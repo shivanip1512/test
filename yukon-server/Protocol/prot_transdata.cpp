@@ -15,7 +15,7 @@
 *-----------------------------------------------------------------------------*/
 #pragma warning( disable : 4786)
 
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "guard.h"

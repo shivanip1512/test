@@ -3,8 +3,6 @@
 #ifndef  NORMAL
    #define NORMAL 0
 #endif
-#define VOID    void
-#define CONST   const
 
 /****************************************************************************
  * OS2 - Win32 type translations
@@ -24,7 +22,7 @@
 #define  PHMTX    HANDLE*           // Pointer to a mutex handle
 #define  PHPIPE   HANDLE*           // Pipe handle
 #define  PID      ULONG             // OS2 Process ID is a ULONG
-#define  PPVOID   VOID**            // Pointer to void pointer ??
+#define  PPVOID   void**            // Pointer to void pointer ??
 #define  PSZ      LPSTR
 #define  SEL      USHORT            // A Thread ID.
 #define  TID      DWORD             // A Thread ID.

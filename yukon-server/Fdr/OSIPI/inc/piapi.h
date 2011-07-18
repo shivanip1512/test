@@ -4,19 +4,19 @@ $Archive: /PI/clients/piapi/piapi.h $
 
 -------------------------------------------------------------------------------
 
-Copyright (c) 1995-2000 OSI Software, Inc. All rights reserved. 
+Copyright (c) 1995-2000 OSI Software, Inc. All rights reserved.
 Unpublished - rights reserved under the copyright law of the United States.
 
-USE OF A COPYRIGHT NOTICE IS PRECAUTIONARY ONLY AND DOES NOT IMPLY PUBLICATION 
+USE OF A COPYRIGHT NOTICE IS PRECAUTIONARY ONLY AND DOES NOT IMPLY PUBLICATION
 OR DISCLOSURE.
 
-THIS SOFTWARE CONTAINS CONFIDENTIAL INFORMATION AND TRADE SECRETS OF 
-OSI SOFTWARE, INC.  USE, DISCLOSURE, OR REPRODUCTION IS PROHIBITED WITHOUT 
+THIS SOFTWARE CONTAINS CONFIDENTIAL INFORMATION AND TRADE SECRETS OF
+OSI SOFTWARE, INC.  USE, DISCLOSURE, OR REPRODUCTION IS PROHIBITED WITHOUT
 THE PRIOR EXPRESS WRITTEN PERMISSION OF OSI SOFTWARE, INC.
 
 RESTRICTED RIGHTS LEGEND
-Use, duplication, or disclosure by the Government is subject to restrictions 
-as set forth in subparagraph (c)(1)(ii) of the Rights in Technical Data and 
+Use, duplication, or disclosure by the Government is subject to restrictions
+as set forth in subparagraph (c)(1)(ii) of the Rights in Technical Data and
 Computer Software clause at DFARS 252.227.7013
 
 OSI Software, Inc.
@@ -32,37 +32,18 @@ Interface, a Multi-Platform PI Toolkit.
 -------------------------------------------------------------------------------
 
 $Log: piapi.h,v $
-Revision 1.1.36.1  2008/11/13 17:23:45  jmarks
-YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-
-Responded to reviewer comments again.
-
-I eliminated excess references to windows.h .
-
-This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
-
-None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
-Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
-
-In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
-
-This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
-
-Revision 1.1  2005/02/14 16:38:42  tmack
-Initial checkin for FDR interface to Pi.
-
 
 16    3/09/01 11:27a Ray
 Removed obsolete include file pisql.h.
 
 15    3/16/:0 2:07p Charlie
-Made copyright date to 2000 
+Made copyright date to 2000
 
 14    3/10/:0 2:51p Charlie
-Added const to arguments of piut functions which don't modify strings. 
+Added const to arguments of piut functions which don't modify strings.
 
 13    3/09/:0 7:46a Charlie
-Use const in pilg_checklogfile and pilg_formputlog 
+Use const in pilg_checklogfile and pilg_formputlog
 
 12    8/10/99 6:11p Cahenze
 added piut_getloginuser
@@ -101,7 +82,7 @@ a windows platform.
 2     10/27/97 9:13a Harry
 Added pilg_formputlog
 
-Migrated from SCCS at version   @(#)piapi.h	1.35 06/17/96
+Migrated from SCCS at version   @(#)piapi.h 1.35 06/17/96
 Migrated History
   Date    Author  Description
 15-Apr-92  RAB    Original (Based on VMS PI Toolkit)
@@ -128,12 +109,12 @@ Migrated History
 06-dec-93  jhp    extern c cast of function prototypes if c++
                   added long tagname support
 12-jan-94  jhp    replaced long w/int32
-09-may-94  jhp    added piut_getapiversion 
+09-may-94  jhp    added piut_getapiversion
 18-jul-94  jhp    added piut_disconnectnode
 23-aug-94  jhp    added piut_netnodeinfo
 29-jun-95  hks    added piar_timefilter
-01-dec-95  hks    added defines for piut_login 
-24-jan-95  rcv    changed conditionals for vax include 
+01-dec-95  hks    added defines for piut_login
+24-jan-95  rcv    changed conditionals for vax include
 25-mar-96  hks    added pitm_fastservertime and piut_setnobuffering
 14-jun-96  rcv    added piut_getserverversion
 17-jun-96  rcv    added piut_setpassword
@@ -144,7 +125,7 @@ Migrated History
 #define __PIAPI_H
 #include "pidefs.h"
 #include "piba.h"
-/*  14-jun-93  */                                         
+/*  14-jun-93  */
 #ifndef PIPTR
 #if (defined(_WINDOWS) || defined(DOS)) && !defined(WIN32)
 #define PIPTR _far
@@ -167,7 +148,7 @@ Migrated History
 #elif defined ( __alpha )
 #define PIINT32 int
 #define PIVOID void
-#define PIWIN 
+#define PIWIN
 #define PIBOOL pibool
 #else
 #define PIINT32 int32
@@ -241,7 +222,7 @@ PIINT32 piar_timedvalues( int32 pt, int32 PIPTR *count, int32 times[],
    float rvals[], int32 istats[], int32 prev );
 PIINT32 piar_timedvaluesfil( int32 pt, int32 PIPTR *count, int32 times[],
    float rvals[], int32 istats[], char *exp );
-PIINT32 piar_timefilter( int32 starttime, int32 endtime, char *exp, 
+PIINT32 piar_timefilter( int32 starttime, int32 endtime, char *exp,
    int32 *tottime, int32 *passtime);
 PIINT32 piar_value( int32 pt, int32 PIPTR *timedate, int32 mode,
    float PIPTR *rval, int32 *istat );

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_mcsimpsched.h"
 #include "dbaccess.h"
@@ -103,7 +103,7 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 bool CtiTableMCSimpleSchedule::Update()
 {
-    static const string sql =  "update " + std::string(_table_name) + 
+    static const string sql =  "update " + std::string(_table_name) +
                                 " set "
                                     "targetpaobjectid = ?, "
                                     "StartCommand = ?, "

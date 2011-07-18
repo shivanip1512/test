@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test BchBehavior"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "boostutil.h"
 #include "BehaviorCollection.h"
 #include "BchBehavior.h"
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(test_bch_behavior)
 
     bytes message, reference;
 
-    // Pushing data onto each vector. The BchBehavior should modify the 
+    // Pushing data onto each vector. The BchBehavior should modify the
     // second-to-last nibble of the message.
     message.push_back(0x04);
     message.push_back(0x08);
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_bch_behavior)
 
     behaviorCollection.processMessage(message, logger);
 
-    // Check to see that the BchBehavior correctly 
+    // Check to see that the BchBehavior correctly
     // processed the message and put the information back
     // in the intended order to match the reference vector.
     BOOST_CHECK_EQUAL_COLLECTIONS(message.begin(), message.end(), reference.begin(), reference.end());

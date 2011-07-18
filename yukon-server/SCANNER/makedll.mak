@@ -1,7 +1,7 @@
 # nmake file YUKON 1.0
 
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(SCANNER)\include \
@@ -84,17 +84,15 @@ id_sgdll.obj:    id_sgdll.cpp include\id_sgdll.h
 
 
 #UPDATE#
-id_scanner.obj:	yukon.h precompiled.h types.h ctidbgmem.h utility.h \
-		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
-		id_scanner.h
-id_sgdll.obj:	yukon.h precompiled.h types.h ctidbgmem.h utility.h \
-		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
-		id_sgdll.h
-mgr_device_scannable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		mgr_device_scannable.h mgr_device.h dlldefs.h rtdb.h \
-		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h string_utility.h dllbase.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h dsm2err.h \
+id_scanner.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h id_scanner.h
+id_sgdll.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h id_sgdll.h
+mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
+		mgr_device.h dlldefs.h rtdb.h hashkey.h hash_functions.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h string_utility.h dllbase.h dsm2.h cticonnect.h \
+		yukon.h ctidbgmem.h netports.h mutex.h guard.h dsm2err.h \
 		words.h optional.h dev_base.h cmdparse.h ctitokenizer.h \
 		parsevalue.h dev_exclusion.h boostutil.h tbl_paoexclusion.h \
 		row_reader.h rwutil.h database_connection.h dbaccess.h sema.h \
@@ -111,25 +109,24 @@ mgr_device_scannable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h debug_timer.h
-precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
-scanglob.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h scanner.h ctitime.h dllbase.h cticalls.h dsm2.h \
-		mutex.h guard.h utility.h queues.h numstr.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h scanglob.h
-scanmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
-		dlldefs.h scansvc.h cservice.h CServiceConfig.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		queues.h numstr.h cticonnect.h netports.h dsm2err.h words.h \
+scanglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h scanner.h \
+		ctitime.h dllbase.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h queues.h cticalls.h \
+		numstr.h dsm2err.h words.h optional.h scanglob.h
+scanmain.obj:	precompiled.h ctitime.h dlldefs.h scansvc.h cservice.h \
+		CServiceConfig.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h ctibase.h ctinexus.h logger.h thread.h \
 		CtiPCPtrQueue.h thread_monitor.h smartmap.h boostutil.h \
 		readers_writer_lock.h critical_section.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h sema.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h queue.h \
 		string_utility.h thread_register_data.h
-scanner.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h utility.h ctitime.h queues.h numstr.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h sema.h elogger.h \
+scanner.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
+		numstr.h dsm2err.h words.h optional.h sema.h elogger.h \
 		porter.h devicetypes.h scanner.h master.h dlldev.h scanglob.h \
 		rtdb.h hashkey.h hash_functions.h string_utility.h \
 		mgr_device_scannable.h mgr_device.h dev_base.h cmdparse.h \
@@ -158,6 +155,5 @@ scanner.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		c_port_interface.h configparms.h dllyukon.h thread_monitor.h \
 		thread_register_data.h ThreadStatusKeeper.h \
 		millisecond_timer.h
-scansvc.obj:	yukon.h precompiled.h types.h ctidbgmem.h scanglob.h \
-		dlldefs.h scansvc.h cservice.h
+scansvc.obj:	precompiled.h scanglob.h dlldefs.h scansvc.h cservice.h
 #ENDUPDATE#

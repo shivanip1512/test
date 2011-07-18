@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 #include <iomanip>
@@ -854,7 +854,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                             break;
                         }
                     }
-    
+
                     switch(dlcword)
                     {
                     case 0x00:

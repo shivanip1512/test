@@ -32,7 +32,7 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "std_ansi_tbl_25.h"
@@ -47,8 +47,8 @@ CtiAnsiTable25::CtiAnsiTable25( int oc, int sum, int demnd, int coin, int tier, 
     _dateTimeFieldFlag(FALSE),
     _seasonInfoFieldFlag(FALSE),
     _endDateTime(0),
-    _season(0), 
-    _prevDemandResetData(NULL) 
+    _season(0),
+    _prevDemandResetData(NULL)
 {
 }
 

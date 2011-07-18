@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
@@ -120,7 +120,7 @@ char     CTINexusErrors[][80] = {
     {"99 Error unknown"}
 };
 
-INT CTIGetLastError(VOID)
+INT CTIGetLastError(void)
 {
 #ifdef _WIN32
     return(WSAGetLastError());
@@ -420,7 +420,7 @@ INT CTINEXUS::CTINexusOpen(CHAR *szServer, SHORT nPort, ULONG Flags)
     return nReturnCode;
 }
 
-INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG TimeOut)
+INT CTINEXUS::CTINexusWrite(void *buf, ULONG len, PULONG BytesWritten, LONG TimeOut)
 {
     ULONG    BytesSent   = 0;
     CHAR     *bptr       = (CHAR*)buf;
@@ -528,7 +528,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
     return( nReason );
 }
 
-INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
+INT CTINEXUS::CTINexusRead(void *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     INT retval = NoError;
 
@@ -674,7 +674,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
     return retval;
 }
 
-INT CTINEXUS::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
+INT CTINEXUS::CTINexusPeek(void *buf, ULONG len, PULONG BRead)
 {
     INT      BytesRead   = 0;
     ULONG    BytesAvail  = 0;

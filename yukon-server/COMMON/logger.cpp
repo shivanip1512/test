@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "utility.h"
 #include "cparms.h"
@@ -269,16 +269,16 @@ void CtiLogger::doOutput()
                         if( ++outputCount < 100 || _queue.entries() < 100 )
                         {
                             int acquireloops = 0;
-    
+
                             RWMutexLock::TryLockGuard guard(coutMux);
-    
+
                             while( !guard.isAcquired() && acquireloops++ < 60)
                             {
                                 Sleep(500L);
-    
+
                                 guard.tryAcquire();
                             }
-    
+
                             cout.write( to_write->str(), n );
                         }
                         else if( !truncated_output_printed )
@@ -287,7 +287,7 @@ void CtiLogger::doOutput()
                             cout << " ******** Console Output Truncated ******** " << endl;
                         }
                     }
-                    
+
 
                     if( outfile )
                     {

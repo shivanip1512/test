@@ -3,7 +3,7 @@
 * File:   mgr_device_scannable
 *
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "mgr_device_scannable.h"
 #include "dev_single.h"

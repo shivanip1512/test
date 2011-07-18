@@ -2,16 +2,16 @@
   Filename:  lmgroupsa105.cpp
 
   Programmer:  Aaron Lauinger
-        
+
   Description:    Source file for CtiLMGroupSA105.
   CtiLMGroupSA105 maintains the state and handles
   the persistence of sa 305 groups in Load Management.
 
   Initial Date:  3/6/2004
-         
+
   COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
   ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "lmgroupsa105.h"
 #include "lmid.h"
@@ -29,12 +29,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupSA105, CTILMGROUPSA105_ID )
   Constructors
   ---------------------------------------------------------------------------*/
     CtiLMGroupSA105::CtiLMGroupSA105()
-{   
+{
 }
 
 CtiLMGroupSA105::CtiLMGroupSA105(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupSA105::CtiLMGroupSA105(const CtiLMGroupSA105& groupexp)
@@ -118,7 +118,7 @@ CtiRequestMsg* CtiLMGroupSA105::createRotationRequestMsg(LONG sendRate, LONG she
 {
     string controlString("control sa105 shed ");
     controlString += buildShedString(shedTime);
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -148,7 +148,7 @@ CtiRequestMsg* CtiLMGroupSA105::createMasterCycleRequestMsg(LONG offTime, LONG p
 
 /*-------------------------------------------------------------------------
   restoreGuts
-    
+
   Restore self's state from the given stream
   --------------------------------------------------------------------------*/
 void CtiLMGroupSA105::restoreGuts(RWvistream& istrm)
@@ -158,10 +158,10 @@ void CtiLMGroupSA105::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
   saveGuts
-    
+
   Save self's state onto the given stream
   ---------------------------------------------------------------------------*/
-void CtiLMGroupSA105::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupSA105::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
 }
@@ -196,7 +196,7 @@ int CtiLMGroupSA105::operator!=(const CtiLMGroupSA105& right) const
 
 /*---------------------------------------------------------------------------
   replicate
-    
+
   Restores self's operation fields
   ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupSA105::replicate() const
@@ -206,7 +206,7 @@ CtiLMGroupBase* CtiLMGroupSA105::replicate() const
 
 /*---------------------------------------------------------------------------
   restore
-    
+
   Restores given a Reader
   ---------------------------------------------------------------------------*/
 void CtiLMGroupSA105::restore(Cti::RowReader &rdr)

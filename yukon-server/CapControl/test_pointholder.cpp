@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "PointValueHolder.h"
 

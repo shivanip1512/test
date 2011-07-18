@@ -11,7 +11,7 @@
 
   COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
   ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "lmgroupsa305.h"
 #include "lmid.h"

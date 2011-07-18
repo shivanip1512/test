@@ -1,8 +1,8 @@
 
 # nmake file YUKON 1.0
 
-!include ..\common\global.inc
-!include ..\common\rwglobal.inc
+!include $(COMPILEBASE)\global.inc
+!include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
@@ -112,28 +112,29 @@ clean:
 
 ######################################################################################
 #UPDATE#
-test_mgr_ptclients.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		mgr_ptclients.h dlldefs.h mgr_point.h smartmap.h boostutil.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dllbase.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h readers_writer_lock.h \
-		critical_section.h pt_base.h row_reader.h dbmemobject.h \
-		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
-		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
-		tbl_pt_property.h tbl_pt_trigger.h msg_pdata.h message.h \
-		collectable.h rwutil.h database_connection.h \
-		database_reader.h boost_time.h ptconnect.h hashkey.h \
-		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
-		thread.h CtiPCPtrQueue.h string_utility.h msg_multi.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h ctibase.h ctinexus.h server_b.h pt_dyn_dispatch.h \
-		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
-		tbl_rawpthistory.h pt_status.h tbl_pt_status.h pt_analog.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h
-test_signalmanager.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h \
+test_mgr_ptclients.obj:	precompiled.h mgr_ptclients.h dlldefs.h \
+		mgr_point.h pt_base.h yukon.h types.h ctidbgmem.h \
+		row_reader.h ctitime.h boostutil.h utility.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dbmemobject.h resolvers.h \
+		pointtypes.h db_entry_defines.h pointdefs.h pt_dyn_base.h \
+		tbl_pt_base.h dllbase.h dsm2.h cticonnect.h netports.h \
+		mutex.h guard.h dsm2err.h words.h optional.h dbaccess.h \
+		sema.h desolvers.h tbl_pt_property.h tbl_pt_trigger.h \
+		smartmap.h readers_writer_lock.h critical_section.h \
+		msg_pdata.h message.h collectable.h rwutil.h \
+		database_connection.h database_reader.h boost_time.h \
+		ptconnect.h hashkey.h hash_functions.h con_mgr.h connection.h \
+		exchange.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
+		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h ctibase.h ctinexus.h server_b.h \
+		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
+		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h pt_status.h \
+		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h
+test_signalmanager.obj:	precompiled.h tbl_pt_alarm.h dlldefs.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h row_reader.h signalmanager.h \
 		msg_signal.h message.h collectable.h rwutil.h \

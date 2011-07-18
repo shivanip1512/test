@@ -23,6 +23,8 @@ BIN             = .\bin
 # Working directories.
 #
 
+PRECOMPILED     = $(COMPILEBASE)
+
 LOADMANAGEMENT  = $(COMPILEBASE)\loadmanagement
 FDR             = $(COMPILEBASE)\fdr
 CALC            = $(COMPILEBASE)\calc
@@ -125,7 +127,7 @@ SQLAPI_DLL = sqlapi
 
 XERCES_LIBS = $(XERCES)\lib\$(XERCES_LIB).lib
 
-PCHFLAGS = /Yu"yukon.h" /Fp"$(BIN)\yukon.pch"
+PCHFLAGS = /Yu"precompiled.h" /Fp"$(COMPILEBASE)\precompiled.pch"
 
 !IFDEF YUKONPROFILE
 CFLAGS  = /Fm $(CFLAGS)

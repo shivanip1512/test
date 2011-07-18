@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -30,14 +30,14 @@ CtiProtocolANSI_sentinel::CtiProtocolANSI_sentinel( void )
     //_tableZero=NULL;
    // _tableSeventy=NULL;
     //_table_110=NULL;
-    _daysSinceDemandReset = 0;   
-    _daysSinceLastTest = 0;      
-    _timeOfLastOutage = 0;       
+    _daysSinceDemandReset = 0;
+    _daysSinceLastTest = 0;
+    _timeOfLastOutage = 0;
     _timeOfLastInterrogation = 0;
-    _daysOnBattery = 0;          
-    _currentBatteryReading = 0;  
-    _goodBatteryReading = 0;     
-    _dstConfigured = 0;          
+    _daysOnBattery = 0;
+    _currentBatteryReading = 0;
+    _goodBatteryReading = 0;
+    _dstConfigured = 0;
 
 }
 
@@ -60,7 +60,7 @@ void CtiProtocolANSI_sentinel::destroyManufacturerTables( void )
       delete _tableSeventy;
       _tableSeventy = NULL;
    } */
-   
+
   /* if( _table_110 != NULL )
    {
       delete _table_110;
@@ -83,7 +83,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
                 _tableZero->printResult();
                 break;
             }
-            */ 
+            */
     case 1:
         {
             break;
@@ -131,7 +131,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
 
     default:
             break;
-      
+
     }
 }
 
@@ -144,11 +144,11 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 22;
     reqData.proc.std_vs_mfg_flag = 1;
-    reqData.proc.selector = 3;   
+    reqData.proc.selector = 3;
 
 
     getApplicationLayer().setProcBfld( reqData.proc );
-    
+
     reqData.seq_nbr = getWriteSequenceNbr();
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
 
@@ -180,18 +180,18 @@ bool CtiProtocolANSI_sentinel::batteryLifeData()
     Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 0;
     reqData.proc.std_vs_mfg_flag = 0;
-    reqData.proc.selector = 0;   
+    reqData.proc.selector = 0;
 
     getApplicationLayer().setProcBfld( reqData.proc );
-    
+
     reqData.seq_nbr = getWriteSequenceNbr();
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
-    
+
     BYTE clockRelatedData[34];
 
     //READ #3 in Sentinel Developers Guide
     clockRelatedData[0] = 0x00;   //Mode
-    clockRelatedData[1] = 0x08;    //Count 
+    clockRelatedData[1] = 0x08;    //Count
 
     BYTEULONG temp;
     temp.ul = DAYS_SINCE_DEMAND_RESET;
@@ -244,7 +244,7 @@ bool CtiProtocolANSI_sentinel::batteryLifeData()
     clockRelatedData[30] = temp.ch[0];
     clockRelatedData[31] = temp.ch[1];
     clockRelatedData[32] = temp.ch[2];
-    clockRelatedData[33] = temp.ch[3]; 
+    clockRelatedData[33] = temp.ch[3];
 
     getApplicationLayer().populateParmPtr(clockRelatedData, 34) ;
 

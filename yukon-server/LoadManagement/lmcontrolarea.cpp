@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "msg_signal.h"
@@ -1366,8 +1366,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                 //possibly attemping control state?
             }
         }
-        else if ( !(ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) || 
-                    ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || 
+        else if ( !(ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) ||
+                    ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) ||
                     ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType)) )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

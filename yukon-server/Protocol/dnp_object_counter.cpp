@@ -11,7 +11,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "dnp_object_counter.h"
@@ -62,12 +62,12 @@ unsigned char Counter::getFlag() const
     return _flag;
 }
 
-void Counter::setValue(long value) 
+void Counter::setValue(long value)
 {
     _counter = value;
 }
 
-void Counter::setOnlineFlag(bool online) 
+void Counter::setOnlineFlag(bool online)
 {
     _flag = (online?0x01:0x00);
 }
@@ -251,7 +251,7 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
     val = _counter;
 
     if (!_flag && gDNPOfflineNonUpdated)
-    {    
+    {
         quality = NonUpdatedQuality;
     }
 
@@ -350,7 +350,7 @@ int CounterEvent::serializeVariation(unsigned char *buf, int variation) const
     int pos = 0;
     unsigned char flag = getFlag();
     unsigned long counter = getValue();
-    
+
     switch(variation)
     {
         case CE_Binary32BitNoTime:
@@ -435,20 +435,20 @@ int CounterEvent::getSerializedLen(void) const
             retVal = 9;
             break;
         }
-        
+
         default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - in CounterEvent::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-        
+
             retVal = 0;
-        
+
             break;
         }
     }
-    
+
 
     return retVal;
 }
@@ -493,7 +493,7 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
     return tmpMsg;
 }
 
-void CounterEvent::setTime(CtiTime timestamp) 
+void CounterEvent::setTime(CtiTime timestamp)
 {
     _toc.setSeconds(timestamp.seconds());
 }

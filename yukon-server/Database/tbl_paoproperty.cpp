@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_paoproperty.h"
 #include "dbaccess.h"
@@ -37,19 +37,19 @@ string PaoPropertyTable::addIDSQLClause(const set<long> &deviceids)
         if( deviceids.size() == 1 )
         {
             //  special single id case
-    
+
             in_list << *(deviceids.begin());
-             
+
             sqlIDs += "AND PPR.paobjectid = " + in_list.str();
-    
+
             return sqlIDs;
         }
         else
         {
             in_list << "(";
-        
+
             copy(deviceids.begin(), deviceids.end(), csv_output_iterator<long, ostringstream>(in_list));
-        
+
             in_list << ")";
 
             sqlIDs += "AND PPR.paobjectid IN " + in_list.str();

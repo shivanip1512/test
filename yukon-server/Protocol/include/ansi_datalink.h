@@ -98,7 +98,7 @@ class IM_EX_PROT CtiANSIDatalink
       void setSequence( int seq );
 
       ULONG getExpectedBytes( void );
-      void setExpectedBytes( int ULONG );
+      void setExpectedBytes( ULONG );
 
       unsigned short crc16( unsigned char octet, unsigned short crcIn );
       unsigned short crc( int size, unsigned char *packet );

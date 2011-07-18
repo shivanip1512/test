@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "thread_register_data.h"
 
@@ -255,7 +255,7 @@ void CtiThreadRegData::setUnreportedCount(int count)
 }
 
 
-/* 
+/*
    The thread monitor is hiccuping when running on a virtual machine.  If the VM takes a long enough nap
    and then recovers, all of the threads will go unreported and then immediately re-report.  We want to
    filter out this case.

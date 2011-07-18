@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "mc_dbthr.h"
 
 using std::endl;
@@ -43,7 +43,7 @@ void CtiMCDBThread::run()
     try
     {
         while( !isSet( CtiThread::SHUTDOWN ) )
-        {            
+        {
             if( gMacsDebugLevel & MC_DEBUG_DB )
             {
                 CtiLockGuard< CtiLogger > g(dout);

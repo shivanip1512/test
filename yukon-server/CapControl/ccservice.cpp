@@ -9,7 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include <io.h>
 
 #include "id_capcontrol.h"

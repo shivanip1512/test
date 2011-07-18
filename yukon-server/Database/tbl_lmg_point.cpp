@@ -28,7 +28,7 @@
 
 #pragma warning( disable : 4786)
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "logger.h"
 #include "tbl_lmg_point.h"
 

@@ -9,7 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "msg_server_req.h"
 #include "msg_server_resp.h"
@@ -656,12 +656,12 @@ void CtiLMCommandExecutor::ShedGroup()
                         else
                         {
                             CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
-    
+
                             if( routeId > 0 )
                             {
                                 requestMsg->setRouteId(routeId);
                             }
-    
+
                             if( requestMsg != NULL )
                             {
                                 CtiTime now;
@@ -823,12 +823,12 @@ void CtiLMCommandExecutor::RestoreGroup()
                             int priority = 11;
                             string controlString = "control restore";
                             CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
-    
+
                             if( routeId > 0 )
                             {
                                 requestMsg->setRouteId(routeId);
                             }
-    
+
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                         }
@@ -979,13 +979,13 @@ void CtiLMCommandExecutor::DisableGroup()
                                 int priority = 11;
                                 string controlString = "control restore";
                                 CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
-    
+
                                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                                 }
-    
+
                                 currentLMGroup->setLastControlString(requestMsg->CommandString());
                                 CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                                 currentLMGroup->setLastControlSent(CtiTime());

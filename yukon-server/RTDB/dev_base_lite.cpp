@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 #include <sstream>
@@ -142,7 +142,7 @@ string CtiDeviceBaseLite::getSQLCoreStatement(long paoid)
     {
         return string(sqlNoID + " WHERE YP.paobjectid = ?");
     }
-    else 
+    else
     {
         return sqlNoID;
     }

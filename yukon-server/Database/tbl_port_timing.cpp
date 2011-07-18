@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_port_timing.h"
 #include "logger.h"
@@ -65,7 +65,7 @@ void CtiTablePortTimings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    ULONG    uTemp;
 
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -77,7 +77,7 @@ void CtiTablePortTimings::DecodeDatabaseReader(Cti::RowReader &rdr)
    rdr["receivedatawait"]  >> _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY];
    rdr["extratimeout"]     >> _delays[EXTRA_DELAY];
 
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
       dout << " pre_rts_delay        : " << _delays[PRE_RTS_DELAY] << endl;

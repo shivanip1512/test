@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <crtdbg.h>
 #include <iostream>
@@ -23,7 +23,7 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
     {
 
         /* Handle the CTRL+C signal. */
-        
+
         case CTRL_C_EVENT:
 
         case CTRL_CLOSE_EVENT:
@@ -56,7 +56,7 @@ void main(int argc, char **argv)
 
     CtiTime startTime;
     long msgNum = 0;
-    
+
 
     try
     {
@@ -72,7 +72,7 @@ void main(int argc, char **argv)
         //    the program name and such doesn't change - only our requested points.)
 
         string regStr = "Lurker";
-        
+
         myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
         myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
 
@@ -83,14 +83,14 @@ void main(int argc, char **argv)
             //  wait up to a second for a message
             for( ; NULL == (incomingMsg = myConnection.ReadConnQue( 1000 )) && !bQuit; )
                 ;
-            
+
             if( bQuit )
                 continue;  // so we exit the for without inspecting the NULL message
 
             float nowTime = ((float)clock( )/(float)CLOCKS_PER_SEC);
 
             cout << nowTime << " I just got message #" << ++msg << " on loop #" << (i + 1) << endl;
-                
+
             msgNum += inspectMessage( incomingMsg );
 
             delete incomingMsg;   //  Make sure to delete this - its on the heap
@@ -126,7 +126,7 @@ int inspectMessage( CtiMessage *message )
             cout << "PointData:  point " << pData->getId( ) << ", value: " << pData->getValue( ) << endl;
             retval = 1;
             break;
-        
+
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
             cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << endl;

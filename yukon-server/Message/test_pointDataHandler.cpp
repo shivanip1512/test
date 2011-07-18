@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test PointDataHandler"
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>

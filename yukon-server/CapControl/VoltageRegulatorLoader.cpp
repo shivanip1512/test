@@ -1,6 +1,6 @@
 
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ccid.h"
 #include "logger.h"
 #include "database_connection.h"
@@ -37,8 +37,8 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
     static const std::string and_clause = " AND Y.PAObjectID = ?";
 
     const std::string inClause = " ('"  + VoltageRegulator::LoadTapChanger +
-                                 "', '" + VoltageRegulator::GangOperatedVoltageRegulator + 
-                                 "', '" + VoltageRegulator::PhaseOperatedVoltageRegulator + 
+                                 "', '" + VoltageRegulator::GangOperatedVoltageRegulator +
+                                 "', '" + VoltageRegulator::PhaseOperatedVoltageRegulator +
                                  "')";
 
     Cti::Database::DatabaseConnection   connection;
@@ -72,7 +72,7 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
         std::string regulatorType;
 
         rdr["Type"] >> regulatorType;
-  
+
         if ( rdr.isValid() )
         {
             VoltageRegulatorManager::SharedPtr regulator;

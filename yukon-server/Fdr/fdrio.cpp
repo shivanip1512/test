@@ -1,11 +1,11 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "fdrio.h"
 
 using std::queue;
 using std::endl;
 
-template <class T> 
+template <class T>
 void CtiFDRIO<T>::startIO( void )
 {
     _inThreadFunc  = rwMakeThreadFunction( *this, &CtiFDRIO::_inThread );
@@ -15,7 +15,7 @@ void CtiFDRIO<T>::startIO( void )
 }
 
 
-template <class T> 
+template <class T>
 void CtiFDRIO<T>::stopIO( void )
 {
     _inThreadFunc.requestCancellation( );
@@ -27,7 +27,7 @@ void CtiFDRIO<T>::stopIO( void )
 
 //  these are the protected interface functions, which are used in the _in- and _outThread
 //    threads.  they run the backend of what the public interfaces see.
-template <class T> 
+template <class T>
 void CtiFDRIO<T>::_postInput( T *toSend )
 {
     RWMutexLock::LockGuard inboxGuard(_inboxMux);
@@ -36,7 +36,7 @@ void CtiFDRIO<T>::_postInput( T *toSend )
 }
 
 
-template <class T> 
+template <class T>
 T *CtiFDRIO<T>::_grabOutput( long milliseconds )
 {
     T *tmp = NULL;
@@ -55,7 +55,7 @@ T *CtiFDRIO<T>::_grabOutput( long milliseconds )
 
 
 //  these are the public interface methods, seen by the FDRInterface-derived classes.
-template <class T> 
+template <class T>
 void CtiFDRIO<T>::send( T *toSend )
 {
     RWMutexLock::LockGuard outboxGuard(_outboxMux);
@@ -64,7 +64,7 @@ void CtiFDRIO<T>::send( T *toSend )
 }
 
 
-template <class T> 
+template <class T>
 T *CtiFDRIO<T>::recv( long milliseconds )
 {
     T *tmp = NULL;

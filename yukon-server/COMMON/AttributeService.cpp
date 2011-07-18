@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "AttributeService.h"
 #include "resolvers.h"
@@ -35,7 +35,7 @@ std::list<LitePoint> AttributeService::getExtraPaoPoints(int paoId)
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         int pointId;
         while(rdr.isValid() && rdr() )
         {
@@ -71,7 +71,7 @@ LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttr
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         if(rdr.isValid() && rdr() )
         {
             rdr["pointId"] >> pointId;
@@ -112,7 +112,7 @@ std::list<LitePoint> AttributeService::getLitePointsById(const std::list<int>& p
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         while(rdr.isValid() && rdr() )
         {
             LitePoint point;

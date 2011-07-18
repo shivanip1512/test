@@ -24,6 +24,7 @@ build_dirs = \
         loadmanagement
 
 all:
+        @build -nologo -f precompiled.mak $@
         @build -nologo -f libraries.mak $@
 
         %foreach sub_dir in $(build_dirs)

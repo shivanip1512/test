@@ -12,7 +12,7 @@
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 #include <iomanip>
@@ -59,7 +59,7 @@ CtiQueueDataMsg& CtiQueueDataMsg::operator=(const CtiQueueDataMsg& aRef)
     {
         Inherited::operator=(aRef);
 
-        _queueID            = aRef.getId();            
+        _queueID            = aRef.getId();
         _requestId          = aRef.getRequestId();
         _rate               = aRef.getRate();
         _queueCount         = aRef.getQueueCount();

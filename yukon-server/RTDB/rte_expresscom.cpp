@@ -13,7 +13,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include <iostream>
@@ -102,7 +102,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
     BYTE      ABuf[ABUFSIZE];
     ULONG     BytesWritten;
 
-    BASEDLL_IMPORT extern CTINEXUS PorterNexus;
+    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
 
     /*
      *  Wow, I have versacom data and I know what to do with it....

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -159,7 +159,7 @@ void CtiInterpreterPool::dumpPool()
   This string will be evaluated every time a new interpreter is initialized
 
 ----------------------------------------------------------------------------*/
-void CtiInterpreterPool::evalOnInit(const string& cmd) 
+void CtiInterpreterPool::evalOnInit(const string& cmd)
 {
   CtiLockGuard< CtiMutex > guard(_mux);
   _init_cmd = cmd;

@@ -11,7 +11,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #pragma warning( disable : 4786)
 
 

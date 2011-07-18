@@ -29,7 +29,7 @@
          03-30-99    Converted to Win32 API                       CGP
 
    -------------------------------------------------------------------- */
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <stdlib.h>
 #include <stdio.h>

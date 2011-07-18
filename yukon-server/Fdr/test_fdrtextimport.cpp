@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test fdrTextImport"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "fdrtextimport.h"
 #include "ctidate.h"
 #include "ctistring.h" // apparently fdrtextimport doesnt have this file.
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_parseFile_OneFile )
     string w0290w = "1,ALFY_W290_kw,3329.155921936040,G,01/10/2007 02:03:00,S";
     string w0290v = "1,ALFY_W290_kvar,701.708003878593,G,01/10/2007 02:03:00,S";
 
-    
+
     expectedReturn.push_back(c5012w);
     expectedReturn.push_back(c5012v);
     expectedReturn.push_back(c5013w);

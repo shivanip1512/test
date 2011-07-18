@@ -11,7 +11,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -47,7 +47,7 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
     {
         LockGuard guard(_mapMux);
 
-        {   
+        {
             start = start.now();
             if(DebugLevel & 0x00010000)
             {

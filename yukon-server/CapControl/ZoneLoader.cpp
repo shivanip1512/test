@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <string>
 
@@ -79,9 +79,9 @@ void ZoneDBLoader::loadCore(const long Id, ZoneManager::ZoneMap &zones)
         {
             rdr["ParentId"] >> parentId;
         }
-  
+
         ZoneManager::SharedPtr zone = boost::make_shared<ZoneManager::SharedPtr::element_type>( Id, parentId, subbusId, name, type );
-              
+
         if ( zone && rdr.isValid() )            // reader is ~still~ valid
         {
             zones[ zone->getId() ] = zone;      // insert/update...

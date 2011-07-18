@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dsm2.h"
 #include "porter.h"
@@ -36,7 +36,7 @@ using std::string;
 using std::endl;
 using std::list;
 
-VOID ParserToAStruct(CtiCommandParser &parse, ASTRUCT *ASt)
+void ParserToAStruct(CtiCommandParser &parse, ASTRUCT *ASt)
 {
     INT Flags = parse.getFlags();
     int shedtime  = 0;

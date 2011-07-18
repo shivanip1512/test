@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "msg_signal.h"
@@ -825,9 +825,9 @@ std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllSwitchedCapBanks( )
     return banks;
 }
 
-std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllCapBanks( ) 
+std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllCapBanks( )
 {
-    std::vector<CtiCCCapBankPtr> banks; 
+    std::vector<CtiCCCapBankPtr> banks;
     banks.assign(_cccapbanks.begin(), _cccapbanks.end());
     return banks;
 }
@@ -1773,9 +1773,9 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     {
         if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
-                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState), 
-                                                                               capBank->getControlStatus(), 
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
+                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
+                                                                               capBank->getControlStatus(),
                                                                                CtiTime(), -1, 100 );
             hist->setMessagePriority( hist->getMessagePriority() + 2 );
             pointChanges.push_back( hist );
@@ -2066,9 +2066,9 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     {
         if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
-                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState), 
-                                                                               capBank->getControlStatus(), 
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
+                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
+                                                                               capBank->getControlStatus(),
                                                                                CtiTime(), -1, 100 );
             hist->setMessagePriority( hist->getMessagePriority() + 2 );
             pointChanges.push_back( hist );
@@ -2183,9 +2183,9 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     {
         if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
-                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState), 
-                                                                               capBank->getControlStatus(), 
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
+                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
+                                                                               capBank->getControlStatus(),
                                                                                CtiTime(), -1, 100 );
             hist->setMessagePriority( hist->getMessagePriority() + 2 );
             pointChanges.push_back( hist );

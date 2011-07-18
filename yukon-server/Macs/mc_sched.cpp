@@ -24,7 +24,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "mc_sched.h"
 #include "utility.h"

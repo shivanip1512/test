@@ -423,8 +423,8 @@ public:
     //INT ResultFailureDisplay (INT FailError);
     //UCHAR printPowerPlusStatus(UCHAR Status, BOOL traceFlag);
 
-    INT   getAPlusClassOffset(UINT Key, VOID *ptr);
-    INT   getAPlusFuncOffset(UINT Key, VOID *ptr);
+    INT   getAPlusClassOffset(UINT Key, void *ptr);
+    INT   getAPlusFuncOffset(UINT Key, void *ptr);
 
     LONG findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaPPlusClass2Real_t class2);
 

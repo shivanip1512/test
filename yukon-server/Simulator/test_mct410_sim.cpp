@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test mct410 device"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "boostutil.h"
 #include "types.h"
 #include "Mct410.h"

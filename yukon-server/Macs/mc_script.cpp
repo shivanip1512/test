@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "mc_script.h"
 
 using std::string;
@@ -73,7 +73,7 @@ bool CtiMCScript::readContents()
 
     // Clear out old script contents
     _contents = "";
-    
+
     // Append each block read into _contents string
     if( (fi = fopen( (const char*) filename.c_str(), "rb")) != NULL )
     {

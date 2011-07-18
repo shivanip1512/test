@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <winbase.h>
 #include <stdio.h>
@@ -36,7 +36,7 @@
 
 using namespace std;
 
-extern VOID PortPipeCleanup (ULONG Reason);
+extern void PortPipeCleanup (ULONG Reason);
 extern void freeUCTMemory(void);
 
 // Global Exports....

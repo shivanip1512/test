@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "cmd_lcr3102_hourlyDataLog.h"
 
@@ -74,7 +74,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const u
     else
     {
         const unsigned char flags = getValueFromBits(payload, 0, 8);
-    
+
         validateFlags(flags);
 
         // Grab the hourly data from the payload. There are 12 items of 6-bit packed data.
@@ -98,19 +98,19 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const u
 // throws CommandException
 void Lcr3102HourlyDataLogCommand::validateFlags(const unsigned char &flags)
 {
-    /* 
+    /*
      * This function interprets the flags returned from the LCR 3102.
-     *	Flag byte XXIERSTs
-     *  	XX is unused
-     *  	I - if set the log is doing 15 minute intervals.  Clear means the log is hourly interval
-     *  	E - if set, indicates there is an error with the requested data log time or number of elements
-     *  	R - if set, the first six bits are runtime
-     *  	S - if set, the next six bits are shedtime
-     *  	T - if set, the next six bits are Temperature (thermostat)
-     *  	    Offset by 40 degrees (range is from 40 to 103)
-     *  	s - if set, the next six bits are setpoint (thermostat)
+     *  Flag byte XXIERSTs
+     *      XX is unused
+     *      I - if set the log is doing 15 minute intervals.  Clear means the log is hourly interval
+     *      E - if set, indicates there is an error with the requested data log time or number of elements
+     *      R - if set, the first six bits are runtime
+     *      S - if set, the next six bits are shedtime
+     *      T - if set, the next six bits are Temperature (thermostat)
+     *          Offset by 40 degrees (range is from 40 to 103)
+     *      s - if set, the next six bits are setpoint (thermostat)
      *          Offset by 40 degress (range is from 40 to 103)
-     *  
+     *
      */
 
     std::string description;
@@ -142,7 +142,7 @@ void Lcr3102HourlyDataLogCommand::getDescription(std::vector<unsigned> data, std
     for(int i = 0; i < ReadLength_ExpectedData; i++)
     {
         int runtimeVal  = data[2*i];
-        int shedTimeVal = data[2*i+1]; 
+        int shedTimeVal = data[2*i+1];
 
         description += "Hour " + CtiNumStr((_function - Read_FirstHourlyDataLogInterval) * 6 + i) + " - ";
         if((runtimeVal + shedTimeVal) > 60)

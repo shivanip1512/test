@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test DNP Protocol"
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "prot_dnp.h"
 #include "dnp_object_internalindications.h"

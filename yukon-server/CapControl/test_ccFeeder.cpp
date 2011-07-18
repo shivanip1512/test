@@ -1,7 +1,7 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CCFeeder"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ctitime.h"
 #include "ccfeeder.h"
 #include "ccsubstationbus.h"
@@ -59,7 +59,7 @@ public:
         if (ID < 0)
         {
             long IDs[] = { 100 };
-    
+
             for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
             {
                 loadSingle(IDs[i], loaded);

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_lm_controlhist.h"
 #include "logger.h"
@@ -581,7 +581,7 @@ bool CtiTableLMControlHistory::Update()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater 
+    updater
         << getLMControlHistoryID()
         << getStartTime()
         << getStopTime()
@@ -844,7 +844,7 @@ bool CtiTableLMControlHistory::UpdateDynamic(Cti::Database::DatabaseConnection &
 
     Cti::Database::DatabaseWriter   updater(conn, sql);
 
-    updater 
+    updater
         << getLMControlHistoryID()
         << getStartTime()
         << getStopTime()

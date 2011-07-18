@@ -1,15 +1,15 @@
 /*-----------------------------------------------------------------------------
     Filename:  clientconn.cpp
-                
+
     Programmer:  Josh Wolberg
-    
+
     Description: Source file for CtiLMConnection
-        
+
     Initial Date:  2/7/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "clientconn.h"
 #include "lmmessage.h"
@@ -40,7 +40,7 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(CTIDBG
     try
     {
         _max_out_queue_size = gConfigParms.getValueAsInt("LOAD_MANAGEMENT_MAX_OUT_QUEUE", 0);
-        
+
         sinbuf  = CTIDBG_new RWPortalStreambuf(*_portal);
         soubuf  = CTIDBG_new RWPortalStreambuf(*_portal);
         oStream = CTIDBG_new RWpostream(soubuf);
@@ -95,7 +95,7 @@ CtiLMConnection::~CtiLMConnection()
 
 /*---------------------------------------------------------------------------
     isValid
-    
+
     Returns TRUE is the connection is valid, FALSE otherwise
 ---------------------------------------------------------------------------*/
 bool CtiLMConnection::isValid() const
@@ -105,7 +105,7 @@ bool CtiLMConnection::isValid() const
 
 /*---------------------------------------------------------------------------
     close
-    
+
     Closes the connection
 ---------------------------------------------------------------------------*/
 void CtiLMConnection::close()
@@ -156,7 +156,7 @@ void CtiLMConnection::write(RWCollectable* msg)
     {
         if(_max_out_queue_size != 0 &&
            _queue.entries() >= _max_out_queue_size &&
-	   msg->isA() != MSG_SERVER_RESPONSE)  //never throw away server responses!!!
+       msg->isA() != MSG_SERVER_RESPONSE)  //never throw away server responses!!!
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " Client connection to " << ((RWSocketPortal*)_portal)->socket().getpeername() << " has reached its maximum queue size of " << _max_out_queue_size << " entries!!" << __FILE__ << "(" << __LINE__ << ")" << endl;
@@ -165,7 +165,7 @@ void CtiLMConnection::write(RWCollectable* msg)
         else
         {
 
-            if( _LM_DEBUG & LM_DEBUG_CLIENT )       
+            if( _LM_DEBUG & LM_DEBUG_CLIENT )
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << "Queueing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << msg->classIsA() << endl;
@@ -177,16 +177,16 @@ void CtiLMConnection::write(RWCollectable* msg)
 
 /*---------------------------------------------------------------------------
     _sendthr
-    
+
     Handles putting instances of RWCollectable found in the queue onto the
     output stream.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMConnection::_sendthr()
 {
     RWCollectable* out;
 
     try
-    {     
+    {
         do
         {
             rwRunnable().serviceCancellation();
@@ -199,11 +199,11 @@ void CtiLMConnection::_sendthr()
                 {
                     if( out->isA()!=__RWCOLLECTABLE )
                     {
-                        if( _LM_DEBUG & LM_DEBUG_CLIENT )           
+                        if( _LM_DEBUG & LM_DEBUG_CLIENT )
                         {
                             CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;       
-                        }                       
+                            dout << CtiTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;
+                        }
                         *oStream << out;
                         oStream->vflush();
                     }
@@ -224,7 +224,7 @@ void CtiLMConnection::_sendthr()
     }
     catch ( RWxmsg& msg )
     {
-        /*{    
+        /*{
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiLMConnection::_sendthr - " << msg.why() << endl;
         }*/
@@ -237,7 +237,7 @@ void CtiLMConnection::_sendthr()
 
     _valid = FALSE;
 
-    /*{    
+    /*{
         RWMutexLock::LockGuard guard(coutMux);
         cout << CtiTime()  << "exiting _sendthr - conn:  " << this << endl;
     }*/
@@ -246,10 +246,10 @@ void CtiLMConnection::_sendthr()
 
 /*---------------------------------------------------------------------------
     _recvthr
-    
+
     Receives RWCollectables which must also be cast to CtiCommandable and
     executes them.
----------------------------------------------------------------------------*/   
+---------------------------------------------------------------------------*/
 void CtiLMConnection::_recvthr()
 {
     RWRunnable runnable;
@@ -259,12 +259,12 @@ void CtiLMConnection::_recvthr()
     try
     {
         rwRunnable().serviceCancellation();
-        
+
         do
         {
             //cout << CtiTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
- 
+
             *iStream >> current;
 
             if ( current != NULL )
@@ -272,10 +272,10 @@ void CtiLMConnection::_recvthr()
                 // Give the message a weak pointer to this and pass it on for processing
                 // This is ugly, but the only message loadmanagement accepts that is not
                 // a CTILMMessage is a CtiLMServerRequest, which is a CtiMessage and
-		// a CtiMultiMsg
+        // a CtiMultiMsg
                 // if that changes you better add that as a test here
                 if(current->isA() != MSG_SERVER_REQUEST &&
-		   current->isA() != MSG_MULTI ) // TODO attach a connection to the msgs inside this
+           current->isA() != MSG_MULTI ) // TODO attach a connection to the msgs inside this
                 {
                     CtiLMMessage* msg = (CtiLMMessage*) current;
                     msg->_connection = _weak_this_ptr; // we're a friend class to CTILMMessage, its all good
@@ -299,7 +299,7 @@ void CtiLMConnection::_recvthr()
     }
     catch ( RWxmsg& msg )
     {
-        /*{    
+        /*{
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiLMClientConnection::_recvthr - " << msg.why() << endl;
         }*/
@@ -312,7 +312,7 @@ void CtiLMConnection::_recvthr()
 
     _valid = FALSE;
 
-    /*{    
+    /*{
         RWMutexLock::LockGuard guard(coutMux);
         cout << CtiTime()  << "exiting _recvthr - conn:  " <<  this << endl;
     }*/

@@ -6,7 +6,7 @@
    #include <sys\timeb.h>
 
    #ifdef _WIN32
- 
+
      #if !defined (NOMINMAX)
      #define NOMINMAX
      #endif
@@ -32,59 +32,10 @@
    #define MAKEUSHORT(l, h) (((USHORT)(l)) | ((USHORT)(h)) << 8)
    #define MAKESHORT(l, h)  ((SHORT)MAKEUSHORT(l, h))
 
-/* Define the various types that are used */
-   #ifndef CHAR
-      #define CHAR char
-   #endif
-
-   #ifndef UCHAR
-      #define UCHAR unsigned char
-   #endif
-
-   #ifndef BYTE
-      #define BYTE unsigned char
-   #endif
-
-   #ifndef SHORT
-      #define SHORT short
-   #endif
-
-   #ifndef USHORT
-      #define USHORT unsigned short
-   #endif
-
-   #ifndef UINT
-      #define UINT unsigned int
-   #endif
-
-   #ifndef LONG
-      #define LONG long
-   #endif
-
-   #ifndef ULONG
-      #define ULONG unsigned long
-   #endif
-
-   #ifndef FLOAT
-      #define FLOAT float
-   #endif
-
-  #ifndef DOUBLE
-      #define DOUBLE double
-   #endif
-
-   #ifndef VOID
-      #define VOID void
-   #endif
-
-   #ifndef EXIT_PROCESS
-      #define EXIT_PROCESS       1
-   #endif
-
 
 APIRET   IM_EX_CTIBASE CTISleep              (ULONG SleepTime);
 APIRET   IM_EX_CTIBASE CTIScanEnv            (PSZ Name, PSZ *Result);
-VOID     IM_EX_CTIBASE CTIExit               (ULONG ExitType, ULONG ExitCode);
+void     IM_EX_CTIBASE CTIExit               (ULONG ExitType, ULONG ExitCode);
 APIRET   IM_EX_CTIBASE CTICloseMutexSem      (PHMTX phmtx);
 APIRET   IM_EX_CTIBASE CTICreateMutexSem     (PSZ pszName, PHMTX phmtx, ULONG Flags, BOOL bState);
 APIRET   IM_EX_CTIBASE CTIRequestMutexSem    (HMTX hmtx, ULONG time);
@@ -96,7 +47,7 @@ APIRET   IM_EX_CTIBASE CTIWrite              (HANDLE &hFile, PVOID pBuf, ULONG B
 
 APIRET   IM_EX_CTIBASE CTISetPriority        (ULONG ulPriClass, int tPri);
 
-DWORD    IM_EX_CTIBASE CurrentTID(VOID);
+DWORD    IM_EX_CTIBASE CurrentTID(void);
 
 APIRET IM_EX_CTIBASE CTICreateEventSem      (PSZ pszName, PHEV phev, ULONG Flags, BOOL32 bState);
 APIRET IM_EX_CTIBASE CTICloseEventSem       (PHEV phev);

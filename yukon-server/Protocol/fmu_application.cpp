@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -13,12 +13,12 @@
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/fmu_application.cpp-arc  $
 * REVISION     :  $Revision: 1.1 $
 * DATE         :  $Date: 2007/01/26 20:20:18 $
-*    History: 
+*    History:
       $Log: fmu_application.cpp,v $
       Revision 1.1  2007/01/26 20:20:18  jrichter
       FMU stuff for jess....
 
- 
+
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,8 +81,8 @@ bool CtiFMUApplication::generate(  BYTE *packetPtr, USHORT cmd, USHORT count, IN
     bool retFlag = false;
     BYTE *dataPtr;
 
-    switch (cmd) 
-    {  
+    switch (cmd)
+    {
         case ack:
         {
             //dataPtr = nothing;
@@ -155,7 +155,7 @@ bool CtiFMUApplication::generate(  BYTE *packetPtr, USHORT cmd, USHORT count, IN
 
     getDatalinkLayer().assemblePacket( packetPtr, dataPtr, cmd,count, seq, address);
        //do next step to get logged in
-     
+
      // make this generic
      //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
      //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, _maxPktSize.sh, _maxNbrPkts );
@@ -169,7 +169,7 @@ bool CtiFMUApplication::generate(  BYTE *packetPtr, USHORT cmd, USHORT count, IN
 void CtiFMUApplication::initializeDataLog( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation )
 {
 
-    
+
 
 }
 void CtiFMUApplication::buildAllUnreportedMsgsRequest(UCHAR *abuf, INT *buflen, INT xmitter)
@@ -179,10 +179,10 @@ void CtiFMUApplication::buildAllUnreportedMsgsRequest(UCHAR *abuf, INT *buflen, 
     //getDatalinkLayer().setSequence(sequence);
     dataPtr[0] = 0x01;
     INT sequence = 0xff;
-    
+
     getDatalinkLayer().assemblePacket(abuf, dataPtr, 0x08, 1, sequence, xmitter);
 
-    
+
 }
 
 
@@ -225,7 +225,7 @@ bool CtiFMUApplication::decode( CtiXfer &xfer, int aCommStatus )
             }
             else
             {
-                  
+
 
             }
         }
@@ -258,44 +258,44 @@ bool CtiFMUApplication::analyzePacket()
         (getDatalinkLayer().getPacketPart() && !getDatalinkLayer().getPacketFirst()))
     {
         if (getDatalinkLayer().getPacketPart())
-        {   
-            if (getDatalinkLayer().getPacketFirst()) 
+        {
+            if (getDatalinkLayer().getPacketFirst())
             {
-                memcpy (_currentTable+_totalBytesInTable, 
-                    getDatalinkLayer().getCurrentPacket()+9, 
+                memcpy (_currentTable+_totalBytesInTable,
+                    getDatalinkLayer().getCurrentPacket()+9,
                     getDatalinkLayer().getPacketBytesReceived()-11); //header(6),crc(2),length(2),response(1)
 
                 _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-11;
 
-               if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit 
+               if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                {
                     getDatalinkLayer().toggleToggle();
                }
             }
 
-           else if (getDatalinkLayer().getSequence() == 0) 
+           else if (getDatalinkLayer().getSequence() == 0)
             {
                  // move the data into storage
-                memcpy (_currentTable+_totalBytesInTable, 
-                   getDatalinkLayer().getCurrentPacket()+6, 
+                memcpy (_currentTable+_totalBytesInTable,
+                   getDatalinkLayer().getCurrentPacket()+6,
                    getDatalinkLayer().getPacketBytesReceived()-9); //header(6),crc(2),cksm(1)
-        
+
                 _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-9;
-                    
+
             }
             else
             {
                  // move the data into storage
-                memcpy (_currentTable+_totalBytesInTable, 
-                   getDatalinkLayer().getCurrentPacket()+6, 
+                memcpy (_currentTable+_totalBytesInTable,
+                   getDatalinkLayer().getCurrentPacket()+6,
                    getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
-        
+
                 _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
 
             }
         }
     }
-        
+
     return retFlag;
 }
 
@@ -304,7 +304,7 @@ bool CtiFMUApplication::areThereMorePackets()
     bool retVal;
     if (getDatalinkLayer().getPacketPart() )
     {
-        if(1)//getDatalinkLayer().getSequence() == 0 )  
+        if(1)//getDatalinkLayer().getSequence() == 0 )
         {
             if (_totalBytesInTable < _currentBytesExpected)
             {
@@ -321,7 +321,7 @@ bool CtiFMUApplication::areThereMorePackets()
         }
     }
     else
-    { 
+    {
         if (_totalBytesInTable < _currentBytesExpected)
         {
             retVal = true;
@@ -349,7 +349,7 @@ bool CtiFMUApplication::checkResponse( BYTE aResponseByte)
       break;
 
    case err:
-      {  
+      {
           CtiLockGuard< CtiLogger > doubt_guard( dout );
           dout << endl;
           dout << CtiTime::now() <<"The " << getFmuDeviceName() << " responded: Service Request Rejected"<< endl;
@@ -449,15 +449,15 @@ bool CtiFMUApplication::checkResponse( BYTE aResponseByte)
    }  */
    return proceed;
 
-} 
+}
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
 BYTE* CtiFMUApplication::getCurrentTable( )
-{  
+{
      return (_currentTable);
-    
+
 }
 
 

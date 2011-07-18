@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "CommInterface.h"
 
@@ -14,7 +14,7 @@ bool Comms::write(const bytes &buf, Logger &logger)
     bytes temp_buf = buf;
     ProcessMessage(temp_buf, logger);
     writeMessage(temp_buf);
-    
+
     return true;
 }
 
@@ -87,7 +87,7 @@ bool SocketComms::writeMessage(const bytes &buf)
     boost::scoped_array<unsigned char> temp(new unsigned char[buf.size()]);
 
     copy(buf.begin(), buf.end(), temp.get());
-    
+
     unsigned long bytes_written = 0;
 
     _nexus.CTINexusWrite(temp.get(), buf.size(), &bytes_written, SocketTimeout);

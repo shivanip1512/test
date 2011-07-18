@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -235,7 +235,7 @@ bool CtiTblPAO::Insert()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    inserter 
+    inserter
         << getID()
         << getCategory()
         << getClassStr()

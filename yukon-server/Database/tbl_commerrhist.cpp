@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_commerrhist.h"
 #include "logger.h"
@@ -222,7 +222,7 @@ bool CtiTableCommErrorHistory::Insert(Cti::Database::DatabaseConnection &conn)
 
     Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-    inserter 
+    inserter
         << getCommErrorID()
         << getPAOID()
         << getDateTime()

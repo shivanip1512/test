@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_devicereadjoblog.h"
 #include "logger.h"
@@ -93,7 +93,7 @@ bool CtiTblDeviceReadJobLog::Insert()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    inserter 
+    inserter
         << getJobLogId()
         << getScheduleId()
         << getStartTime()
@@ -113,7 +113,7 @@ bool CtiTblDeviceReadJobLog::UpdateStopTime()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater 
+    updater
         << getStopTime()
         << getJobLogId();
 

@@ -39,7 +39,7 @@
 
 #pragma warning( disable : 4786)
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "cparms.h"
 #include "logger.h"
@@ -204,7 +204,7 @@ double CtiRegression::regression( double xprojection ) const
 
 /*  This does a regression and forms a line of the form y = (slope)x + (intercept)
  *
- *  The function assumes all points are 1 interval apart, so time is really not used. 
+ *  The function assumes all points are 1 interval apart, so time is really not used.
  *  Returns false if there were not enough entries to do the regression.
  */
 bool CtiRegression::linearConstantIntervalRegression( double &slope, double &intercept )
@@ -256,7 +256,7 @@ bool CtiRegression::linearConstantIntervalRegression( double &slope, double &int
             }
             retVal = true;
         }
-        
+
     }
 
     return retVal;

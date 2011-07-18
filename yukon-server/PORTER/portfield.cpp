@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "c_port_interface.h"
 #include "cti_asmc.h"
@@ -54,7 +54,7 @@ using namespace Cti;
 
 
 /* Threads that handle each port for communications */
-VOID PortThread(void *pid)
+void PortThread(void *pid)
 {
     INT            status;
 

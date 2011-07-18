@@ -2,16 +2,16 @@
   Filename:  lmgroupsadigital.cpp
 
   Programmer:  Aaron Lauinger
-        
+
   Description:    Source file for CtiLMGroupSADigital.
   CtiLMGroupSADigital maintains the state and handles
   the persistence of sa 305 groups in Load Management.
 
   Initial Date:  3/6/2004
-         
+
   COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
   ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "lmgroupsadigital.h"
 #include "lmid.h"
@@ -30,12 +30,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupSADigital, CTILMGROUPSADIGITAL_ID )
   ---------------------------------------------------------------------------*/
 CtiLMGroupSADigital::CtiLMGroupSADigital() :
 _nominal_timeout(0)
-{   
+{
 }
 
 CtiLMGroupSADigital::CtiLMGroupSADigital(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupSADigital::CtiLMGroupSADigital(const CtiLMGroupSADigital& groupexp)
@@ -104,7 +104,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createTrueCycleRequestMsg(LONG percent, LONG
 CtiRequestMsg* CtiLMGroupSADigital::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     string controlString("control sadigital shed ");
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -155,7 +155,7 @@ CtiLMGroupSADigital& CtiLMGroupSADigital::setNominalTimeout(int nominal_timeout)
 
 /*-------------------------------------------------------------------------
   restoreGuts
-    
+
   Restore self's state from the given stream
   --------------------------------------------------------------------------*/
 void CtiLMGroupSADigital::restoreGuts(RWvistream& istrm)
@@ -165,10 +165,10 @@ void CtiLMGroupSADigital::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
   saveGuts
-    
+
   Save self's state onto the given stream
   ---------------------------------------------------------------------------*/
-void CtiLMGroupSADigital::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupSADigital::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
 }
@@ -203,7 +203,7 @@ int CtiLMGroupSADigital::operator!=(const CtiLMGroupSADigital& right) const
 
 /*---------------------------------------------------------------------------
   replicate
-    
+
   Restores self's operation fields
   ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupSADigital::replicate() const
@@ -213,7 +213,7 @@ CtiLMGroupBase* CtiLMGroupSADigital::replicate() const
 
 /*---------------------------------------------------------------------------
   restore
-    
+
   Restores given a Reader
   ---------------------------------------------------------------------------*/
 void CtiLMGroupSADigital::restore(Cti::RowReader &rdr)

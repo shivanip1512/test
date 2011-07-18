@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <string>
 
@@ -160,9 +160,9 @@ const std::string ControlStrategy::getEndDaySettings() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getPeakLag() const
@@ -173,9 +173,9 @@ double ControlStrategy::getPeakLag() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getOffPeakLag() const
@@ -186,9 +186,9 @@ double ControlStrategy::getOffPeakLag() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getPeakLead() const
@@ -199,9 +199,9 @@ double ControlStrategy::getPeakLead() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getOffPeakLead() const
@@ -212,9 +212,9 @@ double ControlStrategy::getOffPeakLead() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getPeakVARLag() const
@@ -225,9 +225,9 @@ double ControlStrategy::getPeakVARLag() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getOffPeakVARLag() const
@@ -238,9 +238,9 @@ double ControlStrategy::getOffPeakVARLag() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getPeakVARLead() const
@@ -251,9 +251,9 @@ double ControlStrategy::getPeakVARLead() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getOffPeakVARLead() const
@@ -264,9 +264,9 @@ double ControlStrategy::getOffPeakVARLead() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getPeakPFSetPoint() const
@@ -277,9 +277,9 @@ double ControlStrategy::getPeakPFSetPoint() const
 }
 
 
-/** 
+/**
  * @return      0.0
- * @deprecated  This function is supplied for backwards 
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 double ControlStrategy::getOffPeakPFSetPoint() const
@@ -290,11 +290,11 @@ double ControlStrategy::getOffPeakPFSetPoint() const
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setPeakLag(const double value)
@@ -303,11 +303,11 @@ void ControlStrategy::setPeakLag(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setOffPeakLag(const double value)
@@ -316,11 +316,11 @@ void ControlStrategy::setOffPeakLag(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setPeakLead(const double value)
@@ -329,11 +329,11 @@ void ControlStrategy::setPeakLead(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setOffPeakLead(const double value)
@@ -342,11 +342,11 @@ void ControlStrategy::setOffPeakLead(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setPeakVARLag(const double value)
@@ -355,11 +355,11 @@ void ControlStrategy::setPeakVARLag(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setOffPeakVARLag(const double value)
@@ -368,11 +368,11 @@ void ControlStrategy::setOffPeakVARLag(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setPeakVARLead(const double value)
@@ -381,11 +381,11 @@ void ControlStrategy::setPeakVARLead(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setOffPeakVARLead(const double value)
@@ -394,11 +394,11 @@ void ControlStrategy::setOffPeakVARLead(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setPeakPFSetPoint(const double value)
@@ -407,11 +407,11 @@ void ControlStrategy::setPeakPFSetPoint(const double value)
 }
 
 
-/** 
- * This function has no effect on the strategy. 
- *  
- * @param       value   The new input value. 
- * @deprecated  This function is supplied for backwards 
+/**
+ * This function has no effect on the strategy.
+ *
+ * @param       value   The new input value.
+ * @deprecated  This function is supplied for backwards
  *              compatability with the old style strategies.
  */
 void ControlStrategy::setOffPeakPFSetPoint(const double value)
@@ -548,14 +548,14 @@ void ControlStrategy::printError(const char *function) const
     }
 }
 
-/** 
+/**
  *  This flag exists for the sole purpose of allowing the IVVC
  *  strategy to return the appropriate data in the subbus and
  *  feeder messaging.  They set the flag in the messaging
  *  function and rely on the overloads to return the data.
- * 
+ *
  *  It's ugly and needs to be rethought, but for now....
- */ 
+ */
 void ControlStrategy::setPeakTimeFlag(const bool flag)
 {
     _isPeakTime = flag;

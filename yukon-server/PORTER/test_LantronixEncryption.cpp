@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test Lantronix Encryption"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "encryption_lantronix.h"
 #include "numstr.h"
 

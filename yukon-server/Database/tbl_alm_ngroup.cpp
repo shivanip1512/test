@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 
@@ -88,21 +88,21 @@ bool CtiTableNotificationGroup::Restore()
         static const string sql = "SELECT NG.notificationgroupid, NG.groupname, NG.disableflag "
                                   "FROM NotificationGroup NG "
                                   "WHERE NG.notificationgroupid = ?";
-    
+
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader reader(connection, sql);
 
         reader << getGroupID();
 
         reader.execute();
-    
+
         if( reader() )
         {
             DecodeDatabaseReader( reader );
             return true;
         }
     }
-    
+
     return false;
 }
 

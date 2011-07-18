@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "tbl_pt_accumhistory.h"
 #include "dbaccess.h"
 #include "database_connection.h"
@@ -98,7 +98,7 @@ bool CtiTablePointAccumulatorHistory::Update()
     {
         setDirty(FALSE);
     }
-   
+
     return success;
 }
 

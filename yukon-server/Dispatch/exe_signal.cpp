@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

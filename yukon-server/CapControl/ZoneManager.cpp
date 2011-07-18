@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "ZoneManager.h"
 #include "ZoneLoader.h"
@@ -12,7 +12,7 @@ namespace CapControl    {
     This non-Zone is what is returned on a call to getZone() that has
     no corresponding entry in the map.  The ID of -1 is the standard
     CapControl way of saying: "Ignore me - I really don't exist"
- 
+
     Someday I'd like to replace this with a thrown exception.
 */
 const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1,       // Zone ID
@@ -124,8 +124,8 @@ Zone::IdSet ZoneManager::getAllChildrenOfZone(const long parentId) const
 }
 
 
-/** 
- * Recursive helper function 
+/**
+ * Recursive helper function
  */
 void ZoneManager::getAllChildrenOfZone(const long parentId, Zone::IdSet & results) const
 {

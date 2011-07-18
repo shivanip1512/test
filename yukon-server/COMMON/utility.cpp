@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "dbaccess.h"
@@ -998,7 +998,7 @@ typedef BOOL (__stdcall *tSGMI)( IN HANDLE hProcess, IN DWORD dwAddr, OUT PIMAGE
 tSGMI pSGMI = NULL;
 
 // SymGetOptions()
-typedef DWORD (__stdcall *tSGO)( VOID );
+typedef DWORD (__stdcall *tSGO)( void );
 tSGO pSGO = NULL;
 
 // SymGetSymFromAddr()
@@ -1998,7 +1998,7 @@ DOUBLE DblLittleEndian(DOUBLE *BigEndianDouble)
    return *dptr;
 }
 
-VOID BDblLittleEndian(CHAR *BigEndianBDouble)
+void BDblLittleEndian(CHAR *BigEndianBDouble)
 {
    /* This guy is in charge of doing the shuffle royale */
 

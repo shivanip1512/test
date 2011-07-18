@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_mcsched.h"
 #include "dbaccess.h"
@@ -119,7 +119,7 @@ bool CtiTableMCSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 bool CtiTableMCSchedule::Update()
 {
-    static const string sql =  "update " + std::string(_table_name) + 
+    static const string sql =  "update " + std::string(_table_name) +
                                 " set "
                                     "CategoryName = ?, "
                                     "HolidayScheduleID = ?, "
@@ -154,7 +154,7 @@ bool CtiTableMCSchedule::Update()
         << getStopPolicy();
 
     if( getLastRunTime().isValid() )
-    {    
+    {
         updater << getLastRunTime();
     }
     else
@@ -173,7 +173,7 @@ bool CtiTableMCSchedule::Update()
         << getDuration();
 
     if( getManualStartTime().isValid() )
-    {    
+    {
         updater << getManualStartTime();
     }
     else
@@ -182,7 +182,7 @@ bool CtiTableMCSchedule::Update()
     }
 
     if( getManualStopTime().isValid() )
-    {    
+    {
         updater << getManualStopTime();
     }
     else
@@ -224,11 +224,11 @@ bool CtiTableMCSchedule::Insert()
         << getStopPolicy();
 
     if( getLastRunTime().isValid() )
-    {    
+    {
         inserter << CtiTime( getLastRunTime() );
     }
     else
-    {    
+    {
         inserter << Cti::Database::DatabaseWriter::Null;
     }
 
@@ -243,20 +243,20 @@ bool CtiTableMCSchedule::Insert()
         << getDuration();
 
     if( getManualStartTime().isValid() )
-    {    
+    {
         inserter << CtiTime( getManualStartTime() );
     }
     else
-    {    
+    {
         inserter << Cti::Database::DatabaseWriter::Null;
     }
 
     if( getManualStopTime().isValid() )
-    {    
+    {
         inserter << CtiTime( getManualStopTime() );
     }
     else
-    {    
+    {
         inserter << Cti::Database::DatabaseWriter::Null;
     }
 

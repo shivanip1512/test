@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "mc_msg.h"
 
 /*-----------------------------------------------------------------------------*
@@ -340,7 +340,7 @@ void CtiMCRetrieveScript::restoreGuts(RWvistream& aStream)
 
 RWDEFINE_COLLECTABLE( CtiMCVerifyScript, MSG_MC_VERIFY_SCRIPT );
 
-CtiMCVerifyScript::CtiMCVerifyScript() 
+CtiMCVerifyScript::CtiMCVerifyScript()
 {
 }
 
@@ -354,7 +354,7 @@ CtiMCVerifyScript::~CtiMCVerifyScript()
 }
 
 CtiMCVerifyScript&
-CtiMCVerifyScript::operator=(const CtiMCVerifyScript& ref) 
+CtiMCVerifyScript::operator=(const CtiMCVerifyScript& ref)
 {
     CtiMessage::operator=( (CtiMessage&) ref);
     setScriptName(ref.getScriptName());
@@ -387,7 +387,7 @@ void CtiMCVerifyScript::saveGuts(RWvostream &aStream) const
 
 }
 
-void CtiMCVerifyScript::restoreGuts(RWvistream& aStream) 
+void CtiMCVerifyScript::restoreGuts(RWvistream& aStream)
 {
     string _rw_name;
 

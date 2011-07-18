@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_port_serial.h"
 #include "logger.h"
@@ -51,7 +51,7 @@ CtiTablePortLocalSerial&   CtiTablePortLocalSerial::setPhysicalPort(const string
 
 void CtiTablePortLocalSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -59,7 +59,7 @@ void CtiTablePortLocalSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    rdr["physicalport"] >> _physicalPort;
 
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
       dout << " Physical Port Desc.  = " << _physicalPort << endl;

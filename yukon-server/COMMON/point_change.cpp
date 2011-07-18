@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include <iostream>
 using namespace std;
 
@@ -47,14 +47,14 @@ INT CtiPointChange::getPointType() const
 { return PointType; }
 LONG CtiPointChange::getPointNumber() const
 { return PointNumber; }
-double CtiPointChange::getPointValue() const 
+double CtiPointChange::getPointValue() const
 { return PointValue;  }
 PointQuality_t CtiPointChange::getPointQuality() const
 { return PointQuality;}
 
 const CtiTime& CtiPointChange::getPointChangeTime() const
-{ 
-   return PointChangeTime; 
+{
+   return PointChangeTime;
 }
 const CtiTime& CtiPointChange::UpdatePointChangeTime()
 {
@@ -63,15 +63,15 @@ const CtiTime& CtiPointChange::UpdatePointChangeTime()
 }
 
 
-void CtiPointChange::setPointNumber(LONG id)                
+void CtiPointChange::setPointNumber(LONG id)
 { PointNumber = id; }
-void CtiPointChange::setPointType(INT  i)                   
+void CtiPointChange::setPointType(INT  i)
 { PointType = i;}
-void CtiPointChange::setPointValue(double val)              
+void CtiPointChange::setPointValue(double val)
 { PointValue = val; }
-void CtiPointChange::setPointQuality(PointQuality_t q)      
+void CtiPointChange::setPointQuality(PointQuality_t q)
 { PointQuality = q; }
-void CtiPointChange::setPointChangeTime(CtiTime rt)          
+void CtiPointChange::setPointChangeTime(CtiTime rt)
 { PointChangeTime = rt; }
 
 

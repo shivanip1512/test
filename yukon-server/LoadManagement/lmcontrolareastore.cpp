@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <map>
 
@@ -2311,7 +2311,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     for( long i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-  
+
         if( !ciStringEqual(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateNone ) )//check default operational state
         {
             if( ( ciStringEqual(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateEnabled ) &&

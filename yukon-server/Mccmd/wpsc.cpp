@@ -10,7 +10,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "wpsc.h"
 #include "numstr.h"
@@ -54,7 +54,7 @@ bool DecodeCFDATAFile(const string& file, std::vector<RWCollectableString*>* ord
             continue;
 
         RWCollectableString* decoded = new RWCollectableString();
-        
+
         if( DecodeCFDATALine( l_buf, string(decoded->data()) ) == false)
         {
             fclose(fptr);

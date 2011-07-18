@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -10,7 +10,7 @@
 *
 * Description: returns the name of the Interface.  This set by the
 *              implementing class.
-* 
+*
 *************************************************************************
 */
 
@@ -33,9 +33,9 @@ CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, SOCK
 
 
 CtiFDRSocketConnection::~CtiFDRSocketConnection( )
-{   
+{
     closeAndFailConnection();
-} 
+}
 
 CtiFDRSocketLayer * CtiFDRSocketConnection::getParent ()
 {
@@ -62,7 +62,7 @@ CtiFDRSocketConnection& CtiFDRSocketConnection::setAddr (SOCKADDR_IN aAddr)
 SOCKET CtiFDRSocketConnection::getConnection () const
 {
     return iConnection;
-}      
+}
 
 SOCKET &CtiFDRSocketConnection::getConnection ()
 {
@@ -86,7 +86,7 @@ CtiFDRSocketConnection& CtiFDRSocketConnection::setConnectionStatus (CtiFDRSocke
     return *this;
 }
 
-int CtiFDRSocketConnection::closeAndFailConnection () 
+int CtiFDRSocketConnection::closeAndFailConnection ()
 {
     int retVal=NORMAL;
 
@@ -95,7 +95,7 @@ int CtiFDRSocketConnection::closeAndFailConnection ()
     if (iConnection != NULL)
     {
         shutdown(iConnection, SD_BOTH);
-        retVal = closesocket(iConnection);     
+        retVal = closesocket(iConnection);
         iConnection = NULL;
     }
 

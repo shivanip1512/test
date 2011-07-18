@@ -14,7 +14,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "disable_entry.h"
 
 CtiDisabledEntry::CtiDisabledEntry(long paoID, bool isDisabledFlag, CtiString &type, CtiString &name) : _isDisabled(false) ,_minObjectDisableCount(0)

@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "pointdefs.h"
 #include "tbl_pt_status.h"
@@ -27,7 +27,7 @@ static const string oneControl = "control close";
 void CtiTablePointStatus::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -247,7 +247,7 @@ CtiTablePointStatus& CtiTablePointStatus::setStateOneControl(const string& one)
         {
             *_stateOneControl = one;
         }
-        else 
+        else
         {
             _stateOneControl = CTIDBG_new string(one);
         }

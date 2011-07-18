@@ -36,13 +36,13 @@ public:
     ULONG CtiGetNexusState ();
     INT   CTINexusClose    ();
     INT   CTINexusWrite    (VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut);
-    INT   CTINexusRead     (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut);
-    INT   CTINexusPeek     (VOID *buf, ULONG len, PULONG BRead);
+    INT   CTINexusRead     (void *buf, ULONG len, PULONG BRead, LONG TimeOut);
+    INT   CTINexusPeek     (void *buf, ULONG len, PULONG BRead);
 
     bool  CTINexusValid    () const;
 
     int   CtiLocalConnectOpen ();
-    INT   CtiLocalConnectRead (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
+    INT   CtiLocalConnectRead (void *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
 
     bool setMatchingConnection( CtiLocalConnect<Inbound, Outbound> &connection );
 

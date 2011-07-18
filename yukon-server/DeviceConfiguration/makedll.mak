@@ -1,7 +1,7 @@
 # nmake file YUKON 1.0
 
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
@@ -110,25 +110,23 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h
 ######################################################################################
 
 #UPDATE#
-config_device.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		config_device.h logger.h dlldefs.h thread.h mutex.h guard.h \
+config_device.obj:	precompiled.h config_device.h yukon.h types.h \
+		ctidbgmem.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		CtiPCPtrQueue.h dllbase.h dsm2.h cticonnect.h netports.h \
 		dsm2err.h words.h optional.h hashkey.h hash_functions.h
-config_strings.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		config_data_cbc.h dllbase.h os2_2w32.h dlldefs.h cticalls.h \
-		dsm2.h mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h \
+config_strings.obj:	precompiled.h config_data_cbc.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		config_data_mct.h
-da_lp_deviceconfig.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		da_lp_deviceconfig.h da_load_profile.h config_device.h \
+da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
+		types.h ctidbgmem.h da_load_profile.h config_device.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		CtiPCPtrQueue.h dllbase.h dsm2.h cticonnect.h netports.h \
 		dsm2err.h words.h optional.h hashkey.h hash_functions.h \
 		config_data_mct.h boostutil.h
-id_dcdll.obj:	yukon.h precompiled.h types.h ctidbgmem.h id_dcdll.h \
-		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		numstr.h
-precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
+id_dcdll.obj:	precompiled.h id_dcdll.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h
 #ENDUPDATE#

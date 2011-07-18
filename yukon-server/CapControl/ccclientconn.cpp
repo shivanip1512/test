@@ -1,15 +1,15 @@
 /*-----------------------------------------------------------------------------
     Filename:  ccclientconn.cpp
-                
+
     Programmer:  Josh Wolberg
-    
+
     Description: Source file for CtiCCClientConnection
-        
+
     Initial Date:  9/04/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "ccclientconn.h"
@@ -84,7 +84,7 @@ CtiCCClientConnection::~CtiCCClientConnection()
 
 /*---------------------------------------------------------------------------
     isValid
-    
+
     Returns TRUE is the connection is valid, FALSE otherwise
 ---------------------------------------------------------------------------*/
 BOOL CtiCCClientConnection::isValid() const
@@ -110,7 +110,7 @@ RWSockAddr CtiCCClientConnection::getPeerName()
 
 /*---------------------------------------------------------------------------
     close
-    
+
     Closes the connection
 ---------------------------------------------------------------------------*/
 void CtiCCClientConnection::close()
@@ -179,15 +179,15 @@ void CtiCCClientConnection::write(RWCollectable* msg)
 
 /*---------------------------------------------------------------------------
     _sendthr
-    
+
     Handles putting instances of RWCollectable found in the queue onto the
     output stream.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiCCClientConnection::_sendthr()
 {
     RWCollectable* out;
     try
-    {   
+    {
 
         do
         {
@@ -203,7 +203,7 @@ void CtiCCClientConnection::_sendthr()
                     {
                         if( out->isA()!=__RWCOLLECTABLE && oStream->good())
                         {
-                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS && out->isA() == CTICCSUBSTATIONBUS_MSG_ID) 
+                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS && out->isA() == CTICCSUBSTATIONBUS_MSG_ID)
                             {
                                 long x = ((CtiCCSubstationBusMsg*) out)->getCCSubstationBuses()->size();
                                 {
@@ -213,7 +213,7 @@ void CtiCCClientConnection::_sendthr()
                             }
 
                             try
-                            {    
+                            {
                                 *oStream << out;
                                 oStream->vflush();
                             }
@@ -223,7 +223,7 @@ void CtiCCClientConnection::_sendthr()
                                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
 
-                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS && out->isA() == CTICCSUBSTATIONBUS_MSG_ID) 
+                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS && out->isA() == CTICCSUBSTATIONBUS_MSG_ID)
                             {
                                 long x = ((CtiCCSubstationBusMsg*) out)->getCCSubstationBuses()->size();
                                 {
@@ -248,7 +248,7 @@ void CtiCCClientConnection::_sendthr()
             }
         }
         while ( isValid() && oStream->good() );
-       
+
     }
     catch(RWCancellation& )
     {
@@ -256,7 +256,7 @@ void CtiCCClientConnection::_sendthr()
     }
     catch(RWxmsg& msg)
     {
-        /*{    
+        /*{
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiCCClientConnection::_sendthr - " << msg.why() << endl;
         }*/
@@ -274,10 +274,10 @@ void CtiCCClientConnection::_sendthr()
 
 /*---------------------------------------------------------------------------
     _recvthr
-    
+
     Receives RWCollectables which must also be cast to CtiCommandable and
     executes them.
----------------------------------------------------------------------------*/   
+---------------------------------------------------------------------------*/
 void CtiCCClientConnection::_recvthr()
 {
     RWRunnable runnable;
@@ -294,7 +294,7 @@ void CtiCCClientConnection::_recvthr()
              try
              {
                  *iStream >> current;
-                 
+
              }
              catch(...)
                 {
@@ -308,7 +308,7 @@ void CtiCCClientConnection::_recvthr()
                     if( CtiCapController::getInstance()->getInClientMsgQueueHandle().isOpen() )
                     {
                         CtiCapController::getInstance()->getInClientMsgQueueHandle().write(  current );
-                    }   
+                    }
                 }
                 catch(...)
                 {
@@ -326,7 +326,7 @@ void CtiCCClientConnection::_recvthr()
     }
     catch(RWxmsg& msg)
     {
-        /*{    
+        /*{
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiCCClientConnection::_recvthr - " << msg.why() << endl;
         }*/

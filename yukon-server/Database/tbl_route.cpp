@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_route.h"
 #include "logger.h"
@@ -63,7 +63,7 @@ CtiTableDeviceRoute& CtiTableDeviceRoute::setRouteID( const LONG aRouteID )
 
 void CtiTableDeviceRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

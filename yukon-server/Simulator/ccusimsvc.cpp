@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 using namespace std;
@@ -89,7 +89,7 @@ void CtiSimulatorService::Run()
    RWThreadFunction _simulatorThread = rwMakeThreadFunction( Cti::Simulator::SimulatorMainFunction, _myargc, _myargv );
    _simulatorThread.start();
 
-   SetThreadName(-1, "SimulatorSvc ");   
+   SetThreadName(-1, "SimulatorSvc ");
 
    // set service as running Now
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
@@ -106,7 +106,7 @@ void CtiSimulatorService::ParseArgs(DWORD argc, LPTSTR* argv)
    _myargv = argv;
 }
 
-CtiSimulatorService::~CtiSimulatorService() 
+CtiSimulatorService::~CtiSimulatorService()
 {
     _myargv = NULL;
 }

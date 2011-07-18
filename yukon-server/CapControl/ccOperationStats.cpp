@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "msg_signal.h"
 #include "pointtypes.h"
 #include "msg_pdata.h"
@@ -53,13 +53,13 @@ CtiCCOperationStats::CtiCCOperationStats()
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
 
-    return;  
+    return;
 }
 
 
 CtiCCOperationStats::CtiCCOperationStats(const CtiCCOperationStats& twoWayPt)
 {
-    operator=(twoWayPt);  
+    operator=(twoWayPt);
 }
 
 /*---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void CtiCCOperationStats::init()
     _userDefConfFail = 0;
     _dailyOpCount = 0;
     _dailyConfFail = 0;
-    _weeklyOpCount = 0;	
+    _weeklyOpCount = 0;
     _weeklyConfFail = 0;
     _monthlyOpCount = 0;
     _monthlyConfFail = 0;
@@ -114,7 +114,7 @@ LONG CtiCCOperationStats::getWeeklyOpCount() const
 LONG CtiCCOperationStats::getWeeklyConfFail() const
 {
     return _weeklyConfFail;
-}                          
+}
 LONG CtiCCOperationStats::getMonthlyOpCount() const
 {
     return _monthlyOpCount;
@@ -158,7 +158,7 @@ DOUBLE CtiCCOperationStats::getMonthlyOpSuccessPercent() const
     return _monthlyOpSuccessPercent;
 }
 
-    
+
 CtiCCOperationStats& CtiCCOperationStats::setPAOId(LONG paoId)
 {
     _paoid = paoId;
@@ -346,14 +346,14 @@ CtiCCOperationStats& CtiCCOperationStats::createPointDataMsgs(CtiMultiMsg_vec& p
     return *this;
 }
 CtiCCOperationStats& CtiCCOperationStats::incrementAllOpCounts()
-{  
+{
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
     setDailyOpCount(_dailyOpCount+1);
     setUserDefOpCount(_userDefOpCount+1);
     _userDefOpSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);  
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
@@ -374,7 +374,7 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
 }
 
 CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpCounts()
-{  
+{
     setMonthlyOpCount(_monthlyOpCount+1);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
@@ -391,7 +391,7 @@ CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpFails()
 
 
 CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpCounts()
-{  
+{
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
@@ -404,19 +404,19 @@ CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpCounts()
-{  
+{
     setDailyOpCount(_dailyOpCount+1);
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
     _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
@@ -428,7 +428,7 @@ CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
     setWeeklyConfFail(_weeklyConfFail+1);
     setDailyConfFail(_dailyConfFail+1);
     _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
@@ -494,15 +494,15 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
             }
             static const string insertSql = "insert into dynamicccoperationstatistics values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             Cti::Database::DatabaseWriter inserter(conn, insertSql);
-            
+
             inserter << _paoid
-                << _userDefOpCount  
-                << _userDefConfFail        
-                << _dailyOpCount            
-                << _dailyConfFail            
-                << _weeklyOpCount            
-                << _weeklyConfFail          
-                << _monthlyOpCount         
+                << _userDefOpCount
+                << _userDefConfFail
+                << _dailyOpCount
+                << _dailyConfFail
+                << _weeklyOpCount
+                << _weeklyConfFail
+                << _monthlyOpCount
                 << _monthlyConfFail;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -513,7 +513,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
                 }
             }
 
-            
+
 
             if(inserter.execute( ))    // No error occured!
             {
@@ -567,12 +567,12 @@ DOUBLE CtiCCOperationStats::calculateSuccessPercent(ccStatsType type)
             failCount = _monthlyConfFail;
             break;
         }
-        default: 
+        default:
             break;
 
-        
+
     }
-    
+
     if (opCount > 0 && opCount >= failCount)
     {
         retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
@@ -623,16 +623,16 @@ void CtiCCOperationStats::setDynamicData(Cti::RowReader& rdr)
     rdr["userdefopcount"] >> _userDefOpCount;
     rdr["userdefconffail"] >> _userDefConfFail;
     rdr["dailyopcount"] >> _dailyOpCount;
-    rdr["dailyconffail"] >> _dailyConfFail;               
+    rdr["dailyconffail"] >> _dailyConfFail;
     rdr["weeklyopcount"] >> _weeklyOpCount;
     rdr["weeklyconffail"] >> _weeklyConfFail;
     rdr["monthlyopcount"] >> _monthlyOpCount;
     rdr["monthlyconffail"] >> _monthlyConfFail;
-    
-    _userDefOpSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS); 
-    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);   
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);  
-    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS); 
+
+    _userDefOpSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
@@ -657,23 +657,23 @@ CtiCCOperationStats& CtiCCOperationStats::operator=(const CtiCCOperationStats& r
     if( this != &right )
     {
         _paoid = right._paoid;
-        _userDefOpCount   = right._userDefOpCount; 
+        _userDefOpCount   = right._userDefOpCount;
         _userDefConfFail  = right._userDefConfFail;
-        _dailyOpCount     = right._dailyOpCount;   
-        _dailyConfFail    = right._dailyConfFail;  
-        _weeklyOpCount    = right._weeklyOpCount;  
-        _weeklyConfFail   = right._weeklyConfFail; 
-        _monthlyOpCount   = right._monthlyOpCount; 
+        _dailyOpCount     = right._dailyOpCount;
+        _dailyConfFail    = right._dailyConfFail;
+        _weeklyOpCount    = right._weeklyOpCount;
+        _weeklyConfFail   = right._weeklyConfFail;
+        _monthlyOpCount   = right._monthlyOpCount;
         _monthlyConfFail  = right._monthlyConfFail;
 
-        _userDefOpSuccessPercentId  =  right._userDefOpSuccessPercentId; 
-        _userDefOpSuccessPercent    =  right._userDefOpSuccessPercent; 
-        _dailyOpSuccessPercentId    =  right._dailyOpSuccessPercentId; 
-        _dailyOpSuccessPercent      =  right._dailyOpSuccessPercent; 
-        _weeklyOpSuccessPercentId   =  right._weeklyOpSuccessPercentId; 
-        _weeklyOpSuccessPercent     =  right._weeklyOpSuccessPercent; 
+        _userDefOpSuccessPercentId  =  right._userDefOpSuccessPercentId;
+        _userDefOpSuccessPercent    =  right._userDefOpSuccessPercent;
+        _dailyOpSuccessPercentId    =  right._dailyOpSuccessPercentId;
+        _dailyOpSuccessPercent      =  right._dailyOpSuccessPercent;
+        _weeklyOpSuccessPercentId   =  right._weeklyOpSuccessPercentId;
+        _weeklyOpSuccessPercent     =  right._weeklyOpSuccessPercent;
         _monthlyOpSuccessPercentId  =  right._monthlyOpSuccessPercentId;
-        _monthlyOpSuccessPercent    =  right._monthlyOpSuccessPercent; 
+        _monthlyOpSuccessPercent    =  right._monthlyOpSuccessPercent;
 
 
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
@@ -698,18 +698,18 @@ void CtiCCOperationStats::printOpStats()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - DUMPING OpStats. " <<  endl;
-    
+
         dout << "\t\t -  _paoid: " << _paoid
             << " _userDefOpCount " << _userDefOpCount
-             << " _userDefConfFail " << _userDefConfFail  
-             << "  _dailyOpCount "   << _dailyOpCount        
-             << "  _dailyConfFail "  << _dailyConfFail      
-             << "  _weeklyOpCount "  << _weeklyOpCount      
-             << "  _weeklyConfFail " << _weeklyConfFail     
-             << "  _monthlyOpCount " << _monthlyOpCount    
-             << "  _monthlyConfFail "<< _monthlyConfFail  
+             << " _userDefConfFail " << _userDefConfFail
+             << "  _dailyOpCount "   << _dailyOpCount
+             << "  _dailyConfFail "  << _dailyConfFail
+             << "  _weeklyOpCount "  << _weeklyOpCount
+             << "  _weeklyConfFail " << _weeklyConfFail
+             << "  _monthlyOpCount " << _monthlyOpCount
+             << "  _monthlyConfFail "<< _monthlyConfFail
             << endl;
     }
-    
+
 }
-       
+

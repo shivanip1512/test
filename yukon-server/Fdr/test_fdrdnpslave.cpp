@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test fdrDnpSlave"
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <string>
 

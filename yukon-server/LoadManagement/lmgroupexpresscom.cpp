@@ -2,16 +2,16 @@
         Filename:  lmgroupexpress.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMGroupExpresscom.
                         CtiLMGroupExpresscom maintains the state and handles
                         the persistence of expresscom groups in Load Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmgroupexpresscom.h"
@@ -34,12 +34,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupExpresscom, CTILMGROUPEXPRESSCOM_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupExpresscom::CtiLMGroupExpresscom()
-{   
+{
 }
 
 CtiLMGroupExpresscom::CtiLMGroupExpresscom(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupExpresscom::CtiLMGroupExpresscom(const CtiLMGroupExpresscom& groupexp)
@@ -260,7 +260,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
-{ 
+{
     string controlString("control xcom shed ");
     controlString += buildShedString(offTime-60);
 
@@ -598,7 +598,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMGroupExpresscom::restoreGuts(RWvistream& istrm)
@@ -608,10 +608,10 @@ void CtiLMGroupExpresscom::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMGroupExpresscom::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupExpresscom::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
     return;
@@ -650,7 +650,7 @@ int CtiLMGroupExpresscom::operator!=(const CtiLMGroupExpresscom& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupExpresscom::replicate() const
@@ -660,7 +660,7 @@ CtiLMGroupBase* CtiLMGroupExpresscom::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMGroupExpresscom::restore(Cti::RowReader &rdr)

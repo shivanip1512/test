@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "prot_ansi.h"
 #include "ansi_datalink.h"
 #include "ansi_application.h"
@@ -652,7 +652,7 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    data[3] = dataCount.ch[1];
    data[4] = dataCount.ch[0];
 
-   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl || 
+   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl ||
        aTableID == Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest)
    {
        //BYTEULONG lid;
@@ -1063,7 +1063,7 @@ bool CtiANSIDatalink::compareToggleBits()
     if ((getToggle() && compareValue == 0x00) ||
         !getToggle() && compareValue == 0x20)
     {
-       retVal = true; 
+       retVal = true;
     }
     return retVal;
 }

@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <limits.h>
 #include <iostream>
@@ -324,7 +324,7 @@ void CtiConnection::InThread()
                     {
                         _exchange->In().clear(); // resets all flags
                         failCount++;
-    
+
                         string whoStr = who();
                         if( c != rwnil )
                         {
@@ -335,7 +335,7 @@ void CtiConnection::InThread()
                             delete c;
                             c = rwnil;
                         }
-    
+
                         // This is expected to let RW read bytes off one at a time with In >> c.
                         // After FailCountLimit bytes we give up.
                         if( failCount > FailCountLimit )
@@ -345,10 +345,10 @@ void CtiConnection::InThread()
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Fail limit of " << FailCountLimit << " reached " << whoStr <<", shutting down the InThread." << endl;
                             }
-    
+
                             _bQuit = TRUE;
                         }
-    
+
                         continue; // We deleted the incoming message, no reason to keep going
                     }
                 }

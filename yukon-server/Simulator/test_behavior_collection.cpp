@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test behaviorCollection"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "boostutil.h"
 #include "BehaviorCollection.h"
 #include "SimulatorLogger.h"
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_behavior_collection)
     int value = 3;
 
     behaviorCollection.processMessage(value, logger);
-    
+
     BOOST_CHECK_EQUAL(value, 61);
 
     behaviorCollection.clear();

@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2000
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmcontrolareatrigger.h"
@@ -649,8 +649,8 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
   hasReceviedPointData
 
   Returns true if at some point after creation we have received some point
-  data.  
------------------------------------------------------------------------------*/  
+  data.
+-----------------------------------------------------------------------------*/
 bool CtiLMControlAreaTrigger::hasReceivedPointData() const
 {
     return _lastpointvaluetimestamp > gInvalidCtiTime;

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -71,7 +71,7 @@ void CtiMCServer::run()
         CtiConnection VanGoghConnection;
         string dispatch_host = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
         int    dispatch_port = gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS);
-    
+
         {
             CtiLockGuard< CtiLogger > guard(dout);
             dout << " Connecting to dispatch, host: " << dispatch_host << ", port: " << dispatch_port << endl;
@@ -79,7 +79,7 @@ void CtiMCServer::run()
 
         VanGoghConnection.doConnect(dispatch_port, dispatch_host);
         VanGoghConnection.setName("MACServer to Dispatch");
-        
+
         //Send a registration message
         CtiRegistrationMsg* regMsg = new CtiRegistrationMsg("MACServer", 0, false );
         VanGoghConnection.WriteConnQue( regMsg );
@@ -107,7 +107,7 @@ void CtiMCServer::run()
                         {
                             previous = next;
                             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
-        
+
                             VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                         }
                     }
@@ -207,13 +207,13 @@ void CtiMCServer::run()
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " An error occured during initialization" << endl;
         }
-        
+
 
         {
             CtiLockGuard< CtiLogger > guard(dout);
             dout << CtiTime() << " - " << "Shutting down MACServer connection to VanGogh" << endl;
         }
-    
+
         VanGoghConnection.ShutdownConnection();
     }
     catch(...)

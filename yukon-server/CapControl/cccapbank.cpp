@@ -11,7 +11,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "cccapbank.h"
@@ -1821,7 +1821,7 @@ bool CtiCCCapBank::isExpresscom()
     std::string devType = getControlDeviceType();
 
     return ( stringContainsIgnoreCase( devType, "cbc 701" ) ||
-             stringContainsIgnoreCase( devType, "cbc expresscom" ) ); 
+             stringContainsIgnoreCase( devType, "cbc expresscom" ) );
 }
 
 /*---------------------------------------------------------------------------

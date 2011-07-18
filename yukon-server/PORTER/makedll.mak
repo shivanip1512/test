@@ -1,7 +1,7 @@
 # nmake file YUKON 1.0
 
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(PORTER)\include \
@@ -99,10 +99,10 @@ id_pgdll.obj:    id_pgdll.cpp include\id_pgdll.h
 
 
 #UPDATE#
-disp_thd.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
-		dlldefs.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
-		utility.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h ctinexus.h porter.h devicetypes.h cparms.h \
+disp_thd.obj:	precompiled.h ctitime.h dlldefs.h os2_2w32.h types.h \
+		cticalls.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
+		mutex.h guard.h utility.h queues.h numstr.h dsm2err.h words.h \
+		optional.h ctinexus.h porter.h devicetypes.h cparms.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h queent.h pil_conmgr.h exchange.h \
@@ -127,19 +127,19 @@ disp_thd.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h \
 		millisecond_timer.h StatisticsManager.h PaoStatistics.h \
 		PaoStatisticsRecord.h ThreadStatusKeeper.h
-dllmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
+dllmain.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
 		words.h optional.h portglob.h ctinexus.h porter.h \
 		devicetypes.h logger.h thread.h CtiPCPtrQueue.h
-encodingfilterfactory.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		EncodingFilterFactory.h EncodingFilter.h port_udp.h \
-		port_serial.h port_base.h dev_base.h dsm2.h mutex.h dlldefs.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h cticonnect.h netports.h dsm2err.h words.h optional.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h sema.h \
+encodingfilterfactory.obj:	precompiled.h EncodingFilterFactory.h \
+		EncodingFilter.h port_udp.h port_serial.h port_base.h \
+		dev_base.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
 		database_reader.h boost_time.h config_device.h logger.h \
 		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
 		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
@@ -151,36 +151,33 @@ encodingfilterfactory.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
 		counter.h tbl_port_settings.h tbl_port_timing.h \
 		tbl_port_tcpip.h encryption_lantronix.h encryption_noop.h
-encryption_lantronix.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		encryption_lantronix.h EncodingFilter.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h
-encryption_noop.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		encryption_noOp.h EncodingFilter.h
-id_pgdll.obj:	yukon.h precompiled.h types.h ctidbgmem.h id_pgdll.h \
-		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		numstr.h
-id_porter.obj:	yukon.h precompiled.h types.h ctidbgmem.h id_porter.h \
-		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		numstr.h
-paostatistics.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		PaoStatistics.h PaoStatisticsRecord.h ctitime.h dlldefs.h \
-		database_reader.h database_connection.h dbaccess.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		queues.h numstr.h cticonnect.h netports.h dsm2err.h words.h \
-		optional.h sema.h row_reader.h InvalidReaderException.h \
-		logger.h thread.h CtiPCPtrQueue.h
-paostatisticsrecord.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		PaoStatisticsRecord.h ctitime.h dlldefs.h database_writer.h \
-		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
+encryption_lantronix.obj:	precompiled.h encryption_lantronix.h \
+		EncodingFilter.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h CtiPCPtrQueue.h
+encryption_noop.obj:	precompiled.h encryption_noOp.h EncodingFilter.h
+id_pgdll.obj:	precompiled.h id_pgdll.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h
+id_porter.obj:	precompiled.h id_porter.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h
+paostatistics.obj:	precompiled.h PaoStatistics.h PaoStatisticsRecord.h \
+		ctitime.h dlldefs.h database_reader.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
+		ctidbgmem.h netports.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
+		sema.h row_reader.h InvalidReaderException.h logger.h \
+		thread.h CtiPCPtrQueue.h
+paostatisticsrecord.obj:	precompiled.h PaoStatisticsRecord.h ctitime.h \
+		dlldefs.h database_writer.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h sema.h \
 		row_writer.h ctidate.h logger.h thread.h CtiPCPtrQueue.h
-phlidlc.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h queues.h dsm2.h mutex.h guard.h \
-		utility.h ctitime.h numstr.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h porter.h devicetypes.h \
-		portdecl.h rte_base.h boostutil.h dbmemobject.h cmdparse.h \
+phlidlc.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
+		mutex.h guard.h utility.h ctitime.h numstr.h dsm2err.h \
+		words.h optional.h porter.h devicetypes.h portdecl.h \
+		rte_base.h boostutil.h dbmemobject.h cmdparse.h \
 		ctitokenizer.h parsevalue.h ctibase.h ctinexus.h dllbase.h \
 		message.h collectable.h rwutil.h database_connection.h \
 		dbaccess.h sema.h database_reader.h row_reader.h boost_time.h \
@@ -197,9 +194,9 @@ phlidlc.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		thread_register_data.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h cparms.h configkey.h configval.h \
 		queue.h portglob.h mgr_port.h slctprt.h trx_711.h trx_info.h
-plidlc.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h cti_asmc.h queues.h dsm2.h mutex.h \
-		guard.h utility.h ctitime.h numstr.h cticonnect.h netports.h \
+plidlc.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		cti_asmc.h queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h ctitime.h numstr.h \
 		dsm2err.h words.h optional.h porter.h devicetypes.h \
 		portglob.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
 		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
@@ -213,10 +210,10 @@ plidlc.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h trx_info.h critical_section.h
-portconf.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
+portconf.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		cparms.h rwutil.h yukon.h ctidbgmem.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
 		words.h optional.h sema.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h configkey.h configval.h porter.h \
 		devicetypes.h master.h elogger.h portglob.h ctinexus.h \
@@ -233,14 +230,15 @@ portconf.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		xfer.h critical_section.h counter.h mgr_device.h rtdb.h \
 		slctdev.h smartmap.h readers_writer_lock.h mgr_route.h \
 		repeaterrole.h
-portdialback.obj:	yukon.h precompiled.h types.h ctidbgmem.h cticalls.h \
-		os2_2w32.h dlldefs.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h sema.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h connection.h \
-		exchange.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
-		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+portdialback.obj:	precompiled.h cticalls.h os2_2w32.h dlldefs.h \
+		types.h cparms.h rwutil.h yukon.h ctidbgmem.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h numstr.h dsm2err.h words.h optional.h sema.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		configkey.h configval.h connection.h exchange.h logger.h \
+		thread.h CtiPCPtrQueue.h string_utility.h message.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h mgr_device.h \
 		rtdb.h hashkey.h hash_functions.h dev_base.h cmdparse.h \
 		ctitokenizer.h parsevalue.h dev_exclusion.h \
@@ -255,11 +253,11 @@ portdialback.obj:	yukon.h precompiled.h types.h ctidbgmem.h cticalls.h \
 		msg_cmd.h pilserver.h server_b.h con_mgr.h msg_pcrequest.h \
 		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
 		portglob.h porter.h devicetypes.h
-portentry.obj:	yukon.h precompiled.h types.h ctidbgmem.h connection.h \
-		dlldefs.h exchange.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
-		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h logger.h \
-		thread.h CtiPCPtrQueue.h string_utility.h message.h \
+portentry.obj:	precompiled.h connection.h dlldefs.h exchange.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
+		logger.h thread.h CtiPCPtrQueue.h string_utility.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -280,11 +278,11 @@ portentry.obj:	yukon.h precompiled.h types.h ctidbgmem.h connection.h \
 		mgr_port.h slctprt.h mgr_device.h rtdb.h slctdev.h \
 		CtiLocalConnect.h msg_pcrequest.h msg_pcreturn.h \
 		prot_emetcon.h trx_711.h trx_info.h
-porter.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h color.h cparms.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h utility.h ctitime.h queues.h numstr.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h sema.h \
+porter.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		color.h cparms.h rwutil.h yukon.h ctidbgmem.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h numstr.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h porter.h devicetypes.h portdecl.h \
 		rte_base.h dbmemobject.h cmdparse.h ctitokenizer.h \
@@ -317,10 +315,10 @@ porter.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		con_mgr.h dev_ccu721.h dev_remote.h tbl_dialup.h tbl_direct.h \
 		tbl_dv_address.h device_queue_interface.h prot_klondike.h \
 		prot_wrap.h prot_idlc.h
-portersu.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h color.h connection.h exchange.h \
-		dllbase.h dsm2.h mutex.h guard.h utility.h ctitime.h queues.h \
-		numstr.h cticonnect.h netports.h dsm2err.h words.h optional.h \
+portersu.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		color.h connection.h exchange.h dllbase.h dsm2.h cticonnect.h \
+		yukon.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h numstr.h dsm2err.h words.h optional.h \
 		logger.h thread.h CtiPCPtrQueue.h string_utility.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		sema.h database_reader.h row_reader.h boost_time.h \
@@ -341,17 +339,17 @@ portersu.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		thread_register_data.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h c_port_interface.h rtdb.h mgr_port.h \
 		slctprt.h mgr_device.h slctdev.h msg_commerrorhistory.h
-portfield.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		c_port_interface.h dlldefs.h elogger.h cti_asmc.h cticalls.h \
-		os2_2w32.h dsm2.h mutex.h guard.h utility.h ctitime.h \
-		queues.h numstr.h cticonnect.h netports.h dsm2err.h words.h \
-		optional.h master.h portdecl.h rte_base.h boostutil.h \
-		dbmemobject.h cmdparse.h ctitokenizer.h parsevalue.h \
-		ctibase.h ctinexus.h dllbase.h message.h collectable.h \
-		rwutil.h database_connection.h dbaccess.h sema.h \
-		database_reader.h row_reader.h boost_time.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
+portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
+		cti_asmc.h cticalls.h os2_2w32.h types.h dsm2.h cticonnect.h \
+		yukon.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h numstr.h dsm2err.h words.h optional.h \
+		master.h portdecl.h rte_base.h boostutil.h dbmemobject.h \
+		cmdparse.h ctitokenizer.h parsevalue.h ctibase.h ctinexus.h \
+		dllbase.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h sema.h database_reader.h \
+		row_reader.h boost_time.h tbl_pao_lite.h tbl_rtcomm.h \
+		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
 		string_utility.h port_base.h dev_base.h dev_exclusion.h \
 		tbl_paoexclusion.h config_device.h hashkey.h hash_functions.h \
 		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
@@ -393,10 +391,10 @@ portfield.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dev_rtc.h tbl_dv_rtc.h dev_tap.h mgr_route.h repeaterrole.h \
 		rte_macro.h tbl_rtmacro.h rte_ccu.h rte_xcu.h tbl_rtcarrier.h \
 		tbl_rtrepeater.h prot_711.h portfield.h
-portfill.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
+portfill.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		cparms.h rwutil.h yukon.h ctidbgmem.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
 		words.h optional.h sema.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h configkey.h configval.h porter.h \
 		devicetypes.h portdecl.h rte_base.h dbmemobject.h cmdparse.h \
@@ -421,17 +419,17 @@ portfill.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dv_ied.h dev_snpp.h dev_tnpp.h tbl_dv_tnpp.h \
 		dev_pagingreceiver.h tbl_dv_pagingreceiver.h dev_wctp.h \
 		prot_versacom.h expresscom.h ctistring.h
-portglob.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h queues.h dsm2.h mutex.h guard.h \
-		utility.h ctitime.h numstr.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h porter.h devicetypes.h \
-		portglob.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h
-portload.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h queues.h dsm2.h mutex.h guard.h \
-		utility.h ctitime.h numstr.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h porter.h devicetypes.h \
-		portglob.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
-		portdecl.h rte_base.h boostutil.h dbmemobject.h cmdparse.h \
+portglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
+		mutex.h guard.h utility.h ctitime.h numstr.h dsm2err.h \
+		words.h optional.h porter.h devicetypes.h portglob.h \
+		ctinexus.h logger.h thread.h CtiPCPtrQueue.h
+portload.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
+		mutex.h guard.h utility.h ctitime.h numstr.h dsm2err.h \
+		words.h optional.h porter.h devicetypes.h portglob.h \
+		ctinexus.h logger.h thread.h CtiPCPtrQueue.h portdecl.h \
+		rte_base.h boostutil.h dbmemobject.h cmdparse.h \
 		ctitokenizer.h parsevalue.h ctibase.h dllbase.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		sema.h database_reader.h row_reader.h boost_time.h \
@@ -455,43 +453,42 @@ portload.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dev_ccu_queue_interface.h device_queue_interface.h \
 		dev_ccu721.h tbl_dv_address.h prot_klondike.h prot_wrap.h \
 		prot_idlc.h
-portmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
-		dlldefs.h portsvc.h cservice.h CServiceConfig.h ctibase.h \
-		ctinexus.h netports.h cticonnect.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
+portmain.obj:	precompiled.h ctitime.h dlldefs.h portsvc.h cservice.h \
+		CServiceConfig.h ctibase.h ctinexus.h cticonnect.h yukon.h \
+		types.h ctidbgmem.h netports.h dllbase.h dsm2.h mutex.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
 		dsm2err.h words.h optional.h portglob.h porter.h \
 		devicetypes.h logger.h thread.h CtiPCPtrQueue.h cparms.h \
 		rwutil.h database_connection.h dbaccess.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h configparms.h
-portpil.obj:	yukon.h precompiled.h types.h ctidbgmem.h mgr_device.h \
-		dlldefs.h rtdb.h hashkey.h hash_functions.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		string_utility.h dllbase.h dsm2.h mutex.h guard.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h sema.h \
-		database_reader.h boost_time.h config_device.h logger.h \
-		thread.h CtiPCPtrQueue.h rte_base.h dbmemobject.h ctibase.h \
-		ctinexus.h message.h collectable.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_base.h tbl_stats.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h tbl_static_paoinfo.h \
-		pointdefs.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
-		tbl_pt_property.h tbl_pt_trigger.h slctdev.h smartmap.h \
-		readers_writer_lock.h critical_section.h mgr_route.h \
-		repeaterrole.h mgr_point.h pilserver.h server_b.h con_mgr.h \
-		connection.h exchange.h msg_multi.h msg_pdata.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h \
-		msg_pcrequest.h mgr_config.h dllyukon.h portglob.h porter.h \
-		devicetypes.h thread_monitor.h thread_register_data.h \
-		ThreadStatusKeeper.h
-portpool.obj:	yukon.h precompiled.h types.h ctidbgmem.h connection.h \
-		dlldefs.h exchange.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
-		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h logger.h \
-		thread.h CtiPCPtrQueue.h string_utility.h message.h \
+portpil.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
+		hash_functions.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h string_utility.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h guard.h \
+		dsm2err.h words.h optional.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h sema.h database_reader.h \
+		boost_time.h config_device.h logger.h thread.h \
+		CtiPCPtrQueue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
+		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
+		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		msg_signal.h tbl_base.h tbl_stats.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
+		tbl_pt_trigger.h slctdev.h smartmap.h readers_writer_lock.h \
+		critical_section.h mgr_route.h repeaterrole.h mgr_point.h \
+		pilserver.h server_b.h con_mgr.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h msg_pcrequest.h mgr_config.h \
+		dllyukon.h portglob.h porter.h devicetypes.h thread_monitor.h \
+		thread_register_data.h ThreadStatusKeeper.h
+portpool.obj:	precompiled.h connection.h dlldefs.h exchange.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
+		logger.h thread.h CtiPCPtrQueue.h string_utility.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -508,10 +505,10 @@ portpool.obj:	yukon.h precompiled.h types.h ctidbgmem.h connection.h \
 		critical_section.h mgr_port.h port_base.h tbl_port_base.h \
 		xfer.h counter.h slctprt.h port_pool_out.h portdecl.h \
 		porter.h devicetypes.h portglob.h
-portque.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
+portque.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		cparms.h rwutil.h yukon.h ctidbgmem.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
 		words.h optional.h sema.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h configkey.h configval.h porter.h \
 		devicetypes.h elogger.h thread_monitor.h smartmap.h \
@@ -537,17 +534,17 @@ portque.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dv_idlcremote.h dev_ccu_queue_interface.h \
 		device_queue_interface.h dev_ccu721.h tbl_dv_address.h \
 		prot_klondike.h prot_wrap.h prot_idlc.h prot_emetcon.h
-portsvc.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
-		dlldefs.h portsvc.h cservice.h ctibase.h ctinexus.h \
-		netports.h cticonnect.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h mutex.h guard.h utility.h queues.h numstr.h dsm2err.h \
-		words.h optional.h portglob.h porter.h devicetypes.h logger.h \
+portsvc.obj:	precompiled.h ctitime.h dlldefs.h portsvc.h cservice.h \
+		ctibase.h ctinexus.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		netports.h dllbase.h dsm2.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h portglob.h porter.h devicetypes.h logger.h \
 		thread.h CtiPCPtrQueue.h
-porttime.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h queues.h dsm2.h mutex.h guard.h \
-		utility.h ctitime.h numstr.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h porter.h devicetypes.h \
-		portdecl.h rte_base.h boostutil.h dbmemobject.h cmdparse.h \
+porttime.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
+		mutex.h guard.h utility.h ctitime.h numstr.h dsm2err.h \
+		words.h optional.h porter.h devicetypes.h portdecl.h \
+		rte_base.h boostutil.h dbmemobject.h cmdparse.h \
 		ctitokenizer.h parsevalue.h ctibase.h ctinexus.h dllbase.h \
 		message.h collectable.h rwutil.h database_connection.h \
 		dbaccess.h sema.h database_reader.h row_reader.h boost_time.h \
@@ -581,13 +578,14 @@ porttime.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		config_data_mct.h ctidate.h mgr_route.h repeaterrole.h \
 		thread_monitor.h thread_register_data.h ThreadStatusKeeper.h \
 		prot_welco.h prot_lmi.h prot_seriesv.h verification_objects.h
-portverify.obj:	yukon.h precompiled.h types.h ctidbgmem.h boost_time.h \
-		mgr_port.h dlldefs.h smartmap.h boostutil.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dllbase.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h readers_writer_lock.h critical_section.h \
-		port_base.h dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h tbl_paoexclusion.h row_reader.h rwutil.h \
+portverify.obj:	precompiled.h boost_time.h mgr_port.h dlldefs.h \
+		smartmap.h boostutil.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h guard.h \
+		dsm2err.h words.h optional.h readers_writer_lock.h \
+		critical_section.h port_base.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
 		database_connection.h dbaccess.h sema.h database_reader.h \
 		config_device.h logger.h thread.h CtiPCPtrQueue.h hashkey.h \
 		hash_functions.h rte_base.h dbmemobject.h ctibase.h \
@@ -601,8 +599,8 @@ portverify.obj:	yukon.h precompiled.h types.h ctidbgmem.h boost_time.h \
 		configkey.h configval.h portverify.h queue.h \
 		verification_objects.h ctidate.h database_writer.h \
 		row_writer.h
-port_shr.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctinexus.h \
-		dlldefs.h netports.h cticonnect.h dsm2.h mutex.h guard.h \
+port_shr.obj:	precompiled.h ctinexus.h cticonnect.h yukon.h types.h \
+		ctidbgmem.h dlldefs.h netports.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		dsm2err.h words.h optional.h port_shr.h thread.h logger.h \
 		CtiPCPtrQueue.h port_base.h dev_base.h cmdparse.h \
@@ -618,30 +616,31 @@ port_shr.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctinexus.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
 		counter.h cparms.h configkey.h configval.h
-port_shr_ip.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
-		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h sema.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h logger.h \
-		thread.h CtiPCPtrQueue.h port_shr_ip.h ctinexus.h port_shr.h \
-		port_base.h dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h tbl_paoexclusion.h config_device.h hashkey.h \
-		hash_functions.h rte_base.h dbmemobject.h ctibase.h message.h \
-		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
-		string_utility.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h prot_welco.h porter.h devicetypes.h cti_asmc.h
-port_thread_tcp.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		port_thread_tcp.h unsolicited_handler.h port_base.h \
-		dev_base.h dsm2.h mutex.h dlldefs.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
+port_shr_ip.obj:	precompiled.h types.h cparms.h dlldefs.h rwutil.h \
+		yukon.h ctidbgmem.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
+		dsm2err.h words.h optional.h sema.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		logger.h thread.h CtiPCPtrQueue.h port_shr_ip.h ctinexus.h \
+		port_shr.h port_base.h dev_base.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
+		config_device.h hashkey.h hash_functions.h rte_base.h \
+		dbmemobject.h ctibase.h message.h collectable.h \
+		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
+		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
+		tbl_port_base.h xfer.h critical_section.h counter.h \
+		prot_welco.h porter.h devicetypes.h cti_asmc.h
+port_thread_tcp.obj:	precompiled.h port_thread_tcp.h \
+		unsolicited_handler.h port_base.h dev_base.h dsm2.h \
+		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h sema.h \
 		database_reader.h boost_time.h config_device.h logger.h \
 		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
@@ -665,24 +664,24 @@ port_thread_tcp.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
 		dnp_object_binaryoutput.h mgr_port.h slctprt.h
-port_thread_udp.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		port_thread_udp.h unsolicited_handler.h port_base.h \
-		dev_base.h dsm2.h mutex.h dlldefs.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h sema.h \
-		database_reader.h boost_time.h config_device.h logger.h \
-		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
-		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
-		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
-		string_utility.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h mgr_device.h rtdb.h slctdev.h smartmap.h \
+port_thread_udp.obj:	precompiled.h port_thread_udp.h yukon.h types.h \
+		ctidbgmem.h unsolicited_handler.h port_base.h dev_base.h \
+		dsm2.h cticonnect.h dlldefs.h netports.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
+		dsm2err.h words.h optional.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h boostutil.h tbl_paoexclusion.h \
+		row_reader.h rwutil.h database_connection.h dbaccess.h \
+		dllbase.h sema.h database_reader.h boost_time.h \
+		config_device.h logger.h thread.h CtiPCPtrQueue.h hashkey.h \
+		hash_functions.h rte_base.h dbmemobject.h ctibase.h \
+		ctinexus.h message.h collectable.h tbl_pao_lite.h \
+		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h msg_signal.h string_utility.h tbl_base.h \
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
+		tbl_port_base.h xfer.h critical_section.h counter.h \
+		mgr_device.h rtdb.h slctdev.h smartmap.h \
 		readers_writer_lock.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
@@ -696,11 +695,10 @@ port_thread_udp.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
 		dnp_datalink_packet.h dnp_object_binaryoutput.h \
 		tbl_dv_address.h dev_gridadvisor.h dev_rds.h portfield.h
-precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
-ripple.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
-		dlldefs.h cticalls.h connection.h exchange.h dllbase.h dsm2.h \
-		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h logger.h \
+ripple.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		connection.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h numstr.h dsm2err.h words.h optional.h logger.h \
 		thread.h CtiPCPtrQueue.h string_utility.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		sema.h database_reader.h row_reader.h boost_time.h \
@@ -722,40 +720,40 @@ ripple.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dv_idlcremote.h trx_info.h trx_711.h mgr_device.h rtdb.h \
 		slctdev.h smartmap.h readers_writer_lock.h mgr_port.h \
 		slctprt.h
-statisticsmanager.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
-		ctitime.h dlldefs.h ThreadStatusKeeper.h \
-		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \
-		boostutil.h utility.h queues.h numstr.h thread_monitor.h \
-		smartmap.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h readers_writer_lock.h \
+statisticsmanager.obj:	precompiled.h StatisticsManager.h \
+		PaoStatistics.h PaoStatisticsRecord.h ctitime.h dlldefs.h \
+		ThreadStatusKeeper.h thread_register_data.h boost_time.h \
+		cticalls.h os2_2w32.h types.h boostutil.h utility.h queues.h \
+		numstr.h thread_monitor.h smartmap.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h guard.h \
+		dsm2err.h words.h optional.h readers_writer_lock.h \
 		critical_section.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h sema.h database_reader.h row_reader.h configkey.h \
 		configval.h queue.h logger.h thread.h CtiPCPtrQueue.h \
 		string_utility.h database_writer.h row_writer.h \
 		InvalidReaderException.h ctidate.h debug_timer.h
-statisticsthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
-		ctitime.h dlldefs.h ThreadStatusKeeper.h \
-		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \
-		boostutil.h utility.h queues.h numstr.h thread_monitor.h \
-		smartmap.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h readers_writer_lock.h \
+statisticsthread.obj:	precompiled.h StatisticsManager.h \
+		PaoStatistics.h PaoStatisticsRecord.h ctitime.h dlldefs.h \
+		ThreadStatusKeeper.h thread_register_data.h boost_time.h \
+		cticalls.h os2_2w32.h types.h boostutil.h utility.h queues.h \
+		numstr.h thread_monitor.h smartmap.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h guard.h \
+		dsm2err.h words.h optional.h readers_writer_lock.h \
 		critical_section.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h sema.h database_reader.h row_reader.h configkey.h \
 		configval.h queue.h logger.h thread.h CtiPCPtrQueue.h \
 		string_utility.h debug_timer.h millisecond_timer.h portglob.h \
 		ctinexus.h porter.h devicetypes.h
-systemmsgthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h counter.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h mutex.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h sema.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h \
-		device_queue_interface.h msg_cmd.h message.h collectable.h \
-		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_queuedata.h msg_requestcancel.h \
+systemmsgthread.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
+		parsevalue.h counter.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h mutex.h cparms.h \
+		rwutil.h yukon.h ctidbgmem.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
+		optional.h sema.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h configkey.h configval.h device_queue_interface.h \
+		msg_cmd.h message.h collectable.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_queuedata.h msg_requestcancel.h \
 		systemmsgthread.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h string_utility.h msg_ptreg.h msg_reg.h \
 		queue.h ctilocalconnect.h critical_section.h mgr_device.h \
@@ -768,29 +766,28 @@ systemmsgthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_pt_property.h tbl_pt_trigger.h slctdev.h smartmap.h \
 		readers_writer_lock.h mgr_port.h port_base.h tbl_port_base.h \
 		xfer.h slctprt.h portdecl.h porter.h devicetypes.h
-tcp_connection.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
-		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h sema.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h logger.h \
-		thread.h CtiPCPtrQueue.h tcp_connection.h
-tcp_connection_manager.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		tcp_connection_manager.h tcp_connection.h ctitime.h dlldefs.h \
-		packet_finder.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
-		guard.h utility.h queues.h numstr.h cticonnect.h netports.h \
+tcp_connection.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
+		types.h ctidbgmem.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
+		dsm2err.h words.h optional.h sema.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		logger.h thread.h CtiPCPtrQueue.h tcp_connection.h
+tcp_connection_manager.obj:	precompiled.h tcp_connection_manager.h \
+		tcp_connection.h ctitime.h dlldefs.h packet_finder.h cparms.h \
+		rwutil.h yukon.h types.h ctidbgmem.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
 		dsm2err.h words.h optional.h sema.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
 		logger.h thread.h CtiPCPtrQueue.h
-test_lantronixencryption.obj:	yukon.h precompiled.h types.h \
-		ctidbgmem.h encryption_lantronix.h EncodingFilter.h numstr.h \
-		dlldefs.h
-traceset.obj:	yukon.h precompiled.h types.h ctidbgmem.h dlldefs.h
-unsolicited_handler.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		os2_2w32.h numstr.h unsolicited_handler.h port_base.h \
-		dev_base.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
+test_lantronixencryption.obj:	precompiled.h encryption_lantronix.h \
+		EncodingFilter.h numstr.h dlldefs.h
+traceset.obj:	precompiled.h dlldefs.h
+unsolicited_handler.obj:	precompiled.h boostutil.h utility.h ctitime.h \
+		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		unsolicited_handler.h port_base.h dev_base.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h guard.h \
 		dsm2err.h words.h optional.h cmdparse.h ctitokenizer.h \
 		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_focus.h"
@@ -18,7 +18,7 @@ using std::endl;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiDeviceFocus::CtiDeviceFocus() 
+CtiDeviceFocus::CtiDeviceFocus()
 {
 }
 
@@ -201,7 +201,7 @@ int CtiDeviceFocus::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 
     // currently defaulted at billing data only
     header.lastLoadProfileTime = 0;
- 
+
     // lazyness so I don't have to continually remember to update this
     header.numTablesRequested = 0;
     for (int x=0; x < 100; x++)

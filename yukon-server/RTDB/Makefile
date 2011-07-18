@@ -1,9 +1,9 @@
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 
 all:
-            @build -nologo -f makepch.mak
+            @build -nologo -f $(PRECOMPILED)\makepch.mak
             @build -nologo -f makepntdb.mak
             @build -nologo -f makedevdb.mak
             @build -nologo -f makeprtdb.mak
@@ -13,7 +13,7 @@ all:
             @build -nologo -f makeexe.mak
 
 copy:
-            @build -nologo -f makepch.mak $@
+            @build -nologo -f $(PRECOMPILED)\makepch.mak $@
             @build -nologo -f makepntdb.mak $@
             @build -nologo -f makedevdb.mak $@
             @build -nologo -f makeprtdb.mak $@

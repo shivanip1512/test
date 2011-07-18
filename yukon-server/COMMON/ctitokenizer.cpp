@@ -1,11 +1,11 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include <boost/tokenizer.hpp>
 #include "ctitokenizer.h"
 
 /*
  * Constructor, initiates the date memebers
  */
- 
+
 CtiTokenizer::CtiTokenizer(std::string& s)
 {
     str = s;
@@ -14,7 +14,7 @@ CtiTokenizer::CtiTokenizer(std::string& s)
 }
 
 /*
- * Tokenizing. 
+ * Tokenizing.
  * d is the delimiters
  */
 

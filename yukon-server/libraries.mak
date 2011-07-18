@@ -1,9 +1,7 @@
-# nmake file YUKON 1.0
+!include $(COMPILEBASE)\global.inc
+!include $(COMPILEBASE)\rwglobal.inc
 
-include common\global.inc
-include common\rwglobal.inc
-
-ALL:           copy
+ALL:	copy
 
 copy:
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

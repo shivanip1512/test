@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ccid.h"
 #include "CParms.h"
 #include "logger.h"
@@ -465,7 +465,7 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_RATE_OF_CHANGE_DEPTH: " << _RATE_OF_CHANGE_DEPTH << endl;
     }
 
-    
+
     _VOLT_REDUCTION_SYSTEM_POINTID = 0; // pointid
 
     strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_SYSTEM_POINTID");

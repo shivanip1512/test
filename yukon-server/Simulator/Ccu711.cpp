@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "ccu711.h"
 
@@ -40,24 +40,24 @@ bool Ccu711::handleRequest(Comms &comms, Logger &logger)
 
     {
         ScopedLogger scope = logger.getNewScope(_ccu711InTag);
-    
+
         if( error = readRequest(comms, request) )
         {
             scope.log("Error reading request / " + error, request.message);
             return false;
         }
-    
+
         scope.log(request.description, request.message);
-    
+
         //  get us up to date before we try to process anything new
         processQueue(scope);
-    
+
         if( error = processRequest(request, reply, scope) )
         {
             scope.log("Error processing request / " + error);
             return false;
         }
-    
+
         if( reply.message.empty() )
         {
             scope.log("No reply generated");
@@ -67,13 +67,13 @@ bool Ccu711::handleRequest(Comms &comms, Logger &logger)
 
     {
         ScopedLogger scope = logger.getNewScope(_ccu711OutTag);
-            
+
         if( error = sendReply(comms, reply, scope) )
         {
             scope.log("Error sending reply / " + error);
             return false;
         }
-    
+
         scope.log(describeReply(reply), reply.message);
     }
 
@@ -778,12 +778,12 @@ error_t Ccu711::extractTS_Values(const words_t &reply_words, queue_entry &entry)
     boost::shared_ptr<const EmetconWordD1> word = boost::static_pointer_cast<const EmetconWordD1>(reply_words[0]);
     if( word->alarm == true )
     {
-        // If the D-word's alarm bit is set to true, then our response data needs to 
-        // reflect this. Bit 0 of the TS values is the general alarm bit. Using a 
+        // If the D-word's alarm bit is set to true, then our response data needs to
+        // reflect this. Bit 0 of the TS values is the general alarm bit. Using a
         // bitwise OR with 1 correctly sets this bit.
         entry.result.ts_values |= TS_AlarmEnabled;
     }
-    
+
     return error_t::success;
 }
 
@@ -1266,7 +1266,7 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
 
                 //  ENSTA
                 /* Refer to Section 2 EMETCON Protocols, 4-86, pdf page 123 -
-                   ENSTA field is 1 nibble in length, so the first 4 bits 
+                   ENSTA field is 1 nibble in length, so the first 4 bits
                    are the significant bits.                                */
                 completed_entry_buf.push_back(0xF0);
 
@@ -1298,9 +1298,9 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 {
 
                     //  L1
-                    
+
                     completed_entry_buf.push_back(completed_itr->result.data.size());
-                    
+
                     //  TS
 
                     //  b0 = D1.alarm

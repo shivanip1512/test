@@ -41,7 +41,7 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "std_ansi_tbl_52.h"
@@ -72,7 +72,7 @@ CtiAnsiTable52::CtiAnsiTable52( BYTE *dataBlob, int timefmat )
     memcpy( (void *)&clock_table.time_date_qual, dataBlob, sizeof( unsigned char ));
     dataBlob +=  sizeof( unsigned char);
 
-    
+
     ULONG timeNow = CtiTime().seconds();
     _meterServerTimeDifference = (int)abs((int)(timeNow - CtiTime(clock_table.clock_calendar).seconds()));
 
@@ -238,13 +238,13 @@ bool CtiAnsiTable52::adjustTimeForDST()
 
 bool CtiAnsiTable52::getTimeZoneAppliedFlag()
 {
-    return clock_table.time_date_qual.tm_zn_applied_flag; 
+    return clock_table.time_date_qual.tm_zn_applied_flag;
 }
 
 ULONG CtiAnsiTable52::adjustTimeZoneAndDST(ULONG adjustedTime)
 {
     if (!isCalendarValid())
-        return 0; 
+        return 0;
 
     if (getTimeZoneAppliedFlag() )
         adjustedTime = (CtiTime::fromLocalSeconds(adjustedTime)).seconds();

@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test delayBehavior"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "boostutil.h"
 #include "BehaviorCollection.h"
 #include "DelayBehavior.h"
@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
 {
     srand(time(NULL));
     // Apparently the first random needs to be dumped or else
-    // the random number will be some linear function as 
+    // the random number will be some linear function as
     // opposed to being truly (or rather pseudo-) random.
     rand();
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     reference.push_back(0x08);
     reference.push_back(0x0F);
 
-    // Ensure that the message size is indeed 3 after the 3 bytes were pushed on. 
+    // Ensure that the message size is indeed 3 after the 3 bytes were pushed on.
     BOOST_CHECK_EQUAL(message.size(), 3);
 
     behaviorCollection.processMessage(message, logger);
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
 
     behaviorCollection.processMessage(message, logger);
 
-    // After message has been processed the second time it should return with the 
+    // After message has been processed the second time it should return with the
     // data that was initially delayed as well as all its current data.
     // Since 3 bytes were added the first time and another 3 have been added
     // this most recent time, the size should be 6.

@@ -81,7 +81,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_dv_wnd.h"
 
@@ -257,19 +257,19 @@ string CtiTableDeviceWindow::addIDSQLClause(const Cti::Database::id_set &paoids)
         if( paoids.size() == 1 )
         {
             //  special single id case
-    
+
             in_list << *(paoids.begin());
-             
+
             sqlIDs += "AND DV.deviceid = " + in_list.str();
-    
+
             return sqlIDs;
         }
         else
         {
             in_list << "(";
-        
+
             copy(paoids.begin(), paoids.end(), csv_output_iterator<long, std::ostringstream>(in_list));
-        
+
             in_list << ")";
 
             sqlIDs += "AND DV.deviceid IN " + in_list.str();

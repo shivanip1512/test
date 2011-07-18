@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "ccid.h"
@@ -34,15 +34,15 @@ RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint::CtiCCMonitorPoint() :
 _phase(Cti::CapControl::Phase_Unknown),
-_pointId(0),              
-_bankId(0),               
-_displayOrder(0),         
-_scannable(false),            
-_nInAvg(0),               
-_upperBW(0),              
-_lowerBW(0),              
-_value(0),          
-_scanInProgress(false),       
+_pointId(0),
+_bankId(0),
+_displayOrder(0),
+_scannable(false),
+_nInAvg(0),
+_upperBW(0),
+_lowerBW(0),
+_value(0),
+_scanInProgress(false),
 _insertDynamicDataFlag(false),
 _dirty(false)
 {
@@ -512,7 +512,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
             Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater 
+            updater
             << _value
             << _timeStamp
             << (string)(_scanInProgress?"Y":"N")
@@ -542,8 +542,8 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted Monitor Point into dynamicCCMonitorBankHistory: " << endl;
             }
-            
-            
+
+
             static const string insertSql = "insert into dynamicccmonitorbankhistory values( "
                                             "?, ?, ?, ?, ?)";
 

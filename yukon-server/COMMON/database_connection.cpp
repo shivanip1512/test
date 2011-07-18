@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "database_connection.h"
 #include "logger.h"
 
@@ -35,7 +35,7 @@ void DatabaseConnection::beginTransaction()
         {
             connection->setAutoCommit(SA_AutoCommitOff);
         }
-    } 
+    }
     catch(SAException &x)
     {
         {
@@ -54,7 +54,7 @@ bool DatabaseConnection::commitTransaction()
     {
         connection->Commit();
         commitSuccess = true;
-    } 
+    }
     catch(SAException &x)
     {
         {

@@ -13,7 +13,7 @@
 *-----------------------------------------------------------------------------*/
 #define BOOST_AUTO_TEST_MAIN "Test SignalManager"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "tbl_pt_alarm.h"
 #include "signalmanager.h"
 

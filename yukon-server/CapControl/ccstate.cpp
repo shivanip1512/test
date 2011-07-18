@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------------------
         Filename:  ccstate.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCState.
                         CtiCCState is a copy of each entry in the state table
 
         Initial Date:  9/04/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "ccid.h"
@@ -27,7 +27,7 @@ RWDEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCState::CtiCCState()
-{   
+{
     _text = "";
     _foregroundcolor = 0;
     _backgroundcolor = 0;
@@ -36,7 +36,7 @@ CtiCCState::CtiCCState()
 CtiCCState::CtiCCState(Cti::RowReader& rdr)
 {
     _text = "";
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiCCState::CtiCCState(const CtiCCState& state)
@@ -53,38 +53,38 @@ CtiCCState::~CtiCCState()
 
 /*---------------------------------------------------------------------------
     Text
-    
+
     Returns the text of the state
 ---------------------------------------------------------------------------*/
 const string& CtiCCState::getText() const
-{   
+{
     return _text;
 }
 /*---------------------------------------------------------------------------
     ForegroundColor
-    
+
     Returns the foreground color of the state
 ---------------------------------------------------------------------------*/
 LONG CtiCCState::getForegroundColor() const
-{   
+{
     return _foregroundcolor;
 }
 
 /*---------------------------------------------------------------------------
     BackgroundColor
-    
+
     Returns the background color of the state
 ---------------------------------------------------------------------------*/
 LONG CtiCCState::getBackgroundColor() const
-{   
+{
     return _backgroundcolor;
 }
 
 /*---------------------------------------------------------------------------
     setText
-    
+
     Sets the Text of the state
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::setText(const string& text)
 {
     _text = text;
@@ -94,7 +94,7 @@ CtiCCState& CtiCCState::setText(const string& text)
 
 /*---------------------------------------------------------------------------
     setForegroundColor
-    
+
     Sets the foreground color of the state
 ---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::setForegroundColor(LONG foregroundcolor)
@@ -106,7 +106,7 @@ CtiCCState& CtiCCState::setForegroundColor(LONG foregroundcolor)
 
 /*---------------------------------------------------------------------------
     setBackgroundColor
-    
+
     Sets the background color of the state
 ---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::setBackgroundColor(LONG backgroundcolor)
@@ -118,7 +118,7 @@ CtiCCState& CtiCCState::setBackgroundColor(LONG backgroundcolor)
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiCCState::restoreGuts(RWvistream& istrm)
@@ -132,10 +132,10 @@ void CtiCCState::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiCCState::saveGuts(RWvostream& ostrm ) const  
+void CtiCCState::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
@@ -150,27 +150,27 @@ void CtiCCState::saveGuts(RWvostream& ostrm ) const
 CtiCCState& CtiCCState::operator=(const CtiCCState& right)
 {
 
-	if ( &right != NULL )
-	{
-		if( this != &right )
-		{
-			_text = right.getText();
-			_foregroundcolor = right.getForegroundColor();
-			_backgroundcolor = right.getBackgroundColor();
-		}
-	}
-	else
-	{
-		CtiLockGuard<CtiLogger> logger_guard(dout);
-		dout << CtiTime() << " - Error: state == NULL " << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-	}
-	return *this;
+    if ( &right != NULL )
+    {
+        if( this != &right )
+        {
+            _text = right.getText();
+            _foregroundcolor = right.getForegroundColor();
+            _backgroundcolor = right.getBackgroundColor();
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Error: state == NULL " << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+    }
+    return *this;
 
 }
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiCCState* CtiCCState::replicate() const
@@ -180,7 +180,7 @@ CtiCCState* CtiCCState::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiCCState::restore(Cti::RowReader& rdr)

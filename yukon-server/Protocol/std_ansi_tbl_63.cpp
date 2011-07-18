@@ -9,7 +9,7 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "std_ansi_tbl_63.h"
@@ -59,7 +59,7 @@ CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbD
             dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
             _lp_status_tbl.lp_status_set[index].last_block_element = tempLong;
 
-            double tempResult; 
+            double tempResult;
             dataBlob += toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
             _lp_status_tbl.lp_status_set[index].last_block_seq_nbr = tempResult;
 

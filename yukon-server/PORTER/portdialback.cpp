@@ -1,86 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portdialback
-*
-* Date:   2/16/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6.20.2 $
-* DATE         :  $Date: 2008/11/17 23:06:33 $
-*
-* HISTORY      :
-* $Log: portdialback.cpp,v $
-* Revision 1.6.20.2  2008/11/17 23:06:33  jmarks
-* YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-* **************************************************************************************************************
-* Removed "CTITYPES.H" from every file in the project, so far there were no
-* known side-effects or even compile errors, however, they could still happen.
-*
-* Also, made many other changes for compiling.
-*
-* The project now apparently compiles until reching the database
-* subdirectory, however, I have seen cases where there is apparent
-* regressing and need to re-work things.
-*
-* However, enough changes have happened, that I felt it was good to
-* committ.
-* **************************************************************************************************************
-* Possibly other misc. changes since last commit.
-* *******************************************************
-*
-*
-* Revision 1.6.20.1  2008/11/13 17:23:43  jmarks
-* YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-*
-* Responded to reviewer comments again.
-*
-* I eliminated excess references to windows.h .
-*
-* This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
-*
-* None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
-* Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
-*
-* In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
-*
-* This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
-*
-* Revision 1.6  2007/04/11 14:37:55  jotteson
-* Fix for problems related to boost.
-*
-* Revision 1.5  2005/12/20 17:19:23  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.4.2.4  2005/08/12 19:53:59  jliu
-* Date Time Replaced
-*
-* Revision 1.4.2.3  2005/07/18 22:30:51  jliu
-* rebuild_cppunit&correct_find
-*
-* Revision 1.4.2.2  2005/07/14 22:27:00  jliu
-* RWCStringRemoved
-*
-* Revision 1.4.2.1  2005/07/12 21:08:41  jliu
-* rpStringWithoutCmpParser
-*
-* Revision 1.4  2005/02/17 19:02:58  mfisher
-* Removed space before CVS comment header, moved #include "yukon.h" after CVS header
-*
-* Revision 1.3  2005/02/10 23:23:54  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.2  2004/05/05 15:31:43  cplender
-* Implemented shared pointers.  GHMOOS.
-*
-* Revision 1.1  2004/02/17 15:08:03  cplender
-* New files for GRE/SA support
-*
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <process.h>
 #include <iostream>
@@ -106,7 +24,7 @@
 
 using namespace std;
 
-VOID PortDialbackThread(void *pid)
+void PortDialbackThread(void *pid)
 {
     extern CtiConnection    VanGoghConnection;
     extern CtiPILServer     PIL;
@@ -243,9 +161,9 @@ VOID PortDialbackThread(void *pid)
                 {
                     // We need to look for the message.
                     boost::tokenizer<> tok(byteString);
-                    boost::tokenizer<>::iterator beg=tok.begin(); 
+                    boost::tokenizer<>::iterator beg=tok.begin();
 
-                  
+
                     string tstr;
                     string strdev;
                     string strtime;

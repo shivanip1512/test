@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dnp_object_analoginput.h"
 #include "logger.h"

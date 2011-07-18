@@ -9,7 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "fileint.h"
 #include "dllbase.h"

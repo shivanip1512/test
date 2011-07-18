@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -29,7 +29,7 @@ CtiProtocolSASimple::CtiProtocolSASimple()
 
 CtiProtocolSASimple::CtiProtocolSASimple( const CtiProtocolSASimple& aRef )
 {
-	*this = aRef;
+    *this = aRef;
 }
 
 //===================================================================================================================
@@ -38,4 +38,4 @@ CtiProtocolSASimple::CtiProtocolSASimple( const CtiProtocolSASimple& aRef )
 CtiProtocolSASimple::~CtiProtocolSASimple()
 {
 }
- 
+

@@ -11,7 +11,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "dnp_object_binaryinput.h"
@@ -141,12 +141,12 @@ int BinaryInput::serialize(unsigned char *buf) const
 }
 
 
-void BinaryInput::setStateValue(long value) 
+void BinaryInput::setStateValue(long value)
 {
     _bi.flags.state = value;
 }
 
-void BinaryInput::setOnlineFlag(bool online) 
+void BinaryInput::setOnlineFlag(bool online)
 {
     _bi.flags.online = online;
 }
@@ -211,7 +211,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
 
     }*/
     if (!_bi.flags.online && gDNPOfflineNonUpdated)
-    {    
+    {
         quality = NonUpdatedQuality;
     }
 
@@ -432,7 +432,7 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
 }
 
 
-void BinaryInputChange::setTime(CtiTime timestamp) 
+void BinaryInputChange::setTime(CtiTime timestamp)
 {
     _time.setSeconds(timestamp.seconds());
 }

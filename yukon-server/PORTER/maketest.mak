@@ -1,7 +1,7 @@
 # nmake file YUKON 1.0
 
-!include ..\common\global.inc
-!include ..\common\rwglobal.inc
+!include $(COMPILEBASE)\global.inc
+!include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(CAPCONTROL)\include \
@@ -90,8 +90,7 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_lantronixencryption.obj:	yukon.h precompiled.h types.h \
-		ctidbgmem.h encryption_lantronix.h EncodingFilter.h numstr.h \
-		dlldefs.h
+test_lantronixencryption.obj:	precompiled.h encryption_lantronix.h \
+		EncodingFilter.h numstr.h dlldefs.h
 #ENDUPDATE#
 

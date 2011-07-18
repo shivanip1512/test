@@ -13,7 +13,7 @@ Things to note about telegyr learned the hard way...
 
 -It appears that you may build up to 128 groups with up to 128 points in each
 ==============================================================================================================================*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <math.h>
 #include <stdlib.h>

@@ -1,11 +1,11 @@
-!include ..\common\global.inc
-!include ..\common\rwglobal.inc
+!include $(COMPILEBASE)\global.inc
+!include $(COMPILEBASE)\rwglobal.inc
 
 
 ALL:
             @if not exist obj md obj
             @if not exist bin md bin
-            @build -nologo -f makepch.mak
+            @build -nologo -f $(PRECOMPILED)\makepch.mak
             @build -nologo -f makedll.mak
 
 clean:
@@ -28,7 +28,7 @@ allclean:   clean all
 
 
 copy:
-            @build -nologo -f makepch.mak $@
+            @build -nologo -f $(PRECOMPILED)\makepch.mak $@
             @build -nologo -f makedll.mak $@
 
 deps:

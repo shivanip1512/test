@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.

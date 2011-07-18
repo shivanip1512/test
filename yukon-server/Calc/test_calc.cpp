@@ -1,18 +1,18 @@
 
 /*
  * file test_cmdparse.cpp
- *  
- * Author: Jian Liu 
- * Date: 08/05/2005 13:25:55 
- * 
+ *
+ * Author: Jian Liu
+ * Date: 08/05/2005 13:25:55
+ *
  *
  * test ctitime.cpp
- * 
- * 
+ *
+ *
  */
 #define BOOST_AUTO_TEST_MAIN "Test Calc"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "calc.h"
 
 #include <boost/test/unit_test.hpp>

@@ -103,7 +103,8 @@
       Merged  changes from 3.1.  handled massive point data with list of multimsg.  handled white space in data record for optional interval time field, handled massively long file format (extended workbuffer to 1500 bytes)
 
       Revision 1.14  2005/02/17 19:02:58  mfisher
-      Removed space before CVS comment header, moved #include "yukon.h" after CVS header
+      Removed space before CVS comment header, moved #include "precompiled.h"
+//#include "yukon.h" after CVS header
 
       Revision 1.13  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
@@ -149,7 +150,7 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <wininet.h>
 #include <fcntl.h>

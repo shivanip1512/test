@@ -147,7 +147,7 @@ IM_EX_CTIBASE USHORT  CCITT16CRC(INT Id, BYTE* buffer, LONG length, BOOL bAdd);
 IM_EX_CTIBASE USHORT  ShortLittleEndian(USHORT *ShortEndianFloat);
 IM_EX_CTIBASE FLOAT   FltLittleEndian(FLOAT  *BigEndianFloat);
 IM_EX_CTIBASE DOUBLE  DblLittleEndian(DOUBLE *BigEndianDouble);
-IM_EX_CTIBASE VOID    BDblLittleEndian(CHAR *BigEndianBDouble);
+IM_EX_CTIBASE void    BDblLittleEndian(CHAR *BigEndianBDouble);
 
 IM_EX_CTIBASE ULONG   MilliTime (PULONG);
 

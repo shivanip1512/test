@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <algorithm>
 
@@ -225,7 +225,7 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
     sched_to_add->setScheduleID( id );
 
 
-    std::pair< std::map<long,CtiMCSchedule*>::iterator,bool> aPair = 
+    std::pair< std::map<long,CtiMCSchedule*>::iterator,bool> aPair =
         Map.insert( std::pair<long,CtiMCSchedule*>(id, sched_to_add) );
     if( !aPair.second )
     {
@@ -272,10 +272,10 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
 
     CtiLockGuard<CtiMutex> guard( getMux() );
 
-    
-    CtiMCSchedule* to_delete; 
+
+    CtiMCSchedule* to_delete;
     MapIterator itr = Map.find(sched_id);
-    if ( itr != Map.end() ) 
+    if ( itr != Map.end() )
         to_delete = (*itr).second;
     else
         to_delete = NULL;
@@ -287,7 +287,7 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
         long key_p = NULL;
         MapIterator itr2 = Map.find( sched_id );
 
-        if (itr2 != Map.end() ){ 
+        if (itr2 != Map.end() ){
             Map.erase( sched_id );
             key_p =  (*itr2).first;
         }
@@ -328,7 +328,7 @@ CtiMCSchedule* CtiMCScheduleManager::findSchedule(long id)
     if ( itr != Map.end() ) {
         return (*itr).second;
     }else
-        return NULL; 
+        return NULL;
 }
 
 /*----------------------------------------------------------------------------
@@ -472,7 +472,7 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
                     rdr["scheduleid"] >> id;
 
                     CtiMCSchedule* temp_sched = new CtiMCSchedule();
-                    
+
                     // Add it to the map
                     temp_sched->setUpdatedFlag();   // Mark it updated
                     sched_map.insert( std::pair<long,CtiMCSchedule*>(id, temp_sched) );

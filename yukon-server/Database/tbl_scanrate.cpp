@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_scanrate.h"
 
@@ -122,19 +122,19 @@ string CtiTableDeviceScanRate::addIDSQLClause(const Cti::Database::id_set &paoid
         if( paoids.size() == 1 )
         {
             //  special single id case
-    
+
             in_list << *(paoids.begin());
-             
+
             sqlIDs += "AND DV.deviceid = " + in_list.str();
-    
+
             return sqlIDs;
         }
         else
         {
             in_list << "(";
-        
+
             copy(paoids.begin(), paoids.end(), csv_output_iterator<long, std::ostringstream>(in_list));
-        
+
             in_list << ")";
 
             sqlIDs += "AND DV.deviceid IN " + in_list.str();

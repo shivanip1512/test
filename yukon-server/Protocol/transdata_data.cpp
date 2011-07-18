@@ -17,7 +17,7 @@
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "transdata_data.h"
@@ -188,7 +188,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000;
          _minute = holder / 100;
          _hour = holder % 100;
-      
+
          _year = date.year();
          _month = date.month();
          _day = date.dayOfMonth();
@@ -201,7 +201,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _minute = holder / 100;
          _second = holder % 100;
-      
+
          _year = date.year();
          _month = date.month();
          _day = date.dayOfMonth();
@@ -214,7 +214,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _month = holder / 100;
          _year = holder % 100;
-      
+
          _hour = time.hour();
          _minute = time.minute();
          _second = time.second();
@@ -227,7 +227,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _day = holder / 100;
          _year = holder % 100;
-      
+
          _hour = time.hour();
          _minute = time.minute();
          _second = time.second();
@@ -240,7 +240,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _day = holder / 100;
          _month = holder % 100;
-      
+
          _hour = time.hour();
          _minute = time.minute();
          _second = time.second();
@@ -253,7 +253,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _month = holder / 100;
          _day = holder % 100;
-      
+
          _hour = time.hour();
          _minute = time.minute();
          _second = time.second();
@@ -266,7 +266,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _hour = holder / 100;
          _minute = holder % 100;
-      
+
          _year = date.year();
          _month = date.month();
          _day = date.dayOfMonth();
@@ -279,7 +279,7 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _hour = holder / 100;
          _day = holder % 100;
-   
+
          _year = date.year();
          _month = date.month();
          _day = date.dayOfMonth();
@@ -292,19 +292,19 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _day = holder / 100;
          _hour = holder % 100;
-   
+
          _year = date.year();
          _month = date.month();
          _day = date.dayOfMonth();
       }
-   
+
    case 23:    //HH:DD:MM
       {
          _hour = temp / 10000;
          holder = temp % 10000 ;
          _day = holder / 100;
          _minute = holder % 100;
-   
+
          _year = date.year();
          _month = date.month();
          _day = date.dayOfMonth();
@@ -389,7 +389,7 @@ FLOAT CtiTransdataData::getReading( void )
 
 //=====================================================================================================================
 //=====================================================================================================================
-   
+
 unsigned CtiTransdataData::getYear( void )
 {
    return( _year );
@@ -397,7 +397,7 @@ unsigned CtiTransdataData::getYear( void )
 
 //=====================================================================================================================
 //=====================================================================================================================
-                     
+
 unsigned CtiTransdataData::getMonth( void )
 {
    return( _month );
@@ -405,7 +405,7 @@ unsigned CtiTransdataData::getMonth( void )
 
 //=====================================================================================================================
 //=====================================================================================================================
-   
+
 unsigned CtiTransdataData::getDay( void )
 {
    return( _day );
@@ -413,7 +413,7 @@ unsigned CtiTransdataData::getDay( void )
 
 //=====================================================================================================================
 //=====================================================================================================================
-   
+
 unsigned CtiTransdataData::getHour( void )
 {
    return( _hour );
@@ -421,7 +421,7 @@ unsigned CtiTransdataData::getHour( void )
 
 //=====================================================================================================================
 //=====================================================================================================================
-   
+
 unsigned CtiTransdataData::getMinute( void )
 {
    return( _minute );
@@ -429,7 +429,7 @@ unsigned CtiTransdataData::getMinute( void )
 
 //=====================================================================================================================
 //=====================================================================================================================
-   
+
 unsigned CtiTransdataData::getSecond( void )
 {
    return( _second );

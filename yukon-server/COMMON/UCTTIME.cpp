@@ -34,7 +34,7 @@
         03-30-99  Convert to Win32 API for YUKON                  CGP
 
    -------------------------------------------------------------------- */
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -12,7 +12,7 @@
 
   COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
   -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <map>
 #include <set>
@@ -214,7 +214,7 @@ void CtiLoadManager::controlLoop()
         vector<CtiLMControlArea*> controlAreaChanges;
         CtiMultiMsg* multiDispatchMsg = CTIDBG_new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = CTIDBG_new CtiMultiMsg();
-        CtiMultiMsg* multiNotifMsg = CTIDBG_new CtiMultiMsg();    
+        CtiMultiMsg* multiNotifMsg = CTIDBG_new CtiMultiMsg();
 
         CtiMessage* msg = NULL;
         CtiLMExecutorFactory executorFactory;
@@ -350,7 +350,7 @@ void CtiLoadManager::controlLoop()
                                             {
                                                 currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
                                             }
-                                        }                                    
+                                        }
 
                                         //currentControlArea->setUpdatedFlag(TRUE);
                                     }
@@ -365,13 +365,13 @@ void CtiLoadManager::controlLoop()
                                 else
                                 {
                                     if (currentControlArea->getControlInterval() == 0 &&
-                                        currentControlArea->getControlAreaState() == CtiLMControlArea::InactiveState && 
+                                        currentControlArea->getControlAreaState() == CtiLMControlArea::InactiveState &&
                                         currentControlArea->hasStatusTrigger() &&
-                                        !currentControlArea->isStatusTriggerTripped() )                                  
+                                        !currentControlArea->isStatusTriggerTripped() )
                                     {
                                         currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg, false);
                                         currentControlArea->clearManualControlReceivedFlags();
-                                    }   
+                                    }
                                 }
 
                                 // See if we can restore some load
@@ -463,7 +463,7 @@ void CtiLoadManager::controlLoop()
                 if( _LM_DEBUG & LM_DEBUG_TIMING && controlAreaStop.seconds() - controlAreaStart.seconds() > 2 )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Control area loop took: " 
+                    dout << CtiTime() << " - Control area loop took: "
                          << controlAreaStop.seconds() - controlAreaStart.seconds() << " seconds " << endl;
                 }
 
@@ -502,16 +502,16 @@ void CtiLoadManager::controlLoop()
                 {
                     if( multiNotifMsg->getCount() > 0 )
                     {
-                        multiNotifMsg->setMessagePriority(13); 
-                        multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time. 
-                        getNotificationConnection()->WriteConnQue(multiNotifMsg); 
-                        multiNotifMsg = CTIDBG_new CtiMultiMsg(); 
+                        multiNotifMsg->setMessagePriority(13);
+                        multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
+                        getNotificationConnection()->WriteConnQue(multiNotifMsg);
+                        multiNotifMsg = CTIDBG_new CtiMultiMsg();
                     }
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout); 
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
                 try
@@ -536,8 +536,8 @@ void CtiLoadManager::controlLoop()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                dout << CtiTime() << " No Group Found for group in change list! " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " No Group Found for group in change list! " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
 
@@ -560,8 +560,8 @@ void CtiLoadManager::controlLoop()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                dout << CtiTime() << " No Program Found for program in change list with id: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " No Program Found for program in change list with id: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
                         if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
@@ -583,8 +583,8 @@ void CtiLoadManager::controlLoop()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                dout << CtiTime() << " No Control Area Found for id in change list ID: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " No Control Area Found for id in change list ID: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
                         if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
@@ -1182,7 +1182,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 if( currentTrigger->getPointId() == pointID )
                 {
                     currentControlArea->setUpdatedFlag(TRUE);
-    
+
                     string text = ("");
                     bool isNewData = false;
                     string additional = ("");
@@ -1201,15 +1201,15 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                             text += tempchar;
                         }
                     }
-    
+
                     if( currentTrigger->getPointValue() != value )
                     {
                         currentTrigger->setPointValue(value);
                     }
-    
-                    if( (!ciStringEqual(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) && 
+
+                    if( (!ciStringEqual(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) &&
                          !ciStringEqual(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
-                         !ciStringEqual(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) ) 
+                         !ciStringEqual(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
                     {
                         if( quality != NonUpdatedQuality && isNewData )
                         {
@@ -1244,7 +1244,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     {
                         currentTrigger->setProjectedPointValue(value);
                     }
-    
+
                     if( _LM_POINT_EVENT_LOGGING && text.length() > 0 )
                     {
                         try
@@ -1262,23 +1262,23 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         }
                     }
                 }
-    
+
                 if( currentTrigger->getPeakPointId() == pointID )
                 {
                     currentControlArea->setUpdatedFlag(TRUE);
-    
+
                     if( value > currentTrigger->getPeakPointValue() )
                     {
                         currentTrigger->setLastPeakPointValueTimestamp(timestamp);
                         currentTrigger->setPeakPointValue(value);
                     }
-    
+
                     if( currentTrigger->getThresholdKickPercent() > 0 )
                     {
                         DOUBLE oldThreshold = currentTrigger->getThreshold();
                         LONG thresholdKickOffset = currentTrigger->getThresholdKickPercent();
                         LONG amountOverKickValue = currentTrigger->getPeakPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
-    
+
                         if( amountOverKickValue > 0 )
                         {
                             currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
@@ -1313,39 +1313,39 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         }
                     }
                 }
-    
+
                 if ( currentTrigger->getThresholdPointId() == pointID &&
                      currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdPointTriggerType )
                 {
                     currentControlArea->setUpdatedFlag(TRUE);
-    
+
                     if ( value != currentTrigger->getThreshold() )
                     {
                         double oldThreshold = currentTrigger->getThreshold();
-    
+
                         currentTrigger->setThreshold(value);
                         currentControlArea->setNewPointDataReceivedFlag(TRUE);
-    
+
                         CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
-        
+
                         if ( _LM_POINT_EVENT_LOGGING )
                         {
                             std::string text("Updated Threshold");
-        
+
                             std::ostringstream stream;
-        
+
                             stream
                                 << "Threshold for Trigger: "     << currentTrigger->getTriggerNumber()
                                 << " changed in LMControlArea: " << currentControlArea->getPAOName()
                                 << " PAO ID: "                   << currentControlArea->getPAOId()
                                 << " old threshold: "            << oldThreshold
                                 << " new threshold: "            << currentTrigger->getThreshold();
-        
+
                             std::string additional( stream.str() );
-        
+
                             CtiLoadManager::getInstance()->sendMessageToDispatch(
                                 new CtiSignalMsg(currentTrigger->getThresholdPointId(), 0, text, additional, GeneralLogType, SignalEvent));
-        
+
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;

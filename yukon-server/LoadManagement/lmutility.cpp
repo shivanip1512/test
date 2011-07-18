@@ -2,7 +2,7 @@
 *   Copyright (c) 2009 Cooper Power Systems EAS. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "timeperiod.h"
 #include "lmutility.h"
 
@@ -60,25 +60,25 @@ string ControlWindowErrorMessage(const CtiTime &windowStartTime,
             << " time of "
             << proposedTime.asString()
             << " is outside the ";
-        
+
     if( !windowType.empty() )
     {
         stream << windowType << " ";
     }
-        
+
     stream << "control window that runs from "
             << windowStartTime.asString()
             << " to "
             << windowStopTime.asString();
-            
+
     return stream.str();
 }
 
 
 // Given the requested start/stop time, tries to use program and control area windows
-// and returns appropriate start/stop times. If not successful, the result start/stop 
+// and returns appropriate start/stop times. If not successful, the result start/stop
 // may be anything.
-// 
+//
 // Returns true if successful, false if not.
 bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
                       CtiTime &resultStart, CtiTime &resultStop,
@@ -91,7 +91,7 @@ bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
     TimePeriod caTime(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime::CtiTime(CtiTime::neg_infin));
     if( controlArea != NULL )
     {
-        caTime = TimePeriod(controlArea->getCurrentDailyStartTime(proposedStart.date()), 
+        caTime = TimePeriod(controlArea->getCurrentDailyStartTime(proposedStart.date()),
                             controlArea->getCurrentDailyStopTime(proposedStart.date()));
     }
 
@@ -187,7 +187,7 @@ bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
                                 result1Found = true;
                             }
                         }
-                        
+
                         program1Time.addDays(1);
                         progDays++;
                     }
@@ -206,7 +206,7 @@ bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
                                 result2Found = true;
                             }
                         }
-                       
+
                         program2Time.addDays(1);
                         progDays++;
                     }
@@ -224,7 +224,7 @@ bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
                 {
                     result = possibleResult1.merge(possibleResult2).intersection(result);
                 }
-                else 
+                else
                 {
                     // Try the one that has the first start time first.
                     if( possibleResult1.begin() > possibleResult2.begin() )

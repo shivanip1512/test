@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "ConstraintViolation.h"
 #include "ctidate.h"
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_d)
 
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
                                                                         expectedValueDouble);
 
         BOOST_CHECK(fancyFeastEqual(vectors.doubles, testViolation.getDoubleParams()));
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_d)
 
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
                                                                         expectedValueDouble);
 
         BOOST_CHECK(fancyFeastEqual(vectors.doubles, testViolation.getDoubleParams()));
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_ti)
         vectors.ints.push_back(expectedValueInt);
         vectors.times.push_back(expectedValueTime);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_TI_OutsideSeasonSchedule, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_TI_OutsideSeasonSchedule,
                                                                         expectedValueTime,
                                                                         expectedValueInt);
 
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_t)
 
         vectors.times.push_back(expectedValueTime);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_T_ProhibitedHolidayRun, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_T_ProhibitedHolidayRun,
                                                                         expectedValueTime);
 
         BOOST_CHECK(testViolation.getDoubleParams().empty());
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededDailyControlHours, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededDailyControlHours,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededDailyControlHoursMsg2, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededDailyControlHoursMsg2,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededDailyControlHoursMsg3, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededDailyControlHoursMsg3,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededMonthlyControlHours, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededMonthlyControlHours,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededMonthlyControlHoursMsg2, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededMonthlyControlHoursMsg2,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededMonthlyControlHoursMsg3, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededMonthlyControlHoursMsg3,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededSeasonalControlHours, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededSeasonalControlHours,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededSeasonalControlHoursMsg2, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededSeasonalControlHoursMsg2,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededSeasonalControlHoursMsg3, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededSeasonalControlHoursMsg3,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -336,7 +336,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededAnnualControlHours, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededAnnualControlHours,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededAnnualControlHoursMsg2, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededAnnualControlHoursMsg2,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededAnnualControlHoursMsg3, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_ExceededAnnualControlHoursMsg3,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -393,7 +393,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_sd)
         vectors.strings.push_back(expectedValueString);
         vectors.doubles.push_back(expectedValueDouble);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_MinRestartTimeViolation, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SD_MinRestartTimeViolation,
                                                                         expectedValueString,
                                                                         expectedValueDouble);
 
@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_si)
         vectors.strings.push_back(expectedValueString);
         vectors.ints.push_back(expectedValueInt);
 
-        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SI_MaximumDailyOperationsReached, 
+        testConstraintViolation testViolation = testConstraintViolation(ConstraintViolation::CV_SI_MaximumDailyOperationsReached,
                                                                         expectedValueString,
                                                                         expectedValueInt);
 
@@ -729,7 +729,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 {
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Another mission, The powers have called me away";
 
         vectors.strings.push_back(expectedValueString);
@@ -745,7 +745,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Another time to carry my colors again";
 
         vectors.strings.push_back(expectedValueString);
@@ -761,7 +761,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "My motivation: an oath I've sworn to defend";
 
         vectors.strings.push_back(expectedValueString);
@@ -777,7 +777,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "To win the honor of coming back home again";
 
         vectors.strings.push_back(expectedValueString);
@@ -793,7 +793,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "No explanation will matter after we begin";
 
         vectors.strings.push_back(expectedValueString);
@@ -809,7 +809,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Unlock the dark destroyer that's buried within";
 
         vectors.strings.push_back(expectedValueString);
@@ -825,7 +825,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "My true vocation, and now my unfortunate friend";
 
         vectors.strings.push_back(expectedValueString);
@@ -841,7 +841,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "You will discover a war you're unable to win";
 
         vectors.strings.push_back(expectedValueString);
@@ -857,7 +857,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "I'll have you know that I've become indestructable";
 
         vectors.strings.push_back(expectedValueString);
@@ -873,7 +873,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Determination that is incorruptable";
 
         vectors.strings.push_back(expectedValueString);
@@ -889,7 +889,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "From the other side a terror to behold";
 
         vectors.strings.push_back(expectedValueString);
@@ -905,7 +905,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Annihilation will be unavoidable";
 
         vectors.strings.push_back(expectedValueString);
@@ -921,7 +921,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Every broken enemy will know that their opponent had to be invincible";
 
         vectors.strings.push_back(expectedValueString);
@@ -937,7 +937,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_s)
 
     {
         VectorHolder vectors;
-        
+
         std::string expectedValueString = "Take a last look around while you're alive: I'm an indestructible master of war!";
 
         vectors.strings.push_back(expectedValueString);
@@ -956,7 +956,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_tti)
 {
     {
         VectorHolder vectors;
-        
+
         CtiDate today(12, 8, 2010);
         CtiTime morning(today, 8, 0, 0);
         CtiTime evening(today, 17, 0, 0);
@@ -979,7 +979,7 @@ BOOST_AUTO_TEST_CASE(test_cv_type_tti)
 
     {
         VectorHolder vectors;
-        
+
         CtiDate today(12, 9, 2010);
         CtiTime morning(today, 8, 30, 0);
         CtiTime evening(today, 17, 30, 0);

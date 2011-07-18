@@ -13,7 +13,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "msg_signal.h"
 #include "pointtypes.h"
 #include "msg_pdata.h"
@@ -48,13 +48,13 @@ CtiCCConfirmationStats::CtiCCConfirmationStats()
     _monthlyCommSuccessPercentId  = 0;
     _monthlyCommSuccessPercent    = -1;
 
-    return;  
+    return;
 }
 
 
 CtiCCConfirmationStats::CtiCCConfirmationStats(const CtiCCConfirmationStats& twoWayPt)
 {
-    operator=(twoWayPt);  
+    operator=(twoWayPt);
 }
 
 /*---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ void CtiCCConfirmationStats::init()
     _userDefCommFail = 0;
     _dailyCommCount = 0;
     _dailyCommFail = 0;
-    _weeklyCommCount = 0;   
+    _weeklyCommCount = 0;
     _weeklyCommFail = 0;
     _monthlyCommCount = 0;
     _monthlyCommFail = 0;
@@ -109,7 +109,7 @@ LONG CtiCCConfirmationStats::getWeeklyCommCount() const
 LONG CtiCCConfirmationStats::getWeeklyCommFail() const
 {
     return _weeklyCommFail;
-}                          
+}
 LONG CtiCCConfirmationStats::getMonthlyCommCount() const
 {
     return _monthlyCommCount;
@@ -153,7 +153,7 @@ DOUBLE CtiCCConfirmationStats::getMonthlyCommSuccessPercent() const
     return _monthlyCommSuccessPercent;
 }
 
-    
+
 CtiCCConfirmationStats& CtiCCConfirmationStats::setPAOId(LONG paoId)
 {
     _paoid = paoId;
@@ -374,16 +374,16 @@ DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
             failCount = _monthlyCommFail;
             break;
         }
-        default: 
+        default:
             break;
 
-        
+
     }
     if (opCount > 0 && opCount >= failCount)
     {
         retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
     }
-    else 
+    else
         retVal = -1;
 
     return retVal;
@@ -421,9 +421,9 @@ BOOL CtiCCConfirmationStats::setSuccessPercentPointId(LONG tempPointId, LONG tem
         default:
             break;
     }
-    return retVal;  
+    return retVal;
 
-}                    
+}
 /*---------------------------------------------------------------------------
     replicate
 
@@ -440,23 +440,23 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::operator=(const CtiCCConfirmatio
     if( this != &right )
     {
         _paoid = right._paoid;
-        _userDefCommCount   = right._userDefCommCount; 
+        _userDefCommCount   = right._userDefCommCount;
         _userDefCommFail  = right._userDefCommFail;
-        _dailyCommCount     = right._dailyCommCount;   
-        _dailyCommFail    = right._dailyCommFail;  
-        _weeklyCommCount    = right._weeklyCommCount;  
-        _weeklyCommFail   = right._weeklyCommFail; 
-        _monthlyCommCount   = right._monthlyCommCount; 
+        _dailyCommCount     = right._dailyCommCount;
+        _dailyCommFail    = right._dailyCommFail;
+        _weeklyCommCount    = right._weeklyCommCount;
+        _weeklyCommFail   = right._weeklyCommFail;
+        _monthlyCommCount   = right._monthlyCommCount;
         _monthlyCommFail  = right._monthlyCommFail;
 
-        _userDefCommSuccessPercentId  =  right._userDefCommSuccessPercentId; 
-        _userDefCommSuccessPercent    =  right._userDefCommSuccessPercent; 
-        _dailyCommSuccessPercentId    =  right._dailyCommSuccessPercentId; 
-        _dailyCommSuccessPercent      =  right._dailyCommSuccessPercent; 
-        _weeklyCommSuccessPercentId   =  right._weeklyCommSuccessPercentId; 
-        _weeklyCommSuccessPercent     =  right._weeklyCommSuccessPercent; 
+        _userDefCommSuccessPercentId  =  right._userDefCommSuccessPercentId;
+        _userDefCommSuccessPercent    =  right._userDefCommSuccessPercent;
+        _dailyCommSuccessPercentId    =  right._dailyCommSuccessPercentId;
+        _dailyCommSuccessPercent      =  right._dailyCommSuccessPercent;
+        _weeklyCommSuccessPercentId   =  right._weeklyCommSuccessPercentId;
+        _weeklyCommSuccessPercent     =  right._weeklyCommSuccessPercent;
         _monthlyCommSuccessPercentId  =  right._monthlyCommSuccessPercentId;
-        _monthlyCommSuccessPercent    =  right._monthlyCommSuccessPercent; 
+        _monthlyCommSuccessPercent    =  right._monthlyCommSuccessPercent;
 
 
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
@@ -476,7 +476,7 @@ int CtiCCConfirmationStats::operator!=(const CtiCCConfirmationStats& right) cons
 
 
 CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommCounts(LONG attempts)
-{  
+{
     setUserDefCommCount(_userDefCommCount+attempts);
     _userDefCommSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
 
@@ -498,18 +498,18 @@ void CtiCCConfirmationStats::printCommStats()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - DUMPING CommStats. " <<  endl;
-    
+
         dout << "\t\t -  _paoid: " << _paoid
             << " _userDefCommCount " << _userDefCommCount
-             << " _userDefCommFail " << _userDefCommFail  
-             << "  _dailyCommCount "   << _dailyCommCount        
-             << "  _dailyCommFail "  << _dailyCommFail      
-             << "  _weeklyCommCount "  << _weeklyCommCount      
-             << "  _weeklyCommFail " << _weeklyCommFail     
-             << "  _monthlyCommCount " << _monthlyCommCount    
-             << "  _monthlyCommFail "<< _monthlyCommFail  
+             << " _userDefCommFail " << _userDefCommFail
+             << "  _dailyCommCount "   << _dailyCommCount
+             << "  _dailyCommFail "  << _dailyCommFail
+             << "  _weeklyCommCount "  << _weeklyCommCount
+             << "  _weeklyCommFail " << _weeklyCommFail
+             << "  _monthlyCommCount " << _monthlyCommCount
+             << "  _monthlyCommFail "<< _monthlyCommFail
             << endl;
     }
-    
+
 }
-       
+

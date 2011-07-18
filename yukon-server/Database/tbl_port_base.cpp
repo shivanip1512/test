@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_port_base.h"
 #include "logger.h"
@@ -133,7 +133,7 @@ void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
    INT iTemp;
    string rwsTemp;
 
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -162,7 +162,7 @@ void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
        CtiLockGuard<CtiLogger> logger_guard(dout);
        dout << " Performance Alarming ? " << rwsTemp << endl;
    }
-   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);   
+   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);
    _performanceAlarm = (rwsTemp[0] == 'y' ? true : false);
 
    rdr["performthreshold"] >> _performanceThreshold;
@@ -178,7 +178,7 @@ void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
        CtiLockGuard<CtiLogger> logger_guard(dout);
        dout << " Shared Port Type     = " << rwsTemp << endl;
    }
-   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);      
+   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);
    _sharedPortType = rwsTemp;
 
    rdr["sharedsocketnumber"] >> iTemp;
@@ -188,7 +188,7 @@ void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
        dout << "  Shared Socket Number = " << rwsTemp << endl;
    }
    _sharedSocketNumber = iTemp;
-   
+
 }
 
 void CtiTablePortBase::DumpData()

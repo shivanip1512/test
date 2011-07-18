@@ -1,7 +1,7 @@
 # nmake file YUKON 1.0 FDR Rdex Interface
 
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(DISPATCH)\include \

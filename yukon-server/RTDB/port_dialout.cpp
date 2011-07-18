@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -22,9 +22,9 @@
 #include "port_dialout.h"
 
 using std::iostream;
-using std::pair;  
+using std::pair;
 using std::endl;
-using std::string;  
+using std::string;
 
 CtiPortDialout::CtiPortDialout()
 {

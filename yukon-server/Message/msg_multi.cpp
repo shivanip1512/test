@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
@@ -80,7 +80,7 @@ CtiMessage* CtiMultiMsg::replicateMessage() const
    return( (CtiMessage*)ret );
 }
 
-CtiMessage& CtiMultiMsg::setConnectionHandle(VOID *p)
+CtiMessage& CtiMultiMsg::setConnectionHandle(void *p)
 {
    ConnectionHandle = p;
 
@@ -92,7 +92,7 @@ CtiMessage& CtiMultiMsg::setConnectionHandle(VOID *p)
    return *this;
 }
 
-VOID* CtiMultiMsg::getConnectionHandle()
+void* CtiMultiMsg::getConnectionHandle()
 {
    return ConnectionHandle;
 }

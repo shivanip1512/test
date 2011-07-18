@@ -13,7 +13,7 @@
 *
 * Copyright (c) 2008 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "logger.h"

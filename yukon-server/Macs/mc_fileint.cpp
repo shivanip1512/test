@@ -24,7 +24,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "mc_fileint.h"
 #include "mc_msg.h"

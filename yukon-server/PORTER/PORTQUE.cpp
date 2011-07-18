@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -207,7 +207,7 @@ struct buildLGRPQ
 };
 
 /* Thread to process and dispatch entries from Queue & ACTIN queues */
-VOID QueueThread (VOID *Arg)
+void QueueThread (void *Arg)
 {
     USHORT Port, Remote;
     DWORD  dwWait = 0;
@@ -1256,7 +1256,7 @@ struct kick
 };
 
 /* Thread to kick the CCU-711 if no activity and it might have data */
-VOID KickerThread (VOID *Arg)
+void KickerThread (void *Arg)
 {
     USHORT Port, Remote;
     ULONG i;
@@ -1627,7 +1627,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                     OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
                 PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-                if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (void *) OutMessage, OutMessage->Priority))
                 {
                     _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                     {
@@ -1755,7 +1755,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
         /* we are done with the request message */
         delete (MyOutMessage);
 
-        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (void *) OutMessage, OutMessage->Priority))
         {
             _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
             {

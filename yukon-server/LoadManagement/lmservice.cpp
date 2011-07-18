@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <io.h>
 
@@ -37,7 +37,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
     {
 
     /* Handle the CTRL+C signal. */
-    
+
     case CTRL_C_EVENT:
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
@@ -166,7 +166,7 @@ void CtiLMService::Init()
     }
 
     SET_CRT_OUTPUT_MODES;
-    if( gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") ) 
+    if( gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
     _quit = false;

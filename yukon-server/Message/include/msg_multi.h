@@ -55,8 +55,8 @@ public:
    CtiMultiMsg& setData(const CtiMultiMsg_vec& point_data);
 
 
-   virtual CtiMessage& setConnectionHandle(VOID *p);
-   virtual VOID* getConnectionHandle();
+   virtual CtiMessage& setConnectionHandle(void *p);
+   virtual void* getConnectionHandle();
 
    virtual void dump() const;
 

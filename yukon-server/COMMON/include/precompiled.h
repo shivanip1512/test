@@ -1,8 +1,9 @@
 /*
- * Every source file should include this file.
+ * Every source (.cpp) file should include this file, with the exception of unit tests.
  *
- * This header file exists to precompile large header files that never change.
- * Add any headers here that you want precompiled.
+ * This header file exists to precompile large header files that never change,
+ *   which are usually third-party library includes such as Boost or Rogue Wave.
+ *
  */
 #pragma once
 
@@ -84,6 +85,4 @@
 //#include "boost/thread/thread.hpp"
 //#include "boost/thread/tss.hpp"
 //#include "boost/thread/xtime.hpp"
-
-#include "types.h"
 

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
@@ -852,7 +852,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
         {
             unsigned short umsw = _calcpoint->pop();
             unsigned short ulsw = _calcpoint->pop();
-        
+
             unsigned fpu = (unsigned short)umsw;
             fpu = (fpu << 16) + ulsw;
 
@@ -949,7 +949,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             if(_componentPointId > 0)
             {
                 CtiPointStore* pointStore = CtiPointStore::getInstance();
-                
+
                 CtiHashKey calcHashKey(_calcpoint->getPointId());
                 CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcHashKey]);
 
@@ -1036,7 +1036,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             if(_componentPointId > 0)
             {
                 CtiPointStore* pointStore = CtiPointStore::getInstance();
-                
+
                 CtiHashKey calcHashKey(_calcpoint->getPointId());
                 CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcHashKey]);
 
@@ -1147,7 +1147,7 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                 rdr << regressionPt;
 
                 rdr.execute();
-    
+
                 int i = 0;
                 long pointid;
                 double value;
@@ -1159,7 +1159,7 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                     rdr["POINTID"] >> pointid;
                     rdr["TIMESTAMP"] >> timeStamp;
                     rdr["VALUE"] >> value;
-    
+
                     PointValuePair insertPair(pointid, value);
                     if( timeStamp != pointTime )
                     {
@@ -1172,14 +1172,14 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                         dout << CtiTime() << " - TIMESTAMP ERROR: " << timeStamp.asString() << " = " << pointTime.asString() << endl;
                     }
                 }
-    
+
                 DynamicTableSinglePointDataIter iter;
-                
+
                 for( iter = dataMap.begin(); iter != dataMap.end(); iter++ )
                 {
-                    calcPointPtr->addRegressionVal(iter->first,  iter->second.second); 
+                    calcPointPtr->addRegressionVal(iter->first,  iter->second.second);
                 }
-    
+
             }
             catch( RWxmsg &msg )
             {

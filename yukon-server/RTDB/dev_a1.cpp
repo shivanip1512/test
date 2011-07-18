@@ -62,7 +62,7 @@
 
 
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 
@@ -3017,7 +3017,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
 
 
 
-INT CtiDeviceAlphaA1::getA1ClassOffset(UINT Key, VOID *ptr)
+INT CtiDeviceAlphaA1::getA1ClassOffset(UINT Key, void *ptr)
 {
     int   i;
     INT   Offset;
@@ -3122,7 +3122,7 @@ UCHAR CtiDeviceAlphaA1::touBlockMapping (UCHAR config, USHORT type)
 }
 
 
-INT CtiDeviceAlphaA1::getA1FuncOffset(UINT Key, VOID *ptr)
+INT CtiDeviceAlphaA1::getA1FuncOffset(UINT Key, void *ptr)
 {
     int   i;
     INT   Offset;

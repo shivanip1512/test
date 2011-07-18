@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -213,7 +213,7 @@ bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter 
+    deleter
         << pointid
         << alarm_condition;
 

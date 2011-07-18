@@ -9,14 +9,14 @@
 
 #define INETRECEIVEONLYFILE "data\\inet.dat"
 
-int EXPENTRY ModuleStart( VOID );
-VOID INetInThread( PVOID );
+int EXPENTRY ModuleStart( void );
+void INetInThread( PVOID );
 int SizeOfINetMessage( USHORT );
-VOID INetOutThread( PVOID );
+void INetOutThread( PVOID );
 int SendINetNull( USHORT );
-VOID NullMessageThread( PVOID );
-VOID INetCheckThread( PVOID );
-VOID INetTCPOutThread( PVOID );
-VOID APIENTRY INetCleanUp( ULONG );
+void NullMessageThread( PVOID );
+void INetCheckThread( PVOID );
+void INetTCPOutThread( PVOID );
+void APIENTRY INetCleanUp( ULONG );
 USHORT InitializeHost( PCHAR hostName, USHORT *Slot );
 

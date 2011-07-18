@@ -10,7 +10,7 @@
 ---------------------------------------------------------------------------*/
 
 #define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_MACS_day_of_month_start)
     schedule.setStartDay(31);
     schedule.setStartYear(2008); // Irrelevant
     schedule.setStartMonth(11);// Irrelevant
-    
+
     CtiTime now(febLeapYear, 3, 3, 3);
     CtiDate tempDate = CtiDate(29, 2, 2008); // Testing leap year first
     expectedResult = CtiTime(tempDate, 9, 2, 4);
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_MACS_day_of_month_start)
     schedule.setStartMonth(11);//Months are 1-12
     schedule.setStartDay(2);// 11/2/2008 is last day of DST (change on this day)
     now = CtiTime::CtiTime(CtiDate(2, 11, 2008), 1, 1, 1); // few hours before, same day
-    expectedResult = CtiTime(CtiDate(2, 11, 2008), 3, 2, 4); 
+    expectedResult = CtiTime(CtiDate(2, 11, 2008), 3, 2, 4);
     scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
 
     BOOST_CHECK_EQUAL(expectedResult, startTime);

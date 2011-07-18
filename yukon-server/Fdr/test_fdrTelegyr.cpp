@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test fdrTelegyr"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "fdrtelegyr.h"
 
 #include <string>

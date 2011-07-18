@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_devicereadrequestlog.h"
 #include "logger.h"
@@ -119,7 +119,7 @@ bool CtiTblDeviceReadRequestLog::Insert()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    inserter 
+    inserter
         << getRequestLogId()
         << getRequestId()
         << getCommand()
@@ -145,7 +145,7 @@ bool CtiTblDeviceReadRequestLog::Update()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater 
+    updater
         << getRequestId()
         << getCommand()
         << getStartTime()

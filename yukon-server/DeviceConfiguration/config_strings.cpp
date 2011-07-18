@@ -11,7 +11,7 @@
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "config_data_cbc.h"
 #include "config_data_mct.h"
 using std::string;

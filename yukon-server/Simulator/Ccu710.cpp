@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "Ccu710.h"
 
@@ -121,15 +121,15 @@ bool Ccu710::handleRequest(Comms &comms, Logger &logger)
 
     {
         ScopedLogger scope = logger.getNewScope(_ccu710InTag);
-    
+
         if( error = readRequest(comms, ccu_request) )
         {
             scope.log("Error reading request / " + error, ccu_request.message);
             return false;
         }
-    
+
         scope.log(ccu_request.description, ccu_request.message);
-    
+
         if( error = processRequest(ccu_request, ccu_reply, scope) )
         {
             scope.log("Error processing request / " + error);
@@ -151,7 +151,7 @@ bool Ccu710::handleRequest(Comms &comms, Logger &logger)
             scope.log("Error sending reply / " + error + "\n" + ccu_reply.description, ccu_reply.message);
             return false;
         }
-    
+
         scope.log(ccu_reply.description, ccu_reply.message);
     }
 

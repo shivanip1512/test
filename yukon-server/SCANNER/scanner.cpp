@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 // These next few are required for Win32
 #include <process.h>
@@ -77,8 +77,8 @@ static list< INMESS* > inmessList;
 const CtiTime   MAXTime(YUKONEOT);
 
 void  LoadScannableDevices(void *ptr = NULL);
-void  DispatchMsgHandlerThread(VOID *Arg);
-void  DatabaseHandlerThread(VOID *Arg);
+void  DispatchMsgHandlerThread(void *Arg);
+void  DatabaseHandlerThread(void *Arg);
 
 /* Local Declarations... Utility Functions */
 
@@ -86,7 +86,7 @@ CtiTime  TimeOfNextRemoteScan(void);
 CtiTime  TimeOfNextLPScan(void);
 static CtiTime  TimeOfNextWindow( void );
 
-VOID    NexusThread(VOID *Arg);
+void    NexusThread(void *Arg);
 INT     RecordDynamicData();
 void    InitScannerGlobals(void);
 void    DumpRevision(void);
@@ -417,13 +417,13 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     if(!ScannerQuit)
     {
-        if(_beginthread (NexusThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
+        if(_beginthread (NexusThread, RESULT_THREAD_STK_SIZE, (void *)SCANNER_REGISTRATION_NAME) == -1)
         {
             dout << "Error starting Nexus Thread" << endl;
             return -1;
         }
 
-        if(_beginthread (ResultThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
+        if(_beginthread (ResultThread, RESULT_THREAD_STK_SIZE, (void *)SCANNER_REGISTRATION_NAME) == -1)
         {
             dout << "Error starting Result Thread" << endl;
             return -1;
@@ -705,7 +705,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
 
 /* The following thread handles results coming back from field devices */
-VOID ResultThread (VOID *Arg)
+void ResultThread (void *Arg)
 {
     // I want an attitude!
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
@@ -912,7 +912,7 @@ VOID ResultThread (VOID *Arg)
     } /* End of for */
 }
 
-VOID NexusThread (VOID *Arg)
+void NexusThread (void *Arg)
 {
     DWORD       dwWait;
     /* Define the return Pipe handle */
@@ -990,7 +990,7 @@ VOID NexusThread (VOID *Arg)
 }
 
 
-VOID ScannerCleanUp ()
+void ScannerCleanUp ()
 {
     ScannerQuit = TRUE;
 
@@ -1304,7 +1304,7 @@ void LoadScannableDevices(void *ptr)
     return;
 }
 
-void DispatchMsgHandlerThread(VOID *Arg)
+void DispatchMsgHandlerThread(void *Arg)
 {
     BOOL           bServerClosing = FALSE;
 
@@ -1437,7 +1437,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     } /* End of for */
 }
 
-void DatabaseHandlerThread(VOID *Arg)
+void DatabaseHandlerThread(void *Arg)
 {
     BOOL    bServerClosing = FALSE;
 

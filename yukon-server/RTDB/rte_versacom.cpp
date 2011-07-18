@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include <iostream>
@@ -57,7 +57,7 @@ void CtiRouteVersacom::DumpData()
 void CtiRouteVersacom::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    
+
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
@@ -102,7 +102,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     BYTE      ABuf[ABUFSIZE];
     ULONG     BytesWritten;
 
-    BASEDLL_IMPORT extern CTINEXUS PorterNexus;
+    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
 
     /*
      *  Wow, I have versacom data and I know what to do with it....

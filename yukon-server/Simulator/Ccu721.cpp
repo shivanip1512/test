@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "Ccu721.h"
 
@@ -31,24 +31,24 @@ bool Ccu721::handleRequest(Comms &comms, Logger &logger)
 
     {
         ScopedLogger scope = logger.getNewScope(_ccu721InTag);
-    
+
         if( error = readRequest(comms, request) )
         {
             scope.log("Error reading request / " + error, request.message);
             return false;
         }
-    
+
         scope.log(request.description, request.message);
-    
+
         //  get us up to date before we try to process anything new
         processQueue(scope);
-    
+
         if( error = processRequest(request, reply, scope) )
         {
             scope.log("Error processing request / " + error);
             return false;
         }
-    
+
         if( reply.message.empty() )
         {
             scope.log("No reply generated");
@@ -60,7 +60,7 @@ bool Ccu721::handleRequest(Comms &comms, Logger &logger)
         ScopedLogger scope = logger.getNewScope(_ccu721OutTag);
 
         scope.log(describeReply(reply), reply.message);
-    
+
         if( error = sendReply(comms, reply, scope) )
         {
             scope.log("Error sending reply / " + error);
@@ -137,32 +137,32 @@ error_t Ccu721::extractRequestInfo(const bytes &message, request_info &info) con
     {
         case Klondike_Dtran:
         {
-            info.command = Klondike_Dtran;  
+            info.command = Klondike_Dtran;
             return extractRequestInfo_Dtran(command_data, info);
         }
         case Klondike_CheckStatus:
         {
-            info.command = Klondike_CheckStatus; 
+            info.command = Klondike_CheckStatus;
             return error_t::success;
         }
-        case Klondike_ClearBuffers:     
-        {   
-            info.command = Klondike_ClearBuffers; 
+        case Klondike_ClearBuffers:
+        {
+            info.command = Klondike_ClearBuffers;
             return extractRequestInfo_ClrBuffers(command_data, info);
         }
-        case Klondike_LoadBuffer:   
+        case Klondike_LoadBuffer:
         {
             info.command = Klondike_LoadBuffer;
             return extractRequestInfo_LoadBuffer(command_data, info);
         }
-        case Klondike_FreezeBuffer:   
+        case Klondike_FreezeBuffer:
         {
             info.command = Klondike_FreezeBuffer;
             return error_t::success;
         }
         case Klondike_ThawBuffer:
         {
-            info.command = Klondike_ThawBuffer;  
+            info.command = Klondike_ThawBuffer;
             return error_t::success;
         }
         case Klondike_SpyBuffer:
@@ -240,19 +240,19 @@ error_t Ccu721::extractRequestInfo_Dtran(const bytes &command_data, request_info
 
     switch( command_data[index + 5] & 0xf0 )
     {
-        default:    
-            request.word_type = EmetconWord::WordType_Invalid;  
+        default:
+            request.word_type = EmetconWord::WordType_Invalid;
             break;
-        case 0x80:  
-        case 0x90:  
-            request.word_type = EmetconWord::WordType_A;   
+        case 0x80:
+        case 0x90:
+            request.word_type = EmetconWord::WordType_A;
             // Process the command_data to get the information
             // to put into the A word.
             // There is nothing in the data structures that contains
             // a location for the A word. What to do here?
             break;
         case 0xa0:
-        case 0xb0:  
+        case 0xb0:
             request.word_type = EmetconWord::WordType_B;
 
             words_t b_word_holder;  // Something to hold the B Word
@@ -343,7 +343,7 @@ error_t Ccu721::extractRequestInfo_ClrBuffers(const bytes &command_data, request
         // to be sure.
         if( command_data[index] == 0x00 )
         {
-            // clear all the blocks! 
+            // clear all the blocks!
             info.clearBuffer.clearAll = true;
         }
         else
@@ -353,13 +353,13 @@ error_t Ccu721::extractRequestInfo_ClrBuffers(const bytes &command_data, request
             return error_t("Data in clear buffer request is inconsistent with command's format.", command_data[index]);
         }
     }
-    else 
+    else
     {
         // The request has size greater than one. command_data contains the number
         // of blocks to erase and the sequence number of each block to be erased.
         if( command_data.size() % 2 != 1 )
         {
-            /*  There should be an odd number of bytes in the command_data, one for the 
+            /*  There should be an odd number of bytes in the command_data, one for the
                 number of blocks to erase and two each for the sequences to be erased.
                 If there is an even number of bytes, this pattern doesn't hold and the
                 request data is corrupt or incorrect: return an error.                  */
@@ -404,7 +404,7 @@ error_t Ccu721::extractRequestInfo_TimeSync(const bytes &command_data, request_i
     int index = 0;
 
     // What happens with this...?
-    unsigned utcSeconds = command_data[index] << 24 | command_data[index + 1] << 16 
+    unsigned utcSeconds = command_data[index] << 24 | command_data[index + 1] << 16
                         | command_data[index + 2] << 8 | command_data[index + 3];
 
     return error_t::success;
@@ -444,7 +444,7 @@ error_t Ccu721::extractRequestInfo_LoadBuffer(const bytes &command_data, request
         // One queue entry has been used up.
         numQueueEntries--;
 
-        // Is this what we want to do? 
+        // Is this what we want to do?
         // CCU 721 SSPEC Page 22 indicates that all additional commands will increment
         // up from the starting sequence number.
         nextSequence++;
@@ -496,7 +496,7 @@ error_t Ccu721::extractRequestInfo_WriteRtTable(const bytes &command_data, reque
 
         numEntries--;
     }
-    
+
     return error_t::success;
 }
 
@@ -542,7 +542,7 @@ error_t Ccu721::extractRequestInfo_ReadMem(const bytes &command_data, request_in
     {
         return "No data in the read memory request.";
     }
-    
+
     int index = 0, memType, numBytes;
 
     info.memoryAccess.memoryRead = true;
@@ -614,19 +614,19 @@ error_t Ccu721::extractQueueEntry(const bytes &command_data, int index, int next
 
         switch( command_data[index + 4] & 0xf0 )
         {
-            default:    
-                request.word_type = EmetconWord::WordType_Invalid;  
+            default:
+                request.word_type = EmetconWord::WordType_Invalid;
                 break;
-            case 0x80:  
-            case 0x90:  
-                request.word_type = EmetconWord::WordType_A;   
+            case 0x80:
+            case 0x90:
+                request.word_type = EmetconWord::WordType_A;
                 // Process the command_data to get the information
                 // to put into the A word.
                 // There is nothing in the data structures that contains
                 // a location for the A word. What to do here?
                 break;
             case 0xa0:
-            case 0xb0:  
+            case 0xb0:
                 request.word_type = EmetconWord::WordType_B;
 
                 words_t b_word_holder;  // Something to hold the B Word
@@ -929,7 +929,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
                     // target holds the sequence number of the entry in the pending queue we are currently looking at.
                     sequence = *sequence_itr, target = (*pending_itr).sequence;
 
-                    // Check to see if we have the one we're looking for. 
+                    // Check to see if we have the one we're looking for.
                     // If not, check the next entry in the pending queue until we find it.
                     while( pending_itr != pending_end && target != sequence )
                     {
@@ -944,12 +944,12 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
                             dout << "Message with sequence " << sequence << " not found in pending queue." << endl;
                         };
                     }
-                    else 
+                    else
                     {
                         // We found it, delete it.
                         _queue.pending.erase(pending_itr);
                     }
-                    
+
                     sequence_itr++;
                 }
             }
@@ -963,7 +963,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
             unsigned pre_pending = _queue.pending.size();
 
             _queue.pending.insert(request.info.loadBuffer.request_group.begin(),
-                                  request.info.loadBuffer.request_group.begin() 
+                                  request.info.loadBuffer.request_group.begin()
                                   + min(request.info.loadBuffer.request_group.size(), (LoadBufferMaxSlots - pre_pending)));
 
             reply.info.loadBuffer.available = LoadBufferMaxSlots - _queue.pending.size();
@@ -977,7 +977,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
         case Klondike_FreezeBuffer:
         {
             _bufferFrozen = true;
-            
+
             return error_t::success;
         }
         case Klondike_ThawBuffer:
@@ -1137,7 +1137,7 @@ void Ccu721::processQueue(Logger &logger)
             copy(entry.request.c_words.begin(),
                  entry.request.c_words.end(),
                  EmetconWord::serializer(byte_appender(request_buf)));
-            
+
             Grid.oneWayCommand(request_buf, logger);
 
             entry.result.completion_status = queue_entry::result_info::CompletionStatus_Successful;
@@ -1274,7 +1274,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
             {
                 info_description << "clear all buffers ";
             }
-            else 
+            else
             {
                 info_description << "sequences to clear: ";
                 for each (int seq in info.clearBuffer.sequences )
@@ -1296,7 +1296,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
             {
                 info_description << endl;
 
-                info_description << "sequence "; //<< setw(10) << setfill('0') 
+                info_description << "sequence "; //<< setw(10) << setfill('0')
                 info_description << entry_itr->sequence << ", ";
                 info_description << "priority " << setw(2)                  << entry_itr->priority << ", ";
 
@@ -1406,7 +1406,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
             {
                 info_description << " clear all routes / ";
             }
-            else 
+            else
             {
                 info_description << " routes to clear: ";
                 for each (int route in info.routeTable.routesToClear)
@@ -1771,7 +1771,7 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
     }
 
     // ACK with Data section. This needs to be updated when and if NAK responses become available.
-    // For now, assume all responses are ACKs and that a NAK doesn't occur. 
+    // For now, assume all responses are ACKs and that a NAK doesn't occur.
     switch( info.command )
     {
         case Klondike_Dtran:
@@ -1826,7 +1826,7 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
 
                 completed_entry_buf.push_back(completed_itr->sequence);
                 completed_entry_buf.push_back(completed_itr->sequence >> 8);
-                
+
                 unsigned utc_seconds = completed_itr->result.completion_time.seconds();
 
                 completed_entry_buf.push_back(utc_seconds);
@@ -1911,7 +1911,7 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
         }
         case Klondike_ReadRouteTable:
         {
-            // This needs to read all route table data for routes in use. 
+            // This needs to read all route table data for routes in use.
             // No routing table exists yet, just pad it with 0s for now.
             data_buf.push_back(0);
             data_buf.push_back(0);
@@ -1921,7 +1921,7 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
         }
         case Klondike_ReadRouteTableOpen:
         {
-            // This responds with the route number of all the open routes in the 
+            // This responds with the route number of all the open routes in the
             // routing table. Contrary to what the Read Route Table command responds with,
             // and to make this response a lot simpler, assume all routes are being used
             // and that there are no route numbers open.
@@ -2122,10 +2122,10 @@ error_t Ccu721::writeReplyStatus(const unsigned short &status, byte_appender &ou
         if( status & Status_TransBufFrozen )    byte |= 1 << 5;
         if( status & Status_PLCTransDtran )     byte |= 1 << 6;
         if( status & Status_PLCTransBuf )       byte |= 1 << 7;
-     
-        out_itr++ = byte;       
+
+        out_itr++ = byte;
     }
-    
+
     {
         unsigned char byte = 0;
 
@@ -2161,7 +2161,7 @@ bool Ccu721::validateCommand(SocketComms &socket_interface)
 
     if( (command & 0x80) || (command & 0x08) )
     {
-        // Bits 3 and 7 of the command byte for the 721 are NEVER set in any of 
+        // Bits 3 and 7 of the command byte for the 721 are NEVER set in any of
         // the valid request commands. If either of them are, we know for sure
         // that this is a 711 command.
         return false;
@@ -2178,14 +2178,14 @@ bool Ccu721::validateCommand(SocketComms &socket_interface)
             // There should only be 7 total bytes in the request if this is the case.
             return (peek_buf[3] == 1);
         case Klondike_ClearBuffers:
-            // Could be a lengthy command. If the length is 1 we know for sure it's 
+            // Could be a lengthy command. If the length is 1 we know for sure it's
             // a 721 command, otherwise it's hard to say.
             return (peek_buf[3] == 1);
         case Klondike_LoadBuffer:
             // This is another lengthy command. We know for sure that the number of
             // entries must be 8 or fewer, so if this isn't the case we know it's not
             // a 721 command.
-            
+
             // Since 711 general requests are at least 9 bytes in length, and the load
             // buffer request is even longer, we can safely grab the value for the number
             // of queue entries to check.
@@ -2237,7 +2237,7 @@ bool Ccu721::validateCommand(SocketComms &socket_interface)
             {
                 // This isn't necessarily true. If this is the case, the second byte is probably
                 // a 0x00 indended to clear all the routes. However, this 0x00 matches with the
-                // 711's ACTIN command which will be virtually indistinguishable. 
+                // 711's ACTIN command which will be virtually indistinguishable.
                 return false;
             }
 
@@ -2249,7 +2249,7 @@ bool Ccu721::validateCommand(SocketComms &socket_interface)
             }
 
             // This may not be entirely correct. There is no guarantee that these values matching
-            // ensures that this is the correct command. Also, none of the route numbers can be 
+            // ensures that this is the correct command. Also, none of the route numbers can be
             // higher than 31. This doesn't check each of these values.
             return false;
         case Klondike_ReadMemory:

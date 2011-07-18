@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_pt_control.h"
 #include "logger.h"
@@ -92,7 +92,7 @@ void CtiTablePointControl::dump() const
 
 void CtiTablePointControl::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

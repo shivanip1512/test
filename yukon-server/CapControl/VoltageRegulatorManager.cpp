@@ -1,6 +1,6 @@
 
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "VoltageRegulatorManager.h"
 #include "VoltageRegulatorLoader.h"

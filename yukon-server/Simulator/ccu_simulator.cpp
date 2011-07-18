@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 #include <vector>
@@ -139,7 +139,7 @@ int SimulatorMainFunction(int argc, char **argv)
     // There's only one PlcInfrastructure, so this should be the place to set its BchBehavior to avoid
     // multiple instances of the behavior being added by each thread.
     if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY") )
-    {   
+    {
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " BCH Behavior Enabled - Probability " << CtiNumStr(chance, 2) << "%" << endl;
@@ -158,7 +158,7 @@ int SimulatorMainFunction(int argc, char **argv)
             threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port_min, strategy)));
         }
     }
-    else 
+    else
     {
         for each (int port in portList )
         {
@@ -181,7 +181,7 @@ int SimulatorMainFunction(int argc, char **argv)
 
 bool getPorts(vector<int> &ports)
 {
-    static const string sql =  "SELECT Distinct P.SOCKETPORTNUMBER " 
+    static const string sql =  "SELECT Distinct P.SOCKETPORTNUMBER "
                                "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C "
                                "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND "
                                  "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') "
@@ -273,7 +273,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logge
 
     // Check for behaviors that may be used during the simulator runtime.
     if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
-    {   
+    {
         logger.log("Delay Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
         std::auto_ptr<CommsBehavior> d(new DelayBehavior());
         d->setChance(chance);
@@ -327,14 +327,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                     Sleep(500);
                     continue;
                 }
-    
+
                 if( error = CcuIDLC::peekAddress(socket_interface, ccu_address) )
                 {
                     scope.log("Invalid message received, clearing socket / " + error);
-        
+
                     socket_interface.clear();
                 }
-    
+
                 if( ccu_list.find(ccu_address) == ccu_list.end() )
                 {
                     stringstream ss_address, ss_port;
@@ -350,7 +350,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                                     "Y.TYPE = 'CCU-721' AND A.SlaveAddress = " + ss_address.str() + " AND "
                                                     "D.PORTID = P.PORTID AND Y.PAObjectID = D.DEVICEID AND "
                                                     "P.SOCKETPORTNUMBER = " + ss_port.str();
-    
+
                     const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
                                                 "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, PORTTERMINALSERVER P, "
                                                     "DeviceDirectCommSettings S "
@@ -358,14 +358,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                                     "Y.TYPE = 'CCU-711' AND D.ADDRESS = " + ss_address.str() + " AND "
                                                     "S.PORTID = P.PORTID AND Y.PAObjectID = S.DEVICEID AND "
                                                     "P.SOCKETPORTNUMBER = " + ss_port.str();
-                
+
                     Cti::Database::DatabaseConnection connection;
                     Cti::Database::DatabaseReader rdr(connection, sql_Ccu721);
 
                     rdr.execute();
-            
+
                     if( rdr() )
-                    {                        
+                    {
                         // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
                         string str;
                         rdr["TYPE"] >> str;
@@ -378,7 +378,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                     {
                         rdr.setCommandText(sql_Ccu711);
                         rdr.execute();
-    
+
                         if( rdr() )
                         {
                             string str;
@@ -397,7 +397,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                             {
                                 ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
                             }
-                            else 
+                            else
                             {
                                 ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
                             }
@@ -413,26 +413,26 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                     Sleep(500);
                     continue;
                 }
-    
+
                 if( error = Ccu710::peekAddress(socket_interface, ccu_address) )
                 {
                     scope.log("Invalid message received, clearing socket / " + error);
-        
+
                     socket_interface.clear();
                 }
-    
+
                 if( ccu_list.find(ccu_address) == ccu_list.end() )
                 {
                     scope.log("New CCU address received", ccu_address);
-    
+
                     ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
                 }
             }
-    
+
             if( !ccu_list[ccu_address]->handleRequest(socket_interface, scope) )
             {
                 scope.log("Error while processing message, clearing socket");
-    
+
                 socket_interface.clear();
             }
         }

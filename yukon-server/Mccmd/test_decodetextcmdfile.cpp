@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "decodetextcmdfile.h"
 
 #define BOOST_TEST_MAIN "Test MCCMD decode text cmd file"
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine)
     RWCollectableString* decodedCommand = new RWCollectableString();
 
     input = "6,TARGET,spid 1,geo 2,sub 3,feeder 4,feeder 1,zip 5,uda 6,program 7,splinter 8,"
-            "ASSIGN,spid 10,geo 11,sub 12,feeder 2,zip 14,uda 15,program 16,splinter 17, relay 2"; 
+            "ASSIGN,spid 10,geo 11,sub 12,feeder 2,zip 14,uda 15,program 16,splinter 17, relay 2";
     expectedCommand = "set MessagePriority 5 ; PutConfig xcom target "
                      "spid 1 geo 2 sub 3 zip 5 uda 6 program 7 splinter 8 feeder 9 "
                      "assign spid 10 geo 11 sub 12 zip 14 uda 15 program 16 splinter 17 relay 2 feeder 2";
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine)
     BOOST_CHECK_EQUAL(result, true);
 
     input = "6,TARGET,serial 12345456,"
-            "ASSIGN,spid 10,geo 11,sub 12,feeder 16,feeder 1,zip 14,uda 15,program 16,splinter 17, relay 2"; 
+            "ASSIGN,spid 10,geo 11,sub 12,feeder 16,feeder 1,zip 14,uda 15,program 16,splinter 17, relay 2";
     expectedCommand = "set MessagePriority 5 ; PutConfig xcom target "
                      "serial 12345456 "
                      "assign spid 10 geo 11 sub 12 zip 14 uda 15 program 16 splinter 17 relay 2 feeder 32769";

@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <cstdlib>
 
@@ -109,7 +109,7 @@ const std::string KVarStrategy::getControlMethod() const
 
 
 const ControlStrategy::ControlUnitType KVarStrategy::getUnitType() const
-{ 
+{
     return ControlStrategy::KVar;
 }
 

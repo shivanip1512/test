@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "septempoffsetgear.h"
 #include "GroupControlInterface.h"
 #include "SepControlInterface.h"
@@ -9,7 +9,7 @@
 using std::endl;
 using namespace Cti::LoadManagement;
 
-SEPTemperatureOffsetGear::SEPTemperatureOffsetGear(Cti::RowReader &rdr) : 
+SEPTemperatureOffsetGear::SEPTemperatureOffsetGear(Cti::RowReader &rdr) :
 CtiLMProgramThermoStatGear(rdr)
 {
 }
@@ -55,14 +55,14 @@ bool SEPTemperatureOffsetGear::attemptControl(CtiLMGroupPtr currentLMGroup, long
     {
         bool randomizeStart = (getFrontRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
         bool randomizeStop = (getBackRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
-    
+
         bool isCelsius = CtiString(getSettings()).contains("c", CtiString::ignoreCase);
-    
+
         int heatOffset = getDelayTime();
         int coolOffset = getPrecoolTime();
-    
+
         long criticality = getMethodPeriod(); // We are using the MethodPeriod in the database to hold the criticality
-    
+
         if( getPercentReduction() > 0.0 )
         {
             expectedLoadReduced += (getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -71,7 +71,7 @@ bool SEPTemperatureOffsetGear::attemptControl(CtiLMGroupPtr currentLMGroup, long
         {
             expectedLoadReduced += currentLMGroup->getKWCapacity();
         }
-    
+
         return controllableGroup->sendSEPTempOffsetControl(controlSeconds/60, heatOffset, coolOffset, isCelsius, criticality, randomizeStart, randomizeStop);
     }
     else

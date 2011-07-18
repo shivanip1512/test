@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 using namespace std;
@@ -99,7 +99,7 @@ void CtiPorterService::Run()
    RWThreadFunction _porterThread = rwMakeThreadFunction( PorterMainFunction, _myargc, _myargv );
    _porterThread.start();
 
-   SetThreadName(-1, "PorterSvc");   
+   SetThreadName(-1, "PorterSvc");
 
    // set service as running Now
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
@@ -126,7 +126,7 @@ void CtiPorterService::ParseArgs(DWORD argc, LPTSTR* argv)
 
 //CtiPorterService::CtiPorterService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType);
 
-CtiPorterService::~CtiPorterService() 
+CtiPorterService::~CtiPorterService()
 {
     _myargv = NULL;
 }

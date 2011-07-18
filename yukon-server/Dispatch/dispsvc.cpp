@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 
@@ -54,7 +54,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 }
 
 
-CtiDispatchService::~CtiDispatchService() 
+CtiDispatchService::~CtiDispatchService()
 {
   //intentionally ignore PCLint warning about _myargv cleanup
 }

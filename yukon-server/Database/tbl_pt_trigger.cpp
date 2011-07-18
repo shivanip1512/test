@@ -11,7 +11,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "tbl_pt_trigger.h"
 #include "logger.h"
 

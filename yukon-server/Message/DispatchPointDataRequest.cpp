@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "DispatchPointDataRequest.h"
 #include "msg_signal.h"
@@ -83,7 +83,7 @@ bool DispatchPointDataRequest::isPointDataNew(long pointId, PointValue pv)
 void DispatchPointDataRequest::updateRejectedValues()
 {
     PointValueMap::iterator itr = _values.begin();
-    // Iterate through the _values map.  
+    // Iterate through the _values map.
     // Move non-normal qualities to the rejected Values map
     // Prune Rejected Values map of pointId's that have Normal Point Value
     while (itr != _values.end())
@@ -102,7 +102,7 @@ void DispatchPointDataRequest::updateRejectedValues()
             itr++;
         }
     }
-    
+
 }
 
 bool DispatchPointDataRequest::watchPoints(const std::set<PointRequest>& pointRequests)

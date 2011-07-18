@@ -1,8 +1,8 @@
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 all:
-         @build -nologo -f makepch.mak
+         @build -nologo -f $(PRECOMPILED)\makepch.mak
          @build -nologo -f makedll.mak
          @build -nologo -f maketest.mak
 
@@ -26,7 +26,7 @@ $(BIN)\*.exe
 allclean:   clean all
 
 copy:
-        @build -nologo -f makepch.mak $@
+        @build -nologo -f $(PRECOMPILED)\makepch.mak $@
         @build -nologo -f makedll.mak $@
         @build -nologo -f maketest.mak $@
 

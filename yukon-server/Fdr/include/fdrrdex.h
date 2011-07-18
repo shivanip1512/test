@@ -1,110 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrrdex.h
-*
-*    DATE: 12/10/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Generic Interface to a scada systemm (class header)
-*
-*    DESCRIPTION: This class implements an interface that exchanges point data
-*                 with a scada system.  The data is both status and Analog data.
-*             Information is exchanged using sockets opened on a predefined socket
-*             number and also pre-defined messages between the systems.  See the
-*             design document for more information
-*    History:
-      $Log: fdrrdex.h,v $
-      Revision 1.10.2.2  2008/11/18 20:11:30  jmarks
-      [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-
-      * Responded to reviewer comments
-      * Changed monitor's version to MUTEX version
-      * Other changes for compilation
-
-      Revision 1.10.2.1  2008/11/13 17:23:46  jmarks
-      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-
-      Responded to reviewer comments again.
-
-      I eliminated excess references to windows.h .
-
-      This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
-
-      None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
-      Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
-
-      In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
-
-      This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
-
-      Revision 1.10  2008/10/29 18:16:47  mfisher
-      YUK-6374 Remove unused DSM/2 remnants
-      Removed many orphaned function headers and structure definitions
-      Moved ILEX items closer to point of use in TimeSyncThread()
-
-      Revision 1.9  2008/10/02 23:57:15  tspar
-      YUK-5013 Full FDR reload should not happen with every point
-
-      YUKRV-325  review changes
-
-      Revision 1.8  2008/09/23 15:15:22  tspar
-      YUK-5013 Full FDR reload should not happen with every point db change
-
-      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
-
-      Revision 1.7  2008/09/15 21:09:16  tspar
-      YUK-5013 Full FDR reload should not happen with every point db change
-
-      Changed interfaces to handle points on an individual basis so they can be added
-      and removed by point id.
-
-      Changed the fdr point manager to use smart pointers to help make this transition possible.
-
-      Revision 1.6  2007/11/12 16:46:55  mfisher
-      Removed some Rogue Wave includes
-
-      Revision 1.5  2005/12/20 17:17:16  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.4  2005/10/19 16:53:23  dsutton
-      Added the ability to set the connection timeout using a cparm.  Interfaces will
-      kill the connection if they haven't heard anything from the other system after
-      this amount of time.  Defaults to 60 seconds.  Also changed the logging to
-      the system log so we don't log every unknown point as it comes in from the
-      foreign system.  It will no log these points only if a debug level is set.
-      Revision 1.3.58.3  2005/08/12 19:53:47  jliu
-      Date Time Replaced
-
-      Revision 1.3.58.2  2005/07/14 22:26:57  jliu
-      RWCStringRemoved
-
-      Revision 1.3.58.1  2005/07/12 21:08:39  jliu
-      rpStringWithoutCmpParser
-
-      Revision 1.3  2002/04/16 15:58:46  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:19:01  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
- *
- *    Rev 2.1   15 Feb 2002 11:11:30   dsutton
- * added two new cparms to control data flow to RDEX that limit the number of entries sent per so many seconds
- *
- *    Rev 2.0   20 Dec 2001 14:51:34   dsutton
- * Overrode the isregistrationneeded to return true
- *
- *    Rev 1.0   14 Dec 2001 17:14:06   dsutton
- * Initial revision.
- *
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
 #ifndef __FDRRDEX_H__
 #define __FDRRDEX_H__
 
@@ -113,7 +6,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "queues.h"

@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include <stdio.h>
@@ -45,7 +45,7 @@ CtiSyncDefStruct PorterSyncs[] = {
    { CtiEventType, TRUE , FALSE, "CtiGWResultEvent"}
 };
 
-VOID APIENTRY GlobalsCleanUp ()
+void APIENTRY GlobalsCleanUp ()
 {
    /* Close the semaphore with scanner */
    for(int i = 0 ;i < NUMPORTEREVENTS; i++)

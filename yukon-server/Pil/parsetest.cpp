@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include <crtdbg.h>
@@ -29,7 +29,7 @@
 #include "cmdparse.h"
 #include "logger.h"
 
-                       
+
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 BOOL  bQuit = FALSE;
@@ -38,13 +38,13 @@ BOOL  bQuit = FALSE;
 void main(int argc, char **argv)
 {
     try
-    {   
+    {
         string cmd;
         for(int i=1; i<argc; i++){
             cmd += argv[i];
             cmd += " ";
         }
-        
+
         cout << "parsing: " << cmd << endl;
 
         CtiCommandParser  parse(cmd);

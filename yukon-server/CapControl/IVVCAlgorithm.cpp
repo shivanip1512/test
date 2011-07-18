@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "IVVCAlgorithm.h"
 #include "IVVCStrategy.h"
@@ -83,7 +83,7 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
-                {    
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
                     dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
@@ -235,7 +235,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     if ( hasStaleData )
                     {
-                        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() 
+                        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
                              << "  Analysis Interval: Stale Data." << std::endl;
                     }
 
@@ -345,8 +345,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             bool isControlled = false;
 
             if( bank->getControlStatus() == CtiCCCapBank::OpenPending ||
-				bank->getControlStatus() == CtiCCCapBank::ClosePending ||
-				bank->getPerformingVerificationFlag() )
+                bank->getControlStatus() == CtiCCCapBank::ClosePending ||
+                bank->getPerformingVerificationFlag() )
             {
                 isControlled = subbus->isAlreadyControlled();
             }
@@ -387,14 +387,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         state->_verification.successCount++;
                     }
-                
+
                     if (result)
                     {
                         setupNextBankToVerify(state, subbus, ccEvents);
                     }
                 }
-                        
-                    
+
+
                 sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
                 subbus->setBusUpdatedFlag(true);
                 state->setTimeStamp(now);
@@ -519,7 +519,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             VoltageRegulatorManager::SharedPtr  regulator
                                 = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
-                            regulator->getPointByAttribute( 
+                            regulator->getPointByAttribute(
                                 ( tapOpCount > 0 ) ? PointAttribute::TapUp : PointAttribute::TapDown );
                         }
                     }
@@ -574,7 +574,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             {
                                 regulator->executeTapUpOperation();
                                 state->_tapOps[ regulatorId ]--;
-                        
+
                                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -586,7 +586,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             {
                                 regulator->executeTapDownOperation();
                                 state->_tapOps[ regulatorId ]++;
-                        
+
                                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -752,7 +752,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                 catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
                 {
                     if (missingAttribute.complain())
-                    {    
+                    {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
 
                         dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
@@ -964,7 +964,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
-                {    
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
                     dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
@@ -1008,7 +1008,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     {
         return false;
     }
-    
+
     CtiTime now;
     state->setTimeStamp(now);
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -1040,7 +1040,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
 
     CtiCCCapBankPtr currentBank = store->getCapBankByPaoId(subbus->getCurrentVerificationCapBankId());;
 
-    
+
     state->_estimated[currentBank->getPaoId()].capbank = currentBank;
     // record preoperation voltage values for the feeder our capbank is on
     for each (PointValueMap::value_type pointValuePair in pointValues)
@@ -1079,7 +1079,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
             subbus->setWaitForReCloseDelayFlag(FALSE);
         }
         else
-        {    
+        {
             subbus->setWaitForReCloseDelayFlag(TRUE);
         }
     }
@@ -1132,7 +1132,7 @@ void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBus
 bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection)
 {
     if ( busVerificationAnalysisState(state, subbus, strategy, dispatchConnection) )
-    {    
+    {
         return true;
     }
 
@@ -1503,7 +1503,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
         catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
         {
             if (missingAttribute.complain())
-            {    
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
 
                 dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
@@ -1589,7 +1589,7 @@ void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManage
         for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
         {
             Zone::PhaseIdMap    parentMapping = parentZone->getRegulatorIds();
-            
+
             if ( parentZone->isGangOperated() )
             {
                 tapOp[ mapping.second ] -= tapOp[ parentMapping[ Cti::CapControl::Phase_Poly ] ];
@@ -1647,7 +1647,7 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
-                {    
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
                     dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
@@ -1779,15 +1779,15 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
                 catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                
+
                     dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
                 }
                 catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
                 {
                     if (missingAttribute.complain())
-                    {    
+                    {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                
+
                         dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
                     }
                 }

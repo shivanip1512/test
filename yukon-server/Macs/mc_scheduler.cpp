@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -223,17 +223,17 @@ CtiTime CtiMCScheduler::scheduleManualStart(const CtiTime& now,
             {
                 start_event.timestamp = now;
             }
-    
+
             if( pending_event.timestamp.isValid() ) {
                 addEvent(sched, pending_event);
                 sched.setCurrentStopTime(_invalid_time);
             }
-    
+
             if( start_event.timestamp.isValid() ) {
                 addEvent(sched, start_event);
                 sched.setCurrentStopTime(_invalid_time);
             }
-    
+
             return start_event.timestamp;
         }
     }
@@ -685,7 +685,7 @@ void CtiMCScheduler::calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule
                              CtiTime& start_time ) const
 {
     unsigned hour, minute, second;
- 
+
     parseTimeString( sched.getStartTime(), hour, minute, second );
 
     CtiDate nowDate = CtiDate(now);
@@ -714,7 +714,7 @@ void CtiMCScheduler::calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule
             {
                 month++;
             }
-            
+
             day = std::min((unsigned int)sched.getStartDay(), CtiDate::daysInMonthYear(month, year));
             start_time = CtiTime(CtiDate::CtiDate(day, month, year), hour, minute, second);
         }

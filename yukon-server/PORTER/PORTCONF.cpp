@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
@@ -114,7 +114,7 @@ typedef struct _VERSACONFIG {
 IM_EX_CTIBASE INT VConfigGetEqual (VERSACONFIG *);
 
 
-VOID VConfigThread (VOID *Arg)
+void VConfigThread (void *Arg)
 {
    ULONG i;
    HANDLE HFile;
@@ -159,7 +159,7 @@ VOID VConfigThread (VOID *Arg)
    if(0) // FIX FIX FIX CGP This must be repaired 082199
    {
       printf ("Unable to Open Versacom Configuration Database\n");
-      CTIExit (EXIT_PROCESS, -1);
+      CTIExit (-1, -1);
    }
 
    /* Do this forever */

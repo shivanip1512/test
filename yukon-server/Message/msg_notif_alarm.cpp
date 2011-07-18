@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "msg_notif_alarm.h"
@@ -34,7 +34,7 @@ CtiNotifAlarmMsg::CtiNotifAlarmMsg(const vector<int>& group_ids,
       _acknowledged(acknowledged),
       _abnormal(abnormal)
 { }
-    
+
 CtiNotifAlarmMsg::~CtiNotifAlarmMsg()
 { }
 
@@ -93,13 +93,13 @@ CtiNotifAlarmMsg& CtiNotifAlarmMsg::setNotifGroupIDs(const vector<int>& group_id
 CtiNotifAlarmMsg& CtiNotifAlarmMsg:: setPointID(int point_id)
 {
     _point_id = point_id;
-    return *this;    
+    return *this;
 }
 
 CtiNotifAlarmMsg& CtiNotifAlarmMsg:: setCondition(int condition)
 {
     _condition = condition;
-    return *this;    
+    return *this;
 }
 
 CtiNotifAlarmMsg& CtiNotifAlarmMsg::setValue(double value)
@@ -131,31 +131,31 @@ void CtiNotifAlarmMsg::saveGuts(RWvostream &aStream) const
     CtiMessage::saveGuts(aStream);
 
     aStream
-        << _notif_group_ids     
+        << _notif_group_ids
         << _category_id
         << _point_id
         << _condition
         << _value
-	<< _alarm_timestamp
+    << _alarm_timestamp
         << _acknowledged
         << _abnormal;
-}  
+}
 
 void CtiNotifAlarmMsg::restoreGuts(RWvistream& aStream)
 {
     CtiMessage::restoreGuts(aStream);
 
     aStream
-        >> _notif_group_ids     
+        >> _notif_group_ids
         >> _category_id
         >> _point_id
         >> _condition
         >> _value
-	>> _alarm_timestamp
+    >> _alarm_timestamp
         >> _acknowledged
         >> _abnormal;
 }
-   
+
 CtiMessage* CtiNotifAlarmMsg::replicateMessage() const
 {
     CtiNotifAlarmMsg* ret = new CtiNotifAlarmMsg(*this);
@@ -169,7 +169,7 @@ void CtiNotifAlarmMsg::dump() const
     {
         dout << "  Notification Group ID: " <<  *i << endl;
     }
-    
+
     dout << "  Alarm Category ID: " << _category_id << endl;
     dout << "  Point ID: " << _point_id << endl;
     dout << "  Condition:  " << _condition << endl;

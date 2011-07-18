@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <crtdbg.h>
 #include <iostream>
@@ -439,13 +439,13 @@ void CtiCalcLogicService::Run( )
                     if(pointID!=0)
                     {
                         CtiThreadMonitor::State next;
-                        if((next = ThreadMonitor.getState()) != previous || 
+                        if((next = ThreadMonitor.getState()) != previous ||
                            CtiTime::now() > NextThreadMonitorReportTime)
                         {
                             // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
                             previous = next;
                             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
-        
+
                             if(_conxion)
                             {
                                 _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
@@ -456,7 +456,7 @@ void CtiCalcLogicService::Run( )
                     // I think this is what we want instead... I believe it preserves existing functionality, but
                     // may require additional eyes to be sure.
                     if( threadStatus.monitorCheck( CtiThreadMonitor::ExtendedMonitorTime ) )
-                    {    
+                    {
                         if(_conxion)
                         {
                             if( _dispatchPingedFailed != CtiTime(YUKONEOT) )
@@ -479,9 +479,9 @@ void CtiCalcLogicService::Run( )
                                     }
                                     _registerForPoints();                       // re-register if we haven't seen data since last ping.
                                 }
-                        
+
                                 _dispatchPingedFailed = pingTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
-                        
+
                                 CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
                                 pCmd->setUser(CompileInfo.project);
                                 if(_conxion) _conxion->WriteConnQue( pCmd );
@@ -559,7 +559,7 @@ void CtiCalcLogicService::Run( )
                 {
                     dropDispatchConnection();
                 }
-                
+
                 threadStatus.monitorCheck();
 
                 calcThreadFunc.requestInterrupt( );
@@ -1125,7 +1125,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
                                       "ORDER BY COMPONENTORDER ASC";
 
         Cti::Database::DatabaseReader componentRdr(connection);
-        
+
         componentRdr.setCommandText(sqlCalc);
 
         componentRdr.execute();

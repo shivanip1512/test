@@ -62,7 +62,7 @@ protected:
     *   This pointer is never worried about by this class, it is just a carrier
     *   location as the message goes through the machinery on the server....
     */
-   VOID  *ConnectionHandle;
+   void  *ConnectionHandle;
 
 public:
    RWDECLARE_COLLECTABLE( CtiMessage );
@@ -78,9 +78,9 @@ public:
    RWBoolean operator==(const CtiMessage &aRef) const;
    RWBoolean virtual operator<(const CtiMessage& aRef) const;
    RWBoolean virtual operator>(const CtiMessage& aRef) const;
-   virtual CtiMessage& setConnectionHandle(VOID *p);
-   virtual VOID* getConnectionHandle();
-   VOID setMessagePriority(INT n);
+   virtual CtiMessage& setConnectionHandle(void *p);
+   virtual void* getConnectionHandle();
+   void setMessagePriority(INT n);
    INT  getMessagePriority() const;
    INT  getSOE() const;
    CtiMessage& setSOE( const INT & soe );

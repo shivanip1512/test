@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 #include <fstream>
@@ -111,7 +111,7 @@ void reportOnWorkObjects();
 
 extern void QueueThread (void *);
 extern void KickerThread (void *);
-extern void DispatchMsgHandlerThread(VOID *Arg);
+extern void DispatchMsgHandlerThread(void *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 void commFail(const CtiDeviceSPtr &Device);
 bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
@@ -810,7 +810,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     if((i = InitError ()) != NORMAL)
     {
         PrintError ((USHORT)i);
-        CTIExit (EXIT_PROCESS, -1);
+        CTIExit (-1, -1);
     }
 
     if(RefreshPorterRTDB())             // Loads globals and the RTDB
@@ -982,7 +982,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                         {
                             fprintf(stdout, "Required Hardlock Not Detected.\n");
                             Result = HL_LOGOUT ();
-                            CTIExit (EXIT_PROCESS, -1);
+                            CTIExit (-1, -1);
                         }
                         time (&timeStart);
                     }
@@ -1056,7 +1056,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 /*
  *  called in an atexit() routine to clean up the schtick.
  */
-VOID APIENTRY PorterCleanUp (ULONG Reason)
+void APIENTRY PorterCleanUp (ULONG Reason)
 {
     PorterQuit = TRUE;
     SetEvent( hPorterEvents[P_QUIT_EVENT] );
@@ -1787,7 +1787,7 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
 
 CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
 {
-    extern VOID PortPoolDialoutThread(void *pid);
+    extern void PortPoolDialoutThread(void *pid);
 
     CTI_PORTTHREAD_FUNC_PTR fptr = PortThread;
 

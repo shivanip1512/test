@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <string.h>
 
@@ -36,7 +36,7 @@ CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _returnNexus.NexusState = CTINEXUS_STATE_NULL;
    _returnNexus.sockt = INVALID_SOCKET;
    _requestCount = 0;
-   
+
 }
 
 

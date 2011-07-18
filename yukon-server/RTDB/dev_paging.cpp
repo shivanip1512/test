@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "dev_paging.h"
 
 using namespace Cti::Devices;
@@ -11,7 +11,7 @@ DevicePaging::DevicePaging()
 
 DevicePaging::DevicePaging(const DevicePaging& aRef)
 {
-    
+
 }
 
 DevicePaging::~DevicePaging()

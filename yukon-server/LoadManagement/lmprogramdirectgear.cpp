@@ -2,17 +2,17 @@
         Filename:  lmprogramdirectgear.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMProgramDirectGear.
                         CtiLMProgramDirectGear maintains the state and handles
                         the persistence of direct program gears in Load
                         Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmprogramdirectgear.h"
@@ -55,12 +55,12 @@ _rampinpercent(0),
 _rampoutinterval(0),
 _rampoutpercent(0),
 _kw_reduction(0)
-{   
+{
 }
 
 CtiLMProgramDirectGear::CtiLMProgramDirectGear(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMProgramDirectGear::CtiLMProgramDirectGear(const CtiLMProgramDirectGear& proggear)
@@ -77,7 +77,7 @@ CtiLMProgramDirectGear::~CtiLMProgramDirectGear()
 
 /*---------------------------------------------------------------------------
     getProgramPAOId
-    
+
     Returns the unique id of the gear's program
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirectGear::getProgramPAOId() const
@@ -99,7 +99,7 @@ const string& CtiLMProgramDirectGear::getGearName() const
 
 /*---------------------------------------------------------------------------
     getGearNumber
-    
+
     Returns the gear number of the gear
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirectGear::getGearNumber() const
@@ -109,11 +109,11 @@ LONG CtiLMProgramDirectGear::getGearNumber() const
 }
 
 /**
- * Returns the unique ID of this gear. This is NOT a PAO id but 
- * is unique on the gear table. 
- * 
- * 
- * @return LONG 
+ * Returns the unique ID of this gear. This is NOT a PAO id but
+ * is unique on the gear table.
+ *
+ *
+ * @return LONG
  */
 LONG CtiLMProgramDirectGear::getUniqueID() const
 {
@@ -145,7 +145,7 @@ LONG CtiLMProgramDirectGear::getMethodRate() const
 
 /*---------------------------------------------------------------------------
     getMethodPeriod
-    
+
     Returns the length of 1 period in seconds for cycling or shed-time length
     for refresh/rotate in seconds for the gear
 ---------------------------------------------------------------------------*/
@@ -157,7 +157,7 @@ LONG CtiLMProgramDirectGear::getMethodPeriod() const
 
 /*---------------------------------------------------------------------------
     getMethodRateCount
-    
+
     Returns the number of cycle counts for cycling (a zero value means
     calculate the best number based on the total duration of shed); also
     the number of groups to take in refresh/rotation methods for the gear
@@ -170,7 +170,7 @@ LONG CtiLMProgramDirectGear::getMethodRateCount() const
 
 /*---------------------------------------------------------------------------
     getCycleRefreshRate
-    
+
     Returns the number of periods to wait in a cycle gear before we should
     refresh the cycle command. 0 for non-cycle gears, 1 to the default count
     for cycle gears.
@@ -205,7 +205,7 @@ const string& CtiLMProgramDirectGear::getChangeCondition() const
 
 /*---------------------------------------------------------------------------
     getChangeDuration
-    
+
     Returns the change duration of the gear in seconds
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirectGear::getChangeDuration() const
@@ -216,7 +216,7 @@ LONG CtiLMProgramDirectGear::getChangeDuration() const
 
 /*---------------------------------------------------------------------------
     getChangePriority
-    
+
     Returns the change priority of the gear
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirectGear::getChangePriority() const
@@ -227,7 +227,7 @@ LONG CtiLMProgramDirectGear::getChangePriority() const
 
 /*---------------------------------------------------------------------------
     getChangeTriggerNumber
-    
+
     Returns the trigger number that the gear will use to compare the trigger
     offset value with.
 ---------------------------------------------------------------------------*/
@@ -239,7 +239,7 @@ LONG CtiLMProgramDirectGear::getChangeTriggerNumber() const
 
 /*---------------------------------------------------------------------------
     getChangeTriggerOffset
-    
+
     Returns the change trigger offset of the gear
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirectGear::getChangeTriggerOffset() const
@@ -250,7 +250,7 @@ DOUBLE CtiLMProgramDirectGear::getChangeTriggerOffset() const
 
 /*---------------------------------------------------------------------------
     getPercentReduction
-    
+
     Returns the percent reduction of the gear
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirectGear::getPercentReduction() const
@@ -283,7 +283,7 @@ const string& CtiLMProgramDirectGear::getMethodOptionType() const
 
 /*---------------------------------------------------------------------------
     getMethodOptionMax
-    
+
     Returns the method option max of the gear
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirectGear::getMethodOptionMax() const
@@ -334,7 +334,7 @@ LONG CtiLMProgramDirectGear::getRampOutPercent() const
 
 /*----------------------------------------------------------------------------
   getFrontRampOption
-  
+
  ----------------------------------------------------------------------------*/
 const string& CtiLMProgramDirectGear::getFrontRampOption() const
 {
@@ -358,7 +358,7 @@ DOUBLE CtiLMProgramDirectGear::getKWReduction() const
 
 /*---------------------------------------------------------------------------
     setProgramPAOId
-    
+
     Sets the id of the program - use with caution
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setProgramPAOId(LONG paoid)
@@ -371,9 +371,9 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setProgramPAOId(LONG paoid)
 
 /*---------------------------------------------------------------------------
     setGearName
-    
+
     Sets the name of the gear
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const string& name)
 {
 
@@ -383,7 +383,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const string& name)
 
 /*---------------------------------------------------------------------------
     setGearNumber
-    
+
     Sets the number of the gear
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearNumber(LONG gearnum)
@@ -395,9 +395,9 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearNumber(LONG gearnum)
 
 /*---------------------------------------------------------------------------
     setControlMethod
-    
+
     Sets the control method of the gear
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const string& contmeth)
 {
 
@@ -407,10 +407,10 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const string& c
 
 /*---------------------------------------------------------------------------
     setMethodRate
-    
+
     Sets the send/refresh rate in seconds for rotation/refresh; also
     percentage for cycling in the gear
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRate(LONG methrate)
 {
 
@@ -420,7 +420,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRate(LONG methrate)
 
 /*---------------------------------------------------------------------------
     setMethodPeriod
-    
+
     Sets the length of 1 period in seconds for cycling or shed-time length
     for refresh/rotate in seconds for the gear
 ---------------------------------------------------------------------------*/
@@ -433,7 +433,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodPeriod(LONG methper)
 
 /*---------------------------------------------------------------------------
     setMethodRateCount
-    
+
     Sets the number of cycle counts for cycling (a zero value means
     calculate the best number based on the total duration of shed); also
     the number of groups to take in refresh/rotation methods for the gear
@@ -447,7 +447,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRateCount(LONG methrate
 
 /*---------------------------------------------------------------------------
     setCycleRefeshRate
-    
+
     Sets the number of periods to wait in a cycle gear before we should
     refresh the cycle command. 0 for non-cycle gears, 1 to the default count
     for cycle gears.
@@ -461,9 +461,9 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setCycleRefreshRate(LONG cyclere
 
 /*---------------------------------------------------------------------------
     setMethodStopType
-    
+
     Sets the method stop type of the gear
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const string& methstoptype)
 {
 
@@ -473,9 +473,9 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const string& 
 
 /*---------------------------------------------------------------------------
     setChangeCondition
-    
+
     Sets the change condition of the gear
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const string& changecond)
 {
 
@@ -485,7 +485,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const string&
 
 /*---------------------------------------------------------------------------
     setChangeDuration
-    
+
     Sets the change duration of the gear in seconds
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeDuration(LONG changedur)
@@ -497,7 +497,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeDuration(LONG changedur
 
 /*---------------------------------------------------------------------------
     setChangePriority
-    
+
     Sets the change priority of the gear
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangePriority(LONG changeprior)
@@ -509,7 +509,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangePriority(LONG changepri
 
 /*---------------------------------------------------------------------------
     setChangeTriggerNumber
-    
+
     Sets the trigger number that the gear will use to compare the trigger
     offset value with.
 ---------------------------------------------------------------------------*/
@@ -522,7 +522,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerNumber(LONG trig
 
 /*---------------------------------------------------------------------------
     setChangeTriggerOffset
-    
+
     Sets the change offset of the gear
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerOffset(DOUBLE triggeroffset)
@@ -534,7 +534,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerOffset(DOUBLE tr
 
 /*---------------------------------------------------------------------------
     setPercentReduction
-    
+
     Sets the reduction percentage of the gear
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPercentReduction(LONG percentreduce)
@@ -546,9 +546,9 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPercentReduction(LONG percent
 
 /*---------------------------------------------------------------------------
     setGroupSelectionMethod
-    
+
     Sets the group selection method of the direct program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const string& group)
 {
 
@@ -559,9 +559,9 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const st
 
 /*---------------------------------------------------------------------------
     setMethodOptionType
-    
+
     Sets the method option type of the direct program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const string& optype)
 {
 
@@ -573,7 +573,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const string
 
 /*---------------------------------------------------------------------------
     setMethodOptionMax
-    
+
     Sets the method option max of the gear
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionMax(LONG opmax)
@@ -641,7 +641,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setKWReduction(DOUBLE kw)
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
@@ -675,10 +675,10 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const  
+void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
@@ -730,7 +730,7 @@ int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) cons
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
@@ -740,7 +740,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::restore(Cti::RowReader &rdr)

@@ -1,17 +1,17 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogramcontrolwindow.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMProgramControlWindow.
                         CtiLMProgramControlWindow maintains the state and handles
                         the persistence of programs for Load Management.
 
         Initial Date:  2/13/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmid.h"
@@ -34,12 +34,12 @@ _paoid(0),
 _windownumber(0),
 _availablestarttime(0),
 _availablestoptime(0)
-{   
+{
 }
 
 CtiLMProgramControlWindow::CtiLMProgramControlWindow(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMProgramControlWindow::CtiLMProgramControlWindow(const CtiLMProgramControlWindow& lmprogcontwindow)
@@ -56,7 +56,7 @@ CtiLMProgramControlWindow::~CtiLMProgramControlWindow()
 
 /*---------------------------------------------------------------------------
     getPAOId
-    
+
     Returns the unique id of the program control window
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramControlWindow::getPAOId() const
@@ -68,7 +68,7 @@ LONG CtiLMProgramControlWindow::getPAOId() const
 
 /*---------------------------------------------------------------------------
     getWindowNumber
-    
+
     Returns the window number of the program control window
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramControlWindow::getWindowNumber() const
@@ -79,7 +79,7 @@ LONG CtiLMProgramControlWindow::getWindowNumber() const
 
 /*---------------------------------------------------------------------------
     getAvailableStartTime
-    
+
     Returns the available start time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/
@@ -90,7 +90,7 @@ CtiTime CtiLMProgramControlWindow::getAvailableStartTime(CtiDate &defaultDate) c
 
 /*---------------------------------------------------------------------------
     getAvailableStopTime
-    
+
     Returns the available stop time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ CtiTime CtiLMProgramControlWindow::getAvailableStopTime(CtiDate &defaultDate) co
 
 /*---------------------------------------------------------------------------
     setPAOId
-    
+
     Sets the id of the program control window - use with caution
 ---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(LONG devid)
@@ -114,9 +114,9 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(LONG devid)
 
 /*---------------------------------------------------------------------------
     setWindowNumber
-    
+
     Sets the window number of the program control window
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(LONG winnum)
 {
 
@@ -130,7 +130,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(LONG winnu
 
     Sets the available start time as the number of seconds from midnight
     for the program control window.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(LONG availstarttime)
 {
 
@@ -144,7 +144,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(LONG
 
     Sets the available stop time as the number of seconds from midnight
     for the program control window.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(LONG availstoptime)
 {
 
@@ -155,7 +155,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(LONG 
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMProgramControlWindow::restoreGuts(RWvistream& istrm)
@@ -174,14 +174,14 @@ void CtiLMProgramControlWindow::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMProgramControlWindow::saveGuts(RWvostream& ostrm ) const  
+void CtiLMProgramControlWindow::saveGuts(RWvostream& ostrm ) const
 {
 
 
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -230,7 +230,7 @@ int CtiLMProgramControlWindow::operator!=(const CtiLMProgramControlWindow& right
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow* CtiLMProgramControlWindow::replicate() const
@@ -240,7 +240,7 @@ CtiLMProgramControlWindow* CtiLMProgramControlWindow::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramControlWindow::restore(Cti::RowReader &rdr)

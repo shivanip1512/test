@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -97,7 +97,7 @@ bool CtiTableCICustomerBase::Restore()
                                    "WHERE CST.customerid = ?";
 
         reader.setCommandText(sql);
-        
+
         reader << getID();
 
         reader.execute();
@@ -195,21 +195,21 @@ void CtiTableCICustomerBase::dump() const
     dout << getID() << endl;
 }
 
-CtiTableCICustomerBase::INTSET CtiTableCICustomerBase::getContactNotificationSet() const 
+CtiTableCICustomerBase::INTSET CtiTableCICustomerBase::getContactNotificationSet() const
 {
   return _contactNotificationIDs;
 }
 
-void CtiTableCICustomerBase::dumpContactNotifications() const 
+void CtiTableCICustomerBase::dumpContactNotifications() const
 {
   try
     {
       CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
       CtiLockGuard<CtiLogger> guard(dout);
       for(iter = _contactNotificationIDs.begin(); iter != _contactNotificationIDs.end(); iter++)
-	{
-	  dout << " ContactNotificationID " << *iter << endl;
-	}
+    {
+      dout << " ContactNotificationID " << *iter << endl;
+    }
     }
   catch(...)
     {
@@ -218,7 +218,7 @@ void CtiTableCICustomerBase::dumpContactNotifications() const
     }
 }
 
-CtiTableCICustomerBase& CtiTableCICustomerBase::setContactNotificationSet(const INTSET& rhs) 
+CtiTableCICustomerBase& CtiTableCICustomerBase::setContactNotificationSet(const INTSET& rhs)
 {
   _contactNotificationIDs = rhs;
   return *this;
@@ -228,14 +228,14 @@ vector<int> CtiTableCICustomerBase::getContactNotificationVector() const
 {
   vector<int> n_vec;
 
-  try 
+  try
     {
       CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
-      
+
       for(iter = _contactNotificationIDs.begin(); iter != _contactNotificationIDs.end(); iter++)
-	{
-	  n_vec.push_back(*iter);
-	}
+    {
+      n_vec.push_back(*iter);
+    }
     }
   catch(...)
     {
@@ -246,7 +246,7 @@ vector<int> CtiTableCICustomerBase::getContactNotificationVector() const
   return n_vec;
 }
 //            set<int>::const_reference locID = *iter;
-  
+
 
 CtiTableCICustomerBase::CtiTableCICustomerBase(LONG id) :
 _id(id)
@@ -267,7 +267,7 @@ CtiTableCICustomerBase& CtiTableCICustomerBase::operator=(const CtiTableCICustom
     if(this != &aRef)
     {
         setID(aRef.getID());
-	setContactNotificationSet(aRef.getContactNotificationSet());
+    setContactNotificationSet(aRef.getContactNotificationSet());
     }
     return *this;
 }

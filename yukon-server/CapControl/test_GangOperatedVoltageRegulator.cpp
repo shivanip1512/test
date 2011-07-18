@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "capcontroller.h"
 #include "ccmessage.h"
 #include "PointAttribute.h"
@@ -114,10 +114,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Fail)
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeIntegrityScan(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -142,25 +142,25 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success)
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
-    
+
     BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'VoltageY' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
-    
+
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
-    
+
     BOOST_REQUIRE( requestMsg );
-    
+
     BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'VoltageY' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
-    
-    
+
+
     BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
 }
 
@@ -170,10 +170,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Fail)
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeTapUpOperation(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -198,13 +198,13 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
-    
+
     BOOST_REQUIRE( signalMsg );
-    
+
     BOOST_CHECK_EQUAL( 3100, signalMsg->getId() );     // ID of the 'TapUp' LitePoint
     BOOST_CHECK_EQUAL( "Raise Tap Position", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
@@ -234,10 +234,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Fail)
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeTapDownOperation(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -262,13 +262,13 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
-    
+
     BOOST_REQUIRE( signalMsg );
-    
+
     BOOST_CHECK_EQUAL( 3101, signalMsg->getId() );     // ID of the 'TapDown' LitePoint
     BOOST_CHECK_EQUAL( "Lower Tap Position", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
@@ -298,10 +298,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Fail)
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeEnableKeepAlive(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success)
 
 
     BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
-    
+
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success)
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
@@ -356,10 +356,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Fail)
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeDisableKeepAlive(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Success)
 
 
     BOOST_CHECK_NO_THROW( regulator->executeDisableKeepAlive() );
-    
+
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Success)
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
@@ -413,10 +413,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Fail)
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeEnableRemoteControl(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -448,7 +448,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
     BOOST_CHECK_EQUAL( 4200, signalMsg->getId() );          // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Enable Remote Control", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
     BOOST_CHECK_EQUAL( 123, signalMsg->getPointValue() );   // 'KeepAlive' reload value
 
     signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
@@ -458,7 +458,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
@@ -488,10 +488,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Fail
     TestCtiCapController    capController;
 
     VoltageRegulatorManager::SharedPtr  regulator( new GangOperatedVoltageRegulator );
-    
+
 
     BOOST_CHECK_THROW( regulator->executeDisableRemoteControl(), MissingPointAttribute );
-    
+
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -522,7 +522,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
     BOOST_CHECK_EQUAL( 4200, signalMsg->getId() );          // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Disable Remote Control", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
     BOOST_CHECK_EQUAL( 0, signalMsg->getPointValue() );     // 'KeepAlive' reload value
 
     signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
@@ -532,7 +532,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );        
+                       signalMsg->getAdditionalInfo() );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );

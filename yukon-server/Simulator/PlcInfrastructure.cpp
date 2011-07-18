@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "plcinfrastructure.h"
 
@@ -12,7 +12,7 @@ namespace Cti {
 namespace Simulator {
 
 PlcInfrastructure::PlcInfrastructure() :
-    _plcTagIn("PLC-IN"), 
+    _plcTagIn("PLC-IN"),
     _plcTagOut("PLC-OUT")
 {
 }

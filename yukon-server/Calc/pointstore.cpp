@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "pointstore.h"
 
 using std::endl;
@@ -14,10 +14,10 @@ CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dep
     {
         if( pointNum == 0 )
             return NULL;
-    
+
         newElement = CTIDBG_new CtiPointStoreElement( pointNum );
         newHashKey = CTIDBG_new CtiHashKey( pointNum );
-    
+
         //  if the insertion wasn't successful, that means this point is already in the pointstore
         if( !(this->insert( newHashKey, newElement )) )
         {
@@ -26,12 +26,12 @@ CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dep
             newElement = (CtiPointStoreElement *)((*this).findValue(newHashKey));
             delete newHashKey;
         }
-    
+
         //  in either case, newElement now points to the CtiPointStoreElement of pointID pointNum...
-    
+
         //  we append the pointID of the calc point that is dependent on it...
         if( newElement != rwnil
-            && ( updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0) 
+            && ( updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0)
             && dependentId >= 0 )// this be for the calc points cause they ain't got no dependents
         {
             newElement->appendDependent( dependentId, updateType );
@@ -58,7 +58,7 @@ void CtiPointStore::removePointElement( long pointNum )
         if( pointNum !=0 )
         {
             hashKey = CTIDBG_new CtiHashKey( pointNum );
-    
+
             element = (CtiPointStoreElement *)((*this).findValue(hashKey));
             this->removeAll( hashKey );
 
@@ -66,7 +66,7 @@ void CtiPointStore::removePointElement( long pointNum )
             {
                 delete element;
             }
-            
+
             delete hashKey;
         }
     }

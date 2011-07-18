@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <rw/collect.h>
 #include "message.h"
@@ -169,18 +169,18 @@ RWBoolean CtiMessage::operator>(const CtiMessage& aRef) const
    return bRet;
 }
 
-CtiMessage& CtiMessage::setConnectionHandle(VOID *p)
+CtiMessage& CtiMessage::setConnectionHandle(void *p)
 {
    ConnectionHandle = p;
    return *this;
 }
 
-VOID* CtiMessage::getConnectionHandle()
+void* CtiMessage::getConnectionHandle()
 {
    return ConnectionHandle;
 }
 
-VOID CtiMessage::setMessagePriority(INT n)   { MessagePriority = n & 0x0000000f; }
+void CtiMessage::setMessagePriority(INT n)   { MessagePriority = n & 0x0000000f; }
 INT  CtiMessage::getMessagePriority() const  { return MessagePriority;           }
 
 

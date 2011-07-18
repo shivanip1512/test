@@ -1,7 +1,7 @@
 # nmake file YUKON 1.0 FDR TELEGYR Interface
 
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(DISPATCH)\include \
@@ -63,7 +63,7 @@ fdrtelegyr.dll: $(FDRINTERFACEOBJS) fdrtelegyr.mak
                 -if exist ..\telegyr\lib\apiclilib.lib copy ..\telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
                 -if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
                 -if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(BOOST_LIBS) $(CTIFDRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

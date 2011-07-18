@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -778,7 +778,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 }
 
 /* Routine to generate the basic time sync messages... time filled in at port */
-VOID TimeSyncThread (PVOID Arg)
+void TimeSyncThread (PVOID Arg)
 {
     struct timeb TimeB;
     ULONG EventWait;

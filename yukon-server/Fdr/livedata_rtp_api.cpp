@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 using std::endl;
 
@@ -17,24 +17,24 @@ using std::endl;
 #include "livedata_rtp_api.h"
 
 
-/** 
+/**
  * This function is passed to the RTP_API.
- */ 
+ */
 static void completionHelperFunction(RTP_STATUS RtpStatus,
                                       void        *pCompletionArgument);
 
-/** 
+/**
  * This function is passed to the RTP_API.
- */ 
+ */
 static RTP_STATUS writeHelperFunction(HANDLE          hRtpApi,
                                       unsigned long   lAddress,
                                       unsigned long   lLength,
                                       unsigned char   *pBuffer,
                                       void            *userArgument);
 
-/** 
+/**
  * Default Constructor.
- */ 
+ */
 LiveDataApi::LiveDataApi()
 {
   _messageHandler = NULL;
@@ -44,16 +44,16 @@ LiveDataApi::LiveDataApi()
 
 }
 
-/** 
+/**
  * Setup the connection.
- */ 
+ */
 void LiveDataApi::initialize(std::string ipAddressString,
                              unsigned short port)
 {
   if (_phRtpApi == NULL)
   {
     unsigned long threadHandle;
-  
+
     threadHandle = Init(&_phRtpApi,
                         ipAddressString.c_str(),
                         port,
@@ -66,13 +66,13 @@ void LiveDataApi::initialize(std::string ipAddressString,
                         _writeCallback);
 
     _connectionOpen = true;
-  
+
   }
 }
 
-/** 
+/**
  * Destructor.
- */ 
+ */
 LiveDataApi::~LiveDataApi()
 {
   if (_connectionOpen)
@@ -81,28 +81,28 @@ LiveDataApi::~LiveDataApi()
   }
 }
 
-/** 
+/**
  * Sets the error message callback.
- */ 
+ */
 void LiveDataApi::setMessageHandler(MessageHandler messageHandler)
 {
   _messageHandler = messageHandler;
 }
-  
-/** 
+
+/**
  * Closes the connection.
- */ 
+ */
 void LiveDataApi::exit()
 {
   _connectionOpen = false;
   Exit(_phRtpApi);
 }
-  
-  
-/** 
+
+
+/**
  * Makes a request for data from the server.
  * The response is returned via the CompletionCallback object.
- */ 
+ */
 REQUEST_STATUS LiveDataApi::get(unsigned long        *lpAddresses,
                                 unsigned long        *lpLengths,
                                 int                  nCount,
@@ -127,12 +127,12 @@ REQUEST_STATUS LiveDataApi::get(unsigned long        *lpAddresses,
   return result;
 
 }
-  
-  
-/** 
+
+
+/**
  * Write data to the server.
  * The response is returned via the CompletionCallback object.
- */ 
+ */
 REQUEST_STATUS LiveDataApi::put(unsigned long        *lpAddresses,
                                 unsigned long        *lpLengths,
                                 int                  nCount,
@@ -155,46 +155,46 @@ REQUEST_STATUS LiveDataApi::put(unsigned long        *lpAddresses,
   return result;
 
 }
-  
-/** 
+
+/**
  * Allows the callbacks to be made.
  * MUST be called periodically.
- */ 
+ */
 void LiveDataApi::dispatch()
 {
   Dispatch(_phRtpApi, 10);
 }
 
-/** 
+/**
  * Sets the number of pending requests the client can hold on to.
- */ 
+ */
 void LiveDataApi::setMaxBacklog(unsigned short nMaxBacklog)
 {
   SetMaxBacklog(_phRtpApi, nMaxBacklog);
 }
-  
-/** 
+
+/**
  * Sets the number of seconds that the client should wait for a response.
- */ 
+ */
 void LiveDataApi::setSendTimeout(int nSendTimeout)
 {
   SetSendTimeout(_phRtpApi, nSendTimeout);
 }
 
-/** 
+/**
  * Tests the state of the server connection.
  * (Note, this does not "ping" the server.)
  * If the server is not connected, it will retain pending
  * requests up to the MaxBacklog.
- */ 
+ */
 bool LiveDataApi::isConnected()
 {
   return IsConnected(_phRtpApi);
 }
 
-/** 
+/**
  * A simple message handler.
- */ 
+ */
 void LiveDataApi::defaultMessageHandler(const char *pzText,
                                         unsigned long lCode)
 {

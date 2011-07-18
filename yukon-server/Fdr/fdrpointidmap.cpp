@@ -1,6 +1,6 @@
-#include "yukon.h"
- 
-/***************************************************************************** 
+#include "precompiled.h"
+
+/*****************************************************************************
 *
 *    FILE NAME: fdrpointidmap.cpp
 *
@@ -66,7 +66,7 @@ CtiFDRPointIdMap::~CtiFDRPointIdMap()
 **************************************************
 */
 BOOL CtiFDRPointIdMap::operator==( const CtiFDRPointIdMap &other ) const
-{   
+{
     return( (
              getPointID() ==        other.getPointID()          &&
              getTranslateName() ==  other.getTranslateName()    &&
@@ -76,8 +76,8 @@ BOOL CtiFDRPointIdMap::operator==( const CtiFDRPointIdMap &other ) const
              getReasonForReload() ==    other.getReasonForReload()    &&
              getPointType() ==    other.getPointType()    &&
              isControllable() ==    other.isControllable()    &&
-             getOffset() ==         other.getOffset()           
-             ) 
+             getOffset() ==         other.getOffset()
+             )
             );
 }
 
@@ -89,13 +89,13 @@ BOOL CtiFDRPointIdMap::operator==( const CtiFDRPointIdMap &other ) const
 **************************************************
 */
 CtiFDRPointIdMap& CtiFDRPointIdMap::operator=( const CtiFDRPointIdMap &other )
-{   
-    
+{
+
     iPointID = other.getPointID();
     iTranslateName = other.getTranslateName();
     iDestinationName = other.getDestinationName();
     iMultiplier = other.getMultiplier();
-    iOffset = other.getOffset();           
+    iOffset = other.getOffset();
     iLastTimeStamp = other.getLastTimeStamp();
     iPointType = other.getPointType();
     iReasonForReload = other.getReasonForReload();
@@ -111,24 +111,24 @@ CtiFDRPointIdMap& CtiFDRPointIdMap::operator=( const CtiFDRPointIdMap &other )
 ****************************************************
 */
 long CtiFDRPointIdMap::getPointID( void ) const
-{   
+{
     return iPointID;
 }
-        
+
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setPointID(const long aPointID)
-{   
+{
     iPointID = aPointID;
     return *this;
 }
-        
+
 string CtiFDRPointIdMap::getTranslateName() const
 {
     return iTranslateName;
 }
-        
+
 
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setTranslateName(const string & aName)
-{                                   
+{
     iTranslateName = aName;
     return *this;
 }
@@ -137,10 +137,10 @@ string CtiFDRPointIdMap::getDestinationName() const
 {
     return iDestinationName;
 }
-        
+
 
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setDestinationName(const string & aName)
-{                                   
+{
     iDestinationName = aName;
     return *this;
 }
@@ -150,7 +150,7 @@ double CtiFDRPointIdMap::getMultiplier( void ) const
 {
     return iMultiplier;
 }
-        
+
 
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setMultiplier( const double aMultiplier )
 {
@@ -158,12 +158,12 @@ CtiFDRPointIdMap &  CtiFDRPointIdMap::setMultiplier( const double aMultiplier )
     return *this;
 }
 
-        
+
 double CtiFDRPointIdMap::getOffset( void ) const
 {
     return iOffset;
 }
-        
+
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setOffset( const double aOffset )
 {
     iOffset = aOffset;
@@ -174,7 +174,7 @@ CtiTime CtiFDRPointIdMap::getLastTimeStamp ( void ) const
 {
     return iLastTimeStamp;
 }
-        
+
 
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setLastTimeStamp( const CtiTime & aTimeStamp )
 {
@@ -194,22 +194,22 @@ CtiFDRPointIdMap & CtiFDRPointIdMap::setReasonForReload (FDRDbReloadReason  aFla
     return *this;
 }
 bool CtiFDRPointIdMap::isControllable( void ) const
-{   
+{
     return iControllable;
 }
-        
+
 CtiFDRPointIdMap &  CtiFDRPointIdMap::setControllable(const bool aFlag)
-{   
+{
     iControllable = aFlag;
     return *this;
 }
 
-CtiPointType_t CtiFDRPointIdMap::getPointType() const        
-{ 
+CtiPointType_t CtiFDRPointIdMap::getPointType() const
+{
     return iPointType;
 }
 CtiFDRPointIdMap & CtiFDRPointIdMap::setPointType(CtiPointType_t aType)
-{ 
+{
     iPointType = aType;
     return *this;
 }

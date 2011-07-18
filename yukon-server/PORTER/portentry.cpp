@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "connection.h"
 #include "queues.h"
@@ -39,11 +39,11 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutTemplate);
 
 INT ValidateOutMessage(OUTMESS *&OutMessage);
-VOID ConnectionThread (VOID *Arg);
+void ConnectionThread (void *Arg);
 INT realignNexus(OUTMESS *&OutMessage);
 
 /* Threads to field incoming messages from the pipes */
-VOID PorterConnectionThread (VOID *Arg)
+void PorterConnectionThread (void *Arg)
 {
     INT   iNexus   = 0;
     INT   nRet     = 0;
@@ -60,7 +60,7 @@ VOID PorterConnectionThread (VOID *Arg)
     ::strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
 
     //Initiate a thread for the porter pil connection
-    _beginthread(ConnectionThread, 0, (VOID*)&PorterToPil);
+    _beginthread(ConnectionThread, 0, (void*)&PorterToPil);
 
     /*
      *  4/7/99 This is the server side of a new Port Control Nexus
@@ -113,7 +113,7 @@ VOID PorterConnectionThread (VOID *Arg)
         {
             /* Someone has connected to us.. */
             // fprintf(stderr,"PortControl Connection Server: Nexus Connected\n");
-            _beginthread(ConnectionThread, 0, (VOID*)NewNexus);
+            _beginthread(ConnectionThread, 0, (void*)NewNexus);
 
             NewNexus = 0;
         }
@@ -136,7 +136,7 @@ VOID PorterConnectionThread (VOID *Arg)
 /*
  *  This is the guy who deals with incoming data from any one else in the system.
  */
-VOID ConnectionThread (VOID *Arg)
+void ConnectionThread (void *Arg)
 {
     INT            i;
     CtiConnect        *MyNexus = (CtiConnect*)Arg;     // This is an established connection with a client!

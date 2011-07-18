@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -43,7 +43,7 @@ CtiNotifEmailAttachmentMsg::CtiNotifEmailAttachmentMsg()
 //=====================================================================================================================
 
 CtiNotifEmailAttachmentMsg::~CtiNotifEmailAttachmentMsg()
-{ 
+{
 
 }
 
@@ -81,7 +81,7 @@ void CtiNotifEmailAttachmentMsg::saveGuts( RWvostream &aStream ) const
 
    fileAttachment.close();
 }
-   
+
 //=====================================================================================================================
 //=====================================================================================================================
 
@@ -100,13 +100,13 @@ void CtiNotifEmailAttachmentMsg::restoreGuts( RWvistream& aStream )
    {
       aStream >> data[index];
    }
-      
+
    std::ofstream fileAttachment( _fileName.c_str() );
 
    fileAttachment.write( data, len );
-   
+
    delete [] data;
-   
+
    fileAttachment.close();
 }
 
@@ -147,5 +147,5 @@ CtiMessage* CtiNotifEmailAttachmentMsg::replicateMessage() const
 
    return( (CtiMessage*)ret );
 }
-   
+
 

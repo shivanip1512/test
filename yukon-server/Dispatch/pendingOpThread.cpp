@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "counter.h"
 #include "cparms.h"
@@ -1255,7 +1255,7 @@ bool CtiPendingOpThread::loadICControlMap()
         resetICControlMap();
 
         static const string sql = CtiTableLMControlHistory::getSQLCoreStatementDynamic();
-        
+
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
         rdr.execute();

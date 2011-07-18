@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "porter.h"
 #include "logger.h"
@@ -68,7 +68,7 @@ IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
 }
 
 /* Routine that gets run when we go tits up */
-IM_EX_CTIBASE VOID PortPipeCleanup (ULONG Reason)
+IM_EX_CTIBASE void PortPipeCleanup (ULONG Reason)
 {
    PorterNexus.CTINexusClose();     // Close it if it is open.
 }

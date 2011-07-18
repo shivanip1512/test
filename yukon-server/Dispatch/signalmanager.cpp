@@ -12,7 +12,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "dbaccess.h"
@@ -87,7 +87,7 @@ CtiSignalManager& CtiSignalManager::operator=(const CtiSignalManager& aRef)
     return *this;
 }
 
-CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool markDirty/*=true*/) 
+CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool markDirty/*=true*/)
 {
     try
     {
@@ -220,7 +220,7 @@ CtiSignalMsg * CtiSignalManager::clearAlarms(long pointid)
         pSigActive = CTIDBG_new CtiSignalMsg(pointid, 0, "Alarms Cleared");
     }
     return pSigActive;
-    
+
 }
 
 // This is now based on the TAG_ACTIVE_CONDITION more than the TAG_ACTIVE_ALARM
@@ -491,11 +491,11 @@ UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR 
             PointSignalMap_t::value_type     vt      = *itr;
             PointSignalMap_t::key_type       key     = vt.first;
             CtiSignalMsg                     *pSig   = vt.second;
-    
+
             if(pSig && key == pointid)
             {
                 mask |= (pSig->getTags() & SIGNAL_MANAGER_MASK);
-    
+
                 if(mask == SIGNAL_MANAGER_MASK)
                 {
                     break;      // No point in looking any further.  We have ack and active already indicated for this pointid.
@@ -577,12 +577,12 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
                 PointSignalMap_t::value_type vt = *itr;
                 PointSignalMap_t::key_type   key = vt.first;
                 CtiSignalMsg *pOriginalSig = vt.second;
-    
+
                 if(key == pointid && pOriginalSig)
                 {
                     pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
                     pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
-    
+
                     if(pMulti)
                     {
                         pMulti->insert(pSig);
@@ -634,9 +634,9 @@ CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
                 pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
                 if(!pMulti)
-          	 	{
-          	 	    pMulti = new CtiMultiMsg;
-          	 	}
+                {
+                    pMulti = new CtiMultiMsg;
+                }
 
                 if(pMulti)
                 {
@@ -808,7 +808,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
             if((stop.seconds() - start.seconds()) > 5)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Writing dynamic signals took " << (stop.seconds() - start.seconds()) 
+                dout << CtiTime() << " Writing dynamic signals took " << (stop.seconds() - start.seconds())
                      << " Seconds and wrote " << count << " entries." << endl;
             }
 

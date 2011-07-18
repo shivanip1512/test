@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "tbl_rawpthistory.h"
 #include "dbaccess.h"
 #include "logger.h"
@@ -24,7 +24,7 @@ void CtiTableRawPointHistory::Insert(Cti::Database::DatabaseConnection &conn)
 
     Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-    inserter 
+    inserter
         << getChangeID()
         << getPointID()
         << getTime()
@@ -52,7 +52,7 @@ void CtiTableRawPointHistory::Insert(Cti::Database::DatabaseConnection &conn)
 
             Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-            inserter 
+            inserter
                 << getChangeID()
                 << getPointID()
                 << getTime()

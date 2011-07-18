@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <crtdbg.h>
 #include <iostream>
@@ -24,7 +24,7 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
     {
 
         /* Handle the CTRL+C signal. */
-        
+
         case CTRL_C_EVENT:
 
         case CTRL_CLOSE_EVENT:
@@ -74,7 +74,7 @@ void main(int argc, char **argv)
         //    the program name and such doesn't change - only our requested points.)
 
         string regStr = "CalcLogTest";
-        
+
         Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
         Connect.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
 
@@ -85,7 +85,7 @@ void main(int argc, char **argv)
             //  wait up to a second for a message
             for( ; NULL == (incomingMsg = Connect.ReadConnQue( 1000 )) && !bQuit; )
                 ;
-            
+
             if( bQuit )
                 continue;  // so we exit the for without inspecting the NULL message
 
@@ -122,11 +122,11 @@ int inspectMessage( CtiMessage *message )
     {
         case MSG_POINTDATA:
             pData = (CtiPointDataMsg *)message;
-                    //  loopno+1000 << pData->getId( ) << ":" << 
+                    //  loopno+1000 << pData->getId( ) << ":" <<
             cout << pData->getValue( ) << " ";
             retval = 1;
             break;
-        
+
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
             retval = 0;

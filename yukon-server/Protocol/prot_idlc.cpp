@@ -13,7 +13,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <limits>
 using namespace std;
@@ -479,7 +479,7 @@ int IDLC::process_control( frame in_frame )
     }
     else if( (in_frame.header.control.code & 0x1f) == ControlCode_RejectWithRestart )
     {
-        // The end device is unhappy with us, we submit our new request with 
+        // The end device is unhappy with us, we submit our new request with
         // the slave and master it asked for.
         _master_sequence = in_frame.header.control.code >> 5;
         _slave_sequence  = _master_sequence;

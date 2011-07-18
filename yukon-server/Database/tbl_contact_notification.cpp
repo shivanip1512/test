@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -134,7 +134,7 @@ void CtiTableContactNotification::dump() const {
   dout << "Dirty: " << isDirty() << endl;
 }
 
-bool CtiTableContactNotification::Restore() 
+bool CtiTableContactNotification::Restore()
 {
     static const string sql =  "SELECT CTN.contactnotifid, CTN.contactid, CTN.notificationcategoryid, CTN.disableflag, "
                                    "CTN.notification "

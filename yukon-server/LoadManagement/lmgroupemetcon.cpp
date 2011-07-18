@@ -2,16 +2,16 @@
         Filename:  lmgroupemetcon.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMGroupEmetcon.
                         CtiLMGroupEmetcon maintains the state and handles
                         the persistence of emetcon groups in Load Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmgroupemetcon.h"
@@ -31,12 +31,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupEmetcon, CTILMGROUPEMETCON_ID )
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon::CtiLMGroupEmetcon() :
 _refreshsent(false)
-{   
+{
 }
 
 CtiLMGroupEmetcon::CtiLMGroupEmetcon(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupEmetcon::CtiLMGroupEmetcon(const CtiLMGroupEmetcon& groupemet)
@@ -175,7 +175,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
 /*---------------------------------------------------------------------------
     doesMasterCycleNeedToBeUpdated
 
-    
+
 ---------------------------------------------------------------------------*/
 BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
@@ -209,7 +209,7 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, UL
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
@@ -219,10 +219,10 @@ void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
     return;
@@ -262,7 +262,7 @@ int CtiLMGroupEmetcon::operator!=(const CtiLMGroupEmetcon& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
@@ -272,7 +272,7 @@ CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::restore(Cti::RowReader &rdr)

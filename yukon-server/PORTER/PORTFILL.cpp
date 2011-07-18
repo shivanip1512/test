@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*---------------------------------------------------------------------
@@ -567,7 +567,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 }
 
 /* Routine to generate filler messages */
-VOID FillerThread (PVOID Arg)
+void FillerThread (PVOID Arg)
 
 {
     ULONG FillerRate = {300L};

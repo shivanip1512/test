@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "ConstraintViolation.h"
 #include "lmid.h"
@@ -136,9 +136,9 @@ void ConstraintViolation::restoreGuts(RWvistream& strm)
 
 void ConstraintViolation::saveGuts(RWvostream& strm) const
 {
-    strm << _errorCode      
-         << _doubleParams   
-         << _integerParams  
-         << _stringParams   
+    strm << _errorCode
+         << _doubleParams
+         << _integerParams
+         << _stringParams
          << _datetimeParams;
 }

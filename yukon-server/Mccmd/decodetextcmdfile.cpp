@@ -11,28 +11,28 @@
 *    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
 *
 *
-* 	 Example input lines:
+*    Example input lines:
 
 Function 1: configurations
-	format:  1,serial #, group name
-		1,50001,WH		sends addressing from Yukon group WH to switch 50001
+    format:  1,serial #, group name
+        1,50001,WH      sends addressing from Yukon group WH to switch 50001
 
 Function 2:  permanent in or out of service
-	format:  2,serial #, command (IN or OUT)
-		2,50001,IN		sends an in service to switch 50001
-		2,50001,OUT		sends an out of service to switch 50001
+    format:  2,serial #, command (IN or OUT)
+        2,50001,IN      sends an in service to switch 50001
+        2,50001,OUT     sends an out of service to switch 50001
 
-Function 3:  
-	format:  3,serial #,utility,section,class1,class2,..classN,division1,division2...divisionN
-		3,50001,u2,s10,c1,c5,d1,d5		sends the address section 10, classes 1 and 5, division 1 and 5 to serial number 50001
-						(NOTE:  order of the section,class,division doesn't really matter)
-                        
-Function #  Comment in the file, will get moved to the exported file if needed                        
+Function 3:
+    format:  3,serial #,utility,section,class1,class2,..classN,division1,division2...divisionN
+        3,50001,u2,s10,c1,c5,d1,d5      sends the address section 10, classes 1 and 5, division 1 and 5 to serial number 50001
+                        (NOTE:  order of the section,class,division doesn't really matter)
+
+Function #  Comment in the file, will get moved to the exported file if needed
 
 *
 ****************************************************************************
 */
-#include "yukon.h"
+#include "precompiled.h"
 #include <rw/ctoken.h>
 #include "ctidate.h"
 
@@ -47,7 +47,7 @@ using std::endl;
 
 /***************************
 *
-*  this function reads in the file and 
+*  this function reads in the file and
 *  decides which function type we are talking about
 *
 ****************************
@@ -56,16 +56,16 @@ using std::endl;
 // we seem to go back and forth as to whether 0 is valid so this lets me make the change easily
 #define XCOM_ADDRESS_START 0
 
-int decodeTextCommandFile(const string& fileName, 
+int decodeTextCommandFile(const string& fileName,
                                 int aCommandsToPerform,
-                                int aProtocolFlag, 
+                                int aProtocolFlag,
                                 std::vector<RWCollectableString*>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
-	char command;
-	string serialNum;
-	string programming;
+    char command;
+    string serialNum;
+    string programming;
     int lineCnt=0, cmdCnt=0;
     int retVal=NORMAL;
 
@@ -78,8 +78,8 @@ int decodeTextCommandFile(const string& fileName,
     }
     else
     {
-                                   
-        // open file               
+
+        // open file
         if( (fptr = fopen( fileName.c_str(), "r")) == NULL )
         {
             retVal = TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE;
@@ -157,7 +157,7 @@ int decodeTextCommandFile(const string& fileName,
                 {
                     retVal = TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL;
                 }
-                
+
                 logVector.erase(logVector.begin(), logVector.end());
                 commandVector.erase(commandVector.begin(), commandVector.end());
             }
@@ -374,11 +374,11 @@ bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &a
 
 bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableString* programming, string aFileName)
 {
-	string serialNum;
+    string serialNum;
     string tempString1;
-	bool retCode = true;
-    
-	std::transform(input.begin(), input.end(), input.begin(), tolower);
+    bool retCode = true;
+
+    std::transform(input.begin(), input.end(), input.begin(), tolower);
 
     boost::char_separator<char> sep(",\r\n");
     Boost_char_tokenizer cmdLine(input, sep);
@@ -566,11 +566,11 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             string classAddr("class ");
                             string divisionAddr("division ");
                             bool haveUtility=false, haveSection=false,firstClass=true,firstDivision=true;
-    
+
                             if (++tok_iter != cmdLine.end())
                             {
                                 serialNum = *tok_iter;
-    
+
                                 if (++tok_iter != cmdLine.end())
                                 {
                                     tempString1 = *tok_iter;
@@ -595,7 +595,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                         {
                                             // we have a class address
                                             if (firstClass)
-                                            {   
+                                            {
                                                 // first time thru, we won't need a comma
                                                 firstClass = false;
                                             }
@@ -605,13 +605,13 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             }
                                             tempString1 = trim_left(tempString1,"c");
                                             classAddr += tempString1;
-    
+
                                         }
                                         else if (tempString1.find ("d")!=string::npos)
                                         {
                                             // we have a division address
                                             if (firstDivision)
-                                            {   
+                                            {
                                                 // first time thru, we won't need a comma
                                                 firstDivision = false;
                                             }
@@ -622,7 +622,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             tempString1 = trim_left(tempString1,"d");
                                             divisionAddr += tempString1;
                                         }
-    
+
                                         if (++tok_iter != cmdLine.end())
                                         {
                                             tempString1 = *tok_iter;
@@ -632,31 +632,31 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             continueFlag = false;
                                         }
                                     }
-    
+
                                     // make sure we found something
                                     if ((!firstDivision) || (!firstClass) || (haveSection) || (haveUtility))
                                     {
                                         *programming = "set MessagePriority 5 ; PutConfig versacom serial ";
                                         *programming +=serialNum.c_str();
-    
+
                                         if (haveUtility)
                                         {
                                             *programming += " ";
                                             *programming += utilityAddr.c_str();
                                         }
-    
+
                                         if (haveSection)
                                         {
                                             *programming += " ";
                                             *programming += sectionAddr.c_str();
                                         }
-    
+
                                         if (!firstClass)
                                         {
                                             *programming += " ";
                                             *programming += classAddr.c_str();
                                         }
-    
+
                                         if (!firstDivision)
                                         {
                                             *programming += " ";
@@ -718,7 +718,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             ULONG tmpAddress;
 
                             memset (&buffer, '\0', 20);
-                            
+
                             if (++tok_iter != cmdLine.end())
                             {
                                 currentCmd += *tok_iter;
@@ -850,7 +850,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                                         load += ",";
                                                     }
 
-                                                    
+
 
                                                     if (sub_tok_iter != subCmd.end())
                                                     {
@@ -1116,7 +1116,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                         }
 
                                         retCode = false;
-                                    }   
+                                    }
                                 }
                                 else
                                 {
@@ -1151,11 +1151,11 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             if (++tok_iter != cmdLine.end())
                             {
                                 serialNum = *tok_iter;
-    
+
                                 if (++tok_iter != cmdLine.end())
                                 {
                                     amps = *tok_iter;
-    
+
                                     *programming = "set MessagePriority 5 ; PutConfig xcom serial ";
                                     *programming += serialNum.c_str();
                                     *programming += " targetloadamps ";
@@ -1180,17 +1180,17 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                     case 6:
                     {
                         /****************************
-                        * Format: 6,TARGET,spid #,geo #,sub #,feeder #,zip #,uda #,user #,program #,splinter #,serial #,ASSIGN, spid #,geo #,sub #,feeder #,zip #,uda #,user #,program #,splinter #, relay # 
+                        * Format: 6,TARGET,spid #,geo #,sub #,feeder #,zip #,uda #,user #,program #,splinter #,serial #,ASSIGN, spid #,geo #,sub #,feeder #,zip #,uda #,user #,program #,splinter #, relay #
                         *
                         * function is only valid for expresscom so it works with only
                         * expresscom or no protocol specified flags
                         *
-                        * This function is very similar to function 4. 
-                        * However function 6 can assign addressing to any other addressing level, not just serial. 
+                        * This function is very similar to function 4.
+                        * However function 6 can assign addressing to any other addressing level, not just serial.
                         * This function only allows for a single relay/program/splinter combination.
                         * Addressing may be in any order, but TARGET must come before ASSIGN.
                         * Relay may only be sent if either program or splinter are also sent.
-                        * Example: 6,TARGET,spid 2,geo 3,sub 4,ASSIGN,spid 3,geo 2,sub 5,program 3,relay 3 
+                        * Example: 6,TARGET,spid 2,geo 3,sub 4,ASSIGN,spid 3,geo 2,sub 5,program 3,relay 3
                         *****************************
                         */
                         string currentCmd;
@@ -1206,7 +1206,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             ULONG tmpAddress;
 
                             memset (&buffer, '\0', 20);
-                            
+
                             if (++tok_iter != cmdLine.end())
                             {
                                 tempString1 = *tok_iter;
@@ -1424,7 +1424,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                     }
 
                                     retCode = false;
-                                }   
+                                }
                             }
                             else
                             {
@@ -1455,15 +1455,15 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
     }
 
     return retCode;
-}   
+}
 
-bool decodeDsm2Lines( string &aFunction, 
+bool decodeDsm2Lines( string &aFunction,
                       string &aRoute,
                       string &aSerialNum,
                       string &aCmd,
                       RWCollectableString* programming)
 {
-	bool retCode = true;
+    bool retCode = true;
     string route,function,serialNum,cmd;
 
     boost::char_separator<char> sep("\r\n");
@@ -1493,15 +1493,15 @@ bool decodeDsm2Lines( string &aFunction,
     {
         cmd = trim(string(*tCmd.begin()));
     }
-    
-/* rprw    
-    RWCTokenizer tFunction(aFunction);           
+
+/* rprw
+    RWCTokenizer tFunction(aFunction);
     function = tFunction("\r\n");
-    RWCTokenizer tRoute(aRoute);           
+    RWCTokenizer tRoute(aRoute);
     route = tRoute("\r\n");
-    RWCTokenizer tSN(aSerialNum);           
+    RWCTokenizer tSN(aSerialNum);
     serialNum = tSN("\r\n");
-    RWCTokenizer tCmd(aCmd);           
+    RWCTokenizer tCmd(aCmd);
     cmd = tCmd("\r\n");
 
     route = route.strip(string::both);
@@ -1516,7 +1516,7 @@ bool decodeDsm2Lines( string &aFunction,
             {
                 /****************************
                 * line is configuration command specifying a config name from dsm2
-                * we are assuming there will now be a corresponding group name on the 
+                * we are assuming there will now be a corresponding group name on the
                 * yukon side (we are adding config: to the front of each dsm2 group name
                 * to avoid confusion
                 * 4
@@ -1594,7 +1594,7 @@ bool decodeDsm2Lines( string &aFunction,
             }
     }
     return retCode;
-}   
+}
 
 
 /**********************
@@ -1613,20 +1613,20 @@ bool getToken (char **InBuffer,
     if (InBuffer == NULL)
     {
         retVal = false;
-    } 
-    else if ((ptr = strchr (*InBuffer, ',')) != NULL) 
+    }
+    else if ((ptr = strchr (*InBuffer, ',')) != NULL)
     {
 
             // found one
         *ptr = '\0';
-		outBuffer = *InBuffer;
+        outBuffer = *InBuffer;
         *InBuffer += outBuffer.length() + 1;
 
-    } 
-    else if ((ptr = strchr (*InBuffer, '\0')) != NULL) 
+    }
+    else if ((ptr = strchr (*InBuffer, '\0')) != NULL)
     {
             *ptr = '\0';
-			outBuffer = *InBuffer;
+            outBuffer = *InBuffer;
             *InBuffer = '\0';
     }
     else
@@ -1642,9 +1642,9 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableStrin
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
-	char command;
-	string serialNum;
-	string programming;
+    char command;
+    string serialNum;
+    string programming;
     int lineCnt=0, cmdCnt=0;
     int retVal=NORMAL;
 
@@ -1657,8 +1657,8 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableStrin
     }
     else
     {
-                                   
-        // open file               
+
+        // open file
         if( (fptr = fopen( fileName.c_str(), "r")) == NULL )
         {
             retVal = TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE;
@@ -1695,7 +1695,7 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableStrin
                     */
                     RWCollectableString* decodedCommand = new RWCollectableString();
 
-                    if( true == decodeDsm2Lines( commandVector[lineCnt], 
+                    if( true == decodeDsm2Lines( commandVector[lineCnt],
                                                  commandVector[lineCnt+1],
                                                  commandVector[lineCnt+2],
                                                  commandVector[lineCnt+3],

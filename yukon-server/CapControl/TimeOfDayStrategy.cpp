@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <cstdlib>
 #include <sstream>
@@ -66,7 +66,7 @@ void TimeOfDayStrategy::restoreParameters( const std::string &name, const std::s
         else
         {
             TimeOfDay   tod;
-            
+
             tod.timeOffset = timeOffset;
 
             if (ciStringEqual(type, "WeekDay"))

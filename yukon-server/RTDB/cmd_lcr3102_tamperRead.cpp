@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "cmd_lcr3102_tamperRead.h"
 
@@ -47,10 +47,10 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decodeReading(CtiTime now, con
     {
         description = "No tamper detected.";
     }
-    else 
+    else
     {
         description = "";
-        
+
         if(tamper_info & 0x01) description += "Relay Circuit Fault detected. ";
         if(tamper_info & 0x02) description += "Runtime Tamper detected. ";
     }

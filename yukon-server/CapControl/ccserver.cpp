@@ -2,14 +2,14 @@
     Filename:  ccserver.cpp
 
     Programmer:  Josh Wolberg
-    
+
     Description:  Source file for CtiCCServer.
 
     Initial Date:  9/04/2001
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "ccserver.h"
 #include "ctibase.h"
@@ -20,7 +20,7 @@ using std::endl;
 
 extern ULONG _CC_DEBUG;
 
-//The singleton instance of the server                                       
+//The singleton instance of the server
 CtiCCServer* CtiCCServer::_instance = NULL;
 
 //The default port where the server will listen for client connections
@@ -28,7 +28,7 @@ int CtiCCServer::_capcontrolclientsport = CAPCONTROLNEXUS;
 
 /*------------------------------------------------------------------------
     Instance
-    
+
     Returns a pointer to the singleton instance of the server.
 ---------------------------------------------------------------------------*/
 CtiCCServer* CtiCCServer::getInstance()
@@ -41,7 +41,7 @@ CtiCCServer* CtiCCServer::getInstance()
 
 /*---------------------------------------------------------------------------
     start
-    
+
     Starts up the server
 ---------------------------------------------------------------------------*/
 void CtiCCServer::start()
@@ -83,9 +83,9 @@ void CtiCCServer::start()
 
 /*---------------------------------------------------------------------------
     stop
-    
+
     Stops the server
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiCCServer::stop()
 {
     // _dostop = TRUE;
@@ -99,9 +99,9 @@ void CtiCCServer::stop()
 
 /*---------------------------------------------------------------------------
     Broadcast
-    
-    Notifies all objects that are observing this that a new message is 
-    available to broadcast.  The mutex lock gives all the observers a 
+
+    Notifies all objects that are observing this that a new message is
+    available to broadcast.  The mutex lock gives all the observers a
     chance to broadcast the current message before the next message
     comes in.  Observers must deal with this notification quickly to avoid
     new messages from piling up here.
@@ -125,7 +125,7 @@ void CtiCCServer::Broadcast(CtiMessage* message)
 
 /*---------------------------------------------------------------------------
     BroadcastMessage
-    
+
     Returns the CtiCCMessage that is currently being broadcast
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiCCServer::getBroadcastMessage()
@@ -137,7 +137,7 @@ CtiMessage* CtiCCServer::getBroadcastMessage()
 
 /*---------------------------------------------------------------------------
     _checkstatus
-    
+
     Periodically checks to see whether the cap control server should be
     shut down and then does so if necessary.
 ---------------------------------------------------------------------------*/
@@ -167,7 +167,7 @@ void CtiCCServer::_checkstatus()
 
         _running = FALSE;
         _dostop = FALSE;
-    }                                                            
+    }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -1,6 +1,6 @@
 
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "logger.h"
 #include "PhaseOperatedVoltageRegulator.h"
 #include "ccutil.h"
@@ -129,12 +129,12 @@ VoltageRegulator * PhaseOperatedVoltageRegulator::replicate() const
         zone type that the regulator is attached to.
 
     The CooperCL6 functionality is contained here in the PhaseOperatedVoltageRegulator class.
- 
+
     The PaoType() is poorly named - time permitting it will be changed and the relevent
         classes renamed and reduced to only 2 different types from the original 3.
- 
+
         GangOperatedVoltageRegulator    --> BeckwithLTC
-        PhaseOperatedVoltageRegulator   --> CooperCL6 
+        PhaseOperatedVoltageRegulator   --> CooperCL6
 */
 const VoltageRegulator::Type PhaseOperatedVoltageRegulator::getType() const
 {
@@ -254,7 +254,7 @@ long PhaseOperatedVoltageRegulator::getKeepAliveRefreshRate()
     LitePoint point = getPointByAttribute( PointAttribute::HeartbeatTimerConfig );
 
     if ( getPointValue( point.getPointId(), value ) )
-    {        
+    {
         return ( value <= 0.0 ) ? 0 : static_cast<long>( value * 60.0 / 2.0 );
     }
 

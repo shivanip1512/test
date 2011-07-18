@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -199,9 +199,9 @@ void StrategyDBLoader::loadParameters(const long ID, StrategyManager::StrategyMa
 {
     static const string sqlNoID = "SELECT CST.strategyid, CST.settingname, CST.settingvalue, CST.settingtype "
                                   "FROM ccstrategytargetsettings CST";
-                
+
     Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection);              
+    Cti::Database::DatabaseReader rdr(connection);
 
     if( ID >= 0 )
     {

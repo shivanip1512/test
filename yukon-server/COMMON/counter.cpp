@@ -14,7 +14,7 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "counter.h"
 
 using std::map;

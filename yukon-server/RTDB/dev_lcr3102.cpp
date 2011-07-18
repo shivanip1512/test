@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dev_lcr3102.h"
 #include "ctidate.h"

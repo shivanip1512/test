@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test Mgr PtClients"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "mgr_ptclients.h"
 #include "pt_status.h"
 #include "pt_analog.h"
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic)
 
     dynamic = CtiDynamicPointDispatchSPtr(CTIDBG_new CtiDynamicPointDispatch(status1_id));
     manager.setDynamic(status1_id, dynamic);
-    
+
     CtiDynamicPointDispatchSPtr pDispatch = manager.getDynamic(point_status1_sptr);
     BOOST_CHECK(pDispatch);
 

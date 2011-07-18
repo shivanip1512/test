@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "sepcyclegear.h"
 #include "GroupControlInterface.h"
 #include "SepControlInterface.h"
@@ -54,9 +54,9 @@ bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeco
         bool isTrueCycle = (getMethodOptionType() == CtiLMProgramDirectGear::TrueCycleMethod);
         bool randomizeStart = (getFrontRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
         bool randomizeStop = (getBackRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
-    
+
         long criticality = getMethodPeriod(); // We are using the MethodPeriod in the database to hold the criticality
-    
+
         if( getPercentReduction() > 0.0 )
         {
             expectedLoadReduced += (getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -65,7 +65,7 @@ bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeco
         {
             expectedLoadReduced += currentLMGroup->getKWCapacity();
         }
-    
+
         return controllableGroup->sendSEPCycleControl(controlSeconds/60, getMethodRate(), criticality, isTrueCycle, randomizeStart, randomizeStop);
     }
     else

@@ -13,7 +13,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "cparms.h"
 #include "logger.h"
@@ -48,7 +48,7 @@ INT CtiLocalConnect<Outbound, Inbound>::CTINexusClose()
 }
 
 template <class Outbound, class Inbound>
-INT CtiLocalConnect<Outbound, Inbound>::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut)
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusWrite(void *buf, ULONG len, PULONG BWritten, LONG TimeOut)
 {
     int retVal = 1;
 
@@ -126,7 +126,7 @@ INT CtiLocalConnect<Outbound, Inbound>::CTINexusWrite(VOID *buf, ULONG len, PULO
 }
 
 template <class Outbound, class Inbound>
-INT CtiLocalConnect<Outbound, Inbound>::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusRead(void *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     int retVal = 0;
 
@@ -144,7 +144,7 @@ INT CtiLocalConnect<Outbound, Inbound>::CTINexusRead(VOID *buf, ULONG len, PULON
 }
 
 template <class Outbound, class Inbound>
-INT CtiLocalConnect<Outbound, Inbound>::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusPeek(void *buf, ULONG len, PULONG BRead)
 {
     int retVal = 0;
 
@@ -162,7 +162,7 @@ INT CtiLocalConnect<Outbound, Inbound>::CTINexusPeek(VOID *buf, ULONG len, PULON
 }
 
 template <class Outbound, class Inbound>
-INT CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags)
+INT CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectRead(void *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags)
 {
     int retVal = 1;
     ULONG count = 0;

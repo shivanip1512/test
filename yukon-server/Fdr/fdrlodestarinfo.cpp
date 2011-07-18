@@ -14,7 +14,7 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 ****************************************************************************/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "fdrlodestarinfo.h"
 

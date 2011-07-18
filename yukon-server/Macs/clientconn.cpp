@@ -23,7 +23,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "clientconn.h"
 #include "ctibase.h"
@@ -52,8 +52,8 @@ void CtiMCConnection::initialize(RWPortal portal)
 {
     try
     {
-	_portal = new RWPortal(portal);
-	
+    _portal = new RWPortal(portal);
+
         sinbuf  = new RWPortalStreambuf(*_portal);
         soubuf  = new RWPortalStreambuf(*_portal);
         oStream = new RWpostream(soubuf);
@@ -76,7 +76,7 @@ void CtiMCConnection::initialize(RWPortal portal)
         }
 
         _valid = FALSE;
-    }    
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -191,7 +191,7 @@ void CtiMCConnection::_sendthr()
     catch(RWCancellation& )
     {
         throw;
-    } 
+    }
     catch ( RWxmsg& msg )
     {
         if( gMacsDebugLevel & MC_DEBUG_CONN )

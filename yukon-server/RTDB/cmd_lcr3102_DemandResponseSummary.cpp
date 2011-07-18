@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "cmd_lcr3102_DemandResponseSummary.h"
 
@@ -16,7 +16,7 @@ Lcr3102DemandResponseSummaryCommand::Lcr3102DemandResponseSummaryCommand() :
 DlcCommand::request_ptr Lcr3102DemandResponseSummaryCommand::decodeReading(CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points)
 {
     const unsigned char drSummary_info = getValueFromBits(payload, 48, 8);
-  
+
     decodeResponseByte(drSummary_info, description);
 
     return request_ptr();
@@ -27,8 +27,8 @@ void Lcr3102DemandResponseSummaryCommand::decodeResponseByte(const unsigned char
 {
     description = "";
 
-    if( ((drSummaryByte & 0x01) && (drSummaryByte & 0x04)) ||  // Bit 0 said we are controlling, bit 2 said we're not.                     
-        (!(drSummaryByte & 0x01) && (drSummaryByte & 0x08)) || // Bit 0 said we're not controlling, bit 3 said we are.                     
+    if( ((drSummaryByte & 0x01) && (drSummaryByte & 0x04)) ||  // Bit 0 said we are controlling, bit 2 said we're not.
+        (!(drSummaryByte & 0x01) && (drSummaryByte & 0x08)) || // Bit 0 said we're not controlling, bit 3 said we are.
         ((drSummaryByte & 0x08) && (drSummaryByte & 0x04)) )   // Both activated bits are set: can't be both controlled and not controlled.
     {
        description = "LCR returned a conflicted account of its currently controlled state (" + CtiNumStr(drSummaryByte) + ")";
@@ -55,6 +55,6 @@ void Lcr3102DemandResponseSummaryCommand::decodeResponseByte(const unsigned char
 }
 
 }
-}  
-}  
+}
+}
 

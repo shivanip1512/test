@@ -2,17 +2,17 @@
         Filename:  lmprogramthermostatgear.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMProgramThermoStatGear.
                         CtiLMProgramThermoStatGear maintains the state and handles
                         the persistence of direct program gears in Load
                         Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmprogramthermostatgear.h"
@@ -32,7 +32,7 @@ extern ULONG _LM_DEBUG;
 ---------------------------------------------------------------------------*/
 CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear)
@@ -106,7 +106,7 @@ float CtiLMProgramThermoStatGear::getRampRate() const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 /*void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
@@ -131,10 +131,10 @@ float CtiLMProgramThermoStatGear::getRampRate() const
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-/*void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const  
+/*void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMProgramDirectGear::saveGuts( ostrm );
 
@@ -204,7 +204,7 @@ int CtiLMProgramThermoStatGear::operator!=(const CtiLMProgramThermoStatGear& rig
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
@@ -214,7 +214,7 @@ CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)

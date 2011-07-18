@@ -1,5 +1,5 @@
 /* Global definitions for the scanner */
-#include "yukon.h"
+#include "precompiled.h"
 
 // These next few are required for Win32
 

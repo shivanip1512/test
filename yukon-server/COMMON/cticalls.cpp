@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -106,7 +106,7 @@ APIRET IM_EX_CTIBASE CTIScanEnv ( PSZ Name, PSZ *Result )
 }
 
 
-VOID IM_EX_CTIBASE CTIExit (ULONG ExitType, ULONG ExitCode)
+void IM_EX_CTIBASE CTIExit (ULONG ExitType, ULONG ExitCode)
 {
 #if defined(__OS2__)
 
@@ -571,7 +571,7 @@ APIRET IM_EX_CTIBASE CTISetPriority( ULONG ulPriClass, int tPri )
     return 0;
 }
 
-VOID  IM_EX_CTIBASE   DebugLine(char *fName, char *funcName, int lineNum)
+void  IM_EX_CTIBASE   DebugLine(char *fName, char *funcName, int lineNum)
 {
    char  temp[1024];
    int   end = strlen(fName)-1;

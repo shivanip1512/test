@@ -5,14 +5,14 @@
 
     Programmer:  Julie Richter
 
-    Description:    
+    Description:
 
     Initial Date:  1/27/2005
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
 -----------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "dbaccess.h"
 #include "connection.h"
 #include "msg_dbchg.h"
@@ -25,15 +25,15 @@ using std::endl;
     Constructor
 ---------------------------------------------------------------------------*/
 CtiPAOSchedule::CtiPAOSchedule() :
-_dirty(false),    
-_scheduleId(0), 
-_intervalRate(0),     
+_dirty(false),
+_scheduleId(0),
+_intervalRate(0),
 _disabledFlag(false)
 {
 }
 
 CtiPAOSchedule::CtiPAOSchedule(Cti::RowReader& rdr)
-{    
+{
     string tempBoolString;
 
     rdr["scheduleid"] >> _scheduleId;
@@ -53,7 +53,7 @@ CtiPAOSchedule::CtiPAOSchedule(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 CtiPAOSchedule::~CtiPAOSchedule()
 {
-   
+
 }
 
 CtiPAOSchedule& CtiPAOSchedule::operator=(const CtiPAOSchedule& right)
@@ -108,7 +108,7 @@ bool CtiPAOSchedule::isDisabled()
 void CtiPAOSchedule::setScheduleId( long schedId )
 {
     if (_scheduleId != schedId)
-    {                  
+    {
         _dirty = true;
     }
     _scheduleId = schedId;

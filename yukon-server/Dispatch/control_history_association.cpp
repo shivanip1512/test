@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "control_history_association.h"
 
 ControlHistoryTableAssociation::ControlHistoryTableAssociation(const CtiTableLMControlHistory& aRef, int associationId) :

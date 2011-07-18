@@ -1,17 +1,17 @@
 /*-----------------------------------------------------------------------------
     Filename:  ctish.cpp
-                    
+
     Programmer:  Aaron Lauinger
-    
+
     Description: Source file for ctish.exe
                  Simply calls Tcl_Main in tcl81.dll providing a callback
                  after initialization in order to load mccmd.dll.
-                          
-    Initial Date:  10/16/99   
+
+    Initial Date:  10/16/99
                     9/3/03
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999, 2003
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "ctish.h"
 
@@ -28,12 +28,12 @@ void main(int argc, char* argv[])
 
 int CTISH_InitProc(Tcl_Interp* interp)
 {
-  
+
     // Initialize the global logger
     dout.setOutputFile("ctish");
     dout.setWriteInterval(0);
     dout.setToStdOut(true);
-    dout.start();   
+    dout.start();
 
     Tcl_Eval(interp, "load mccmd" );
 

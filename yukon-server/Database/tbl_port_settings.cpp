@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "tbl_port_settings.h"
 #include "logger.h"
@@ -130,7 +130,7 @@ INT CtiTablePortSettings::getStopBits() const
 
 void CtiTablePortSettings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
       CtiLockGuard<CtiLogger> logger_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -140,7 +140,7 @@ void CtiTablePortSettings::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["cdwait"]           >> _cdWait;
     rdr["linesettings"]     >> _lineSettings;
 
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << " Baud Rate            = " << _baudRate << endl;

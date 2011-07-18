@@ -1,18 +1,18 @@
 
 /*---------------------------------------------------------------------------
         Filename:  ccoriginalparent.cpp
-        
+
         Programmer:  Julie Richter
-                
+
         Description:    CtiCCOriginalParent
-                        
+
 
         Initial Date:  10/30/2009
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
 ---------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ccoriginalparent.h"
 #include "ccid.h"
 #include "row_reader.h"
@@ -22,7 +22,7 @@ using std::endl;
 using std::string;
 
 extern ULONG _CC_DEBUG;
- 
+
 
 CtiCCOriginalParent::CtiCCOriginalParent()
 {
@@ -49,11 +49,11 @@ CtiCCOriginalParent& CtiCCOriginalParent::operator=(const CtiCCOriginalParent& r
 {
     if( this != &right )
     {
-       _paoId                   = right._paoId;                 
-       _originalParentId        = right._originalParentId;      
-       _originalSwitchingOrder  = right._originalSwitchingOrder; 
-       _originalCloseOrder      = right._originalCloseOrder; 
-       _originalTripOrder       = right._originalTripOrder; 
+       _paoId                   = right._paoId;
+       _originalParentId        = right._originalParentId;
+       _originalSwitchingOrder  = right._originalSwitchingOrder;
+       _originalCloseOrder      = right._originalCloseOrder;
+       _originalTripOrder       = right._originalTripOrder;
        _dirty                   = right._dirty;
        _insertDynamicDataFlag   = right._insertDynamicDataFlag;
     }
@@ -202,7 +202,7 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
             }
             static const string inserterSql = "insert into dynamicccoriginalparent values (?, ?, ?, ?, ?)";
             Cti::Database::DatabaseWriter inserter(conn, inserterSql);
-            
+
             inserter << _paoId
                     << _originalParentId
                     << _originalSwitchingOrder

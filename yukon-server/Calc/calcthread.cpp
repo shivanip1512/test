@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <rw/thr/runnable.h>
 #include <rw/thr/mutex.h>
@@ -1805,76 +1805,76 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
     DynamicTableDataIter iter;
 
     if( calcPoint->getComponentIDList().empty() )
-	{
-		return;
-	}
+    {
+        return;
+    }
 
-	try
-	{
-		set<long> compIDList = calcPoint->getComponentIDList();
+    try
+    {
+        set<long> compIDList = calcPoint->getComponentIDList();
 
-		static const string sqlIds = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
-									 "FROM RAWPOINTHISTORY RPH "
-									 "WHERE RPH.TIMESTAMP > ?";
+        static const string sqlIds = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+                                     "FROM RAWPOINTHISTORY RPH "
+                                     "WHERE RPH.TIMESTAMP > ?";
 
-		Cti::Database::DatabaseConnection connection;
-		Cti::Database::DatabaseReader rdr(connection);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-		std::stringstream ss;
+        std::stringstream ss;
 
-		ss << sqlIds << " AND RPH.POINTID IN (";
+        ss << sqlIds << " AND RPH.POINTID IN (";
 
-		for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
-		{
-			if( idIter != compIDList.begin() )
-			{
-				ss << ", " << *idIter;
-			}
-			else
-			{
-				ss << *idIter;
-			}
-		}
+        for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
+        {
+            if( idIter != compIDList.begin() )
+            {
+                ss << ", " << *idIter;
+            }
+            else
+            {
+                ss << *idIter;
+            }
+        }
 
-		ss << ")";
+        ss << ")";
 
-		rdr.setCommandText(ss.str());
-		rdr << lastTime;
+        rdr.setCommandText(ss.str());
+        rdr << lastTime;
 
-		rdr.execute();
+        rdr.execute();
 
-		//  iterate through the components
-		while( rdr() )
-		{
-			//  read 'em in, and append to the data structure
-			rdr["POINTID"] >> pointid;
-			rdr["TIMESTAMP"] >> timeStamp;
-			rdr["VALUE"] >> value;
+        //  iterate through the components
+        while( rdr() )
+        {
+            //  read 'em in, and append to the data structure
+            rdr["POINTID"] >> pointid;
+            rdr["TIMESTAMP"] >> timeStamp;
+            rdr["VALUE"] >> value;
 
-			if( (iter = data.find(timeStamp)) != data.end() )
-			{
-				iter->second.insert(HistoricalPointValueMap::value_type(pointid, value));
-			}
-			else
-			{
-				HistoricalPointValueMap insertMap;
-				insertMap.insert(HistoricalPointValueMap::value_type(pointid, value));
-				data.insert(DynamicTableData::value_type(timeStamp, insertMap));
-			}
-		}
+            if( (iter = data.find(timeStamp)) != data.end() )
+            {
+                iter->second.insert(HistoricalPointValueMap::value_type(pointid, value));
+            }
+            else
+            {
+                HistoricalPointValueMap insertMap;
+                insertMap.insert(HistoricalPointValueMap::value_type(pointid, value));
+                data.insert(DynamicTableData::value_type(timeStamp, insertMap));
+            }
+        }
 
-	}
-	catch( RWxmsg &msg )
-	{
-		CtiLockGuard<CtiLogger> doubt_guard(dout);
-		dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-		exit( -1 );
-	}
-	catch(...)
-	{
-		CtiLockGuard<CtiLogger> logger_guard(dout);
-		dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-	}
+    }
+    catch( RWxmsg &msg )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
+        exit( -1 );
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data)

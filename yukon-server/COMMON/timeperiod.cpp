@@ -3,7 +3,7 @@
 * a single object to hold a known span of time and functionality
 * to work with spans of time
 * */
-#include "yukon.h"
+#include "precompiled.h"
 #include <time.h>
 
 #include "ctitime.h"

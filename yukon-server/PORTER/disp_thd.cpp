@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iomanip>
 #include <iostream>
@@ -75,7 +75,7 @@ extern void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevi
 extern bool processInputFunction(CHAR Char);
 extern void KickPIL();
 
-void DispatchMsgHandlerThread(VOID *Arg)
+void DispatchMsgHandlerThread(void *Arg)
 {
     extern CtiPortManager PortManager;
     extern CtiDeviceManager DeviceManager;

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 
@@ -43,7 +43,7 @@ int main(int argc, char* argv[] )
           {
              dout.setWriteInterval(0);
              CtiSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-    
+
              RunningInConsole = TRUE;
              service.RunInConsole(argc, argv );
           }
@@ -51,7 +51,7 @@ int main(int argc, char* argv[] )
     else
     {
           CtiSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-    
+
           //Set up an entry for the one service and go
           BEGIN_SERVICE_MAP
           SERVICE_MAP_ENTRY(CtiSimulatorService, CCUSIMULATOR)

@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "mgr_port.h"
@@ -219,7 +219,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCPIP Terminal Server Ports" << endl;
                 }
-                
+
                 static const string sql = CtiPortTCPIPDirect::getSQLCoreStatement();
                 Cti::Database::DatabaseConnection connection;
                 Cti::Database::DatabaseReader rdr(connection, sql);

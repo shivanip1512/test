@@ -23,7 +23,7 @@
 
 
    -------------------------------------------------------------------- */
-#include "yukon.h"
+#include "precompiled.h"
 
 // These next few are required for Win32
 #include "os2_2w32.h"

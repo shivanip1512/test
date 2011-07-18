@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "AttributeService.h"
 #include "LitePoint.h"
@@ -16,7 +16,7 @@
 
 using Cti::CapControl::DynamicCommandExecutor;
 using Cti::CapControl::VoltageRegulatorManager;
-using Cti::CapControl::PaoIdList; 
+using Cti::CapControl::PaoIdList;
 using Cti::CapControl::createPorterRequestMsg;
 using std::endl;
 
@@ -1961,11 +1961,11 @@ void CtiCCCommandExecutor::SendTimeSync()
     }
 
     if (eventMulti->getCount() > 0)
-    {    
+    {
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
     }
     else
-    {    
+    {
         delete eventMulti;
     }
 }

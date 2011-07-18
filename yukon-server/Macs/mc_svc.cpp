@@ -24,7 +24,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 #include "mc_svc.h"
 #include "CParms.h"
 #include "mc_script.h"

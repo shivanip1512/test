@@ -23,7 +23,7 @@
 
 
    -------------------------------------------------------------------- */
-#include "yukon.h"
+#include "precompiled.h"
 
 // These next few are required for Win32
 #include <iostream>
@@ -248,7 +248,7 @@ ERRSTRUCT CTIErrors[] = {
 };
 
 /* Routine to open up the error file */
-INT InitError (VOID)
+INT InitError (void)
 {
     INT rc, i;
 

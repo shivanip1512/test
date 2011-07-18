@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "dev_rds.h"
 #include "tbl_static_paoinfo.h"
 #include "ctistring.h"
@@ -125,7 +125,7 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
             status = FinalError;
             _isBiDirectionSet = false;
         }
-        else 
+        else
         {
             _isBiDirectionSet = true;
 
@@ -138,7 +138,7 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
                 {
                     _currentState = StateSendRequestedMessage;
                 }
-                else 
+                else
                 {
                     _command = Complete; //Transaction Complete
                     delay();
@@ -198,7 +198,7 @@ void RDSTransmitter::createCompletePackedMessage(MessageStore &message)
     message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
     message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
     msgCount++;
-     
+
     const int totalMessages = getMessageCountFromBufSize(_outMessage.OutLength);
 
     while( msgCount < totalMessages)
@@ -321,7 +321,7 @@ unsigned char RDSTransmitter::getGroupTypeCode() const
     if( getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_Group_Type, groupType) )
     {
         retVal = (atoi(groupType.c_str())) << 1;
-        
+
         if (groupType.contains("b",CtiString::ignoreCase))
         {
             retVal |= 1;
@@ -346,7 +346,7 @@ void RDSTransmitter::copyMessageToXfer(CtiXfer &xfer, MessageStore &message)
 
     xfer.setOutCount(message.size());
     xfer.setInCountExpected(isTwoWay() ? UECPResponseLen : 0);
-    
+
     int i = 0;
     for each( const unsigned char element in message )
     {
@@ -464,72 +464,72 @@ void RDSTransmitter::printAcknowledgmentError(unsigned char error)
     string errorText = "RDS reported error: ";
     switch(error)
     {
-        case 1: 
+        case 1:
         {
             errorText += "CRC error has occurred: Message is wrong";
             break;
         }
-        case 2: 
+        case 2:
         {
             errorText += "Message was not received (derived from the sequence counter)";
             break;
         }
-        case 3: 
+        case 3:
         {
             errorText += "Message unknown";
             break;
         }
-        case 4: 
+        case 4:
         {
             errorText += "DSN error";
             break;
         }
-        case 5: 
+        case 5:
         {
             errorText += "PSN error";
             break;
         }
-        case 6: 
+        case 6:
         {
             errorText += "Parameter out of range";
             break;
         }
-        case 7: 
+        case 7:
         {
             errorText += "Message element length error";
             break;
         }
-        case 8: 
+        case 8:
         {
             errorText += "Message field length error";
             break;
         }
-        case 9: 
+        case 9:
         {
             errorText += "Message not acceptable";
             break;
         }
-        case 10: 
+        case 10:
         {
             errorText += "End message (0xFF) missing";
             break;
         }
-        case 11: 
+        case 11:
         {
             errorText += "Buffer overflow";
             break;
         }
-        case 12: 
+        case 12:
         {
             errorText += "Bad stuffing, after 0xFD a number outside the range 00 to 02 has been received";
             break;
         }
-        case 13: 
+        case 13:
         {
             errorText += "Unexpected end of message (0xFF) received";
             break;
         }
-        case 14: 
+        case 14:
         {
             errorText += "Message received OK, but not interpreted";
             break;

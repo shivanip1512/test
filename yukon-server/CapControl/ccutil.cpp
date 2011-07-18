@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------
         Filename:  ccstatsobject.cpp
-        
+
         Programmer:  Julie Richter
-                
+
         Description:    CCStatsObject
-                        
+
 
         Initial Date:  2/24/2009
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
 ---------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ccutil.h"
 #include "pointdefs.h"
 #include "cccapbank.h"
- 
+
 using std::string;
 
 extern ULONG _MSG_PRIORITY;
 namespace Cti           {
 namespace CapControl    {
 
-std::set<int> initClosedStates() 
+std::set<int> initClosedStates()
 {
     std::set<int> s;
     s.insert(CtiCCCapBank::Close);
@@ -32,7 +32,7 @@ std::set<int> initClosedStates()
     return s;
 }
 
-std::set<int> initOpenStates() 
+std::set<int> initOpenStates()
 {
     std::set<int> s;
     s.insert(CtiCCCapBank::Open);
@@ -42,14 +42,14 @@ std::set<int> initOpenStates()
     return s;
 }
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString) 
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString)
 {
     CtiRequestMsg* reqMsg = new CtiRequestMsg(controllerId, commandString);
     reqMsg->setMessagePriority(_MSG_PRIORITY);
     return reqMsg;
 };
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString, const string& user) 
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString, const string& user)
 {
     CtiRequestMsg* reqMsg = createPorterRequestMsg(controllerId, commandString);
     reqMsg->setUser(user);
@@ -124,7 +124,7 @@ std::string desolvePhase( const Phase & p )
         {
             return "C";
         }
-    
+
         case Phase_Poly:
         {
             return "*";

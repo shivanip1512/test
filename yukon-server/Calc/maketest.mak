@@ -1,5 +1,5 @@
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(DISPATCH)\include \
@@ -115,14 +115,14 @@ $(BIN)\test*.exe
 
 
 #UPDATE#
-test_calc.obj:	yukon.h precompiled.h types.h ctidbgmem.h calc.h \
-		ctiqueues.h calccomponent.h ctitime.h dlldefs.h ctidate.h \
-		logger.h thread.h mutex.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h pointstore.h \
-		hashkey.h hash_functions.h rtdb.h string_utility.h dllbase.h \
-		dsm2.h cticonnect.h netports.h dsm2err.h words.h optional.h \
-		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
-		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h
+test_calc.obj:	precompiled.h calc.h ctiqueues.h calccomponent.h \
+		ctitime.h dlldefs.h ctidate.h logger.h thread.h mutex.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h CtiPCPtrQueue.h pointstore.h hashkey.h \
+		hash_functions.h rtdb.h string_utility.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
+		optional.h pointdefs.h regression.h tbl_pt_limit.h \
+		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h row_reader.h
 #ENDUPDATE#
 

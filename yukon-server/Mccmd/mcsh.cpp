@@ -1,19 +1,19 @@
 /*-----------------------------------------------------------------------------
     Filename:  mcsh.cpp
-                    
+
     Programmer:  Aaron Lauinger
-    
+
     Description: Source file for mcsh.exe
                  Simply calls Tcl_Main in tcl81.dll providing a callback
                  after initialization in order to load mccmd.dll.
-                 This loads cti metering and control commands into the 
+                 This loads cti metering and control commands into the
                  interpreter and attempts to make a connection to the PIL.
-                          
-    Initial Date:  10/16/99   
-    
+
+    Initial Date:  10/16/99
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "mcsh.h"
 
@@ -34,7 +34,7 @@ int MCSH_InitProc(Tcl_Interp* interp)
     dout.setOutputFile("mcsh");
     dout.setWriteInterval(0);
     dout.setToStdOut(true);
-    dout.start();   
+    dout.start();
 
     if( Mccmd_Init(interp) == TCL_ERROR )
         return TCL_ERROR;

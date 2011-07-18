@@ -1,6 +1,6 @@
 
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "VoltageRegulator.h"
 #include "ccutil.h"
 
@@ -324,7 +324,7 @@ VoltageRegulator::OperatingMode VoltageRegulator::getOperatingMode()
     LitePoint point = getPointByAttribute( PointAttribute::AutoRemoteControl );
 
     if ( getPointValue( point.getPointId(), value ) )
-    {        
+    {
         return ( value == 1.0 ) ? RemoteMode : LocalMode;
     }
 

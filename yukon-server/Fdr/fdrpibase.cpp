@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -65,7 +65,7 @@ const char CtiFDRPiBase::PI_DIGITAL_POINT = 'D';
 /**
  * Default Constructor.
  */
-CtiFDRPiBase::CtiFDRPiBase() : 
+CtiFDRPiBase::CtiFDRPiBase() :
   CtiFDRSimple( "PI" ),
   _connectionFailureCount(0),
   _connected(false),
@@ -106,10 +106,10 @@ CtiFDRPiBase* CtiFDRPiBase::createInstance()
 
 /**
  * Attempt a connection to the primary PI server. If the attempt
- * to set the node and login to the server are successful, the 
- * current node index is set to 0 to alert callers of 
- * needConnetion() that we're happily connected to the primary. 
- *  
+ * to set the node and login to the server are successful, the
+ * current node index is set to 0 to alert callers of
+ * needConnetion() that we're happily connected to the primary.
+ *
  * @return <code>true</code> if setting the active connection to
  *         the primary PI server and subsequent login attempt
  *         were successful,
@@ -151,14 +151,14 @@ bool CtiFDRPiBase::tryPrimaryConnection()
 }
 
 /**
- * Attempt a connection to a secondary PI server. All handling 
- * of secondary node switching occurs in this function. If a 
- * secondary has been attempted too many times, future efforts 
+ * Attempt a connection to a secondary PI server. All handling
+ * of secondary node switching occurs in this function. If a
+ * secondary has been attempted too many times, future efforts
  * will attempt an alternative secondary node if any exist. This
  * function will never attempt a connection to the primary node.
- * If the attempt to set the node and login to the server are 
- * successful, the connection failure count is reset. 
- *  
+ * If the attempt to set the node and login to the server are
+ * successful, the connection failure count is reset.
+ *
  * @return <code>true</code> if setting the active connection to
  *         a secondary PI server and subsequent login attempt
  *         were successful,
@@ -174,7 +174,7 @@ bool CtiFDRPiBase::trySecondaryConnection()
 
   if(_currentNodeIndex == 0)
   {
-    // We got in here because the connection to the primary wasn't any good. 
+    // We got in here because the connection to the primary wasn't any good.
     // Start with the first secondary and try to find a good backup to use!
     _currentNodeIndex = 1;
   }
@@ -204,7 +204,7 @@ bool CtiFDRPiBase::trySecondaryConnection()
     if( _connectionFailureCount >= FailureThreshold )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Attempts to connect to PI server " << getCurrentNodeName() 
+      logNow() << "Attempts to connect to PI server " << getCurrentNodeName()
         << " have failed. Attempting a node switch." << endl;
       _currentNodeIndex = (_currentNodeIndex + 1) % _serverNodeNames.size();
       _connectionFailureCount = 0;
@@ -232,9 +232,9 @@ bool CtiFDRPiBase::needsConnection()
 }
 
 /**
- * Open a connection to the remote system. 
- *  
- * We are in this function for one of the following reasons: 
+ * Open a connection to the remote system.
+ *
+ * We are in this function for one of the following reasons:
  *    1) We are _NOT_ connected to any PI server
  *    2) We _ARE_ connected to a secondary PI server
  *    3) We lost connection to a secondary server (both of the
@@ -251,8 +251,8 @@ bool CtiFDRPiBase::connect()
 }
 
 /**
- * Attempt a login to the PI server we have currently set for 
- * our active connection. 
+ * Attempt a login to the PI server we have currently set for
+ * our active connection.
  */
 bool CtiFDRPiBase::serverNodeLogin()
 {
@@ -426,12 +426,12 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
 }
 
 /**
- * 
- * Function to grab the server node name we're connecting to. 
- * Used primarily for support of collectives, but will work for 
- * systems using one database as well. 
- *  
- * @return The name of the server whose PI Database we are 
+ *
+ * Function to grab the server node name we're connecting to.
+ * Used primarily for support of collectives, but will work for
+ * systems using one database as well.
+ *
+ * @return The name of the server whose PI Database we are
  *         connecting to.
  */
 std::string CtiFDRPiBase::getCurrentNodeName()
@@ -455,10 +455,10 @@ std::string CtiFDRPiBase::getPrimaryNodeName()
 }
 
 /**
- * This function simply returns whether the number of servers in 
- * our server node list is greater than one, indicating that we 
- * are indeed connected to a collective. 
- *  
+ * This function simply returns whether the number of servers in
+ * our server node list is greater than one, indicating that we
+ * are indeed connected to a collective.
+ *
  * @return <code>true</code> if there is more than one server in
  *         our node name list, <code>false</code> otherwise.
  */

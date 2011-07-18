@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "fdriosocket.h"
 
@@ -7,10 +7,10 @@ using std::endl;
 
 template <class T>
 CtiFDRIOSocket<T>::~CtiFDRIOSocket( )
-{   
+{
     _initThreadFunc.requestCancellation( );
     _initThreadFunc.join( );
-    
+
     try
     {
         delete _inPortal;
@@ -48,7 +48,7 @@ void CtiFDRIOSocket<T>::_initThread( void )
 
             _submittedSockSem.acquire( );   //  this will wait for submitSocket( ) to be called,
             _inPortal = _submittedPortal;   //    which will mean that an RWSocketPortal has been
-        }                                   //    placed into _submittedPortal, and the destination 
+        }                                   //    placed into _submittedPortal, and the destination
                                             //    and port have been extracted and set.
 
         //  if we are not a dual socket connection, then the in and out portals are the same.
@@ -107,7 +107,7 @@ void CtiFDRIOSocket<T>::_inThread( void )
                     signature[4];
     T               *incomingTMsg;
     int             incomingSize;
-        
+
     try
     {
         for( ; ; )
@@ -115,7 +115,7 @@ void CtiFDRIOSocket<T>::_inThread( void )
             _inSockSem.acquire( 200 );  //  wait for the socket to be ready
             _pSelf.serviceCancellation( );
         }
-        
+
         for( ; ; )
         {
             //  wait for 4 bytes
@@ -124,7 +124,7 @@ void CtiFDRIOSocket<T>::_inThread( void )
                 rwSleep( 50 );
                 _pSelf.serviceCancellation( );
             }
-            
+
             //  find out how much we need to read in
             incomingSize = _idSizeof( signature );
             incomingCharMsg = new char[incomingSize];
@@ -136,9 +136,9 @@ void CtiFDRIOSocket<T>::_inThread( void )
                 _pSelf.serviceCancellation( );
             }
 
-            
+
             _inPortal->recv( incomingCharMsg, incomingSize );   //  read in the message
-            
+
             incomingTMsg = _prepareInput( incomingCharMsg );    //  translate it into queue form
             _postInput( incomingTMsg );                         //  and stuff it into the queue
         }
@@ -156,7 +156,7 @@ void CtiFDRIOSocket<T>::_outThread( void )
     T               *outgoingTMsg;
     char            *outgoingCharMsg;
     int             bytesToSend, bytesSent;
-        
+
     try
     {
         for( ; ; )
@@ -164,7 +164,7 @@ void CtiFDRIOSocket<T>::_outThread( void )
             _outSockSem.acquire( 200 ); //  wait for the socket to be ready
             _pSelf.serviceCancellation( );
         }
-        
+
         for( ; ; )
         {
             _pSelf.serviceCancellation( );
@@ -172,7 +172,7 @@ void CtiFDRIOSocket<T>::_outThread( void )
             {
                 outgoingCharMsg = _prepareOutput( T *toOutput );    //  translate the message into raw form
                 bytesToSend = _idSizeof( outgoingCharMsg );     //  find out how big it is
-                bytesSent = 0;  
+                bytesSent = 0;
                 //  until we've sent it all
                 for( ; bytesToSend - bytesSent; )
                 {
@@ -194,7 +194,7 @@ void CtiFDRIOSocket<T>::_outThread( void )
 //  socket reading, writing, and peeking code from ctinexus.cpp, for reference
 
 /*
-INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG TimeOut)
+INT CTINEXUS::CTINexusWrite(void *buf, ULONG len, PULONG BytesWritten, LONG TimeOut)
 {
    ULONG    BytesSent   = 0;
    CHAR     *bptr       = (CHAR*)buf;
@@ -225,7 +225,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
 */
 
 /*
-IM_EX_CTIBASE INT CTINexusRead(CTINEXUS *Nexus, VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
+IM_EX_CTIBASE INT CTINexusRead(CTINEXUS *Nexus, void *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     INT      BytesRead   = 0;
     ULONG    BytesAvail  = 0;
@@ -251,7 +251,7 @@ IM_EX_CTIBASE INT CTINexusRead(CTINEXUS *Nexus, VOID *buf, ULONG len, PULONG BRe
                 CTINexusReportError(__FILE__, __LINE__, Error );
                 return(-Error);
             }
-            else if( 
+            else if(
                    (BytesAvail                 && Nexus->NexusFlags | CTINEXUS_FLAG_READANY)       ||
                    (BytesAvail >= (ULONG)len   && Nexus->NexusFlags | CTINEXUS_FLAG_READEXACTLY)
                    )
@@ -264,7 +264,7 @@ IM_EX_CTIBASE INT CTINexusRead(CTINEXUS *Nexus, VOID *buf, ULONG len, PULONG BRe
 
         if( Nexus->NexusState != CTINEXUS_STATE_NULL && nLoops >= TimeOut * 20 )
         {
-            if( 
+            if(
               (Nexus->NexusFlags | CTINEXUS_FLAG_READEXACTLY && BytesAvail < (ULONG)len)          ||
               (Nexus->NexusFlags | CTINEXUS_FLAG_READANY     && BytesAvail == 0)
               )
@@ -285,7 +285,7 @@ IM_EX_CTIBASE INT CTINexusRead(CTINEXUS *Nexus, VOID *buf, ULONG len, PULONG BRe
                 CTINexusReportError(__FILE__, __LINE__, Error );
                 return(-Error);
             }
-            else if( 
+            else if(
                    (BytesAvail                 && Nexus->NexusFlags | CTINEXUS_FLAG_READANY)       ||
                    (BytesAvail >= (ULONG)len   && Nexus->NexusFlags | CTINEXUS_FLAG_READEXACTLY)
                    )
@@ -342,7 +342,7 @@ IM_EX_CTIBASE INT CTINexusRead(CTINEXUS *Nexus, VOID *buf, ULONG len, PULONG BRe
 */
 
 /*
-IM_EX_CTIBASE INT CTINexusPeek(CTINEXUS *Nexus, VOID *buf, ULONG len, PULONG BRead)
+IM_EX_CTIBASE INT CTINexusPeek(CTINEXUS *Nexus, void *buf, ULONG len, PULONG BRead)
 {
     INT      BytesRead   = 0;
     ULONG    BytesAvail  = 0;

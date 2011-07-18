@@ -32,9 +32,9 @@ public:
 
     virtual ULONG CtiGetNexusState   () { return CTINEXUS_STATE_NULL; }
     virtual INT CTINexusClose        () { return 0; }
-    virtual INT CTINexusWrite        (VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut) { return 0; }
-    virtual INT CTINexusRead         (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut) { return 0; }
-    virtual INT CTINexusPeek         (VOID *buf, ULONG len, PULONG BRead) { return 0; }
+    virtual INT CTINexusWrite        (void *buf, ULONG len, PULONG BWritten, LONG TimeOut) { return 0; }
+    virtual INT CTINexusRead         (void *buf, ULONG len, PULONG BRead, LONG TimeOut) { return 0; }
+    virtual INT CTINexusPeek         (void *buf, ULONG len, PULONG BRead) { return 0; }
 
     virtual bool CTINexusValid() const { return false; }
 };

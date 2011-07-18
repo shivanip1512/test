@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "port_thread_udp.h"
 
@@ -34,7 +34,7 @@ namespace Cti    {
 namespace Porter {
 
 /* Threads that handle each port for communications */
-VOID PortUdpThread(void *pid)
+void PortUdpThread(void *pid)
 {
     long portid = (long)pid;
 

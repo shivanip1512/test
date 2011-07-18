@@ -9,7 +9,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmid.h"
@@ -900,7 +900,7 @@ void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter 
+    deleter
         << getPAOId()
         << getCurtailReferenceId();
 

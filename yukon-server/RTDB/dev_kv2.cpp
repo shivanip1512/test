@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,7 +11,7 @@
 ** Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_kv2.h"

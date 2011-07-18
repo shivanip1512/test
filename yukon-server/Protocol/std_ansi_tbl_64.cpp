@@ -9,7 +9,7 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "std_ansi_tbl_64.h"
@@ -52,7 +52,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour,  
+                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour,
                                           bool timeZoneApplied, bool lsbDataOrder, bool descBlockOrder, bool descIntervalOrder )
 {
     int index, i, j;
@@ -349,7 +349,7 @@ void CtiAnsiTable64::printResult( const string& deviceName )
 
     for (index = 0; index < _nbrBlksSet1; index++)
     {
-        if ( ( !_descBlockOrder && index == (_nbrBlksSet1-1)) 
+        if ( ( !_descBlockOrder && index == (_nbrBlksSet1-1))
               || (  _descBlockOrder && index == 0 )
               )
         {

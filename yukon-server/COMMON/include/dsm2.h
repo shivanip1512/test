@@ -9,6 +9,8 @@
 #include "dsm2err.h"
 #include "words.h"
 
+#include <set>
+
 class CTINEXUS;
 
 extern LONG gOutMessageCounter;
@@ -276,7 +278,7 @@ struct PIL_ECHO               // Data echo'ed through porter fro the PIL.
 {
    char     BuildIt;          // 022801 CGP If !FALSE porter will analyze the CommandStr and make his own assumptions.
 
-   VOID     *Connection;
+   void     *Connection;
    CHAR     CommandStr[COMMAND_STR_SIZE + 1];   // First COMMAND_STR_SIZE characters of the request string.
    INT      RouteID;          // The ID of the route which is currently being addressed
    char     MacroOffset;      // On request, the macro offset to try.  On reply, the macro offset to try next (or zero if no more exist)
@@ -589,8 +591,8 @@ typedef struct _STATS
 IM_EX_CTIBASE int            UCTFTime (struct timeb *);
 IM_EX_CTIBASE struct tm *    UCTLocalTime (time_t, USHORT);               //
 IM_EX_CTIBASE time_t         UCTMakeTime (struct tm *);
-IM_EX_CTIBASE ULONG          LongTime (VOID);
-IM_EX_CTIBASE ULONG          DSTFlag (VOID);
+IM_EX_CTIBASE ULONG          LongTime (void);
+IM_EX_CTIBASE ULONG          DSTFlag (void);
 IM_EX_CTIBASE void           UCTLocoTime (time_t, USHORT, struct tm *);
 IM_EX_CTIBASE void           UCTAsciiTime (time_t, USHORT, PCHAR);
 IM_EX_CTIBASE ULONG          setNextInterval(time_t, ULONG);

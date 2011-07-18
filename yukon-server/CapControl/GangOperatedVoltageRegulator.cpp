@@ -1,6 +1,6 @@
 
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "logger.h"
 #include "GangOperatedVoltageRegulator.h"
 #include "ccutil.h"

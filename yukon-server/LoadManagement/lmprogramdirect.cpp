@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <algorithm>
 #include <queue>
@@ -640,7 +640,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                     {
                         LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
-    
+
                         // .checkControl below can modify (shorten) the shed time
                         CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                         if( getConstraintOverride() || (con_checker.checkControl(shedTime, true) && !hasGroupExceededMaxDailyOps(currentLMGroup))  )
@@ -3616,7 +3616,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     currentLMGroup->getNextControlTime().seconds() <= secondsFrom1901 )
                 {
                     LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
-    
+
                     // .checkControl below can modify (shorten) the shed time
                     CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                     if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )

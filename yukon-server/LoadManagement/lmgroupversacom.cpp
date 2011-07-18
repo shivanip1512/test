@@ -2,16 +2,16 @@
         Filename:  lmgroupversacom.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMGroupVersacom.
                         CtiLMGroupVersacom maintains the state and handles
                         the persistence of versacom groups in Load Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmgroupbase.h"
@@ -31,12 +31,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupVersacom, CTILMGROUPVERSACOM_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom::CtiLMGroupVersacom()
-{   
+{
 }
 
 CtiLMGroupVersacom::CtiLMGroupVersacom(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupVersacom::CtiLMGroupVersacom(const CtiLMGroupVersacom& groupversa)
@@ -147,7 +147,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LON
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::restoreGuts(RWvistream& istrm)
@@ -157,10 +157,10 @@ void CtiLMGroupVersacom::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMGroupVersacom::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupVersacom::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
     return;
@@ -199,7 +199,7 @@ int CtiLMGroupVersacom::operator!=(const CtiLMGroupVersacom& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupVersacom::replicate() const
@@ -209,7 +209,7 @@ CtiLMGroupBase* CtiLMGroupVersacom::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::restore(Cti::RowReader &rdr)

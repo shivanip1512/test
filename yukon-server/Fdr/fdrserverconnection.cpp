@@ -1,6 +1,6 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "logger.h"
 #include "guard.h"
 
@@ -29,22 +29,22 @@ CtiFDRServerConnection::CtiFDRServerConnection(SOCKET aConnection, SOCKADDR_IN a
 
 
 CtiFDRServerConnection::~CtiFDRServerConnection( )
-{   
-} 
+{
+}
 
 /*
-int CtiFDRServerConnection::init (int aPortNumber) 
+int CtiFDRServerConnection::init (int aPortNumber)
 {
-    iThreadReceive = rwMakeThreadFunction(*this, 
+    iThreadReceive = rwMakeThreadFunction(*this,
                                           &CtiFDRServerConnection::threadFunctionGetDataFrom);
 //    initializeConnection(aPortNumber);
 
    return NORMAL;
 }
 
-int CtiFDRServerConnection::init () 
+int CtiFDRServerConnection::init ()
 {
-    iThreadReceive = rwMakeThreadFunction(*this, 
+    iThreadReceive = rwMakeThreadFunction(*this,
                                           &CtiFDRServerConnection::threadFunctionGetDataFrom);
     if (getParent() == NULL)
     {
@@ -59,23 +59,23 @@ int CtiFDRServerConnection::init ()
 }
 
 */
-int CtiFDRServerConnection::init () 
+int CtiFDRServerConnection::init ()
 {
-    iThreadReceive = rwMakeThreadFunction(*this, 
+    iThreadReceive = rwMakeThreadFunction(*this,
                                           &CtiFDRServerConnection::threadFunctionGetDataFrom);
    return NORMAL;
 }
 
-int CtiFDRServerConnection::run () 
+int CtiFDRServerConnection::run ()
 {
     iThreadReceive.start();
     return NORMAL;
 }
 
-int CtiFDRServerConnection::stop () 
+int CtiFDRServerConnection::stop ()
 {
     closeAndFailConnection();
-    iThreadReceive.requestCancellation();    
+    iThreadReceive.requestCancellation();
     return NORMAL;
 }
 
@@ -84,7 +84,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     CHAR            data[8172];
-    INT retVal=0;        
+    INT retVal=0;
     ULONG   bytesRead=0,totalMsgSize=0;
     int connectionBadCount=0;
 
@@ -94,14 +94,14 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
         while (getParent() == NULL)
         {
             pSelf.serviceCancellation( );
-            pSelf.sleep (1000);  
+            pSelf.sleep (1000);
         }
 
         // loop until this is created
         while (getParent()->getConnectionSem() == NULL)
         {
             pSelf.serviceCancellation( );
-            pSelf.sleep (1000);  
+            pSelf.sleep (1000);
         }
 
         // must be available
@@ -177,7 +177,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                     /********************
                                     * check here if the client by name already existed
                                     *
-                                    * NOTE:  when someone connects, we check for their IP in 
+                                    * NOTE:  when someone connects, we check for their IP in
                                     * our list.  This works fine as long as there aren't 2 network
                                     * cards and therefore possibly 2 ips that may connect back
                                     *********************
@@ -282,7 +282,7 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
             }
         }
 
-        // see if we bailed because the socket failed		
+        // see if we bailed because the socket failed
         if (getConnectionStatus() ==  CtiFDRSocketConnection::Failed)
         {
             retVal = SOCKET_ERROR;
@@ -305,9 +305,9 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
                     }
                     else
                     {
-			CtiLockGuard<CtiLogger> dout_guard(dout);
-			dout << CtiTime() << " Socket Error on read, WSAGetLastError() == " << WSAGetLastError() << endl;
-			
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Socket Error on read, WSAGetLastError() == " << WSAGetLastError() << endl;
+
                         // problem with the receive
                         retVal = SOCKET_ERROR;
                         break;

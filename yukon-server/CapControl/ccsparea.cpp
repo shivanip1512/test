@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <rw/tpsrtvec.h>
 
@@ -216,7 +216,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     {
         if( !_insertDynamicDataFlag )
         {
-            
+
 
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
@@ -226,7 +226,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             static const string updaterSql = "update dynamicccspecialarea set additionalflags = ?, controlvalue = ? "
                                              " where areaid = ?";
             Cti::Database::DatabaseWriter updater(conn, updaterSql);
-            
+
             updater << _additionalFlags << _voltReductionControlValue << getPaoId();
 
             if(updater.execute())    // No error occured!

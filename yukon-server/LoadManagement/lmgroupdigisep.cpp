@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "lmgroupdigisep.h"
 #include "lmid.h"
 #include "logger.h"
@@ -17,12 +17,12 @@ RWDEFINE_COLLECTABLE( LMGroupDigiSEP, LMGROUPDIGISEP_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 LMGroupDigiSEP::LMGroupDigiSEP()
-{   
+{
 }
 
 LMGroupDigiSEP::LMGroupDigiSEP(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 LMGroupDigiSEP::LMGroupDigiSEP(const LMGroupDigiSEP& groupe)
@@ -68,7 +68,7 @@ int LMGroupDigiSEP::operator!=(const LMGroupDigiSEP& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* LMGroupDigiSEP::replicate() const
@@ -78,7 +78,7 @@ CtiLMGroupBase* LMGroupDigiSEP::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void LMGroupDigiSEP::restore(Cti::RowReader &rdr)
@@ -109,7 +109,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     }
 
     setLastControlSent(CtiTime());
-    
+
     if( getGroupControlState() != CtiLMGroupBase::ActiveState )
     {
         setControlStartTime(CtiTime());
@@ -177,7 +177,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
     }
 
     setLastControlSent(CtiTime());
-    
+
     if( getGroupControlState() != CtiLMGroupBase::ActiveState )
     {
         setControlStartTime(CtiTime());
@@ -203,7 +203,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediately: " << (stopImmediately ? "TRUE" : "FALSE") << endl;
     }
-    
+
     setLastControlSent(CtiTime::now());
     return true;
 }
@@ -221,7 +221,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending SEP Shed command, LM Group: " << getPAOName() << ", control minutes: " << CtiNumStr(controlMinutes) << endl;
     }
-    
+
     setLastControlSent(CtiTime::now());
     return true;
 }

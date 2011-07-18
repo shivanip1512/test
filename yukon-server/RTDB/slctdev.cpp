@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dev_710.h"
 #include "dev_base.h"
@@ -83,7 +83,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "slctdev.h"
-#include "yukon.h"
+#include "precompiled.h"
 #include "row_reader.h"
 
 using namespace Cti::Devices;

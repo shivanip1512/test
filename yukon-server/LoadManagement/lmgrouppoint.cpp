@@ -2,16 +2,16 @@
         Filename:  lmgrouppoint.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMGroupPoint.
                         CtiLMGroupPoint maintains the state and handles
                         the persistence of emetcon groups in Load Management.
 
         Initial Date:  3/12/2002
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmgrouppoint.h"
@@ -32,12 +32,12 @@ CtiLMGroupPoint::CtiLMGroupPoint() :
 _deviceidusage(0),
 _pointidusage(0),
 _startcontrolrawstate(0)
-{   
+{
 }
 
 CtiLMGroupPoint::CtiLMGroupPoint(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupPoint::CtiLMGroupPoint(const CtiLMGroupPoint& grouppoint)
@@ -186,7 +186,7 @@ CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG p
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
@@ -200,10 +200,10 @@ void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMGroupPoint::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupPoint::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
 
@@ -252,7 +252,7 @@ int CtiLMGroupPoint::operator!=(const CtiLMGroupPoint& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupPoint::replicate() const
@@ -262,7 +262,7 @@ CtiLMGroupBase* CtiLMGroupPoint::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a Reader
 ---------------------------------------------------------------------------*/
 void CtiLMGroupPoint::restore(Cti::RowReader &rdr)

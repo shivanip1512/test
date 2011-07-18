@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "boost/mem_fn.hpp"
 
@@ -506,12 +506,12 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     const string sql_analog = string(CtiPointAnalog().getSQLCoreStatement() + " AND PT.");
 
     //  CALC points
-    const string sql_calc   = string(CtiPointNumeric().getSQLCoreStatement() + 
+    const string sql_calc   = string(CtiPointNumeric().getSQLCoreStatement() +
                               " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')" +
                               " AND PT.");
 
     //  STATUS points
-    const string sql_status = string(CtiPointStatus().getSQLCoreStatement() + 
+    const string sql_status = string(CtiPointStatus().getSQLCoreStatement() +
                               " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') " +
                               " AND PT.");
 
@@ -541,7 +541,7 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
         in_list = "(" + in_list + ")";
 
         std::stringstream ss_accum, ss_analog, ss_calc, ss_status, ss_system;
-        
+
         ss_accum    << sql_accum    << keyColString << in_list.c_str();
         ss_analog   << sql_analog   << keyColString << in_list.c_str();
         ss_calc     << sql_calc     << keyColString << in_list.c_str();
@@ -556,7 +556,7 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
             string loggedSQLstatus = ss_status.str();
             string loggedSQLsystem = ss_system.str();
             {
-    
+
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << loggedSQLaccum  << endl;
                 dout << loggedSQLanalog << endl;

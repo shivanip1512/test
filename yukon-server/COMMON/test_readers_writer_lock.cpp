@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test readers/writer lock"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include <boost/test/unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 

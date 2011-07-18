@@ -21,36 +21,36 @@ INT IDLCua (PBYTE, PUSHORT, PUSHORT);
 INT IDLCAlgStat (PBYTE, PUSHORT);
 
 /* Prototypes from PORTER.C */
-VOID APIENTRY PorterCleanUp (ULONG);
+void APIENTRY PorterCleanUp (ULONG);
 
 /* Prototypes from PORTERSU.C */
 INT SendError(OUTMESS *&, USHORT, INMESS *InMessage = NULL);
 
 /* Prototypes from PORTFILL.C */
-VOID FillerThread (PVOID);
+void FillerThread (PVOID);
 
 /* Prototypes from PORTPIPE.C */
-VOID PorterConnectionThread (PVOID);
+void PorterConnectionThread (PVOID);
 
-VOID PorterInterfaceThread (PVOID);
-VOID PorterGWThread (PVOID);
+void PorterInterfaceThread (PVOID);
+void PorterGWThread (PVOID);
 
 /*  */
-VOID PortThread(void *);
-VOID PortDialbackThread(void *);
+void PortThread(void *);
+void PortDialbackThread(void *);
 bool RemoteReset (CtiDeviceSPtr &Device, const CtiPortSPtr &pPort);
 
 /* Prototypes from PORTQUE.C */
-VOID QueueThread (PVOID);
+void QueueThread (PVOID);
 INT CCUResponseDecode (INMESS *, CtiDeviceSPtr , OUTMESS *OutMessage);
-VOID KickerThread (PVOID);
+void KickerThread (PVOID);
 INT DeQueue(INMESS *);
 INT QueueFlush       (CtiDeviceSPtr Dev);
 INT BuildLGrpQ       (CtiDeviceSPtr Dev);
 INT BuildActinShed   (CtiDeviceSPtr Dev);
 
 /* Prototypes from PORTTIME.C */
-VOID TimeSyncThread (PVOID);
+void TimeSyncThread (PVOID);
 INT LoadXTimeMessage (PBYTE);
 
 INT RefreshMCTTimeSync (OUTMESS *);
@@ -61,7 +61,7 @@ INT LoadWelcoTimeMessage (PBYTE, USHORT);
 INT LoadSES92TimeMessage (PBYTE, USHORT);
 
 /* Prototypes from PORTCONF.C */
-VOID VConfigThread (PVOID);
+void VConfigThread (PVOID);
 INT VSend (VSTRUCT *, PCHAR, USHORT);
 INT VSend2 (VSTRUCT *, CtiRouteSPtr );
 

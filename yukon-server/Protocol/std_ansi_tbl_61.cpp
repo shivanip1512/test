@@ -9,7 +9,7 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "logger.h"
 #include "math.h"
@@ -84,7 +84,7 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
             x++;
         }
     }
-    double tempResult; 
+    double tempResult;
     offset = toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
     _lp_tbl.lp_memory_len = tempResult;
     dataBlob += offset;
@@ -103,20 +103,20 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
         {
 
             if (lsbDataOrder)
-			{
-				memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blks_set, dataBlob, sizeof(short));
-				memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, dataBlob+2, sizeof(short));
+            {
+                memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blks_set, dataBlob, sizeof(short));
+                memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, dataBlob+2, sizeof(short));
 
                 dataBlob += sizeof(short) * 2;
-			}
-			else
-			{
+            }
+            else
+            {
                 ULONG tempLong;
                 dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
                 _lp_tbl.lp_data_set_info[xx].nbr_blks_set = tempLong;
                 dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
                 _lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set = tempLong;
-			}
+            }
              memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_chns_set, dataBlob, sizeof( UINT8 ));
              memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].max_int_time_set, dataBlob+1, sizeof( UINT8 ));
              dataBlob +=   sizeof( UINT8 ) * 2;

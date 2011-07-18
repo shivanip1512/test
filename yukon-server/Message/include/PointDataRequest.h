@@ -5,6 +5,7 @@
 
 #include <list>
 #include <map>
+#include <set>
 #include <boost/shared_ptr.hpp>
 
 struct PointValue{

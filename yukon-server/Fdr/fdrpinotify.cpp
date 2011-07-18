@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -59,20 +59,20 @@ void CtiFDRPiNotify::handleNewPoints()
   }
   int32 count = _registerList.size();
   int32 initial_count = count;
-  if (count > 0) 
+  if (count > 0)
   {
-	  PiPointId *piIdArray = &_registerList[0];
-	  int err = pisn_evmestablish(&count, piIdArray);
-	  if (err != 0 || count != initial_count)
-	  {
-		  CtiLockGuard<CtiLogger> doubt_guard( dout );
-		  logNow() << "Unable to register for "
-			<< (initial_count - count) << " of " << initial_count
-			<< " point notications from Pi, pisn_evmestablish returned "
-			<< getPiErrorDescription(err, "pisn_evmestablish") << endl;
-	  }
+      PiPointId *piIdArray = &_registerList[0];
+      int err = pisn_evmestablish(&count, piIdArray);
+      if (err != 0 || count != initial_count)
+      {
+          CtiLockGuard<CtiLogger> doubt_guard( dout );
+          logNow() << "Unable to register for "
+            << (initial_count - count) << " of " << initial_count
+            << " point notications from Pi, pisn_evmestablish returned "
+            << getPiErrorDescription(err, "pisn_evmestablish") << endl;
+      }
 
-	  forceUpdateAllPoints();
+      forceUpdateAllPoints();
   }
 
   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )

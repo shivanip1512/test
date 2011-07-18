@@ -1,5 +1,5 @@
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "NoStrategy.h"
 
@@ -30,7 +30,7 @@ const std::string NoStrategy::getControlUnits() const
 
 
 const ControlStrategy::ControlMethodType NoStrategy::getMethodType() const
-{ 
+{
     return ControlStrategy::NoMethod;
 }
 

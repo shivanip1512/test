@@ -1,8 +1,8 @@
 # nmake file YUKON 1.0 FDR RCCS Interface
 # note:  the fdrinet.lib is linked to this interface because it inherits from it
 
-include ..\common\global.inc
-include ..\common\rwglobal.inc
+include $(COMPILEBASE)\global.inc
+include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(DISPATCH)\include \

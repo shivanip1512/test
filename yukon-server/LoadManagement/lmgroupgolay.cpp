@@ -2,16 +2,16 @@
   Filename:  lmgroupgolay.cpp
 
   Programmer:  Aaron Lauinger
-        
+
   Description:    Source file for CtiLMGroupGolay.
   CtiLMGroupGolay maintains the state and handles
   the persistence of golay groups in Load Management.
 
   Initial Date:  3/6/2004
-         
+
   COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
   ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "lmgroupgolay.h"
 #include "lmid.h"
@@ -30,12 +30,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupGolay, CTILMGROUPGOLAY_ID )
   ---------------------------------------------------------------------------*/
 CtiLMGroupGolay::CtiLMGroupGolay() :
 _nominal_timeout(0)
-{   
+{
 }
 
 CtiLMGroupGolay::CtiLMGroupGolay(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupGolay::CtiLMGroupGolay(const CtiLMGroupGolay& groupexp)
@@ -104,7 +104,7 @@ CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG per
 CtiRequestMsg* CtiLMGroupGolay::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     string controlString("control golay shed ");
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -154,7 +154,7 @@ CtiLMGroupGolay& CtiLMGroupGolay::setNominalTimeout(int nominal_timeout)
 
 /*-------------------------------------------------------------------------
   restoreGuts
-    
+
   Restore self's state from the given stream
   --------------------------------------------------------------------------*/
 void CtiLMGroupGolay::restoreGuts(RWvistream& istrm)
@@ -164,10 +164,10 @@ void CtiLMGroupGolay::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
   saveGuts
-    
+
   Save self's state onto the given stream
   ---------------------------------------------------------------------------*/
-void CtiLMGroupGolay::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupGolay::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
 }
@@ -202,7 +202,7 @@ int CtiLMGroupGolay::operator!=(const CtiLMGroupGolay& right) const
 
 /*---------------------------------------------------------------------------
   replicate
-    
+
   Restores self's operation fields
   ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupGolay::replicate() const
@@ -212,7 +212,7 @@ CtiLMGroupBase* CtiLMGroupGolay::replicate() const
 
 /*---------------------------------------------------------------------------
   restore
-    
+
   Restores given a Reader
   ---------------------------------------------------------------------------*/
 void CtiLMGroupGolay::restore(Cti::RowReader &rdr)

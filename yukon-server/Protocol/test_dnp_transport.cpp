@@ -1,6 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test DNP Protocol Transport Layer"
 
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dnp_transport.h"
 

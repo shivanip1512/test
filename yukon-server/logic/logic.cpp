@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "logic.h"
 
 #include "cparms.h"
@@ -22,7 +22,7 @@ int Logic_Init(Tcl_Interp* interp) {
 
 int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]) {
     if(gDispatchConnection != 0) {
-	return TCL_OK;
+    return TCL_OK;
     }
 
     int dispatch_port = VANGOGHNEXUS;
@@ -36,14 +36,14 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
         CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
 
         bool trouble = false;
-	if( (*fpGetAsString)("DISPATCH_MACHINE", temp, 64) ) {
+    if( (*fpGetAsString)("DISPATCH_MACHINE", temp, 64) ) {
             CtiLockGuard< CtiLogger > guard(dout);
             dout << CtiTime()  << " - Using " << temp << " as the dispatch host" << endl;
             dispatch_host = temp;
         }
         else {
             trouble = true;
-	}
+    }
 
         if( (*fpGetAsString)("DISPATCH_PORT", temp, 64) ) {
             CtiLockGuard< CtiLogger > guard(dout);
@@ -52,19 +52,19 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
         }
         else {
             trouble = TRUE;
-	}
+    }
 
-	if( trouble ) {
-	    CtiLockGuard< CtiLogger > guard(dout);
-	    dout << CtiTime() << " - Unable to find one or more mccmd config values in the configuration file." << endl;
-	}
+    if( trouble ) {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << CtiTime() << " - Unable to find one or more mccmd config values in the configuration file." << endl;
+    }
 
-	FreeLibrary(hLib);
+    FreeLibrary(hLib);
     }
     else
     {
-	CtiLockGuard< CtiLogger > guard(dout);
-	dout << "Unable to load cparms dll " << endl;
+    CtiLockGuard< CtiLogger > guard(dout);
+    dout << "Unable to load cparms dll " << endl;
     }
 
     gDispatchConnection = new CtiConnection(dispatch_port, dispatch_host.c_str());
@@ -77,8 +77,8 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
 int SetPoint(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]) {
     if(argc != 3) {
-	Tcl_SetErrorCode(interp, "SendPointData - wrong number of arguments");
-	return TCL_ERROR;
+    Tcl_SetErrorCode(interp, "SendPointData - wrong number of arguments");
+    return TCL_ERROR;
     }
 
     int pointid = atoi(argv[1]);

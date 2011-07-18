@@ -10,7 +10,7 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test FdrSanMiguel"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ctitime.h"
 #include "ctidate.h"
 #include "ctistring.h"

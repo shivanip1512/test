@@ -10,7 +10,7 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ctitime.h"
 #include "ccsubstationbus.h"
 #include "ccsubstation.h"
@@ -59,7 +59,7 @@ public:
         if (ID < 0)
         {
             long IDs[] = { 100 };
-    
+
             for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
             {
                 loadSingle(IDs[i], loaded);

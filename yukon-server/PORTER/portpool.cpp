@@ -12,7 +12,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include "connection.h"
@@ -33,7 +33,7 @@ INT AllocateOutMessagesToChildPorts(CtiPortSPtr &ParentPort);
 
 static INT sgPoolDebugLevel = 0;
 
-VOID PortPoolDialoutThread(void *pid)
+void PortPoolDialoutThread(void *pid)
 {
     extern CtiConnection  VanGoghConnection;
     extern CtiPortManager PortManager;

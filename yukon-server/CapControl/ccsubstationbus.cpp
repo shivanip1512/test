@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <rw/tpsrtvec.h>
 
@@ -3703,8 +3703,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 {
      if( getPerformingVerificationFlag())
      {
-         if ( getWaitForReCloseDelayFlag() || 
-              (!capBankVerificationStatusUpdate(pointChanges, ccEvents)  && 
+         if ( getWaitForReCloseDelayFlag() ||
+              (!capBankVerificationStatusUpdate(pointChanges, ccEvents)  &&
                 getCurrentVerificationCapBankId() != -1)  )
          {
              return false;
@@ -8921,7 +8921,7 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
     return retVal;
 }
 
-int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates) 
+int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates)
 {
     int currentNum = 0;
     std::vector<CtiCCCapBankPtr> banks = getAllSwitchedCapBanks();
@@ -8932,7 +8932,7 @@ int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates)
     return currentNum;
 }
 
-std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( ) 
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( )
 {
     std::vector<CtiCCCapBankPtr> banks;
     for each (CtiCCFeederPtr currentFeeder in _ccfeeders)
@@ -8942,17 +8942,17 @@ std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( )
     }
     return banks;
 }
-std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( ) 
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( )
 {
     std::vector<CtiCCCapBankPtr> banks;
     for each (CtiCCFeederPtr currentFeeder in _ccfeeders)
     {
         std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllSwitchedCapBanks( );
-        banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());    
+        banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());
     }
     return banks;
 }
-    
+
 CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
@@ -8965,16 +8965,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
         {
             int numOfBanks = getAllCapBanks().size();
             int currentNumClosed = getNumOfBanksInState(Cti::CapControl::ClosedStates);
-            
+
             int targetNumClose = numOfBanks * (_percentToClose * 0.01);
             int targetState = CtiCCCapBank::Close; //close
-            int targetNumInState = targetNumClose; 
+            int targetNumInState = targetNumClose;
             int currentNumInState = currentNumClosed;
             if (targetNumClose < currentNumClosed)
             {
                 targetState = CtiCCCapBank::Open; //open
                 targetNumInState = numOfBanks  - targetNumClose;
-                currentNumInState = numOfBanks - currentNumClosed;    
+                currentNumInState = numOfBanks - currentNumClosed;
             }
             CtiCCFeederPtr currentFeeder = NULL;
             CtiCCCapBankPtr capBank =  NULL;
@@ -8987,7 +8987,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                        " currentClose: " << currentNumClosed << " targetOpen: " << (numOfBanks - targetNumClose)  <<" currentOpen: " << (numOfBanks - currentNumClosed) << endl;
             }
             setSendMoreTimeControlledCommandsFlag(FALSE);
-            
+
             LONG currentPosition = getLastFeederControlledPosition();
             while (currentNumInState < targetNumInState )
             {
@@ -9006,7 +9006,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                         //CtiCCCapBank::Open = 0, CtiCCCapBank::Close = 1
                         //need to pass in -1 for close and 1 for open
                         int operation = (targetState == CtiCCCapBank::Close ? -1 : 1);
-                        capBank = currentFeeder->findCapBankToChangeVars( operation, pointChanges);  
+                        capBank = currentFeeder->findCapBankToChangeVars( operation, pointChanges);
                     }
                     catch(...)
                     {
@@ -9038,7 +9038,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                 phaseAValue = currentFeeder->getPhaseAValue();
                                 phaseBValue = currentFeeder->getPhaseBValue();
                                 phaseCValue = currentFeeder->getPhaseCValue();
-                                
+
                             }
                             if (targetState == CtiCCCapBank::Close)
                             {

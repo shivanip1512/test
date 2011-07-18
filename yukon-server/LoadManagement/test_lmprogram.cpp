@@ -4,7 +4,7 @@
 *
 * Copyright (c) 2009 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "lmprogramdirect.h"
 #include "lmprogramcontrolwindow.h"
@@ -629,7 +629,7 @@ BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
 
     BOOST_CHECK_EQUAL(true, constraints.checkControlWindows(startTime.seconds(), stopTime.seconds()));
     BOOST_CHECK_EQUAL(    0, constraints.getViolations().size() );
-    
+
 }
 
 
@@ -1468,8 +1468,8 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
 
 /*
-*** TESTING: controlWindowErrorMessage() 
- 
+*** TESTING: controlWindowErrorMessage()
+
     This may not be necessary to test anymore since all it does is builds a string which isn't even used anymore.
     The function itself probably can be removed.
 
@@ -1506,7 +1506,7 @@ BOOST_AUTO_TEST_CASE(test_control_window_error_message_stop_control_area_window)
 class Test_CtiLMManualControlRequestExecutor : public CtiLMManualControlRequestExecutor
 {
 public:
-    Test_CtiLMManualControlRequestExecutor() : 
+    Test_CtiLMManualControlRequestExecutor() :
         CtiLMManualControlRequestExecutor(NULL, NULL)
     {
 

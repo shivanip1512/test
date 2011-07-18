@@ -13,7 +13,7 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 #include <set>
@@ -79,8 +79,8 @@ void CtiPorterVerification::run( void )
     }
 
     SetThreadName(-1, "PrtVerify");
-	
-	verificationThread();
+
+    verificationThread();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

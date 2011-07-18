@@ -3,7 +3,7 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  */
-#include "yukon.h"
+#include "precompiled.h"
 
 #include <iostream>
 #include <sstream>
@@ -43,23 +43,23 @@ CtiFDRScadaHelper<T>::~CtiFDRScadaHelper()
 }
 
 template<typename T>
-bool CtiFDRScadaHelper<T>::handleValueUpdate(const T& id, double rawValue, 
+bool CtiFDRScadaHelper<T>::handleValueUpdate(const T& id, double rawValue,
                                              int quality, CtiTime timestamp) const
 {
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Handling value update message for " << id 
+        _parent->logNow() << "Handling value update message for " << id
             << " with value=" << rawValue << endl;;
     }
-    
+
     // call generic update function with pointer to the
     // "value" Point Type checker function
     return handleUpdate(id, rawValue, quality, timestamp, &checkValueType);
 }
 
 template<typename T>
-bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value, 
+bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
                                               int quality, CtiTime timestamp) const
 {
     if (value == INVALID)
@@ -70,21 +70,21 @@ bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
         }
         return false;
     }
-    
+
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Handling status update message for " << id 
+        _parent->logNow() << "Handling status update message for " << id
             << " with state=" << value << endl;;
     }
-    
+
     // call generic update function with pointer to the
     // "status" Point Type checker function
     return handleUpdate(id, value, quality, timestamp, &checkStatusType);
 }
 
 template<typename T>
-bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int quality, 
+bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int quality,
                                         CtiTime timestamp, CheckStatusFunc checkFunc) const
 {
     bool sentAPoint = false;
@@ -95,39 +95,39 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
     {
         const CtiFDRDestination& dest = (*destIter).second;
         CtiFDRPoint& point = *dest.getParentPoint();
-        
+
         if (!(*checkFunc)(point.getPointType()))
         {
             if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                _parent->logNow() << "Point type mismatch for " << dest << " and " << id << endl; 
+                _parent->logNow() << "Point type mismatch for " << dest << " and " << id << endl;
             }
             continue;
         }
-        
+
         double value = rawValue;
-    
+
         if (checkValueType(point.getPointType())) // is this correct???
         {
             value *= point.getMultiplier();
             value += point.getOffset();
         }
-    
+
         if (timestamp == PASTDATE)
         {
             if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                _parent->logNow() << "Value received with an invalid timestamp (" 
+                _parent->logNow() << "Value received with an invalid timestamp ("
                     << timestamp << ")" << endl;
             }
             continue;
         }
         CtiPointDataMsg* pData;
-        pData = new CtiPointDataMsg(point.getPointID(), 
-                                    value, 
-                                    quality, 
+        pData = new CtiPointDataMsg(point.getPointID(),
+                                    value,
+                                    quality,
                                     point.getPointType());
 
         pData->setTime(timestamp);
@@ -143,7 +143,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
 
         sentAPoint = true;
     }
-    
+
     if (!sentAPoint)
     {
         if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
@@ -161,10 +161,10 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Handling control message for " << id 
+        _parent->logNow() << "Handling control message for " << id
             << " with controlstate=" << controlState << endl;;
     }
-    
+
     if (controlState == INVALID)
     {
         {
@@ -179,7 +179,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
         _parent->logEvent (desc,action,true);
         return false;
     }
-    
+
     bool sentAControl = false;
     ReceiveMap::const_iterator destIter, destEnd;
     destIter = receiveMap.lower_bound(id);
@@ -188,7 +188,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     {
         const CtiFDRDestination& dest = (*destIter).second;
         CtiFDRPoint& point = *dest.getParentPoint();
-        
+
         if (!checkStatusType(point.getPointType()))
         {
             {
@@ -205,13 +205,13 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             _parent->logEvent (desc, action);
             continue;
         }
-        
+
         if (!point.isControllable())
         {
              {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 _parent->logNow() << "Foreign control point " << id
-                    << " was mapped to " << dest 
+                    << " was mapped to " << dest
                     << ", which is not configured for control " << endl;
             }
 
@@ -234,17 +234,17 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
         cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
         cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
         cmdMsg->insert(point.getPointID());  // point for control
-        cmdMsg->insert(controlState);       
+        cmdMsg->insert(controlState);
         _parent->sendMessageToDispatch(cmdMsg);
 
         if (_parent->getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "Control message of " << (controlState == OPENED ? "OPENED" : "CLOSED") 
+            _parent->logNow() << "Control message of " << (controlState == OPENED ? "OPENED" : "CLOSED")
                 << " sent to " << dest << " for " << id << endl;
         }
         sentAControl = true;
-    
+
     }
     if (!sentAControl)
     {
@@ -271,7 +271,7 @@ void CtiFDRScadaHelper<T>::addSendMapping(const T& id, const CtiFDRDestination& 
 template<typename T>
 void CtiFDRScadaHelper<T>::addReceiveMapping(const T& id, const CtiFDRDestination& pointDestination)
 {
-    receiveMap.insert(ReceiveMap::value_type(id, pointDestination));    
+    receiveMap.insert(ReceiveMap::value_type(id, pointDestination));
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -296,7 +296,7 @@ void CtiFDRScadaHelper<T>::removeReceiveMapping(const T& id, const CtiFDRDestina
 {
     //Remove on the iterator that matches id and pointdestination
     ReceiveMap::iterator itr;
-    for (itr = receiveMap.equal_range(id).first; itr != receiveMap.equal_range(id).second; itr++ ) 
+    for (itr = receiveMap.equal_range(id).first; itr != receiveMap.equal_range(id).second; itr++ )
     {
         if ((*itr).second == pointDestination)
         {
@@ -331,7 +331,7 @@ void CtiFDRScadaHelper<T>::clearMappings()
     receiveMap.clear();
 }
 
-static bool checkStatusType(CtiPointType_t type) 
+static bool checkStatusType(CtiPointType_t type)
 {
     return type == StatusPointType;
 }

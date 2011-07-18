@@ -2,7 +2,7 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CapControl IVVC Algorithm"
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ctitime.h"
 #include "ccsubstationbus.h"
 #include "ccsubstation.h"

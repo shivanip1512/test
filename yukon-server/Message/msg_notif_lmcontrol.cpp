@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 #include "msg_notif_lmcontrol.h"
 
 using std::vector;
@@ -11,7 +11,7 @@ CtiNotifLMControlMsg::CtiNotifLMControlMsg() : _notif_type(0), _program_id(-1)
 CtiNotifLMControlMsg::CtiNotifLMControlMsg(const vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time)
     : _notif_group_ids(group_ids), _notif_type(notif_type),_program_id(program_id), _start_time(start_time), _stop_time(stop_time)
 { }
-    
+
 CtiNotifLMControlMsg::~CtiNotifLMControlMsg()
 { }
 
@@ -69,31 +69,31 @@ CtiNotifLMControlMsg& CtiNotifLMControlMsg::setStopTime(const CtiTime& stop_time
     _stop_time = stop_time;
     return *this;
 }
-    
+
 void CtiNotifLMControlMsg::saveGuts(RWvostream &aStream) const
 {
     CtiMessage::saveGuts(aStream);
 
     aStream
-	<< _notif_group_ids
-	<< _notif_type
-	<< _program_id
-	<< _start_time
-	<< _stop_time;
-}  
+    << _notif_group_ids
+    << _notif_type
+    << _program_id
+    << _start_time
+    << _stop_time;
+}
 
 void CtiNotifLMControlMsg::restoreGuts(RWvistream& aStream)
 {
     CtiMessage::restoreGuts(aStream);
 
     aStream
-	>> _notif_group_ids
-	>> _notif_type
-	>> _program_id
-	>> _start_time
-	>> _stop_time;
+    >> _notif_group_ids
+    >> _notif_type
+    >> _program_id
+    >> _start_time
+    >> _stop_time;
 }
-   
+
 CtiMessage* CtiNotifLMControlMsg::replicateMessage() const
 {
     CtiNotifLMControlMsg* ret = new CtiNotifLMControlMsg(*this);

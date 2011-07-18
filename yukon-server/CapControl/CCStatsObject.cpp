@@ -1,19 +1,19 @@
 /*---------------------------------------------------------------------------
         Filename:  ccstatsobject.cpp
-        
+
         Programmer:  Julie Richter
-                
+
         Description:    CCStatsObject
-                        
+
 
         Initial Date:  2/24/2009
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
 ---------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "ccstatsobject.h"
- 
+
 
 CCStatsObject::CCStatsObject()
 {
@@ -30,8 +30,8 @@ CCStatsObject& CCStatsObject::operator=(const CCStatsObject& right)
     if( this != &right )
     {
         _opCount =  right._opCount;
-        _total   =  right._total; 
-        _failCount = right._failCount; 
+        _total   =  right._total;
+        _failCount = right._failCount;
     }
     return *this;
 }
@@ -66,7 +66,7 @@ DOUBLE CCStatsObject::getTotal()
 void CCStatsObject::setTotal(DOUBLE val)
 {
     _total = val;
-    
+
 }
 void CCStatsObject::incrementTotal(DOUBLE val)
 {

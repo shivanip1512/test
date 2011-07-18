@@ -3,14 +3,14 @@
 
     Programmer:  Julie Richter
 
-    Description:    
+    Description:
 
     Initial Date:  1/27/2005
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
 -----------------------------------------------------------------------------*/
 
-#include "yukon.h"
+#include "precompiled.h"
 #include "dbaccess.h"
 #include "connection.h"
 #include "msg_dbchg.h"
@@ -62,7 +62,7 @@ CtiPAOEvent::CtiPAOEvent(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 CtiPAOEvent::~CtiPAOEvent()
 {
-   
+
 }
 CtiPAOEvent& CtiPAOEvent::operator=(const CtiPAOEvent& right)
 {
@@ -73,7 +73,7 @@ CtiPAOEvent& CtiPAOEvent::operator=(const CtiPAOEvent& right)
     _disableOvUvFlag = right._disableOvUvFlag;
 
     _dirty = right._dirty;
-    
+
     return *this;
 }
 int CtiPAOEvent::operator==(const CtiPAOEvent& right) const

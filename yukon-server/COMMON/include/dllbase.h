@@ -14,6 +14,7 @@
 #include <iostream>
 #include <set>
 
+#include <boost/tokenizer.hpp>
 #include <rw\thr\mutex.h>
 
 // Used with "DB_DEBUGLEVEL"

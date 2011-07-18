@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -32,7 +32,7 @@ extern CtiConfigManager   ConfigManager;
 
 CtiPILServer PIL(&DeviceManager, &PorterPointManager, &RouteManager, &ConfigManager);
 
-VOID PorterInterfaceThread (VOID *Arg)
+void PorterInterfaceThread (void *Arg)
 {
     UINT sanity = 0;
     CtiTime lastTickleTime, lastReportTime;

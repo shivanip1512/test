@@ -2,16 +2,16 @@
         Filename:  lmgroupemetcon.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMGroupMCT.
                         CtiLMGroupMCT maintains the state and handles
                         the persistence of mct groups in Load Management.
 
         Initial Date:  7/23/2003
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2003
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "lmgroupmct.h"
@@ -27,12 +27,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupMCT, CTILMGROUPMCT_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupMCT::CtiLMGroupMCT()
-{   
+{
 }
 
 CtiLMGroupMCT::CtiLMGroupMCT(Cti::RowReader &rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupMCT::CtiLMGroupMCT(const CtiLMGroupMCT& groupmct)
@@ -49,7 +49,7 @@ CtiLMGroupMCT::~CtiLMGroupMCT()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMGroupMCT::restoreGuts(RWvistream& istrm)
@@ -59,10 +59,10 @@ void CtiLMGroupMCT::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMGroupMCT::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupMCT::saveGuts(RWvostream& ostrm ) const
 {
     Inherited::saveGuts( ostrm );
     return;
@@ -100,7 +100,7 @@ int CtiLMGroupMCT::operator!=(const CtiLMGroupMCT& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupMCT::replicate() const

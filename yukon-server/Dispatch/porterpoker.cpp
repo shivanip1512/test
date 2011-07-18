@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -157,10 +157,10 @@ void main(int argc, char **argv)
             if( !(command == 0x03 || command == 0x04 || command == 0x05 || command == 0x06 || command == 0x07) )
             {
                 CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::PorterConsoleInput, 15);
-    
+
                 pCmd->getOpArgList().push_back(-1);    // Token
                 pCmd->getOpArgList().push_back(command);
-    
+
                 if( (command == 0x01 || command == 0x02) )
                 {
                     if( argc >= 4 )
@@ -173,7 +173,7 @@ void main(int argc, char **argv)
                         pCmd->getOpArgList().push_back(0x00000000);
                     }
                 }
-    
+
                 Connect.WriteConnQue(pCmd);
             }
             else
@@ -200,7 +200,7 @@ void main(int argc, char **argv)
                 else if( command == 0x05 )
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangeConfigDb, "device config", "config", ChangeTypeUpdate);
-                    
+
                     Connect.WriteConnQue(chg);
                 }
                 else if( command == 0x06 )
@@ -267,7 +267,7 @@ void main(int argc, char **argv)
         }
 
     }
-    
+
 
     // Make sure all the logs get output and done!
     dout.interrupt(CtiThread::SHUTDOWN);

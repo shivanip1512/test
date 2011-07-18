@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -13,7 +13,7 @@
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
 * REVISION     :  $Revision: 1.11 $
 * DATE         :  $Date: 2008/11/19 16:42:59 $
-*    History: 
+*    History:
       $Log: std_ansi_tbl_base.cpp,v $
       Revision 1.11  2008/11/19 16:42:59  jrichter
       YUK-6310 Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
@@ -130,7 +130,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
       //float64
        {
            if (dataOrderLSB) //data order LSB
-           {    
+           {
                flipFloat.ch[7] = source[7];
                flipFloat.ch[6] = source[6];
                flipFloat.ch[5] = source[5];
@@ -168,7 +168,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
        {
 
             if (dataOrderLSB) //data order LSB
-            {    
+            {
                float32.ch[3] = source[3];
                float32.ch[2] = source[2];
                float32.ch[1] = source[1];
@@ -185,7 +185,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
            //result = (double)float32.u32;
            result = float32.u32;
            offset = sizeof( unsigned char ) * 4;
-           
+
 
        }
        break;
@@ -249,9 +249,9 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
       break;
 
    case ANSI_NI_FORMAT_INT40:
-      //int40  
+      //int40
        {
-           if (dataOrderLSB) 
+           if (dataOrderLSB)
            {
                tempDbl = ((double) source[5] * (0x10000000000)) +
                          ((double) source[4] * (0x100000000)) +
@@ -280,8 +280,8 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
           //NOTE: need to figure out if this order is correct
           //int48
           //tempDbl = source[0] * multer;
-               
-           if (dataOrderLSB) 
+
+           if (dataOrderLSB)
            {
                tempDbl = ((double) source[5] * (0x10000000000)) +
                          ((double) source[4] * (0x100000000)) +
@@ -343,10 +343,10 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
    {
    case ANSI_NI_FORMAT_FLOAT64:
        {   //float64
-       
+
            tempDbl = source;
-           if (dataOrderLSB) 
-           {    
+           if (dataOrderLSB)
+           {
                flipFloat.u64 = tempDbl;
                result[0] = flipFloat.ch[0];
                result[1] = flipFloat.ch[1];
@@ -357,7 +357,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
                result[6] = flipFloat.ch[6];
                result[7] = flipFloat.ch[7];
 
-              
+
            }
            else
            {
@@ -379,7 +379,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
    case ANSI_NI_FORMAT_FLOAT32:
       //float32
        float32.u32 = source;
-       if (dataOrderLSB) 
+       if (dataOrderLSB)
        {
            result[0] = float32.ch[0];
            result[1] = float32.ch[1];
@@ -453,7 +453,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
 
    case ANSI_NI_FORMAT_INT48:
        tempDbl = source;
-       if (dataOrderLSB) 
+       if (dataOrderLSB)
        {
            result[5] = tempDbl / 0x10000000000;
            tempDbl =  tempDbl - (result[5] * 0x10000000000);
@@ -508,13 +508,13 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
 int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 {
    ULONG    temp;
-   
-   unsigned       year = 0;  
-   unsigned month = 0;   
-   unsigned day = 0;     
-   unsigned hour = 0;    
-   unsigned minute = 0;  
-   unsigned second = 0;  
+
+   unsigned       year = 0;
+   unsigned month = 0;
+   unsigned day = 0;
+   unsigned hour = 0;
+   unsigned minute = 0;
+   unsigned second = 0;
 
    int      offset = 0;
 
@@ -559,7 +559,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
        source += sizeof (BYTE);
        memcpy ((void *)&minute, source, sizeof (BYTE) );
        source += sizeof (BYTE);
-       
+
        offset = 5;
        CtiTime timeResult( CtiDate( day, month, year + 2000), hour, minute);
        result = timeResult.seconds();
@@ -568,9 +568,9 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 
    case 3:
        {
-           temp = (int)*source  
-               + ((int)*(source + 1)* 0x100) 
-               + ((int)*(source + 2)* 0x10000) 
+           temp = (int)*source
+               + ((int)*(source + 1)* 0x100)
+               + ((int)*(source + 2)* 0x10000)
                + ((int)*(source + 3)* 0x1000000);
 
            temp = temp * 60;
@@ -590,13 +590,13 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
 {
    ULONG    temp;
-   
-   unsigned year = 0;  
-   unsigned month = 0;   
-   unsigned day = 0;     
-   unsigned hour = 0;    
-   unsigned minute = 0;  
-   unsigned second = 0;  
+
+   unsigned year = 0;
+   unsigned month = 0;
+   unsigned day = 0;
+   unsigned hour = 0;
+   unsigned minute = 0;
+   unsigned second = 0;
 
    int      offset = 0;
 
@@ -641,9 +641,9 @@ int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
 
    case 3:
        {
-           /*temp = (int)*source  
-               + ((int)*(source + 1)* 0x100) 
-               + ((int)*(source + 2)* 0x10000) 
+           /*temp = (int)*source
+               + ((int)*(source + 1)* 0x100)
+               + ((int)*(source + 2)* 0x10000)
                + ((int)*(source + 3)* 0x1000000);
 
            temp = temp * 60;
@@ -736,7 +736,7 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
 
    case 2:
        {
-          
+
           memcpy ((void *)&year, source, sizeof (BYTE) );
           source += sizeof (BYTE);
           memcpy ((void *)&month, source, sizeof (BYTE) );
@@ -756,16 +756,16 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
 
    case 3:
        {
-           temp = (int)*source  
-               + ((int)*(source + 1)* 0x100) 
-               + ((int)*(source + 2)* 0x10000) 
+           temp = (int)*source
+               + ((int)*(source + 1)* 0x100)
+               + ((int)*(source + 2)* 0x10000)
                + ((int)*(source + 3)* 0x1000000);
            temp = (temp * 60) + ((int)*(source + 4));
 
            offset = 5;
-           
+
            result = CtiTime(temp).seconds();
-           
+
         }
       break;
    }

@@ -1,4 +1,4 @@
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -603,7 +603,7 @@ void CtiCapController::controlLoop()
                         //Bypass IVVC subbuses.  IVVC subbuses are analyzed in the IVVC Algorithm.
                         if (currentSubstationBus->getStrategy()->getControlUnits() == ControlStrategy::IntegratedVoltVarControlUnit)
                             continue;
-                        
+
                         CtiCCAreaPtr currentArea = NULL;
                         CtiCCSubstation* currentStation = NULL;
 
@@ -2038,7 +2038,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
     Determines if a DB change is for a CBC device type.
 ---------------------------------------------------------------------------*/
 bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
-{       
+{
     if( resolvePAOCategory(dbChange->getCategory()) != PAO_CATEGORY_DEVICE )
     {
         return false;
@@ -2046,9 +2046,9 @@ bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
     else
     {
         INT DeviceType = resolveDeviceType(dbChange->getObjectType());
-        return( DeviceType == TYPEVERSACOMCBC || DeviceType == TYPEEXPRESSCOMCBC || 
-                DeviceType == TYPECBC7010 || DeviceType == TYPECBC7020 || 
-                DeviceType == TYPECBC8020 || DeviceType == TYPECBCDNP || 
+        return( DeviceType == TYPEVERSACOMCBC || DeviceType == TYPEEXPRESSCOMCBC ||
+                DeviceType == TYPECBC7010 || DeviceType == TYPECBC7020 ||
+                DeviceType == TYPECBC8020 || DeviceType == TYPECBCDNP ||
                 DeviceType == TYPEFISHERPCBC || DeviceType == TYPECBC6510 );
     }
 }
@@ -3344,7 +3344,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                                 }
-                            }                          
+                            }
                             else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                         ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
                             {

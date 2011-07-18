@@ -44,8 +44,8 @@ public:
    INT CTINexusConnect      (CTINEXUS *RemoteNexus, HANDLE *hAbort = NULL, LONG timeout = CTINEXUS_INFINITE_TIMEOUT, int flags = CTINEXUS_FLAG_READEXACTLY);
    INT CTINexusOpen         (CHAR *szServer, SHORT nPort, ULONG Flags);
    INT CTINexusWrite        (VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut);
-   INT CTINexusRead         (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut);
-   INT CTINexusPeek         (VOID *buf, ULONG len, PULONG BRead);
+   INT CTINexusRead         (void *buf, ULONG len, PULONG BRead, LONG TimeOut);
+   INT CTINexusPeek         (void *buf, ULONG len, PULONG BRead);
    INT CTINexusReportError  (CHAR *Label, INT Line, INT Error) const;
    INT CTINexusFlushInput   ();
    ULONG CtiGetNexusState   ();

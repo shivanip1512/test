@@ -1,5 +1,5 @@
-!include ..\common\global.inc
-!include ..\common\rwglobal.inc
+!include $(COMPILEBASE)\global.inc
+!include $(COMPILEBASE)\rwglobal.inc
 
 
 INCLUDE=%INCLUDE%;\$(INCPATHADDITIONS)

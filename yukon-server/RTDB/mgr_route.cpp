@@ -11,7 +11,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 
 
@@ -181,7 +181,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Routes" << endl;
                 }
-                
+
                 static const string sql = CtiTableVersacomRoute::getSQLCoreStatement();
 
                 Cti::Database::DatabaseConnection connection;
@@ -208,7 +208,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Repeater Information" << endl;
                 }
-                
+
                 static const string sql = CtiTableRepeaterRoute::getSQLCoreStatement();
                 Cti::Database::DatabaseConnection connection;
                 Cti::Database::DatabaseReader rdr(connection, sql);

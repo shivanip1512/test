@@ -552,8 +552,8 @@ public:
    virtual INT decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
    virtual INT decodeResultScan (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-   INT   getA1ClassOffset(UINT Key, VOID *ptr);
-   INT   getA1FuncOffset(UINT Key, VOID *ptr);
+   INT   getA1ClassOffset(UINT Key, void *ptr);
+   INT   getA1FuncOffset(UINT Key, void *ptr);
 
    LONG findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaA1Class14Real_t &class14);
 

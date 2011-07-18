@@ -3,10 +3,10 @@
 * File:   tbl_lmprogramhistory
 *
 * Date:   12/8/2008
-* 
+*
 * Copyright (c) 2008 Cooper Industries, All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#include "precompiled.h"
 
 #include "row_reader.h"
 
@@ -81,7 +81,7 @@ bool CtiTableLMProgramHistory::Insert()
             << _lmProgramHistID
             << _programName
             << _programID;
-        
+
         if( ! inserter.execute() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -200,7 +200,7 @@ string CtiTableLMProgramHistory::getStrFromAction(long action)
     }
 }
 
-// This ensures that all strings have something in them 
+// This ensures that all strings have something in them
 // and that their sizes are not larger than the database can handle.
 void CtiTableLMProgramHistory::validateData()
 {
