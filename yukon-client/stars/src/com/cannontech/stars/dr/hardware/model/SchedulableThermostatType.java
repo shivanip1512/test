@@ -54,8 +54,8 @@ public enum SchedulableThermostatType {
 				                      ThermostatScheduleMode.ALL, 
 				                      ThermostatScheduleMode.WEEKDAY_WEEKEND),
                 Sets.immutableEnumSet(ThermostatFanState.AUTO,
-                                      ThermostatFanState.ON,
-                                      ThermostatFanState.CIRCULATE)
+                                      ThermostatFanState.CIRCULATE,
+                                      ThermostatFanState.ON)
 	),
 	UTILITY_PRO_G2(HardwareType.UTILITY_PRO_G2,
                    50, 99,
