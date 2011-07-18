@@ -31,9 +31,21 @@ Yukon.ThermostatScheduleEditor = {
         }
     },
     
+    halfIntegerAccuracy: function(value){
+        return Math.round(value * 2) / 2.0;
+    },
+    
+    fahrenheitToCelsius: function(fahrenheit){
+        return ((fahrenheit - 32) * 5) / 9.0;  
+    },
+    
+    celsiusToFahrenheit: function(celsius){
+        return ((celsius * 9) / 5.0) + 32;
+    },
+    
     celsiusToSafeCelsius: function(celsius) {
         //ensure we have 0.5 accurracy
-        return parseFloat((Math.round(celsius*2) / 2).toFixed(1));
+        return parseFloat(Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(celsuis).toFixed(1));
     },
     
     
@@ -340,26 +352,26 @@ Yukon.ThermostatScheduleEditor = {
         }
         
         if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-            var c = (((start - 32)*5)/9);
-            start = Math.round(c*2) / 2;
-            c = (((end - 32)*5)/9);
-            end = Math.round(c*2) / 2;
+            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(start);
+            start = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(end);
+            end = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
         }
         
         switch(event.keyCode){
         case KEYUP:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-                value = Math.round((value+0.5)*2) / 2;
+                value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value + 0.5);
             }else {
                 value = value+1;
             }
             break;
         case KEYDOWN:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-                value = Math.round((value-0.5)*2) / 2;
+                value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value - 0.5);
                 if(value != Yukon.ThermostatScheduleEditor.celsiusToSafeCelsius(value)){
                     //take off another half degree
-                    value = Math.round((value-0.5)*2) / 2;
+                    value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value-0.5);
                 }
             }else {
                 value = value-1;
@@ -403,11 +415,11 @@ Yukon.ThermostatScheduleEditor = {
         var startLabel = "";
         var endLabel = "";
         if(_self._private.currentUnit == 'C'){
-            var c = (((start - 32)*5)/9);
-            start = Math.round(c*2) / 2;
+            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(start);
+            start = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
             
-            c = (((end - 32)*5)/9);
-            end = Math.round(c*2) / 2;
+            c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(end);
+            end = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
             TEMP_SLIDER.increment = 0.5;
             startLabel = start.toFixed(1);
             endLabel = end.toFixed(1);
@@ -465,7 +477,7 @@ Yukon.ThermostatScheduleEditor = {
         //convert the value to fahrenheit scale
         if(_self._private.currentUnit == 'C'){
             //only .5 increments are allowed
-            value_F = ((value*9)/5)+32;
+            value_F = Yukon.ThermostatScheduleEditor.celsiusToFahrenheit(start);
             input.value = _self.celsiusToSafeCelsius(value).toFixed(1);
         }else {
             input.value = parseInt(value_F);
@@ -642,16 +654,14 @@ Yukon.ThermostatScheduleEditor = {
         _self._private.currentUnit = 'C';
         $$(".temp .value").each(function(elem){
             var f = parseFloat(elem.next("input:hidden").value);
-            f -= 32;
-            var c = ((f*5)/9)
-            var rounded = Math.round(c*2) / 2;
+            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(f);
+            var rounded = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
             elem.innerHTML = rounded.toFixed(1);
         });
         $$(".temp input:text").each(function(elem){
             var f = parseFloat(elem.next("input:hidden").value);
-            f -= 32;
-            var c = ((f*5)/9)
-            var rounded = Math.round(c*2) / 2;
+            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(f);
+            var rounded = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
             elem.value = rounded.toFixed(1);
         });
         $$(".temp, .tempLabel").each(function(elem){
@@ -749,7 +759,7 @@ Yukon.ThermostatScheduleEditor = {
             var c = 0;
             while(c<50) {
                 //convert to fahrenheit
-                var f = ((c*9)/5)+32;
+                var f = Yukon.ThermostatScheduleEditor.celsiusToFahrenheit(c);
                 
                 //convert back to celsius and round like we do on display and validate
                 
@@ -757,8 +767,8 @@ Yukon.ThermostatScheduleEditor = {
                 var d = Math.round(f);
                 
                 //This is what will come back out from the DB when converted to Celsius
-                var c_prime = (((d-32)*5)/9)
-                var rounded = Math.round(c_prime*2) / 2;
+                var c_prime = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(d);
+                var rounded = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c_prime);
                 c_final = parseFloat(rounded.toFixed(1));
                 
                 if (c_final != c) {
