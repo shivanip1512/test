@@ -112,7 +112,7 @@ Yukon.ThermostatScheduleEditor = {
             }
         });
 
-        $$(".schedules input:text").each(function(input){
+        $$(".schedules input:text, .createSchedule input:text").each(function(input){
             input.observe('focus', function(event){
                 this.writeAttribute("previousValue", this.value);
             });
