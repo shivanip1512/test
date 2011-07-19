@@ -59,9 +59,10 @@ public class CurtailmentEventNotifDaoImpl implements CurtailmentEventNotifDao, I
     @Override
     public List<CurtailmentEventNotif> getScheduledNotifs() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from CCurtCENotif");
-        sql.append("where State").eq(NotificationState.SCHEDULED);
+        sql.append("SELECT *");
+        sql.append("FROM CCurtCENotif");
+        sql.append("WHERE State").eq(NotificationState.SCHEDULED);
+        sql.append(    "AND NotificationTime").lte(new Date());
         
         List<CurtailmentEventNotif> result = yukonJdbcTemplate.query(sql, new CurtailmentEventNotifRowMapper());
         return result;

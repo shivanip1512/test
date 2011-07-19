@@ -29,7 +29,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao, InitializingBean {
@@ -81,9 +80,10 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao, Initial
     @Override
     public List<EconomicEventNotif> getScheduledNotifs() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from CCurtEconomicEventNotif");
-        sql.append("where State").eq(NotificationState.SCHEDULED);
+        sql.append("SELECT *");
+        sql.append("FROM CCurtEconomicEventNotif");
+        sql.append("WHERE State").eq(NotificationState.SCHEDULED);
+        sql.append(  "AND NotificationTime").lte(new Date());
         
         List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
         if(result.size() > 0) {
