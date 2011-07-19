@@ -8,10 +8,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
@@ -128,39 +130,39 @@ public class MeterController extends MultiActionController {
         ModelAndView mav;
         // Redirect to device home page if only one result is found
         if (meterSearchResults.getHitCount() == 1) {
+            mav = new ModelAndView();
 
             Meter meter = meterSearchResults.getResultList().get(0);
             
             String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(meter);
-            mav = new ModelAndView("redirect:"+urlForPaoDetailPage);
-
-            mav.addObject("deviceId", meter.getDeviceId());
-
-        } else {
-            mav = new ModelAndView("meters.jsp");
-            // Create a device collection (only used to generate a link)
-            DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
-            
-            mav.addObject("deviceGroupCollection", deviceGroupCollection);
-            
-            mav.addObject("filterByString", filterByString);
-            mav.addObject("orderBy", orderBy);
-            mav.addObject("meterSearchResults", meterSearchResults);
-            mav.addObject("orderByFields", MeterSearchField.values());
-            mav.addObject("filterByList", filterByList);
-            
-            ImmutableMap<String,Meter> paoIdToMeterMap = 
-                Maps.uniqueIndex(meterSearchResults.getResultList(), new Function<Meter, String>() {
-                    @Override
-                    public String apply(Meter meter) {
-                        return String.valueOf(meter.getDeviceId());
-                    }
-                });
-            
-            mav.addObject("paoIdToMeterMap", paoIdToMeterMap);
-            
+            if (!StringUtils.isEmpty(urlForPaoDetailPage)) {
+                mav.setView(new RedirectView(urlForPaoDetailPage));
+                return mav;
+            }
         }
-
+        
+        mav = new ModelAndView("meters.jsp");
+        // Create a device collection (only used to generate a link)
+        DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
+        
+        mav.addObject("deviceGroupCollection", deviceGroupCollection);
+        
+        mav.addObject("filterByString", filterByString);
+        mav.addObject("orderBy", orderBy);
+        mav.addObject("meterSearchResults", meterSearchResults);
+        mav.addObject("orderByFields", MeterSearchField.values());
+        mav.addObject("filterByList", filterByList);
+        
+        ImmutableMap<String,Meter> paoIdToMeterMap = 
+            Maps.uniqueIndex(meterSearchResults.getResultList(), new Function<Meter, String>() {
+                @Override
+                public String apply(Meter meter) {
+                    return String.valueOf(meter.getDeviceId());
+                }
+            });
+        
+        mav.addObject("paoIdToMeterMap", paoIdToMeterMap);
+            
         return mav;
     }
     
