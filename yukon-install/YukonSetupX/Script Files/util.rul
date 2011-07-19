@@ -356,3 +356,22 @@ begin
 		MessageBox("Error deleting files of type \"" + sSearchString + "\" in directory \"" + sDirectory + ". Old files may still be present.", WARNING);
 	endif;
 end;
+
+//---------------------------------------------------------------
+//Sets edit permissions on Yukon configuration files.
+//---------------------------------------------------------------
+export prototype SetAdminWriteFilePermissions(string, string);
+function SetAdminWriteFilePermissions(sPath, sFileName)
+number nResult;
+string sResult, sFilePath;
+begin
+	nResult = FindFile(sPath, sFileName, sResult);
+	if(nResult = 0) then
+		sFilePath = sPath ^ sFileName;
+		nResult = SetObjectPermissions(sFilePath, IS_PERMISSIONS_TYPE_FILE, "", "Administrators", 
+					FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_EA|FILE_WRITE_ATTRIBUTES, 0);
+		if(nResult != ISERR_SUCCESS) then
+			MessageBox("Error setting file permissions. File: " + sFilePath + ".", WARNING);
+		endif;
+	endif;
+end;

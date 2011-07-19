@@ -103,7 +103,7 @@ end;
 // of the setup when the setup is running in first install mode.
 //---------------------------------------------------------------------------
 function OnFirstUIAfter()
-string sProg, sCMD, sName, sKey, sEnv;
+string sProg, sCMD, sName, sKey, sEnv, sPath, sFileName, sResult;
 number nResult;
 BOOL opt, bOptYes, bOptNo;
 pointer pEnv;
@@ -149,6 +149,15 @@ begin
 	    SdShowMsg("", FALSE);
     endif;
     
+    //check for config files and modify permissions
+    sPath = TARGETDIR ^ "Server\\Config";
+    sFileName = "master.cfg";
+    SetAdminWriteFilePermissions(sPath, sFileName);
+    sFileName = "remoteLogging.xml";
+    SetAdminWriteFilePermissions(sPath, sFileName);
+    sFileName = "yukonLogging.xml";
+    SetAdminWriteFilePermissions(sPath, sFileName);
+    
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
     Disable(CANCELBUTTON); //You just installed.  There's no going back.
@@ -158,8 +167,8 @@ begin
     			"Yes", bOptYes,
     			"No", bOptNo);
     if(bOptYes) then
-    	sProg = "C:\\Windows\\notepad.exe";
-        sCMD = TARGETDIR ^ "\\Server\\Config\\master.cfg";
+    	sProg = WINDIR ^ "notepad.exe";
+        sCMD = LongPathToQuote(TARGETDIR ^ "\\Server\\Config\\master.cfg", TRUE);
         LaunchAppAndWait(sProg, sCMD, LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
