@@ -31,6 +31,7 @@ public class DeviceTreeModel extends AbstractDeviceTreeModel {
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
         return DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId())
                && paoCategory == PaoCategory.DEVICE
-               && paoType != PaoType.MCTBROADCAST;
+               && paoType != PaoType.MCTBROADCAST
+               && paoType != PaoType.DIGIGATEWAY;
     }
 }
