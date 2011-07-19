@@ -337,12 +337,6 @@ tbl_dyn_pttag.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ctinexus.h dbmemobject.h pointdefs.h row_reader.h \
 		database_connection.h database_reader.h database_writer.h \
 		row_writer.h
-tbl_lmg_golay.obj:	precompiled.h tbl_lmg_golay.h row_reader.h \
-		ctitime.h dlldefs.h yukon.h types.h ctidbgmem.h dbmemobject.h \
-		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h dbaccess.h sema.h resolvers.h pointtypes.h \
-		db_entry_defines.h
 tbl_lmg_point.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h tbl_lmg_point.h yukon.h \
