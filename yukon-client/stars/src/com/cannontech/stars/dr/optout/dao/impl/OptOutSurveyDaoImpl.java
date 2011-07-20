@@ -209,18 +209,20 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     public List<SurveyResult> findSurveyResults(int surveyId,
             int questionId, Iterable<Integer> answerIds,
             boolean includeOtherAnswers, boolean includeUnanswered,
+            boolean includeScheduledSurveys,
             ReadableInstant begin, ReadableInstant end,
             String accountNumber, String serialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT r.surveyResultId, r.surveyId, r.whenTaken,");
         sql.append(    "r.accountId, r.accountNumber, ra.surveyResultAnswerId,");
         sql.append(    "ra.surveyQuestionId, ra.surveyQuestionAnswerId, ");
-        sql.append(    "sqa.answerKey, ra.textAnswer,");
-        sql.append(    "l.inventoryId, l.customerAccountId");
+        sql.append(    "sqa.answerKey, ra.textAnswer, OOE.ScheduledDate, ");
+        sql.append(    "OOE.StartDate, OOE.StopDate, l.inventoryId, l.customerAccountId");
         sql.append("FROM surveyResult r");
         sql.append(    "JOIN surveyResultAnswer ra ON r.surveyResultId = ra.surveyResultId");
         sql.append(    "JOIN optOutSurveyResult oosr ON oosr.surveyResultId = r.surveyResultId");
         sql.append(    "JOIN optOutEventLog l ON l.optOutEventLogId = oosr.optOutEventLogId");
+        sql.append(    "JOIN OptOutEvent OOE ON OOE.OptOutEventId = l.OptOutEventId");
         sql.append(    "LEFT JOIN surveyQuestionAnswer sqa ON ra.surveyQuestionAnswerId = sqa.surveyQuestionAnswerId");
         if (!StringUtils.isBlank(serialNumber)) {
             sql.append("JOIN lmHardwareBase hwb ON hwb.inventoryId = l.inventoryId");
@@ -228,7 +230,10 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         sql.append("WHERE r.surveyId").eq(surveyId);
         sql.append(    "AND ra.surveyQuestionId").eq(questionId);
         sql.append(    "AND (l.eventAction").eq_k(OptOutAction.START_OPT_OUT);
-        sql.append(         "OR l.eventAction").eq_k(OptOutAction.SCHEDULE).append(")");
+        if (includeScheduledSurveys) {
+            sql.append(         "OR l.eventAction").eq_k(OptOutAction.SCHEDULE);
+        }
+        sql.append(         ")");
         if (!StringUtils.isBlank(accountNumber)) {
             sql.append("AND r.accountNumber").eq(accountNumber);
         }
@@ -289,6 +294,11 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
             retVal.setAnswerKey(rs.getString("answerKey"));
             retVal.setTextAnswer(rs.getString("textAnswer"));
             retVal.setInventoryId(rs.getInt("inventoryId"));
+            
+            retVal.setScheduledDate(rs.getInstant("ScheduledDate"));
+            retVal.setStartDate(rs.getInstant("StartDate"));
+            retVal.setStopDate(rs.getInstant("StopDate"));
+            
             return retVal;
         }
     };

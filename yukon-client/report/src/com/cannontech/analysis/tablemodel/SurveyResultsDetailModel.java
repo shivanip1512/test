@@ -18,8 +18,6 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
-import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
-import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.google.common.collect.ArrayListMultimap;
@@ -37,7 +35,6 @@ public class SurveyResultsDetailModel extends
     // member variables
     private static String title = "Survey Results Detail Report";
 
-    private OptOutEventDao optOutEventDao;
     private InventoryDao inventoryDao;
     private CustomerAccountDao customerAccountDao;
 
@@ -79,12 +76,10 @@ public class SurveyResultsDetailModel extends
         Map<Integer, List<ProgramEnrollment>> enrollmentsBySurveyResultId = Maps.newHashMap();
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
-                                              includeOtherAnswers, includeUnanswered,
+                                              includeOtherAnswers, includeUnanswered, true,
                                               startDate, getStopDateAsInstant(),
                                               accountNumber, deviceSerialNumber);
 
-        Map<SurveyResult, OptOutEvent> optOutsBySurveyResult =
-            optOutEventDao.getOptOutsBySurveyResult(surveyResults);
         Set<Integer> inventoryIds = Sets.newHashSet();
         List<Integer> accountIds = Lists.newArrayList();
         for (SurveyResult result : surveyResults) {
@@ -101,12 +96,7 @@ public class SurveyResultsDetailModel extends
                 accountIds.add(result.getAccountId());
             }
             
-            // This should not be null except in the case of some data that was created before
-            // YUK-9705.
-            OptOutEvent event = optOutsBySurveyResult.get(result);
-            if (event != null) {
-                inventoryIds.add(event.getInventoryId());
-            }
+            inventoryIds.add(result.getInventoryId());
         }
 
         Survey survey = surveyDao.getSurveyById(surveyId);
@@ -138,28 +128,24 @@ public class SurveyResultsDetailModel extends
                 }
             }
 
-            OptOutEvent event = optOutsBySurveyResult.get(result);
             ModelRow row = new ModelRow();
             row.accountNumber = result.getAccountNumber();
-            if (event != null) {
-                HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
-                if (hardwareSummary == null) {
-                    row.serialNumber = hardwareNotFound;
-                } else {
-                    row.serialNumber = YukonMessageSourceResolvable.createDefaultWithoutCode(hardwareSummary.getSerialNumber());
-                }
+            HardwareSummary hardwareSummary = hardwareSummariesById.get(result.getInventoryId());
+            if (hardwareSummary == null) {
+                row.serialNumber = hardwareNotFound;
+            } else {
+                row.serialNumber = YukonMessageSourceResolvable.createDefaultWithoutCode(hardwareSummary.getSerialNumber());
             }
+
             row.altTrackingNumber = "";
             CustomerAccountWithNames account = accountsByAccountId.get(result.getAccountId());
             if (account != null) {
                 row.altTrackingNumber = account.getAlternateTrackingNumber();
             }
             row.reason = getReason(result, baseKey);
-            if (event != null) {
-                row.scheduledDate = event.getScheduledDate().toDate();
-                row.startDate = event.getStartDate().toDate();
-                row.endDate = event.getStopDate().toDate();
-            }
+            row.scheduledDate = result.getScheduledDate().toDate();
+            row.startDate = result.getStartDate().toDate();
+            row.endDate = result.getStopDate().toDate();
 
             if (programsControlledDuringOptOut.isEmpty()) {
                 row.loadProgram = noControlDuringOptOut;
@@ -202,11 +188,7 @@ public class SurveyResultsDetailModel extends
         this.deviceSerialNumber = deviceSerialNumber;
     }
 
-    @Autowired
-    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
-        this.optOutEventDao = optOutEventDao;
-    }
-
+    // DI Setters
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;

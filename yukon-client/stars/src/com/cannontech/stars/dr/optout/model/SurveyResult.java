@@ -12,6 +12,9 @@ public class SurveyResult {
     private String answerKey;
     private String textAnswer;
     private int inventoryId;
+    private Instant scheduledDate;
+    private Instant startDate;
+    private Instant stopDate;
 
     public int getSurveyResultId() {
         return surveyResultId;
@@ -84,5 +87,29 @@ public class SurveyResult {
 
     public void setInventoryId(int inventoryId) {
         this.inventoryId = inventoryId;
+    }
+
+    public Instant getScheduledDate() {
+        return scheduledDate;
+    }
+
+    public void setScheduledDate(Instant scheduledDate) {
+        this.scheduledDate = scheduledDate;
+    }
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
+    }
+
+    public Instant getStopDate() {
+        return stopDate;
+    }
+
+    public void setStopDate(Instant stopDate) {
+        this.stopDate = stopDate;
     }
 }

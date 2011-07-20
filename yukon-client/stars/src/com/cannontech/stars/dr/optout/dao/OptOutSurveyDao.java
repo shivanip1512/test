@@ -27,6 +27,7 @@ public interface OptOutSurveyDao {
     public List<SurveyResult> findSurveyResults(int surveyId,
             int questionId, Iterable<Integer> answerIds,
             boolean includeOtherAnswers, boolean includeUnanswered,
+            boolean includeScheduledSurveys,
             ReadableInstant begin, ReadableInstant end,
             String accountNumber, String serialNumber);
 }

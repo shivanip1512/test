@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.optout.dao;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Instant;
 
@@ -14,7 +13,6 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
-import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.google.common.collect.Multimap;
 
 /**
@@ -218,9 +216,4 @@ public interface OptOutEventDao {
 	 */
 	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
 			int customerAccountId);
-
-	/**
-	 * Get a map of SurveyResult to OptOutEvent mapping. 
-	 */
-    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(Iterable<SurveyResult> surveyResults);
 }

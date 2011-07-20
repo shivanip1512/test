@@ -95,7 +95,7 @@ public class SurveyResultsSummaryModel extends
         Map<Integer, List<ProgramEnrollment>> enrollmentsBySurveyResultId = Maps.newHashMap();
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
-                                              includeOtherAnswers, includeUnanswered,
+                                              includeOtherAnswers, includeUnanswered, false,
                                               startDate, getStopDateAsInstant(),
                                               null, null);
         for (SurveyResult result : surveyResults) {

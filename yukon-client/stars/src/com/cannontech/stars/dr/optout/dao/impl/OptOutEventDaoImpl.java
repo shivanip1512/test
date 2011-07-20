@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
-import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -47,7 +44,6 @@ import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
-import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.stars.dr.program.model.Program;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -695,104 +691,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return scheduledOptOuts;
 	}
 
-	@Override
-    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(final Iterable<SurveyResult> surveyResults) {
-	    
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 2);
-        
-        SqlFragmentGenerator<SurveyResultIdPair> sqlGenerator = new SqlFragmentGenerator<SurveyResultIdPair>() {
-            @Override
-            public SqlFragmentSource generate(List<SurveyResultIdPair> surveyResultIdPairs) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT OOSR.SurveyResultId, OOE.OptOutEventId, OOEL.OptOutEventLogId,");
-                sql.append(    "OOE.InventoryId, OOE.CustomerAccountId, OOE.ScheduledDate,");
-                sql.append(    "OOE.StartDate, OOE.StopDate, OOE.EventCounts, OOE.EventState");
-                sql.append("FROM OptOutEvent OOE");
-                sql.append(    "JOIN OptOutEventLog OOEL ON OOE.OptOutEventId = OOEL.OptOutEventId");
-                sql.append(    "JOIN OptOutSurveyResult OOSR ON OOSR.OptOutEventLogId = OOEL.OptOutEventLogId");
-
-                SqlFragmentCollection sureveyResultConditions = SqlFragmentCollection.newOrCollection();
-                for (SurveyResultIdPair surveyResultIdPair : surveyResultIdPairs) {
-                    SqlStatementBuilder surveyResultCondition = new SqlStatementBuilder();
-                    surveyResultCondition.append("(OOSR.SurveyResultId").eq(surveyResultIdPair.getSurveyResultId());
-                    surveyResultCondition.append(" AND OOE.InventoryId").eq(surveyResultIdPair.getInventoryId()).append(")");
-                    sureveyResultConditions.add(surveyResultCondition);
-                }
-                sql.append("WHERE").appendFragment(sureveyResultConditions);
-                return sql;
-            }
-        };
-
-        Function<SurveyResult, SurveyResultIdPair> typeMapper = new Function<SurveyResult, SurveyResultIdPair>() {
-            @Override
-            public SurveyResultIdPair apply(SurveyResult surveyResult) {
-                return new SurveyResultIdPair(surveyResult.getSurveyResultId(), surveyResult.getInventoryId());
-            }};
-        
-        YukonRowMapper<Map.Entry<SurveyResultIdPair, OptOutEvent>> mappingRowMapper =
-            new YukonRowMapper<Map.Entry<SurveyResultIdPair, OptOutEvent>>() {
-                OptOutEventRowMapper rowMapper = new OptOutEventRowMapper();
-                
-                @Override
-                public Entry<SurveyResultIdPair, OptOutEvent> mapRow(YukonResultSet rs)throws SQLException {
-                    OptOutEvent event = rowMapper.mapRow(rs);
-                    SurveyResultIdPair surveyResultIdPair = 
-                        new SurveyResultIdPair(rs.getInt("SurveyResultId"), rs.getInt("InventoryId"));
-                    return Maps.immutableEntry(surveyResultIdPair, event);
-                }
-        };
-
-        Map<SurveyResult, OptOutEvent> retVal =
-            template.mappedQuery(sqlGenerator, surveyResults, mappingRowMapper, typeMapper);
-
-        return retVal;
-    }
-
-	private static class SurveyResultIdPair {
-	    
-	    private int surveyResultId;
-	    private int inventoryId;
-
-	    public SurveyResultIdPair(int surveyResultId, int inventoryId) {
-	        this.surveyResultId = surveyResultId;
-	        this.inventoryId = inventoryId;
-	    }
-	    
-	    public int getSurveyResultId() {
-            return surveyResultId;
-        }
-	    
-	    public int getInventoryId() {
-            return inventoryId;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + inventoryId;
-            result = prime * result + surveyResultId;
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            SurveyResultIdPair other = (SurveyResultIdPair) obj;
-            if (inventoryId != other.inventoryId)
-                return false;
-            if (surveyResultId != other.surveyResultId)
-                return false;
-            return true;
-        }
-    }
-	
     private int getFirstEventUser(int optOutEventId) {
 
 	    SqlStatementBuilder sql = new SqlStatementBuilder();

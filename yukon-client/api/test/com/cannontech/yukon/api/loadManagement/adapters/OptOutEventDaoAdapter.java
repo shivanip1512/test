@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.loadManagement.adapters;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Instant;
 
@@ -15,7 +14,6 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
-import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.google.common.collect.Multimap;
 
 public class OptOutEventDaoAdapter implements OptOutEventDao {
@@ -151,11 +149,6 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
 
     @Override
     public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(Iterable<SurveyResult> surveyResults) {
         throw new UnsupportedOperationException("not implemented");
     }
 
