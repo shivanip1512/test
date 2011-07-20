@@ -14,27 +14,32 @@ public class LuceneQueryHelper {
 
 	public static void buildQueryByFilterType(BooleanQuery query, FilterType filterType) {
 		
+	    BooleanQuery pointTypeQuery = new BooleanQuery();
+        
 		switch (filterType) {
 			case ANALOGPOINT:
-				query.add(buildQuery("pointtype","Analog"),BooleanClause.Occur.SHOULD);
-				query.add(buildQuery("pointtype","CalcAnalog"),BooleanClause.Occur.SHOULD);
+			    pointTypeQuery.add(buildQuery("pointtype","Analog"),BooleanClause.Occur.SHOULD);
+			    pointTypeQuery.add(buildQuery("pointtype","CalcAnalog"),BooleanClause.Occur.SHOULD);
 				break;
 			case STATUSPOINT:
-				query.add(buildQuery("pointtype","Status"),BooleanClause.Occur.SHOULD);
-				query.add(buildQuery("pointtype","CalcStatus"),BooleanClause.Occur.SHOULD);
+			    pointTypeQuery.add(buildQuery("pointtype","Status"),BooleanClause.Occur.SHOULD);
+			    pointTypeQuery.add(buildQuery("pointtype","CalcStatus"),BooleanClause.Occur.SHOULD);
 				break;
 			default:
 				throw new NotFoundException("Could not build Query for unknown filtertype: " + filterType.name());
 		}
-			
+	
+		query.add(pointTypeQuery, BooleanClause.Occur.MUST);
 	}
 	
 	public static void buildQueryByEnergyCompanyIds(BooleanQuery query, Set<Integer> energyCompanyIds) {
+        BooleanQuery energyCompanyIdQuery = new BooleanQuery();
         
 	    for (Integer energyCompanyId : energyCompanyIds) {
-	        query.add(buildQuery("energyCompanyId", Integer.toString(energyCompanyId)), BooleanClause.Occur.SHOULD);
+	        energyCompanyIdQuery.add(buildQuery("energyCompanyId", Integer.toString(energyCompanyId)), BooleanClause.Occur.SHOULD);
         }
 	    
+	    query.add(energyCompanyIdQuery, BooleanClause.Occur.MUST);
     }
 	
 	private static TermQuery buildQuery(String field, String value) {
