@@ -73,7 +73,7 @@
                     </c:if>
                 </c:if>
                     
-                <a href="javascript:void(0);" onclick="GB_show('Comments','${commentsUrl}', 380, 710);" style="color: white; font-weight: bold;" >Comments</a>
+                <a href="javascript:void(0);" onclick="GB_show('Comments','${commentsUrl}', 380, 810);" style="color: white; font-weight: bold;" >Comments</a>
                 <br>
                 <div style="color: white;">
                     <c:set var="count" value="1" />

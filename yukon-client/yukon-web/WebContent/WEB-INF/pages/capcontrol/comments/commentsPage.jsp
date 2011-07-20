@@ -119,7 +119,7 @@
             <input type="hidden" name="commentId" id="commentId" value="">
             <input type="hidden" name="comment" id="comment">
             <input type="hidden" name="submitNormal" value="${submitNormal}">
-            <input type="hidden" name="redirectValue" value="${redirectValue}">
+            <input type="hidden" name="redirectToOneline" value="${redirectToOneline}">
             <table id="commentsTable" class="compactResultsTable">
                 <thead>
                     <tr>
