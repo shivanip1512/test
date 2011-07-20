@@ -3,8 +3,8 @@ package com.cannontech.web.support.development.database.objects;
 import com.cannontech.common.pao.PaoType;
 
 public enum DevCommChannel {
-    COMM_CHANNEL_1(PaoType.TSERVER_SHARED, "Wireless Cart Port 1", "10.106.40.201", 2101, 1200),
-    COMM_CHANNEL_SIM(PaoType.TSERVER_SHARED, "Sim Comm Channel", "0.0.0.0", 2101, 1200),
+    CART_PORT_1(PaoType.TSERVER_SHARED, "Wireless Cart Port 1", "127.0.0.1", 2101, 1200),
+    SIM(PaoType.TSERVER_SHARED, "Sim Comm Channel", "127.0.0.1", 2101, 1200),
     ;
 
     private final PaoType paoType;

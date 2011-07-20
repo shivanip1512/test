@@ -3,21 +3,28 @@ package com.cannontech.web.support.development.database.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.web.support.development.database.service.DevRolePropUpdaterService;
 
 public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase implements DevRolePropUpdaterService {
     private RoleDao roleDao;
+    private RolePropertyEditorDao rolePropertyEditorDao;
 
     @Override
-    public void createAll() {
+    protected void createAll() {
         // feel free to make this sys admin group thing below better
         LiteYukonGroup group = new LiteYukonGroup(-2, "System Administrator Grp");
         updateAllRolePropertiesForGroup(group);
     }
-    
+
+    @Override
+    protected void logFinalExecutionDetails() {
+    }
+
     private void updateAllRolePropertiesForGroup(LiteYukonGroup group) {
         // OPERATOR_ADMINISTRATOR
         setRoleTrue(group, YukonRole.OPERATOR_ADMINISTRATOR, YukonRoleProperty.ADMIN_VIEW_LOGS);
@@ -258,17 +265,24 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
     }
 
     private void setRole(LiteYukonGroup group, YukonRole role, YukonRoleProperty property, String newVal) {
-        log.info("Setting YukonRole " + role.name() + " and YukonRoleProperty " + property.name() + " to " + newVal);
         roleDao.updateGroupRoleProperty(group, role.getRoleId(), property.getPropertyId(), newVal);
+        log.info("YukonRole " + role.name() + " and YukonRoleProperty " + property.name() + " set to " + newVal);
     }
 
     private void setRoleTrue(LiteYukonGroup group, YukonRole role, YukonRoleProperty property) {
-        log.info("Setting YukonRole " + role.name() + " and YukonRoleProperty " + property.name() + " to true");
-        roleDao.updateGroupRoleProperty(group, role.getRoleId(), property.getPropertyId(), "true");
+        GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(group, role, true);
+        propertyValues.getValueMap().put(property, true);
+        rolePropertyEditorDao.save(propertyValues);
+        log.info("YukonRole " + role.name() + " and YukonRoleProperty " + property.name() + " set to true");
     }
     
     @Autowired
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
+    }
+    
+    @Autowired
+    public void setRolePropertyEditorDao(RolePropertyEditorDao rolePropertyEditorDao) {
+        this.rolePropertyEditorDao = rolePropertyEditorDao;
     }
 }

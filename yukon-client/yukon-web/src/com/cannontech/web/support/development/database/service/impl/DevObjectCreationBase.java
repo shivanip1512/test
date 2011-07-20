@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
@@ -19,6 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.web.support.development.DevDbSetupTask;
+import com.cannontech.web.support.development.database.objects.DevObject;
 import com.cannontech.web.support.development.database.service.DevObjectCreationInterface;
 
 public abstract class DevObjectCreationBase implements DevObjectCreationInterface {
@@ -31,18 +33,25 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
     protected DevDbSetupTask devDbSetupTask;
     protected DeviceCreationService deviceCreationService;
     protected DBPersistentDao dbPersistentDao;
+    protected ConfigurationSource configurationSource;
 
     @Override
-    public void createAll(DevDbSetupTask devDbSetupTask, boolean create) {
-        if (!create) {
-            return;
-        }
+    public void createAll(DevDbSetupTask devDbSetupTask) {
         this.devDbSetupTask = devDbSetupTask;
         createAll();
     }
     
+    protected abstract void createAll();
+    
     @Override
-    public abstract void createAll();
+    public void logFinalExecutionDetails(DevObject devObj) {
+        logFinalExecutionDetails();
+        log.info(" success: " + devObj.getSuccessCount());
+        log.info(" failure: " + devObj.getFailureCount());
+        log.info(" total:   " + devObj.getTotal());
+    }
+    
+    protected abstract void logFinalExecutionDetails();
 
     // This is a pretty terrible way of accomplishing this... but good enough for now
     protected void checkIsCancelled() {
@@ -71,8 +80,9 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
     }
 
     protected SmartMultiDBPersistent createSmartDBPersistent(DeviceBase deviceBase) {
-        if (deviceBase == null)
+        if (deviceBase == null) {
             return null;
+        }
 
         SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
         smartDB.addOwnerDBPersistent(deviceBase);
@@ -114,5 +124,9 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
     @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
+    }
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 }

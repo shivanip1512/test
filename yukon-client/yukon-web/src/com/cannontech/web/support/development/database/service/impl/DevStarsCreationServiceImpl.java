@@ -30,11 +30,17 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
     private StarsInventoryBaseDao starsInventoryBaseDao;
     
     @Override
-    public void createAll() {
+    protected void createAll() {
         createStars(devDbSetupTask.getDevStars());
+    }
+    
+    @Override
+    protected void logFinalExecutionDetails() {
+        log.info("Stars:");
     }
 
     private void createStars(DevStars devStars) {
+        log.info("Creating Stars Accounts (and Hardware) ...");
         int inventoryIdIterator = devStars.getDevStarsHardware().getSerialNumMin();
         // Account Hardware
         for (UpdatableAccount updatableAccount: devStars.getDevStarsAccounts().getAccounts()) {
@@ -50,6 +56,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
                 }
             }
         }
+        log.info("Creating Extra Stars Hardware ...");
         // Warehouse (extra) Hardware
         for (int i = 0; i < devStars.getDevStarsHardware().getNumExtra(); i++) {
             for (DevHardwareType devHardwareType: devStars.getDevStarsHardware().getHardwareTypes()) {
@@ -116,7 +123,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
             hardwareDto.setTwoWayDeviceName("twoWayDeviceName" + inventoryIdIteratorString);
             hardwareDto.setCreatingNewTwoWayDevice(true);
         }
-        String ccuName = DevCCU.CCU_711_SIM.getName();
+        String ccuName = DevCCU.SIM_711.getName();
         Integer routeId = paoDao.getRouteIdForRouteName(ccuName);
         if (routeId == null) {
             throw new RuntimeException("Couldn't find route with name " + ccuName);

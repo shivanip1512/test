@@ -1,7 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="support" page="setupDatabase">
@@ -13,7 +13,9 @@
             <ul class="indentedMedium">
                 <li>
                     <tags:nameValueContainer2>
-                        <tags:checkbox path="updateRoleProperties" descriptionNameKey=".setupDevDatabase.option.roleProperties"/>
+                        <span title="<i:inline key=".setupDevDatabase.option.roleProperties.title"/>">
+                            <tags:checkbox path="updateRoleProperties" descriptionNameKey=".setupDevDatabase.option.roleProperties"/>
+                        </span>
                     </tags:nameValueContainer2>
                 </li>
                 <li class="dib fl">

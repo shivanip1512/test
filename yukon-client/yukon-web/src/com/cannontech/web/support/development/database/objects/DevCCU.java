@@ -1,8 +1,8 @@
 package com.cannontech.web.support.development.database.objects;
 
 public enum DevCCU {
-    CCU_711_CART_1("* CCU 711 CART", 2, DevCommChannel.COMM_CHANNEL_1),
-    CCU_711_SIM("* CCU 711 SIM", 2, DevCommChannel.COMM_CHANNEL_SIM),
+    CART_711("* CCU 711 CART", 2, DevCommChannel.CART_PORT_1),
+    SIM_711("* CCU 711 SIM", 2, DevCommChannel.SIM),
     ;
 
     private final String name;

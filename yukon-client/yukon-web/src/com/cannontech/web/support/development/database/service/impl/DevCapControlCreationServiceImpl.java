@@ -20,11 +20,17 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private StrategyDao strategyDao;
     
     @Override
-    public void createAll() {
+    protected void createAll() {
         createCapControl(devDbSetupTask.getDevCapControl());
     }
     
+    @Override
+    protected void logFinalExecutionDetails() {
+        log.info("CC:");
+    }
+    
     private void createCapControl(DevCapControl devCapControl) {
+        log.info("Creating (and assigning) Cap Control Objects ...");
         int offset = devCapControl.getOffset();
         for (int areaIndex = offset; areaIndex  < offset + devCapControl.getNumAreas(); areaIndex++) { // Areas
             String areaName = createArea(devCapControl, areaIndex);
@@ -85,7 +91,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         for (DevPaoType cbcType: devCapControl.getCbcTypes()) {
             if (cbcType.isCreate()) {
                 String cbcName = cbcType.getPaoType().getPaoTypeName() + " "+ Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex) + Integer.toString(cbcIndex);
-                createCapControlCBC(devCapControl, cbcType.getPaoType().getDeviceTypeId(), cbcName, false, DevCommChannel.COMM_CHANNEL_1);
+                createCapControlCBC(devCapControl, cbcType.getPaoType().getDeviceTypeId(), cbcName, false, DevCommChannel.SIM);
                 int cbcPaoId = getPaoIdByName(cbcName);
                 capControlCreationService.assignController(cbcPaoId, cbcType.getPaoType(), capBankName);
                 logCapControlAssignment(cbcName, capBankName);

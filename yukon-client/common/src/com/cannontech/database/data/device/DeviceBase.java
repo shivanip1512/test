@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.customer.DeviceCustomerList;
@@ -153,6 +154,12 @@ public final static String hasRoute( Integer deviceID ) throws java.sql.SQLExcep
 		return null;
 	}
 
+}
+
+public void applyTypeToPao(PaoType type) {
+    setPAOCategory(type.getPaoCategory().toString());
+    setPAOClass(type.getPaoClass().toString());
+    setDeviceType(type.getDbString());
 }
 
 /**

@@ -37,10 +37,15 @@ import com.cannontech.web.support.development.database.service.DevAMRCreationSer
 public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements DevAMRCreationService {
     
     @Override
-    public void createAll() {
+    protected void createAll() {
         createAllCommChannels();
         createAllCCUs();
         createAllMeters(devDbSetupTask.getDevAMR());
+    }
+
+    @Override
+    protected void logFinalExecutionDetails() {
+        log.info("AMR:");
     }
 
     private void createAllCommChannels() {
@@ -55,15 +60,11 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
     }
 
     private void createCommChannel(DevCommChannel commChannel) throws NotFoundException {
-        try {
-            // if this comm channel exists already, then return
-            LiteYukonPAObject existingCommChannel = paoDao.getLiteYukonPAObject(commChannel.getName(), PaoCategory.PORT.getCategoryId(), PaoClass.PORT.getPaoClassId(), PaoType.TSERVER_SHARED.getDeviceTypeId());
-            if (existingCommChannel != null) {
-                log.info("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
-                return;
-            }
-        } catch (NotFoundException e) {
-            // ignoring and continuing to create this comm channel
+        // if this comm channel exists already, then return
+        LiteYukonPAObject existingCommChannel = paoDao.findUnique(commChannel.getName(), PaoCategory.PORT, PaoClass.PORT);
+        if (existingCommChannel != null) {
+            log.info("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
+            return;
         }
 
         DirectPort directPort = PortFactory.createPort(commChannel.getPaoType().getDeviceTypeId());
@@ -72,10 +73,15 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         PortSettings portSettings = new PortSettings();
         portSettings.setPortID(directPort.getCommPort().getPortID());
         portSettings.setBaudRate(commChannel.getBaudRate());
+        
+        String ipAddress = commChannel.getIpAddress();
+        String cparmIpAddress = configurationSource.getString("DEVELOPMENT_DB_IP_ADDRESS_" + commChannel.name());
+        if (cparmIpAddress != null) {
+            ipAddress = cparmIpAddress;
+        }
 
         PortTerminalServer portTerminalServer =
-            new PortTerminalServer(directPort.getCommPort().getPortID(),
-                                               commChannel.getIpAddress(), commChannel.getPort());
+            new PortTerminalServer(directPort.getCommPort().getPortID(), ipAddress, commChannel.getPort());
 
         TerminalServerDirectPort terminalServerSharedPort = new TerminalServerDirectPort();
         terminalServerSharedPort.setCommPort(directPort.getCommPort());
@@ -127,11 +133,8 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         Integer portID = new Integer(commChan.getYukonID());
 
         CCU711 ccu = new CCU711();
-
-        ccu.setPAOCategory(PaoCategory.DEVICE.toString());
-        ccu.setPAOClass(PaoClass.TRANSMITTER.toString());
+        ccu.applyTypeToPao(PaoType.CCU711);
         ccu.setPAOName(devCCU.getName());
-        ccu.setDeviceType(PaoType.CCU711.getDbString());
 
         ((RemoteBase) ccu).getDeviceDirectCommSettings().setPortID(portID);
 
@@ -177,6 +180,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
     }
 
     private void createAllMeters(DevAMR devAMR) {
+        log.info("Creating Meters ...");
         if (devAMR.isCreateCartObjects()) {
             DevMeter[] meters = DevMeter.values();
             for (DevMeter meter : meters) {
@@ -198,10 +202,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
     }
 
     private void createMeter(DevAMR devAMR, DevMeter meter) {
-        Integer routeId = paoDao.getRouteIdForRouteName(DevCCU.CCU_711_SIM.getName());
-        if (routeId == null) {
-            throw new RuntimeException("Couldn't find route with name " + DevCCU.CCU_711_SIM.getName());
-        }
+        int routeId = getDefaultRouteId();
         createMeter(devAMR, meter.getPaoType().getDeviceTypeId(), meter.getName(), meter.getAddress(), routeId, true);
     }
 
@@ -212,6 +213,9 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
                      + devAMR.getAddressRangeMax() + " . Skipping.");
             devAMR.incrementFailureCount();
             return;
+        }
+        if (routeId <= 0) {
+            routeId = getDefaultRouteId();
         }
         try {
             // if this device exists already, then return
@@ -228,5 +232,13 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         deviceCreationService.createCarrierDeviceByDeviceType(type, name, address, routeId, createPoints);
         devAMR.incrementSuccessCount();
         log.info("Meter with name " + name + " created.");
+    }
+    
+    private int getDefaultRouteId() {
+        Integer routeId = paoDao.getRouteIdForRouteName(DevCCU.SIM_711.getName());
+        if (routeId == null) {
+            throw new RuntimeException("Couldn't find route with name " + DevCCU.SIM_711.getName());
+        }
+        return routeId;
     }
 }
