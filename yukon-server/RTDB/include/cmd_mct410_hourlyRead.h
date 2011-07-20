@@ -52,8 +52,8 @@ class IM_EX_DEVDB Mct410HourlyReadCommand : public Mct410Command
 
     request_ptr makeRequest(const CtiTime now);
 
+    CtiDeviceSingle::point_info        extractMidnightKwh(const payload_t &payload) const;
     static point_data                  extractBlinkCount (const payload_t &payload);
-    static CtiDeviceSingle::point_info extractMidnightKwh(const payload_t &payload);
     static std::vector<unsigned>       extractDeltas     (const payload_t &payload, const request_pointer &rp);
 
     static std::vector<point_data> processDeltas(point_data base_kwh, const std::vector<unsigned> &deltas);
@@ -70,6 +70,8 @@ protected:
     static read_request_t requestDayEnd  (const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday);
 
     static int convertDelta(unsigned delta);
+
+    virtual CtiDeviceSingle::point_info getAccumulatorData(const unsigned char *buf, const unsigned len) const;
 
 public:
 

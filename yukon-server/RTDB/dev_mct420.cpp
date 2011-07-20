@@ -259,6 +259,13 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
     return NoError;
 }
 
+
+DlcBaseDevice::DlcCommandSPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
+{
+    return DlcCommandSPtr(new Mct420HourlyReadCommand(date_begin, date_end, channel));
+}
+
+
 string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
 {
     string resultStr;
@@ -357,7 +364,7 @@ int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
 
 Mct420Device::point_info Mct420Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
-    point_info pi = Mct4xxDevice::getData(buf, len, ValueType_Accumulator);
+    point_info pi = getMct420AccumulatorData(buf, len);
 
     if( freeze_counter )
     {
@@ -380,6 +387,34 @@ Mct420Device::point_info Mct420Device::getDemandData(const unsigned char *buf, c
     }
 
     return pi;
+}
+
+
+CtiDeviceSingle::point_info Mct420Device::getMct420AccumulatorData(const unsigned char *buf, const unsigned len)
+{
+    unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
+
+    __int64 value = 0;
+
+    for( int i = 0; i < len; i++ )
+    {
+        //  input data is in MSB order
+        value      = value      << 8 | buf[i];
+        error_code = error_code << 8 | buf[i];
+    }
+
+    if( value >= MaxAccumulatorValue )
+    {
+        return getDataError(error_code, error_codes);
+    }
+
+    point_info  retval;
+
+    retval.freeze_bit = 0;
+    retval.value      = value;
+    retval.quality    = NormalQuality;
+
+    return retval;
 }
 
 

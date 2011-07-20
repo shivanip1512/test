@@ -962,20 +962,7 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
 
     if( error_code >= min_error )
     {
-        value       = 0;
-
-        error_map::const_iterator es_itr = errors->find(error_code);
-
-        if( es_itr != errors->end() )
-        {
-            quality     = es_itr->second.quality;
-            description = es_itr->second.description;
-        }
-        else
-        {
-            quality     = InvalidQuality;
-            description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
-        }
+        return getDataError(error_code, *errors);
     }
     else if( vt == ValueType_IED && error_pad >= 0xfc )
     {

@@ -360,6 +360,8 @@ protected:
     virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
 
+    virtual DlcCommandSPtr makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const;
+
     virtual ConfigPartsList getPartsList();
 
     virtual const read_key_store_t &getReadKeyStore(void) const;

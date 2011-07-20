@@ -27,6 +27,8 @@ protected:
 
     virtual int executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList, bool readsOnly);
 
+    virtual DlcCommandSPtr makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const;
+
     virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt);
 
     virtual int decodeGetConfigMeterParameters( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
@@ -37,6 +39,10 @@ protected:
 
     virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
     virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
+
+public:
+
+    static point_info getMct420AccumulatorData(const unsigned char *buf, const unsigned len);
 };
 
 }

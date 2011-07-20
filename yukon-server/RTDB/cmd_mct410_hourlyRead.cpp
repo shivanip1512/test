@@ -119,7 +119,7 @@ DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const payload_
 
 
 //  throws CommandException
-CtiDeviceSingle::point_info Mct410HourlyReadCommand::extractMidnightKwh(const payload_t &payload)
+CtiDeviceSingle::point_info Mct410HourlyReadCommand::extractMidnightKwh(const payload_t &payload) const
 {
     //  we have to manually check this here because we're using Mct4xxDevice::getData(), which only knows pointers
     if( payload.size() < 13 )
@@ -127,7 +127,13 @@ CtiDeviceSingle::point_info Mct410HourlyReadCommand::extractMidnightKwh(const pa
         throw CommandException(NOTNORMAL, "Payload too small");
     }
 
-    return Mct4xxDevice::getData(&payload.front() + 10, 3, Mct4xxDevice::ValueType_Accumulator);
+    return getAccumulatorData(&payload.front() + 10, 3);
+}
+
+
+CtiDeviceSingle::point_info Mct410HourlyReadCommand::getAccumulatorData(const unsigned char *buf, const unsigned len) const
+{
+    return Mct4xxDevice::getData(buf, len, Mct4xxDevice::ValueType_Accumulator);
 }
 
 

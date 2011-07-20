@@ -283,20 +283,7 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, const u
 
     if( error_code >= min_error )
     {
-        value       = 0;
-
-        error_map::const_iterator error = error_codes.find(error_code);
-
-        if( error != error_codes.end() )
-        {
-            quality     = error->second.quality;
-            description = error->second.description;
-        }
-        else
-        {
-            quality     = InvalidQuality;
-            description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
-        }
+        return getDataError(error_code, error_codes);
     }
     else
     {
@@ -1597,7 +1584,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         const CtiDate date_end   = parseDateValue(parse.getsValue("hourly_read_date_end"));
         const unsigned channel   = parse.getiValue("channel", 1);
 
-        DlcCommandSPtr hourlyRead(new Mct410HourlyReadCommand(date_begin, date_end, channel));
+        DlcCommandSPtr hourlyRead = makeHourlyReadCommand(date_begin, date_end, channel);
 
         //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
         //    a DlcCommand object that it can execute out there
@@ -1939,6 +1926,13 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
     return nRet;
 }
+
+
+DlcBaseDevice::DlcCommandSPtr Mct410Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
+{
+    return DlcCommandSPtr(new Mct410HourlyReadCommand(date_begin, date_end, channel));
+}
+
 
 INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,

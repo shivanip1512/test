@@ -298,12 +298,8 @@ Mct4xxDevice::point_info Mct4xxDevice::getAccumulatorData(const unsigned char *b
 
 Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const unsigned len, const ValueType4xx vt )
 {
-    PointQuality_t quality = NormalQuality;
-    unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
-                  min_error  = 0;
-    unsigned char error_byte, value_byte;
+    unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
 
-    string description;
     __int64 value = 0;
     point_info  retval;
 
@@ -321,36 +317,45 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const 
         case ValueType_FrozenAccumulator:
         case ValueType_Accumulator:
         {
+            if( value >= MaxAccumulatorValue )
+            {
+                return getDataError(error_code, error_codes);
+            }
+
             value &= ~0x01; // clear the low bit
 
-            min_error = 0xff989680;  //  32-bit version of the 24-bit maximum value for kWh values - see section 10.1 in the MCT-410 SSPEC
             break;
         }
     }
 
-    if( min_error && error_code >= min_error )
-    {
-        value = 0;
-
-        error_map::const_iterator error_itr = error_codes.find(error_code);
-
-        if( error_itr != error_codes.end() )
-        {
-            quality     = error_itr->second.quality;
-            description = error_itr->second.description;
-        }
-        else
-        {
-            quality     = InvalidQuality;
-            description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
-        }
-    }
-
-    retval.value       = value;
-    retval.quality     = quality;
-    retval.description = description;
+    retval.value   = value;
+    retval.quality = NormalQuality;
 
     return retval;
+}
+
+
+CtiDeviceSingle::point_info Mct4xxDevice::getDataError(unsigned error_code, const Mct4xxDevice::error_map &error_codes)
+{
+    point_info pi;
+
+    pi.value = 0;
+    pi.freeze_bit = 0;
+
+    error_map::const_iterator error_itr = error_codes.find(error_code);
+
+    if( error_itr != error_codes.end() )
+    {
+        pi.quality     = error_itr->second.quality;
+        pi.description = error_itr->second.description;
+    }
+    else
+    {
+        pi.quality     = InvalidQuality;
+        pi.description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
+    }
+
+    return pi;
 }
 
 

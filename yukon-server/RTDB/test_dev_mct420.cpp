@@ -228,6 +228,29 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
                                   tr.results_begin(),  tr.results_end());
 }
 
+
+BOOST_AUTO_TEST_CASE(test_dev_mct420_getMct4xxAccumulatorData)
+{
+    unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
+
+    CtiDeviceSingle::point_info pi;
+
+    pi = Mct420Device::getMct420AccumulatorData(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      512 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x01;
+
+    pi = Mct420Device::getMct420AccumulatorData(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      513 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+
+
 BOOST_AUTO_TEST_CASE(test_dev_mct420_isProfileTablePointerCurrent)
 {
     test_Mct420Device dev;

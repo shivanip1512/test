@@ -156,6 +156,8 @@ protected:
 
         DawnOfTime_UtcSeconds   = 0x386d4380,  //  jan 1, 2000, in UTC seconds
 
+        MaxAccumulatorValue     = 0x98967f,
+
         PointOffset_RateOffset  =  20,   //  gets added for rate B, C, D
 
         PointOffset_PeakOffset  =  10,
@@ -320,6 +322,7 @@ public:
     };
 
     static point_info getData(const unsigned char *buf, const unsigned len, const ValueType4xx vt);
+    static point_info getDataError(unsigned error_code, const error_map &error_codes);
 
     //  will start up any outstanding LLP requests
     void deviceInitialization(std::list< CtiRequestMsg * > &request_list);
