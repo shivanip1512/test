@@ -610,9 +610,9 @@ public abstract class AbstractIndexManager implements IndexManager {
     /**
      * Mapping class to process a result set row into a Document
      */
-    protected class DocumentMapper implements RowMapper {
+    protected class DocumentMapper implements RowMapper<Document> {
 
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public Document mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createDocument(rs);
         }
     }

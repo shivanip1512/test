@@ -100,7 +100,6 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
      * @param paoId - Id of changed pao
      * @return Index update info for the pao change
      */
-    @SuppressWarnings("unchecked")
     private IndexUpdateInfo processPaoChange(DbChangeType dbChangeType, int paoId) {
 
         Term term = new Term("paoid", Integer.toString(paoId));

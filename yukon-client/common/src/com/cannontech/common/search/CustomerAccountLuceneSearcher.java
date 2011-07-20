@@ -16,6 +16,9 @@ public class CustomerAccountLuceneSearcher extends AbstractLuceneSearcher<UltraL
             public String getAccountNumber() {
                 return doc.get("accountNumber");
             }
+            public String getAccountId() {
+                return doc.get("accountId");
+            }
         };
         return ultra;
     }

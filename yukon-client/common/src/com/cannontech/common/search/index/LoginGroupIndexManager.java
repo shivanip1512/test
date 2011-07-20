@@ -83,7 +83,6 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
      * @param groupId - Id of changed user
      * @return Index update info for the user change
      */
-    @SuppressWarnings("unchecked")
     private IndexUpdateInfo processGroupChange(int groupId) {
 
         Term term = new Term("groupid", Integer.toString(groupId));

@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.search.UltraLightCustomerAccount;
 import com.cannontech.common.search.YukonObjectCriteria;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.service.EnergyCompanyService;
+import com.cannontech.stars.util.ECUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -20,7 +21,7 @@ import com.google.common.collect.Sets;
 
 public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccount> {
 
-    private EnergyCompanyService energyCompanyService;
+    private StarsDatabaseCache starsDatabaseCache;
     
     private static List<OutputColumn> outputColumns;
     static {
@@ -39,7 +40,9 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
         
         // Get available energy company ids
         int energyCompanyId = Integer.parseInt(extraArgs);
-        Set<LiteStarsEnergyCompany> memberEnergyCompanies = energyCompanyService.getMemberCandidates(energyCompanyId);
+        LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        List<LiteStarsEnergyCompany> memberEnergyCompanies = ECUtils.getAllDescendants(liteStarsEnergyCompany);
+        
         Set<Integer> searchableEnergyCompanyIds = 
             Sets.newHashSet(Iterables.transform(memberEnergyCompanies, new Function<LiteStarsEnergyCompany, Integer>() {
                 @Override
@@ -82,7 +85,7 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
     
     // DI Setters
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 }

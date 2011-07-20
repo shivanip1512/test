@@ -91,14 +91,6 @@ public class SurveyReportController {
             Date start = reportConfig.getStartDate();
             Date end = reportConfig.getStopDate();
             
-            if (start == null) {
-                errors.rejectValue("startDate", "startDateRequired");
-            }
-
-            if (end == null) {
-                errors.rejectValue("stopDate", "stopDateRequired");
-            }
-
             if (start != null && end != null && !start.before(end)) {
                 YukonValidationUtils.rejectValues(errors,
                                                   "startTimeNotBeforeStopTime",

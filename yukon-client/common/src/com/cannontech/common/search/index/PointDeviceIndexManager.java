@@ -127,7 +127,6 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
      * @param deviceId - Id of changed device
      * @return Index update info for the device change
      */
-    @SuppressWarnings("unchecked")
     private IndexUpdateInfo processDeviceChange(DbChangeType dbChangeType, int deviceId) {
 
         Term term = new Term("deviceid", Integer.toString(deviceId));
@@ -156,7 +155,6 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
      * @param pointId - Id of changed point
      * @return Index update info for the point change
      */
-    @SuppressWarnings("unchecked")
     private IndexUpdateInfo processPointChange(DbChangeType dbChangeType, int pointId) {
 
         Term term = new Term("pointid", Integer.toString(pointId));

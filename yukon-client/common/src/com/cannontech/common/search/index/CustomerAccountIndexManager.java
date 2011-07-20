@@ -21,6 +21,26 @@ import com.cannontech.message.dispatch.message.DbChangeType;
  */
 public class CustomerAccountIndexManager extends AbstractIndexManager {
 
+    private static String documentQuery;
+    {
+        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+        sql.append("SELECT CA.AccountId, CA.AccountNumber, ECTAM.EnergyCompanyId");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
+        
+        documentQuery = sql.toString();
+    }
+    
+    private static String documentCountQuery;
+    {
+        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
+
+        documentCountQuery = sql.toString();
+    }
+
     public String getIndexName() {
         return "customerAccountPicker";
     }
@@ -34,21 +54,11 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
-        sql.append("SELECT CA.AccountId, CA.AccountNumber, ECTAM.EnergyCompanyId");
-        sql.append("FROM CustomerAccount CA");
-        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
-        
-        return sql.toString();
+        return documentQuery;
     }
 
     protected String getDocumentCountQuery() {
-        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM CustomerAccount CA");
-        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
-
-        return sql.toString();
+        return documentCountQuery;
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -61,10 +71,10 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
         int energyCompanyIdInt = rs.getInt("EnergyCompanyId");
         String energyCompanyId = Integer.toString(energyCompanyIdInt);
         
-        doc.add(new Field("all", accountNumber, Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("all", accountNumber, Field.Store.NO, Field.Index.TOKENIZED));
         doc.add(new Field("accountNumber", accountNumber, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("accountId", accountId, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("energyCompanyId", energyCompanyId, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("energyCompanyId", energyCompanyId, Field.Store.NO, Field.Index.UN_TOKENIZED));
 
         return doc;
     }
@@ -85,7 +95,6 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
      * @param groupId - Id of changed user
      * @return Index update info for the user change
      */
-    @SuppressWarnings("unchecked")
     private IndexUpdateInfo processCustomerAccountChange(int accountId) {
 
         Term term = new Term("accountId", Integer.toString(accountId));

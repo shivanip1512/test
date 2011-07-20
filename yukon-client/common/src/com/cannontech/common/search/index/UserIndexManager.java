@@ -79,7 +79,6 @@ public class UserIndexManager extends AbstractIndexManager {
      * @param userId - Id of changed user
      * @return Index update info for the user change
      */
-    @SuppressWarnings("unchecked")
     private IndexUpdateInfo processUserChange(int userId) {
 
         Term term = new Term("userid", Integer.toString(userId));
