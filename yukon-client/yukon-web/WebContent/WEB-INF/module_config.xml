@@ -1250,24 +1250,24 @@
                             <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>userGroupEditor|home</menu>
                                 <link>/spring/adminSetup/userEditor/view?userId=${userId}</link>
-                                <labelArgument>${username}</labelArgument>
+                                <labelArgument>${editingUsername}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="userEditor.EDIT" type="DETAIL_CHILD">
                                         <menu>userGroupEditor|home</menu>
                                         <link>/spring/adminSetup/userEditor/edit?userId=${userId}</link>
-                                        <labelArgument>${username}</labelArgument>
+                                        <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                     <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                     	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <menu>userGroupEditor|home</menu>
                                         <link>/spring/editor/user/editUser?userId=${userId}</link>
-                                        <labelArgument>${username}</labelArgument>
+                                        <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                     <page name="groups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>userGroupEditor|home</menu>
                                         <link>/spring/adminSetup/userEditor/groups?userId=${userId}</link>
-                                        <labelArgument>${username}</labelArgument>
+                                        <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                 </pages>
                             </page>

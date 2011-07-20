@@ -15,8 +15,12 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
 </script>
     
     <i:simplePopup titleKey=".changePasswordPopup" arguments="${user.username}" id="changePasswordPopup" 
-            on="#changePasswordButton" styleClass="smallSimplePopup">
-        <form:form commandName="password" action="changePassword" method="post">
+            on="#changePasswordButton" styleClass="smallSimplePopup" showImmediately="${showChangePwPopup}">
+        <tags:setFormEditMode mode="${pwChangeFormMode}"/>
+        <c:if test="${showChangePasswordErrors}">
+            <cti:flashScopeMessages/>
+        </c:if>
+        <form:form commandName="passwordChange" action="changePassword" method="post">
             <input type="hidden" value="${userId}" name="userId">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".password">

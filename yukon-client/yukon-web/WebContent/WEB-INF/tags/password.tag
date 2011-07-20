@@ -25,10 +25,9 @@
 </c:if>
 
 <form:password path="${path}" id="${path}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" cssClass="${inputClass}" />
-
 <c:if test="${status.error}">
 	<br>
-	<form:errors path="${path}" cssClass="errorRed"/>
+	<form:errors path="${path}" cssClass="errorMessage"/>
 </c:if>
 
 </cti:displayForPageEditModes>
