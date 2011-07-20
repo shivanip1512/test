@@ -2,6 +2,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="zoneWizard">
 
@@ -9,12 +10,12 @@
 
 <tr id="${row.type}_${row.id}" class="${row.type}RowCounter">
 	<td>
-        ${row.name}
+        <spring:escapeBody>${row.name}</spring:escapeBody>
         <input type="hidden" value="${row.id}" name="${row.type}Assignments[${index}].id"/>
-        <input type="hidden" value="${row.name}" name="${row.type}Assignments[${index}].name"/>
-        <input type="hidden" value="${row.device}" name="${row.type}Assignments[${index}].device"/>
+        <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="${row.type}Assignments[${index}].name"/>
+        <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="${row.type}Assignments[${index}].device"/>
     </td>
-	<td>${row.device}</td>
+	<td><spring:escapeBody>${row.device}</spring:escapeBody></td>
     <td>
         <c:choose>
             <c:when test="${phaseUneditable}">

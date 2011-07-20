@@ -284,8 +284,8 @@
             						<tr id="${row.type}_${row.id}" class="bankRowCounter">
             							<td>
             								<form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
-            								<form:hidden path="bankAssignments[${status.index}].name"/>
-            								<form:hidden path="bankAssignments[${status.index}].device"/>
+            								<form:hidden path="bankAssignments[${status.index}].name" htmlEscape="true"/>
+            								<form:hidden path="bankAssignments[${status.index}].device" htmlEscape="true"/>
             								<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
             							</td>
             							<td>
@@ -343,8 +343,8 @@
             					<tr id="${row.type}_${row.id}" class="pointRowCounter">
             						<td>
             							<form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
-            							<form:hidden path="pointAssignments[${status.index}].name"/>
-            							<form:hidden path="pointAssignments[${status.index}].device"/>
+            							<form:hidden path="pointAssignments[${status.index}].name" htmlEscape="true"/>
+            							<form:hidden path="pointAssignments[${status.index}].device" htmlEscape="true"/>
             							<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
             						</td>
             						<td>
