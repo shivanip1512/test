@@ -655,7 +655,6 @@ function makeFirstSelectedFilterValueVisible() {
                             <span style="font-size:16px;">
                                     
                                 <tags:pickerDialog  type="customerAccountPicker"
-                                                    extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
                                                     id="customerAccountPicker" 
                                                     multiSelectMode="true"
                                                     destinationFieldId="selectedPickerValues"

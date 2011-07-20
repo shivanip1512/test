@@ -27,7 +27,7 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
             String extraArgs, YukonUserContext userContext) {
         SearchResult<T> hits;
         
-        YukonObjectCriteria combinedCriteria = combineCriteria(criteria, extraArgs);
+        YukonObjectCriteria combinedCriteria = combineCriteria(criteria, userContext, extraArgs);
 		if (StringUtils.isBlank(ss)) {
             hits = searcher.all(combinedCriteria, start, count);
         } else {
@@ -44,7 +44,7 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
         return hits;
     }
 
-    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, String extraArgs) {
+    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria,  YukonUserContext userContext, String extraArgs) {
     	return baseCriteria;
     }
 

@@ -13,7 +13,10 @@ import com.cannontech.common.search.UltraLightCustomerAccount;
 import com.cannontech.common.search.YukonObjectCriteria;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -22,6 +25,7 @@ import com.google.common.collect.Sets;
 public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccount> {
 
     private StarsDatabaseCache starsDatabaseCache;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     private static List<OutputColumn> outputColumns;
     static {
@@ -36,11 +40,11 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
     }
     
     @Override
-    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, String extraArgs) {
+    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, YukonUserContext userContext, String extraArgs) {
         
         // Get available energy company ids
-        int energyCompanyId = Integer.parseInt(extraArgs);
-        LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         List<LiteStarsEnergyCompany> memberEnergyCompanies = ECUtils.getAllDescendants(liteStarsEnergyCompany);
         
         Set<Integer> searchableEnergyCompanyIds = 
@@ -50,7 +54,7 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
                     return energyCompany.getEnergyCompanyId();
                 }
             }));
-        searchableEnergyCompanyIds.add(energyCompanyId);
+        searchableEnergyCompanyIds.add(yukonEnergyCompany.getEnergyCompanyId());
 
         // Build up lucene query
         final BooleanQuery query = new BooleanQuery(false);
@@ -87,5 +91,10 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 }
