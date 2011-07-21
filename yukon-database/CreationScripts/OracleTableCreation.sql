@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/21/2011 9:24:37 AM                         */
+/* Created on:     7/21/2011 12:40:03 PM                        */
 /*==============================================================*/
 
 
@@ -1870,6 +1870,13 @@ create table DEVICECARRIERSETTINGS  (
    DEVICEID             NUMBER                          not null,
    ADDRESS              NUMBER                          not null,
    constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
+);
+
+/*==============================================================*/
+/* Index: Indx_DevCarSet_Address                                */
+/*==============================================================*/
+create index Indx_DevCarSet_Address on DEVICECARRIERSETTINGS (
+   ADDRESS ASC
 );
 
 /*==============================================================*/

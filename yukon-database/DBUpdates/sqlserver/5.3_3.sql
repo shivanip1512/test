@@ -43,6 +43,12 @@ WHERE PointId IN (SELECT P.PointId
                          PAO.Type = 'Digi Gateway')); 
 /* End YUK-10000 */
 
+/* Start YUK-10062 */ 
+CREATE INDEX Indx_DevCarSet_Address ON DeviceCarrierSettings (
+   ADDRESS ASC
+);
+/* End YUK-10062 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

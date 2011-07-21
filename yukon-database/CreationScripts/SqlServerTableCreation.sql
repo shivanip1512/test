@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/21/2011 10:33:50 AM                        */
+/* Created on:     7/21/2011 12:41:55 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -1999,6 +1999,14 @@ create table DEVICECARRIERSETTINGS (
    DEVICEID             numeric              not null,
    ADDRESS              numeric              not null,
    constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_DevCarSet_Address                                */
+/*==============================================================*/
+create index Indx_DevCarSet_Address on DEVICECARRIERSETTINGS (
+ADDRESS ASC
 )
 go
 
