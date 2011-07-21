@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/21/2011 12:41:55 PM                        */
+/* Created on:     7/21/2011 1:11:57 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4320,6 +4320,15 @@ go
 /*==============================================================*/
 create index Indx_DYNV_TIME on DynamicVerification (
 TimeArrival ASC
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_DynVer_TimeArr_Code                              */
+/*==============================================================*/
+create index Indx_DynVer_TimeArr_Code on DynamicVerification (
+TimeArrival ASC,
+Code ASC
 )
 go
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/21/2011 12:40:03 PM                        */
+/* Created on:     7/21/2011 1:15:53 PM                         */
 /*==============================================================*/
 
 
@@ -4115,6 +4115,14 @@ create index Index_DYNVER_CS on DynamicVerification (
 /*==============================================================*/
 create index Indx_DYNV_TIME on DynamicVerification (
    TimeArrival ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_DynVer_TimeArr_Code                              */
+/*==============================================================*/
+create index Indx_DynVer_TimeArr_Code on DynamicVerification (
+   TimeArrival ASC,
+   Code ASC
 );
 
 /*==============================================================*/

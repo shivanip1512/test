@@ -49,6 +49,13 @@ CREATE INDEX Indx_DevCarSet_Address ON DeviceCarrierSettings (
 );
 /* End YUK-10062 */
 
+/* Start YUK-10067 */ 
+CREATE INDEX Indx_DynVer_TimeArr_Code ON DynamicVerification (
+   TimeArrival ASC,
+   Code ASC
+);
+/* End YUK-10067 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
