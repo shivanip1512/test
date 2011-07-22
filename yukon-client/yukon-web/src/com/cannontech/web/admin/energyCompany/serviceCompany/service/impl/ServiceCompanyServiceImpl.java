@@ -157,6 +157,9 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     @Override
     @Transactional
     public void deleteServiceCompany(ServiceCompanyDto serviceCompany) {
+        //Remove all of the inventory attached to this service company
+        serviceCompanyDao.removeInventory(serviceCompany.getCompanyId());
+        
         //first delete dependent service company designation codes
         designationCodeDao.bulkDelete(serviceCompany.getDesignationCodes());
 

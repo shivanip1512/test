@@ -30,4 +30,14 @@ public interface ServiceCompanyDao {
     public void update(ServiceCompanyDto serviceCompany);
     
     public void delete(int serviceCompanyId);
+
+    /**
+     * This method unassigns all the inventory of a given service company.
+     */
+    public void removeInventory(int serviceCompanyId);
+
+    /**
+     * This method returns the total number of inventory that are attached to a given service company
+     */
+    public int getInventoryCountForServiceCompany(int serviceCompanyId);
 }

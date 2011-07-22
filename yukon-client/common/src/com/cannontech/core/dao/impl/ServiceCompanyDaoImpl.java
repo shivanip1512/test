@@ -197,6 +197,26 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
         
         yukonJdbcTemplate.update(sql2);
     }
+
+    @Override
+    public void removeInventory(int serviceCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE InventoryBase");
+        sql.append("SET InstallationCompanyId").eq(0);
+        sql.append("WHERE InstallationCompanyId").eq(serviceCompanyId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+
+    @Override
+    public int getInventoryCountForServiceCompany(int serviceCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Count(*)");
+        sql.append("FROM InventoryBase IB");
+        sql.append("WHERE IB.InstallationCompanyId").eq(serviceCompanyId);
+        
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
     
     // DI
     @Autowired

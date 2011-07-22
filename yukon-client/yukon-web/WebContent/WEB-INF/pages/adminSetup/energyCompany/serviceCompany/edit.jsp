@@ -261,7 +261,7 @@
                 </cti:url>
             
                 <cti:button key="delete" id="deleteButton"/>
-                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" href="${serviceCompanyUpdateUrl}" submitName="delete"/>
+                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" href="${serviceCompanyUpdateUrl}" submitName="delete" argument="${numberOfInventoryInServiceCompany}"/>
 
             </cti:displayForPageEditModes>
 

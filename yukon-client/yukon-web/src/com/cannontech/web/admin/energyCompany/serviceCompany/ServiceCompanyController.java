@@ -25,12 +25,12 @@ import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 
 @RequestMapping("/energyCompany/serviceCompany/*")
 @Controller
@@ -155,7 +155,7 @@ public class ServiceCompanyController {
         modelMap.addAttribute("serviceCompany", serviceCompany);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         modelMap.addAttribute("availableLogins", availableLogins(serviceCompany.getPrimaryContact().getLoginID()));
-        
+        modelMap.addAttribute("numberOfInventoryInServiceCompany", serviceCompanyDao.getInventoryCountForServiceCompany(serviceCompanyId));
         return "energyCompany/serviceCompany/edit.jsp";
     }
     
@@ -182,6 +182,7 @@ public class ServiceCompanyController {
             
             modelMap.addAttribute("mode", PageEditMode.EDIT);
             modelMap.addAttribute("availableLogins", availableLogins(serviceCompany.getPrimaryContact().getContactID()));
+            modelMap.addAttribute("numberOfInventoryInServiceCompany", serviceCompanyDao.getInventoryCountForServiceCompany(serviceCompany.getCompanyId()));
             return "energyCompany/serviceCompany/edit.jsp";
         }
         
@@ -224,14 +225,10 @@ public class ServiceCompanyController {
         return baseUrl;
     }
     
+    // DI Setters
     @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setWarehouseService(ServiceCompanyService serviceCompanyService) {
-        this.serviceCompanyService = serviceCompanyService;
     }
     
     @Autowired
@@ -240,17 +237,22 @@ public class ServiceCompanyController {
     }
     
     @Autowired
+    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
+        this.serviceCompanyDao = serviceCompanyDao;
+    }
+    
+    @Autowired
     public void setServiceCompanyDtoValidator(ServiceCompanyDtoValidator serviceCompanyDtoValidator) {
         this.serviceCompanyDtoValidator = serviceCompanyDtoValidator;
+    }
+
+    @Autowired
+    public void setWarehouseService(ServiceCompanyService serviceCompanyService) {
+        this.serviceCompanyService = serviceCompanyService;
     }
     
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
-    }
-
-    @Autowired
-    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
-        this.serviceCompanyDao = serviceCompanyDao;
     }
 }
