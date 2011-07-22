@@ -149,15 +149,6 @@ begin
 	    SdShowMsg("", FALSE);
     endif;
     
-    //check for config files and modify permissions
-    sPath = TARGETDIR ^ "Server\\Config";
-    sFileName = "master.cfg";
-    SetAdminWriteFilePermissions(sPath, sFileName);
-    sFileName = "remoteLogging.xml";
-    SetAdminWriteFilePermissions(sPath, sFileName);
-    sFileName = "yukonLogging.xml";
-    SetAdminWriteFilePermissions(sPath, sFileName);
-    
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
     Disable(CANCELBUTTON); //You just installed.  There's no going back.
@@ -168,7 +159,8 @@ begin
     			"No", bOptNo);
     if(bOptYes) then
     	sProg = WINDIR ^ "notepad.exe";
-        sCMD = LongPathToQuote(TARGETDIR ^ "\\Server\\Config\\master.cfg", TRUE);
+        sCMD = TARGETDIR ^ "\\Server\\Config\\master.cfg";
+        LongPathToQuote(sCMD, TRUE);
         LaunchAppAndWait(sProg, sCMD, LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
