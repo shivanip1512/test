@@ -122,6 +122,7 @@ public class LiteStarsEnergyCompanyFactory {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 energyCompany.resetEnergyCompanyInfo();
+                energyCompany.clearHierarchy();
             }
         });
     }
