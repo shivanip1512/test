@@ -8,7 +8,7 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.mainFax">Main Fax</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.companyName">Company Name</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.HIType">Company Type</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.message">The service company you are trying to delete has {0} inventory assigned to it.  Are you sure you want to remove these inventory from the service company and delete it?</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.message">This service company has {0} hardware devices assigned to it. Are you sure you want to delete this service company? (These hardware devices will no longer have an assigned service company).</entry>
     
     <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContact.firstName">First Name</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContact.lastName">Last Name</entry>

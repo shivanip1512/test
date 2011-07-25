@@ -199,11 +199,11 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
     }
 
     @Override
-    public void removeInventory(int serviceCompanyId) {
+    public void moveInventory(int fromServiceCompanyId, int toServiceCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE InventoryBase");
-        sql.append("SET InstallationCompanyId").eq(0);
-        sql.append("WHERE InstallationCompanyId").eq(serviceCompanyId);
+        sql.append("SET InstallationCompanyId").eq(toServiceCompanyId);
+        sql.append("WHERE InstallationCompanyId").eq(fromServiceCompanyId);
         
         yukonJdbcTemplate.update(sql);
     }

@@ -16,6 +16,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -158,7 +159,8 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     @Transactional
     public void deleteServiceCompany(ServiceCompanyDto serviceCompany) {
         //Remove all of the inventory attached to this service company
-        serviceCompanyDao.removeInventory(serviceCompany.getCompanyId());
+        LiteInventoryBase blankInventoryBase = new LiteInventoryBase();
+        serviceCompanyDao.moveInventory(serviceCompany.getCompanyId(), blankInventoryBase.getInstallationCompanyID());
         
         //first delete dependent service company designation codes
         designationCodeDao.bulkDelete(serviceCompany.getDesignationCodes());
