@@ -28,12 +28,10 @@
 		</c:if>
 		
 		<%-- THE CHART --%>
-        <%-- 
-        max-width set to 525 because that is the largest width the chart can be with IE 
-        still able to print the whole width of the chart 
-        --%>
-		<div style="height: 250px; max-width: 525px;">
-			<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" interval="${interval}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"></tags:trend>
+        <div>
+			<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" 
+                        interval="${interval}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"
+                        height="250px" width="100%"/>
 		</div>
 		
 		<table class="compactResultsTable">
@@ -99,7 +97,7 @@
         				<td>
             				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDate}" />&nbsp;
             				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDate}" />&nbsp;
-                            <tags:widgetActionRefreshImage2 method="render" title=".reloadUsingCustomDates" imgSrc="/WebConfig/yukon/Icons/arrow_refresh_small.png" imgSrcHover="/WebConfig/yukon/Icons/arrow_refresh.png" />
+                            <tags:widgetActionRefreshImage2 title="reloadUsingCustomDates" method="render"/>
         				</td>
         			</tr>
         		</c:when>
@@ -129,7 +127,7 @@
         
             <%-- TABULAR DATA REPROTS --%>
     		<tr>
-                <td>
+                <td class="label">
                     <c:choose>
                         <c:when test="${attributeGraphType.attribute == 'USAGE'}">
                             <i:inline key=".archivedUsageData"/>:
