@@ -21,6 +21,7 @@ import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -48,8 +49,10 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.DateFormattingService.PeriodFormatEnum;
 import com.cannontech.core.service.LoadProfileService;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -79,6 +82,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private PaoDao paoDao = null;
     private DeviceDao deviceDao = null;
     private MeterDao meterDao = null;
+    private DurationFormattingService durationFormattingService;
     private DateFormattingService dateFormattingService = null;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
     private AttributeService attributeService = null;
@@ -185,13 +189,14 @@ public class ProfileWidget extends WidgetControllerBase {
         }
 
         if (hrs >= 1) {
-            iStr = messageSourceAccessor.getMessage("yukon.web.defaults.hourAbbreviation", hrs);
-            String test = dateFormattingService.formatPeriod((Object)hrs,PeriodFormatEnum.HM_SHORT, userContext);
+            Period period = new Period(hrs, 0, 0, 0);
+            iStr = durationFormattingService.formatPeriod(period, DurationFormat.H, userContext);
+            
         }
 
         if (mins >= 1) {
-            iStr = messageSourceAccessor.getMessage("yukon.web.defaults.minuteAbbreviation", mins);
-            String test = dateFormattingService.formatPeriod(mins,PeriodFormatEnum.HM_SHORT, userContext);
+            Period period = new Period(0, mins, 0, 0);
+            iStr = durationFormattingService.formatPeriod(period, DurationFormat.M, userContext);
         }
 
         return iStr;
@@ -776,6 +781,11 @@ public class ProfileWidget extends WidgetControllerBase {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+
+    @Autowired
+    public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
+        this.durationFormattingService = durationFormattingService;
     }
 
 }
