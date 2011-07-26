@@ -103,7 +103,6 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.empty.displayName">Display name cannot be empty.</entry>
 
 <!-- Appliance Category Assigned Programs -->
-<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.title">{0}</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.editingMultiple">
     Multiple programs have been selected.  Display name and short name will both be the same as the program
     name.  Values entered below will apply to all selected programs.
