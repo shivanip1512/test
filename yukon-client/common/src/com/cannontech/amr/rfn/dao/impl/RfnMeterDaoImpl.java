@@ -24,7 +24,7 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
     private PaoDao paoDao;
 
     @Override
-    public RfnMeter getMeter(RfnMeterIdentifier meterIdentifier) throws NotFoundException {
+    public RfnMeter getMeterForExactIdentifier(RfnMeterIdentifier meterIdentifier) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.PAObjectID, ypo.Type");
         sql.append("from YukonPaObject ypo");

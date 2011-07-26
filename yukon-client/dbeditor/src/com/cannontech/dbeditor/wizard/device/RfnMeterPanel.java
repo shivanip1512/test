@@ -17,8 +17,8 @@ import javax.swing.event.CaretListener;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.amr.rfn.service.RfnMeterLookupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -151,9 +151,9 @@ public class RfnMeterPanel extends DataInputPanel implements CaretListener {
         String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
         String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
         
-        RfnMeterDao rfnMeterDao = YukonSpringHook.getBean("rfnMeterDao", RfnMeterDao.class);
+        RfnMeterLookupService rfnMeterLookupService = YukonSpringHook.getBean("rfnMeterLookupService", RfnMeterLookupService.class);
         try {
-            rfnMeterDao.getMeter(new RfnMeterIdentifier(serialNumber, manufacturer, model));
+            rfnMeterLookupService.getMeter(new RfnMeterIdentifier(serialNumber, manufacturer, model));
             throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN Meters.");
         } catch (NotFoundException e) { /* IGNORE */ };
         

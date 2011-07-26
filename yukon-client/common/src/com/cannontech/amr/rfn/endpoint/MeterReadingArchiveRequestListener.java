@@ -31,6 +31,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
+import com.cannontech.amr.rfn.service.RfnMeterLookupService;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -65,6 +66,7 @@ public class MeterReadingArchiveRequestListener {
     private RfnMeterReadService rfnMeterReadService;
     private JmsTemplate jmsTemplate;
     private RfnMeterDao rfnMeterDao;
+    private RfnMeterLookupService rfnMeterLookupService;
     private DeviceDao deviceDao;
     private DeviceCreationService deviceCreationService;
     private TransactionTemplate transactionTemplate;
@@ -108,7 +110,7 @@ public class MeterReadingArchiveRequestListener {
                 @Override
                 public RfnMeter apply(RfnMeterIdentifier meterIdentifier) {
                     meterLookupCacheMiss.incrementAndGet();
-                    RfnMeter rfnMeter = rfnMeterDao.getMeter(meterIdentifier);
+                    RfnMeter rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
                     return rfnMeter;
                 }
             });
@@ -208,7 +210,7 @@ public class MeterReadingArchiveRequestListener {
         RfnMeter rfnMeter;
         try {
             try {
-                rfnMeter = rfnMeterDao.getMeter(meterIdentifier);
+                rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
                 meterFoundOnCreate.incrementAndGet();
                 LogHelper.debug(log, "Found matching meter on new meter lookup: %s", rfnMeter);
                 queueForArchiveProcessing(rfnMeter, archiveRequest);
@@ -364,6 +366,11 @@ public class MeterReadingArchiveRequestListener {
     @Autowired
     public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
         this.asyncDynamicDataSource = asyncDynamicDataSource;
+    }
+    
+    @Autowired
+    public void setRfnMeterLookupService(RfnMeterLookupService rfnMeterLookupService) {
+        this.rfnMeterLookupService = rfnMeterLookupService;
     }
     
     @ManagedAttribute

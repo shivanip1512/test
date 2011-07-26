@@ -222,6 +222,7 @@
 <entry key="yukon.web.menu.config.support.development.uiToolkitDemo">UI Toolkit Demo</entry>
 <entry key="yukon.web.menu.config.support.development.setupDatabase">Setup Database</entry>
 <entry key="yukon.web.menu.config.support.development.miscellaneousMethods">Miscellaneous Methods</entry>
+<entry key="yukon.web.menu.config.support.development.rfn">RFN Test</entry>
 
 <entry key="yukon.web.menu.config.support.other">Other</entry>
 <entry key="yukon.web.menu.config.support.other.threadDump">Thread Dump</entry>

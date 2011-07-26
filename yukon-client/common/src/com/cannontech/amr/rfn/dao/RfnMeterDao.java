@@ -7,7 +7,16 @@ import com.cannontech.core.dao.NotFoundException;
 
 public interface RfnMeterDao {
 
-    public RfnMeter getMeter(RfnMeterIdentifier meterIdentifier) throws NotFoundException;
+    /**
+     * WARNING!!! 
+     * This method only handles exact matches and does not handle meter identifiers that may have
+     * a new version of the model name ie: (FocusAXD-SD vs FocusAXD).
+     * Use RfnMeterLookupService.getMeter instead.
+     * @param meterIdentifier
+     * @return RfnMeter
+     * @throws NotFoundException
+     */
+    public RfnMeter getMeterForExactIdentifier(RfnMeterIdentifier meterIdentifier) throws NotFoundException;
     
     public RfnMeter getMeter(YukonPao pao) throws NotFoundException;
     

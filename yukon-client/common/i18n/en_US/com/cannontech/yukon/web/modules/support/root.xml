@@ -94,4 +94,8 @@
     
     <entry key="yukon.web.modules.support.miscellaneousMethod.pageName">Miscellaneous Methods</entry>
     <entry key="yukon.web.modules.support.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>
+    
+    <entry key="yukon.web.modules.support.rfnTest.pageName">RFN Test</entry>
+    <entry key="yukon.web.modules.support.rfnTest.send.label">Send Archive Request</entry>
+    
 </properties>
