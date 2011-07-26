@@ -155,8 +155,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
         sql.append("INNER JOIN YukonWebConfiguration ywc ON ac.webConfigurationId = ywc.configurationId");
-        sql.append("INNER JOIN ECToGenericMapping ectgm ON (ectgm.itemId = ac.applianceCategoryId");
-        sql.append("                                        AND ectgm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY).append("");
+        sql.append("INNER JOIN ECToGenericMapping ectgm ON");
+        sql.append(  "(ectgm.itemId = ac.applianceCategoryId AND ectgm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY).append(")");
         sql.append("WHERE (AC.description").eq(applianceCategoryName);
         sql.append("       OR ywc.alternateDisplayName").eq(applianceCategoryName).append(")");
         sql.append("AND ectgm.energyCompanyId IN (", energyCompanyIds,")");
