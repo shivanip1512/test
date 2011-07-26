@@ -10,6 +10,7 @@
 <cti:standardPage title="${title}" module="capcontrol">
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+    <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
     <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 

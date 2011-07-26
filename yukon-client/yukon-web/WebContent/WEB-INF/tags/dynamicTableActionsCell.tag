@@ -10,13 +10,20 @@
 <%@ attribute name="tableId" required="true" %>
 <%@ attribute name="isFirst" type="java.lang.Boolean" required="true" %>
 <%@ attribute name="isLast" type="java.lang.Boolean" required="true" %>
+<%@ attribute name="skipMoveButtons" type="java.lang.Boolean" %>
 
 <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 
+<c:if test="${empty pageScope.skipMoveButtons}">
+    <c:set var="skipMoveButtons" value="false"/>
+</c:if>
+
 <td class="actions">
-    <cti:button renderMode="image" key="up.disabled" disabled="true" styleClass="disabledMoveUpBtn"/>
-    <cti:button renderMode="image" key="up" styleClass="moveUpBtn"/> 
-    <cti:button renderMode="image" key="down.disabled" disabled="true" styleClass="disabledMoveDownBtn"/>
-    <cti:button renderMode="image" key="down" styleClass="moveDownBtn"/>
+    <c:if test="${!skipMoveButtons}">
+        <cti:button renderMode="image" key="up.disabled" disabled="true" styleClass="disabledMoveUpBtn"/>
+        <cti:button renderMode="image" key="up" styleClass="moveUpBtn"/> 
+        <cti:button renderMode="image" key="down.disabled" disabled="true" styleClass="disabledMoveDownBtn"/>
+        <cti:button renderMode="image" key="down" styleClass="moveDownBtn"/>
+    </c:if>
     <cti:button renderMode="image" key="remove" styleClass="removeBtn"/>
 </td>

@@ -83,6 +83,9 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title">Zone Wizard</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.creation.title">Zone Creation Wizard</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title">Zone Editor</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.dynamicTable.noItems"></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.undoRow.undo">Undo</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.undoRow.willBeRemoved">This item will be removed.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltageDevice.title">Assigned Cap Bank Devices</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltagePoint.title">Assigned Voltage Points</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title.createTitle">Create New Zone</entry>

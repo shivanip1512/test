@@ -7,19 +7,20 @@
 <tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="zoneWizard">
 
 <table class="compactResultsTable">
-
-<tr id="${row.type}_${row.id}" class="${row.type}RowCounter">
+<tr>
 	<td>
         <spring:escapeBody>${row.name}</spring:escapeBody>
-        <input type="hidden" value="${row.id}" name="${row.type}Assignments[${index}].id"/>
-        <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="${row.type}Assignments[${index}].name"/>
-        <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="${row.type}Assignments[${index}].device"/>
+        <input type="hidden" value="${row.id}" name="bankAssignments[${itemIndex}].id"/>
+        <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="bankAssignments[${itemIndex}].name"/>
+        <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="bankAssignments[${itemIndex}].device"/>
+        <input type="hidden" value="false" name="bankAssignments[${itemIndex}].deletion" class="isDeletionField">
     </td>
 	<td><spring:escapeBody>${row.device}</spring:escapeBody></td>
-	<td><input name="${row.type}Assignments[${index}].graphPositionOffset" size="1" value="${index+1}"/></td>
-	<td><input name="${row.type}Assignments[${index}].distance" size="3" value="0"/></td>
-	<td class="removeColumn"><cti:img key="delete" href="javascript:removeTableRow('${row.type}', '${row.id}')"/></td>
+	<td><input name="bankAssignments[${itemIndex}].graphPositionOffset" size="1" value="${itemIndex+1}.0"/></td>
+	<td><input name="bankAssignments[${itemIndex}].distance" size="3" value="0.0"/></td>
+    <tags:dynamicTableActionsCell tableId="bankTable" isFirst="true" isLast="true" skipMoveButtons="true"/>
 </tr>
+<tags:dynamicTableUndoRow columnSpan="5" nameKey="undoRow"/>
 </table>
 
 </tags:standardPageFragment>

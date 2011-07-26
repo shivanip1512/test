@@ -8,117 +8,75 @@
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
 <script type="text/javascript">
-    zoneId = null;
-    <c:if test="${!empty zoneDto.zoneId}">
-        zoneId = ${zoneDto.zoneId};
-    </c:if>
-
-    regPhase = null;
-    <c:if test="${zoneDto.zoneType !=  threePhase}">
-        <c:if test="${!empty zoneDto.regulator.phase}">
-            regPhase = '${zoneDto.regulator.phase}';
-        </c:if>
-    </c:if>
-
-    addBankHandler = function (selectedPaoInfo) {
-        var url = '/spring/capcontrol/ivvc/wizard/addCapBank';
-        var index = $$('.bankRowCounter').length;
-        
+    getExtraArgs = function(url, addRegPhase) {
+        extraArgs = {};
+        extraArgs.url = url;
+        extraArgs.extraParameters = {};
+        if (addRegPhase) {
+            var regPhase = null;
+            <c:if test="${zoneDto.zoneType !=  threePhase}">
+                <c:if test="${!empty zoneDto.regulator.phase}">
+                    regPhase = '${zoneDto.regulator.phase}';
+                </c:if>
+            </c:if> 
+            if (regPhase) {
+                extraArgs.extraParameters.phase = regPhase;
+            }
+        }
+        return extraArgs;
+    };
+    
+    addBankHandler = function (selectedPaoInfo, picker) {
+        var extraArgs = getExtraArgs('/spring/capcontrol/ivvc/wizard/addCapBank', false);
         for(var i = 0; i < selectedPaoInfo.length; i++) {
             var paoId = selectedPaoInfo[i].paoId;
-            addRow(url,paoId,index++,'bank');   
+            extraArgs.extraParameters.id = paoId;
+            picker.excludeIds.push(paoId);
+            bankTable.addItem(null, extraArgs);   
         }
-        
-        return true;
-    };
-    
-    addPointHandler = function (selectedPointInfo) {
-        var url = '/spring/capcontrol/ivvc/wizard/addVoltagePoint';
-        var index = $$('.pointRowCounter').length;
-        
-        for(var i = 0; i < selectedPointInfo.length; i++) {
-            var pointId = selectedPointInfo[i].pointId;     
-            addRow(url,pointId,index++,'point');
-        }
-        
-        return true;
-    };
-    
-    addRow = function (url,id,index,rowType) {
-        var newRow = $('defaultRow').cloneNode(true);
-        $(rowType+'TableBody').appendChild(newRow);
-        
-        var parameters = {'id': id, 'index': index, 'zoneType': '${zoneDto.zoneType}'};
-        if (zoneId) {
-            parameters.zoneId = zoneId;
-        }
-        if (regPhase) {
-            parameters.phase = regPhase;
-        }
-        new Ajax.Request(url,{
-            'parameters': parameters,
-            'onSuccess': function(transport) {
-                var dummyHolder = document.createElement('div');
-                dummyHolder.innerHTML = transport.responseText;
-                var replacementRow = $(dummyHolder).getElementsBySelector('tr')[0];
-                $(rowType+'TableBody').replaceChild(replacementRow, newRow);
-            },
-            'onFailure': function() { 
-                newRow.remove();
-            }
-        });
+        picker.clearEntireSelection();
     };
 
-    removeTableRow = function (rowType, rowId) {
-        var rowToDelete = document.createElement('input');
-        rowToDelete.type = 'hidden';
-        //rowType will be "bank" or "point"
-        rowToDelete.name = rowType + 'ToRemove';
-        rowToDelete.value = rowId;
-        rowToDelete.id =  'deleteInput_' + rowId;
-        $('zoneDetailsForm').appendChild(rowToDelete);
-        $(rowType +'_'+ rowId).hide();
-        var undoRow = $(rowType +'_'+ rowId + '_undo');
-        if (undoRow) {
-            undoRow.show();
+    addPointHandler = function (selectedPointInfo, picker) {
+        var extraArgs = getExtraArgs('/spring/capcontrol/ivvc/wizard/addVoltagePoint', true);
+        for(var i = 0; i < selectedPointInfo.length; i++) {
+            var pointId = selectedPointInfo[i].pointId;
+            extraArgs.extraParameters.id = pointId;
+            picker.excludeIds.push(pointId);
+            pointTable.addItem(null, extraArgs);
         }
-    };
-    
-    undoRemoveTableRow = function (rowType, rowId) {
-        $('deleteInput_' + rowId).remove();
-        $(rowType +'_'+ rowId).show();
-        $(rowType +'_'+ rowId + '_undo').hide();
+        picker.clearEntireSelection();
     };
     
     updateRegPickerExcludes = function(selectedItems, picker) {
-        if (picker != voltageThreePhaseRegulatorPickerA) {
-            if (voltageThreePhaseRegulatorPickerA.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPickerA.clearSelected();
+        if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A) {
+            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.getSelected() == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.clearSelected();
             }
         }
-        if (picker != voltageThreePhaseRegulatorPickerB) {
-            if (voltageThreePhaseRegulatorPickerB.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPickerB.clearSelected();
+        if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B) {
+            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.getSelected() == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.clearSelected();
             }
         }
-        if (picker != voltageThreePhaseRegulatorPickerC) {
-            if (voltageThreePhaseRegulatorPickerC.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPickerC.clearSelected();
+        if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C) {
+            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.getSelected() == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.clearSelected();
             }
         }
-    }
+    };
     
     cancelZoneWizard = function() {
         $('zoneWizardPopup').hide();
-    }
+    };
     
     backToTypeSelect = function() {
         submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/spring/capcontrol/ivvc/wizard/wizardParentSelected', false);
-    }
+    };
 
     zoneSubmit = function() {
         submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', null);
-    }
+    };
 
 </script>
 
@@ -193,7 +151,7 @@
             <c:when test="${zoneDto.zoneType ==  gangOperated}">
         		<tags:nameValue2 nameKey=".label.regulator">
                     <tags:bind path="regulator.regulatorId">
-            			<tags:pickerDialog 	id="voltageGangRegulatorPicker" 
+            			<tags:pickerDialog 	id="voltageGangRegulatorPicker${zoneDto.zoneId}" 
             				type="availableVoltageRegulatorGangPicker" 
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
@@ -215,7 +173,7 @@
                     <input type="hidden" name="regulators[${phaseKey}].phase" value="${phaseKey}"/>
                     <tags:nameValue2 nameKey=".label.regulator.${phaseKey}">
                         <tags:bind path="regulators[${phaseKey}].regulatorId">
-                            <tags:pickerDialog  id="voltageThreePhaseRegulatorPicker${phaseKey}"
+                            <tags:pickerDialog  id="voltageThreePhaseRegulatorPicker${zoneDto.zoneId}${phaseKey}"
                                 type="availableVoltageRegulatorPhasePicker" 
                                 destinationFieldName="regulators[${phaseKey}].regulatorId"
                                 initialId="${zoneDto.regulators[phaseKey].regulatorId}"
@@ -237,7 +195,7 @@
                 <input type="hidden" name="regulator.phase" value="${zoneDto.regulator.phase}"/>
                 <tags:nameValue2 nameKey=".label.regulator.${zoneDto.regulator.phase}">
                     <tags:bind path="regulator.regulatorId">
-                        <tags:pickerDialog id="voltageSinglePhaseRegulatorPicker" 
+                        <tags:pickerDialog id="voltageSinglePhaseRegulatorPicker${zoneDto.zoneId}" 
                             type="availableVoltageRegulatorPhasePicker" 
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
@@ -258,18 +216,15 @@
 
 	</tags:nameValueContainer2>
     
-	<table style="display:none">
-		<tr id="defaultRow">
-			<td colspan="5" style="text-align: center"><img src="/WebConfig/yukon/Icons/indicator_arrows.gif"></td>
-		</tr>
-	</table>
     <table>
         <tr>
             <c:if test="${zoneDto.zoneType != singlePhase}">
                 <td>
                 	<tags:boxContainer2 nameKey="assignedVoltageDevice" hideEnabled="false" showInitially="true" styleClass="zoneWizardCapBanks">
+                        <tags:dynamicTable items="${zoneDto.bankAssignments}" nameKey="dynamicTable"
+                            id="bankTable" addButtonClass="bankAddItem">
                         <div class="zoneWizardTableScrollArea">
-            			<table id="bankTable" class="compactResultsTable">
+            			<table class="compactResultsTable">
             				<thead>
             					<tr>
             						<th><i:inline key=".table.bank.name"/></th>
@@ -279,13 +234,14 @@
             						<th class="removeColumn"><i:inline key=".table.remove"/></th>
             					</tr>
             				</thead>
-            				<tbody id="bankTableBody">
+                            <tbody>
             					<c:forEach var="row" varStatus="status" items="${zoneDto.bankAssignments}">
-            						<tr id="${row.type}_${row.id}" class="bankRowCounter">
+            						<tr>
             							<td>
             								<form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
             								<form:hidden path="bankAssignments[${status.index}].name" htmlEscape="true"/>
             								<form:hidden path="bankAssignments[${status.index}].device" htmlEscape="true"/>
+                                            <form:hidden path="bankAssignments[${status.index}].deletion" class="isDeletionField"/>
             								<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
             							</td>
             							<td>
@@ -293,41 +249,42 @@
             							</td>
             							<td>
             								<tags:input path="bankAssignments[${status.index}].graphPositionOffset" size="1"/>
-            							</td>
+                                        </td>
             							<td>
             								<tags:input path="bankAssignments[${status.index}].distance" size="3"/>
             							</td>
-            							<td class="removeColumn" >
-            								<cti:img key="delete" href="javascript:removeTableRow('${row.type}','${row.id}')"/>
-            							</td>
+                                        <tags:dynamicTableActionsCell tableId="bankTable"
+                                            isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
             						</tr>
-            						<tr style="display: none" id="${row.type}_${row.id}_undo" class="undoRow">
-            							<td colspan="4" align="center">
-            								${row.name} will be removed
-            							</td>
-            							<td colspan="1" align="center">
-            								<a href="javascript:undoRemoveTableRow('${row.type}','${row.id}')">Undo</a>
-            							</td>
-            						</tr>
+                                    <tags:dynamicTableUndoRow columnSpan="5" nameKey="undoRow"/>
             					</c:forEach>
-            				</tbody>
+                            </tbody>
             			</table>
                         </div>
+                        </tags:dynamicTable>
                 		<div class="actionArea">
                 			<tags:pickerDialog 	id="bankPicker" 
                 				type="availableCapBankPicker"
                 				multiSelectMode="true"
                 				endAction="addBankHandler"
-                				linkType="button" nameKey="add"
                                 extraArgs="${zoneDto.substationBusId}"/>
+                            <script type="text/javascript">
+                                bankPicker.excludeIds = [
+                                    <c:forEach var="bank" varStatus="status" items="${zoneDto.bankAssignments}">
+                                        ${bank.id}<c:if test="${!status.last}">,</c:if>
+                                    </c:forEach> ];
+                            </script>
                 		</div>
                 	</tags:boxContainer2>
                 </td>
             </c:if>
             <td>
             	<tags:boxContainer2 nameKey="assignedVoltagePoint" hideEnabled="false" showInitially="true" styleClass="zoneWizardVoltagePoints">
+                    <c:set var="addItemParameters" value="{'zoneType': '${zoneDto.zoneType}'}"/>
+                    <tags:dynamicTable items="${zoneDto.pointAssignments}" nameKey="dynamicTable"
+                        id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem">
                     <div class="zoneWizardTableScrollArea">
-            		<table id="pointTable" class="compactResultsTable">
+            		<table class="compactResultsTable">
             			<thead>
             				<tr>
             					<th><i:inline key=".table.point.name"/></th>
@@ -338,13 +295,14 @@
             					<th class="removeColumn"><i:inline key=".table.remove"/></th>
             				</tr>
             			</thead>
-            			<tbody id="pointTableBody">
+            			<tbody>
             				<c:forEach var="row" varStatus="status" items="${zoneDto.pointAssignments}">
-            					<tr id="${row.type}_${row.id}" class="pointRowCounter">
+            					<tr>
             						<td>
             							<form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
             							<form:hidden path="pointAssignments[${status.index}].name" htmlEscape="true"/>
             							<form:hidden path="pointAssignments[${status.index}].device" htmlEscape="true"/>
+                                        <form:hidden path="pointAssignments[${status.index}].deletion" class="isDeletionField"/>
             							<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
             						</td>
             						<td>
@@ -368,33 +326,31 @@
                                         </c:choose>
                                     </td>
             						<td>
-            							<tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="1"/>
-            						</td>
+                                        <tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="1"/>
+                                    </td>
             						<td>
             							<tags:input path="pointAssignments[${status.index}].distance" size="3"/>
             						</td>
-            						<td class="removeColumn">
-            							<cti:img key="delete" href="javascript:removeTableRow('${row.type}','${row.id}')"/>
-            						</td>
+                                    <tags:dynamicTableActionsCell tableId="pointTable"
+                                        isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
             					</tr>
-            					<tr style="display: none" id="${row.type}_${row.id}_undo" class="undoRow">
-            						<td colspan="5" align="center">
-            							${row.name} will be removed
-            						</td>
-            						<td colspan="1" align="center">
-            							<a href="javascript:undoRemoveTableRow('${row.type}','${row.id}')">Undo</a>
-            						</td>
-            					</tr>
+                                <tags:dynamicTableUndoRow columnSpan="6" nameKey="undoRow"/>
             				</c:forEach>
             			</tbody>
             		</table>
                     </div>
+                    </tags:dynamicTable>
             		<div class="actionArea">
             			<tags:pickerDialog 	id="pointPicker" 
             				type="voltPointPicker"
             				multiSelectMode="true"
-            				endAction="addPointHandler"
-            				linkType="button" nameKey="add"/>
+            				endAction="addPointHandler"/>
+                        <script type="text/javascript">
+                            pointPicker.excludeIds = [
+                                <c:forEach var="pointId" varStatus="status" items="${usedPointIds}">
+                                    ${pointId}<c:if test="${!status.last}">,</c:if>
+                                </c:forEach> ];
+                        </script>
             		</div>
             	</tags:boxContainer2>
         	</td>
@@ -416,9 +372,9 @@
 
 <c:if test="${zoneDto.zoneType ==  threePhase}">
     <script type="text/javascript">
-        voltageThreePhaseRegulatorPickerA.endAction = updateRegPickerExcludes;
-        voltageThreePhaseRegulatorPickerB.endAction = updateRegPickerExcludes;
-        voltageThreePhaseRegulatorPickerC.endAction = updateRegPickerExcludes;
+        voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.endAction = updateRegPickerExcludes;
+        voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.endAction = updateRegPickerExcludes;
+        voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.endAction = updateRegPickerExcludes;
     </script>
 </c:if>
 

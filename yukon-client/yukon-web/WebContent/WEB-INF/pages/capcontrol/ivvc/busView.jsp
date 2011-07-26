@@ -12,6 +12,7 @@
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
+    <cti:includeScript link="/JavaScript/dynamicTable.js"/>
     <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 	
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
@@ -120,7 +121,7 @@
                         <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
                         <th class="rightActionColumn"><i:inline key="modules.capcontrol.actions"/></th>
                     </tr>
-    				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}" styleClass="zoneHierarchy">
+    				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
     					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
     				    	<cti:param name="zoneId" value="${zone.zoneId}"/>
     				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>

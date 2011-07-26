@@ -43,20 +43,29 @@ DynamicTable.prototype = {
     /**
      * The tag calls this method to add a new blank row to the table.
      */
-    addItem: function(event) {
+    addItem: function(event, extraArgs) {
         if (!this.addItemParameters) {
             this.addItemParameters = {};
         }
-        this.addItemParameters.itemIndex = this.nextRowId;
-        new Ajax.Updater(this.tempRequestDiv, 'addItem', {
-            'parameters': this.addItemParameters,
+        this.addItemParameters.itemIndex = this.nextRowId++;
+        var parameters = Object.clone(this.addItemParameters);
+        var url = 'addItem';
+        if (extraArgs) {
+        	if (extraArgs.extraParameters) {
+            	Object.extend(parameters, extraArgs.extraParameters);
+            }
+            if (extraArgs.url) {
+                url = extraArgs.url;
+            }
+        }
+        new Ajax.Updater(this.tempRequestDiv, url, {
+            'parameters': parameters,
             'evalScripts': true,
             'onComplete': this.addItemSuccess.bind(this)
         });
     },
 
     addItemSuccess : function() {
-        this.nextRowId++;
         var newRow = this.tempRequestDiv.down('tr');
         var newUndoRow = newRow.next();
         var tempRow = this.table.insertRow(-1);
@@ -256,44 +265,41 @@ DynamicTable.prototype = {
 
     // Private methods to enable/disable move up and move down buttons.
     disableMoveUp: function(tableRow) {
-        tableRow.down('.disabledMoveUpBtn').show();
-        tableRow.down('.moveUpBtn').hide();
+        if (tableRow.down('.disabledMoveUpBtn')) {
+            tableRow.down('.disabledMoveUpBtn').show();
+            tableRow.down('.moveUpBtn').hide();
+        }
     },
 
     enableMoveUp: function(tableRow) {
-        tableRow.down('.disabledMoveUpBtn').hide();
-        tableRow.down('.moveUpBtn').show();
+        if (tableRow.down('.disabledMoveUpBtn')) {
+            tableRow.down('.disabledMoveUpBtn').hide();
+            tableRow.down('.moveUpBtn').show();
+        }
     },
 
     disableMoveDown: function(tableRow) {
-        tableRow.down('.disabledMoveDownBtn').show();
-        tableRow.down('.moveDownBtn').hide();
+        if (tableRow.down('.disabledMoveDownBtn')) {
+            tableRow.down('.disabledMoveDownBtn').show();
+            tableRow.down('.moveDownBtn').hide();
+        }
     },
 
     enableMoveDown: function(tableRow) {
-        tableRow.down('.disabledMoveDownBtn').hide();
-        tableRow.down('.moveDownBtn').show();
+        if (tableRow.down('.disabledMoveDownBtn')) {
+            tableRow.down('.disabledMoveDownBtn').hide();
+            tableRow.down('.moveDownBtn').show();
+        }
     }
 }
-
-function getDynamicTableInstance(wrapperDiv) {
-    var divId = wrapperDiv.id;
-    return window[divId.substring(0, divId.length - 8)];
-}
-
-Event.observe(window, 'load', function() {
-    var divs = $$('div');
-    $$('div.dynamicTableWrapper').each(function(wrapperDiv){
-        getDynamicTableInstance(wrapperDiv).init();
-    });
-});
 
 /**
  * Find the correct instance of DynamicTable for a given element and call the given method on it.
  */
 function callOnDynamicTable(event, method) {
     var wrapperDiv = event.target.up('div.dynamicTableWrapper');
-    var dynamicTableInstance = getDynamicTableInstance(wrapperDiv);
+    var divId = wrapperDiv.id;
+    var dynamicTableInstance = window[divId.substring(0, divId.length - 8)];
     dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
 }
 
@@ -306,5 +312,5 @@ YEvent.observeSelectorClick('div.dynamicTableWrapper .removeBtn',
 YEvent.observeSelectorClick('div.dynamicTableWrapper .undoRemoveBtn',
         function(event) { callOnDynamicTable(event, 'undoRemoveItem') });
 
-YEvent.observeSelectorClick('div.dynamicTableWrapper #addItem',
+YEvent.observeSelectorClick('div.dynamicTableWrapper .addItem',
         function(event) { callOnDynamicTable(event, 'addItem') });

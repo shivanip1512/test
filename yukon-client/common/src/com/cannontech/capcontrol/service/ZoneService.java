@@ -50,7 +50,13 @@ public interface ZoneService {
      * @return
      */
     public List<Integer> getCapBankIdsForZoneId(int zoneId);
-    
+
+    /**
+     * Returns all Voltage Points assigned to a zone.
+     * @return
+     */
+    public List<Integer> getAllUsedPointIds();
+
     /**
      * Returns a list of pointIds assigned to the Zone with zoneId.
      * @param zoneId

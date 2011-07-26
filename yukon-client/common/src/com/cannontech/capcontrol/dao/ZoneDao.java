@@ -100,6 +100,12 @@ public interface ZoneDao {
     public List<Integer> getCapBankIdsByZone(int zoneId);
     
     /**
+     * Returns all Voltage Points assigned to a zone.
+     * @return
+     */
+    public List<Integer> getAllUsedPointIds();
+
+    /**
      * Return all Points attached to a zoneId.
      * @param zoneId
      * @return

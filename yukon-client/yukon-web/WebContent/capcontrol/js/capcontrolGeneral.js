@@ -529,6 +529,13 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 }
 
+YEvent.observeSelectorClick('div.dynamicTableWrapper .pointAddItem', function(event) {
+    pointPicker.show();
+});
+YEvent.observeSelectorClick('div.dynamicTableWrapper .bankAddItem', function(event) {
+    bankPicker.show();
+});
+
 function updateVerificationImage(spanId) {
   //assumes data is of type Hash
     return function(data) {

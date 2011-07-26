@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol.ivvc;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -128,7 +127,6 @@ public class ZoneWizardController {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(userContext.getYukonUser());
         SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
         model.addAttribute("subBusName", subBus.getCcName());
-        model.addAttribute("zoneDto", zoneDto);
 
         Integer parentId = zoneDto.getParentId();
         if (parentId != null) {
@@ -141,13 +139,7 @@ public class ZoneWizardController {
             model.addAttribute("parentZoneName", creatingAsRootString);
         }
 
-        List<Phase> phases = Lists.newArrayList(Phase.getRealPhases());
-        model.addAttribute("phases", phases);
-        
-        addZoneEnums(model);
-
-        boolean phaseUneditable = isPhaseUneditable(zoneDto.getZoneType());
-        model.addAttribute("phaseUneditable", phaseUneditable);
+        setupCommonAttributes(model, zoneDto);
         model.addAttribute("mode", PageEditMode.CREATE.name());
     }
     
@@ -168,6 +160,13 @@ public class ZoneWizardController {
 
         boolean noErrors = true;
         try {
+            List<ZoneAssignmentCapBankRow> bankAssignments =
+                getRemainingBankAssignments(zoneDto.getBankAssignments());
+            List<ZoneAssignmentPointRow> pointAssignments =
+                getRemainingPointAssignments(zoneDto.getPointAssignments());
+            zoneDto.setBankAssignments(bankAssignments);
+            zoneDto.setPointAssignments(pointAssignments);
+
             noErrors = saveZone(zoneDto,bindingResult,flashScope);
         } catch (RootZoneExistsException e) {
             noErrors = false;
@@ -190,32 +189,34 @@ public class ZoneWizardController {
     
     @RequestMapping
     public String zoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
-        setupZoneEditor(model, user, zoneId);
+        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
+        setupZoneEditor(model, user, zoneDto);
         return "ivvc/zoneWizardDetails.jsp";
     }
     
-    private void setupZoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
-        model.addAttribute("zoneDto", zoneDto);
-
+    private void setupZoneEditor(ModelMap model, LiteYukonUser user, AbstractZone zoneDto) {
         Integer parentId = zoneDto.getParentId();
         if (parentId != null) {
             AbstractZone parentZone = zoneDtoHelper.getAbstractZoneFromZoneId(parentId, user);
             model.addAttribute("parentZone", parentZone);
         }
 
-        List<Phase> phases = Lists.newArrayList(Phase.getRealPhases());
-        model.addAttribute("phases", phases);
-        
-        addZoneEnums(model);
-
-        boolean phaseUneditable = isPhaseUneditable(zoneDto.getZoneType());
-        model.addAttribute("phaseUneditable", phaseUneditable);
-
+        setupCommonAttributes(model, zoneDto);
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
         model.addAttribute("subBusName", subBus.getCcName());
         model.addAttribute("mode", PageEditMode.EDIT.name());
+    }
+    
+    private void setupCommonAttributes(ModelMap model, AbstractZone zoneDto) {
+        model.addAttribute("zoneDto", zoneDto);
+        boolean phaseUneditable = isPhaseUneditable(zoneDto.getZoneType());
+        model.addAttribute("phaseUneditable", phaseUneditable);
+        List<Phase> phases = Lists.newArrayList(Phase.getRealPhases());
+        model.addAttribute("phases", phases);
+        List<Integer> usedPointIds = zoneService.getAllUsedPointIds();
+        model.addAttribute("usedPointIds", usedPointIds);
+        addZoneEnums(model);
     }
 
     private List<Phase> getPhasesForZoneTypeAndPhase(ZoneType zoneType, Phase phase) {
@@ -229,37 +230,23 @@ public class ZoneWizardController {
         return phases;
     }
 
-    private List<ZoneAssignmentCapBankRow> getRemainingBankAssignments(List<ZoneAssignmentCapBankRow> bankAssignments, Integer[] removedBanks) {
-    	if (removedBanks == null) {
-    		return bankAssignments;
-    	}
-    	
+    private List<ZoneAssignmentCapBankRow> getRemainingBankAssignments(List<ZoneAssignmentCapBankRow> bankAssignments) {
     	List<ZoneAssignmentCapBankRow> remainingBankAssignments = Lists.newArrayList(); 
-    	
     	for (ZoneAssignmentCapBankRow bankRow : bankAssignments) {
-    		boolean isRemoved = Arrays.asList(removedBanks).contains(bankRow.getId());
-    		if (!isRemoved) {
+    		if (!bankRow.isDeletion()) {
     			remainingBankAssignments.add(bankRow);
     		}
     	}
-    	
     	return remainingBankAssignments;
     }
     
-    private List<ZoneAssignmentPointRow> getRemainingPointAssignments(List<ZoneAssignmentPointRow> pointAssignments, Integer[] removedPoints) {
-    	if (removedPoints == null) {
-    		return pointAssignments;
-    	}
-    	
+    private List<ZoneAssignmentPointRow> getRemainingPointAssignments(List<ZoneAssignmentPointRow> pointAssignments) {
     	List<ZoneAssignmentPointRow> remainingPointAssignments = Lists.newArrayList();
-    	
     	for (ZoneAssignmentPointRow pointRow : pointAssignments) {
-    		boolean isRemoved = Arrays.asList(removedPoints).contains(pointRow.getId());
-    		if (!isRemoved) {
+    		if (!pointRow.isDeletion()) {
     			remainingPointAssignments.add(pointRow);
     		}
     	}
-    	
     	return remainingPointAssignments;
     }
 
@@ -272,8 +259,7 @@ public class ZoneWizardController {
 
     @RequestMapping
     public String updateZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
-                             YukonUserContext userContext, ZoneType zoneType, 
-                             Integer[] bankToRemove, Integer[] pointToRemove) {
+                             YukonUserContext userContext, ZoneType zoneType) {
 
         AbstractZone zoneDto = AbstractZone.create(zoneType);
         BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
@@ -281,9 +267,9 @@ public class ZoneWizardController {
         boolean noErrors = true;
         try {
             List<ZoneAssignmentCapBankRow> bankAssignments =
-                getRemainingBankAssignments(zoneDto.getBankAssignments(), bankToRemove);
+                getRemainingBankAssignments(zoneDto.getBankAssignments());
             List<ZoneAssignmentPointRow> pointAssignments =
-                getRemainingPointAssignments(zoneDto.getPointAssignments(), pointToRemove);
+                getRemainingPointAssignments(zoneDto.getPointAssignments());
             zoneDto.setBankAssignments(bankAssignments);
             zoneDto.setPointAssignments(pointAssignments);
         	
@@ -300,7 +286,7 @@ public class ZoneWizardController {
         } else {
             bindingResult.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone");
 
-            setupZoneEditor(model, userContext.getYukonUser(), zoneDto.getZoneId());
+            setupZoneEditor(model, userContext.getYukonUser(), zoneDto);
             
             //Add Errors to flash scope
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -370,7 +356,7 @@ public class ZoneWizardController {
     }
     
     @RequestMapping
-    public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id, Integer zoneId, int index) {
+    public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id, int itemIndex) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
         CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
@@ -378,19 +364,19 @@ public class ZoneWizardController {
         bankToZone.setGraphPositionOffset(0);
         ZoneAssignmentCapBankRow row = zoneDtoHelper.getBankAssignmentFromMapping(bankToZone, cache);        
         modelMap.addAttribute("row",row);
-        modelMap.addAttribute("index", index);
+        modelMap.addAttribute("itemIndex", itemIndex);
         
         return "ivvc/addZoneCapBankRow.jsp";
     }
     
     @RequestMapping
-    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, String zoneType, String phase, int index) {
+    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, String zoneType, String phase, int itemIndex) {
     	PointToZoneMapping pointToZone = new PointToZoneMapping();
     	pointToZone.setPointId(id);
     	pointToZone.setGraphPositionOffset(0);
         ZoneAssignmentPointRow row = zoneDtoHelper.getPointAssignmentFromMapping(pointToZone);        
         modelMap.addAttribute("row",row);
-        modelMap.addAttribute("index", index);
+        modelMap.addAttribute("itemIndex", itemIndex);
 
         ZoneType type = ZoneType.valueOf(zoneType);
         Phase regPhase = null;

@@ -98,7 +98,6 @@ public class ZoneDtoHelper {
         LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceID());
 
         ZoneAssignmentCapBankRow row = new ZoneAssignmentCapBankRow();
-        row.setType("bank");
         row.setId(bankId);        
         row.setName(bank.getCcName());
         row.setDevice(controller.getPaoName());
@@ -126,7 +125,6 @@ public class ZoneDtoHelper {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
 
         ZoneAssignmentPointRow row = new ZoneAssignmentPointRow();
-        row.setType("point");
         row.setId(pointId);        
         row.setName(point.getPointName());
         row.setDevice(pao.getPaoName());

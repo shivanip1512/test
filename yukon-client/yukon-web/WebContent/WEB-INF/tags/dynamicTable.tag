@@ -12,10 +12,14 @@
 <%@ attribute name="items" type="java.lang.Object" required="true" %>
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="addItemParameters" %>
+<%@ attribute name="addButtonClass" description="Use this if you need your own behavior for addItem." %>
 
 <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 <c:if test="${empty pageScope.addItemParameters}">
     <c:set var="addItemParameters" value="null"/>
+</c:if>
+<c:if test="${empty pageScope.addButtonClass}">
+    <c:set var="addButtonClass" value="addItem"/>
 </c:if>
 
 <script type="text/javascript">
@@ -33,7 +37,11 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
         <div class="noItemsMessage">${pageScope.noItemsMsg}</div>
     </c:if>
     <div class="actionArea">
-        <cti:button id="addItem" key="add" styleClass="f_blocker"/>
+        <cti:button key="add" styleClass="f_blocker ${addButtonClass}"/>
     </div>
     <div style="display: none;" class="tempRequest"></div>
 </div>
+
+<script type="text/javascript">
+callAfterMainWindowLoad(${id}.init.bind(${id}));
+</script>
