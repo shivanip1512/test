@@ -58,7 +58,7 @@ public class RfnMeterReadService {
      *  RFN_METER_READ_REPLY1_TIMEOUT
      *  RFN_METER_READ_REPLY2_TIMEOUT
      *  
-     *  If not provided they default to 10 seconds and 15 minutes.
+     *  If not provided they default to 1 minute and 10 minutes.
      *  
      * @param rfnMeter The meter to read.
      * @param callback The callback to use for updating status, errors and read data.
