@@ -50,7 +50,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DurationFormattingService;
-import com.cannontech.core.service.DateFormattingService.PeriodFormatEnum;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
@@ -177,7 +176,6 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String iStr = "";
 
         int hrs = 0;
