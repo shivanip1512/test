@@ -90,11 +90,13 @@ public class RfnMeterLookupService {
     @PostConstruct
     public void initialize() {
         Builder<String, String> builder = ImmutableBiMap.builder();
-        String modelConversion = configurationSource.getString("RFN_METER_MODEL_CONVERSION", "");
-        String[] models = modelConversion.split(",");
-        for (String model : models) {
-            String[] modelNames = model.split(":");
-            builder.put(modelNames[0], modelNames[1]);
+        String modelConversion = configurationSource.getString("RFN_METER_MODEL_CONVERSION", null);
+        if (modelConversion != null) {
+            String[] models = modelConversion.split(",");
+            for (String model : models) {
+                String[] modelNames = model.split(":");
+                builder.put(modelNames[0], modelNames[1]);
+            }
         }
         modelTranslations = builder.build();
     }
