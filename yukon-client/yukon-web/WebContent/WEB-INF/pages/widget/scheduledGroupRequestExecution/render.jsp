@@ -7,8 +7,6 @@
 
 <c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
 <c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
-<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
 <script type="text/javascript">
 
@@ -90,22 +88,19 @@
 		</cti:url>
 		
 		<tr id="tr_${jobWrapper.job.id}">
-			
 			<%-- actions --%>
 			<td>
 			    <cti:msg2 var="viewScheduleDetailsTitleText" key=".actions.viewScheduleDetails" />
-				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${jobWrapper.name})" style="text-decoration:none;" >
+				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${fn:escapeXml(jobWrapper.name)})" style="text-decoration:none;" >
 					<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
 				</a>
 			</td>
-			
 			<%-- name --%>	
 			<td style="white-space:nowrap;">
 			
-				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${jobWrapper.name})" >
-					${jobWrapper.name}
+				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${fn:escapeXml(jobWrapper.name)})" >
+					${fn:escapeXml(jobWrapper.name)}
 				</a>
-				
 			</td>
 			
 			<%-- schedule description --%>
@@ -128,14 +123,15 @@
 			<c:if test="${canManage}">
                 <td style="text-align:right;">
                     <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title=".disable" titleArgument="${jobWrapper.name}"/>
+                        <tags:widgetActionRefreshImage2 title="disable" titleArgument="${jobWrapper.name}" 
+                                                        method="toggleEnabled" jobId="${jobWrapper.job.id}"/>
                     </span>
                     <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title=".enable" titleArgument="${jobWrapper.name}"/>
+                        <tags:widgetActionRefreshImage2 title="enable" titleArgument="${jobWrapper.name}" 
+                                                        method="toggleEnabled" jobId="${jobWrapper.job.id}"/>
                     </span>
                 </td>
 			</c:if>
-					
 		</tr>
 
         <cti:dataUpdaterCallback function="buildTooltipText('status_${jobWrapper.job.id}')" initialize="true"

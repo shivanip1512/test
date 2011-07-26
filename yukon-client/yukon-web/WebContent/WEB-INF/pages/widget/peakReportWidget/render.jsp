@@ -21,7 +21,7 @@
 			   		</select>
 			   	</td>
 			   	<td colspan="2" align="right">
-			   		<tags:widgetActionUpdate2 method="requestReport" label=".getReport" labelBusy=".reading" container="${widgetParameters.widgetId}_results"/>
+			   		<tags:widgetActionUpdate method="requestReport" label="getReport" labelBusy="reading" container="${widgetParameters.widgetId}_results"/>
 			   	</td>
 			</tr>
 			

@@ -30,7 +30,7 @@
 				
 				<tr>
 					<td class="label"><i:inline key=".avgDailyTotalUsage"/></td>
-					<td>${peakResult.averageDailyUsage} / ${peakResult.totalUsage}<i:inline key=".kwh"/></td>
+					<td><i:inline key=".kwh" arguments="${peakResult.averageDailyUsage} / ${peakResult.totalUsage}"/></td>
 				</tr>
 				<tr>
 					<td class="label"><i:inline key=".peak"/> ${peakResult.peakType.displayName}:</td>
@@ -40,13 +40,13 @@
 					<c:when test="${peakResult.peakType == 'INTERVAL'}">
 						<tr>
 							<td class="label"><i:inline key=".peakInterval"/></td>
-							<td>${peakResult.demand} <i:inline key=".kw"/></td>
+							<td><i:inline key=".kw" arguments="${peakResult.demand}"/></td>
 						</tr>
 					</c:when>
 					<c:otherwise>
 						<tr>
 							<td class="label"><i:inline key=".peakDay"/></td>
-							<td>${peakResult.usage} <i:inline key=".kwh"/></td>
+							<td><i:inline key=".kwh" arguments="${peakResult.usage}"/></td>
 						</tr>
 					</c:otherwise>
 				</c:choose>

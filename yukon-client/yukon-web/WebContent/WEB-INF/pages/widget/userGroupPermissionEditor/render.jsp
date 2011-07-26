@@ -57,7 +57,7 @@ ${pageScope.addPao} = function() {
         <div class="actionArea">
             <c:if test="${showSave}">
                 <span id="${widgetParameters.widgetId}_results">
-                    <tags:widgetActionUpdate method="save" label="Save" labelBusy="Saving" container="${widgetParameters.widgetId}_results"/>
+                    <tags:widgetActionUpdate method="save" label="save" labelBusy="saving" container="${widgetParameters.widgetId}_results"/>
                 </span>
             </c:if>
             <span class="widgetActionLink">

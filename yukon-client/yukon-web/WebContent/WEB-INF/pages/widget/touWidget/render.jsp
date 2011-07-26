@@ -39,10 +39,8 @@
 	
 		<div id="${widgetParameters.widgetId}_results"></div>
 		<div style="text-align: right">
-            <cti:msg2 var="read" key=".read"/>
-            <cti:msg2 var="reading" key=".reading"/>
-			<tags:widgetActionUpdate2 hide="${!readable}" method="read" label=".read"
-				labelBusy=".reading" container="${widgetParameters.widgetId}_results" />
+			<tags:widgetActionUpdate hide="${!readable}" method="read" label="read"
+				labelBusy="reading" container="${widgetParameters.widgetId}_results" />
 		</div>
 	</c:when>
 	<c:otherwise>

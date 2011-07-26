@@ -102,6 +102,6 @@ ${widgetParameters.widgetId}_updateDifference();
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
 <div style="text-align: right">
-	<ct:widgetActionUpdate2 hide="${!readable}" method="read" label=".readNow" labelBusy=".reading" container="${widgetParameters.widgetId}_results"/>
+	<ct:widgetActionUpdate hide="${!readable}" method="read" label="readNow" labelBusy="reading" container="${widgetParameters.widgetId}_results"/>
 </div>
 

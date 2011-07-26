@@ -17,8 +17,10 @@
     <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing.imageUrl">/WebConfig/yukon/Icons/cog.gif</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing.hoverUrl">/WebConfig/yukon/Icons/cog_over.gif</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing.hoverText">Manage Processor Output ({0})</entry>
-    <entry key="yukon.web.widgets.outageMonitorsWidget.disable">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.outageMonitorsWidget.enable">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
     
     <!-- OutageMonitorEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

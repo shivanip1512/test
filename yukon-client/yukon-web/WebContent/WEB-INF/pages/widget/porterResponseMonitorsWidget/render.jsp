@@ -7,19 +7,16 @@
 
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
-<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
-<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
 <%-- ERROR --%>
 <c:if test="${not empty porterResponseMonitorError}">
-	<div class="errorRed">${porterResponseMonitorError}</div>
+	<div class="errorMessage">${porterResponseMonitorError}</div>
 </c:if>
 
 <%-- TABLE --%>
 <c:choose>
 	<c:when test="${fn:length(monitors) > 0}">
 		<table class="compactResultsTable">
-
 			<tr>
 				<th style="width: 20px;">&nbsp;</th>
 				<th><i:inline key=".name"/></th>
@@ -40,7 +37,7 @@
 					<%-- action icons --%>
 					<td>
                         <cti:msg2 var="viewResponseMonitor" key=".porterResponseMonitoring"/>
-						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${monitor.name})" 
+						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${fn:escapeXml(monitor.name)})" 
 							style="text-decoration: none;">
 							<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" 
 								onmouseout="javascript:this.src='${cog}'">
@@ -49,8 +46,7 @@
 
 					<%-- monitor name --%>
 					<td class="${tdClass}">
-                        
-						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${monitor.name})">${monitor.name}</a>
+						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${fn:escapeXml(monitor.name)})">${fn:escapeXml(monitor.name)}</a>
 					</td>
 
 					<%-- enable/disable --%>
@@ -58,15 +54,13 @@
 						<c:choose>
 							<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
 								<tags:widgetActionRefreshImage2 method="toggleEnabled"
-									imgSrc="${enabledImg}" imgSrcHover="${enabledImg}"
-									monitorId="${monitor.monitorId}"
-									title=".disable" titleArgument="${monitor.name}" />
+									title="disable" titleArgument="${monitor.name}"
+									monitorId="${monitor.monitorId}"/>
 							</c:when>
 							<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
 								<tags:widgetActionRefreshImage2 method="toggleEnabled"
-									imgSrc="${disabledImg}" imgSrcHover="${disabledImg}"
-									monitorId="${monitor.monitorId}"
-									title=".enable" titleArgument="${monitor.name}" checked="false" />
+									title="enable" titleArgument="${monitor.name}"
+									monitorId="${monitor.monitorId}" checked="false"/>
 							</c:when>
 						</c:choose>
 					</td>

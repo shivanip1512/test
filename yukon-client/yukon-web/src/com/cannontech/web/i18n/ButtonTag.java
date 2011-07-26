@@ -5,15 +5,16 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.taglib.MessageScopeHelper;
+import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.YukonTagSupport;
-import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 public class ButtonTag extends YukonTagSupport {
 
@@ -146,6 +147,9 @@ public class ButtonTag extends YukonTagSupport {
             if (StringUtils.isBlank(labelText)) {
                 MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label", arguments);
                 labelText = getLocalMessage(labelTextResolvable, false);
+                if (!StringUtils.isBlank(labelText)) {
+                    labelText = StringEscapeUtils.escapeHtml(labelText);
+                }
             } else {
                 override = true;
             }
@@ -167,7 +171,10 @@ public class ButtonTag extends YukonTagSupport {
             /* Hover Text */
             MessageSourceResolvable hoverTextResolvable = messageScope.generateResolvable(".hoverText", arguments);
             String hoverText = getLocalMessage(hoverTextResolvable, false);
-
+            if (!StringUtils.isBlank(hoverText)) {
+                hoverText = StringEscapeUtils.escapeHtml(hoverText);
+            }
+            
             JspWriter out = getJspContext().getOut();
 
             out.write("<button id=\"");

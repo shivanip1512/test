@@ -9,8 +9,8 @@
 <entry key="yukon.web.widgets.touWidget.rateB">B</entry>
 <entry key="yukon.web.widgets.touWidget.rateC">C</entry>
 <entry key="yukon.web.widgets.touWidget.rateD">D</entry>
-<entry key="yukon.web.widgets.touWidget.read">Read Now</entry>
-<entry key="yukon.web.widgets.touWidget.reading">Reading</entry>
+<entry key="yukon.web.widgets.touWidget.read.label">Read Now</entry>
+<entry key="yukon.web.widgets.touWidget.reading.label">Reading</entry>
 <entry key="yukon.web.widgets.touWidget.recentReadings">Recent Readings (since {0})</entry>
 <entry key="yukon.web.widgets.touWidget.dailyReadings">Daily readings (before ${cutOff})</entry>
 <entry key="yukon.web.widgets.touWidget.previousReadingsLink">View Historical Readings</entry>
@@ -19,6 +19,6 @@
 <entry key="yukon.web.widgets.touWidget.totalConsumption">Total Consumption</entry>
 
     <!-- touScheduleWidget/render.jsp --> 
-<entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule">Download TOU Schedule</entry>
-<entry key="yukon.web.widgets.touScheduleWidget.downloadingSchedule">Downloading TOU Schedule</entry>
+<entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.label">Download TOU Schedule</entry>
+<entry key="yukon.web.widgets.touScheduleWidget.downloadingSchedule.label">Downloading TOU Schedule</entry>
 </properties>

@@ -53,16 +53,17 @@ JsWidgetObject.prototype = {
   
   doActionUpdate: function(cmd, theContainer, actionButton, waitingLabel, key) {
     $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
-    var input = $(actionButton).getElementsBySelector('input').first();
-    var initialLabel = input.value;
-    input.value = waitingLabel;
-    input.disable();
+    var buttonElem = $(actionButton).down('button');
+    var textSpan = $(buttonElem).down('span');
+    var initialLabel = textSpan.innerHTML;
+    textSpan.innerHTML = waitingLabel;
+    buttonElem.disable();
     
     var localSuccess = function() {
       // the following is only useful for the actionUpdate case
       $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('hide'); 
-      input.value = initialLabel;
-      input.enable();
+      textSpan.innerHTML = initialLabel;
+      buttonElem.enable();
     
       this.onSuccess();
     }

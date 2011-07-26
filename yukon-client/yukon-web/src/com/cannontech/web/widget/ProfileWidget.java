@@ -48,6 +48,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.PeriodFormatEnum;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
 import com.cannontech.database.data.lite.LiteContact;
@@ -184,15 +185,13 @@ public class ProfileWidget extends WidgetControllerBase {
         }
 
         if (hrs >= 1) {
-            String hourSuffix =
-                messageSourceAccessor.getMessage("yukon.web.defaults.hourSuffix");
-            iStr += hrs + " " + hourSuffix + " ";
+            iStr = messageSourceAccessor.getMessage("yukon.web.defaults.hourAbbreviation", hrs);
+            String test = dateFormattingService.formatPeriod((Object)hrs,PeriodFormatEnum.HM_SHORT, userContext);
         }
 
         if (mins >= 1) {
-            String minuteSuffix =
-                messageSourceAccessor.getMessage("yukon.web.defaults.minuteSuffix");
-            iStr += mins + " " + minuteSuffix + " ";
+            iStr = messageSourceAccessor.getMessage("yukon.web.defaults.minuteAbbreviation", mins);
+            String test = dateFormattingService.formatPeriod(mins,PeriodFormatEnum.HM_SHORT, userContext);
         }
 
         return iStr;
@@ -427,6 +426,8 @@ public class ProfileWidget extends WidgetControllerBase {
 
         String toggleErrorMsg = null;
 
+        // get device
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         // get parameters
         int channelNum = WidgetParameterHelper.getRequiredIntParameter(request, "channelNum");
         boolean newToggleVal = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
@@ -440,12 +441,14 @@ public class ProfileWidget extends WidgetControllerBase {
         String startHourString = WidgetParameterHelper.getStringParameter(request, "startHour" + channelNum);
         String stopHourString = WidgetParameterHelper.getStringParameter(request, "stopHour" + channelNum);
 
-        LocalTime startHour =  new LocalTime(Integer.parseInt(startHourString),0,0);
-        LocalTime stopHour = new LocalTime(Integer.parseInt(stopHourString),0,0);
-
-        // get device
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-
+        LocalTime startHour = null;
+        if (startHourString != null) {
+             startHour =  new LocalTime(Integer.parseInt(startHourString),0,0);
+        }
+        LocalTime stopHour = null;
+        if (stopHourString != null) {
+            stopHour = new LocalTime(Integer.parseInt(stopHourString),0,0);
+        }
         // START
         // - start now or later
         // - with option to schedule stop later
@@ -502,7 +505,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // was starting scheduled for later as well? make sure its before this scheduled
                 // stop date
                 if (stopRadio.equalsIgnoreCase("future") && scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
-                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterStart", stopDate);
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterStart", stopDate, startDate);
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {

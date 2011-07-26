@@ -18,7 +18,7 @@
 	<tags:nameValueContainer2>
 
         <tags:nameValue2 nameKey=".section.mainDetail.name">
-			${tamperFlagMonitor.tamperFlagMonitorName}
+			${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}
 		</tags:nameValue2>
 		
         <tags:nameValue2 nameKey=".section.mainDetail.violations">
@@ -44,15 +44,15 @@
 		<tags:nameValue2 nameKey=".section.mainDetail.tamperFlagGroup">
 			
 			<cti:url var="tamperFlagGroupUrl" value="/spring/group/editor/home">
-				<cti:param name="groupName">${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}</cti:param>
+				<cti:param name="groupName">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</cti:param>
 			</cti:url>
 			
-			<a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}</a>
+			<a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</a>
 			
 			<%-- tamper flag group report --%>
 			<br><br>
 			<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
-				<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
+				<cti:param name="groupName" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
 			</cti:url>
 			<a href="${tamperFlagGroupReportUrl}"><i:inline key=".section.options.tamperFlagGroupReport"/></a>
 			
@@ -250,7 +250,7 @@
 		<%-- other actions --%>
 		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions">
 			<cti:param name="collectionType" value="group"/>
-			<cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
+			<cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
 		</cti:url>
 		<a href="${otherActionsUrl}"><i:inline key=".section.options.otherActions"/></a>
 	    	

@@ -35,7 +35,6 @@
     <c:choose>
     <%-- START --%>
     <c:when test="${newToggleVal}">
-    
         <table>
             <tr>
                 <td colspan="3"><div style="font-weight:bold;"><i:inline key=".scheduleStart"/></div></td>
@@ -50,9 +49,9 @@
                 <td>
                     <tags:dateInputCalendar fieldName="${startDate}" fieldValue="${futureScheduleDate}"/> 
                     <select name="${startHour}">
-                        <c:forEach var="hour" items="${hours}" varStatus="hourNumber">
+                        <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
-                            <option value="${hourNumber.index}">${formattedHour}</option>
+                            <option value="${hour.hourOfDay}">${formattedHour}</option>
                         </c:forEach>
                     </select>
                 </td>
@@ -73,9 +72,9 @@
                 <td>
                     <tags:dateInputCalendar fieldName="${stopDate}" fieldValue="${futureScheduleDate}"/> 
                     <select name="${stopHour}">
-                        <c:forEach var="hour" items="${hours}" varStatus="hourNumber">
+                        <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
-                            <option value="${hourNumber.index}">${formattedHour}</option>
+                            <option value="${hour.hourOfDay}">${formattedHour}</option>
                         </c:forEach>
                     </select>
                 </td>
@@ -99,9 +98,9 @@
                 <td>
                     <tags:dateInputCalendar fieldName="${stopDate}" fieldValue="${futureScheduleDate}"/> 
                     <select name="${stopHour}">
-                        <c:forEach var="hour" items="${hours}" varStatus="hourNumber">
+                        <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
-                            <option value="${hourNumber.index}">${formattedHour}</option>
+                            <option value="${hour.hourOfDay}">${formattedHour}</option>
                         </c:forEach>
                     </select>
                 </td>

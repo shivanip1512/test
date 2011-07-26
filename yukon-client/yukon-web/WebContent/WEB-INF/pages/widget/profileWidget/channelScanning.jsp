@@ -35,11 +35,11 @@
                     <c:when test="${empty c.jobInfos}">
                         <tr>
                             <c:if test="${c.channelProfilingOn}">
-                                <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/>&nbsp;</div></td>
+                                <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/></div></td>
                                 <td><i:inline key=".neverStops"/></td>
                             </c:if>
                             <c:if test="${not c.channelProfilingOn}">
-                                <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/>&nbsp;</div></td>
+                                <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/></div></td>
                                 <td><i:inline key=".neverStarts"/></td>
                             </c:if>                        
                         </tr>
@@ -50,10 +50,10 @@
                                 <c:when test="${status.count == 1}">
                                     <tr>
                                         <c:if test="${c.channelProfilingOn}">
-                                            <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/>&nbsp;</div></td>
+                                            <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/></div></td>
                                         </c:if>
                                         <c:if test="${not c.channelProfilingOn}">
-                                            <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/>&nbsp;</div></td>
+                                            <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/></div></td>
                                         </c:if>        
                                 </c:when>
                                 <c:otherwise>

@@ -9,7 +9,9 @@
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.porterResponseMonitoring">View Porter Response Monitor Details</entry>
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.createNew.label">Create</entry>
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.createNew.labelBusy">Creating</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enable">Enable ({0})</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.disable">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
 
 </properties>

@@ -128,6 +128,9 @@
     <!-- voltageAndTou.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageDescription">Voltage &amp; TOU</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.read.label">Read</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.reading.label">Reading</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.errorReading">Error Reading Voltage:</entry>
     
     <!-- manualCommand.jsp -->
     <entry key="yukon.web.modules.amr.manualCommand.pageName">Manual Commander</entry>

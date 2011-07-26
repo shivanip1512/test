@@ -20,8 +20,8 @@
             <tr valign="bottom">
                 <td width="45%">    
                     <br>
-                    <tags:widgetActionUpdate2 method="downloadTouSchedule" label=".downloadSchedule" 
-                                              labelBusy=".downloadingSchedule" container="${widgetParameters.widgetId}_results"/>
+                    <tags:widgetActionUpdate method="downloadTouSchedule" label="downloadSchedule" 
+                                             labelBusy="downloadingSchedule" container="${widgetParameters.widgetId}_results"/>
                 </td>
                 <td>
                     <div id="${widgetParameters.widgetId}_results"></div>

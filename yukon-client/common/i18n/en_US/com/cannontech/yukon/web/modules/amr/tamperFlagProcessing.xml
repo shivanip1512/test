@@ -15,8 +15,10 @@
     <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.createNew">Create</entry>
     <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.actionTitle.edit">Edit Tamper Flag Monitor</entry>
     <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing">Manage Processor Output</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.enable">Enable ({0})</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.disable">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
 
     <!-- TamperFlagProcessingEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

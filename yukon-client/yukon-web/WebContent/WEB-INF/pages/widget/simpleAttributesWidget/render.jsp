@@ -34,7 +34,7 @@
         <tr><td><div style="height:8px;"></div></td></tr>
         <tr>
             <td>
-                <tags:widgetActionUpdate method="read" label="Read" labelBusy="Reading" container="${widgetParameters.widgetId}_results" /></td>
+                <tags:widgetActionUpdate method="read" label="read" labelBusy="reading" container="${widgetParameters.widgetId}_results" /></td>
             <td>
                 <div id="${widgetParameters.widgetId}_results">
                 </div>

@@ -14,8 +14,8 @@
     <entry key="yukon.web.widgets.meterInformationWidget.model">Model</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.ping">Ping</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.pinging">Pinging</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.ping.label">Ping</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.pinging.label">Pinging</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.disabled">Disabled</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
     <!-- meterReadingsResult.tag -->
@@ -27,8 +27,8 @@
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.notConfigured">Not Configured</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous Usage Reading</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow">Read Now</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.reading">Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.label">Read Now</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.reading.label">Reading</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.argumentStub">{0}</entry>
 
     <!-- common/rfnMeterReadingsResult.jsp -->
@@ -63,10 +63,10 @@
     <entry key="yukon.web.widgetClasses.TrendWidget.graphType">Graph Type:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.timePeriod">Time Period:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous weeks' data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous months' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous week's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous month's data</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous years' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous year's data</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.customDateRange">Custom Date Range</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.oneDay">1D</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.oneWeek">1W</entry>
@@ -74,7 +74,9 @@
     <entry key="yukon.web.widgetClasses.TrendWidget.threeMonths">3M</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.oneYear">1Y</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.custom">Custom</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates">Reload Graph Using Custom Dates</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh_small.png</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.chartStyle">Chart Style:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.line">Line</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.lineGraph">Line Graph</entry>
@@ -100,12 +102,12 @@
     <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
     <entry key="yukon.web.widgets.configWidget.assign">Assign</entry>
     <entry key="yukon.web.widgets.configWidget.assigning">Assigning</entry>
-    <entry key="yukon.web.widgets.configWidget.send">Send</entry>
-    <entry key="yukon.web.widgets.configWidget.sending">Sending</entry>
-    <entry key="yukon.web.widgets.configWidget.read">Read</entry>
-    <entry key="yukon.web.widgets.configWidget.reading">Reading</entry>
-    <entry key="yukon.web.widgets.configWidget.verify">Verify</entry>
-    <entry key="yukon.web.widgets.configWidget.verifying">Verifying</entry>
+    <entry key="yukon.web.widgets.configWidget.send.label">Send</entry>
+    <entry key="yukon.web.widgets.configWidget.sending.label">Sending</entry>
+    <entry key="yukon.web.widgets.configWidget.read.label">Read</entry>
+    <entry key="yukon.web.widgets.configWidget.reading.label">Reading</entry>
+    <entry key="yukon.web.widgets.configWidget.verify.label">Verify</entry>
+    <entry key="yukon.web.widgets.configWidget.verifying.label">Verifying</entry>
     <entry key="yukon.web.widgets.configWidget.noConfigurations">There are no existing configurations.</entry>
     
     <!-- configWidget/configWidgetResult.jsp -->

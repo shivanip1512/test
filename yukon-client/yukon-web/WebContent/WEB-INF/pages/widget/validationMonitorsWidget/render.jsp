@@ -53,7 +53,7 @@
                 </cti:url>
                 <cti:msg2 var="editActionTitleText" key=".actionTitle.edit"/>
                 <a href="${viewValidationMonitorEditorUrl}" title="${editActionTitleText}">
-                    ${monitorName}
+                    ${fn:escapeXml(monitorName)}
                 </a>
                 
             </td>
@@ -72,10 +72,13 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-						<tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" validationMonitorId="${monitorId}" title=".disable" titleArgument="${monitorName}"/>
+						<tags:widgetActionRefreshImage2 title="disable" titleArgument="${monitorName}" 
+                                                        method="toggleEnabled" validationMonitorId="${monitorId}"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-						<tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" validationMonitorId="${monitorId}" title=".enable" titleArgument="${monitorName}" checked="false"/>
+						<tags:widgetActionRefreshImage2 title="enable" titleArgument="${monitorName}" 
+                                                        method="toggleEnabled" validationMonitorId="${monitorId}" 
+                                                        checked="false"/>
 					</c:when>
 				</c:choose>
 			</td>

@@ -105,8 +105,8 @@
 
 <%-- POPUP TREE --%>
 <cti:msg2 var="titleText"  key="${title}"/>
-<cti:msg2 var="submitText" key="${submitButton}"/>
-<cti:msg2 var="cancelText" key="${cancelButton}"/>
+<cti:msg2 var="submitText" key="${submitButton}" javaScriptEscape="true"/>
+<cti:msg2 var="cancelText" key="${cancelButton}" javaScriptEscape="true"/>
 <cti:msg2 var="noSelectionAlertMessage" key="${noSelectionAlert}"/> 
 
 <ext:popupTree  id="${id}"

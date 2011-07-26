@@ -7,8 +7,7 @@
 
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
-<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
-<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
+
 
 <%-- CREATE NEW TAMPERFLAG MONITOR FORM --%>
 <form id="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/tamperFlagProcessing/edit" method="get">
@@ -51,15 +50,14 @@
 			<%-- action icons --%>
 			<td>
 			    <cti:msg2 var="tamperFlagProcessingActionTitleText" key=".actionTitle.tamperFlagProcessing"/>
-				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
+				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${fn:escapeXml(monitorName)})" style="text-decoration:none;">
 					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
 				</a>
-				
 			</td>
 			
 			<%-- monitor name --%>
 			<td class="${tdClass}">
-				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${monitorName})">${monitorName}</a>
+				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${fn:escapeXml(monitorName)})">${fn:escapeXml(monitorName)}</a>
 			</td>
 			
 			<%-- violations count --%>
@@ -76,10 +74,10 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-						<tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" tamperFlagMonitorId="${monitorId}" title=".disable" titleArgument="${monitorName}"/>
+						<tags:widgetActionRefreshImage2 title="disable" method="toggleEnabled" tamperFlagMonitorId="${monitorId}" titleArgument="${monitorName}"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-						<tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" tamperFlagMonitorId="${monitorId}" title=".enable" titleArgument="${monitorName}" checked="false"/>
+						<tags:widgetActionRefreshImage2 title="enable" method="toggleEnabled" tamperFlagMonitorId="${monitorId}" titleArgument="${monitorName}" checked="false"/>
 					</c:when>
 				</c:choose>
 			</td>
@@ -100,6 +98,3 @@
 	<cti:msg2 var="createNewText" key=".createNew"/>
     <tags:slowInput myFormId="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>
-
-
-

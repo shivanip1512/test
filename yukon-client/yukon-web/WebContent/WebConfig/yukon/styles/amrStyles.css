@@ -82,10 +82,12 @@ div.resultBar > div {
     font-weight:bold;
     color:#339900;
     display:inline;
+    padding-right: 5px;
 }
 
 .channelOff {
     font-weight:bold;
     color:#BB0000;
     display:inline;
+    padding-right: 5px;
 }
