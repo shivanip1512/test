@@ -28,14 +28,15 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -45,6 +46,7 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -60,7 +62,10 @@ import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.service.InventoryOperationsFilterService;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InvalidSerialNumberRangeDataException;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -75,6 +80,7 @@ public class InventoryFilterController {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private FilterModelValidator filterModelValidator;
+    private ServiceCompanyDao serviceCompanyDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     
@@ -231,12 +237,24 @@ public class InventoryFilterController {
     }
     
     @ModelAttribute(value="serviceCompanies")
-    public List<LiteServiceCompany> getServiceCompanies(YukonUserContext userContext) {
+    public List<ServiceCompanyDto> getServiceCompanies(YukonUserContext userContext) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteServiceCompany> serviceCompanies = energyCompany.getAllServiceCompaniesUpDown();
         
-        return serviceCompanies;
+        // Get all the parent and child energy company ids of this energy company
+        List<LiteStarsEnergyCompany> memberEnergyCompanies = ECUtils.getAllDescendants(energyCompany);
+        memberEnergyCompanies.addAll(ECUtils.getAllAscendants(energyCompany));
+        
+        Set<Integer> usableEnergyCompanyIds = 
+            Sets.newHashSet(Iterables.transform(memberEnergyCompanies, new Function<LiteStarsEnergyCompany, Integer>() {
+                @Override
+                public Integer apply(LiteStarsEnergyCompany energyCompany) {
+                    return energyCompany.getEnergyCompanyId();
+                }
+            }));
+        usableEnergyCompanyIds.add(yukonEnergyCompany.getEnergyCompanyId());
+        
+        return serviceCompanyDao.getAllServiceCompaniesForEnergyCompanies(usableEnergyCompanyIds);
     }
 
     @ModelAttribute(value="warehouses")
@@ -308,6 +326,11 @@ public class InventoryFilterController {
     @Autowired
     public void setFilterModelValidator(FilterModelValidator filterModelValidator) {
         this.filterModelValidator = filterModelValidator;
+    }
+    
+    @Autowired
+    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
+        this.serviceCompanyDao = serviceCompanyDao;
     }
     
     @Autowired

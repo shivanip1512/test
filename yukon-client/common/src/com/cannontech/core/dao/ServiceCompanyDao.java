@@ -1,6 +1,7 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.model.ServiceCompanyDto;
 
@@ -19,11 +20,9 @@ public interface ServiceCompanyDao {
     public List<ServiceCompanyDto> getAllServiceCompanies();
     
     /**
-     * Returns a list of all the relevant service companies wrt to a specific energy company
-     * @param energyCompanyId
-     * @return list of service company dtos
+     * Returns a list of all the relevant service companies wrt to a specific energy companies
      */
-    public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompany(int energyCompanyId);
+    public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds);
     
     public void create(ServiceCompanyDto serviceCompany, int energyCompanyId);
     

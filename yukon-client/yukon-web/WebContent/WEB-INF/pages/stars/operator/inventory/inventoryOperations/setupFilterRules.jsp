@@ -177,7 +177,7 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                     <form:select path="filterRules[${row.index}].serviceCompanyId">
-                                                        <form:options items="${serviceCompanies}" itemLabel="companyName" itemValue="companyID"/>
+                                                        <form:options items="${serviceCompanies}" itemLabel="companyName" itemValue="companyId"/>
                                                     </form:select>
                                                 </c:otherwise>
                                             </c:choose>

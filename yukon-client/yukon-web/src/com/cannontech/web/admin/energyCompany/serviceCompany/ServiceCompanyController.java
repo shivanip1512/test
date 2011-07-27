@@ -1,6 +1,7 @@
 package com.cannontech.web.admin.energyCompany.serviceCompany;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,8 @@ public class ServiceCompanyController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         //get all for this energy company
-        modelMap.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompaniesForEnergyCompany(ecId));
+        List<ServiceCompanyDto> serviceCompanies = serviceCompanyDao.getAllServiceCompaniesForEnergyCompanies(Collections.singleton(ecId));
+        modelMap.addAttribute("serviceCompanies", serviceCompanies);
         return "energyCompany/serviceCompany/list.jsp";
     }
     

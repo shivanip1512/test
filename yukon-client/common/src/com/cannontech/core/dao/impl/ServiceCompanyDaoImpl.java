@@ -3,6 +3,7 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,10 +150,11 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
     }
     
     @Override
-    public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompany(int energyCompanyId) {
+    public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
-        sql.append("WHERE ec.energycompanyid").eq(energyCompanyId);
+        sql.append("WHERE ec.energycompanyid").in(energyCompanyIds);
         
         List<ServiceCompanyDto> serviceCompanies = yukonJdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
         
