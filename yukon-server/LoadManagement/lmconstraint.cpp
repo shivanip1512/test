@@ -521,13 +521,8 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
 
-    // We want the seconds at the beginning of the day in which the program is to start
-    CtiTime startTime(proposed_start_from_1901);
-    CtiDate startDate(startTime);
-    startTime = CtiTime(startDate);
-
-    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(proposed_start_from_1901 - startTime.seconds());
-    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(proposed_stop_from_1901 - startTime.seconds());
+    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(GetOffsetFromTime(CtiTime(proposed_start_from_1901)));
+    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(GetOffsetFromTime(CtiTime(proposed_stop_from_1901)));
 
     if( start_ctrl_window != 0 && stop_ctrl_window != 0 )
     {
@@ -804,6 +799,11 @@ bool CtiLMProgramConstraintChecker::checkMasterActive()
         }
     }
     return !master_active;
+}
+
+const std::vector<std::string>& CtiLMProgramConstraintChecker::getResults()
+{
+    return _results;
 }
 
 const vector<ConstraintViolation>& CtiLMProgramConstraintChecker::getViolations()

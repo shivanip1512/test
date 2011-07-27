@@ -47,6 +47,17 @@ CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, const CtiDate &startin
 }
 
 
+/*
+    This function is the inverse of GetTimeFromOffsetAndDate().  It takes a CtiTime and gives
+     back the seconds of offset since midnight - ignoring any DST effects.
+     4am will ALWAYS return an offset of 14400.
+*/
+LONG GetOffsetFromTime(const CtiTime &time)
+{
+    return ( time.hour() * 60 + time.minute() ) * 60 + time.second(); 
+}
+
+
 string ControlWindowErrorMessage(const CtiTime &windowStartTime,
                                  const CtiTime &windowStopTime,
                                  const CtiTime &proposedTime,
