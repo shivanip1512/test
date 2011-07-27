@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.RowAndFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -85,8 +85,8 @@ public class AccountThermostatScheduleEntryDaoImpl implements AccountThermostatS
     		atsEntry.setAccountThermostatScheduleId(rs.getInt("AcctThermostatScheduleId"));
     		atsEntry.setStartTime(rs.getInt("StartTime"));
     		atsEntry.setTimeOfWeek(TimeOfWeek.valueOf(rs.getString("TimeOfWeek")));
-    		atsEntry.setCoolTemp(new FahrenheitTemperature(rs.getDouble("CoolTemp")));
-    		atsEntry.setHeatTemp(new FahrenheitTemperature(rs.getDouble("HeatTemp")));
+    		atsEntry.setCoolTemp(Temperature.fromFahrenheit(rs.getDouble("CoolTemp")));
+    		atsEntry.setHeatTemp(Temperature.fromFahrenheit(rs.getDouble("HeatTemp")));
     		
     		return atsEntry;
     	}

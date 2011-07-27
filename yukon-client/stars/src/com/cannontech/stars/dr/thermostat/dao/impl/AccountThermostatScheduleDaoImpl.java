@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.thermostat.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -28,7 +26,6 @@ import com.cannontech.database.YukonRowAndFieldMapper;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -38,6 +35,7 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
+import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -50,7 +48,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     private YukonJdbcTemplate yukonJdbcTemplate;
     private AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao;
     private ECMappingDao ecMappingDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private ThermostatService thermostatService;
     
     private SimpleTableAccessTemplate<AccountThermostatSchedule> accountThermostatScheduleTemplate;
     
@@ -304,8 +302,8 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
         
         List<AccountThermostatSchedule> schedules = getAllSchedulesAndEntriesForAccountByType(accountId, types);
-        List<AccountThermostatSchedule> disallowedSchedules = new ArrayList<AccountThermostatSchedule>();
-        Set<ThermostatScheduleMode> allowedModes = yukonEnergyCompanyService.getAllowedThermostatScheduleModesByAccountId(accountId);
+        List<AccountThermostatSchedule> disallowedSchedules = Lists.newArrayList();
+        Set<ThermostatScheduleMode> allowedModes = thermostatService.getAllowedThermostatScheduleModesByAccountId(accountId);
         
         for(AccountThermostatSchedule schedule : schedules){
             //mark the disallowed schedules for removal
@@ -486,7 +484,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	}
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService){
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setThermostatService(ThermostatService thermostatService){
+        this.thermostatService = thermostatService;
     }
 }

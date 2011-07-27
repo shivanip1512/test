@@ -4,6 +4,7 @@ package com.cannontech.stars.dr.thermostat.model;
  * Enum which represents schedule update results
  */
 public enum ThermostatScheduleUpdateResult {
+    //messages corresponding to each enum should be added to thermostat.xml
     UNAVAILABLE_ERROR(true), 
     NO_SERIAL_ERROR(true), 
     UPDATE_SCHEDULE_ERROR(true), 

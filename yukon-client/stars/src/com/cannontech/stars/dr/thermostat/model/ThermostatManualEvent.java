@@ -1,26 +1,26 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 
 /**
  * Model object which represents a manual thermostat event
  */
 public class ThermostatManualEvent extends CustomerThermostatEventBase {
 
-    public static final FahrenheitTemperature DEFAULT_TEMPERATURE = new FahrenheitTemperature(72);
+    public static final Temperature DEFAULT_TEMPERATURE = Temperature.fromFahrenheit(72);
 
     // Default temp to 72F
-    private FahrenheitTemperature previousTemperature = DEFAULT_TEMPERATURE;
+    private Temperature previousTemperature = DEFAULT_TEMPERATURE;
     private boolean holdTemperature = false;
     private ThermostatMode mode = ThermostatMode.OFF;
     private ThermostatFanState fanState = ThermostatFanState.AUTO;
     private boolean runProgram = false;
 
-    public FahrenheitTemperature getPreviousTemperature() {
+    public Temperature getPreviousTemperature() {
         return previousTemperature;
     }
 
-    public void setPreviousTemperature(FahrenheitTemperature previousTemperature) {
+    public void setPreviousTemperature(Temperature previousTemperature) {
         this.previousTemperature = previousTemperature;
     }
 

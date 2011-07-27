@@ -26,12 +26,12 @@ var TIME_SLIDER = null;
 Event.observe(window, 'load', function(){
     Yukon.ThermostatScheduleEditor.init({
         currentUnit: '${temperatureUnit}',
-        upperHeatF: parseFloat(${type.upperLimitHeatInFahrenheit.value}),
-        lowerHeatF: parseFloat(${type.lowerLimitHeatInFahrenheit.value}),
-        upperCoolF: parseFloat(${type.upperLimitCoolInFahrenheit.value}),
-        lowerCoolF: parseFloat(${type.lowerLimitCoolInFahrenheit.value}),
-        secondsResolution: ${type.resolutionInSeconds},
-        secondsBetweenPeriods: ${type.minimumTimeBetweenPeriodsInSeconds}
+        upperHeatF: parseFloat(${type.upperLimitHeat.value}),
+        lowerHeatF: parseFloat(${type.lowerLimitHeat.value}),
+        upperCoolF: parseFloat(${type.upperLimitCool.value}),
+        lowerCoolF: parseFloat(${type.lowerLimitCool.value}),
+        secondsResolution: ${type.resolution.standardSeconds},
+        secondsBetweenPeriods: ${type.minimumTimeBetweenPeriods.standardSeconds}
     });
 });
 </script>
@@ -163,7 +163,7 @@ Event.observe(window, 'load', function(){
                     <cti:button key="cancel" styleClass="cancel" />
                 </div>
                 <div class="fl">
-                    <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
+                    <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="createDefault"/>
                 </div>
             </div>
         </div>

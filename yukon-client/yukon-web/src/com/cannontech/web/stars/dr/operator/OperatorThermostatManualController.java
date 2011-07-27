@@ -14,7 +14,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -134,7 +134,7 @@ public class OperatorThermostatManualController {
 				    		String mode, 
 				    		String fan, 
 				    		String temperatureUnit,
-				    		Integer temperature,
+				    		Integer temperatureValue,
 				    		YukonUserContext userContext,
 				            HttpServletRequest request, 
 				            ModelMap modelMap,
@@ -160,11 +160,11 @@ public class OperatorThermostatManualController {
         boolean isValid = true;
         ThermostatManualEventResult message = null;
         
-        FahrenheitTemperature temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
+        Temperature temperature = thermostatService.getTempOrDefault(temperatureValue, temperatureUnit);
         
         //Validate temperature for mode and thermostat type
         if(needsTempValidation) {
-            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, temperatureInF, thermostatMode);
+            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, temperature, thermostatMode);
             
             if(limitMessage != null) {
                 String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + limitMessage.name();
@@ -177,7 +177,7 @@ public class OperatorThermostatManualController {
         if(isValid) {
             boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
             
-            message = thermostatService.setupAndExecuteManualEvent(thermostatIdsList, hold, runProgram, temperatureInF, temperatureUnit, mode, fan, customerAccount, userContext);
+            message = thermostatService.setupAndExecuteManualEvent(thermostatIdsList, hold, runProgram, temperature, temperatureUnit, mode, fan, customerAccount, userContext);
             
             // Add thermostat labels to message
             List<String> thermostatLabels = new ArrayList<String>();

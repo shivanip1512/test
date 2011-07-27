@@ -1,16 +1,16 @@
 package com.cannontech.stars.dr.thermostat.model;
 
 import com.cannontech.common.temperature.CelsiusTemperature;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 
 public class ManualThermostatEvent extends ThermostatEvent {
     
-    private FahrenheitTemperature manualTemp;
+    private Temperature manualTemp;
     private ThermostatMode manualMode;
     private ThermostatFanState manualFan;
     private boolean manualHold;
 
-    public FahrenheitTemperature getManualTemp() {
+    public Temperature getManualTemp() {
         return manualTemp;
     }
     
@@ -18,7 +18,7 @@ public class ManualThermostatEvent extends ThermostatEvent {
         return manualTemp.toCelsius();
     }
     
-    public void setManualTemp(FahrenheitTemperature manualTemp) {
+    public void setManualTemp(Temperature manualTemp) {
         this.manualTemp = manualTemp;
     }
 

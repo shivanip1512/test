@@ -32,7 +32,6 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -65,7 +64,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private OperatorThermostatHelper operatorThermostatHelper;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     
     @RequestMapping(value = "send", method = RequestMethod.POST)
@@ -80,24 +78,21 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         // retrieve the schedule
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
-        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
         
-        //associate the thermostats with this schedule
-        accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
         
-        message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonUserContext.getYukonUser());
+        ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonUserContext.getYukonUser());
     
+        String pageName = "savedSchedules.";
+        if(thermostatIds.size() > 1){
+            pageName = "savedSchedulesMultiple.";
+        }
+        
         if (message.isFailed()) {
-            //Log schedule send to thermostat history
-            if(thermostatIds.size() > 1) {
-                message = ThermostatScheduleUpdateResult.MULTIPLE_ERROR;
-            }else{
-                message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_ERROR;
-            }
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.consumer." + pageName + message, ats.getScheduleName()));
         }else{
-            message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer." + pageName + message, ats.getScheduleName()));
+            //associate the thermostats with this schedule
+            accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
         }
         
         map.addAttribute("thermostatIds", StringUtils.join(thermostatIds, ","));
@@ -146,8 +141,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         }
 
         //flash messages
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
-        map.addAttribute("thermostatIds", thermostatIds.toString());
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.savedSchedules." + message, ats.getScheduleName()));
+        map.addAttribute("thermostatIds", StringUtils.join(thermostatIds, ","));
 
         return "redirect:view/saved";
     }
@@ -204,7 +199,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, yukonUserContext);
         defaultSchedule.setScheduleName(useDefaultScheduleName);
         
-        Set<ThermostatScheduleMode> modes = type.getAllowedModes(yukonEnergyCompanyService.getAllowedThermostatScheduleModesByAccountId(account.getAccountId()));
+        Set<ThermostatScheduleMode> modes = type.getAllowedModes(thermostatService.getAllowedThermostatScheduleModesByAccountId(account.getAccountId()));
         List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();
         for(ThermostatScheduleMode mode : modes){
             if(defaultSchedule.getThermostatScheduleMode() == mode){
@@ -248,7 +243,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	//flash message
     	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.deleteSuccess", oldScheduleName));
     	
-    	map.addAttribute("thermostatIds", thermostatIds.toString());
+    	map.addAttribute("thermostatIds", StringUtils.join(thermostatIds, ","));
     	return "redirect:view/saved";
 
     }
@@ -340,10 +335,5 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired
     public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
         this.thermostatEventHistoryDao = thermostatEventHistoryDao;
-    }
-
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 }

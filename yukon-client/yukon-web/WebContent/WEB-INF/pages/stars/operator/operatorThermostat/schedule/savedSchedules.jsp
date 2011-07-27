@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
     
-<cti:standardPage module="operator" page="thermostatSavedSchedules">
+<cti:standardPage module="operator" page="${pageName}">
 
 <cti:includeCss link="/WebConfig/yukon/styles/thermostat.css"/>
 
@@ -14,32 +14,17 @@
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
 
-
-<%-- THERMOSTAT NAMES --%>
-<c:choose>
-    <c:when test="${fn:length(thermostatNames) > 1}">
-        <c:set var="formElementContainerNameKey" value=".pageName.multiple"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="formElementContainerNameKey" value=".pageName.singular"/>
-    </c:otherwise>
-</c:choose>
-
-<h2 class="standardPageHeading">
-    <i:inline key="${formElementContainerNameKey}" arguments="${thermostatNameString}" />
-</h2>
-
 <script>
 var TIME_SLIDER = null;
 Event.observe(window, 'load', function(){
     Yukon.ThermostatScheduleEditor.init({
         currentUnit: '${temperatureUnit}',
-        upperHeatF: parseFloat(${type.upperLimitHeatInFahrenheit.value}),
-        lowerHeatF: parseFloat(${type.lowerLimitHeatInFahrenheit.value}),
-        upperCoolF: parseFloat(${type.upperLimitCoolInFahrenheit.value}),
-        lowerCoolF: parseFloat(${type.lowerLimitCoolInFahrenheit.value}),
-        secondsResolution: ${type.resolutionInSeconds},
-        secondsBetweenPeriods: ${type.minimumTimeBetweenPeriodsInSeconds}
+        upperHeatF: parseFloat(${type.upperLimitHeat.value}),
+        lowerHeatF: parseFloat(${type.lowerLimitHeat.value}),
+        upperCoolF: parseFloat(${type.upperLimitCool.value}),
+        lowerCoolF: parseFloat(${type.lowerLimitCool.value}),
+        secondsResolution: ${type.resolution.standardSeconds},
+        secondsBetweenPeriods: ${type.minimumTimeBetweenPeriods.standardSeconds}
     });
 });
 </script>
@@ -68,9 +53,12 @@ Event.observe(window, 'load', function(){
 
 <table class="thermostatPageContent">
     <tr>
-        <td>  
+        <td> 
             <c:choose>
                 <c:when test="${empty schedules and empty currentSchedule}">
+                    <%-- THERMOSTAT NAMES --%>
+                    <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
+                    
                     <div class="helper">
                         <i:inline key=".noSchedulesHelper" />
                     </div>
@@ -81,6 +69,8 @@ Event.observe(window, 'load', function(){
                 </c:when>
                 <c:otherwise>
                     <div class="schedules fl">
+                        <%-- THERMOSTAT NAMES --%>
+                        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
                         <c:if test="${not empty currentSchedule}">
                             <div class="paddedContainer">
                                 <tags:thermostatScheduleWidget schedule="${currentSchedule}"
@@ -172,7 +162,7 @@ Event.observe(window, 'load', function(){
                         <cti:button key="cancel" styleClass="cancel" />
                     </div>
                     <div class="fl">
-                        <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
+                        <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="createDefault"/>
                     </div>
                 </div>
             </div>

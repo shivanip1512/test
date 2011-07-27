@@ -29,7 +29,6 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.AccountCheckerService;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -61,7 +60,6 @@ public class OperatorThermostatScheduleController {
 	private OperatorThermostatHelper operatorThermostatHelper;
 	private AccountCheckerService accountCheckerService;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
-	private YukonEnergyCompanyService yukonEnergyCompanyService;
 	
 	// SAVE
 	@RequestMapping
@@ -107,7 +105,7 @@ public class OperatorThermostatScheduleController {
         }
 
         //flash messages
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSavedSchedules." + message, ats.getScheduleName()));
 
         model.addAttribute("thermostatId", thermostatIds);
         return "redirect:savedSchedules";
@@ -131,24 +129,21 @@ public class OperatorThermostatScheduleController {
         // retrieve the schedule
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
-        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
         
-        //associate the thermostats with this schedule
-        accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIdList, ats.getAccountThermostatScheduleId());
         
-        message = thermostatService.sendSchedule(account, ats, thermostatIdList, thermostatScheduleMode, yukonUserContext.getYukonUser());
+        ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIdList, thermostatScheduleMode, yukonUserContext.getYukonUser());
+        
+        String pageName = "thermostatSavedSchedules.";
+        if(thermostatIdList.size() > 1){
+            pageName = "thermostatSavedSchedulesMultiple.";
+        }
         
         if (message.isFailed()) {
-            //Log schedule send to thermostat history
-            if(thermostatIdList.size() > 1) {
-                message = ThermostatScheduleUpdateResult.MULTIPLE_ERROR;
-            }else{
-                message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_ERROR;
-            }
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator." + pageName + message, ats.getScheduleName()));
         }else{
-            message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator." + pageName + message, ats.getScheduleName()));
+            //associate the thermostats with this schedule
+            accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIdList, ats.getAccountThermostatScheduleId());
         }
         
         map.addAttribute("thermostatId", thermostatIdList);
@@ -177,13 +172,15 @@ public class OperatorThermostatScheduleController {
         model.addAttribute("temperatureUnit", temperatureUnit);
         
         // current schedule is only relevant when operating in the context of 1 Thermostat
-        AccountThermostatSchedule thermostatCurrentSchedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
-        if (thermostatCurrentSchedule != null) {
-            for(AccountThermostatSchedule ats : schedules){
-                if (ats.getAccountThermostatScheduleId() == thermostatCurrentSchedule.getAccountThermostatScheduleId()){
-                    //only add the 'currentSchedule' if it is included in the allowed schedule
-                    model.addAttribute("currentSchedule", schedules.remove(schedules.indexOf(ats)));
-                    break;
+        if(thermostatIdList.size() == 1){
+            AccountThermostatSchedule thermostatCurrentSchedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
+            if (thermostatCurrentSchedule != null) {
+                for(AccountThermostatSchedule ats : schedules){
+                    if (ats.getAccountThermostatScheduleId() == thermostatCurrentSchedule.getAccountThermostatScheduleId()){
+                        //only add the 'currentSchedule' if it is included in the allowed schedule
+                        model.addAttribute("currentSchedule", schedules.remove(schedules.indexOf(ats)));
+                        break;
+                    }
                 }
             }
         }
@@ -201,7 +198,7 @@ public class OperatorThermostatScheduleController {
         String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, userContext);
         defaultSchedule.setScheduleName(useDefaultScheduleName);
         
-        Set<ThermostatScheduleMode> modes = type.getAllowedModes(yukonEnergyCompanyService.getAllowedThermostatScheduleModesByAccountId(fragment.getAccountId()));
+        Set<ThermostatScheduleMode> modes = type.getAllowedModes(thermostatService.getAllowedThermostatScheduleModesByAccountId(fragment.getAccountId()));
         List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();
         for(ThermostatScheduleMode mode : modes){
             if(defaultSchedule.getThermostatScheduleMode() == mode){
@@ -221,6 +218,16 @@ public class OperatorThermostatScheduleController {
         }        
         model.addAttribute("defaultSchedules", defaultSchedules);
         model.addAttribute("allowedModes", modes);
+        
+        if(thermostatIdList.size() > 1){
+            model.addAttribute("displayName", new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSavedSchedules.multiple"));
+            model.addAttribute("pageName", "thermostatSavedSchedulesMultiple");
+        }else{
+            //the serial number is the same as the hardwareDto.getDisplayName() that appears on the parent page.
+            model.addAttribute("displayName", thermostat.getSerialNumber());
+            model.addAttribute("pageName", "thermostatSavedSchedules");
+            model.addAttribute("inventoryId", thermostat.getId());
+        }
         
         return "operator/operatorThermostat/schedule/savedSchedules.jsp";
     }
@@ -334,10 +341,4 @@ public class OperatorThermostatScheduleController {
 	public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
-
-	@Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-	
 }

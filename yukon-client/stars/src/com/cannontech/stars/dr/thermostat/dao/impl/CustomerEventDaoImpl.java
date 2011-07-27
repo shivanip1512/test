@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -142,7 +142,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
      */
     private void saveManualEvent(ThermostatManualEvent event, YukonEnergyCompany yukonEnergyCompany) {
 
-        FahrenheitTemperature previousTemperature = event.getPreviousTemperature();
+        Temperature previousTemperature = event.getPreviousTemperature();
         boolean holdTemperature = event.isHoldTemperature();
 
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
@@ -163,7 +163,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         SqlStatementBuilder eventSql = new SqlStatementBuilder();
         eventSql.append("INSERT INTO LMThermostatManualEvent");
         eventSql.append("(EventId, InventoryId, PreviousTemperature, HoldTemperature, OperationStateId, FanOperationId)");
-        eventSql.values(eventId, thermostatId, previousTemperature, YNBoolean.valueOf(holdTemperature),
+        eventSql.values(eventId, thermostatId, previousTemperature.toString(), YNBoolean.valueOf(holdTemperature),
                         modeListEntry.getEntryID(), fanStateEntry.getEntryID());
 
         yukonJdbcTemplate.update(eventSql);
@@ -188,7 +188,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
             int id = rs.getInt("EventId");
             int inventoryId = rs.getInt("InventoryId");
-            FahrenheitTemperature previousTemp = new FahrenheitTemperature(rs.getInt("PreviousTemperature"));
+            Temperature previousTemp = Temperature.fromFahrenheit(rs.getDouble("PreviousTemperature"));
             String holdTemp = rs.getString("HoldTemperature");
             Date date = rs.getTimestamp("EventDateTime");
 
@@ -200,7 +200,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             // A temp of -1 indicates this event was a 'run program' event. This
             // should really be handled with a column in the table or some other
             // more solid way
-            if (previousTemp.getValue() == -1) {
+            if (previousTemp.toFahrenheit().getValue() == -1) {
                 event.setRunProgram(true);
             }
 

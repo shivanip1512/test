@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.thermostat.dao.impl;
 
 import java.util.List;
 
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
@@ -25,7 +25,7 @@ public class DefaultAccountThermostatScheduleHelper {
         List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
         for (TimeOfWeek timeOfWeek : type.getDefaultThermostatScheduleMode().getAssociatedTimeOfWeeks()) {
             for (ThermostatSchedulePeriod period : type.getPeriodStyle().getAllPeriods()) {
-                AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry(period.getDefaultStartTime(), timeOfWeek, new FahrenheitTemperature(72), new FahrenheitTemperature(72));
+                AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry(period.getDefaultStartTime(), timeOfWeek, Temperature.fromFahrenheit(72), Temperature.fromFahrenheit(72));
                 atsEntries.add(entry);
             }
         }

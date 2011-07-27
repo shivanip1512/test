@@ -1,8 +1,9 @@
 package com.cannontech.stars.dr.thermostat.service;
 
 import java.util.List;
+import java.util.Set;
 
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -12,6 +13,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -52,7 +54,7 @@ public interface ThermostatService {
     public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
                                                                    boolean hold, 
                                                                    boolean runProgram, 
-                                                                   FahrenheitTemperature tempInF, 
+                                                                   Temperature tempInF, 
                                                                    String temperatureUnit, 
                                                                    String mode, 
                                                                    String fan, 
@@ -79,9 +81,9 @@ public interface ThermostatService {
     
     /**
      * If the temperature value is null, returns the default temperature for a manual event in
-     * Fahrenheit.  If not, the temperature is returned in Fahrenheit.
+     * If not, the temperature is returned in the supplied unit.
      */
-    public FahrenheitTemperature getTempOrDefaultInF(Integer temperature, String temperatureUnit);
+    public Temperature getTempOrDefault(Integer temperature, String temperatureUnit);
     
     /**
      * Parses a thermostat mode string value into a ThermostatMode object.  A blank string
@@ -96,7 +98,7 @@ public interface ThermostatService {
      * will be null.
      */
     public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList,
-                                                                 FahrenheitTemperature temperatureInF, 
+                                                                 Temperature temperatureInF, 
                                                                  ThermostatMode mode);
     
     /**
@@ -109,4 +111,20 @@ public interface ThermostatService {
                                                        Iterable<Integer> thermostatIds,
                                                        ThermostatScheduleMode mode,
                                                        LiteYukonUser user);
+    
+    /**
+     * Schedule Modes are determined by the EnergyCompany that an account belongs to.  This method
+     * returns a set of ThermostatScheduleModes given an accountId
+     * @param accountId
+     * @return
+     */
+    public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModesByAccountId(int accountId);
+    
+    /**
+     * Schedule Modes are determined by the EnergyCompany that an account belongs to.  This method
+     * returns a set of ThermostatScheduleModes given an accountId
+     * @param accountId
+     * @return
+     */
+    public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModes(YukonEnergyCompany yukonEnergyCompany);
 }

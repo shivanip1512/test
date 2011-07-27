@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -449,10 +447,9 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
     @Override
     public void setTemperatureUnit(int customerId, String temp) throws IllegalArgumentException {
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temp);
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ){
+        if ("C".equalsIgnoreCase(temp) || "F".equalsIgnoreCase(temp)) {
             String sql = "UPDATE Customer SET TemperatureUnit = ? WHERE CustomerId = ?";
-            yukonJdbcTemplate.update(sql.toString(), escapedTempUnit ,customerId);
+            yukonJdbcTemplate.update(sql.toString(), temp ,customerId);
             return;
         }
         throw new IllegalArgumentException("Temperature preference invalid.  Supplied: ["+temp+"]. Acceptable (escaped) values: ['F', 'C']");

@@ -13,9 +13,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -43,6 +45,7 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation class for ThermostatService
@@ -59,6 +62,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
     private CommandServiceFactory commandServiceFactory;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     
     @Override
     @Transactional
@@ -148,7 +152,7 @@ public class ThermostatServiceImpl implements ThermostatService {
                                                        ThermostatScheduleMode mode,
                                                        LiteYukonUser user) {
         
-        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS; // these enums suck, generalize (used to be SAVE_SCHEDULE_SUCCESS)
+        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS; // these enums suck, generalize (used to be SAVE_SCHEDULE_SUCCESS)
         int thermostatCount = 0;
         for (int thermostatId : thermostatIdsList) {
             thermostatCount++;
@@ -208,11 +212,11 @@ public class ThermostatServiceImpl implements ThermostatService {
                             AccountThermostatScheduleEntry atse = new AccountThermostatScheduleEntry();
                             atse.setTimeOfWeek(TimeOfWeek.WEEKDAY);
                             if(period.isPsuedo()){
-                                atse.setCoolTemp(new FahrenheitTemperature(-1));
-                                atse.setHeatTemp(new FahrenheitTemperature(-1));
+                                atse.setCoolTemp(Temperature.fromFahrenheit(-1));
+                                atse.setHeatTemp(Temperature.fromFahrenheit(-1));
                             }else{
-                                atse.setCoolTemp(new FahrenheitTemperature(72));
-                                atse.setHeatTemp(new FahrenheitTemperature(72));
+                                atse.setCoolTemp(Temperature.fromFahrenheit(72));
+                                atse.setHeatTemp(Temperature.fromFahrenheit(72));
                             }
                             atse.setStartTime(period.getDefaultStartTime());
                             
@@ -242,15 +246,15 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, FahrenheitTemperature tempInF, ThermostatMode mode) {
+    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, Temperature tempInF, ThermostatMode mode) {
         
         //The UI only allows selection of multiple thermostats of the same type, so the type of the
         //first thermostat should be the same as any others
         int firstThermostatId = thermostatIdsList.get(0);
         HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
         SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
-        FahrenheitTemperature minTempInF = schedThermType.getLowerLimitInFahrenheit(mode.getHeatCoolSettingType());
-        FahrenheitTemperature maxTempInF = schedThermType.getUpperLimitInFahrenheit(mode.getHeatCoolSettingType());
+        Temperature minTempInF = schedThermType.getLowerLimit(mode.getHeatCoolSettingType()).toFahrenheit();
+        Temperature maxTempInF = schedThermType.getUpperLimit(mode.getHeatCoolSettingType()).toFahrenheit();
         
         ThermostatManualEventResult message = null;
         if (tempInF.compareTo(maxTempInF) > 0) {
@@ -263,11 +267,11 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public FahrenheitTemperature getTempOrDefaultInF(Integer temperature, String temperatureUnit) {
+    public Temperature getTempOrDefault(Integer temperature, String temperatureUnit) {
         if(temperature == null) {
             return ThermostatManualEvent.DEFAULT_TEMPERATURE;
         } else {
-            return new FahrenheitTemperature(CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER));
+            return Temperature.from(temperature, TemperatureUnit.fromAbbreviation(temperatureUnit));
         }
     }
     
@@ -313,7 +317,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
                                                                   boolean hold, 
                                                                   boolean runProgram, 
-                                                                  FahrenheitTemperature tempInF, 
+                                                                  Temperature tempInF, 
                                                                   String temperatureUnit, 
                                                                   String mode, 
                                                                   String fan, 
@@ -377,7 +381,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         if (event.isRunProgram()) {
             logMsg.append(", Run Program");
         } else {
-            logMsg.append(", Temp:" + event.getPreviousTemperature().getValue() + CtiUtilities.FAHRENHEIT_CHARACTER);
+            logMsg.append(", Temp:" + event.getPreviousTemperature().toFahrenheit().getValue() + CtiUtilities.FAHRENHEIT_CHARACTER);
             if (event.isHoldTemperature()) {
                 logMsg.append(" (HOLD)");
             }
@@ -398,6 +402,25 @@ public class ThermostatServiceImpl implements ThermostatService {
     public String getThermostatNameFromId(int thermostatId) {
         Thermostat thermo =  inventoryDao.getThermostatById(thermostatId);
         return thermo.getLabel();
+    }
+    
+    @Override
+    public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModes(YukonEnergyCompany yukonEnergyCompany){
+        Set<ThermostatScheduleMode> allowedModes = Sets.newHashSet();
+        
+        for(ThermostatScheduleMode mode : ThermostatScheduleMode.values()){
+          //check to see if this mode is allowed by the energy company
+            if(energyCompanyRolePropertyDao.getPropertyBooleanValue(mode.getAssociatedRoleProperty(), yukonEnergyCompany)){
+                allowedModes.add(mode);
+            }
+        }
+        return allowedModes;
+    }
+    
+    @Override
+    public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModesByAccountId(int accountId) {
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
+        return getAllowedThermostatScheduleModes(yukonEnergyCompany);
     }
     
     // DI Setters
@@ -440,5 +463,9 @@ public class ThermostatServiceImpl implements ThermostatService {
     public void setCommandServiceFactory(CommandServiceFactory commandServiceFactory) {
         this.commandServiceFactory = commandServiceFactory;
     }
-    
+
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
 }

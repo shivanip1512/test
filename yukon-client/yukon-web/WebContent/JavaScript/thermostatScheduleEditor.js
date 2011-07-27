@@ -45,7 +45,7 @@ Yukon.ThermostatScheduleEditor = {
     
     celsiusToSafeCelsius: function(celsius) {
         //ensure we have 0.5 accurracy
-        return parseFloat(Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(celsuis).toFixed(1));
+        return parseFloat(Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(celsius).toFixed(1));
     },
     
     
@@ -244,8 +244,10 @@ Yukon.ThermostatScheduleEditor = {
             $("createSchedule_body").select(".schedule_editor").each(function(elem){
                 if(!elem.hasClassName(input.value)){
                     elem.hide();
+                    elem.removeClassName("active");
                 }else{
                     elem.show();
+                    elem.addClassName("active");
                 }
             });
         });
@@ -256,36 +258,17 @@ Yukon.ThermostatScheduleEditor = {
             var mode = ourForm.down("input[name=thermostatScheduleMode]").value;
             var recForm = $("createSchedule").down('.'+ mode +' form');
             
-            if(recForm != null){
-                var days = ourForm.select(".day");
-                var defaultDays = recForm.down(".day");
-                for(var i=0; i<days.length; i++){
-                    var timeOfWeek = recForm.down("." + days[i].down("input[name=timeOfWeek]").value);
-                    
-                    //copy values over
-                    var times = days[i].select("input[name=secondsFromMidnight]");
-                    var defaultTimes = defaultDays.select("input[name=secondsFromMidnight]");
-                    for(var j=0; j<times.length; j++){
-                        times[j].value = defaultTimes[j].getAttribute("defaultValue");
-                    }
-                    
-                    var heatTemps = days[i].select("input[name=heat_F]");
-                    var defaultHeatTemps = defaultDays.select("input[name=heat_F]");
-                    for(var j=0; j<heatTemps.length; j++){
-                        heatTemps[j].value = defaultHeatTemps[j].getAttribute("defaultValue");
-                    }
-                    
-                    var coolTemps = days[i].select("input[name=cool_F]");
-                    var defaultCoolTemps = defaultDays.select("input[name=cool_F]");
-                    for(var j=0; j<coolTemps.length; j++){
-                        coolTemps[j].value = defaultCoolTemps[j].getAttribute("defaultValue");
-                    }
-                }
-                
-                //render times and temps
-                Yukon.ThermostatScheduleEditor.renderTime();
-                Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor._private.currentUnit]();
-            }
+            Yukon.ThermostatScheduleEditor.resetDefaults({ourForm:ourForm, recForm:recForm});
+            
+        });
+        
+        YEvent.observeSelectorClick(".createDefault", function(e){
+            //find 'recommended schedule in the create popup
+            var ourForm = $("createSchedule").down(".schedule_editor.active");
+            var mode = ourForm.down("input[name=thermostatScheduleMode]").value;
+            var recForm = $("createSchedule").down('.'+ mode +' form');
+            
+            Yukon.ThermostatScheduleEditor.resetDefaults({ourForm:ourForm, recForm:recForm});
             
         });
         
@@ -300,6 +283,39 @@ Yukon.ThermostatScheduleEditor = {
         //show the schedules
         $$(".schedule").invoke('removeClassName', "vh");
         $$(".schedule_editor").invoke('removeClassName', "vh");
+    },
+    
+    resetDefaults: function(args){
+        if(args.recForm != null){
+            var days = args.ourForm.select(".day");
+            var defaultDays = args.recForm.down(".day");
+            for(var i=0; i<days.length; i++){
+                var timeOfWeek = args.recForm.down("." + days[i].down("input[name=timeOfWeek]").value);
+                
+                //copy values over
+                var times = days[i].select("input[name=secondsFromMidnight]");
+                var defaultTimes = defaultDays.select("input[name=secondsFromMidnight]");
+                for(var j=0; j<times.length; j++){
+                    times[j].value = defaultTimes[j].getAttribute("defaultValue");
+                }
+                
+                var heatTemps = days[i].select("input[name=heat_F]");
+                var defaultHeatTemps = defaultDays.select("input[name=heat_F]");
+                for(var j=0; j<heatTemps.length; j++){
+                    heatTemps[j].value = defaultHeatTemps[j].getAttribute("defaultValue");
+                }
+                
+                var coolTemps = days[i].select("input[name=cool_F]");
+                var defaultCoolTemps = defaultDays.select("input[name=cool_F]");
+                for(var j=0; j<coolTemps.length; j++){
+                    coolTemps[j].value = defaultCoolTemps[j].getAttribute("defaultValue");
+                }
+            }
+            
+            //render times and temps
+            Yukon.ThermostatScheduleEditor.renderTime();
+            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor._private.currentUnit]();
+        }
     },
     
     prepForm: function(form) {
@@ -369,10 +385,6 @@ Yukon.ThermostatScheduleEditor = {
         case KEYDOWN:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
                 value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value - 0.5);
-                if(value != Yukon.ThermostatScheduleEditor.celsiusToSafeCelsius(value)){
-                    //take off another half degree
-                    value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value-0.5);
-                }
             }else {
                 value = value-1;
             }
@@ -417,9 +429,15 @@ Yukon.ThermostatScheduleEditor = {
         if(_self._private.currentUnit == 'C'){
             var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(start);
             start = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            if(start < c){
+                start += 0.5;
+            }
             
             c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(end);
             end = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            if(end > c){
+                end -= 0.5;
+            }
             TEMP_SLIDER.increment = 0.5;
             startLabel = start.toFixed(1);
             endLabel = end.toFixed(1);
@@ -477,7 +495,7 @@ Yukon.ThermostatScheduleEditor = {
         //convert the value to fahrenheit scale
         if(_self._private.currentUnit == 'C'){
             //only .5 increments are allowed
-            value_F = Yukon.ThermostatScheduleEditor.celsiusToFahrenheit(start);
+            value_F = Yukon.ThermostatScheduleEditor.celsiusToFahrenheit(value);
             input.value = _self.celsiusToSafeCelsius(value).toFixed(1);
         }else {
             input.value = parseInt(value_F);
@@ -582,9 +600,6 @@ Yukon.ThermostatScheduleEditor = {
         CURRENT_TIME_INPUT = this;
         TIME_SLIDER.options.range.start = startSeconds/60;
         TIME_SLIDER.options.range.end = endSeconds/60;
-        
-        debug("start: "+TIME_SLIDER.options.range.start);
-        debug("end: "+TIME_SLIDER.options.range.end);
         
         TIME_SLIDER.setValue(startingValueSeconds/60);
         

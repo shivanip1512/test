@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.temperature.FahrenheitTemperature;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -142,8 +141,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
           AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
           entry.setAccountThermostatScheduleId(ats.getAccountThermostatScheduleId());
           entry.setTimeOfWeek(TimeOfWeek.valueOf(period.getString("timeOfWeek")));
-          entry.setCoolTemp(new FahrenheitTemperature(period.getDouble("cool_F")));
-          entry.setHeatTemp(new FahrenheitTemperature(period.getDouble("heat_F")));
+          entry.setCoolTemp(Temperature.fromFahrenheit(period.getDouble("cool_F")));
+          entry.setHeatTemp(Temperature.fromFahrenheit(period.getDouble("heat_F")));
           entry.setStartTime(period.getInt("secondsFromMidnight"));
           entries.add(entry);
 	    }
@@ -154,8 +153,10 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	}
 	
 	@Override
-    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, 
-                                                                          SchedulableThermostatType schedulableThermostatType, ThermostatScheduleMode thermostatMode, 
+    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString,
+                                                                          int accountThermostatScheduleId, 
+                                                                          SchedulableThermostatType schedulableThermostatType,
+                                                                          ThermostatScheduleMode thermostatMode, 
                                                                           boolean isFahrenheit) {
 
 		JSONObject scheduleObject = JSONObject.fromObject(jsonString);
@@ -191,13 +192,14 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
                     // Convert celsius temp to fahrenheit if needed
                     if (!isFahrenheit) {
-                        coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
-                        heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
+                        entry.setCoolTemp(Temperature.fromCelsius(coolTemp));
+                        entry.setHeatTemp(Temperature.fromCelsius(heatTemp));
+                    }else{
+                        entry.setCoolTemp(Temperature.fromFahrenheit(coolTemp));
+                        entry.setHeatTemp(Temperature.fromFahrenheit(heatTemp));
                     }
 
                     entry.setStartTime(timeMinutes * 60); // stored as seconds in DB
-                    entry.setCoolTemp(new FahrenheitTemperature(coolTemp));
-                    entry.setHeatTemp(new FahrenheitTemperature(heatTemp));
                 }
 
                 atsEntries.add(entry);
@@ -225,13 +227,13 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
             // -1
             AccountThermostatScheduleEntry firstEntry = entryList.get(0);
             firstEntry.setStartTime(0);
-            firstEntry.setCoolTemp(new FahrenheitTemperature(-1));
-            firstEntry.setHeatTemp(new FahrenheitTemperature(-1));
+            firstEntry.setCoolTemp(Temperature.fromFahrenheit(-1));
+            firstEntry.setHeatTemp(Temperature.fromFahrenheit(-1));
             
             AccountThermostatScheduleEntry secondEntry = entryList.get(1);
             secondEntry.setStartTime(0);
-            secondEntry.setCoolTemp(new FahrenheitTemperature(-1));
-            secondEntry.setHeatTemp(new FahrenheitTemperature(-1));
+            secondEntry.setCoolTemp(Temperature.fromFahrenheit(-1));
+            secondEntry.setHeatTemp(Temperature.fromFahrenheit(-1));
         }
     }
 	

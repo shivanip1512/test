@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -140,7 +140,7 @@ public class ThermostatManualController extends AbstractThermostatController {
 	                                String mode,
 	                                String fan, 
 	                                String temperatureUnit,
-	                                Integer temperature,
+	                                Integer temperatureValue,
 	                                YukonUserContext userContext,
 	                                HttpServletRequest request, 
 	                                ModelMap map) {
@@ -165,11 +165,11 @@ public class ThermostatManualController extends AbstractThermostatController {
         boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
         ThermostatManualEventResult result = null;
-        FahrenheitTemperature temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
+        Temperature temperature = thermostatService.getTempOrDefault(temperatureValue, temperatureUnit);
         
         //Validate temperature for mode and thermostat type
         if(needsTempValidation) {
-            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIds, temperatureInF, thermostatMode);
+            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIds, temperature, thermostatMode);
             
             if(limitMessage != null) {
                 map.addAttribute("message", "yukon.dr.consumer.manualevent.result.CONSUMER_" + limitMessage.name());
@@ -180,7 +180,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         if(isValid) {
             boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
             String key = "yukon.dr.consumer.manualevent.result.CONSUMER_";
-            result = thermostatService.setupAndExecuteManualEvent(thermostatIds, hold, runProgram, temperatureInF, temperatureUnit, mode, fan, account, userContext);
+            result = thermostatService.setupAndExecuteManualEvent(thermostatIds, hold, runProgram, temperature, temperatureUnit, mode, fan, account, userContext);
             if (result.isFailed()) {
                 if (thermostatIds.size() > 1) {
                     key += "MULTIPLE_ERROR";

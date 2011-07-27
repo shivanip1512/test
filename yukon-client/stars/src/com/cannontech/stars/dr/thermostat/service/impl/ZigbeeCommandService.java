@@ -121,7 +121,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             }
         }
         
-        return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
+        return ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
     }
     
     private String buildHexNodeId(Thermostat stat) {

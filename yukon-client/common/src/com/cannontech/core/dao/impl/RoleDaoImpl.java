@@ -178,6 +178,7 @@ public class RoleDaoImpl implements RoleDao {
           return null;
     }
 
+    @Deprecated
     public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) {
         
         newVal = SqlUtils.convertStringToDbValue(newVal);

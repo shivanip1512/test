@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
@@ -11,7 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -29,7 +29,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.AbstractCommandExecutionService;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 
 public class ExpressComCommandService extends AbstractCommandExecutionService {
     
@@ -53,7 +53,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
                                  Thermostat stat, 
                                  LiteYukonUser user) {
         
-        ThermostatScheduleUpdateResult result = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
+        ThermostatScheduleUpdateResult result = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
         for (TimeOfWeek timeOfWeek : mode.getAssociatedTimeOfWeeks()) {
             ThermostatScheduleUpdateResult tempResult = sendSchedulePart(account, ats, stat.getId(), timeOfWeek, mode, user);
             if (tempResult.isFailed()) {
@@ -95,7 +95,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
         saveAndLogUpdateEvent(account, ats, timeOfWeek, stat, user);
 
-        return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
+        return ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
     }
     
     /**
@@ -141,8 +141,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
                         ThermostatScheduleMode mode) {
 
         
-        Multimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = ats.getEntriesByTimeOfWeekMultimap();
-        ArrayList<AccountThermostatScheduleEntry> entries = new ArrayList<AccountThermostatScheduleEntry>(entriesByTimeOfWeekMap.get(timeOfWeek));
+        ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = ats.getEntriesByTimeOfWeekMultimap();
+        List<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
 
         StringBuilder command = new StringBuilder();
         command.append("putconfig xcom schedule ");
@@ -160,8 +160,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
             AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
             LocalTime startTime = entry.getStartTimeLocalTime();
 
-            FahrenheitTemperature coolTemp = entry.getCoolTemp().toFahrenheit();
-            FahrenheitTemperature heatTemp = entry.getHeatTemp().toFahrenheit();
+            Temperature coolTemp = entry.getCoolTemp();
+            Temperature heatTemp = entry.getHeatTemp();
 
             if (period.isPsuedo()) {
                 // sending two time/temp values
@@ -173,8 +173,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
                 
                 String startTimeString = startTime.toString("HH:mm");
                 command.append(startTimeString + ",");
-                command.append(heatTemp.toIntValue() + ",");
-                command.append(coolTemp.toIntValue());
+                command.append(heatTemp.toFahrenheit().toIntValue() + ",");
+                command.append(coolTemp.toFahrenheit().toIntValue());
             }
             
             // No trailing comma on the last season entry cool temp
@@ -211,7 +211,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
             command.append(" run");
         } else {
             // Set manual values
-            FahrenheitTemperature temperature = event.getPreviousTemperature();
+            Temperature temperature = event.getPreviousTemperature();
             
             if (HardwareType.UTILITY_PRO.equals(thermostat.getType()) 
                     && mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT) {
@@ -227,7 +227,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
                 command.append(" temp ");
             }
             
-            command.append(temperature);
+            command.append(temperature.toFahrenheit().toIntValue());
 
             ThermostatFanState fanState = event.getFanState();
             if (fanState != null) {

@@ -25,12 +25,12 @@
     Event.observe(window, 'load', function(){
         Yukon.ThermostatScheduleEditor.init({
             currentUnit: '${temperatureUnit}',
-            upperHeatF: parseFloat(${schedule.thermostatType.upperLimitHeatInFahrenheit.value}),
-            lowerHeatF: parseFloat(${schedule.thermostatType.lowerLimitHeatInFahrenheit.value}),
-            upperCoolF: parseFloat(${schedule.thermostatType.upperLimitCoolInFahrenheit.value}),
-            lowerCoolF: parseFloat(${schedule.thermostatType.lowerLimitCoolInFahrenheit.value}),
-            secondsResolution: ${schedule.thermostatType.resolutionInSeconds},
-            secondsBetweenPeriods: ${schedule.thermostatType.minimumTimeBetweenPeriodsInSeconds}
+            upperHeatF: parseFloat(${schedule.thermostatType.upperLimitHeat.value}),
+            lowerHeatF: parseFloat(${schedule.thermostatType.lowerLimitHeat.value}),
+            upperCoolF: parseFloat(${schedule.thermostatType.upperLimitCool.value}),
+            lowerCoolF: parseFloat(${schedule.thermostatType.lowerLimitCool.value}),
+            secondsResolution: ${schedule.thermostatType.resolution.standardSeconds},
+            secondsBetweenPeriods: ${schedule.thermostatType.minimumTimeBetweenPeriods.standardSeconds}
         });
     });
     </script>

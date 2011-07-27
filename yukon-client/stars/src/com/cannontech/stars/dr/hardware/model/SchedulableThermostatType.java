@@ -2,8 +2,10 @@ package com.cannontech.stars.dr.hardware.model;
 
 import java.util.Set;
 
+import org.joda.time.Duration;
+
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
@@ -12,10 +14,10 @@ import com.google.common.collect.Sets;
 public enum SchedulableThermostatType {
 
 	RESIDENTIAL_EXPRESSSTAT(HardwareType.EXPRESSSTAT,
-                            45, 88,
-                            45, 88,
-                            900,
-                            900,
+                            Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
+                            Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
+                            Duration.standardMinutes(15),
+                            Duration.standardMinutes(15),
                             ThermostatSchedulePeriodStyle.FOUR_TIMES,
                             Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
                                                   ThermostatScheduleMode.ALL),
@@ -23,10 +25,10 @@ public enum SchedulableThermostatType {
                                                   ThermostatFanState.ON)
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
-	                      45, 88, 
-	                      45, 88,
-	                      900,
-	                      900,
+	                      Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88), 
+	                      Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
+	                      Duration.standardMinutes(15),
+	                      Duration.standardMinutes(15),
 	                      ThermostatSchedulePeriodStyle.FOUR_TIMES,
 	                      Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
 	                                            ThermostatScheduleMode.ALL),
@@ -34,10 +36,10 @@ public enum SchedulableThermostatType {
                                                 ThermostatFanState.ON)
 	),
     COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
-                           45, 88,
-                           45, 88,
-                           900,
-                           900,
+                           Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
+                           Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
+                           Duration.standardMinutes(15),
+                           Duration.standardMinutes(15),
                            ThermostatSchedulePeriodStyle.TWO_TIMES,
                            Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
                                                  ThermostatScheduleMode.ALL),
@@ -45,10 +47,10 @@ public enum SchedulableThermostatType {
                                                  ThermostatFanState.ON)
     ),
 	UTILITY_PRO(HardwareType.UTILITY_PRO,
-				50, 99, //yes, you read it right. Cool has higher upper-limit than Heat, and Heat has a lower lower-limit than Cool. Go ask a Honeywell device engineer.
-				40, 90,
-				900,
-				900,
+				Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
+				Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
+				Duration.standardMinutes(15),
+				Duration.standardMinutes(15),
 				ThermostatSchedulePeriodStyle.FOUR_TIMES,
 				Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
 				                      ThermostatScheduleMode.ALL, 
@@ -58,10 +60,10 @@ public enum SchedulableThermostatType {
                                       ThermostatFanState.ON)
 	),
 	UTILITY_PRO_G2(HardwareType.UTILITY_PRO_G2,
-                   50, 99,
-                   40, 90,
-                   900,
-                   900,
+                   Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
+                   Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
+                   Duration.standardMinutes(15),
+                   Duration.standardMinutes(15),
                    ThermostatSchedulePeriodStyle.FOUR_TIMES,
                    Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN,
                                          ThermostatScheduleMode.ALL,
@@ -72,10 +74,10 @@ public enum SchedulableThermostatType {
                                          ThermostatFanState.ON)
     ),
     UTILITY_PRO_G3(HardwareType.UTILITY_PRO_G3,
-                   50, 99,
-                   40, 90,
-                   900,
-                   900,
+                   Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
+                   Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
+                   Duration.standardMinutes(15),
+                   Duration.standardMinutes(15),
                    ThermostatSchedulePeriodStyle.FOUR_TIMES,
                    Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
                                          ThermostatScheduleMode.ALL, 
@@ -86,10 +88,10 @@ public enum SchedulableThermostatType {
                                          ThermostatFanState.ON)
     ),
 	UTILITY_PRO_ZIGBEE(HardwareType.UTILITY_PRO_ZIGBEE,
-	                   50, 99,
-	                   40, 90,
-	                   900,
-	                   900,
+	                   Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
+	                   Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
+	                   Duration.standardMinutes(15),
+	                   Duration.standardMinutes(15),
 	                   ThermostatSchedulePeriodStyle.FOUR_TIMES,
 	                   Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
 	                                         ThermostatScheduleMode.ALL, 
@@ -102,32 +104,32 @@ public enum SchedulableThermostatType {
 	;
 	
 	private HardwareType hardwareType;
-	private FahrenheitTemperature lowerLimitCoolInFahrenheit;
-	private FahrenheitTemperature upperLimitCoolInFahrenheit;
-	private FahrenheitTemperature lowerLimitHeatInFahrenheit;
-	private FahrenheitTemperature upperLimitHeatInFahrenheit;
-	private int resolutionInSeconds;
-	private int minimumTimeBetweenPeriodsInSeconds;
+	private Temperature lowerLimitCool;
+	private Temperature upperLimitCool;
+	private Temperature lowerLimitHeat;
+	private Temperature upperLimitHeat;
+	private Duration resolution;
+	private Duration minimumTimeBetweenPeriods;
 	private Set<ThermostatScheduleMode> supportedScheduleModes;
 	private Set<ThermostatFanState> supportedFanStates;
 	private final ThermostatSchedulePeriodStyle periodStyle;
 	
 	SchedulableThermostatType(HardwareType hardwareType,
-							  int lowerLimitCoolInFahrenheit, int upperLimitCoolInFahrenheit,
-							  int lowerLimitHeatInFahrenheit, int upperLimitHeatInFahrenheit,
-							  int resoultionInSeconds,
-							  int minimumTimeBetweenPeriodsInSeconds,
+							  Temperature lowerLimitCool, Temperature upperLimitCool,
+							  Temperature lowerLimitHeat, Temperature upperLimitHeat,
+							  Duration resoultion,
+							  Duration minimumTimeBetweenPeriods,
 							  ThermostatSchedulePeriodStyle periodStyle,
 							  Set<ThermostatScheduleMode> supportedScheduleModes,
 							  Set<ThermostatFanState> supportedFanStates) {
 		
 		this.hardwareType = hardwareType;
-		this.lowerLimitCoolInFahrenheit = new FahrenheitTemperature(lowerLimitCoolInFahrenheit);
-		this.upperLimitCoolInFahrenheit = new FahrenheitTemperature(upperLimitCoolInFahrenheit);
-		this.lowerLimitHeatInFahrenheit = new FahrenheitTemperature(lowerLimitHeatInFahrenheit);
-		this.upperLimitHeatInFahrenheit = new FahrenheitTemperature(upperLimitHeatInFahrenheit);
-		this.resolutionInSeconds = resoultionInSeconds;
-		this.minimumTimeBetweenPeriodsInSeconds = minimumTimeBetweenPeriodsInSeconds;
+		this.lowerLimitCool = lowerLimitCool;
+		this.upperLimitCool = upperLimitCool;
+		this.lowerLimitHeat = lowerLimitHeat;
+		this.upperLimitHeat = upperLimitHeat;
+		this.resolution = resoultion;
+		this.minimumTimeBetweenPeriods = minimumTimeBetweenPeriods;
 		this.periodStyle = periodStyle;
 		this.supportedScheduleModes = supportedScheduleModes;
 		this.supportedFanStates = supportedFanStates;
@@ -143,7 +145,8 @@ public enum SchedulableThermostatType {
 	
 	/**
 	 * Modes that this thermostat type supports.
-	 * Note: Utility Pro <i>supports</i> WEEKDAY_WEEKEND, however there is a role property that is  used to determine if the option is made available in the UI (ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2).
+	 * Note: Utility Pro <i>supports</i> WEEKDAY_WEEKEND, however, there are energycompany role properties for each schedule mode to
+	 * determine availability of the schedule in the UI
 	 */
 	public Set<ThermostatScheduleMode> getSupportedScheduleModes() {
 		return supportedScheduleModes;
@@ -154,56 +157,54 @@ public enum SchedulableThermostatType {
 	}
 	
 	/**
-	 * Modes that this thermostat type supports minus modes disallowed by the energy company
-	 * @param yukonEnergyCompany
-	 * @return
+	 * The intersection of modes allowed by this SchedulableThermostatType and the set of modes allowed by an EnergyCompany
 	 */
 	public Set<ThermostatScheduleMode> getAllowedModes(Set<ThermostatScheduleMode> allModesAllowedByEnergyCompany) {
 	    //we want a subset of supported schedule modes
 	    return Sets.intersection(supportedScheduleModes, allModesAllowedByEnergyCompany);
 	}
 		
-	public FahrenheitTemperature getLowerLimitCoolInFahrenheit() {
-		return lowerLimitCoolInFahrenheit;
+	public Temperature getLowerLimitCool() {
+		return lowerLimitCool;
 	}
-	public FahrenheitTemperature getUpperLimitCoolInFahrenheit() {
-		return upperLimitCoolInFahrenheit;
+	public Temperature getUpperLimitCool() {
+		return upperLimitCool;
 	}
-	public FahrenheitTemperature getLowerLimitHeatInFahrenheit() {
-		return lowerLimitHeatInFahrenheit;
+	public Temperature getLowerLimitHeat() {
+		return lowerLimitHeat;
 	}
-	public FahrenheitTemperature getUpperLimitHeatInFahrenheit() {
-		return upperLimitHeatInFahrenheit;
-	}
-	
-	public FahrenheitTemperature getLowerLimitInFahrenheit(HeatCoolSettingType heatCoolSettingType){
-	    if(heatCoolSettingType == HeatCoolSettingType.HEAT) {
-	        return getLowerLimitHeatInFahrenheit();
-	    } else if(heatCoolSettingType == HeatCoolSettingType.COOL) {
-	        return getLowerLimitCoolInFahrenheit();
-	    } else {
-	        //HeatCoolSetting == OTHER.  Nothing we can do with this.
-	        throw new IllegalArgumentException("HeatCoolSettingType must be HEAT or COOL.");
-	    }
+	public Temperature getUpperLimitHeat() {
+		return upperLimitHeat;
 	}
 	
-	public FahrenheitTemperature getUpperLimitInFahrenheit(HeatCoolSettingType heatCoolSettingType){
-	    if(heatCoolSettingType == HeatCoolSettingType.HEAT) {
-	        return getUpperLimitHeatInFahrenheit();
-	    } else if(heatCoolSettingType == HeatCoolSettingType.COOL) {
-	        return getUpperLimitCoolInFahrenheit();
-	    }else {
+	public Temperature getLowerLimit(HeatCoolSettingType heatCoolSettingType){
+        if(heatCoolSettingType == HeatCoolSettingType.HEAT) {
+            return getLowerLimitHeat();
+        } else if(heatCoolSettingType == HeatCoolSettingType.COOL) {
+            return getLowerLimitCool();
+        } else {
+            //HeatCoolSetting == OTHER.  Nothing we can do with this.
+            throw new IllegalArgumentException("HeatCoolSettingType must be HEAT or COOL.");
+        }
+    }
+    
+    public Temperature getUpperLimit(HeatCoolSettingType heatCoolSettingType){
+        if(heatCoolSettingType == HeatCoolSettingType.HEAT) {
+            return getUpperLimitHeat();
+        } else if(heatCoolSettingType == HeatCoolSettingType.COOL) {
+            return getUpperLimitCool();
+        }else {
             //HeatCoolSetting == OTHER.  Nothing we can do with this.
             throw new IllegalArgumentException("HeatCoolSettingType must be HEAT or COOL.");
         }
     }
 	
-	public int getResolutionInSeconds() {
-	    return this.resolutionInSeconds;
+	public Duration getResolution() {  
+	    return this.resolution;
 	}
 	
-	public int getMinimumTimeBetweenPeriodsInSeconds() {
-	    return this.minimumTimeBetweenPeriodsInSeconds;
+	public Duration getMinimumTimeBetweenPeriods() {
+	    return this.minimumTimeBetweenPeriods;
 	}
 	
 	public ThermostatScheduleMode getDefaultThermostatScheduleMode() {
