@@ -199,7 +199,9 @@ public class OperatorCallTrackingController {
     }
     
     private void setupCallReportModel(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext, Integer callId) {
-        
+
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
         boolean shouldAutoGenerateCallNumber = shouldAutoGenerateCallNumber(userContext.getYukonUser());
