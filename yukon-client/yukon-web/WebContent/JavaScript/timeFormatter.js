@@ -54,7 +54,7 @@ TimeFormatter.prototype = {
     parseTime: function(time) {
 
         // Make sure the time string is a valid time (ex: 12:30 PM)     
-        var exp = /^([0]*[1-9]|[1][0-2])([:][0-5][0-9]){0,1}\s{0,1}([AaPp][Mm]){0,1}$/;
+        var exp = /^([0]*[1-9]|[1][0-2])([:][0-5][0-9]){0,1}\s{0,1}([AaPp][Mm])$/;
         
         if(!exp.test(time)) {
             return -1;
