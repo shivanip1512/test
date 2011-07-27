@@ -75,6 +75,11 @@
             <tag name="MCT_300_SERIES"/>
         </tags>
     </pao>
+    <pao id="DB_EDITOR_INCOMPATIBLE_TAG" abstract="true">
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        </tags>
+    </pao>
 
     <pao id="SUPPORTS_MCT_DISCONNECT" abstract="true">  <!--  Ability to disconnect through collar device -->
         <points>
@@ -3124,6 +3129,7 @@
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>1-4096</value>
             </tag>
+            <tag name="DB_EDITOR_INCOMPATIBLE"/>
         </tags>
     </pao>
     
@@ -6137,6 +6143,9 @@
                 <basicLookup point="Commissioned State" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        </tags>
     </pao>
 
     <pao id="DIGIGATEWAY">
@@ -6161,6 +6170,9 @@
                 <basicLookup point="Commissioned State" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        </tags>
     </pao>
     
 </paoDefinitions>
