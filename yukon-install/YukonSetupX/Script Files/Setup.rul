@@ -158,7 +158,7 @@ begin
     			"Yes", bOptYes,
     			"No", bOptNo);
     if(bOptYes) then
-    	sProg = WINDIR ^ "notepad.exe";
+    	sProg = "notepad.exe";
         sCMD = TARGETDIR ^ "\\Server\\Config\\master.cfg";
         LongPathToQuote(sCMD, TRUE);
         LaunchAppAndWait(sProg, sCMD, LAAW_OPTION_WAIT);
