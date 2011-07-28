@@ -42,6 +42,9 @@ public class ECUtils {
      * Get all the energy companies that the energy company 
      * belongs to (directly or indirectly), including itself
      *
+     * This method returns a list of energy companies starting with the child energy company and ending
+     * with the energy company right below the default energy company. 
+     *
      * @param childEC
      * @return
      */	
