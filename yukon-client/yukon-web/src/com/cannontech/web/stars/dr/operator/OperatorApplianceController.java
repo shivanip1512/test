@@ -442,6 +442,11 @@ public class OperatorApplianceController {
     }
 
     @Autowired
+    public void setProgramDao(ProgramDao programDao) {
+        this.programDao = programDao;
+    }
+    
+    @Autowired
     public void setStarsApplianceDao(StarsApplianceDao starsApplianceDao) {
         this.starsApplianceDao = starsApplianceDao;
     }
