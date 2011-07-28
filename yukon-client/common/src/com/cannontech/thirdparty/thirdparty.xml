@@ -12,10 +12,11 @@
         This file defines beans that live under the com.cannontech.thirdparty package
     </description>
 
-    <bean id="zigbeeWebService" class="com.cannontech.thirdparty.service.impl.DigiWebServiceImpl"/>
-    <bean id="digiXMLBuilder" class="com.cannontech.thirdparty.service.impl.DigiXMLBuilder"/>
-    <bean id="digiResponseHandler" class="com.cannontech.thirdparty.service.impl.DigiResponseHandler"/>
-        
+    <bean class="com.cannontech.thirdparty.digi.service.impl.DigiWebServiceImpl"/>
+    
+    <bean id="digiXMLBuilder" class="com.cannontech.thirdparty.digi.service.impl.DigiXMLBuilder"/>
+    <bean id="digiResponseHandler" class="com.cannontech.thirdparty.digi.service.impl.DigiResponseHandler"/>
+
     <bean id="digiControlMessageHandler" class="com.cannontech.thirdparty.digi.DigiControlMessageHandler"/>
 
     <bean id="gatewayCreationProvider" class="com.cannontech.thirdparty.digi.dao.provider.GatewayCreationProvider"/>
@@ -26,16 +27,15 @@
     <bean id="zigbeeControlEventDao" class="com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDaoImpl"/>
     
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-    <constructor-arg>
-        <bean class="com.cannontech.thirdparty.digi.DigiClientHttpRequestFactory"/>
-    </constructor-arg>
-    <property name="errorHandler" ref="digiErrorHandler"/>
-    <property name="messageConverters">
-        <list>
-            <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
-            <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-        </list>
-    </property>
+        <constructor-arg>
+            <bean class="com.cannontech.thirdparty.digi.DigiClientHttpRequestFactory"/>
+        </constructor-arg>
+        <property name="errorHandler" ref="digiErrorHandler"/>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            </list>
+        </property>
     </bean>
     
     <bean id="digiErrorHandler" class="com.cannontech.thirdparty.digi.DigiErrorHandler"/>

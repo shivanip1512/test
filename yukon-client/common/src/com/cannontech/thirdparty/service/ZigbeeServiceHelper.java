@@ -10,16 +10,20 @@ import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.PointState;
 
+/**
+ * Helper service to hold some common functions across ZigBee services
+ * 
+ */
 public class ZigbeeServiceHelper {
     private AttributeService attributeService;
     private SimplePointAccessDao simplePointAccessDao;
     
-    public void sendPointStatusUpdate(YukonDevice zigbeeDevice, BuiltInAttribute attribute, PointState pointState) {
-        sendPointStatusUpdate(zigbeeDevice,new Instant(), attribute, pointState);
+    public void sendPointStatusUpdate(YukonDevice device, BuiltInAttribute attribute, PointState pointState) {
+        sendPointStatusUpdate(device,new Instant(), attribute, pointState);
     }
     
-    public void sendPointStatusUpdate(YukonDevice zigbeeDevice, Instant lastTime, BuiltInAttribute attribute, PointState pointState) {
-        LitePoint point = attributeService.getPointForAttribute(zigbeeDevice, attribute);
+    public void sendPointStatusUpdate(YukonDevice device, Instant lastTime, BuiltInAttribute attribute, PointState pointState) {
+        LitePoint point = attributeService.getPointForAttribute(device, attribute);
         simplePointAccessDao.setPointValue(point, lastTime.toDate(), pointState);
     }
     

@@ -16,6 +16,8 @@
 
 package com.cannontech.common.util.xml;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +35,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.transform.JDOMSource;
 import org.joda.time.Instant;
@@ -404,20 +407,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
                 DOMSource domSource = (DOMSource) context;
                 return xpath.evaluate(expression, domSource.getNode(), returnType);
             }
-            else if (context instanceof StreamSource) {
-                StreamSource streamSource = (StreamSource) context;
-                InputSource inputSource;
-                if (streamSource.getInputStream() != null) {
-                    inputSource = new InputSource(streamSource.getInputStream());
-                }
-                else if (streamSource.getReader() != null) {
-                    inputSource = new InputSource(streamSource.getReader());
-                }
-                else {
-                    throw new IllegalArgumentException("StreamSource contains neither InputStream nor Reader");
-                }
-                return xpath.evaluate(expression, inputSource, returnType);
-            }
             else {
                 throw new IllegalArgumentException("context type unknown");
             }
@@ -455,4 +444,20 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
     }
 
+    public void setContext(String rawXml) {
+        StringReader reader = new StringReader(rawXml);
+
+        SAXBuilder builder = new SAXBuilder();
+        org.jdom.Document document;
+        
+        try {
+            document = builder.build(reader);
+        } catch (JDOMException e) {
+            throw new XPathException("JDOMException while building the Souce object");
+        } catch (IOException e) {
+            throw new XPathException("IOException while building the Souce object");
+        }
+        this.context = new JDOMSource(document);
+    }
+    
 }

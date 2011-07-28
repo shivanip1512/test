@@ -1,12 +1,9 @@
-package com.cannontech.thirdparty.service.impl;
+package com.cannontech.thirdparty.digi.service.impl;
 
-import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.annotation.PostConstruct;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -28,12 +25,10 @@ import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiEmptyDeviceCoreResultException;
+import com.cannontech.thirdparty.digi.exception.DigiGatewayCommissionException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.exception.DigiEmptyDeviceCoreResultException;
-import com.cannontech.thirdparty.exception.DigiEndPointDisconnectedException;
-import com.cannontech.thirdparty.exception.DigiGatewayDisconnectedException;
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
-import com.cannontech.thirdparty.exception.GatewayCommissionException;
 import com.cannontech.thirdparty.exception.ZCLStatus;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
@@ -42,11 +37,13 @@ import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
+import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
+import com.google.common.collect.Lists;
 
-public class DigiWebServiceImpl implements ZigbeeWebService {
+public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterService {
 
-    private static final Logger logger = YukonLogManager.getLogger(DigiWebServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
 
     private RestOperations restTemplate;
     private GatewayDeviceDao gatewayDeviceDao;
@@ -58,7 +55,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     private ZigbeeEventLogService zigbeeEventLogService;
     private PaoDao paoDao;
     
-    private static String digiBaseUrl;
+    public static String digiBaseUrl;
     
     @PostConstruct
     public void initialize() {
@@ -66,8 +63,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
     
     @Override
-    public void installGateway(int gatewayId) throws GatewayCommissionException {
-        logger.debug("-- Install Gateway Start --");
+    public void installGateway(int gatewayId) {
+        log.debug("-- Install Gateway Start --");
         
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         
@@ -79,29 +76,24 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                                                       BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                       Commissioned.COMMISSIONED);
             
-            //Update the Connection Point State
-            zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
-                                                      BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                      CommStatusState.CONNECTED);
-            
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
             
-        } catch (GatewayCommissionException e) {
-            logger.error("Caught exception in the commissioning process", e);
+        } catch (DigiGatewayCommissionException e) {
+            log.error("Caught exception in the commissioning process", e);
             //re throw
             throw e;
         }
 
         zigbeeEventLogService.zigbeeDeviceCommissioned(digiGateway.getName());
         
-        logger.debug("-- Install Gateway End --");
+        log.debug("-- Install Gateway End --");
     }
     
     @Override
     public void removeGateway(int gatewayId) {
-        logger.debug("-- Remove Gateway Start --");
+        log.debug("-- Remove Gateway Start --");
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         decommissionConnectPort(digiGateway.getDigiId());
 
@@ -117,7 +109,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         zigbeeEventLogService.zigbeeDeviceDecommissioned(digiGateway.getName());
         
-        logger.debug("-- Remove Gateway Stop --");
+        log.debug("-- Remove Gateway Stop --");
     }
     
     /**
@@ -128,13 +120,15 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
      * @param macAddress
      * @return
      */
-    private Integer commissionNewConnectPort(String macAddress) throws GatewayCommissionException {
-        logger.debug("CommissionNewConnectPort Start");
+    private Integer commissionNewConnectPort(String macAddress) throws DigiGatewayCommissionException {
+        log.debug("CommissionNewConnectPort Start");
         String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
         
-        StreamSource response;
+        String response;
         try {
-            response = restTemplate.postForObject(digiBaseUrl + "ws/DeviceCore", xml, StreamSource.class);
+            log.debug(xml);
+            response = restTemplate.postForObject(digiBaseUrl + "ws/DeviceCore", xml, String.class);
+            log.debug(response);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -147,8 +141,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         if (location == null) {
             String error = template.evaluateAsString("//error");
             if (error != null) {
-                logger.error("Failed to Provision device with MAC Address: " + macAddress);
-                throw new GatewayCommissionException(error);
+                log.error("Failed to Provision device with MAC Address: " + macAddress);
+                throw new DigiGatewayCommissionException(error);
             }
         }
         
@@ -156,15 +150,15 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         int digiId = Integer.parseInt(locationInfo[1]);
         
-        logger.info("Device successfully added with Digi Id: " + digiId);
+        log.info("Device successfully added with Digi Id: " + digiId);
         
-        logger.debug("CommissionNewConnectPort End");
+        log.debug("CommissionNewConnectPort End");
         
         return digiId;
     }
 
     private void decommissionConnectPort(int digiId) {
-        logger.debug("DecommissionNewConnectPort Start");
+        log.debug("DecommissionNewConnectPort Start");
         
         try {
             restTemplate.delete(digiBaseUrl + "ws/DeviceCore/" + digiId);
@@ -172,22 +166,24 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             throw new DigiWebServiceException(e);
         }
 
-        logger.info("Deleted " + digiId + " from Digi.");
+        log.info("Deleted " + digiId + " from Digi.");
         
-        logger.debug("DecommissionNewConnectPort End");
+        log.debug("DecommissionNewConnectPort End");
     }
 
     @Override
     public void installStat(int gatewayId, int deviceId) {
-        logger.debug("InstallStat Start");
+        log.debug("InstallStat Start");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         ZigbeeThermostat stat= zigbeeDeviceDao.getZigbeeUtilPro(deviceId);
         
         String xml = digiXMLBuilder.buildInstallStatMessage(gateway,stat);
-        StreamSource response;
+        String response;
         
         try {
-            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, StreamSource.class);
+            log.debug(xml);
+            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+            log.debug(response);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -197,7 +193,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         zigbeeEventLogService.zigbeeDeviceCommissioned(stat.getName());
         
-        logger.debug("InstallStat End");
+        log.debug("InstallStat End");
     }
     
     public void uninstallStat(int gatewayId, int deviceId) {
@@ -206,9 +202,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         String xml = digiXMLBuilder.buildUninstallStatMessage(gateway, stat);
         
-        String response;
         try {
-            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+            log.debug(xml);
+            restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -223,60 +219,20 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                                                   Commissioned.DECOMMISSIONED);
         
         zigbeeEventLogService.zigbeeDeviceDecommissioned(stat.getName());
-        
-        logger.debug(response);
     }
 
     @Override
-    public void refreshDeviceStatuses(ZigbeeDevice device) {
+    public void updateEndPointStatus(ZigbeeDevice device) {
         PaoType type = device.getPaoIdentifier().getPaoType();
         
         switch(type) {
             case ZIGBEEUTILPRO: {
-                int gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(device.getZigbeeDeviceId());
-                ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-                CommStatusState endPointState = CommStatusState.CONNECTED;
-                CommStatusState gatewayState = CommStatusState.CONNECTED;
-                
-                try {
-                    pingEndPoint(device);
-                } catch (DigiEndPointDisconnectedException e) {
-                    logger.error("Caught Exception while attempting to ping " +type + " with id: " + device.getZigbeeDeviceId(),e);
-                    endPointState = CommStatusState.DISCONNECTED;
-                    throw e;
-                } catch (DigiGatewayDisconnectedException e) {
-                    logger.error("Caught Exception while attempting to ping " +type + " with id: " + device.getZigbeeDeviceId(),e);
-                    endPointState = CommStatusState.DISCONNECTED;
-                    gatewayState = CommStatusState.DISCONNECTED;
-                    throw e;
-                } finally {
-                    
-                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                              endPointState);
-                    zigbeeServiceHelper.sendPointStatusUpdate(gateway, 
-                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                              gatewayState);
-                }
-                
+                pingEndPoint(device);
                 break;
             }
             case DIGIGATEWAY: {
-                try {
-                    //This call will send the point status values for us.
-                    refreshGateway(device);
-                } catch(DigiEmptyDeviceCoreResultException e) {
-                    String errorMsg = "Gateway not found on iDigi Account. Possibly need to re-commission.";
-                    logger.error(errorMsg);
-                    
-                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                              CommStatusState.DISCONNECTED);
-                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.ZIGBEE_LINK_STATUS, 
-                                                              Commissioned.DECOMMISSIONED);
-                    throw new DigiWebServiceException(errorMsg);
-                }
+                //This call will send the point status values for us.
+                updateGatewayStatus(device);
                 break;
             }
             default: {
@@ -287,24 +243,23 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         zigbeeEventLogService.zigbeeDeviceRefreshed(device.getName());
     }
     
-    private boolean pingEndPoint(ZigbeeDevice endPoint) {
+    private void pingEndPoint(ZigbeeDevice endPoint) {
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());
         Validate.notNull(gatewayId, "Device not assigned to a gateway, cannot send addressing configs.");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         
         String xml = digiXMLBuilder.buildReadLMAddressingForEndPoint(gateway, endPoint);
         
-        StreamSource response;
+        String response;
         try {
-            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, StreamSource.class);
+            log.debug(xml);
+            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+            log.debug(response);
         } catch(RestClientException e) {
             throw new DigiWebServiceException(e);
         }
-        
-        //Throws a web service exception if it failed.
-        digiResponseHandler.evaluatePingResponse(response);
 
-        return true;
+        digiResponseHandler.handlePingResponse(response,endPoint,gateway);
     }
     
     @Override
@@ -325,52 +280,68 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         zigbeeEventLogService.zigbeeDeviceLoadGroupAddressingSent(endPoint.getName());
     }
     
+    //public void refreshGateway(ZigbeeDevice gateway) {
     @Override
-    public void refreshGateway(ZigbeeDevice gateway) {
-        logger.debug("Refresh Gateway start");
+    public void updateGatewayStatus(ZigbeeDevice gateway) {
+        log.debug("Refresh Gateway start");
         String convertedMac = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         
         //URL for single gateway. NOT using digiId in case it has not been commissioned properly
         String url = digiBaseUrl + "ws/DeviceCore/?condition=devConnectwareId='" + convertedMac +"'";
 
-        refreshDeviceCore(url);
+        List<ZigbeeDevice> expected = Lists.newArrayList();
+        expected.add(gateway);
         
-        logger.debug("Refresh Gateway done");
+        try {
+            refreshDeviceCore(url,expected);
+        } catch (DigiEmptyDeviceCoreResultException e) {
+            String errorMsg = "Gateway not found on iDigi Account. Possibly need to re-commission.";
+            log.error(errorMsg);
+            throw new DigiWebServiceException(errorMsg);
+        }
+
+        log.debug("Refresh Gateway done");
     }
     
     @Override
-    public void refreshAllGateways() {
-        logger.debug("Refresh ALL Gateway start");
+    public void updateAllGatewayStatuses() {
+        log.debug("Refresh ALL Gateway start");
         
         //URL to load all gateways the account.
         String url = digiBaseUrl + "ws/DeviceCore/";
+        List<ZigbeeDevice> expected = gatewayDeviceDao.getAllGateways();
         
         try {
-            refreshDeviceCore(url);
+            refreshDeviceCore(url,expected);
         } catch (DigiEmptyDeviceCoreResultException e) {
             //eat the Error.. It is not REQUIRED to have a gateway
         }
         
         zigbeeEventLogService.zigbeeRefreshedAllGateways();
         
-        logger.debug("Refresh ALL Gateway done");
+        log.debug("Refresh ALL Gateway done");
     }
     
-    private void refreshDeviceCore(String url) {
-        StreamSource xml;
+    private void refreshDeviceCore(String url, List<ZigbeeDevice> expected) {
+        String xml;
         
         try {
-            xml = restTemplate.getForObject(url,StreamSource.class);
+            xml = restTemplate.getForObject(url,String.class);
         } catch(RestClientException e) {
             throw new DigiWebServiceException(e);
         }
         
-        digiResponseHandler.handleDeviceCoreResponse(xml);
+        List<Integer> updated = digiResponseHandler.handleDeviceCoreResponse(xml,expected);
+        
+        //If there were no results, toss an exception. We want this at the end so we decommission the gateway and devices.
+        if (updated.isEmpty()) {
+            throw new DigiEmptyDeviceCoreResultException("0 results from DeviceCore query.");
+        }
     }
     
     @Override
     public void sendManualAdjustment(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
-        logger.debug("Sending adjusment message to Gateway with Id: " + message.getGatewayId() 
+        log.debug("Sending adjusment message to Gateway with Id: " + message.getGatewayId() 
                      +" message: \"" + message.getMessage() +"\"");
 
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
@@ -392,10 +363,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     
     private void sendTextMessage(ZigbeeDevice gateway, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         String xml = digiXMLBuilder.buildTextMessage(gateway, message);
-        StreamSource source;
+        String source;
         
         try {
-            source = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, StreamSource.class);
+            log.debug(xml);
+            source = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -405,7 +377,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         Node errorNode = template.evaluateAsNode("//error");
         if (errorNode != null) {
-            logger.error(" Sending Text message was unsuccessful.");
+            log.error(" Sending Text message was unsuccessful.");
             
             String errorText = template.evaluateAsString("//desc");
             throw new DigiWebServiceException(errorText);
@@ -417,8 +389,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             int status = Integer.decode(statusText);
             if (status != 0) {
                 ZCLStatus zclStatus = ZCLStatus.getByValue(status);
-                logger.error(" Sending Text message was unsuccessful: " + zclStatus.getDescription());
-                logger.debug(" Gateway MAC: " + gateway.getZigbeeMacAddress());
+                log.error(" Sending Text message was unsuccessful: " + zclStatus.getDescription());
+                log.debug(" Gateway MAC: " + gateway.getZigbeeMacAddress());
                 throw new ZigbeeClusterLibraryException(zclStatus);
             }
         }
@@ -426,17 +398,16 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
 
     @Override
     public void sendSEPControlMessage(int eventId, SepControlMessage controlMessage) {
-        logger.debug("Sending SEP Control Message Start");
+        log.debug("Sending SEP Control Message Start");
         
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(controlMessage.getGroupId());
         
         String xmlSEPMessage = digiXMLBuilder.buildSEPControlMessage(eventId, gateways, controlMessage);
-        logger.debug(xmlSEPMessage);
-        
-        String response;
+        log.debug(xmlSEPMessage);
         
         try {
-            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xmlSEPMessage, String.class);
+            log.debug(xmlSEPMessage);
+            restTemplate.postForObject(digiBaseUrl + "ws/sci", xmlSEPMessage, String.class);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -444,19 +415,17 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(controlMessage.getGroupId());
         zigbeeEventLogService.zigbeeSentSepControl(pao.getPaoName());
         
-        logger.debug("XML Response to SEP Control \n " + response);
-        
-        logger.debug("Sending SEP Control Message End");
+        log.debug("Sending SEP Control Message End");
     }
     
     @Override
     public void sendSEPRestoreMessage(int eventId, SepRestoreMessage restoreMessage) {
-        logger.debug("Sending SEP Restore Message Start");
+        log.debug("Sending SEP Restore Message Start");
         String xml = digiXMLBuilder.buildSepRestore(eventId, restoreMessage);
        
-        String response;
         try {
-            response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+            log.debug(xml);
+            restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -464,44 +433,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(restoreMessage.getGroupId());
         zigbeeEventLogService.zigbeeSentSepRestore(pao.getPaoName());
         
-        logger.debug("XML Response to SEP Restore \n " + response);
-        
-        logger.debug("Sending SEP Restore Message Start");
+        log.debug("Sending SEP Restore Message Start");
         return;
-    }
-    
-    @Override
-    public void processAllDeviceNotificationsOnGateway(ZigbeeDevice gateway) throws SocketTimeoutException{
-        String zbDeviceId = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
-        String folderUrl = digiBaseUrl + "ws/data/~/" + zbDeviceId;
-        
-        StreamSource fileNameSource;
-        try {
-            fileNameSource = restTemplate.getForObject(folderUrl + "?recursive=no", StreamSource.class);
-        } catch (RestClientException e) {
-            throw new DigiWebServiceException(e);
-        }
-        List<String> files = digiResponseHandler.handleFolderListingResponse(fileNameSource);
-        
-        for (String filename:files) {
-            try {
-                StreamSource deviceNotification;
-                
-                try {
-                    deviceNotification = restTemplate.getForObject(folderUrl +"/" + filename, StreamSource.class);
-                } catch (RestClientException e) {
-                    throw new DigiWebServiceException(e);
-                }
-                
-                digiResponseHandler.handleDeviceNotification(deviceNotification);
-            } catch (UnsupportedDataTypeException e) {
-                logger.error(e.getMessage());
-            } finally {
-                restTemplate.delete(folderUrl +"/" + filename);
-            }
-        }
-        
-        zigbeeEventLogService.zigbeePolledGateway(gateway.getName());
     }
     
     @Autowired
@@ -543,7 +476,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
         this.zigbeeEventLogService = zigbeeEventLogService;
     }
-    
+     
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;

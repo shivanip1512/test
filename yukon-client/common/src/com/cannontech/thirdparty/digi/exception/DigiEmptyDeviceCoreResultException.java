@@ -1,4 +1,4 @@
-package com.cannontech.thirdparty.exception;
+package com.cannontech.thirdparty.digi.exception;
 
 public class DigiEmptyDeviceCoreResultException extends DigiWebServiceException {
 

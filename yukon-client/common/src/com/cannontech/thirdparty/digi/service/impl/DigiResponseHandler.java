@@ -1,4 +1,4 @@
-package com.cannontech.thirdparty.service.impl;
+package com.cannontech.thirdparty.digi.service.impl;
 
 import java.util.List;
 import java.util.Properties;
@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.activation.UnsupportedDataTypeException;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.jdom.Namespace;
@@ -27,20 +26,18 @@ import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.exception.DigiEmptyDeviceCoreResultException;
-import com.cannontech.thirdparty.exception.DigiEndPointDisconnectedException;
-import com.cannontech.thirdparty.exception.DigiGatewayDisconnectedException;
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
-import com.cannontech.thirdparty.model.DeviceCore;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
+import com.google.common.collect.Lists;
 
 public class DigiResponseHandler {
   
-    private static final Logger logger = YukonLogManager.getLogger(DigiResponseHandler.class);
+    private static final Logger log = YukonLogManager.getLogger(DigiResponseHandler.class);
     
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private GatewayDeviceDao gatewayDeviceDao;
@@ -74,14 +71,15 @@ public class DigiResponseHandler {
         public DeviceCore map(Node node) throws DOMException {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
 
-            int devId = template.evaluateAsInt("//devId");
-            String devMac = template.evaluateAsString("//devMac");
+            int devId = template.evaluateAsInt("id/devId");
+            String devMac = template.evaluateAsString("devMac");
 
-            int connectionStatus = template.evaluateAsInt("//dpConnectionStatus");
+            int connectionStatus = template.evaluateAsInt("dpConnectionStatus");
             boolean connected = connectionStatus==1?true:false;
             
-            String devFirmware = template.evaluateAsString("//dpFirmwareLevelDesc");
-            String lastTimeStr = template.evaluateAsString("//dpLastConnectTime");
+            String devFirmware = template.evaluateAsString("dpFirmwareLevelDesc");
+            String lastTimeStr = template.evaluateAsString("dpLastConnectTime");
+            String commissionTime = template.evaluateAsString("devEffectiveStartDate");
             
             //If the gateway has not been connected yet, this field may be null
             if (devFirmware == null) {
@@ -89,24 +87,32 @@ public class DigiResponseHandler {
             }
             
             //Even if lastTimeStr is null, this will just create an Instant to now.
-            Instant instant = new Instant(lastTimeStr);
+            Instant lastTimeInstant = new Instant(lastTimeStr);
+            Instant commissionInstant = new Instant(commissionTime);
             
-            return new DeviceCore(devId,devMac,devFirmware,connected,instant);
+            return new DeviceCore(devId,devMac,devFirmware,connected,lastTimeInstant,commissionInstant);
         }
     };
-    
+
     /**
      * Returns a list of paths to DeviceNotifications that are stored on the gateway. 
      * 
      * @return
      */
-    public List<String> handleFolderListingResponse(StreamSource source) {
+    public List<String> handleFolderListingResponse(String source) {
+        List<String> fileNames = Lists.newArrayList();
+        
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
-        template.setNamespaces(existProperties);
- 
-        List<String> fileNames = template.evaluate("//exist:resource", digiFileListingNodeMapper);
-        
+        if (template.evaluateAsString("/wsError") != null) {
+           int code = template.evaluateAsInt("/wsError/error/code");
+           String message = template.evaluateAsString("/wsError/error/message");
+           String hint = template.evaluateAsString("/wsError/error/hint");
+           log.error("Error Polling Gateway: " + code + " " + hint + ". " + message);
+        } else { 
+            template.setNamespaces(existProperties);
+            fileNames.addAll(template.evaluate("//exist:resource", digiFileListingNodeMapper));
+        }
         return fileNames;
     }
     
@@ -116,58 +122,65 @@ public class DigiResponseHandler {
      * @param source
      * @throws UnsupportedDataTypeException 
      */
-    public void handleDeviceNotification(StreamSource source) throws UnsupportedDataTypeException {
+    public void handleDeviceNotification(String source) throws UnsupportedDataTypeException {
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
         //Figure out what this file is
         Node tester = template.evaluateAsNode("/received_report_event_status");
         if (tester != null) {
-            logger.info("Processing XML file of type: 'received_report_event_status message'.");
+            log.info("Processing XML file of type: 'received_report_event_status message'.");
             processReportEventStatus(template);
             return;
         }
 
         tester = template.evaluateAsNode("/message");
         if (tester != null) {
-            logger.info("Processing XML file of type: 'message'.");
+            log.info("Processing XML file of type: 'message'.");
+            
+            Long seconds = template.evaluateAsLong("//@timestamp");
+            Instant time = new Instant(seconds*1000);
+            
             String description = template.evaluateAsString("//description");
-            logger.info("RECV from iDigi: " + description);
-            parseMessageForAction(description);
+            log.info("RECV at "+ time.toDate() + " from iDigi: " + description);
+            parseMessageForAction(time,description);
             return;
         }
         
+        log.error(source);
         throw new UnsupportedDataTypeException("Unsupported XML file type returned from iDigi.");
     }
 
     /**
      * Parse for the connection status of the gateway contained in source.
      * 
+     * returns a list of PaoIds that were update.
+     * 
      * @param source
      */
-    public void handleDeviceCoreResponse(StreamSource source) {
+    public List<Integer> handleDeviceCoreResponse(String source, List<ZigbeeDevice> expected) {
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
-        List<DeviceCore> cores = template.evaluate("//DeviceCore", digiDeviceCoreNodeMapper);
+        List<DeviceCore> cores = template.evaluate("/result/DeviceCore", digiDeviceCoreNodeMapper);
         
-        //Make sure we got a result
-        if (cores.isEmpty()) {
-            throw new DigiEmptyDeviceCoreResultException("0 results from DeviceCore query.");
-        }
-        
+        List<Integer> updatedDeviceIds = Lists.newArrayList();
         for (DeviceCore core : cores) {
             DigiGateway digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());        
             digiGateway.setDigiId(core.getDevId());
             digiGateway.setFirmwareVersion(core.getDevFirmware());
             gatewayDeviceDao.updateDigiGateway(digiGateway);
+
+            updatedDeviceIds.add(digiGateway.getPaoId());
+            
+            zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
+                                                      BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                      Commissioned.COMMISSIONED);
             
             if (core.isConnected()) {
                 zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
-                                                      core.getLastTime(),
                                                       BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
                                                       CommStatusState.CONNECTED);
-                
             } else {
                 zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
                                                           BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
@@ -180,9 +193,29 @@ public class DigiResponseHandler {
                                                               BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                               CommStatusState.DISCONNECTED);
                 }
-                
             }
         }
+        
+        //Set Decommissioned to anything we did not get a response from.
+        for (ZigbeeDevice gateway : expected) {
+            if (updatedDeviceIds.contains(gateway.getZigbeeDeviceId())) {
+                continue;
+            }
+            
+            zigbeeServiceHelper.sendPointStatusUpdate(gateway,
+                                                      BuiltInAttribute.ZIGBEE_LINK_STATUS, 
+                                                      Commissioned.DECOMMISSIONED);
+            
+            //Disconnect all devices on the gateway
+            List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
+            for (ZigbeeDevice device : devices) {
+                zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                          BuiltInAttribute.ZIGBEE_LINK_STATUS, 
+                                                          Commissioned.DECOMMISSIONED);
+            }
+        }
+        
+        return updatedDeviceIds;
     }
     
     /**
@@ -190,7 +223,7 @@ public class DigiResponseHandler {
      * 
      * @param message
      */
-    private void parseMessageForAction(String message) {
+    private void parseMessageForAction(Instant time, String message) {
         //Try to determine what this message is
         String commissionStr = " registered with XBee";
         String decommissionStr = " unregistered from XBee";
@@ -206,22 +239,22 @@ public class DigiResponseHandler {
             //We found a MAC, so lets do something..
             if (message.contains(commissionStr)) {
                 //Commissioned
-                logger.debug("Device: " + macAddress + "was commissioned.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                log.debug("Device: " + macAddress + " was commissioned.");
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
                                                                             Commissioned.COMMISSIONED);
                 return;
                 
             } else if ( message.contains(decommissionStr)) {
                 //DeCommissioned
-                logger.debug("Device: " + macAddress + "was decommissioned.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                log.debug("Device: " + macAddress + " was decommissioned.");
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
                                                                             Commissioned.DECOMMISSIONED);
                 return;
                 
             } else if ( message.contains(connectStr) || message.contains(connectStr2)) {
                 //Connected
-                logger.debug("Device: " + macAddress + "has connected.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
+                log.debug("Device: " + macAddress + " has connected.");
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
                                                                             CommStatusState.CONNECTED);
                 
                 if (message.contains(connectStr)) {
@@ -234,7 +267,7 @@ public class DigiResponseHandler {
                         utilPro.setNodeId(nodeId);
                         zigbeeDeviceDao.updateZigbeeUtilPro(utilPro);
                     } else {
-                        logger.warn("NodeId was not in the reponse.");
+                        log.warn("NodeId was not in the reponse.");
                     }
                 }
                 
@@ -242,17 +275,17 @@ public class DigiResponseHandler {
                 
             } else if ( message.contains(disconnectStr)) {
                 //Disconnected
-                logger.debug("Device: " + macAddress + "has disconnected.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,BuiltInAttribute.CONNECTION_STATUS,
+                log.debug("Device: " + macAddress + " has disconnected.");
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
                                                                             CommStatusState.DISCONNECTED);
                 return;
             }
             
-            logger.debug("No Action found in current message for device: " + macAddress);
+            log.debug("No Action found in current message for device: " + macAddress);
             return;
         }
         
-        logger.debug("No device detected in Message. No actions to performed");
+        log.debug("No device detected in Message. No actions to performed");
     }
     
     private void processReportEventStatus(SimpleXPathTemplate template) {        
@@ -269,7 +302,7 @@ public class DigiResponseHandler {
         temp = template.evaluateAsString("//event_status");
         int eventStatus = Integer.decode(temp);
         ZigbeeEventAction action = ZigbeeEventAction.getForEventStatus(eventStatus);        
-        logger.info("event_status: " + action.name());
+        log.info("event_status: " + action.name());
         
         switch (action) {
             case THERMOSTAT_ACK: {
@@ -292,10 +325,10 @@ public class DigiResponseHandler {
                 zigbeeControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, true);
             }
             case INVALID_CANCEL_COMMAND_BAD_EVENT: {
-                logger.info("Invalid event cancel command was sent to device: "+ deviceId + " Bad event Id: " + eventId);
+                log.error("Invalid event cancel command was sent to device: "+ deviceId + " Bad event Id: " + eventId);
             }
             default: {
-                logger.info("Unhandled event_status from ZigBee: " + action.name());
+                log.error("Unhandled event_status from ZigBee: " + action.name());
             }
         }
     }
@@ -305,25 +338,31 @@ public class DigiResponseHandler {
      * 
      * @param source
      */
-    public void evaluatePingResponse(StreamSource source){
+    public void handlePingResponse(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway){
+        CommStatusState endPointState = CommStatusState.CONNECTED;
+
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
         String readResponse = template.evaluateAsString("//read_attributes_response");
+        
         //Error Case
         if (readResponse == null) {
             String error = template.evaluateAsString("//desc");
             
             if( error == null) {
-                String errorSource = "Error Communicating with ZigBee EndPoint";
-                logger.error("Error Communicating with ZigBee EndPoint ");
                 error = template.evaluateAsString("//description");
-                throw new DigiEndPointDisconnectedException( errorSource + ": " + error);
+                log.error("Error Communicating with ZigBee EndPoint: " + error);
+                endPointState = CommStatusState.DISCONNECTED;
             } else {
-                String errorSource = "Error Communicating with Gateway";
-                throw new DigiGatewayDisconnectedException(errorSource + ": " + error);
+                log.error("Error Communicating with Gateway: " + error);
+                endPointState = CommStatusState.DISCONNECTED;
             }
         }
+        
+        zigbeeServiceHelper.sendPointStatusUpdate(endPoint, 
+                                                  BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
+                                                  endPointState);
     }
     
     /**
@@ -331,7 +370,7 @@ public class DigiResponseHandler {
      * 
      * @param source
      */
-    public void evaluateAddDevice(StreamSource source) {
+    public void evaluateAddDevice(String source) {
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
@@ -342,6 +381,12 @@ public class DigiResponseHandler {
             throw new DigiWebServiceException(description);
         }
         
+        String desc = template.evaluateAsString("//desc");
+
+        //Error case
+        if (desc != null) {
+            throw new DigiWebServiceException(desc);
+        }
     }
     
     @Autowired

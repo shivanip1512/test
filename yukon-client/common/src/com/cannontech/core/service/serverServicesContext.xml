@@ -35,4 +35,5 @@
   <bean id="outagePointMonitorProcessor" class="com.cannontech.amr.monitors.impl.OutagePointMonitorProcessorFactory"/>
     
   <bean id="statusPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.StatusPointMonitorProcessorFactory"/>
+  
 </beans>

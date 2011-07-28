@@ -20,7 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
@@ -65,7 +65,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         //Creating the event prior will leave us with an EventId to attempt to cancel in case of a partial control
         zigbeeControlEventDao.createNewEventMapping(eventId,message.getGroupId(),now);
         
-        try {            
+        try {
             //Do what needs to be done
             zigbeeWebService.sendSEPControlMessage(eventId, message);
             

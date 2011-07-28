@@ -1,4 +1,4 @@
-package com.cannontech.thirdparty.service.impl;
+package com.cannontech.thirdparty.digi.service.impl;
 
 import java.util.List;
 import java.util.Map;

@@ -4,12 +4,14 @@ import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.List;
 
+import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -37,10 +39,12 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
-import com.cannontech.thirdparty.exception.GatewayCommissionException;
+import com.cannontech.thirdparty.digi.exception.DigiGatewayCommissionException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
+import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -60,6 +64,7 @@ public class ZigBeeHardwareController {
     
     private static final String keyPrefix = "yukon.web.modules.operator.hardware.";
     private ZigbeeWebService zigbeeWebService;
+    private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private GatewayDeviceDao gatewayDeviceDao;
@@ -67,6 +72,7 @@ public class ZigBeeHardwareController {
     private InventoryDao inventoryDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private ZigbeeEventLogService zigbeeEventLogService;
+    private JmsTemplate jmsTemplate;
     private PaoDao paoDao;
 
     @RequestMapping
@@ -80,15 +86,16 @@ public class ZigBeeHardwareController {
         InventoryIdentifier id = inventoryDao.getYukonInventoryForDeviceId(deviceId);
         HardwareType type = id.getHardwareType();
         
-        ZigbeeDevice device = null;
-        if (type.isGateway()) {
-            device = gatewayDeviceDao.getZigbeeGateway(deviceId);
-        } else {
-            device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
-        }
-        
         try {
-            zigbeeWebService.refreshDeviceStatuses(device);
+            ZigbeeDevice device;
+            if (type.isGateway()) {
+                device = gatewayDeviceDao.getZigbeeGateway(deviceId);
+                zigbeeStateUpdaterService.updateGatewayStatus(device);
+            } else {
+                device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+                zigbeeStateUpdaterService.updateEndPointStatus(device);
+            }
+            jmsTemplate.convertAndSend("yukon.notif.stream.thirdparty.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
         } catch (DigiWebServiceException e) {
             commandFailed(mav.getModelMap(), accessor, e.getMessage());
             return mav;
@@ -115,7 +122,7 @@ public class ZigBeeHardwareController {
         } else {
             commissionNode(mav.getModelMap(), accessor, deviceId, id.getInventoryId());
         }
-        
+
         return mav;
     }
     
@@ -145,6 +152,9 @@ public class ZigBeeHardwareController {
             // This gatewayId is expected to be not null since this action wouldn't have been available.
             int gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
             zigbeeWebService.installStat(gatewayId, deviceId);
+
+            ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+            jmsTemplate.convertAndSend("yukon.notif.stream.thirdparty.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -176,7 +186,10 @@ public class ZigBeeHardwareController {
         String errorMessage = null;
         try {
             zigbeeWebService.installGateway(gatewayId);
-        } catch (GatewayCommissionException e) {
+            
+            ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
+            jmsTemplate.convertAndSend("yukon.notif.stream.thirdparty.smartUpdateRequest", new SmartUpdateRequestMessage(gateway.getPaoIdentifier()));
+        } catch (DigiGatewayCommissionException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
         } catch (DigiWebServiceException e) {
@@ -381,6 +394,11 @@ public class ZigBeeHardwareController {
     }
     
     @Autowired
+    public void setZigbeeStateUpdaterService(ZigbeeStateUpdaterService zigbeeStateUpdaterService) {
+        this.zigbeeStateUpdaterService = zigbeeStateUpdaterService;
+    }
+    
+    @Autowired
     public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
         this.zigbeeWebService = zigbeeWebService;
     }
@@ -420,4 +438,9 @@ public class ZigBeeHardwareController {
         this.paoDao = paoDao;
     }
     
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
+    }
 }

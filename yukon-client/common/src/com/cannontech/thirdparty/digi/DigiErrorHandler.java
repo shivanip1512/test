@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 
 public class DigiErrorHandler implements ResponseErrorHandler {
 	

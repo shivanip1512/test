@@ -77,7 +77,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.ListMultimap;

@@ -7,19 +7,21 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
 
-    <context:component-scan base-package="com.cannontech.services.sepControlMessageListener"/>
+    <context:component-scan base-package="com.cannontech.services.digiPollingService"/>
 
-    <bean id="sepMessageListener" class="com.cannontech.thirdparty.messaging.activemq.SepMessageListener" />
+    <bean class="com.cannontech.thirdparty.digi.service.impl.DigiPollingServiceImpl"/>
+
+    <bean class="com.cannontech.thirdparty.digi.service.impl.DigiSmartUpdateServiceImpl"/>
+
+    <bean id="digiSmartUpdateListener" class="com.cannontech.thirdparty.messaging.activemq.DigiSmartUpdateListener"/>
 
     <jms:listener-container 
-        connection-factory="connectionFactory" 
+        connection-factory="connectionFactory"         
         destination-type="queue"
-        concurrency="1" 
+        concurrency="1"
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-        <jms:listener destination="yukon.notif.stream.dr.SmartEnergyProfileControlMessage" ref="sepMessageListener" method="handleControlMessage"/>
-        <jms:listener destination="yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage" ref="sepMessageListener" method="handleRestoreMessage"/>
-        <jms:listener destination="yukon.notif.stream.dr.HistoryRowAssociationResponse" ref="sepMessageListener" method="handleControlHistoryAssociation"/>
+        <jms:listener destination="yukon.notif.stream.thirdparty.smartUpdateRequest" ref="digiSmartUpdateListener" method="handleSmartUpdateRequest"/>
     </jms:listener-container>
     
 </beans>
