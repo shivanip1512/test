@@ -4679,7 +4679,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
         {
             static const string sql =  "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
                                        "FROM ccsubstationsubbuslist SBL "
-                                       "WHERE SBL.substationid = ?";
+                                       "WHERE SBL.substationid = ? "
+                                       "ORDER BY SBL.substationid, SBL.displayorder";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
@@ -5499,20 +5500,22 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
         {
             static const string sqlNoID = "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
                                           "FROM ccsubstationsubbuslist SBL";
+            static const string sqlAppendOrder = " ORDER BY SBL.substationid, SBL.displayorder";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader dbRdr(connection);
 
             if( subBusId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " WHERE SBL.substationbusid = ?");
+                static const string sqlID = string(sqlNoID + " WHERE SBL.substationbusid = ?" + sqlAppendOrder);
                 dbRdr.setCommandText(sqlID);
                 dbRdr << subBusId;
             }
             else
             {
-                dbRdr.setCommandText(sqlNoID);
+                dbRdr.setCommandText(sqlNoID + sqlAppendOrder);
             }
+
 
             dbRdr.execute();
 
@@ -5931,7 +5934,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
         {
             static const string sql =  "SELECT FSA.feederid, FSA.substationbusid, FSA.displayorder "
                                        "FROM ccfeedersubassignment FSA "
-                                       "WHERE FSA.substationbusid = ?";
+                                       "WHERE FSA.substationbusid = ? "
+                                       "ORDER BY FSA.substationbusid, FSA.displayorder";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
@@ -6172,19 +6176,20 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
         {
             static const string sqlNoID = "SELECT SAA.feederid, SAA.substationbusid, SAA.displayorder "
                                           "FROM ccfeedersubassignment SAA";
+            static const string sqlAppendOrder = " ORDER BY SAA.substationbusid, SAA.displayorder";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
             if (feederId > 0)
             {
-                static const string sqlID = string(sqlNoID + " WHERE SAA.feederid = ?");
+                static const string sqlID = string(sqlNoID + " WHERE SAA.feederid = ?" + sqlAppendOrder);
                 rdr.setCommandText(sqlID);
                 rdr << feederId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText(sqlNoID + sqlAppendOrder);
             }
 
             rdr.execute();
