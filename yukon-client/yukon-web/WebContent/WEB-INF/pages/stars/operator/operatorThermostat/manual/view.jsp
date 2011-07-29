@@ -104,23 +104,13 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
 							    	</c:otherwise>
 							    </c:choose>
     
-				                <table class="boxContainer" cellspacing="0" cellpadding="0">
-				                    <tr>
-				                        <td class="boxContainer_titleBar">
-				                            <table style="width: 100%" cellspacing="0" cellpadding="0">
-				                                <tr>
-				                                    <td style="white-space: nowrap;">
-				                                        <span id="thermostatName">
-					                                        ${settingsLabel}
-					                                    </span>
-				                                    </td>
-				                                </tr>
-				                            </table>
-				                            
-				                        </td>
-				                    </tr>
-				                    <tr>
-				                        <td class="boxContainer_content">
+				                <div class="boxContainer">
+			                        <div class="boxContainer_titleBar">
+                                       <span id="thermostatName">
+	                                        ${settingsLabel}
+	                                    </span>
+			                        </div>
+				                        <div class="boxContainer_content">
 			                                <table width="100%" cellpadding="0" cellspacing="0">
 			                                    <tr>
 			                                        <td colspan="4" style="padding-bottom: .5em; font-size: .75em;">
@@ -245,11 +235,9 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
 			                                        </td>
 			                                    </tr>
 			                               </table>
-				                        </td>
-				                    </tr>
-				                </table>
+    				                </div>
+    				            </div>
 				            </td>
-				            
 				            <td style="vertical-align:top;padding-left:20px;font-size:11px;">
 				            
 				            	<%-- INSTRUCTIONS --%>
@@ -270,8 +258,15 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
 				    </table>
 				    
 				</tags:formElementContainer>
-				
-                <br>
+			</td>
+			
+			<td class="selectedThermostatsTd">
+    			<%-- THERMOSTAT NAMES --%>
+    			<jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
+    		</td>
+		</tr>
+        <tr>
+            <td colspan="2">
                 <cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
                 <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
                     filterDialog="" baseUrl="/spring/stars/operator/thermostatManual/view"
@@ -364,13 +359,8 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                         </c:otherwise>
                     </c:choose>
                 </tags:pagedBox>
-			</td>
-			
-			<td class="selectedThermostatsTd">
-    			<%-- THERMOSTAT NAMES --%>
-    			<jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
-    		</td>
-		</tr>
+            </td>
+        </tr>
 	</table>
     
      <%-- Confirm Dialog for send settings --%>
