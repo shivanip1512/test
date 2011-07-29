@@ -1155,11 +1155,26 @@ table.rowHighlighting tr:hover td {
     padding: 5px 0;
 }
 
-.indentedSmall {
-    margin-left: 3px;   
+table.devDbSetupExecution {
+    margin-top: 20px;
 }
-.indentedMedium {
-    margin-left: 8px;   
+table.devDbSetupExecution td {
+    padding-right: 10px;
+}
+
+.hideRevealTree input[type='checkbox'] {
+    float: left;
+    margin: 4px 3px 0px 0px;
+}
+.hideRevealTree ul,
+.hideRevealTree li {
+    margin-left: 8px;
+}
+.hideRevealTree li {
+    list-style: none;
+}
+.hideRevealTree li.box {
+    line-height: 20px;
 }
 
 div.padded {

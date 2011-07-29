@@ -32,9 +32,8 @@ import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevCommChannel;
 import com.cannontech.web.support.development.database.objects.DevMeter;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
-import com.cannontech.web.support.development.database.service.DevAMRCreationService;
 
-public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements DevAMRCreationService {
+public class DevAMRCreationService extends DevObjectCreationBase {
     
     @Override
     protected void createAll() {

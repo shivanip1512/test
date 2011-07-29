@@ -4,11 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.web.support.development.DevDbSetupTask;
-import com.cannontech.web.support.development.database.service.DevAMRCreationService;
-import com.cannontech.web.support.development.database.service.DevCapControlCreationService;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
-import com.cannontech.web.support.development.database.service.DevRolePropUpdaterService;
-import com.cannontech.web.support.development.database.service.DevStarsCreationService;
 
 public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationService {
     private DevAMRCreationService devAMRCreationService;

@@ -20,10 +20,9 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevHardwareType;
 import com.cannontech.web.support.development.database.objects.DevStars;
-import com.cannontech.web.support.development.database.service.DevStarsCreationService;
 import com.google.common.collect.Lists;
 
-public class DevStarsCreationServiceImpl extends DevObjectCreationBase implements DevStarsCreationService {
+public class DevStarsCreationService extends DevObjectCreationBase {
     private AccountService accountService;
     private HardwareUiService hardwareUiService;
     private CustomerAccountDao customerAccountDao;

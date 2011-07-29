@@ -8,9 +8,8 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.web.support.development.database.service.DevRolePropUpdaterService;
 
-public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase implements DevRolePropUpdaterService {
+public class DevRolePropUpdaterService extends DevObjectCreationBase {
     private RoleDao roleDao;
     private RolePropertyEditorDao rolePropertyEditorDao;
 

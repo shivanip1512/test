@@ -10,19 +10,17 @@
     <cti:dataGridCell>
         <tags:sectionContainer title="Options" styleClass="pageActionArea">
         <form:form commandName="devDbSetupTask" action="setupDatabase" method="post" id="setupDbForm">
-            <ul class="indentedMedium">
-                <li>
+            <ul class="hideRevealTree">
+                <li class="box">
                     <span title="<i:inline key=".setupDevDatabase.option.roleProperties.title"/>">
                         <tags:checkbox path="updateRoleProperties" descriptionNameKey=".setupDevDatabase.option.roleProperties"/>
                     </span>
                 </li>
-                <li class="dib fl">
+                <li class="box">
                     <form:checkbox path="devAMR.create" id="createAMR"/>
-                </li>
-                <li class="dib indentedSmall">
-                    <tags:hideReveal2 titleKey=".setupDevDatabase.option.amr" showInitially="false" slide="true" styleClass="dib">
-                        <ul class="indentedMedium">
-                            <li class="dib">
+                    <tags:hideReveal2 titleKey=".setupDevDatabase.option.amr" showInitially="false" slide="true">
+                        <ul>
+                            <li>
                                 <tags:nameValueContainer2>
                                     <tags:checkbox path="devAMR.createCartObjects" descriptionNameKey=".setupDevDatabase.option.amr.createCartObjects"/>
                                     <tags:inputNameValue path="devAMR.numAdditionalMeters" nameKey=".setupDevDatabase.option.amr.numAdditionalMeters" size="4"/>
@@ -33,11 +31,11 @@
                             </li>
                             <li>
                                 <tags:hideReveal2 titleKey=".setupDevDatabase.option.amr.meterTypes" showInitially="false" slide="true">
-                                    <ul class="indentedMedium">
+                                    <ul>
                                         <c:forEach items="${devDbSetupTask.devAMR.meterTypes}" var="meterType" varStatus="status">
                                             <li>
                                                 <tags:checkbox path="devAMR.meterTypes[${status.index}].create"/>
-                                                <span class="indentedSmall">${devDbSetupTask.devAMR.meterTypes[status.index].paoType}</span>
+                                                <span>${devDbSetupTask.devAMR.meterTypes[status.index].paoType}</span>
                                             </li>
                                         </c:forEach>
                                     </ul>
@@ -46,15 +44,12 @@
                         </ul>
                     </tags:hideReveal2>
                 </li>
-                <li class="cl"></li>
-                <li class="dib fl">
+                <li class="box">
                     <form:checkbox path="devCapControl.create" id="createCapControl"/>
-                </li>
-                <li class="dib indentedSmall">
                     <span>
-                        <tags:hideReveal2 titleKey=".setupDevDatabase.option.capcontrol" showInitially="false" slide="true" styleClass="dib">
-                            <ul class="indentedMedium">
-                                <li class="dib">
+                        <tags:hideReveal2 titleKey=".setupDevDatabase.option.capcontrol" showInitially="false" slide="true">
+                            <ul>
+                                <li>
                                     <tags:nameValueContainer2>
                                         <tags:inputNameValue path="devCapControl.numAreas" nameKey=".setupDevDatabase.option.capcontrol.object.areas" size="2"/>
                                         <tags:inputNameValue path="devCapControl.numSubs" nameKey=".setupDevDatabase.option.capcontrol.object.subs" size="2"/>
@@ -68,11 +63,11 @@
                                 </li>
                                 <li>
                                     <tags:hideReveal2 titleKey=".setupDevDatabase.option.capcontrol.cbcTypes" showInitially="false" slide="true">
-                                        <ul class="indentedMedium">
+                                        <ul>
                                             <c:forEach items="${devDbSetupTask.devCapControl.cbcTypes}" var="cbcType" varStatus="status">
                                                 <li>
                                                     <tags:checkbox path="devCapControl.cbcTypes[${status.index}].create"/>
-                                                    <span class="indentedSmall">${devDbSetupTask.devCapControl.cbcTypes[status.index].paoType}</span>
+                                                    <span>${devDbSetupTask.devCapControl.cbcTypes[status.index].paoType}</span>
                                                 </li>
                                             </c:forEach>
                                         </ul>
@@ -80,11 +75,11 @@
                                 </li>
                                 <li>
                                     <tags:hideReveal2 titleKey=".setupDevDatabase.option.capcontrol.regulatorTypes" showInitially="false" slide="true">
-                                        <ul class="indentedMedium">
+                                        <ul>
                                             <c:forEach items="${devDbSetupTask.devCapControl.regulatorTypes}" var="cbcType" varStatus="status">
                                                 <li>
                                                     <tags:checkbox path="devCapControl.regulatorTypes[${status.index}].create"/>
-                                                    <span class="indentedSmall">${devDbSetupTask.devCapControl.regulatorTypes[status.index].paoType}</span>
+                                                    <span>${devDbSetupTask.devCapControl.regulatorTypes[status.index].paoType}</span>
                                                 </li>
                                             </c:forEach>
                                         </ul>
@@ -94,15 +89,12 @@
                         </tags:hideReveal2>
                     </span>
                 </li>
-                <li class="cl"></li>
-                <li class="dib fl">
+                <li class="box">
                     <form:checkbox path="devStars.create" id="createStars"/>
-                </li>
-                <li class="dib indentedSmall">
                     <span>
-                        <tags:hideReveal2 titleKey=".setupDevDatabase.option.stars" showInitially="false" slide="true" styleClass="dib">
-                            <ul class="indentedMedium">
-                                <li class="dib">
+                        <tags:hideReveal2 titleKey=".setupDevDatabase.option.stars" showInitially="false" slide="true">
+                            <ul>
+                                <li>
                                     <tags:nameValueContainer2>
                                         <tags:selectNameValue path="devStars.energyCompany" nameKey=".setupDevDatabase.option.stars.parentEnergyCompany" items="${allEnergyCompanies}" itemLabel="name" itemValue="energyCompanyId"/>
                                         <tags:inputNameValue path="devStars.devStarsAccounts.numAccounts" nameKey=".setupDevDatabase.option.stars.numAccounts" size="4"/>
@@ -116,11 +108,11 @@
                                 </li>
                                 <li>
                                     <tags:hideReveal2 titleKey=".setupDevDatabase.option.stars.hardwareTypes" showInitially="false" slide="true">
-                                        <ul class="indentedMedium">
+                                        <ul>
                                             <c:forEach items="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes}" var="hardwareType" varStatus="status">
                                                 <li>
                                                     <tags:checkbox path="devStars.devStarsHardware.hardwareTypes[${status.index}].create"/>
-                                                    <span class="indentedSmall"><i:inline key="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes[status.index].hardwareType.displayKey}" /></span>
+                                                    <span><i:inline key="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes[status.index].hardwareType.displayKey}" /></span>
                                                 </li>
                                             </c:forEach>
                                         </ul>
@@ -154,7 +146,7 @@
         <c:if test="${(!devDbSetupTask.devStars.create || !devDbSetupTask.hasRun) && !devDbSetupTask.running}">
             <c:set var="pbarStarsStyle" value="display: none;"/>
         </c:if>
-        <table class="pageActionArea">
+        <table class="devDbSetupExecution">
             <tr id="setupDbAMRProgressBar" style="${pbarAMRStyle}">
                 <td><i:inline key=".setupDevDatabase.option.amr" />
                 </td>
@@ -213,6 +205,7 @@
         if (displayCancelBtn) {
             $('cancelDevDatabaseSetupButtonId').show();
         }
+        $('setupDbForm').submit();
     });
     YEvent.observeSelectorClick('.cancelDevDatabaseSetup', function(event) {
         new Ajax.Request("cancelExecution");

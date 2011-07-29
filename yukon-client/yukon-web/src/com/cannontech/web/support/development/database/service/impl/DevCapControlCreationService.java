@@ -13,9 +13,8 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.web.support.development.database.objects.DevCapControl;
 import com.cannontech.web.support.development.database.objects.DevCommChannel;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
-import com.cannontech.web.support.development.database.service.DevCapControlCreationService;
 
-public class DevCapControlCreationServiceImpl extends DevObjectCreationBase implements DevCapControlCreationService {
+public class DevCapControlCreationService extends DevObjectCreationBase {
     private CapControlCreationService capControlCreationService;
     private StrategyDao strategyDao;
     
