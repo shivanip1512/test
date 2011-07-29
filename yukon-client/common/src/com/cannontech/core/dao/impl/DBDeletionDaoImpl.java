@@ -4,6 +4,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.MACScheduleDao;
+import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.route.RouteBase;
@@ -12,8 +13,8 @@ import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.lm.LMGroup;
 import com.cannontech.database.db.baseline.Baseline;
+import com.cannontech.database.db.device.lm.LMGroup;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 
 /**
@@ -95,7 +96,22 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		//this device is deleteable
 		return STATUS_ALLOW;
 	}
-	
+
+    private static byte createDeleteStringForPaoType(final DBDeleteResult dbRes) throws java.sql.SQLException
+    {
+        Integer theID = new Integer( dbRes.getItemID() );
+        String str = null;   
+    
+       if( (str = VoltageRegulator.usedVoltageRegulator(theID)) != null )
+       {
+           dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the Zone named '" + str + "'") );
+           return DBDeletionDao.STATUS_DISALLOW;
+       }
+    
+        //this device is deleteable
+        return STATUS_ALLOW;
+    }
+
 	private static byte createDeleteStringForRoute(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
@@ -565,61 +581,60 @@ public class DBDeletionDaoImpl implements DBDeletionDao
      */
 	public byte deletionAttempted( final DBDeleteResult dbRes ) throws java.sql.SQLException
 	{
-		if (dbRes.getDelType() == POINT_TYPE)
+		if (dbRes.getDelType() == POINT_TYPE) {
 			return createDeleteStringForPoints(dbRes);
-
-		else if(dbRes.getDelType() == NOTIF_GROUP_TYPE)
+		}
+		else if(dbRes.getDelType() == NOTIF_GROUP_TYPE) {
 			return createDeleteStringForNotifGroup(dbRes);
-
-		else if(dbRes.getDelType() == STATEGROUP_TYPE)
+		}
+		else if(dbRes.getDelType() == STATEGROUP_TYPE) {
 			return createDeleteStringForStateGroup(dbRes);
-
-		else if(dbRes.getDelType() == PORT_TYPE)
+		}
+		else if(dbRes.getDelType() == PORT_TYPE) {
 			return createDeleteStringForCommPort(dbRes);
-		
-		else if(dbRes.getDelType() == DEVICE_TYPE)
+		}
+		else if(dbRes.getDelType() == DEVICE_TYPE) {
 			return createDeleteStringForDevice(dbRes);
-		
-		else if(dbRes.getDelType() == ROUTE_TYPE)
+		}
+		else if(dbRes.getDelType() == ROUTE_TYPE) {
 			return createDeleteStringForRoute(dbRes);
-		
-		else if(dbRes.getDelType() == CONTACT_TYPE)
+		}
+		else if(dbRes.getDelType() == CONTACT_TYPE) {
 			return createDeleteStringForContact(dbRes);
-			
-		else if(dbRes.getDelType() == BASELINE_TYPE)
+		}
+		else if(dbRes.getDelType() == BASELINE_TYPE) {
 			return createDeleteStringForBaseline(dbRes);
-
-		else if(dbRes.getDelType() == CONFIG_TYPE)
+		}
+		else if(dbRes.getDelType() == CONFIG_TYPE) {
 				return createDeleteStringForConfig(dbRes);
-		
-		else if(dbRes.getDelType() == TOU_TYPE)
+		}
+		else if(dbRes.getDelType() == TOU_TYPE) {
 			return createDeleteStringForTOU(dbRes);
-				
-		else if(dbRes.getDelType() == TAG_TYPE)
+		}
+		else if(dbRes.getDelType() == TAG_TYPE) {
 			return createDeleteStringForTag(dbRes);
-
-		else if(dbRes.getDelType() == LMPROG_CONSTR_TYPE)
+		}
+		else if(dbRes.getDelType() == LMPROG_CONSTR_TYPE) {
 			return createDeleteStringForLMProgConst(dbRes);
-
-		else if(dbRes.getDelType() == LOGIN_TYPE)
+		}
+		else if(dbRes.getDelType() == LOGIN_TYPE) {
 			return createDeleteStringForLogin(dbRes);
-		
-		else if(dbRes.getDelType() == SEASON_SCHEDULE)	
+		}
+		else if(dbRes.getDelType() == SEASON_SCHEDULE) {	
 			return createDeleteStringForSeasonSchedule(dbRes);
-			
-		else if(dbRes.getDelType() == HOLIDAY_SCHEDULE)	
+		}
+		else if(dbRes.getDelType() == HOLIDAY_SCHEDULE)	{
 			return createDeleteStringForHolidaySchedule(dbRes);
-		
-		else if( dbRes.getDelType() == CUSTOMER_TYPE
-				 || dbRes.getDelType() == PAO_TYPE 
-				 || dbRes.getDelType() == LOGIN_GRP_TYPE )
-
-		{
+		}
+        else if(dbRes.getDelType() == PAO_TYPE) {
+            return createDeleteStringForPaoType(dbRes);
+        }
+		else if( dbRes.getDelType() == CUSTOMER_TYPE || dbRes.getDelType() == LOGIN_GRP_TYPE ) {
 			return STATUS_CONFIRM;
 		}
-
-		else
+		else {
 			return DBDeletionDao.STATUS_DISALLOW;
+		}
 	}
 	
 	@SuppressWarnings("static-access")

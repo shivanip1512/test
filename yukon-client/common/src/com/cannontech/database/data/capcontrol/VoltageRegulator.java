@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
+import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -91,7 +93,16 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     public List<? extends DBPersistent> getChildList() {
         return null;
     }
-    
+
+    public final static String usedVoltageRegulator(Integer regID) {
+        ZoneDao zoneDao = YukonSpringHook.getBean("zoneDao", ZoneDao.class);
+        Zone zone = zoneDao.getZoneByRegulatorId(regID);
+        if (zone != null) {
+            return zone.getName();
+        }
+        return null;
+    }
+
     public List<VoltageRegulatorPointMapping> getPointMappings(){
         if(pointMappings == null){
             VoltageRegulatorService voltageRegulatorService = YukonSpringHook.getBean("voltageRegulatorService", VoltageRegulatorService.class);
