@@ -37,6 +37,21 @@ public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
 
         return job;
     }
+    
+    @Override
+    public JobDisabledStatus getJobDisabledStatusById(int jobId) {
+        JobDisabledStatus jobDisabledStatus = null;
+        try {
+            jobDisabledStatus = scheduledOneTimeJobDao.getJobDisabledStatusById(jobId);
+        } catch (EmptyResultDataAccessException e1) {
+            try {
+                jobDisabledStatus = scheduledRepeatingJobDao.getJobDisabledStatusById(jobId);
+            } catch (EmptyResultDataAccessException e2) {
+                throw new NotFoundException("Unknown job id " + jobId); 
+            }
+        }
+        return jobDisabledStatus;
+    }
 
     @Override
     public void update(YukonJob job) {

@@ -2,25 +2,23 @@ package com.cannontech.web.updater.scheduledGroupRequestExecution.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionBundle;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
 public class LastTooltipForJobUpdateHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
-
-    private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public String handle(int id, YukonUserContext userContext) {
+    public String handle(ScheduledGroupRequestExecutionBundle execution, YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        ScheduledGroupRequestExecutionStatus status = scheduledGroupRequestExecutionDao.getStatusByJobId(id);
-        int successCount = scheduledGroupRequestExecutionDao.getLatestSuccessCountByJobId(id);
-        int failureCount = scheduledGroupRequestExecutionDao.getLatestFailCountByJobId(id);
-        int totalCount = scheduledGroupRequestExecutionDao.getLatestRequestCountByJobId(id);
+        ScheduledGroupRequestExecutionStatus status = execution.getStatus();
+        int successCount = execution.getSuccessCount(); 
+        int failureCount = execution.getFailureCount();
+        int totalCount = execution.getTotalCount();
 
         String tooltipString;
         if (status == ScheduledGroupRequestExecutionStatus.RUNNING) {
@@ -41,11 +39,6 @@ public class LastTooltipForJobUpdateHandler implements ScheduledGroupRequestExec
     @Override
     public ScheduledGroupCommandRequestExecutionUpdaterTypeEnum getUpdaterType() {
         return ScheduledGroupCommandRequestExecutionUpdaterTypeEnum.LAST_TOOLTIP_TEXT_FOR_JOB;
-    }
-
-    @Autowired
-    public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-        this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
     }
 
     @Autowired

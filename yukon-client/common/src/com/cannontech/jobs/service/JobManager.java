@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -30,6 +31,7 @@ public interface JobManager {
     public YukonTask instantiateTask(YukonJob job);
     
     public YukonJob getJob(int jobId);
+    public JobDisabledStatus getJobDisabledStatus(int jobId);
     public ScheduledRepeatingJob getRepeatingJob(int jobId);
     
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);

@@ -29,6 +29,7 @@ import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.YukonJobDao;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobContext;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
@@ -149,6 +150,10 @@ public class JobManagerImpl implements JobManager {
 
     public YukonJob getJob(int jobId) {
         return yukonJobDao.getById(jobId);
+    }
+    
+    public JobDisabledStatus getJobDisabledStatus(int jobId) {
+        return yukonJobDao.getJobDisabledStatusById(jobId);
     }
     
     public ScheduledRepeatingJob getRepeatingJob(int jobId) {

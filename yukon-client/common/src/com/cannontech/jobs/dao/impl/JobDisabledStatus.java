@@ -2,8 +2,8 @@ package com.cannontech.jobs.dao.impl;
 
 public enum JobDisabledStatus {
 
-	Y("Enabled"),
-	N("Disabled"),
+	Y("Disabled"),
+	N("Enabled"),
 	D("Deleted");
 	
 	private String description;

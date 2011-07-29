@@ -2,6 +2,7 @@ package com.cannontech.jobs.dao;
 
 import java.util.Set;
 
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.support.YukonJobDefinition;
@@ -23,4 +24,5 @@ public interface ScheduledOneTimeJobDao {
     
     public Set<ScheduledOneTimeJob> getAllUnstarted();
 
+    public JobDisabledStatus getJobDisabledStatusById(int jobId);
 }

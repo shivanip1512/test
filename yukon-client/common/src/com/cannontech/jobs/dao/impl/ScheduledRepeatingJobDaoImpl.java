@@ -137,7 +137,17 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         
         return job;
     }
-    
+
+    public JobDisabledStatus getJobDisabledStatusById(int jobId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Job.Disabled");
+        sql.append("FROM JobScheduledRepeating JSR");
+        sql.append("JOIN Job ON Job.jobId = JSR.jobId");
+        sql.append("WHERE Job.jobId").eq(jobId);
+        JobDisabledStatus result = yukonJdbcTemplate.queryForObject(sql, jobDisabledStatusRowMapper);
+        return result;
+    }
+
     @Transactional(propagation=Propagation.REQUIRED)
     public void save(ScheduledRepeatingJob repeatingJob) {
         try {

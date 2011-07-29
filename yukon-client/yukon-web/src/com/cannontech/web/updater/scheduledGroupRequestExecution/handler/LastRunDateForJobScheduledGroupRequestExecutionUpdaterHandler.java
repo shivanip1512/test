@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionBundle;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.DateFormattingService;
@@ -22,8 +23,8 @@ public class LastRunDateForJobScheduledGroupRequestExecutionUpdaterHandler imple
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	@Override
-	public String handle(int jobId, YukonUserContext userContext) {
-		
+	public String handle(ScheduledGroupRequestExecutionBundle execution, YukonUserContext userContext) {
+		int jobId = execution.getJobId();
 		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
 		
 		if (lastCre != null) {

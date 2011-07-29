@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.support.YukonJobDefinition;
@@ -24,4 +25,5 @@ public interface ScheduledRepeatingJobDao {
      */
     public void save(ScheduledRepeatingJob repeatingJob);
 
+    public JobDisabledStatus getJobDisabledStatusById(int jobId);
 }

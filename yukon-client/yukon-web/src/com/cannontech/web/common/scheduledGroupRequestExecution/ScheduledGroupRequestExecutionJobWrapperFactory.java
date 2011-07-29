@@ -11,8 +11,8 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
+import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionStatusService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.jobs.dao.JobStatusDao;
@@ -26,7 +26,7 @@ import com.google.common.collect.Ordering;
 
 public class ScheduledGroupRequestExecutionJobWrapperFactory {
 
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+	private ScheduledGroupRequestExecutionStatusService executionStatusService;
 	private JobStatusDao jobStatusDao;
 	private JobManager jobManager;
 	private CronExpressionTagService cronExpressionTagService;
@@ -43,20 +43,16 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	public class ScheduledGroupRequestExecutionJobWrapper implements Comparable<ScheduledGroupRequestExecutionJobWrapper> {
 
 		private ScheduledRepeatingJob job;
+		private ScheduledGroupRequestExecutionStatus jobStatus;
 		private YukonUserContext userContext;
 		
 		private ScheduledGroupRequestExecutionTask task;
-        private int creCount;
-        private int latestRequestCount;
 
 		public ScheduledGroupRequestExecutionJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
-			
 			this.job = job;
+			this.jobStatus = executionStatusService.getStatus(job.getId());
 			this.userContext = userContext;
-			
 			this.task = (ScheduledGroupRequestExecutionTask)jobManager.instantiateTask(this.job);
-	        this.creCount = scheduledGroupRequestExecutionDao.getDistinctCreCountByJobId(this.job.getId(), startTime, stopTime);
-            this.latestRequestCount = scheduledGroupRequestExecutionDao.getLatestRequestCountByJobId(this.job.getId());
 		}
 		
 		public ScheduledRepeatingJob getJob() {
@@ -70,7 +66,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public ScheduledGroupRequestExecutionStatus getJobStatus() {
-			return scheduledGroupRequestExecutionDao.getStatusByJobId(this.job.getId());
+			return this.jobStatus;
 		}
 		
 		public Date getLastRun() {
@@ -128,15 +124,6 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			return this.task.getStopRetryAfterHoursCount();
 		}
 		
-		public int getCreCount() {
-			return creCount;
-		}
-
-        public int getLatestRequestCount() {
-            this.latestRequestCount = scheduledGroupRequestExecutionDao.getLatestRequestCountByJobId(this.job.getId());
-            return this.latestRequestCount;
-        }
-
 		public String getScheduleDescription() {
 			return cronExpressionTagService.getDescription(this.job.getCronString(), this.userContext);
 		}
@@ -171,9 +158,9 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	}
 	
 	@Autowired
-	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-	}
+	public void setExecutionStatusService(ScheduledGroupRequestExecutionStatusService executionStatusService) {
+        this.executionStatusService = executionStatusService;
+    }
 	
 	@Autowired
 	public void setJobStatusDao(JobStatusDao jobStatusDao) {

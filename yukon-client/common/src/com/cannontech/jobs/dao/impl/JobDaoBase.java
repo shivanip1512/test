@@ -1,5 +1,6 @@
 package com.cannontech.jobs.dao.impl;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -12,12 +13,23 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
 
 public class JobDaoBase implements InitializingBean {
     protected YukonJdbcTemplate yukonJdbcTemplate;
-    
+
+    protected static YukonRowMapper<JobDisabledStatus> jobDisabledStatusRowMapper = 
+        new YukonRowMapper<JobDisabledStatus>() {
+        @Override
+        public JobDisabledStatus mapRow(YukonResultSet rs) throws SQLException {
+            JobDisabledStatus jobDisabledStatus = JobDisabledStatus.valueOf(rs.getString("disabled"));
+            return jobDisabledStatus;
+        }
+    };
+
     private FieldMapper<YukonJob> jobFieldMapper = new FieldMapper<YukonJob>() {
 
         public void extractValues(MapSqlParameterSource p, YukonJob job) {

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -59,7 +60,12 @@ public class JobManagerStub implements JobManager {
     public YukonJob getJob(int jobId) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
-    
+
+    @Override
+    public JobDisabledStatus getJobDisabledStatus(int jobId) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
     @Override
     public ScheduledRepeatingJob getRepeatingJob(int jobId) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);

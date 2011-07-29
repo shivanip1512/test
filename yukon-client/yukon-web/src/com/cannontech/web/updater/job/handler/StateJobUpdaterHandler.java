@@ -2,18 +2,18 @@ package com.cannontech.web.updater.job.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
+import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionStatusService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.job.JobUpdaterTypeEnum;
 
 public class StateJobUpdaterHandler implements JobUpdaterHandler {
-
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+    private ScheduledGroupRequestExecutionStatusService executionStatusService;
 	
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
-
-		return scheduledGroupRequestExecutionDao.getStatusByJobId(jobId).name();
+	    ScheduledGroupRequestExecutionStatus status = executionStatusService.getStatus(jobId);
+		return status.name();
 	}
 	
 	@Override
@@ -22,7 +22,7 @@ public class StateJobUpdaterHandler implements JobUpdaterHandler {
 	}
 	
 	@Autowired
-	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-	}
+	public void setExecutionStatusService(ScheduledGroupRequestExecutionStatusService executionStatusService) {
+        this.executionStatusService = executionStatusService;
+    }
 }

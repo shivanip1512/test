@@ -881,7 +881,19 @@
     <bean id="failureResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.FailureResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="stopTimeCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.StopTimeCommandExecutionUpdaterHandler"/>
     <bean id="isCompleteCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.IsCompleteCommandExecutionUpdaterHandler"/>
-    
+
+    <bean id="scheduledGroupRequestExecutionStatusService"
+        class="com.cannontech.amr.scheduledGroupRequestExecution.service.impl.ScheduledGroupRequestExecutionStatusServiceImpl"
+        scope="request">
+        <aop:scoped-proxy proxy-target-class="false" />
+    </bean>
+
+    <bean id="scheduledGroupRequestExecutionBundleService"
+        class="com.cannontech.amr.scheduledGroupRequestExecution.service.impl.ScheduledGroupRequestExecutionBundleServiceImpl"
+        scope="request">
+        <aop:scoped-proxy proxy-target-class="false" />
+    </bean>
+
     <bean id="scheduledGroupRequestExecutionBackingService" class="com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionBackingService"/>
     <bean id="lastRunDateForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastRunDateForJobScheduledGroupRequestExecutionUpdaterHandler"/>
     <bean id="lastTooltipForJobUpdateHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastTooltipForJobUpdateHandler"/>

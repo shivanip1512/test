@@ -8,6 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionBundle;
+import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionBundleService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.handler.ScheduledGroupRequestExecutionUpdaterHandler;
@@ -16,6 +18,7 @@ public class ScheduledGroupRequestExecutionBackingService implements UpdateBacki
 
 	private List<ScheduledGroupRequestExecutionUpdaterHandler> handlers;
 	private Map<ScheduledGroupCommandRequestExecutionUpdaterTypeEnum, ScheduledGroupRequestExecutionUpdaterHandler> handlersMap;
+	private ScheduledGroupRequestExecutionBundleService bundleService;
 	
 	@Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
@@ -26,7 +29,8 @@ public class ScheduledGroupRequestExecutionBackingService implements UpdateBacki
 		
 		ScheduledGroupCommandRequestExecutionUpdaterTypeEnum updaterType = ScheduledGroupCommandRequestExecutionUpdaterTypeEnum.valueOf(updaterTypeStr);
 		ScheduledGroupRequestExecutionUpdaterHandler handler = handlersMap.get(updaterType);
-		return handler.handle(id, userContext);
+		ScheduledGroupRequestExecutionBundle execution = bundleService.getScheduledGroupRequestExecution(id);
+		return handler.handle(execution, userContext);
     }
     
     @Override
@@ -47,5 +51,9 @@ public class ScheduledGroupRequestExecutionBackingService implements UpdateBacki
 	public void setHandlers(List<ScheduledGroupRequestExecutionUpdaterHandler> handlers) {
 		this.handlers = handlers;
 	}
-	
+
+	@Autowired
+	public void setBundleService(ScheduledGroupRequestExecutionBundleService bundleService) {
+        this.bundleService = bundleService;
+    }
 }
