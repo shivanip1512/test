@@ -19,7 +19,7 @@ public class Thermostat {
     private InventoryCategory category;
     private int routeId;
     private HardwareStatus status;
-    private ThermostatScheduleCompatibility schedulableThermostatTypes;
+    private Set<SchedulableThermostatType> schedulableThermostatTypes;
 
     public Integer getId() {
         return id;
@@ -51,7 +51,7 @@ public class Thermostat {
 
     public void setType(HardwareType type) {
         this.type = type;
-        this.schedulableThermostatTypes = ThermostatScheduleCompatibility.getByHardwareType(type);
+        this.schedulableThermostatTypes = ThermostatScheduleCompatibility.getCompatibleTypes(type);
     }
 
     public InventoryCategory getCategory() {
@@ -101,6 +101,6 @@ public class Thermostat {
     }
 
     public Set<SchedulableThermostatType> getCompatibleSchedulableThermostatTypes(){
-        return this.schedulableThermostatTypes.getCompatibleScheduleTypes();
+        return this.schedulableThermostatTypes;
     }
 }

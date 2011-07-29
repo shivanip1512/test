@@ -3,62 +3,51 @@ package com.cannontech.stars.dr.hardware.model;
 import java.util.Set;
 
 import com.cannontech.common.inventory.HardwareType;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.ImmutableSetMultimap.Builder;
+import com.google.common.collect.SetMultimap;
 
-public enum ThermostatScheduleCompatibility {
-    RESIDENTIAL_EXPRESSSTAT(HardwareType.EXPRESSSTAT,
-                            Sets.immutableEnumSet(SchedulableThermostatType.RESIDENTIAL_EXPRESSSTAT,
-                                                  SchedulableThermostatType.HEAT_PUMP_EXPRESSSTAT)),
-                                                  
-    HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
-                          Sets.immutableEnumSet(SchedulableThermostatType.RESIDENTIAL_EXPRESSSTAT,
-                                                SchedulableThermostatType.HEAT_PUMP_EXPRESSSTAT)),
-                                                
-    COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
-                           Sets.immutableEnumSet(SchedulableThermostatType.COMMERCIAL_EXPRESSSTAT)),
-                           
-    UTILITY_PRO(HardwareType.UTILITY_PRO,
-                Sets.immutableEnumSet(SchedulableThermostatType.UTILITY_PRO)),
-                
-    UTILITY_PRO_ZIGBEE(HardwareType.UTILITY_PRO_ZIGBEE,
-                       Sets.immutableEnumSet(SchedulableThermostatType.UTILITY_PRO,
-                                             SchedulableThermostatType.UTILITY_PRO_ZIGBEE)),
-    UTILITY_PRO_G2(HardwareType.UTILITY_PRO_G2,
-                   Sets.immutableEnumSet(SchedulableThermostatType.UTILITY_PRO,
-                                         SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
-                                         SchedulableThermostatType.UTILITY_PRO_G2,
-                                         SchedulableThermostatType.UTILITY_PRO_G3)),
-                                         
-    UTILITY_PRO_G3(HardwareType.UTILITY_PRO_G3,
-                   Sets.immutableEnumSet(SchedulableThermostatType.UTILITY_PRO,
-                                         SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
-                                         SchedulableThermostatType.UTILITY_PRO_G2,
-                                         SchedulableThermostatType.UTILITY_PRO_G3));
+public class ThermostatScheduleCompatibility {
     
-    private HardwareType hardwareType;
-    private Set<SchedulableThermostatType> compatibleScheduleTypes;
+    private static final SetMultimap<HardwareType, SchedulableThermostatType> map;
     
-    ThermostatScheduleCompatibility(HardwareType hardwareType,
-                                          Set<SchedulableThermostatType> compatibleScheduleTypes){
-        this.hardwareType = hardwareType;
-        this.compatibleScheduleTypes = compatibleScheduleTypes;
+    static {
+        Builder<HardwareType, SchedulableThermostatType> builder = ImmutableSetMultimap.builder();
+
+        builder.putAll(HardwareType.EXPRESSSTAT,
+                       SchedulableThermostatType.RESIDENTIAL_EXPRESSSTAT,
+                       SchedulableThermostatType.HEAT_PUMP_EXPRESSSTAT);
+        builder.putAll(HardwareType.EXPRESSSTAT_HEAT_PUMP,
+                       SchedulableThermostatType.RESIDENTIAL_EXPRESSSTAT,
+                       SchedulableThermostatType.HEAT_PUMP_EXPRESSSTAT);
+        builder.putAll(HardwareType.COMMERCIAL_EXPRESSSTAT,
+                       SchedulableThermostatType.COMMERCIAL_EXPRESSSTAT);
+        builder.putAll(HardwareType.UTILITY_PRO,
+                       SchedulableThermostatType.UTILITY_PRO);
+        builder.putAll(HardwareType.UTILITY_PRO_ZIGBEE,
+                       SchedulableThermostatType.UTILITY_PRO,
+                       SchedulableThermostatType.UTILITY_PRO_ZIGBEE);
+        builder.putAll(HardwareType.UTILITY_PRO_G2,
+                       SchedulableThermostatType.UTILITY_PRO,
+                       SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
+                       SchedulableThermostatType.UTILITY_PRO_G2,
+                       SchedulableThermostatType.UTILITY_PRO_G3);
+        builder.putAll(HardwareType.UTILITY_PRO_G3,
+                       SchedulableThermostatType.UTILITY_PRO,
+                       SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
+                       SchedulableThermostatType.UTILITY_PRO_G2,
+                       SchedulableThermostatType.UTILITY_PRO_G3);
+        
+        map = builder.build();
     }
     
-    public HardwareType getHardwareType(){
-        return this.hardwareType;
-    }
-    
-    public Set<SchedulableThermostatType> getCompatibleScheduleTypes(){
-        return this.compatibleScheduleTypes;
-    }
-    
-    public static ThermostatScheduleCompatibility getByHardwareType(HardwareType hardwareType){
-        for (ThermostatScheduleCompatibility schedulableThermostatType : ThermostatScheduleCompatibility.values()) {
-            if (schedulableThermostatType.getHardwareType() == hardwareType) {
-                return schedulableThermostatType;
-            }
+    public static Set<SchedulableThermostatType> getCompatibleTypes(HardwareType hardwareType) throws IllegalArgumentException {
+        Set<SchedulableThermostatType> types = map.get(hardwareType);
+        
+        if(types.size() == 0){
+            throw new IllegalArgumentException("Expected a 'Thermostat' HardwareType. hardwareType = [" + hardwareType + "]");
         }
         
-        throw new IllegalArgumentException("Invalid hardwareType: " + hardwareType);
+        return map.get(hardwareType);
     }
 }

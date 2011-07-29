@@ -162,7 +162,7 @@ public class OperatorThermostatScheduleController {
 		accountCheckerService.checkInventory(userContext.getYukonUser(), thermostatIdList);
 
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdList.get(0));
-        List<SchedulableThermostatType> compatibleTypes = new ArrayList<SchedulableThermostatType>(ThermostatScheduleCompatibility.getByHardwareType(thermostat.getType()).getCompatibleScheduleTypes());
+        List<SchedulableThermostatType> compatibleTypes = new ArrayList<SchedulableThermostatType>(thermostat.getCompatibleSchedulableThermostatTypes());
         SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
         List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesAndEntriesForAccountByTypes(fragment.getAccountId(), compatibleTypes);
         

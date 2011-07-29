@@ -166,7 +166,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             thermostats.add(inventoryDao.getThermostatById(statId));
         }
 
-        List<SchedulableThermostatType> compatibleTypes = new ArrayList<SchedulableThermostatType>(ThermostatScheduleCompatibility.getByHardwareType(thermostat.getType()).getCompatibleScheduleTypes());
+        List<SchedulableThermostatType> compatibleTypes = new ArrayList<SchedulableThermostatType>(thermostat.getCompatibleSchedulableThermostatTypes());
         SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
 		List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesAndEntriesForAccountByTypes(account.getAccountId(), compatibleTypes);
 		String temperatureUnit = customerDao.getCustomerForUser(yukonUserContext.getYukonUser().getUserID()).getTemperatureUnit();
