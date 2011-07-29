@@ -9,21 +9,13 @@
 
 <script type="text/javascript">
     getExtraArgs = function(url, addRegPhase) {
-        extraArgs = {};
-        extraArgs.url = url;
-        extraArgs.extraParameters = {};
+        var extraParameters = {};
         if (addRegPhase) {
-            var regPhase = null;
-            <c:if test="${zoneDto.zoneType !=  threePhase}">
-                <c:if test="${!empty zoneDto.regulator.phase}">
-                    regPhase = '${zoneDto.regulator.phase}';
-                </c:if>
-            </c:if> 
-            if (regPhase) {
-                extraArgs.extraParameters.phase = regPhase;
-            }
+            <c:if test="${zoneDto.zoneType !=  threePhase && !empty zoneDto.regulator.phase}">
+                extraParameters.phase = '${zoneDto.regulator.phase}';
+            </c:if>
         }
-        return extraArgs;
+        return {'url' : url, 'extraParameters' : extraParameters};
     };
     
     addBankHandler = function (selectedPaoInfo, picker) {
