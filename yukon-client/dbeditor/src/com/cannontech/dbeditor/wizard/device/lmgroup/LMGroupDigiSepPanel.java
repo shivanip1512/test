@@ -220,12 +220,18 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
         try {
             enrollmentGroup = Integer.parseInt(getUtilityEnerollmentGroupTextField().getText());
         } catch (NumberFormatException n) {
-            setErrorString("Utility Enrollment Group must be between 0 and 255");
+            setErrorString("Utility Enrollment Group must be between 1 and 255");
             return false;
         }
 
         if (enrollmentGroup < 0 || enrollmentGroup > 255) {
-            setErrorString("Utility Enrollment Group must be between 0 and 255");
+            setErrorString("Utility Enrollment Group must be between 1 and 255");
+            return false;
+        }
+        
+        if (enrollmentGroup == 0) {
+            setErrorString("A value of 0 means all devices in the group will respond. " +
+            		"This is not allowed. Utility Enrollment Group must be between 1 and 255");
             return false;
         }
 
