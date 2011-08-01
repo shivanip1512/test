@@ -22,9 +22,9 @@ import javax.swing.event.CaretListener;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
-import com.cannontech.amr.rfn.service.RfnMeterLookupService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -2050,9 +2050,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	    }
     	    
     	    /* Check for duplicates */
-    	    RfnMeterLookupService rfnMeterLookupService = YukonSpringHook.getBean("rfnMeterLookupService", RfnMeterLookupService.class);
+    	    RfnMeterDao rfnMeterDao = YukonSpringHook.getBean("rfnMeterDao", RfnMeterDao.class);
     	    try {
-    	        RfnMeter possibleDuplicate = rfnMeterLookupService.getMeter(new RfnMeterIdentifier(serialNumber, manufacturer, model));
+    	        RfnMeter possibleDuplicate = rfnMeterDao.getMeterForExactIdentifier(new RfnMeterIdentifier(serialNumber, manufacturer, model));
     	        if(possibleDuplicate.getPaoIdentifier().getPaoId() != deviceBase.getPAObjectID()) {
     	            setErrorString("Serial Number, Manufacturer, and Model fields must be unique among RFN Meters.");
     	            return false;

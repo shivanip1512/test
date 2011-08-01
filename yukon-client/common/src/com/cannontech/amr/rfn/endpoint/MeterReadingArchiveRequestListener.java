@@ -49,13 +49,11 @@ import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
-import com.google.common.base.Function;
-import com.google.common.collect.ComputationException;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
-import com.google.common.collect.ImmutableSet.Builder;
 
 @ManagedResource
 public class MeterReadingArchiveRequestListener {
@@ -75,7 +73,6 @@ public class MeterReadingArchiveRequestListener {
     private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private String meterTemplatePrefix;
-    private Map<RfnMeterIdentifier, RfnMeter> existingMeterLookup;
     private Map<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnMeterIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
@@ -103,18 +100,6 @@ public class MeterReadingArchiveRequestListener {
         }
         templatesToIgnore = ignoredTemplateBuilder.build();
         
-        existingMeterLookup = new MapMaker()
-            .concurrencyLevel(4)
-            .expiration(4, TimeUnit.MINUTES)
-            .makeComputingMap(new Function<RfnMeterIdentifier, RfnMeter>() {
-                @Override
-                public RfnMeter apply(RfnMeterIdentifier meterIdentifier) {
-                    meterLookupCacheMiss.incrementAndGet();
-                    RfnMeter rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
-                    return rfnMeter;
-                }
-            });
-        
         recentlyUncreatableTemplates = new MapMaker()
             .concurrencyLevel(10)
             .expiration(5, TimeUnit.SECONDS)
@@ -125,7 +110,6 @@ public class MeterReadingArchiveRequestListener {
             public void dbChangeReceived(DBChangeMsg dbChange) {
                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
                     // no reason to be too delicate here
-                    existingMeterLookup.clear();
                     recentlyUncreatableTemplates.clear();
                 }
             }
@@ -165,14 +149,12 @@ public class MeterReadingArchiveRequestListener {
             RfnMeterIdentifier meterIdentifier = getMeterIdentifier(archiveRequest.getData());
 
             try {
-                // a simple computing map is used as a cache here to handle
-                // multiple requests for the same device in a short period of time
                 meterLookupAttempt.incrementAndGet();
-                RfnMeter rfnMeter = existingMeterLookup.get(meterIdentifier);
+                RfnMeter rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
                 queueForArchiveProcessing(rfnMeter, archiveRequest);
-            } catch (ComputationException e) {
+            } catch (NotFoundException e) {
                 meterLookupError.incrementAndGet();
-                LogHelper.debug(log, "unable to find existing meter, send to create queue: %s", e.getCause().getMessage());
+                LogHelper.debug(log, "unable to find existing meter, send to create queue: %s", meterIdentifier.toString());
                 
                 jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest.create", archiveRequest);
             }

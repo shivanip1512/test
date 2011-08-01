@@ -21,7 +21,15 @@ public class RfnMeterLookupService {
     private ConfigurationSource configurationSource;
     private ImmutableBiMap<String, String> modelTranslations;
     
-    public RfnMeter getMeter(RfnMeterIdentifier meterIdentifier) {
+    /**
+     * Will attempt to retrieve a meter based on meter identifier, if not found will attempt to 
+     * retrieve it based on new versions of model names defined in master.cfg property "RFN_METER_MODEL_CONVERSION".
+     * If still not found, will throw a NotFountException.
+     * @param meterIdentifier
+     * @return RfnMeter
+     * @throws NotFoundException
+     */
+    public RfnMeter getMeter(RfnMeterIdentifier meterIdentifier) throws NotFoundException {
         NotFoundException originalNotFoundException;
         try {
             RfnMeter result = rfnMeterDao.getMeterForExactIdentifier(meterIdentifier);
