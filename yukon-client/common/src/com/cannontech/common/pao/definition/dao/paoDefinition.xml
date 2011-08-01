@@ -75,11 +75,6 @@
             <tag name="MCT_300_SERIES"/>
         </tags>
     </pao>
-    <pao id="DB_EDITOR_INCOMPATIBLE_TAG" abstract="true">
-        <tags>
-            <tag name="DB_EDITOR_INCOMPATIBLE"/>
-        </tags>
-    </pao>
 
     <pao id="SUPPORTS_MCT_DISCONNECT" abstract="true">  <!--  Ability to disconnect through collar device -->
         <points>

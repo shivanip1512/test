@@ -44,7 +44,7 @@ public enum PaoTag {
     DLC_ADDRESS_RANGE("DLC Address Range", stringType()),   // range used for display info, should be limited to mfg addresses
 	DUMMY_LONG_TAG("for internal testing", longType()),  // can be removed when we add a real tag that uses long
 	WATER_METER_DETAIL_DISPLAYABLE("Water Detail Displayable"),
-	DB_EDITOR_INCOMPATIBLE("Not Displayable in DB Editor"),
+	DB_EDITOR_INCOMPATIBLE("Not Displayable in DB Editor (excluded from DeviceTreeModel.java)."),
 	;
 
 	private final String description;
