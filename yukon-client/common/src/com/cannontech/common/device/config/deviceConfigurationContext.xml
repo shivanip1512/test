@@ -625,9 +625,7 @@
 				<bean class="com.cannontech.web.input.type.InputOption">
 					<property name="text" value="Last Interval Voltage" />
 					<property name="value" value="14" />
-				</bean>
-				<!-- Not supported by the MCT-420CL -->
-				<!-- 
+				</bean> 
 				<bean class="com.cannontech.web.input.type.InputOption">
 					<property name="text" value="Peak Voltage" />
 					<property name="value" value="15" />
@@ -652,7 +650,6 @@
 					<property name="text" value="Minimum Voltage Time" />
 					<property name="value" value="20" />
 				</bean>
-				-->
 				<bean class="com.cannontech.web.input.type.InputOption">
 					<property name="text" value="TOU Rate A kWh" />
 					<property name="value" value="21" />
