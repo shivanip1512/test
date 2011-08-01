@@ -36,7 +36,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.stars.dr.hardware.model.ThermostatScheduleCompatibility;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -82,15 +81,15 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         
         ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonUserContext.getYukonUser());
     
-        String pageName = "savedSchedules.";
+        String pageName = "single.send.";
         if(thermostatIds.size() > 1){
-            pageName = "savedSchedulesMultiple.";
+            pageName = "multiple.send.";
         }
         
         if (message.isFailed()) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.consumer." + pageName + message, ats.getScheduleName()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat." + pageName + message, ats.getScheduleName()));
         }else{
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer." + pageName + message, ats.getScheduleName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat." + pageName + message, ats.getScheduleName()));
             //associate the thermostats with this schedule
             accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
         }
@@ -141,7 +140,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         }
 
         //flash messages
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.savedSchedules." + message, ats.getScheduleName()));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.single.send." + message, ats.getScheduleName()));
         map.addAttribute("thermostatIds", StringUtils.join(thermostatIds, ","));
 
         return "redirect:view/saved";
@@ -241,7 +240,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	accountThermostatScheduleDao.deleteById(scheduleId);
     	
     	//flash message
-    	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.deleteSuccess", oldScheduleName));
+    	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.schedules.scheduleDeleted", oldScheduleName));
     	
     	map.addAttribute("thermostatIds", StringUtils.join(thermostatIds, ","));
     	return "redirect:view/saved";

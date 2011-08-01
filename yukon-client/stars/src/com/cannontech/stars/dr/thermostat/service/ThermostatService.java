@@ -123,7 +123,7 @@ public interface ThermostatService {
     /**
      * Schedule Modes are determined by the EnergyCompany that an account belongs to.  This method
      * returns a set of ThermostatScheduleModes given an accountId
-     * @param accountId
+     * @param yukonEnergyCompany energy company we are checking against.
      * @return
      */
     public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModes(YukonEnergyCompany yukonEnergyCompany);

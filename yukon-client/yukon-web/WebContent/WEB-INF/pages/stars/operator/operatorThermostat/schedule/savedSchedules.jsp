@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
     
-<cti:standardPage module="operator" page="${pageName}">
+<cti:standardPage module="operator" page="thermostat.schedules.${pageName}">
 
 <cti:includeCss link="/WebConfig/yukon/styles/thermostat.css"/>
 

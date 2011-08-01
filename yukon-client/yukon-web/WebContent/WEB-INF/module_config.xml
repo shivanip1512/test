@@ -1675,7 +1675,7 @@
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatSavedSchedules" type="BASIC">
+                                            <page name="thermostat.schedules.single" type="BASIC">
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
@@ -1708,7 +1708,7 @@
                                         <link>/spring/stars/operator/thermostatSelect/select?accountId=${accountId}</link>
                                         <labelArgument>${accountNumber}</labelArgument>
                                         <pages>
-                                            <page name="thermostatSavedSchedulesMultiple" type="BASIC">
+                                            <page name="thermostat.schedules.multiple" type="BASIC">
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>

@@ -34,7 +34,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.stars.dr.hardware.model.ThermostatScheduleCompatibility;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
@@ -105,7 +104,7 @@ public class OperatorThermostatScheduleController {
         }
 
         //flash messages
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSavedSchedules." + message, ats.getScheduleName()));
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.single.send." + message, ats.getScheduleName()));
 
         model.addAttribute("thermostatId", thermostatIds);
         return "redirect:savedSchedules";
@@ -133,15 +132,15 @@ public class OperatorThermostatScheduleController {
         
         ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIdList, thermostatScheduleMode, yukonUserContext.getYukonUser());
         
-        String pageName = "thermostatSavedSchedules.";
+        String pageName = "single.send.";
         if(thermostatIdList.size() > 1){
-            pageName = "thermostatSavedSchedulesMultiple.";
+            pageName = "multiple.send.";
         }
         
         if (message.isFailed()) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator." + pageName + message, ats.getScheduleName()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat." + pageName + message, ats.getScheduleName()));
         }else{
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator." + pageName + message, ats.getScheduleName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat." + pageName + message, ats.getScheduleName()));
             //associate the thermostats with this schedule
             accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIdList, ats.getAccountThermostatScheduleId());
         }
@@ -220,13 +219,12 @@ public class OperatorThermostatScheduleController {
         model.addAttribute("allowedModes", modes);
         
         if(thermostatIdList.size() > 1){
-            model.addAttribute("displayName", new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSavedSchedules.multiple"));
-            model.addAttribute("pageName", "thermostatSavedSchedulesMultiple");
+            model.addAttribute("pageName", "multiple");
         }else{
             //the serial number is the same as the hardwareDto.getDisplayName() that appears on the parent page.
-            model.addAttribute("displayName", thermostat.getSerialNumber());
-            model.addAttribute("pageName", "thermostatSavedSchedules");
+            model.addAttribute("pageName", "single");
             model.addAttribute("inventoryId", thermostat.getId());
+            model.addAttribute("displayName", thermostat.getSerialNumber());
         }
         
         return "operator/operatorThermostat/schedule/savedSchedules.jsp";
@@ -271,7 +269,7 @@ public class OperatorThermostatScheduleController {
 		AccountThermostatSchedule schedule = accountThermostatScheduleDao.getById(scheduleId);
 		accountThermostatScheduleDao.deleteById(scheduleId);
 		
-		MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted", schedule.getScheduleName());
+		MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.schedules.scheduleDeleted", schedule.getScheduleName());
 		flash.setConfirm(Collections.singletonList(message));
     	
     	return "redirect:savedSchedules";

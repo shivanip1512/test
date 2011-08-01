@@ -31,7 +31,7 @@
             <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
             <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
         </div>
-        <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.name"/></label>
+        <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></label>
         <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
 
         <div class="days fl">
@@ -41,7 +41,7 @@
                     <div class="period">
                         <div class="period">
                             <div class="info time">
-                                <i:inline key="yukon.dr.consumer.thermostatSchedule.${period}" />
+                                <i:inline key="yukon.web.components.thermostat.period.${period}" />
                             </div>
                             <div class="temp heat">
                                 <i:inline key="yukon.dr.consumer.thermostat.mode.HEAT"/>
@@ -58,10 +58,10 @@
                     <div class="periods">
                         <c:choose>
                             <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
-                                <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr" /></label>
                             </c:when>
                             <c:otherwise>
-                                <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.${day.key}_abbr" /></label>
                             </c:otherwise>
                         </c:choose>
                         <c:forEach var="period" items="${day.value}">
@@ -84,8 +84,10 @@
                                         <div
                                             class="temp heat ${pageScope.temperatureUnit}"
                                             title="${heatLabel}">
-                                            <input type="text" class="heat_F f_selectAll"
-                                                maxlength="4"><i:inline key="yukon.web.defaults.degree"/><input
+                                            <input type="text" 
+                                                   class="heat_F f_selectAll"
+                                                   maxlength="4"><i:inline key="yukon.web.defaults.degree"/>
+                                            <input
                                                 type="hidden"
                                                 value="${period.heatTemp.value}"
                                                 initialValue="${period.heatTemp.value}"
@@ -95,28 +97,38 @@
                                         <div
                                             class="temp cool ${pageScope.temperatureUnit}"
                                             title="${coolLabel}">
-                                            <input type="text" class="cool_F f_selectAll"
-                                                maxlength="4"><i:inline key="yukon.web.defaults.degree"/><input
-                                                type="hidden"
-                                                value="${period.coolTemp.value}"
-                                                initialValue="${period.coolTemp.value}"
-                                                name="cool_F"
-                                                defaultValue="${period.coolTemp.value}">
+                                            <input type="text"
+                                                   class="cool_F f_selectAll"
+                                                   maxlength="4"><i:inline key="yukon.web.defaults.degree"/>
+                                            <input type="hidden"
+                                                   value="${period.coolTemp.value}" 
+                                                   initialValue="${period.coolTemp.value}" 
+                                                   name="cool_F" 
+                                                   defaultValue="${period.coolTemp.value}">
                                         </div>
                                     </div>
                                 </c:when>
                                 <c:otherwise>
                                     <div class="period dn ${period.timeOfWeek}">
-                                        <input type="hidden" name="timeOfWeek"
-                                            value="${period.timeOfWeek}"> <input
-                                            type="hidden" class="time"
-                                            name="secondsFromMidnight"
-                                            value="${period.startTime}"> <input
-                                            type="hidden"
-                                            value="${period.heatTemp.value}"
-                                            name="heat_F"> <input type="hidden"
-                                            value="${period.coolTemp.value}"
-                                            name="cool_F">
+                                        <input type="hidden"
+                                               name="timeOfWeek"
+                                               value="${period.timeOfWeek}">
+                                        <input type="hidden" 
+                                               class="time" 
+                                               name="secondsFromMidnight" 
+                                               value="${period.startTime}"
+                                               initialValue="${period.startTime}"
+                                                defaultValue="${period.startTime}">
+                                        <input type="hidden" 
+                                               value="${period.heatTemp.value}"
+                                               initialValue="${period.heatTemp.value}"
+                                               name="heat_F"
+                                               defaultValue="${period.heatTemp.value}">
+                                        <input type="hidden"
+                                               value="${period.coolTemp.value}"
+                                               initialValue="${period.coolTemp.value}" 
+                                               name="cool_F" 
+                                               defaultValue="${period.coolTemp.value}">
                                     </div>
                                 </c:otherwise>
                             </c:choose>

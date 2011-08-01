@@ -224,70 +224,43 @@
     ]]></entry>
     
     <!-- operatorThermostat/schedule/savedSchedules.jsp -->
-     <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (savedSchedules.jsp - OperatorThermostatScheduleController.java:saveSchedules()) -->
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageName">Thermostat Schedules</entry>
-	<entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.selectedThermostats.heading">{0, choice, 0#Selected Thermostat|1#Selected Thermostat|1&lt;Selected Thermostats}: </entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.contextualPageName">Thermostat Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.multiple">Multiple</entry>
-	<entry key="yukon.web.modules.operator.thermostatSavedSchedules.savedSchedulesUiContainerHeader.title">Saved Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.chooseSchedule">Select a schedule to view:</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.viewSchedule">View Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.delete">Delete</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteSchedule.label">Delete Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteConfirm.title">Confirm Delete</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteConfirm.message">Are you sure?</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createNewSchedule">Create New Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.noSchedules">There are no saved schedules.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.help.title">Thermostat Schedule Hints and Details</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.tempUnit">Temperature Units</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title">Edit Schedule - {0}</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.message">Edit Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title">Create Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.sendConfirm.title">Send Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.sendConfirm.message">Are you sure you want to send this schedule?</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.name">Schedule Name:</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.modeHint">Select the which days of the week you want specific control over the customer's Thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.title">Saved Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent">This is the last Schedule sent to the Thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent.title">Last Schedule Sent</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.otherSchedules.title">Other Schedules</entry>
+    <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (savedSchedules.jsp - OperatorThermostatScheduleController.java:saveSchedules) -->
+    <entry key="yukon.web.modules.operator.thermostat.schedules.single.pageName">Thermostat Schedules</entry>
+	<entry key="yukon.web.modules.operator.thermostat.schedules.single.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.single.contextualPageName">Thermostat Schedules</entry>
     
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.pageName">Thermostat Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.selectedThermostats.heading">{0, choice, 0#Selected Thermostat|1#Selected Thermostat|1&lt;Selected Thermostats}: </entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.contextualPageName">Thermostat Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.multiple">Multiple</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.savedSchedulesUiContainerHeader.title">Saved Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.chooseSchedule">Select a schedule to view:</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.viewSchedule">View Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.delete">Delete</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.deleteSchedule.label">Delete Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.deleteConfirm.title">Confirm Delete</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.deleteConfirm.message">Are you sure?</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.createNewSchedule">Create New Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.noSchedules">There are no saved schedules.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.scheduleDeleted">Schedule "{0}" Deleted.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.help.title">Thermostat Schedule Hints and Details</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.tempUnit">Temperature Units</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.editSchedule.title">Edit Schedule - {0}</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.editSchedule.message">Edit Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.createSchedule.title">Create Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.sendConfirm.title">Send Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.sendConfirm.message">Are you sure you want to send this schedule?</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.name">Schedule Name:</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.modeHint">Select the which days of the week you want specific control over the customer's Thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.title">Saved Schedules</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.lastSent">This is the last Schedule sent to the Thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.lastSent.title">Last Schedule Sent</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.otherSchedules.title">Other Schedules</entry>
+    <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (savedSchedules.jsp - OperatorThermostatScheduleController.java:saveSchedules) -->
+    <entry key="yukon.web.modules.operator.thermostat.schedules.multiple.pageName">Thermostat Schedules</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.multiple.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.multiple.contextualPageName">Thermostat Schedules</entry>
+    
+    <entry key="yukon.web.modules.operator.thermostat.schedules.multiple">Multiple</entry>
+	<entry key="yukon.web.modules.operator.thermostat.schedules.savedSchedulesUiContainerHeader.title">Saved Schedules</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.chooseSchedule">Select a schedule to view:</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.viewSchedule">View Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.delete">Delete</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.deleteSchedule.label">Delete Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.deleteConfirm.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.deleteConfirm.message">Are you sure?</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.createNewSchedule">Create New Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.noSchedules">There are no saved schedules.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.help.title">Thermostat Schedule Hints and Details</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.tempUnit">Temperature Units</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.editSchedule.title">Edit Schedule - {0}</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.editSchedule.message">Edit Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.createSchedule.title">Create Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.sendConfirm.title">Send Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.sendConfirm.message">Are you sure you want to send this schedule?</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.name">Schedule Name:</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.modeHint">Select the which days of the week you want specific control over the customer's Thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.title">Saved Schedules</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.lastSent">This is the last Schedule sent to the Thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.lastSent.title">Last Schedule Sent</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.otherSchedules.title">Other Schedules</entry>
     
     <!-- stars/consumer/thermostat/schedule/view/saved (savedSchedules.jsp - ThermostatScheduleController.java:viewSaved()) -->
     <entry key="yukon.web.modules.consumer.savedSchedules.pageTitle">Thermostat - Schedules</entry>
@@ -307,22 +280,6 @@
     <entry key="yukon.web.modules.consumer.savedSchedules.lastSent">This is the last Schedule sent to your Thermostat.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.lastSent.title">My Current Schedule</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.otherSchedules.title">Other Schedules</entry>
-    <!--  schedule update events: consumer page ThermostatScheduleUpdateResult enum messages -->
-    <entry key="yukon.web.modules.consumer.savedSchedules.UNAVAILABLE_ERROR">Cannot send schedule {0} to thermostat. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.NO_SERIAL_ERROR">Cannot send schedule {0} to thermostat, the serial number is missing. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.MULTIPLE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
-    
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.UNAVAILABLE_ERROR">Cannot send schedule {0} to the selected thermostats. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.NO_SERIAL_ERROR">Cannot send schedule {0} to the selected thermostats, the serial number is missing. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to the selected thermostats.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.MULTIPLE_ERROR">There was a problem sending the schedule to one or more of the thermostats you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostats you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedulesMultiple.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostats receive it.</entry>
     
     <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (defaultThermostatSchedule.jsp - DefaultThermostatScheduleController.java:()) -->
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.tempUnit">Temperature Units</entry>
@@ -342,22 +299,41 @@
     <entry key="yukon.web.modules.consumer.history.title">Command History</entry>
     <entry key="yukon.web.modules.consumer.history.historyTableTitle">Command History</entry>
     
-    <!--  schedule update events: operator page ThermostatScheduleUpdateResult enum messages -->
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.NO_SERIAL_ERROR">The serial # of thermostat cannot be empty. Schedule {0} is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.MULTIPLE_ERROR">There was a problem sending the schedule {0} to thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.SEND_SCHEDULE_ERROR">The schedule {0} could not be sent to thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
+    <!--  schedule update events: consumer page ThermostatScheduleUpdateResult enum messages (single thermostat selected) -->
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.UNAVAILABLE_ERROR">Cannot send schedule {0} to thermostat. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.NO_SERIAL_ERROR">Cannot send schedule {0} to thermostat, the serial number is missing. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.MULTIPLE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
     
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.NO_SERIAL_ERROR">The serial # of thermostat cannot be empty. Schedule {0} is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.MULTIPLE_ERROR">There was a problem sending the schedule {0} to one or more of the thermostats you selected.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.SEND_SCHEDULE_ERROR">The schedule {0} could not be sent to the thermostats.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedulesMultiple.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostats receive it.</entry>
+    <!--  schedule update events: consumer page ThermostatScheduleUpdateResult enum messages (multiple thermostats selected) -->
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.UNAVAILABLE_ERROR">Cannot send schedule {0} to thermostats. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.NO_SERIAL_ERROR">Cannot send schedule {0} to thermostats, the serial number is missing. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostats.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.MULTIPLE_ERROR">There was a problem sending the schedule to the thermostats you selected. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostats you selected. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostats receive it.</entry>
+    
+    <!--  schedule update events: operator page ThermostatScheduleUpdateResult enum messages (single thermostat selected) -->
+    <entry key="yukon.web.modules.operator.thermostat.single.send.UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.NO_SERIAL_ERROR">The serial # of thermostat cannot be empty. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.MULTIPLE_ERROR">There was a problem sending the schedule {0} to thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.SEND_SCHEDULE_ERROR">The schedule {0} could not be sent to thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
+    
+    <!--  schedule update events: operator page ThermostatScheduleUpdateResult enum messages (multiple thermostats selected) -->
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.NO_SERIAL_ERROR">The serial # of thermostat cannot be empty. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.MULTIPLE_ERROR">There was a problem sending the schedule {0} to one or more of the thermostats you selected.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.SEND_SCHEDULE_ERROR">The schedule {0} could not be sent to the thermostats.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostats receive it.</entry>
     
     <!-- Time of week -->
     <entry key="yukon.web.modules.operator.thermostat.schedule.EVERYDAY">Everyday</entry>
@@ -382,5 +358,38 @@
     <entry key="yukon.web.components.button.recommendedSettings.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>
     <entry key="yukon.web.components.button.recommendedSettings.hoverText">Replace all values with recommended settings.</entry>
     <entry key="yukon.web.components.button.recommendedSettings.label">Recommended Settings</entry>
+    
+    <!-- Time of week -->
+    <entry key="yukon.web.components.thermostat.schedule.EVERYDAY">Everyday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.WEEKDAY">Weekday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.WEEKEND">Weekend</entry>
+
+    <entry key="yukon.web.components.thermostat.schedule.SATURDAY">Saturday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.SUNDAY">Sunday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.MONDAY">Monday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.TUESDAY">Tuesday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.WEDNESDAY">Wednesday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.THURSDAY">Thursday</entry>
+    <entry key="yukon.web.components.thermostat.schedule.FRIDAY">Friday</entry>
+    
+    <!-- Time of week abbreviated -->
+    <entry key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr">All</entry>
+    <entry key="yukon.web.components.thermostat.schedule.WEEKDAY_abbr">M-F</entry>
+    <entry key="yukon.web.components.thermostat.schedule.WEEKEND_abbr">Sa/Su</entry>
+
+    <entry key="yukon.web.components.thermostat.schedule.SATURDAY_abbr">Sa</entry>
+    <entry key="yukon.web.components.thermostat.schedule.SUNDAY_abbr">Su</entry>
+    <entry key="yukon.web.components.thermostat.schedule.MONDAY_abbr">M</entry>
+    <entry key="yukon.web.components.thermostat.schedule.TUESDAY_abbr">Tu</entry>
+    <entry key="yukon.web.components.thermostat.schedule.WEDNESDAY_abbr">W</entry>
+    <entry key="yukon.web.components.thermostat.schedule.THURSDAY_abbr">Th</entry>
+    <entry key="yukon.web.components.thermostat.schedule.FRIDAY_abbr">F</entry>
+    
+    <entry key="yukon.web.components.thermostat.period.WAKE">Wake</entry>
+    <entry key="yukon.web.components.thermostat.period.LEAVE">Leave</entry>
+    <entry key="yukon.web.components.thermostat.period.RETURN">Return</entry>
+    <entry key="yukon.web.components.thermostat.period.SLEEP">Sleep</entry>
+    <entry key="yukon.web.components.thermostat.period.OCCUPIED">Occupied</entry>
+    <entry key="yukon.web.components.thermostat.period.UNOCCUPIED">Unoccupied</entry>
     
 </properties>

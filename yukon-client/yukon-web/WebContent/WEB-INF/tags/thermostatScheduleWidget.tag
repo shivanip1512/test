@@ -47,10 +47,10 @@
                         <div class="periods">
                             <c:choose>
                                 <c:when test="${pageScope.schedule.thermostatScheduleMode == 'ALL'}">
-                                    <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                    <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr" /></label>
                                 </c:when>
                                 <c:otherwise>
-                                    <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                    <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.${day.key}_abbr" /></label>
                                 </c:otherwise>
                             </c:choose>
                             <c:forEach var="period" items="${day.value}">
@@ -91,14 +91,14 @@
         </form>
     </div>
     <c:if test="${empty pageScope.omitEditor or not pageScope.omitEditor}">
-        <i:simplePopup  titleKey="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" 
+        <i:simplePopup  titleKey="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" 
                         arguments="${pageScope.schedule.scheduleName}" 
                         id="editSchedule_${pageScope.schedule.accountThermostatScheduleId}" 
                         on=".edit_${pageScope.schedule.accountThermostatScheduleId}, .copy_${pageScope.schedule.accountThermostatScheduleId}">
                         <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
                         <input type="hidden" name="copyName" value="${copyPrefix} ${pageScope.schedule.scheduleName}"/>
-                        <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title"/>"/>
-                        <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" arguments="${pageScope.schedule.scheduleName}"/>"/>
+                        <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.createSchedule.title"/>"/>
+                        <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" arguments="${pageScope.schedule.scheduleName}"/>"/>
             <div class="container">
                  <tags:thermostatScheduleEditor schedule="${pageScope.schedule}"
                                         thermostatId="${pageScope.thermostatId}"
