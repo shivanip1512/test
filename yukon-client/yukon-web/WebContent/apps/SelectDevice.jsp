@@ -1,10 +1,16 @@
-<%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
-
+<%@page import="com.cannontech.stars.util.ServletUtils"%>
+<%@page import="com.cannontech.util.ServletUtil"%>
+<%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
 <%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <cti:verifyRolesAndProperties value="ENABLE_WEB_COMMANDER"/>
+<%
+	final LiteYukonUser lYukonUser = ServletUtil.getYukonUser(session);
+	String errorMsg = ServletUtils.removeErrorMessage(session);
+%>
 
 <jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
 
