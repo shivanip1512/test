@@ -39,7 +39,7 @@
     </target>
 
     <target name="runUnitTests" depends="init">
-        <!-- All of our build files need this target for this to work
+        <!-- All of our build files need this target for this to work !!!TEST!!!
         <antcall target="callall" inheritAll="true">
             <param name="dotarget" value="runUnitTests"/>
         </antcall>
