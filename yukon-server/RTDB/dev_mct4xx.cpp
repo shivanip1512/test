@@ -203,24 +203,12 @@ string Mct4xxDevice::printable_date(unsigned long timestamp)
 
 bool Mct4xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-    bool found = false;
-
-    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
-
-    if( itr != _commandStore.end( ) )
+    if( getOperationFromStore(_commandStore, cmd, bst) )
     {
-        bst.Function = itr->function;   //  Copy the relevant bits from the commandStore
-        bst.Length   = itr->length;     //
-        bst.IO       = itr->io;         //
-
-        found = true;
-    }
-    else    //  Look in the parent if not found in the child
-    {
-        found = Inherited::getOperation( cmd, bst );
+        return true;
     }
 
-    return found;
+    return Inherited::getOperation(cmd, bst);
 }
 
 

@@ -1,16 +1,13 @@
 #include "dev_mct410.h"
 #include "devicetypes.h"
 
-#include "boost_test_helpers.h"
-
-#define BOOST_TEST_MAIN "Test dev_mct410"
+#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-#include <limits>
-
-using boost::unit_test_framework::test_suite;
+#include "boost_test_helpers.h"
 
 using Cti::Devices::Mct410Device;
+using Cti::Protocols::EmetconProtocol;
 using std::string;
 using std::list;
 
@@ -24,8 +21,11 @@ struct test_Mct410Device : Mct410Device
 
     typedef Mct410Device::point_info point_info;
 
+    using MctDevice::getOperation;
+
     using Mct410Device::getDemandData;
     using Mct410Device::extractDynamicPaoInfo;
+    using Mct410Device::executeGetConfig;
     using Mct410Device::executePutConfig;
 
     using Mct410Device::decodeDisconnectStatus;
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 
     im.Buffer.DSt.Length = 13;
     im.Return.ProtocolInfo.Emetcon.Function = 0;
-    im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocols::EmetconProtocol::IO_Read;
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
 
     dev.extractDynamicPaoInfo(im);
 
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 
     im.Buffer.DSt.Length = 3;
     im.Return.ProtocolInfo.Emetcon.Function = 0xad; //  FuncRead_TOUDaySchedulePos;  it's protected, so instead of inheriting it, it's a magic number
-    im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocols::EmetconProtocol::IO_Function_Read;
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
 
     dev.extractDynamicPaoInfo(im);
 
@@ -184,431 +184,339 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 }
 
 
-/*
-*** TESTING: "putconfig emetcon centron...." commands and parameters
-*/
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio)
+struct command_execution_environment
 {
     test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
+    OUTMESS                *om;
     list<CtiMessage*>       vgList, retList;
     list<OUTMESS*>          outList;
 
-    CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 0s errors disable" );
+    command_execution_environment()
+    {
+        om = new OUTMESS;
+    }
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
+    ~command_execution_environment()
+    {
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
 
-    BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
-    BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
-    BOOST_CHECK_EQUAL( 0x00 , om->Buffer.BSt.Message[1] );
-}
+        delete om;
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
+
+    /*
+    *** TESTING: "putconfig emetcon centron...." commands and parameters
+    */
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 5x1 test 0s errors disable" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  2 , om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
+        BOOST_CHECK_EQUAL( 0x00 , om->Buffer.BSt.Message[1] );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  3 , om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
+        BOOST_CHECK_EQUAL( 0x00 , om->Buffer.BSt.Message[1] );
+        BOOST_CHECK_EQUAL(   40 , om->Buffer.BSt.Message[2] );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x1_1s_enable)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 4x1 test 1s errors enable" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  2 , om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
+        BOOST_CHECK_EQUAL( 0x15 , om->Buffer.BSt.Message[1] );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x1_1s_enable)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  3 , om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
+        BOOST_CHECK_EQUAL( 0x15 , om->Buffer.BSt.Message[1] );
+        BOOST_CHECK_EQUAL(   60 , om->Buffer.BSt.Message[2] );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x10_7s_enable)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 4x10 test 7s errors enable" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  2 , om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
+        BOOST_CHECK_EQUAL( 0x1E , om->Buffer.BSt.Message[1] );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x10_7s_enable)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  3 , om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
+        BOOST_CHECK_EQUAL( 0x1E , om->Buffer.BSt.Message[1] );
+        BOOST_CHECK_EQUAL(  200 , om->Buffer.BSt.Message[2] );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_display)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 5x3 test 0s errors disable" );
+                                                               //  5x3 is not a valid option
+        BOOST_CHECK_EQUAL(    0 , retList.size() );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  1 , retList.size() );
+
+        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_display)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 40 display 5x3 test 0s errors disable" );
+                                                                        //  5x3 is not a valid option
+        BOOST_CHECK_EQUAL(    0 , retList.size() );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  1 , retList.size() );
+
+        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_test)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 5x1 test 3s errors disable" );
+                                                                         // 3 is not a valid option
+        BOOST_CHECK_EQUAL(    0 , retList.size() );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  1 , retList.size() );
+
+        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 40 display 5x1 test 3s errors disable" );
+                                                                                  // 3 is not a valid option
+        BOOST_CHECK_EQUAL(    0 , retList.size() );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  1 , retList.size() );
+
+        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 400 display 5x1 test 0s errors disable" );
+                                                              // 400 is not a valid option ( 0 <= ratio <= 255 )
+        BOOST_CHECK_EQUAL(    0 , retList.size() );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  1 , retList.size() );
+
+        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid transformer ratio (400)" , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 5x1 test 0s" );
+
+        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_test)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron display 5x1 errors enable" );
+
+        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_display)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron test 0 errors enable" );
+
+        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_all_with_ratio)
+    {
+        CtiCommandParser parse( "putconfig emetcon centron ratio 40" );
+
+        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getconfig_address_unique)
+    {
+        CtiCommandParser parse( "getconfig address unique" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   3);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getconfig_thresholds)
+    {
+        CtiCommandParser parse( "getconfig thresholds" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x1e);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   5);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getconfig_meter_ratio)
+    {
+        CtiCommandParser parse( "getconfig meter ratio" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x19);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getconfig_freeze)
+    {
+        CtiCommandParser parse( "getconfig freeze" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1);
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
 
 
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio)
+struct single_error_validator : command_execution_environment
 {
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable" );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
-    BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
-    BOOST_CHECK_EQUAL( 0x00 , om->Buffer.BSt.Message[1] );
-    BOOST_CHECK_EQUAL(   40 , om->Buffer.BSt.Message[2] );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x1_1s_enable)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron display 4x1 test 1s errors enable" );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
-    BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
-    BOOST_CHECK_EQUAL( 0x15 , om->Buffer.BSt.Message[1] );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x1_1s_enable)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable" );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
-    BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
-    BOOST_CHECK_EQUAL( 0x15 , om->Buffer.BSt.Message[1] );
-    BOOST_CHECK_EQUAL(   60 , om->Buffer.BSt.Message[2] );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x10_7s_enable)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron display 4x10 test 7s errors enable" );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
-    BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
-    BOOST_CHECK_EQUAL( 0x1E , om->Buffer.BSt.Message[1] );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x10_7s_enable)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable" );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
-    BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
-    BOOST_CHECK_EQUAL( 0x1E , om->Buffer.BSt.Message[1] );
-    BOOST_CHECK_EQUAL(  200 , om->Buffer.BSt.Message[2] );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_display)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-                                                                  //  5x3 is not a valid option
-    CtiCommandParser        parse( "putconfig emetcon centron display 5x3 test 0s errors disable" );
-
-    BOOST_CHECK_EQUAL(    0 , retList.size() );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    1 , retList.size() );
-
-    CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
-
-    BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
-
-    delete errorMsg;        // clean up the return message
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_display)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-                                                                           //  5x3 is not a valid option
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 40 display 5x3 test 0s errors disable" );
-
-    BOOST_CHECK_EQUAL(    0 , retList.size() );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    1 , retList.size() );
-
-    CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
-
-    BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
-
-    delete errorMsg;        // clean up the return message
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_test)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-                                                                            // 3 is not a valid option
-    CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 3s errors disable" );
-
-    BOOST_CHECK_EQUAL(    0 , retList.size() );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    1 , retList.size() );
-
-    CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
-
-    BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
-
-    delete errorMsg;        // clean up the return message
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-                                                                                     // 3 is not a valid option
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 40 display 5x1 test 3s errors disable" );
-
-    BOOST_CHECK_EQUAL(    0 , retList.size() );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    1 , retList.size() );
-
-    CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
-
-    BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
-
-    delete errorMsg;        // clean up the return message
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-                                                                 // 400 is not a valid option ( 0 <= ratio <= 255 )
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 400 display 5x1 test 0s errors disable" );
-
-    BOOST_CHECK_EQUAL(    0 , retList.size() );
-
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    1 , retList.size() );
-
-    CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
-
-    BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid transformer ratio (400)" , errorMsg->ResultString() );
-
-    delete errorMsg;        // clean up the return message
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 0s" );
-
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_test)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron display 5x1 errors enable" );
-
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_display)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron test 0 errors enable" );
-
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_all_with_ratio)
-{
-    test_Mct410Device    mct410;
-
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-
-    CtiCommandParser        parse( "putconfig emetcon centron ratio 40" );
-
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
-
-    BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
-}
+    ~single_error_validator()
+    {
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK_EQUAL(retList.size(), 1);
+    }
+};
 
 
 // These commands are errors and should only return a single error. See YUK-5059
-BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor)
-{
-    test_Mct410Device   mct410;
+BOOST_FIXTURE_TEST_SUITE(test_single_error_executor, single_error_validator)
 
-    CtiRequestMsg           request;
-    OUTMESS                *om = new OUTMESS;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
-    CtiDeviceBase          *basePtr = &mct410;
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor01)
+    {
+        CtiCommandParser parse("getvalue lp channel 1 02/02/2010 01/01/2010");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor02)
+    {
+        CtiCommandParser parse("control disconnect");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor03)
+    {
+        CtiCommandParser parse("putconfig emetcon address uniq 2455535535553555");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor04)
+    {
+        CtiCommandParser parse("putconfig emetcon centron ratio 10 display 4x5 test 5 errors disable");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor05)
+    {
+        CtiCommandParser parse("putconfig emetcon centron ratio 290 display 5x1 test 7 errors disable");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor06)
+    {
+        CtiCommandParser parse("putconfig emetcon centron ratio 25 display 5x1 test 10 errors disable");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor07)
+    {
+        CtiCommandParser parse("putconfig emetcon disconnect load limit 100 100");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor08)
+    {
+        CtiCommandParser parse("putconfig emetcon disconnect cycle 1 1");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor09)
+    {
+        CtiCommandParser parse("putconfig emetcon outage threshold 200");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor10)
+    {
+        CtiCommandParser parse("putconfig emetcon freeze day 266");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor11)
+    {
+        CtiCommandParser parse("getvalue daily read detail channel 2 02/02/2000");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor12)
+    {
+        CtiCommandParser parse("getvalue daily read detail channel 8");
+        mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
+    }
 
-    CtiCommandParser parse = CtiCommandParser("getvalue lp channel 1 02/02/2010 01/01/2010");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
+BOOST_AUTO_TEST_SUITE_END()
 
-    parse = CtiCommandParser("control disconnect");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon address uniq 2455535535553555");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon centron ratio 10 display 4x5 test 5 errors disable");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon centron ratio 290 display 5x1 test 7 errors disable");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon centron ratio 25 display 5x1 test 10 errors disable");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon disconnect load limit 100 100");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon disconnect cycle 1 1");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon outage threshold 200");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("putconfig emetcon freeze day 266");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("getvalue daily read detail channel 2 02/02/2000");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-
-    parse = CtiCommandParser("getvalue daily read detail channel 8");
-    basePtr->beginExecuteRequest(&request, parse,  vgList , retList, outList);
-    BOOST_CHECK(outList.empty());
-    BOOST_CHECK_EQUAL(retList.size(), 1);
-    delete_container(retList);
-    retList.clear();
-    outList.clear();
-}
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
 {
@@ -956,3 +864,561 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_canDailyReadDateAlias)
     BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate(31, 10, 2001)));
 }
 
+
+struct getOperation_helper
+{
+    test_Mct410Device mct;
+    BSTRUCT BSt;
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
+
+    BOOST_AUTO_TEST_CASE(test_getOperation_01)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Command_Loop, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_02)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Model, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_03)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Install, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_04)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_GroupAddressEnable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x54);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_05)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_GroupAddressInhibit, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x53);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_06)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Raw, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_07)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Shed, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_08)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Restore, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    //  Overridden by MCT-410
+    /*
+    BOOST_AUTO_TEST_CASE(test_getOperation_09)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Connect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write | 0x20);  //  Q_ARML
+        BOOST_CHECK_EQUAL(BSt.Function, 0x42);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_10)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Disconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write | 0x20);  //  Q_ARML
+        BOOST_CHECK_EQUAL(BSt.Function, 0x41);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    */
+    BOOST_AUTO_TEST_CASE(test_getOperation_11)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_ARMC, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x62);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_12)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_ARML, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x60);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    //  Overridden by MCT-410
+    /*
+    BOOST_AUTO_TEST_CASE(test_getOperation_13)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_TSync, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x49);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    */
+    //  MCT-4xx commands
+    BOOST_AUTO_TEST_CASE(test_getOperation_14)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_TOUPeak, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xb0);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_15)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutValue_TOUReset, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x5f);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_16)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutValue_ResetPFCount, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x89);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_17)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TSync, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf0);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_18)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TOUEnable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x56);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_19)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TOUDisable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x55);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_20)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LoadProfileInterest, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x05);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
+    }
+    //  MCT-410 commands
+    BOOST_AUTO_TEST_CASE(test_getOperation_21)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Scan_Accum, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x90);
+        BOOST_CHECK_EQUAL(BSt.Length,   9);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_22)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_KWH, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x90);
+        BOOST_CHECK_EQUAL(BSt.Length,   9);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_23)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_FrozenKWH, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x91);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_24)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_TOUkWh, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xe0);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_25)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_FrozenTOUkWh, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xe1);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_26)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Scan_Integrity, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x92);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_27)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Scan_LoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_28)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_LoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_29)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_LoadProfilePeakReport, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_30)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_Demand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x92);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_31)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_PeakDemand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x93);
+        BOOST_CHECK_EQUAL(BSt.Length,   9);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_32)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_FrozenPeakDemand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x94);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_33)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_Voltage, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x95);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_34)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_FrozenVoltage, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x96);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_35)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_Outage, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x10);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_36)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_Internal, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x05);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_37)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_LoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x97);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_38)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_Freeze, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x26);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_39)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Connect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x4c);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_40)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Disconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x4d);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_41)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_Disconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_42)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Disconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
+        BOOST_CHECK_EQUAL(BSt.Length,   11);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_43)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Disconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_44)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Raw, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_45)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_TSync, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x44);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_46)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Time, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x3f);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_47)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_FreezeDay, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x4f);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_48)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x3f);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_49)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Intervals, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x03);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_50)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Intervals, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x1a);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_51)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_OutageThreshold, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x22);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_52)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Thresholds, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_53)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_DailyReadInterest, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf3);
+        BOOST_CHECK_EQUAL(BSt.Length,   2);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_54)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_PFCount, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x23);
+        BOOST_CHECK_EQUAL(BSt.Length,   2);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_55)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_Reset, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x8a);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_56)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_ResetAlarms, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x08);
+        BOOST_CHECK_EQUAL(BSt.Length,   2);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_57)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_FreezeOne, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x51);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_58)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_FreezeTwo, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x52);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_59)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_FreezeVoltageOne, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x59);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_60)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_FreezeVoltageTwo, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x5a);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_61)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_UniqueAddress, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf1);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_62)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_UniqueAddress, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x10);
+        BOOST_CHECK_EQUAL(BSt.Length,   3);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_63)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Multiplier, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x19);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_64)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_MeterParameters, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x0f);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_65)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Freeze, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x4f);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_66)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LongLoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x04);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_67)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_LongLoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x9d);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_68)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_VThreshold, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_69)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Holiday, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd0);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_70)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Holiday, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd0);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_71)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Options, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x01);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_72)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_AutoReconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x01);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_73)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Outage, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x22);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_74)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x36);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_75)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_PhaseDetect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x0f);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_76)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_PhaseDetect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x10);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_77)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_PhaseDetectClear, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   2);
+    }
+
+BOOST_AUTO_TEST_SUITE_END()

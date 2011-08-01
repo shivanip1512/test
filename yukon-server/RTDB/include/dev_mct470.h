@@ -473,7 +473,7 @@ protected:
 
     unsigned long convertTimestamp(unsigned long timestamp, const CtiDate &current_date=CtiDate()) const;
 
-    unsigned char computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution);
+    static unsigned char computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution);
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );

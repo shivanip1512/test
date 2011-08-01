@@ -79,18 +79,8 @@ Mct24xDevice::CommandSet Mct24xDevice::initCommandStore()
 
 bool Mct24xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-    bool found = false;
-
-    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
-
-    if( itr != _commandStore.end() )
+    if( getOperationFromStore(_commandStore, cmd, bst) )
     {
-        bst.Function = itr->function;   // Copy over the found function
-        bst.Length   = itr->length;     // Copy over the found length
-        bst.IO       = itr->io;         // Copy over the found io indicator
-
-        found = true;
-
         //  LP Interval write doesn't need Q_ARMC
         if( bst.IO == EmetconProtocol::IO_Write && bst.Length )
         {
@@ -103,13 +93,11 @@ bool Mct24xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
             bst.Function = MCT250_StatusPos;
             bst.Length   = MCT250_StatusLen;
         }
-    }
-    else    // Look in the parent if not found in the child
-    {
-        found = Inherited::getOperation(cmd, bst);
+
+        return true;
     }
 
-    return found;
+    return Inherited::getOperation(cmd, bst);
 }
 
 

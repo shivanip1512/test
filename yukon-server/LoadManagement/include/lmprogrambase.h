@@ -18,11 +18,8 @@ class CtiLMProgramControlWindow;
 class CtiLMControlArea;
 
 class CtiLMProgramBase;
-#if VSLICK_TAG_WORKAROUND
-typedef CtiLMProgramBase * CtiLMProgramBaseSPtr;
-#else
+
 typedef boost::shared_ptr< CtiLMProgramBase > CtiLMProgramBaseSPtr;
-#endif
 
 class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
 {

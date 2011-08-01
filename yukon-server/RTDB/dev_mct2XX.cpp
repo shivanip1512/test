@@ -71,34 +71,17 @@ Mct2xxDevice::CommandSet Mct2xxDevice::initCommandStore()
 
 bool Mct2xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-    bool found = false;
-
-    if(_commandStore.empty())  // Must initialize!
+    if( getOperationFromStore(_commandStore, cmd, bst) )
     {
-        Mct2xxDevice::initCommandStore();
-    }
-
-    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
-
-    if( itr != _commandStore.end() )
-    {
-        bst.Function = itr->function;             // Copy over the found function!
-        bst.Length   = itr->length;              // Copy over the found length!
-        bst.IO       = itr->io;                              // Copy over the found io indicator!
-
         if( bst.IO == EmetconProtocol::IO_Write && bst.Length )
         {
             bst.IO |= Q_ARMC;
         }
 
-        found = true;
-    }
-    else                                         // Look in the parent if not found in the child!
-    {
-        found = Inherited::getOperation(cmd, bst);
+        return true;
     }
 
-    return found;
+    return Inherited::getOperation(cmd, bst);
 }
 
 

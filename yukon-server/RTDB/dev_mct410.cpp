@@ -418,6 +418,10 @@ Mct410Device::CommandSet Mct410Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeVoltageTwo, EmetconProtocol::IO_Write,          Command_FreezeVoltageTwo,       0));
 
     cs.insert(CommandStore(EmetconProtocol::PutConfig_UniqueAddress,    EmetconProtocol::IO_Function_Write, FuncWrite_SetAddressPos,        FuncWrite_SetAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_UniqueAddress,    EmetconProtocol::IO_Read,           Memory_UniqueAddressPos,        Memory_UniqueAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,       EmetconProtocol::IO_Read,           Memory_TransformerRatioPos,     Memory_TransformerRatioLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_MeterParameters,  EmetconProtocol::IO_Read,           Memory_DisplayParametersPos,    Memory_DisplayParametersLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Freeze,           EmetconProtocol::IO_Read,           Memory_DayOfScheduledFreezePos, Memory_DayOfScheduledFreezeLen));
 
     //******************************** Config Related starts here *************************
     cs.insert(CommandStore(EmetconProtocol::PutConfig_LongLoadProfile,  EmetconProtocol::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
@@ -479,24 +483,12 @@ long Mct410Device::getLoadProfileInterval( unsigned channel )
 
 bool Mct410Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-    bool found = false;
-
-    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
-
-    if( itr != _commandStore.end( ) )
+    if( getOperationFromStore(_commandStore, cmd, bst) )
     {
-        bst.Function = itr->function;   //  Copy the relevant bits from the commandStore
-        bst.Length   = itr->length;     //
-        bst.IO       = itr->io;         //
-
-        found = true;
-    }
-    else    //  Look in the parent if not found in the child
-    {
-        found = Inherited::getOperation( cmd, bst );
+        return true;
     }
 
-    return found;
+    return Inherited::getOperation(cmd, bst);
 }
 
 
@@ -1992,71 +1984,43 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("thresholds") )
     {
-        found = getOperation(EmetconProtocol::GetConfig_Thresholds, OutMessage->Buffer.BSt);
-
         OutMessage->Sequence = EmetconProtocol::GetConfig_Thresholds;
+
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("address_unique") )
     {
-        found = true;
-
-        OutMessage->Buffer.BSt.Function = Memory_UniqueAddressPos;
-        OutMessage->Buffer.BSt.Length   = Memory_UniqueAddressLen;
-        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-
         OutMessage->Sequence = EmetconProtocol::GetConfig_UniqueAddress;
+
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+    }
+    else if( parse.isKeyValid("transformer_ratio") )
+    {
+        OutMessage->Sequence = EmetconProtocol::GetConfig_Multiplier;
+
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("meter_parameters") )
     {
-        found = true;
+        OutMessage->Sequence = EmetconProtocol::GetConfig_MeterParameters;
 
-        if( parse.isKeyValid("transformer_ratio") )
-        {
-            OutMessage->Buffer.BSt.Function = Memory_TransformerRatioPos;
-            OutMessage->Buffer.BSt.Length   = Memory_TransformerRatioLen;
-            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-
-            OutMessage->Sequence = EmetconProtocol::GetConfig_Multiplier;
-        }
-        else if( parse.isKeyValid("display_parameters") )
-        {
-            OutMessage->Buffer.BSt.Function = Memory_DisplayParametersPos;
-            OutMessage->Buffer.BSt.Length   = Memory_DisplayParametersLen;
-            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-
-            OutMessage->Sequence = EmetconProtocol::GetConfig_MeterParameters;
-        }
-        else
-        {
-            OutMessage->Buffer.BSt.Function = Memory_CentronConfigPos;
-            OutMessage->Buffer.BSt.Length   = Memory_CentronConfigLen;
-            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-
-            OutMessage->Sequence = EmetconProtocol::GetConfig_MeterParameters;
-        }
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("freeze") )
     {
-        found = true;
-
-        OutMessage->Buffer.BSt.Function = Memory_DayOfScheduledFreezePos;
-        OutMessage->Buffer.BSt.Length   = Memory_DayOfScheduledFreezeLen;
-        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-
         OutMessage->Sequence = EmetconProtocol::GetConfig_Freeze;
+
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("phasedetectread"))
     {
-
-        OutMessage->Buffer.BSt.Function = EmetconProtocol::GetConfig_PhaseDetect;
-        found = getOperation(OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt);
+        OutMessage->Sequence = EmetconProtocol::GetConfig_PhaseDetect;
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
 
         if(parse.isKeyValid("phasedetectarchive"))
         {
             OutMessage->Sequence = EmetconProtocol::GetConfig_PhaseDetectArchive;
         }
-        else
-            OutMessage->Sequence = EmetconProtocol::GetConfig_PhaseDetect;
     }
     else
     {

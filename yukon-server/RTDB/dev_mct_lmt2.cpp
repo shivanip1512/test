@@ -52,24 +52,12 @@ Lmt2Device::CommandSet Lmt2Device::initCommandStore()
 
 bool Lmt2Device::getOperation( const UINT &cmd, BSTRUCT &bst) const
 {
-   bool found = false;
+    if( getOperationFromStore(_commandStore, cmd, bst) )
+    {
+        return true;
+    }
 
-   CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
-
-   if( itr != _commandStore.end() )    // It's prego!
-   {
-      bst.Function = itr->function;
-      bst.Length   = itr->length;
-      bst.IO       = itr->io;
-
-      found = true;
-   }
-   else     // Look in the parent if not found in the child
-   {
-      found = Inherited::getOperation(cmd, bst);
-   }
-
-   return found;
+    return Inherited::getOperation(cmd, bst);
 }
 
 

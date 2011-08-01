@@ -1817,7 +1817,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 temp2 = cmdtok();
 
                 //  if it's just "interval," get the next token
-                if( temp2.compareTo("interval") == 0 )
+                if( temp2 == "interval" )
                 {
                     //  "li" or "lp"
                     temp2 = cmdtok();
@@ -1834,23 +1834,25 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         if(CmdStr.contains(" centron") ||
            CmdStr.contains(" meter"))
         {
-            _cmd["meter_parameters"] = CtiParseValue(true);
-
             if(!(token = CmdStr.match(re_meter_parameters)).empty())
             {
                 CtiTokenizer cmdtok(token);
 
-                cmdtok();          //  move past "centron" or "meter"
+                //  check if it's the deprecated "centron" form
+                if( cmdtok() == "centron" )
+                {
+                    _cmd["centron_parameters"] = true;
+                }
 
                 temp2 = cmdtok();  //  grab the token we care about
 
-                if( !temp2.compareTo("ratio") )
+                if( temp2 == "ratio" )
                 {
-                    _cmd["transformer_ratio"] = CtiParseValue(true);
+                    _cmd["transformer_ratio"] = true;
                 }
-                if( !temp2.compareTo("parameters") )
+                if( temp2 == "parameters" )
                 {
-                    _cmd["display_parameters"] = CtiParseValue(true);
+                    _cmd["meter_parameters"] = true;
                 }
             }
         }

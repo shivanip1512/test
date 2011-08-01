@@ -30,6 +30,8 @@ protected:
 
     virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
 
+    static bool getOperationFromStore( const CommandSet &store, const UINT &cmd, BSTRUCT &bst );
+
     enum WireConfig
     {
         WireConfigInvalid   = 0,

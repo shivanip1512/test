@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogramcurtailment.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiLMProgramCurtailment
 
         Initial Date:  3/23/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -17,7 +17,7 @@
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmcurtailcustomer.h"
 #include "lmprogrambase.h"
@@ -127,11 +127,7 @@ private:
     void restore(Cti::RowReader &rdr);
 };
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiLMProgramCurtailment * CtiLMProgramCurtailmentSPtr;
-#else
 typedef boost::shared_ptr< CtiLMProgramCurtailment > CtiLMProgramCurtailmentSPtr;
-#endif
 
 #endif
 

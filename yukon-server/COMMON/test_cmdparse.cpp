@@ -1,57 +1,37 @@
-/*
- * file test_cmdparse.cpp
- *
- * Author: Jian Liu
- * Date: 07/18/2005 11:23:53
- *
- *
- * test cmdparse.cpp
- *
- * use test_cmdparse_input.h as the input
- * should expect output in test_cmdparse_output.h
- *
- */
+#include "cmdparse.h"
 
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Test CommandParse"
+#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-
-#include "boostutil.h"
-
-#include <string>
 
 #include "test_cmdparse_input.h"
 #include "test_cmdparse_output.h"
-#include "cmdparse.h"
-#include "ctistring.h"
-
-using std::string;
 
 using boost::unit_test_framework::test_suite;
 
 BOOST_AUTO_TEST_CASE(testString)
 {
-    const size_t test_size = sizeof(inputString) / sizeof(inputString[0]);
+    std::vector<std::string> parsedStrings;
 
-    for( int i = 0; i < test_size; i++ )
+    for each( const std::string input in inputStrings )
     {
-        CtiCommandParser parse(inputString[i]);
-
-        BOOST_CHECK_EQUAL(parse.asString(), parse_asString[i]);
+        parsedStrings.push_back(CtiCommandParser(input).asString());
     }
+
+    const size_t expected_size = sizeof(parse_asString) / sizeof(parse_asString[0]);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(parsedStrings.begin(), parsedStrings.end(), parse_asString, parse_asString + expected_size);
 }
 
 BOOST_AUTO_TEST_CASE(testDeviceGroupQuotes)
 {
-    const string lead_trail_apos = "getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''";
-    const string mid_apos        = "getvalue kwh update timeout 1800 select group '/Meters/Collection/Intern's Group'";
+    const std::string lead_trail_apos = "getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''";
+    const std::string mid_apos        = "getvalue kwh update timeout 1800 select group '/Meters/Collection/Intern's Group'";
 
     CtiCommandParser leadTrailParser(lead_trail_apos);
     CtiCommandParser midParser      (mid_apos);
 
-    static const CtiString lead_trail_outcome = "/Meters/Collection/'Test Group'";
-    static const CtiString mid_outcome        = "/Meters/Collection/Intern's Group";
+    const std::string lead_trail_outcome = "/Meters/Collection/'Test Group'";
+    const std::string mid_outcome        = "/Meters/Collection/Intern's Group";
 
     BOOST_CHECK_EQUAL(leadTrailParser.getsValue("group"), lead_trail_outcome);
     BOOST_CHECK_EQUAL(midParser.getsValue("group"), mid_outcome);
@@ -85,14 +65,16 @@ BOOST_AUTO_TEST_CASE(testShedTimes)
         1800,
     };
 
-    const size_t test_size = sizeof(inStrings) / sizeof(inStrings[0]);
+    std::vector<double> shedTimes;
 
-    for( int i = 0; i < test_size; i++ )
+    for each( std::string input in inStrings )
     {
-        CtiCommandParser parser(inStrings[i]);
-
-        BOOST_CHECK_EQUAL(parser.getdValue("shed"), shedSecondTimes[i]);
+        shedTimes.push_back(CtiCommandParser(input).getdValue("shed"));
     }
+
+    const size_t expected_size = sizeof(shedSecondTimes) / sizeof(shedSecondTimes[0]);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(shedTimes.begin(), shedTimes.end(), shedSecondTimes, shedSecondTimes + expected_size);
 }
 
 

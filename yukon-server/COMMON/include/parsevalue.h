@@ -1,19 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   parsevalue
-*
-* Class:  CtiParseValue
-* Date:   2/22/2000
-*
-* Author: Corey G. Plender
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PARSEVALUE_H__
-#define __PARSEVALUE_H__
-#pragma warning( disable : 4786)
+#pragma once
 
-
+#include "windef.h"  //  for INT and UINT - should be removed when they're converted to int, unsigned, etc
 #include <limits.h>
 
 class CtiParseValue
@@ -144,4 +131,3 @@ public:
       return *this;
    }
 };
-#endif // #ifndef __PARSEVALUE_H__

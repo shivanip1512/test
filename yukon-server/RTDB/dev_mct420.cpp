@@ -15,8 +15,20 @@ using std::vector;
 namespace Cti {
 namespace Devices {
 
+const Mct420Device::CommandSet       Mct420Device::_commandStore = Mct420Device::initCommandStore();
 const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = Mct420Device::initConfigParts();
 const Mct420Device::read_key_store_t Mct420Device::_readKeyStore = Mct420Device::initReadKeyStore();
+
+
+Mct420Device::CommandSet Mct420Device::initCommandStore()
+{
+    CommandSet cs;
+
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,       EmetconProtocol::IO_Function_Read, 0xf3, 2));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_MeterParameters,  EmetconProtocol::IO_Function_Read, 0xf3, 2));
+
+    return cs;
+}
 
 Mct420Device::ConfigPartsList Mct420Device::initConfigParts()
 {
@@ -64,6 +76,17 @@ Mct420Device::read_key_store_t Mct420Device::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(read2, 12, 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26));
 
     return readKeyStore;
+}
+
+
+bool Mct420Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+{
+    if( getOperationFromStore(_commandStore, cmd, bst) )
+    {
+        return true;
+    }
+
+    return Inherited::getOperation(cmd, bst);
 }
 
 
@@ -260,6 +283,23 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 }
 
 
+int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
+                                    CtiCommandParser     &parse,
+                                    OUTMESS             *&OutMessage,
+                                    list< CtiMessage* >  &vgList,
+                                    list< CtiMessage* >  &retList,
+                                    list< OUTMESS* >     &outList )
+{
+    //  Explicitly disallow this command for the MCT-420
+    if( parse.isKeyValid("centron_parameters") )
+    {
+        return NoMethod;
+    }
+
+    return Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+}
+
+
 DlcBaseDevice::DlcCommandSPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
 {
     return DlcCommandSPtr(new Mct420HourlyReadCommand(date_begin, date_end, channel));
@@ -296,6 +336,9 @@ int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
 
     string resultString = getName() + " / Meter Parameters:\n";
 
+    resultString += "Disconnect display ";
+    resultString += (DSt->Message[0] & 0x80) ? "disabled\n" : "enabled\n";
+
     resultString += "LCD cycle time: ";
 
     if( const unsigned lcd_cycle_time = DSt->Message[0] & 0x0f )
@@ -306,6 +349,8 @@ int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
     {
         resultString += "8 seconds (meter default)\n";
     }
+
+    resultString += "Transformer ratio: " + CtiNumStr(DSt->Message[1]) + "\n";
 
     CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 

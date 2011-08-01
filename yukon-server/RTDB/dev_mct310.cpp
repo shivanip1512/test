@@ -141,32 +141,20 @@ Mct310Device::CommandSet Mct310Device::initCommandStore( )
 
 bool Mct310Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-    bool found = false;
-
-    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
-
     //  the 310IL/IDL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
     if( cmd == EmetconProtocol::Scan_LoadProfile &&
         getType( ) != TYPEMCT310IL  &&
         getType( ) != TYPEMCT310IDL )
     {
-        //  for emphasis...
-        found = false;
-    }
-    else if( itr != _commandStore.end( ) )
-    {
-        bst.Function = itr->function;    //  Copy the relevant bits from the commandStore
-        bst.Length   = itr->length;      //
-        bst.IO       = itr->io;          //
-
-        found = true;
-    }
-    else  //  Look in the parent if not found in the child
-    {
-        found = Inherited::getOperation( cmd, bst );
+        return false;
     }
 
-    return found;
+    if( getOperationFromStore(_commandStore, cmd, bst) )
+    {
+        return true;
+    }
+
+    return Inherited::getOperation(cmd, bst);
 }
 
 

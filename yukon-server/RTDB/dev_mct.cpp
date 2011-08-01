@@ -3781,25 +3781,24 @@ bool MctDevice::hasVariableDemandRate( int type, int sspec )
 
 bool MctDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-   bool found = false;
+   return getOperationFromStore(_commandStore, cmd, bst);
+}
 
-   if(_commandStore.empty())  // Must initialize!
-   {
-      initCommandStore();
-   }
 
-   CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
+bool MctDevice::getOperationFromStore( const CommandSet &store, const UINT &cmd, BSTRUCT &bst )
+{
+   CommandSet::const_iterator itr = store.find(CommandStore(cmd));
 
-   if( itr != _commandStore.end() )     // It's prego!
+   if( itr != store.end() )     // It's prego!
    {
       bst.Function  = itr->function;     // Copy over the found funcLen pair!
       bst.Length    = itr->length;      // Copy over the found funcLen pair!
       bst.IO        = itr->io;
 
-      found = true;
+      return true;
    }
 
-   return found;
+   return false;
 }
 
 

@@ -1,18 +1,18 @@
 #include "dev_mct470.h"
 
-#define BOOST_TEST_MAIN "Test dev_mct470"
+#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-#include <limits>
-
-using boost::unit_test_framework::test_suite;
-
 using Cti::Devices::Mct470Device;
+using Cti::Protocols::EmetconProtocol;
+
 using std::list;
 
 struct test_Mct470Device : Mct470Device
 {
     typedef Mct470Device::point_info point_info;
+
+    using MctDevice::getOperation;
 
     using Mct470Device::extractDynamicPaoInfo;
     using Mct470Device::convertTimestamp;
@@ -324,27 +324,481 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
  */
 BOOST_AUTO_TEST_CASE(test_dev_mct470_computeResolutionByte)
 {
-    using Cti::Protocols::EmetconProtocol;
-    test_Mct470Device dev;
+    BOOST_CHECK_EQUAL(0x1b, test_Mct470Device::computeResolutionByte(0.1,  1.0, 1.0));
 
-    double lpResolution = 0.1;
-    double peakKwResolution = 1.0;
-    double lastIntervalDemandResolution = 1.0;
-    unsigned char resultByte = dev.computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
-    BOOST_CHECK_EQUAL(0x1b, resultByte);
-    std::cout << (int)resultByte << std::endl;
+    BOOST_CHECK_EQUAL(0x12, test_Mct470Device::computeResolutionByte(1.0, 10.0, 1.0));
 
-    lpResolution = 1.0;
-    peakKwResolution = 10.0;
-    lastIntervalDemandResolution = 1.0;
-    resultByte = dev.computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
-    BOOST_CHECK_EQUAL(0x12, resultByte);
-    std::cout << (int)resultByte << std::endl;
-
-    lpResolution = 1.0;
-    peakKwResolution = 10.0;
-    lastIntervalDemandResolution = 0.1;
-    resultByte = dev.computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
-    BOOST_CHECK_EQUAL(0x22, resultByte);
-    std::cout << (int)resultByte << std::endl;
+    BOOST_CHECK_EQUAL(0x22, test_Mct470Device::computeResolutionByte(1.0, 10.0, 0.1));
 }
+
+
+struct getOperation_helper
+{
+    test_Mct470Device mct;
+    BSTRUCT BSt;
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
+
+    BOOST_AUTO_TEST_CASE(test_getOperation_01)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Command_Loop, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_02)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Model, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_03)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Install, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_04)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_GroupAddressEnable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x54);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_05)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_GroupAddressInhibit, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x53);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_06)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Raw, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_07)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Shed, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_08)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Restore, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_09)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Connect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write | 0x20);  //  Q_ARML
+        BOOST_CHECK_EQUAL(BSt.Function, 0x42);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_10)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Control_Disconnect, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write | 0x20);  //  Q_ARML
+        BOOST_CHECK_EQUAL(BSt.Function, 0x41);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_11)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_ARMC, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x62);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_12)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_ARML, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x60);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    //  Overridden by MCT-470
+    /*
+    BOOST_AUTO_TEST_CASE(test_getOperation_13)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_TSync, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x49);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    */
+    //  MCT-4xx commands
+    BOOST_AUTO_TEST_CASE(test_getOperation_14)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_TOUPeak, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xb0);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_15)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutValue_TOUReset, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x5f);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_16)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutValue_ResetPFCount, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x89);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_17)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TSync, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf0);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_18)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TOUEnable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x56);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_19)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TOUDisable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x55);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_20)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LoadProfileInterest, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x05);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
+    }
+    //  MCT-470 commands
+    BOOST_AUTO_TEST_CASE(test_getOperation_21)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Scan_Accum, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x90);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_22)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_KWH, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x90);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_23)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_FrozenKWH, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x91);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_24)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Scan_Integrity, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x92);
+        BOOST_CHECK_EQUAL(BSt.Length,   11);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_25)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_Demand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x92);
+        BOOST_CHECK_EQUAL(BSt.Length,   11);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_26)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Scan_LoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_27)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_Demand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x92);
+        BOOST_CHECK_EQUAL(BSt.Length,   11);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_28)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_PeakDemand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x93);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_29)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutValue_KYZ, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd5);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_30)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Raw, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_31)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Raw, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_32)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Multiplier, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x21);
+        BOOST_CHECK_EQUAL(BSt.Length,   10);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_33)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Multiplier, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x88);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_34)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Time, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x28);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_35)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_TSync, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x2d);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_36)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x28);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_37)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Intervals, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x03);
+        BOOST_CHECK_EQUAL(BSt.Length,   3);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_38)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Intervals, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x32);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_39)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_PrecannedTable, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd3);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_40)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_ChannelSetup, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x20);
+        BOOST_CHECK_EQUAL(BSt.Length,   7);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_41)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_ChannelSetup, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x07);
+        BOOST_CHECK_EQUAL(BSt.Length,   7);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_42)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_LoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_43)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_LoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x97);
+        BOOST_CHECK_EQUAL(BSt.Length,   11);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_44)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_Internal, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x05);
+        BOOST_CHECK_EQUAL(BSt.Length,   3);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_45)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_PFCount, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x13);
+        BOOST_CHECK_EQUAL(BSt.Length,   2);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_46)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_IED, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x00);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_47)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_IEDDemand, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd5);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_48)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_IEDDNP, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd4);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_49)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_IEDTime, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd3);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_50)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_IEDDNP, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x24);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_51)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_IEDDNPAddress, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf6);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_52)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_IEDDNPAddress, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf6);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_53)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_IEDDNPAddress, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xf6);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_54)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutValue_IEDReset, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xd0);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_55)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_FreezeOne, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x51);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_56)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutStatus_FreezeTwo, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x52);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_57)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetStatus_Freeze, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x15);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_58)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetValue_PhaseCurrent, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xda);
+        BOOST_CHECK_EQUAL(BSt.Length,   13);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_59)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LongLoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x04);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_60)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_LongLoadProfile, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x9d);
+        BOOST_CHECK_EQUAL(BSt.Length,   8);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_61)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Holiday, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xe0);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_62)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_Holiday, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0xe0);
+        BOOST_CHECK_EQUAL(BSt.Length,   12);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_63)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_Options, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x01);
+        BOOST_CHECK_EQUAL(BSt.Length,   3);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_64)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x1f);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_65)
+    {
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_SPID, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x12);
+        BOOST_CHECK_EQUAL(BSt.Length,   1);
+    }
+
+BOOST_AUTO_TEST_SUITE_END()

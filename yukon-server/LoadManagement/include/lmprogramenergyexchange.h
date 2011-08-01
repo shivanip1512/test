@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogramenergyexchange.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiLMProgramEnergyExchange
 
         Initial Date:  5/4/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -17,7 +17,7 @@
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmprogrambase.h"
 #include "observe.h"
@@ -79,7 +79,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
 
     // Static Members
 
-    // Possible 
+    // Possible
 
 private:
 
@@ -92,15 +92,11 @@ private:
 
     std::vector<CtiLMEnergyExchangeOffer*>     _lmenergyexchangeoffers;
     std::vector<CtiLMEnergyExchangeCustomer*>  _lmenergyexchangecustomers;
-                                               
+
     void restore(Cti::RowReader &rdr);
 };
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiLMProgramEnergyExchange * CtiLMProgramEnergyExchangeSPtr;
-#else
 typedef boost::shared_ptr< CtiLMProgramEnergyExchange > CtiLMProgramEnergyExchangeSPtr;
-#endif
 
 #endif
 

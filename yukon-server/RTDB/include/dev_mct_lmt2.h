@@ -5,7 +5,7 @@
 namespace Cti {
 namespace Devices {
 
-class Lmt2Device : public Mct22xDevice
+class IM_EX_DEVDB Lmt2Device : public Mct22xDevice
 {
 private:
 

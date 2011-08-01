@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogramdirect.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiLMProgramDirect
-                        CtiLMProgramDirect 
+                        CtiLMProgramDirect
 
         Initial Date:  2/2/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -24,7 +24,7 @@
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmprogrambase.h"
 #include "observe.h"
@@ -35,11 +35,7 @@
 
 class CtiLMProgramDirect;
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiLMProgramDirect * CtiLMProgramDirectSPtr;
-#else
 typedef boost::shared_ptr< CtiLMProgramDirect > CtiLMProgramDirectSPtr;
-#endif
 
 class CtiLMProgramDirect : public CtiLMProgramBase
 {
@@ -47,7 +43,7 @@ class CtiLMProgramDirect : public CtiLMProgramBase
 public:
 
 RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
-    
+
     CtiLMProgramDirect();
     CtiLMProgramDirect(Cti::RowReader &rdr);
     CtiLMProgramDirect(const CtiLMProgramDirect& directprog);
@@ -62,7 +58,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const std::string& getAdditionalInfo() const;
     LONG getTriggerOffset() const;
     LONG getTriggerRestoreOffset() const;
-	
+
     LONG getCurrentGearNumber() const;
     LONG getLastGroupControlled() const;
 //    LONG getDailyOps();
@@ -72,16 +68,16 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const CtiTime& getNotifyInactiveTime() const;
     const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
-    
+
     bool getIsRampingIn();
     bool getIsRampingOut();
-    
+
     std::vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
     CtiLMGroupVec& getLMProgramDirectGroups();
-        
+
     std::set<CtiLMProgramDirectSPtr>& getMasterPrograms();
     std::set<CtiLMProgramDirectSPtr>& getSubordinatePrograms();
-    
+
     std::vector<int>&  getNotificationGroupIDs();
 
     CtiLMProgramDirect& setMessageSubject(const std::string& subject);
@@ -90,14 +86,14 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setAdditionalInfo(const std::string& additional);
     CtiLMProgramDirect& setTriggerOffset(LONG trigger_offst);
     CtiLMProgramDirect& setTriggerRestoreOffset(LONG restore_offst);
-    
+
     CtiLMProgramDirect& setCurrentGearNumber(LONG currentgear);
     CtiLMProgramDirect& setLastGroupControlled(LONG lastcontrolled);
 
-    
+
     CtiLMProgramDirect& setDirectStartTime(const CtiTime& start);
     CtiLMProgramDirect& setDirectStopTime(const CtiTime& stop);
-    CtiLMProgramDirect& setNotifyActiveTime(const CtiTime& notify);    
+    CtiLMProgramDirect& setNotifyActiveTime(const CtiTime& notify);
     CtiLMProgramDirect& setNotifyInactiveTime(const CtiTime& notify);
     CtiLMProgramDirect& setStartedRampingOutTime(const CtiTime& started);
     CtiLMProgramDirect& setConstraintOverride(BOOL override);
@@ -105,13 +101,13 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     virtual CtiLMProgramBase& setProgramState(LONG newState);
 
-    
+
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
-    
+
     BOOL maintainProgramControl(LONG currentPriority, std::vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
     BOOL hasGearChanged(LONG currentPriority,         std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     CtiLMProgramDirectGear* getCurrentGearObject();
@@ -128,14 +124,14 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     bool isControlling();
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
-    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);    
-    BOOL wasControlActivatedByStatusTrigger();   
+    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);
+    BOOL wasControlActivatedByStatusTrigger();
 
     virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
-    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);    
+    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
@@ -146,17 +142,17 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
 
     void startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
-    void refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);    
+    void refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
     bool restoreGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
     bool terminateGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
-    
+
     void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
     void scheduleStartNotification(const CtiTime& start_time);
     void scheduleStopNotification(const CtiTime& stop_time);
 
     virtual void setLastUser(const std::string& user);
     virtual void setChangeReason(const std::string& reason);
-	
+
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -176,7 +172,7 @@ private:
 
     typedef CtiLMProgramBase Inherited;
     bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
-    
+
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
 
@@ -188,7 +184,7 @@ private:
     std::string _change_reason;
     LONG _trigger_offset;
     LONG _trigger_restore_offset;
-	
+
     LONG _currentgearnumber;
     LONG _lastgroupcontrolled;
 
@@ -199,18 +195,18 @@ private:
 
     CtiTime _startedrampingout;
     BOOL _constraint_override;
-    
+
     BOOL _controlActivatedByStatusTrigger;
-    
+
     //When the dynamic data was last saved
     CtiTime  _dynamictimestamp;
-    
+
     std::vector<CtiLMProgramDirectGear*> _lmprogramdirectgears;
     CtiLMGroupVec  _lmprogramdirectgroups;
 
     std::set<CtiLMProgramDirectSPtr> _master_programs;
     std::set<CtiLMProgramDirectSPtr> _subordinate_programs;
-                                     
+
     std::vector<int> _notificationgroupids;
 
     unsigned long _curLogID;
@@ -218,10 +214,10 @@ private:
     //don't stream/don't save
     BOOL _insertDynamicDataFlag;
     bool _announced_program_constraint_violation; // used for timed schedules so we don't spam the logs with constraint violations
-    
+
     void ResetGroups();
     void ResetGroupsControlState();
-    void ResetGroupsInternalState();    
+    void ResetGroupsInternalState();
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
     void updateStandardControlActiveState(LONG numberOfActiveGroups);
     double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
@@ -233,7 +229,7 @@ private:
     void setCurrentHistLogId(unsigned long logID);
     std::string getAndClearChangeReason();
     std::string getLastUser();
-    
+
     void restore(Cti::RowReader &rdr);
 };
 #endif

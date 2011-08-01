@@ -1,59 +1,37 @@
-#include "precompiled.h"
-
 #include "cmdparse.h"
-#include "numstr.h"
 
 #include "test_cmdparse_input.h"
 
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 int main(int argc, char **argv)
 {
-    char *file = "..\\common\\include\\test_cmdparse_output.h";
+    std::ofstream outputfile("..\\common\\include\\test_cmdparse_output.h");
 
-    try
+    outputfile << "#pragma once\n\n";
+    outputfile << "#include <string>\n\n";
+    outputfile << "std::string parse_asString[] = {\n";
+
+    unsigned counter = 0;
+
+    for each( const std::string &inputString in inputStrings )
     {
-        ofstream outputfile(file);
+        std::cout << "Processing \"" << inputString << "\"" << std::endl;
 
-        string parse_asString;
-
-        const size_t test_size = sizeof(inputString) / sizeof(inputString[0]);
-
-        for( int i = 0; i < test_size; i++ )
+        if( counter && counter % 10 == 0 )
         {
-            CtiCommandParser parse(inputString[i]);
-
-            cout << "Processing \"" << inputString[i] << "\"" << endl;
-
-            parse_asString += "\"";
-            parse_asString += parse.asString();
-            parse_asString += "\"";
-
-            if( (i + 1) < test_size )
-            {
-                parse_asString += ",\n";
-            }
+            outputfile << "//  " << counter << "\n";
         }
 
-        outputfile << "#pragma once" << endl;
-        outputfile << endl;
-        outputfile << "#include \"test_cmdparse_input.h\"" << endl;
-        outputfile << endl;
+        outputfile << "\"";
+        outputfile << CtiCommandParser(inputString).asString();
+        outputfile << "\",\n";
 
-        outputfile << "std::string parse_asString[] = {" << endl;
-        outputfile << parse_asString << endl;
-        outputfile << "};" << endl;
-
-        outputfile.close();
-    }
-    catch(RWxmsg &msg)
-    {
-        cout << "Exception: ";
-        cout << msg.why() << endl;
+        counter++;
     }
 
-    return 0;
+    outputfile << "};";
+
+    outputfile.close();
 }
