@@ -14,14 +14,14 @@
 <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('#refresh, #commission, #decommission', function(event) {
+YEvent.observeSelectorClick('#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
     var url = '/spring/stars/operator/hardware/zb/';
     var button = event.findElement('button');
     if (button.id == 'refresh') {
         url += 'refresh';
-    } else if (button.id == 'commission') {
+    } else if (button.name == 'commissionSubmit') {
         url += 'commission';
-    } else {
+    } else if (button.name == 'decommissionSubmit') {
         url += 'decommission';
     }
     
@@ -568,7 +568,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             </table>
                             <div id="zbCommandFailure" style="display:none;" class="errorMessage zbCommandMsg"></div>
                             <div id="zbCommandSuccess" style="display:none;" class="successMessage zbCommandMsg"></div>
-                            <div class="actionArea">
+                            <div class="pageActionArea">
                                 <c:choose>
                                     <c:when test="${showDisabledRefresh}">
                                         <cti:button key="refreshDisabled" disabled="true"/>
@@ -580,6 +580,14 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <c:if test="${showCommissionActions}">
                                     <cti:button key="commission" id="commission"/>
                                     <cti:button key="decommission" id="decommission"/>
+                                    <tags:confirmDialog submitName="commissionSubmit"
+                                        nameKey=".commissionConfirmation"
+                                        styleClass="smallSimplePopup" on="#commission"
+                                        endAction="hide" />
+                                    <tags:confirmDialog submitName="decommissionSubmit"
+                                        nameKey=".decommissionConfirmation"
+                                        styleClass="smallSimplePopup" on="#decommission"
+                                        endAction="hide" />
                                 </c:if>
                                 
                                 <c:if test="${showDisabledCommissionActions}">

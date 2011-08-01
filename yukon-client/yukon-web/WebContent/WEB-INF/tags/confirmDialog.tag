@@ -9,8 +9,9 @@
 <%@ attribute name="submitName" rtexprvalue="true" description="This will be the name of the OK submit button."%>
 <%@ attribute name="argument" type="java.lang.Object" rtexprvalue="true"%>
 <%@ attribute name="on" rtexprvalue="true" description="registers click event on the element with this CSS selector"%>
-<%@ attribute name="styleClass"  rtexprvalue="true"%>
-<%@ attribute name="href"  rtexprvalue="true"%>
+<%@ attribute name="styleClass" rtexprvalue="true"%>
+<%@ attribute name="href" rtexprvalue="true"%>
+<%@ attribute name="endAction" description="The end action for the confirmDialog. The options for this are 'nothing' (the default--the confirmDialog stays shown), 'hide', or 'block' (the confirmDialog stays shown, but the page is blocked)"%>
 
 <cti:uniqueIdentifier var="uniqueId"/>
 <c:if test="${!empty pageScope.id}">
@@ -30,12 +31,38 @@
         <h3 class="dialogQuestion">${confirmationMsg}</h3>
 
         <div class="actionArea">
-            <c:if test="${empty pageScope.submitName}">
-                <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" />
-            </c:if>
-            <c:if test="${!empty pageScope.submitName}">
-                <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" name="${pageScope.submitName}" href="${pageScope.href}"/>
-            </c:if>
+            <c:choose>
+                <c:when test="${empty pageScope.endAction || pageScope.endAction == 'nothing'}">
+                    <c:if test="${empty pageScope.submitName}">
+                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" />
+                    </c:if>
+                    <c:if test="${!empty pageScope.submitName}">
+                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit"
+                            name="${pageScope.submitName}" href="${pageScope.href}" />
+                    </c:if>
+                </c:when>
+                <c:when test="${pageScope.endAction == 'hide'}">
+                    <c:if test="${empty pageScope.submitName}">
+                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit"
+                            onclick="$('${uniqueId}').hide()" />
+                    </c:if>
+                    <c:if test="${!empty pageScope.submitName}">
+                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit"
+                            name="${pageScope.submitName}" href="${pageScope.href}"
+                            onclick="$('${uniqueId}').hide()" />
+                    </c:if>
+                </c:when>
+                <c:when test="${pageScope.endAction == 'block'}">
+                    <c:if test="${empty pageScope.submitName}">
+                        <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
+                            type="submit" />
+                    </c:if>
+                    <c:if test="${!empty pageScope.submitName}">
+                        <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
+                            type="submit" name="${pageScope.submitName}" href="${pageScope.href}" />
+                    </c:if>
+                </c:when>
+            </c:choose>
             <cti:button key="cancel" onclick="$('${uniqueId}').hide()" />
         </div>
     </i:simplePopup>

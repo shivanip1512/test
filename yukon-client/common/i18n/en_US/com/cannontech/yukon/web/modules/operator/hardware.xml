@@ -172,6 +172,12 @@
     <entry key="yukon.web.modules.operator.hardware.decommission.hoverText">Decommission the device</entry>
     <entry key="yukon.web.modules.operator.hardware.decommission.label">Decommission</entry>
 
+    <entry key="yukon.web.modules.operator.hardware.commissionConfirmation.title">Commission the device</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionConfirmation.message">Are you sure you want to commission the device?</entry>
+    
+    <entry key="yukon.web.modules.operator.hardware.decommissionConfirmation.title">Decommission the device</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionConfirmation.message">Are you sure you want to decommission the device?</entry>
+
     <entry key="yukon.web.modules.operator.hardware.commission.disabled.hoverText">Device must be assigned to a gateway to use the Commission command</entry>
     <entry key="yukon.web.modules.operator.hardware.commission.disabled.label">Commission</entry>
     <entry key="yukon.web.modules.operator.hardware.decommission.disabled.hoverText">Device must be assigned to a gateway to use the Decommission command</entry>
