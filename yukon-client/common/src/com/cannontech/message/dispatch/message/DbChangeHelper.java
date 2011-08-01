@@ -6,7 +6,10 @@ import org.apache.commons.lang.Validate;
 
 public class DbChangeHelper {
     public static DBChangeMsg newDbChange(DbChangeType type, DbChangeCategory category, int primaryKey) {
-        DBChangeMsg msg = new DBChangeMsg(primaryKey, DBChangeMsg.CHANGE_DO_NOT_CARE_DB, category.getStringRepresentation(), type);
+    	// see DbChangeIdentifier, for that code to work, we need to create a unique "database" for each category of change
+    	// otherwise, the value doesn't matter
+    	int fakeDatabaseNum = DBChangeMsg.USES_NEW_CATEGORY_ENUM - category.ordinal();
+    	DBChangeMsg msg = new DBChangeMsg(primaryKey, fakeDatabaseNum, category.getStringRepresentation(), type);
         return msg;
     }
 

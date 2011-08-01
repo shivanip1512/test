@@ -27,7 +27,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 
 
 	//Possible values for the database field
-	public static final int CHANGE_DO_NOT_CARE_DB = -999;
+	public static final int USES_NEW_CATEGORY_ENUM = -1000; 
 	public static final int CHANGE_PAO_DB = 0;
 	public static final int CHANGE_POINT_DB = 1;
 	public static final int CHANGE_STATE_GROUP_DB = 2;
@@ -184,11 +184,11 @@ public void setDbChangeType(DbChangeType dbChangeType) {
 public String toString() 
 {
 	StringBuilder retString = new StringBuilder(150);
-	retString .append("DbChange: Database=" + getDatabase());
-	retString .append("; Type=" + getDbChangeType());
-	retString .append("; ID=" + getId());
-	retString .append("; Category=" + getCategory());
-	retString .append("; ObjectType=" + getObjectType());
+	retString.append("DbChange: Database=" + getDatabase());
+	retString.append("; Type=" + getDbChangeType());
+	retString.append("; ID=" + getId());
+	retString.append("; Category=" + getCategory());
+	retString.append("; ObjectType=" + getObjectType()); 
 
 	return retString.toString();
 }
