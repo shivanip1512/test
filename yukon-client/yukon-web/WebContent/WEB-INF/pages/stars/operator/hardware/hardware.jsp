@@ -47,15 +47,17 @@ YEvent.observeSelectorClick('#refresh, button[name=commissionSubmit], button[nam
     });
 });
 
-YEvent.observeSelectorClick('#assignedDevicesCommission, #assignedDevicesDecommission', function(event) {
+YEvent.observeSelectorClick('button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
     var url = '/spring/stars/operator/hardware/zb/';
     var button = event.findElement('button');
-    var deviceId = button.name;
+    var deviceId;
     
-    if (button.id == 'assignedDevicesCommission') {
+    if (button.name.startsWith('assignedDevicesCommissionSubmit_')) {
         url += 'commission';
-    } else {
+        deviceId = button.name.sub('assignedDevicesCommissionSubmit_', '');
+    } else if (button.name.startsWith('assignedDevicesDecommissionSubmit_')) {
         url += 'decommission';
+        deviceId = button.name.sub('assignedDevicesDecommissionSubmit_', '');
     }
     
     Yukon.ui.blockElement({selector:'#assignedDevices_content'});
@@ -570,11 +572,11 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                     <cti:button key="decommission" id="decommission"/>
                                     <tags:confirmDialog submitName="commissionSubmit"
                                         nameKey=".commissionConfirmation"
-                                        styleClass="smallSimplePopup" on="#commission"
+                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#commission"
                                         endAction="hide" />
                                     <tags:confirmDialog submitName="decommissionSubmit"
                                         nameKey=".decommissionConfirmation"
-                                        styleClass="smallSimplePopup" on="#decommission"
+                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#decommission"
                                         endAction="hide" />
                                 </c:if>
                                 
@@ -612,8 +614,16 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                                     </cti:pointStatusColor>
                                                 </td>
                                                 <td class="nonwrapping">
-                                                    <cti:button key="assignedDevices.commission" name="${device.deviceId}" renderMode="image" id="assignedDevicesCommission"/>
-                                                    <cti:button key="assignedDevices.decommission" name="${device.deviceId}" renderMode="image" id="assignedDevicesDecommission"/>
+                                                    <cti:button key="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission"/>
+                                                    <cti:button key="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission"/>
+                                                    <tags:confirmDialog submitName="assignedDevicesCommissionSubmit_${device.deviceId}"
+                                                        nameKey=".commissionConfirmation"
+                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on=".assignedDevicesCommission"
+                                                        endAction="hide" />
+                                                    <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
+                                                        nameKey=".decommissionConfirmation"
+                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on=".assignedDevicesDecommission"
+                                                        endAction="hide" />
                                                     
                                                     <cti:url value="/spring/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
                                                         <cti:param name="accountId" value="${accountId}"/>
