@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/28/2011 4:01:05 PM                         */
+/* Created on:     8/2/2011 10:33:55 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7237,6 +7237,14 @@ create table ScheduledGrpCommandRequest (
    CommandRequestExecContextId numeric              not null,
    JobId                int                  not null,
    constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecContextId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_SchGrpComReq_JobId                               */
+/*==============================================================*/
+create index Indx_SchGrpComReq_JobId on ScheduledGrpCommandRequest (
+JobId ASC
 )
 go
 

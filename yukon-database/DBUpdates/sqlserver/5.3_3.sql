@@ -76,6 +76,12 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId IN (-20892, -20899, -40204, -40205); 
 /* End YUK-10090 */
 
+/* Start YUK-10120 */ 
+CREATE INDEX Indx_SchGrpComReq_JobId ON ScheduledGrpCommandRequest (
+   JobId ASC
+);
+/* End YUK-10120 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

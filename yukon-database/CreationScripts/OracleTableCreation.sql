@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/28/2011 3:49:01 PM                         */
+/* Created on:     8/2/2011 10:38:25 AM                         */
 /*==============================================================*/
 
 
@@ -6805,6 +6805,13 @@ create table ScheduledGrpCommandRequest  (
    CommandRequestExecContextId NUMBER                          not null,
    JobId                INTEGER                         not null,
    constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecContextId)
+);
+
+/*==============================================================*/
+/* Index: Indx_SchGrpComReq_JobId                               */
+/*==============================================================*/
+create index Indx_SchGrpComReq_JobId on ScheduledGrpCommandRequest (
+   JobId ASC
 );
 
 /*==============================================================*/
