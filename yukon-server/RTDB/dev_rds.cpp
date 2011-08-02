@@ -2,6 +2,7 @@
 #include "dev_rds.h"
 #include "tbl_static_paoinfo.h"
 #include "ctistring.h"
+#include "cparms.h"
 
 using std::string;
 using std::endl;
@@ -14,6 +15,8 @@ static const unsigned char UECPStart  = 0xFE;
 static const unsigned char UECPEnd    = 0xFF;
 static const unsigned char UECPEscape = 0xFD;
 
+static const unsigned short CooperAID = 0xC549;
+
 static const unsigned char UECPMinLen = 8; // Start/stop(2), crc(2), addressing(2), Sequence(1), length(1)
 static const unsigned char UECPResponseLen = 10;
 
@@ -21,7 +24,8 @@ RDSTransmitter::RDSTransmitter() :
 _inCountActual(0),
 _isBiDirectionSet(false),
 _messageToggleFlag(false),
-_command(Complete)
+_command(Complete),
+_repeatCount(0)
 {
     resetStates();
 }
@@ -80,7 +84,13 @@ int RDSTransmitter::generate(CtiXfer &xfer)
         }
         case StateSendRequestedMessage:
         {
-            createCompletePackedMessage(newMessage);
+            _repeatCount = gConfigParms.getValueAsInt("RDS_REPEAT_COUNT", 0); // Reset this on every new transmission
+            //FALL Through.
+        }
+        case StateSendRepeatedMessage:
+        {
+            // Note that due to this we need to ensure we have set up the encryption or other before this so the repeat is identical!
+            createRequestedMessage(newMessage);
             break;
         }
     }
@@ -93,21 +103,11 @@ int RDSTransmitter::generate(CtiXfer &xfer)
         addMessageSize(newMessage);
         addSequenceCounter(newMessage);
         addMessageAddressing(newMessage);
-        addMessageCRC(newMessage);
+        addUECPCRC(newMessage);
         replaceReservedBytes(newMessage);
         addStartStopBytes(newMessage);
 
         copyMessageToXfer(xfer, newMessage);
-    }
-
-    if(!isTwoWay())
-    {
-        // UDP ports do not do decode.
-        _command = Complete;
-
-        // If not 2 way, this is our best place to sleep. Yes its silly.
-        // 2 way messages sleep in the decode.
-        delay();
     }
 
     return status;
@@ -117,46 +117,51 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
 {
     status = Normal;
 
-    if(isTwoWay())
+    if(isTwoWay() && xfer.getInCountActual() < UECPResponseLen)
     {
-        if(xfer.getInCountActual() < UECPResponseLen)
+        _command = Complete; //Transaction Complete
+        status = FinalError;
+        _isBiDirectionSet = false;
+    }
+    else 
+    {
+        // Check if we are ok, then continue? somehow.
+        if(!isTwoWay() || xfer.getInBuffer()[6] == 0)
         {
-            _command = Complete; //Transaction Complete
-            status = FinalError;
-            _isBiDirectionSet = false;
-        }
-        else
-        {
-            _isBiDirectionSet = true;
-
-            // Check if we are ok, then continue? somehow.
-            if(xfer.getInBuffer()[6] == 0)
+            //OK!
+            status = Normal;
+            if(_previousState == StateSendBiDirectionalRequest)
             {
-                //OK!
-                status = Normal;
-                if(_previousState == StateSendBiDirectionalRequest)
+                _isBiDirectionSet = true;
+                _currentState = StateSendRequestedMessage;
+            }
+            else if(_previousState == StateSendRequestedMessage ||
+                    _previousState == StateSendRepeatedMessage)
+            {
+                if(_repeatCount > 0)
                 {
-                    _currentState = StateSendRequestedMessage;
+                    _currentState = StateSendRepeatedMessage;
+                    _repeatCount--;
                 }
                 else
                 {
                     _command = Complete; //Transaction Complete
-                    delay();
                 }
+                delay();
             }
             else
             {
-                // print error
-                printAcknowledgmentError(xfer.getInBuffer()[6]);
                 _command = Complete; //Transaction Complete
-                status = FinalError;
+                delay();
             }
         }
-    }
-    else
-    {
-        _command = Complete;
-        status = Normal;
+        else
+        {
+            // print error
+            printAcknowledgmentError(xfer.getInBuffer()[6]);
+            _command = Complete; //Transaction Complete
+            status = FinalError;
+        }
     }
 
     return status;
@@ -183,36 +188,50 @@ void RDSTransmitter::createBiDirectionRequest(MessageStore &message)
 }
 
 // Moves OutMessage to the UECP formatted message.
-// Will copy up to 3 random bytes from the buffer at the end of the message.
-void RDSTransmitter::createCompletePackedMessage(MessageStore &message)
+// Will copy up to 3 0's at the end of the message to fit 4 byte blocks.
+void RDSTransmitter::createRequestedMessage(MessageStore &message)
 {
-    _messageToggleFlag = !_messageToggleFlag;
-    int msgCount = 0;
-    int byteCount = 0;
-    message.push_back(ODAFreeFormat);
-    message.push_back(getGroupTypeCode());
-    message.push_back(0);   //Priority Normal, Normal Mode, No Re-Sending
-    message.push_back(_messageToggleFlag); // Format = ToggleFlag is LSB then 4 bits for sequence number in 5 bit field
-    message.push_back(_outMessage.OutLength);
-    message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-    message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-    message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-    msgCount++;
+    MessageStore frame; // These will hold the bytes that we want to send.
 
-    const int totalMessages = getMessageCountFromBufSize(_outMessage.OutLength);
+    buildRDSFrameFromOutMessage(frame);
+    addFrameToUECPMessage(message, frame);
+}
 
-    while( msgCount < totalMessages)
+void RDSTransmitter::buildRDSFrameFromOutMessage(MessageStore &frame)
+{
+    frame.push_back(_outMessage.OutLength);
+
+    for(int i = 0; i < _outMessage.OutLength; i++)
+    {
+        frame.push_back(_outMessage.Buffer.OutMessage[i]);
+    }
+
+    addCooperCRC(frame);
+}
+
+// There are assumptions being made here about the frames fitting into RDS's 4 byte blocks.
+void RDSTransmitter::addFrameToUECPMessage(MessageStore &message, MessageStore &frame)
+{
+    // This is a bit odd, but it simplifies the loops. Pad the frames with 0's so they have even 4 byte blocks.
+    while(frame.size() % 4)
+    {
+        frame.push_back(0);
+    }
+
+    unsigned int msgCount = 0;
+
+    while( frame.size() > 0)
     {
         message.push_back(ODAFreeFormat);
         message.push_back(getGroupTypeCode());
         message.push_back(0);   //Priority Normal, Normal Mode, No Re-Sending
-        message.push_back((msgCount << 1) + _messageToggleFlag); // Format = ToggleFlag is LSB then 4 bits for sequence number in 5 bit field
-        message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-        message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-        message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-        message.push_back(_outMessage.Buffer.OutMessage[byteCount++]);
-
-        msgCount++;
+        message.push_back(msgCount++);// The Message Sequence Block tells the device where in the message the current frame segments are to be placed.
+                                    //There are 32 Sequence blocks meaning there can be 127 bytes in a single frame.
+        for(int i=0; i<4; i++) // lets be clear we are doing this 4 times per message.
+        {
+            message.push_back(frame.front());
+            frame.pop_front();
+        }
     }
 }
 
@@ -239,11 +258,16 @@ void RDSTransmitter::addMessageAddressing(MessageStore &message)
     message.push_front(getSiteAddress() >> 2);
 }
 
-void RDSTransmitter::addMessageCRC(MessageStore &message)
+void RDSTransmitter::addUECPCRC(MessageStore &message)
 {
+    unsigned int crc = uecp_crc(message);
+    message.push_back(crc >> 8);
+    message.push_back(crc);
+}
 
-
-    unsigned int crc = crc16_ccitt(message);
+void RDSTransmitter::addCooperCRC(MessageStore &message)
+{
+    unsigned int crc = cooper_crc(message);
     message.push_back(crc >> 8);
     message.push_back(crc);
 }
@@ -547,10 +571,17 @@ void RDSTransmitter::printAcknowledgmentError(unsigned char error)
     }
 }
 
-// Copied directly from UECP spec. This is a CCITT CRC initialized with 0xFFFF and inverted at the end.
-unsigned int RDSTransmitter::crc16_ccitt (const MessageStore &message)
+// This is a CCITT CRC initialized with 0xFFFF and inverted at the end.
+unsigned int RDSTransmitter::uecp_crc (const MessageStore &message)
 {
-    unsigned crc=0xFFFF;
+    unsigned int crc = cooper_crc(message);
+    return ((crc ^= 0xFFFF) & 0xFFFF);
+}
+
+// Copied mostly from UECP spec. This is a CCITT CRC initialized with 0xFFFF.
+unsigned int RDSTransmitter::cooper_crc (const MessageStore &message)
+{
+    unsigned int crc=0xFFFF;
 
     for each( unsigned char element in message )
     {
@@ -560,7 +591,7 @@ unsigned int RDSTransmitter::crc16_ccitt (const MessageStore &message)
         crc ^= (crc << 8) << 4;
         crc ^= ((crc & 0xff) << 4) << 1;
     }
-    return ((crc ^= 0xFFFF) & 0xFFFF);
+    return crc;
 }
 
 //Database Functions

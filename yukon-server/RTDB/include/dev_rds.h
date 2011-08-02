@@ -43,12 +43,15 @@ protected:
     {
         StateSendBiDirectionalRequest,
         StateSendRequestedMessage,
+        StateSendRepeatedMessage,
+        StateSendODAConfig,
         StateCheckResponse
     };
 
     enum MessageElementCodes
     {
         CommunicationModeCode = 0x2C,
+        ODAConfiguration      = 0x40,
         ODAFreeFormat         = 0x42,
     };
 
@@ -62,8 +65,10 @@ protected:
     bool                  _isBiDirectionSet;
     bool                  _messageToggleFlag;
     bool                  _twoWay;
+    unsigned int          _repeatCount;
 
     void resetStates();
+
     unsigned char  getEncoderAddress() const;
     unsigned short getSiteAddress() const;
     unsigned char  getSequenceCount() const;
@@ -72,15 +77,19 @@ protected:
     unsigned char  getMessageCountFromBufSize(unsigned char size) const;
 
     // Message to ask unit to give us immediate responses
-    void createBiDirectionRequest   (MessageStore &message);
-    void createCompletePackedMessage(MessageStore &message);
+    void createBiDirectionRequest     (MessageStore &message);
+    void createRequestedMessage       (MessageStore &message);
 
     void addMessageSize             (MessageStore &message);
     void addSequenceCounter         (MessageStore &message);
     void addMessageAddressing       (MessageStore &message);
-    void addMessageCRC              (MessageStore &message);
+    void addUECPCRC                 (MessageStore &message);
+    void addCooperCRC               (MessageStore &message);
     void replaceReservedBytes       (MessageStore &message);
     void addStartStopBytes          (MessageStore &message);
+
+    void buildRDSFrameFromOutMessage(MessageStore &frame);
+    void addFrameToUECPMessage(MessageStore &message, MessageStore &frame);
 
     void copyMessageToXfer          (CtiXfer &xfer, MessageStore &message);
 
@@ -89,9 +98,11 @@ protected:
     virtual int sendCommResult      (INMESS *InMessage);
 
     bool isTwoWay();
+    bool isOdaConfigSendNeeded();
     void delay();
 
-    unsigned int crc16_ccitt (const MessageStore &message);
+    unsigned int uecp_crc   (const MessageStore &message);
+    unsigned int cooper_crc (const MessageStore &message);
 };
 
 }

@@ -24,7 +24,8 @@ struct Test_RDSTransmitter : RDSTransmitter
     using RDSTransmitter::getGroupsPerSecond;
     using RDSTransmitter::addSequenceCounter;
     using RDSTransmitter::addMessageAddressing;
-    using RDSTransmitter::addMessageCRC;
+    using RDSTransmitter::addUECPCRC;
+    using RDSTransmitter::addCooperCRC;
     using RDSTransmitter::replaceReservedBytes;
     using RDSTransmitter::addStartStopBytes;
 
@@ -151,11 +152,38 @@ BOOST_AUTO_TEST_CASE(test_crc)
     message.push_back('6');
     message.push_back('6');
 
-    test_xmitter.addMessageCRC(message);
+    test_xmitter.addUECPCRC(message);
 
     BOOST_CHECK_EQUAL(message.back(), 0x23);
     message.pop_back();
     BOOST_CHECK_EQUAL(message.back(), 0x97);
+
+    // Test Cooper's CRC. This is a snippet from hardwares crc test.
+    //uint8_t pData[] = "123456789";
+    //......
+    //if (crc != 0x29b1)
+    //{
+    //    fprintf(stderr, "\nError in return value from cpsCRC16_ccitt_byte. Exp:0x29B1\tCalc:%04X\n", crc);
+    //    return EXIT_FAILURE;
+    //}
+
+    // Note that this is not representative of an expected message as RDS messages will be binary, not ascii representations.
+    message.clear();
+    message.push_back('1');
+    message.push_back('2');
+    message.push_back('3');
+    message.push_back('4');
+    message.push_back('5');
+    message.push_back('6');
+    message.push_back('7');
+    message.push_back('8');
+    message.push_back('9');
+
+    test_xmitter.addCooperCRC(message);
+
+    BOOST_CHECK_EQUAL(message.back(), 0xB1);
+    message.pop_back();
+    BOOST_CHECK_EQUAL(message.back(), 0x29);
 }
 
 BOOST_AUTO_TEST_CASE(test_add_addressing)

@@ -32,7 +32,7 @@
 #include "prot_lmi.h"
 using namespace std;
 
-#define RDS_MAX_EXPRESSCOM_LENGTH 63
+#define RDS_MAX_EXPRESSCOM_LENGTH 115 // This number is pre encryption. We actually have 125 total bytes.
 
 CtiRouteXCU::CtiRouteXCU()
 {
