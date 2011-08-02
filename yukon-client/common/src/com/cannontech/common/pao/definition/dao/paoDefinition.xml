@@ -6122,11 +6122,11 @@
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>Commissioned State</name>
-                <stategroup value="Commissioned State" initialState="Decommissioned"/>
                 <archive>
                    <type>ON_CHANGE</type>
                    <interval>ZERO</interval>
                 </archive>
+                <stategroup value="Commissioned State" initialState="Decommissioned"/>
             </point>
         </points>
         <attributes>
@@ -6145,11 +6145,11 @@
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>Commissioned State</name>
-                <stategroup value="Commissioned State" initialState="Decommissioned"/>
                 <archive>
                    <type>ON_CHANGE</type>
                    <interval>ZERO</interval>
-               </archive>
+                </archive>
+                <stategroup value="Commissioned State" initialState="Decommissioned"/>
             </point>
         </points>
         <attributes>
