@@ -116,6 +116,10 @@ CREATE INDEX Indx_SchGrpComReq_JobId ON ScheduledGrpCommandRequest (
 );
 /* End YUK-10120 */
 
+/* Start YUK-10129 */ 
+INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
+/* End YUK-10129 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
