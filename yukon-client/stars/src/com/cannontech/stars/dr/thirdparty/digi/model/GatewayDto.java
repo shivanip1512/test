@@ -6,7 +6,6 @@ public class GatewayDto {
     private String macAddress;
     private String firmwareVersion;
     private int digiId;
-    private int connectionStatusId;
     private int gatewayStatusId;
     
     public String getSerialNumber() {
@@ -28,13 +27,6 @@ public class GatewayDto {
     }
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
-    }
-    
-    public int getConnectionStatusId() {
-        return connectionStatusId;
-    }
-    public void setConnectionStatusId(int connectionStatusId) {
-        this.connectionStatusId = connectionStatusId;
     }
     
     public int getGatewayStatusId() {

@@ -48,7 +48,6 @@ public class HardwareDto {
     private String macAddress;
     private String firmwareVersion;
     private int commissionedId;
-    private int connectStatusId;
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -306,13 +305,4 @@ public class HardwareDto {
     public Integer getGatewayId() {
         return gatewayId;
     }
-
-    public void setConnectStatusId(int connectStatusId) {
-        this.connectStatusId = connectStatusId;
-    }
-    
-    public int getConnectStatusId() {
-        return connectStatusId;
-    }
-    
 }

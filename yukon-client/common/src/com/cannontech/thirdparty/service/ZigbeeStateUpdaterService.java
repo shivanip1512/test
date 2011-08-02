@@ -22,4 +22,10 @@ public interface ZigbeeStateUpdaterService {
      * @param endPoint
      */
     public void updateEndPointStatus(ZigbeeDevice endPoint);
+    
+    /**
+     * Activate smart polling on device.
+     * 
+     */
+    public void activateSmartPolling(ZigbeeDevice device);
 }

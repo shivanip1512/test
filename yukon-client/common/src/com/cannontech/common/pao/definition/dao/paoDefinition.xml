@@ -6119,21 +6119,17 @@
     <pao id="ZIGBEEUTILPRO">
         <displayName>ZigBee Utility Pro</displayName>
         <points>
-            <point type="Status" offset="1">
-                <init>true</init>
-                <name>Connection Status</name>
-                <stategroup value="Comm Status State" initialState="Disconnected"/>
-            </point>
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>Commissioned State</name>
                 <stategroup value="Commissioned State" initialState="Decommissioned"/>
+                <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+                </archive>
             </point>
         </points>
         <attributes>
-            <attribute name="ZIGBEE_CONNECTION_STATUS">
-                <basicLookup point="Connection Status" />
-            </attribute>
             <attribute name="ZIGBEE_LINK_STATUS">
                 <basicLookup point="Commissioned State" />
             </attribute>
@@ -6146,21 +6142,17 @@
     <pao id="DIGIGATEWAY">
         <displayName>Digi Gateway</displayName>
         <points>
-            <point type="Status" offset="1">
-                <init>true</init>
-                <name>Connection Status</name>
-                <stategroup value="Comm Status State" initialState="Disconnected"/>
-            </point>
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>Commissioned State</name>
                 <stategroup value="Commissioned State" initialState="Decommissioned"/>
+                <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
             </point>
         </points>
         <attributes>
-            <attribute name="ZIGBEE_CONNECTION_STATUS">
-                <basicLookup point="Connection Status" />
-            </attribute>
             <attribute name="ZIGBEE_LINK_STATUS">
                 <basicLookup point="Commissioned State" />
             </attribute>

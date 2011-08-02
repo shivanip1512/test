@@ -7,7 +7,6 @@ public class ZigbeeDeviceDto implements YukonInventory {
 	private int deviceId;
 	private String serialNumber;
 	private String deviceType;
-	private int connectionStatusId;
 	private int commissionId;
 	private InventoryIdentifier inventoryIdentifier;
 	private Integer gatewayId;
@@ -35,15 +34,7 @@ public class ZigbeeDeviceDto implements YukonInventory {
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
-	
-	public int getConnectionStatusId() {
-		return connectionStatusId;
-	}
-	
-	public void setConnectionStatusId(int connectionStatusId) {
-		this.connectionStatusId = connectionStatusId;
-	}
-	
+
 	public int getCommissionId() {
 		return commissionId;
 	}

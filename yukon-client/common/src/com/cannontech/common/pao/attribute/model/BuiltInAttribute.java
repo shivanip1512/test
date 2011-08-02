@@ -48,7 +48,6 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE_PROFILE("Voltage Profile", true, false),
     USAGE_WATER("Water Usage Reading", false, true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
-    ZIGBEE_CONNECTION_STATUS("ZigBee Connection Status"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
     ;
 

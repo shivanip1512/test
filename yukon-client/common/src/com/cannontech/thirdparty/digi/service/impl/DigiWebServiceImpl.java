@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.w3c.dom.Node;
@@ -16,12 +18,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.model.ZigbeeTextMessage;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
@@ -33,6 +33,7 @@ import com.cannontech.thirdparty.exception.ZCLStatus;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
+import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
@@ -54,6 +55,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     private ZigbeeServiceHelper zigbeeServiceHelper;
     private ZigbeeEventLogService zigbeeEventLogService;
     private PaoDao paoDao;
+
+    private JmsTemplate jmsTemplate;
     
     public static String digiBaseUrl;
     
@@ -74,7 +77,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             //Update the Commissioned Point State
             zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
                                                       BuiltInAttribute.ZIGBEE_LINK_STATUS, 
-                                                      Commissioned.COMMISSIONED);
+                                                      Commissioned.DISCONNECTED);
             
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
@@ -101,11 +104,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
-        
-        //When decommission a device, change it's connection status to disconnected as well.
-        zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
-                                                  BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                  CommStatusState.DISCONNECTED);
         
         zigbeeEventLogService.zigbeeDeviceDecommissioned(digiGateway.getName());
         
@@ -208,42 +206,22 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
-                
-        //When decommissioning a device, change it's connection status to disconnected 
-        //since we will no longer get updates for it, prevent it from appearing connected
-        zigbeeServiceHelper.sendPointStatusUpdate(stat, 
-                                                  BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                  CommStatusState.DISCONNECTED);
+
+        //Set to decommissioned
         zigbeeServiceHelper.sendPointStatusUpdate(stat, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
         
         zigbeeEventLogService.zigbeeDeviceDecommissioned(stat.getName());
     }
-
+    
     @Override
-    public void updateEndPointStatus(ZigbeeDevice device) {
-        PaoType type = device.getPaoIdentifier().getPaoType();
-        
-        switch(type) {
-            case ZIGBEEUTILPRO: {
-                pingEndPoint(device);
-                break;
-            }
-            case DIGIGATEWAY: {
-                //This call will send the point status values for us.
-                updateGatewayStatus(device);
-                break;
-            }
-            default: {
-                throw new DigiWebServiceException("Refresh of " + type.getDbString() + " is not supported.");
-            }
-        }
-        
-        zigbeeEventLogService.zigbeeDeviceRefreshed(device.getName());
+    public void activateSmartPolling(ZigbeeDevice device) {
+        jmsTemplate.convertAndSend("yukon.notif.stream.thirdparty.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
     }
     
-    private void pingEndPoint(ZigbeeDevice endPoint) {
+    @Override
+    public void updateEndPointStatus(ZigbeeDevice endPoint) {
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());
         Validate.notNull(gatewayId, "Device not assigned to a gateway, cannot send addressing configs.");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
@@ -260,6 +238,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         }
 
         digiResponseHandler.handlePingResponse(response,endPoint,gateway);
+        
+        zigbeeEventLogService.zigbeeDeviceRefreshed(endPoint.getName());
     }
     
     @Override
@@ -300,6 +280,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException(errorMsg);
         }
 
+        zigbeeEventLogService.zigbeeDeviceRefreshed(gateway.getName());
+        
         log.debug("Refresh Gateway done");
     }
     
@@ -480,5 +462,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
     }
 }

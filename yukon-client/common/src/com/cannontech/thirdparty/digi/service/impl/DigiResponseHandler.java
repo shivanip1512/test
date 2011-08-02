@@ -16,12 +16,13 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.database.db.point.stategroup.CommStatusState;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
@@ -33,6 +34,7 @@ import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
+import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.google.common.collect.Lists;
 
 public class DigiResponseHandler {
@@ -43,6 +45,9 @@ public class DigiResponseHandler {
     private GatewayDeviceDao gatewayDeviceDao;
     private ZigbeeControlEventDao zigbeeControlEventDao;
     private ZigbeeServiceHelper zigbeeServiceHelper;
+    private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
+    
+    private AttributeDynamicDataSource attributeDynamicDataSource;
     
     private static String regexForMac = "([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}";
     private static Pattern macPattern = Pattern.compile(regexForMac);
@@ -173,26 +178,11 @@ public class DigiResponseHandler {
 
             updatedDeviceIds.add(digiGateway.getPaoId());
             
-            zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
-                                                      BuiltInAttribute.ZIGBEE_LINK_STATUS,
-                                                      Commissioned.COMMISSIONED);
-            
+            //We are commissioned if we got here. So set connected / disconnected accordingly
             if (core.isConnected()) {
-                zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
-                                                      BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
-                                                      CommStatusState.CONNECTED);
+                connectGateway(digiGateway);
             } else {
-                zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
-                                                          BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
-                                                          CommStatusState.DISCONNECTED);
-                
-                //Disconnect all devices on the gateway
-                List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(digiGateway.getPaoId());
-                for (ZigbeeDevice device : devices) {
-                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
-                                                              CommStatusState.DISCONNECTED);
-                }
+                disconnectGateway(digiGateway);
             }
         }
         
@@ -202,17 +192,7 @@ public class DigiResponseHandler {
                 continue;
             }
             
-            zigbeeServiceHelper.sendPointStatusUpdate(gateway,
-                                                      BuiltInAttribute.ZIGBEE_LINK_STATUS, 
-                                                      Commissioned.DECOMMISSIONED);
-            
-            //Disconnect all devices on the gateway
-            List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
-            for (ZigbeeDevice device : devices) {
-                zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                          BuiltInAttribute.ZIGBEE_LINK_STATUS, 
-                                                          Commissioned.DECOMMISSIONED);
-            }
+            decommissionGateway(gateway);
         }
         
         return updatedDeviceIds;
@@ -241,21 +221,21 @@ public class DigiResponseHandler {
                 //Commissioned
                 log.debug("Device: " + macAddress + " was commissioned.");
                 zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
-                                                                            Commissioned.COMMISSIONED);
+                                                                            Commissioned.DISCONNECTED);
                 return;
                 
             } else if ( message.contains(decommissionStr)) {
                 //DeCommissioned
                 log.debug("Device: " + macAddress + " was decommissioned.");
                 zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
-                                                                            Commissioned.DECOMMISSIONED);
+                                                                              Commissioned.DECOMMISSIONED);
                 return;
                 
             } else if ( message.contains(connectStr) || message.contains(connectStr2)) {
                 //Connected
                 log.debug("Device: " + macAddress + " has connected.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
-                                                                            CommStatusState.CONNECTED);
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                                              Commissioned.CONNECTED);
                 
                 if (message.contains(connectStr)) {
                     //"Received device announce message from known device 00:0C:C1:00:27:19:C4:D1 (NWK: E0BB)"
@@ -276,8 +256,8 @@ public class DigiResponseHandler {
             } else if ( message.contains(disconnectStr)) {
                 //Disconnected
                 log.debug("Device: " + macAddress + " has disconnected.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
-                                                                            CommStatusState.DISCONNECTED);
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                                              Commissioned.DISCONNECTED);
                 return;
             }
             
@@ -339,7 +319,7 @@ public class DigiResponseHandler {
      * @param source
      */
     public void handlePingResponse(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway){
-        CommStatusState endPointState = CommStatusState.CONNECTED;
+        Commissioned endPointState = Commissioned.CONNECTED;
 
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
@@ -353,15 +333,17 @@ public class DigiResponseHandler {
             if( error == null) {
                 error = template.evaluateAsString("//description");
                 log.error("Error Communicating with ZigBee EndPoint: " + error);
-                endPointState = CommStatusState.DISCONNECTED;
+                endPointState = Commissioned.DISCONNECTED;
             } else {
                 log.error("Error Communicating with Gateway: " + error);
-                endPointState = CommStatusState.DISCONNECTED;
+                //Disconnect gateway (This will also disconnect the end points attached)
+                disconnectGateway(gateway);
+                return;
             }
         }
         
         zigbeeServiceHelper.sendPointStatusUpdate(endPoint, 
-                                                  BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
+                                                  BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   endPointState);
     }
     
@@ -389,6 +371,74 @@ public class DigiResponseHandler {
         }
     }
     
+    /**
+     * Sets gateway to connected and sets all EndPoint attached to this gateway to smart poll for their state.
+     * 
+     * @param gateway
+     */
+    private void connectGateway(ZigbeeDevice gateway) { 
+        //Check to see if we changed state
+        PointValueHolder pvh = attributeDynamicDataSource.getPointValue(gateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        Commissioned oldState = Commissioned.getForRawState((int)pvh.getValue());
+        
+        zigbeeServiceHelper.sendPointStatusUpdate(gateway,
+                                                  BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                  Commissioned.CONNECTED);
+
+        if (oldState == Commissioned.DISCONNECTED) {
+            //Do this only if we were disconnected before. If no change, do not call.
+            List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
+            for (ZigbeeDevice device : devices) {
+                zigbeeStateUpdaterService.activateSmartPolling(device);
+            }
+        }
+    }
+    
+    /**
+     * Sets gateway to disconnect and also sets disconnect to all EndPoints attached to this gateway.
+     * 
+     * @param gateway
+     */
+    private void disconnectGateway(ZigbeeDevice gateway) {
+        //Check to see if we changed state
+        PointValueHolder pvh = attributeDynamicDataSource.getPointValue(gateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        Commissioned oldState = Commissioned.getForRawState((int)pvh.getValue());
+        
+        //Only change devices to disconnected if we were connected prior.
+        //If we were decommissioned, the devices are not commissioned yet and this would mess up their state.
+        if (oldState == Commissioned.CONNECTED) {
+            changeGatewayStateWithEndPoints(gateway, Commissioned.DISCONNECTED,true);
+        } else {
+            changeGatewayStateWithEndPoints(gateway, Commissioned.DISCONNECTED,false);
+        }
+    }
+    
+    /**
+     * Sets gateway to decommissioned and also sets decommissioned to all EndPoints attached to this gateway.
+     * 
+     * @param gateway
+     */
+    private void decommissionGateway(ZigbeeDevice gateway) {
+        changeGatewayStateWithEndPoints(gateway, Commissioned.DECOMMISSIONED, false);
+    }
+    
+    private void changeGatewayStateWithEndPoints(ZigbeeDevice gateway, Commissioned state, boolean changeDevices) {
+        zigbeeServiceHelper.sendPointStatusUpdate(gateway,
+                                                  BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                  state);
+        
+        if (changeDevices) {
+            //Change state to match on all gateways
+            List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
+            for (ZigbeeDevice device : devices) {
+                //This is setting the update time as now time.
+                zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                          BuiltInAttribute.ZIGBEE_LINK_STATUS, 
+                                                          state);
+            }
+        }
+    }
+    
     @Autowired
     public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
         this.zigbeeDeviceDao = zigbeeDeviceDao;
@@ -409,4 +459,13 @@ public class DigiResponseHandler {
         this.zigbeeServiceHelper = zigbeeServiceHelper;
     }
     
+    @Autowired
+    public void setZigbeeStateUpdaterService(ZigbeeStateUpdaterService zigbeeStateUpdaterService) {
+        this.zigbeeStateUpdaterService = zigbeeStateUpdaterService;
+    }
+    
+    @Autowired
+    public void setAttributeDynamicDataSource(AttributeDynamicDataSource attributeDynamicDataSource) {
+        this.attributeDynamicDataSource = attributeDynamicDataSource;
+    }
 }

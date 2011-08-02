@@ -26,6 +26,8 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
     
     private ZigbeeWebService zigbeeWebService;
     
+    private boolean smartPolling;
+    
     private class SmartRunnable implements Runnable {
 
         public Duration timeToPoll;
@@ -64,23 +66,27 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
         }
     }
     
-    private SmartRunnable smartPollingThread = new SmartRunnable();
+    private SmartRunnable smartPollingThread;
     private ConfigurationSource configurationSource;
     private ScheduledExecutorService globalScheduledExecutor;
     
     @PostConstruct
     public void initialize() {
         boolean runDigi = configurationSource.getBoolean("DIGI_ENABLED",false);
+        smartPolling = false;
         
         if (runDigi) {
-            log.debug("Started DigiSmartUpdateService.");
-            globalScheduledExecutor = Executors.newScheduledThreadPool(4);
+            smartPolling = configurationSource.getBoolean("DIGI_SMARTPOLL_ENABLED", false);
             
-            boolean smartPolling = configurationSource.getBoolean("DIGI_SMARTPOLL_ENABLED", false);
             if (smartPolling) {
+                smartPollingThread = new SmartRunnable();
+                globalScheduledExecutor = Executors.newScheduledThreadPool(1);
+
                 Duration readDelay = configurationSource.getDuration("DIGI_SMARTPOLL_DELAY_TIME", Duration.standardSeconds(30));
                 smartPollingThread.timeToPoll = configurationSource.getDuration("DIGI_SMARTPOLL_POLL_TIME", Duration.standardSeconds(600));
                 globalScheduledExecutor.scheduleWithFixedDelay(smartPollingThread, 15, readDelay.getStandardSeconds(), TimeUnit.SECONDS);
+
+                log.debug("Started DigiSmartUpdateService.");
             }
 
             log.info("Digi Device Notification polling has been started.");
@@ -92,7 +98,9 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
     
     @Override
     public void enableActiveDevicePoll(ZigbeeDevice device) {
-        smartPollingThread.enableSmartPollingForDevice(device);
+        if (smartPolling) {            
+            smartPollingThread.enableSmartPollingForDevice(device);
+        }
     }
 
     @Autowired

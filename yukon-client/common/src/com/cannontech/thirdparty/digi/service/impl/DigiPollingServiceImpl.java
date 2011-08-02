@@ -118,7 +118,7 @@ public class DigiPollingServiceImpl {
                 for (ZigbeeDevice gateway : gateways) {
                     //Only query the gateway if it is commissioned.
                     PointValueHolder value = currentStates.get(gateway.getPaoIdentifier());
-                    if (value.getValue() == Commissioned.COMMISSIONED.getRawState()) {
+                    if (value.getValue() != Commissioned.DECOMMISSIONED.getRawState()) {
                         Future<?> future = fileReadThreadPool.submit(new DigiGatewayFileReader(gateway));
                         futures.add(future);
                     }

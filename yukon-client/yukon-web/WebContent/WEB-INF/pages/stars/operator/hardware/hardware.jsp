@@ -543,18 +543,6 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 </tr>
                                 <tr>
                                     <td>
-                                        <cti:pointStatusColor pointId="${hardwareDto.connectStatusId}" >
-                                            <span class="fwb">
-                                                <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="VALUE"/>
-                                            </span>
-                                        </cti:pointStatusColor>
-                                    </td>
-                                    <td>
-                                        <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="DATE"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
                                         <cti:pointStatusColor pointId="${hardwareDto.commissionedId}" >
                                             <span class="fwb">
                                                 <cti:pointValue pointId="${hardwareDto.commissionedId}" format="VALUE"/>
