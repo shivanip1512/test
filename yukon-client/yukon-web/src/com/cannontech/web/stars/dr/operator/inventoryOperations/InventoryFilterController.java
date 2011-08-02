@@ -189,6 +189,12 @@ public class InventoryFilterController {
             ruleTypes.remove(FilterRuleType.SERIAL_NUMBER_RANGE);
         }
         
+        // Check to see if warehouses exist.  If they don't remove the warehouse rule type.
+        List<Warehouse> warehouses = getAvailableWarehouses(userContext);
+        if (warehouses.isEmpty()) {
+            ruleTypes.remove(FilterRuleType.WAREHOUSE);
+        }
+        
         return ruleTypes;
     }
     
@@ -259,6 +265,10 @@ public class InventoryFilterController {
 
     @ModelAttribute(value="warehouses")
     public List<Warehouse> getWarehouses(YukonUserContext userContext) {
+        return getAvailableWarehouses(userContext);
+    }
+    
+    private List<Warehouse> getAvailableWarehouses(YukonUserContext userContext) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<Warehouse> warehouses = energyCompany.getAllWarehousesDownward();

@@ -188,17 +188,9 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'WAREHOUSE'}">
-                                            <c:choose>
-                                                <c:when test="${empty warehouses}">
-                                                    <tags:hidden path="filterRules[${row.index}].warehouseId" />
-                                                    <i:inline key=".anyDeviceInInventory" />
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <form:select path="filterRules[${row.index}].warehouseId">
-                                                        <form:options items="${warehouses}" itemLabel="warehouseName" itemValue="warehouseID"/>
-                                                    </form:select>
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <form:select path="filterRules[${row.index}].warehouseId">
+                                                <form:options items="${warehouses}" itemLabel="warehouseName" itemValue="warehouseID"/>
+                                            </form:select>
                                         </c:when>
                                         
                                     </c:choose>
