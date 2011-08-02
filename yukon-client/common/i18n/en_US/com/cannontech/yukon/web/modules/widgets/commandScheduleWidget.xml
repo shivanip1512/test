@@ -10,10 +10,13 @@
     <entry key="yukon.web.widgets.commandScheduleWidget.delete">Click to delete.</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.create">Create</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.commandScheduleWidget.enableTitle">Click to enable.</entry>
-    <entry key="yukon.web.widgets.commandScheduleWidget.disableTitle">Click to disable.</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.enable.hoverText">Click to enable</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.disable.hoverText">Click to disable</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.noSchedules">No Schedule Entries</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.create.label">Create</entry>
-    <entry key="yukon.web.widgets.commandScheduleWidget.disableAll">Disable All</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.disableAll.label">Disable All</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.disableAll.labelBusy">Disable All</entry>
 
 </properties>

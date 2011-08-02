@@ -33,8 +33,8 @@ public class UserEditorController extends MultiActionController {
         int userId = ServletRequestUtils.getRequiredIntParameter(request, "userId");
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         mav.addObject("user", user);
-        mav.addObject("username", user.getUsername());
         mav.addObject("userId", user.getUserID());
+        mav.addObject("editingUsername", user.getUsername());  // Used by layout controller.
 
         AuthenticationThrottleDto authThrottleDto = authenticationService.getAuthenticationThrottleData(user.getUsername());
         mav.addObject("authThrottleDto", authThrottleDto);

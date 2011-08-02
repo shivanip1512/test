@@ -1,6 +1,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:choose>
 
@@ -20,20 +21,19 @@
             <tr valign="bottom">
                 <td width="45%">    
                     <br>
-                    <tags:widgetActionUpdate method="downloadTouSchedule" label="downloadSchedule" 
-                                             labelBusy="downloadingSchedule" container="${widgetParameters.widgetId}_results"/>
+                    <tags:widgetActionUpdate method="downloadTouSchedule" nameKey="downloadSchedule" 
+                                             container="${widgetParameters.widgetId}_results"/>
                 </td>
                 <td>
                     <div id="${widgetParameters.widgetId}_results"></div>
-                </div>
-            </td>
+                </td>
             </tr>
         </table>
           
     </c:when>
     
     <c:otherwise>
-        No Schedules
+        <i:inline key=".noSchedules"/>
     </c:otherwise>
     
 </c:choose>

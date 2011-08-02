@@ -14,7 +14,8 @@
         <%-- VOLTAGE --%>
         <br>
         <tags:widgetContainer deviceId="${deviceId}">
-            <tags:widget bean="simpleAttributesWidget" title="Voltage" attributes="VOLTAGE,MINIMUM_VOLTAGE,MAXIMUM_VOLTAGE" />
+            <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle"/>
+            <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" attributes="VOLTAGE,MINIMUM_VOLTAGE,MAXIMUM_VOLTAGE" />
         </tags:widgetContainer>
             
         <%-- TOU SCHEDULE --%>

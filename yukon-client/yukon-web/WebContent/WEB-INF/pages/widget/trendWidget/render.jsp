@@ -95,7 +95,7 @@
         				<td>
             				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDate}" />&nbsp;
             				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDate}" />&nbsp;
-                            <tags:widgetActionRefreshImage2 title="reloadUsingCustomDates" method="render"/>
+                            <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render"/>
         				</td>
         			</tr>
         		</c:when>

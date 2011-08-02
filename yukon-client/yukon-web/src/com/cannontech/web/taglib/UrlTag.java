@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.PageContext;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 
 import com.cannontech.util.ServletUtil;
@@ -21,6 +22,8 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
 
     private String var;
     private String value;
+    private boolean htmlEscape;
+
     private int scope;
 
     private ListMultimap<String, String> encodedParameters;
@@ -37,6 +40,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
     private void init() {
         var = null;
         value = null;
+        htmlEscape = false;
         scope = PageContext.PAGE_SCOPE;
         encodedParameters = ArrayListMultimap.create();
     }
@@ -55,6 +59,9 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         
         // add parameters to the baseUrl
         String result = appendParams(baseUrl);
+        if (htmlEscape) {
+            result = StringEscapeUtils.escapeHtml(result);
+        }
 
         // store or print the output
         if (var != null) {
@@ -102,6 +109,10 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         this.value = value;
     }
 
+    public void setHtmlEscape(boolean htmlEscape) {
+        this.htmlEscape = htmlEscape;
+    }
+    
     public void setScope(String scope) {
         this.scope = getScope(scope);
     }

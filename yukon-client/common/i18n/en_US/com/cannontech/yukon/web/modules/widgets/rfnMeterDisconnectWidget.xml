@@ -11,15 +11,15 @@
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.connected">The meter is connected to service.</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnected">The meter is disconnected from service.</entry>
 
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.connectLabel">Connect</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.connectLabelBusy">Connecting</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.armLabel">Arm</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.armLabelBusy">Arming</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnectLabel">Disconnect</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnectLabelBusy">Disconnecting</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.confirmConnect">Are you sure you want to connect this meter?</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.confirmArm">Are you sure you want to arm this meter?</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.confirmDisconnect">Are you sure you want to disconnect this meter?</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.connect.label">Connect</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.connect.labelBusy">Connecting</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.connect.confirmText">Are you sure you want to connect this meter?</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.arm.label">Arm</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.arm.labelBusy">Arming</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.arm.confirmText">Are you sure you want to arm this meter?</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnect.label">Disconnect</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnect.labelBusy">Disconnecting</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnect.confirmText">Are you sure you want to disconnect this meter?</entry>
 
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error">There was an error sending the {0} command:</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error.lessSevere">The meter may already be in the {0}ed state.</entry>

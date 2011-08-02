@@ -97,7 +97,7 @@
     				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
     			</td>
     	  	    <td class="last" align="right">
-    	            <tags:widgetActionRefresh2 method="initiateLoadProfile" label="yukon.web.defaults.start" labelBusy="yukon.web.defaults.start"/>
+    	            <tags:widgetActionRefresh method="initiateLoadProfile" nameKey="start"/>
                 </td>
     		</tr>
     	</table>
@@ -134,7 +134,7 @@
                 <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
             </td>
             <td class="last" align="right">
-                <tags:widgetActionRefresh2 method="viewDailyUsageReport" label=".viewReport" labelBusy=".viewReport"/>
+                <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/> <!--  labelBusy=".viewReport"/> -->
             </td>
         </tr>
         <tr>

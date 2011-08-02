@@ -48,9 +48,8 @@
                     <td>${task.numberOfItems}</td>
                     
                     <td class="removeColumn">
-                        <cti:msg2 key=".delete" var="deleteTitle" argument="${task.taskName}"/>
-                        <cti:msg2 key=".confirmDelete" var="confirmText" argument="${task.taskName}"/>
-                        <tags:widgetActionRefreshImage method="delete" imgSrc="${removeImg}" imgSrcHover="${removeImgHover}" taskId="${task.inventoryConfigTaskId}" confirmText="${confirmText}" title="${deleteTitle}"/>
+                        <tags:widgetActionRefreshImage method="delete" taskId="${task.inventoryConfigTaskId}"
+                                                       nameKey="delete" arguments="${task.taskName}" showConfirm="true"/>
                     </td>
                     
                 </tr>

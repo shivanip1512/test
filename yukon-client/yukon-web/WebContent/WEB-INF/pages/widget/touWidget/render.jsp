@@ -39,8 +39,8 @@
 	
 		<div id="${widgetParameters.widgetId}_results"></div>
 		<div style="text-align: right">
-			<tags:widgetActionUpdate hide="${!readable}" method="read" label="read"
-				labelBusy="reading" container="${widgetParameters.widgetId}_results" />
+			<tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="read" 
+                                     container="${widgetParameters.widgetId}_results" />
 		</div>
 	</c:when>
 	<c:otherwise>

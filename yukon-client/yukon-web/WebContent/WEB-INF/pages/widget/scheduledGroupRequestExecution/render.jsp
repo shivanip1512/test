@@ -123,12 +123,12 @@
 			<c:if test="${canManage}">
                 <td style="text-align:right;">
                     <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <tags:widgetActionRefreshImage2 title="disable" titleArgument="${jobWrapper.name}" 
-                                                        method="toggleEnabled" jobId="${jobWrapper.job.id}"/>
+                        <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}"
+                                                       nameKey="disable" arguments="${jobWrapper.name}"/>
                     </span>
                     <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <tags:widgetActionRefreshImage2 title="enable" titleArgument="${jobWrapper.name}" 
-                                                        method="toggleEnabled" jobId="${jobWrapper.job.id}"/>
+                        <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}"
+                                                       nameKey="enable" arguments="${jobWrapper.name}"/>
                     </span>
                 </td>
 			</c:if>

@@ -15,7 +15,7 @@
     <entry key="yukon.web.widgets.meterInformationWidget.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.ping.label">Ping</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.pinging.label">Pinging</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.ping.labelBusy">Pinging</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.disabled">Disabled</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
     <!-- meterReadingsResult.tag -->
@@ -28,7 +28,7 @@
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous Usage Reading</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.label">Read Now</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.reading.label">Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.labelBusy">Reading</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.argumentStub">{0}</entry>
 
     <!-- common/rfnMeterReadingsResult.jsp -->
@@ -89,8 +89,8 @@
 
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.readNow">Read Now</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.reading">Reading</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.outagesLastRetrieved">Outages Last Retrieved</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.outageLogPointNotConfigured">Outage Log Analog Point is not configured.</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.log">Log</entry>
@@ -100,14 +100,14 @@
     <!-- configWidget/render.jsp -->
     <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
-    <entry key="yukon.web.widgets.configWidget.assign">Assign</entry>
-    <entry key="yukon.web.widgets.configWidget.assigning">Assigning</entry>
+    <entry key="yukon.web.widgets.configWidget.assign.label">Assign</entry>
+    <entry key="yukon.web.widgets.configWidget.assign.labelBusy">Assigning</entry>
     <entry key="yukon.web.widgets.configWidget.send.label">Send</entry>
-    <entry key="yukon.web.widgets.configWidget.sending.label">Sending</entry>
+    <entry key="yukon.web.widgets.configWidget.send.labelBusy">Sending</entry>
     <entry key="yukon.web.widgets.configWidget.read.label">Read</entry>
-    <entry key="yukon.web.widgets.configWidget.reading.label">Reading</entry>
+    <entry key="yukon.web.widgets.configWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.configWidget.verify.label">Verify</entry>
-    <entry key="yukon.web.widgets.configWidget.verifying.label">Verifying</entry>
+    <entry key="yukon.web.widgets.configWidget.verify.labelBusy">Verifying</entry>
     <entry key="yukon.web.widgets.configWidget.noConfigurations">There are no existing configurations.</entry>
     
     <!-- configWidget/configWidgetResult.jsp -->
@@ -120,4 +120,26 @@
     <entry key="yukon.web.widgets.configWidget.sendConfigFail">Failed</entry>
     <entry key="yukon.web.widgets.configWidget.readSentSuccess">Read Performed Successfully</entry>
 
+    <!-- touWidget/render.jsp -->
+    <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>
+    <entry key="yukon.web.widgets.touWidget.notConfigured">Tou Widget not configured.</entry>
+    <entry key="yukon.web.widgets.touWidget.rateA">A</entry>
+    <entry key="yukon.web.widgets.touWidget.rateB">B</entry>
+    <entry key="yukon.web.widgets.touWidget.rateC">C</entry>
+    <entry key="yukon.web.widgets.touWidget.rateD">D</entry>
+    <entry key="yukon.web.widgets.touWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.touWidget.read.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.touWidget.errorReading">Error reading the meter:</entry>
+    <entry key="yukon.web.widgets.touWidget.successReading">Successfully read the meter.</entry>
+    <entry key="yukon.web.widgets.touWidget.dailyReadings">Daily readings (before ${cutOff})</entry>
+    <entry key="yukon.web.widgets.touWidget.recentReadings">Recent Readings (since {0})</entry>
+    <entry key="yukon.web.widgets.touWidget.currentReading">{0} Reading</entry>
+    <entry key="yukon.web.widgets.touWidget.previousReadings">Previous {0} Readings</entry>
+    <entry key="yukon.web.widgets.touWidget.totalConsumption">Total Consumption</entry>
+    <entry key="yukon.web.widgets.touWidget.previousReadingsLink">View Historical Readings</entry>
+
+    <!-- touScheduleWidget/render.jsp --> 
+    <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.label">Download TOU Schedule</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.labelBusy">Downloading TOU Schedule</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.noSchedules">No Schedules</entry>
 </properties>

@@ -18,10 +18,10 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Days;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -176,27 +176,8 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
-        String iStr = "";
-
-        int hrs = 0;
-        int mins = secs / 60;
-
-        if (mins >= 60) {
-            hrs = mins / 60;
-            mins = mins % 60;
-        }
-
-        if (hrs >= 1) {
-            Period period = new Period(hrs, 0, 0, 0);
-            iStr = durationFormattingService.formatPeriod(period, DurationFormat.H, userContext);
-            
-        }
-
-        if (mins >= 1) {
-            Period period = new Period(0, mins, 0, 0);
-            iStr = durationFormattingService.formatPeriod(period, DurationFormat.M, userContext);
-        }
-
+        Duration duration = Duration.standardSeconds(secs);
+        String iStr = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
         return iStr;
     }
 
@@ -441,16 +422,16 @@ public class ProfileWidget extends WidgetControllerBase {
         String startDate = WidgetParameterHelper.getStringParameter(request, "startDate" + channelNum);
         String stopDate = WidgetParameterHelper.getRequiredStringParameter(request, "stopDate" + channelNum);
 
-        String startHourString = WidgetParameterHelper.getStringParameter(request, "startHour" + channelNum);
-        String stopHourString = WidgetParameterHelper.getStringParameter(request, "stopHour" + channelNum);
+        String startTimeString = WidgetParameterHelper.getStringParameter(request, "startHour" + channelNum);
+        String stopTimeString = WidgetParameterHelper.getStringParameter(request, "stopHour" + channelNum);
 
-        LocalTime startHour = null;
-        if (startHourString != null) {
-             startHour =  new LocalTime(Integer.parseInt(startHourString),0,0);
+        LocalTime startTime = null;
+        if (startTimeString != null) {
+             startTime =  dateFormattingService.parseLocalTime(startTimeString, userContext);
         }
-        LocalTime stopHour = null;
-        if (stopHourString != null) {
-            stopHour = new LocalTime(Integer.parseInt(stopHourString),0,0);
+        LocalTime stopTime = null;
+        if (stopTimeString != null) {
+            stopTime = dateFormattingService.parseLocalTime(stopTimeString, userContext);
         }
         // START
         // - start now or later
@@ -471,8 +452,8 @@ public class ProfileWidget extends WidgetControllerBase {
                     } else if (scheduledStartDate.compareTo(today) <= 0) {
                         toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startAfterToday", startDate);
                     } else {
-                        scheduledStartDate = DateUtils.addHours(scheduledStartDate, startHour.getHourOfDay());
-                        scheduledStartDate = DateUtils.addMinutes(scheduledStartDate, 0);
+                        scheduledStartDate = DateUtils.addHours(scheduledStartDate, startTime.getHourOfDay());
+                        scheduledStartDate = DateUtils.addMinutes(scheduledStartDate, startTime.getMinuteOfHour());
                     }
                 } catch (ParseException e) {
                     toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startInvalid", e.getMessage());
@@ -490,8 +471,8 @@ public class ProfileWidget extends WidgetControllerBase {
                     } else if (scheduledStopDate.compareTo(today) <= 0) {
                         toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday", stopDate);
                     } else {
-                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour.getHourOfDay());
-                        scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
+                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopTime.getHourOfDay());
+                        scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, stopTime.getMinuteOfHour());
                     }
                 } catch (ParseException e) {
                     toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", e.getMessage());
@@ -555,8 +536,8 @@ public class ProfileWidget extends WidgetControllerBase {
                     } else if (scheduledStopDate.compareTo(today) <= 0) {
                         toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday", stopDate);
                     } else {
-                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour.getHourOfDay());
-                        scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
+                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopTime.getHourOfDay());
+                        scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, stopTime.getMinuteOfHour());
                     }
                 } catch (ParseException e) {
                     toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", e.getMessage());

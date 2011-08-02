@@ -2,6 +2,7 @@ package com.cannontech.web.widget;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,7 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -22,11 +25,13 @@ import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -42,6 +47,7 @@ public class PeakReportWidget extends WidgetControllerBase {
     private DateFormattingService dateFormattingService = null;
     private AttributeService attributeService = null;
     private PaoCommandAuthorizationService commandAuthorizationService;
+    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -125,6 +131,11 @@ public class PeakReportWidget extends WidgetControllerBase {
         PeakReportResult peakResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.SINGLE, userContext);
         
         if(peakResult != null){
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            List<String> arguments = Arrays.asList(String.valueOf(peakResult.getAverageDailyUsage()),
+                                                   String.valueOf(peakResult.getTotalUsage()));
+            mav.addObject("avgVsTotal", 
+                          messageSourceAccessor.getMessage("yukon.web.widgets.peakReportWidget.kwhVsKwh", arguments.toArray()));
             mav.addObject("peakResult", peakResult);
         }
         
@@ -278,4 +289,9 @@ public class PeakReportWidget extends WidgetControllerBase {
 			PaoCommandAuthorizationService commandAuthorizationService) {
 		this.commandAuthorizationService = commandAuthorizationService;
 	}
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
 }

@@ -74,10 +74,12 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-						<tags:widgetActionRefreshImage2 title="disable" method="toggleEnabled" tamperFlagMonitorId="${monitorId}" titleArgument="${monitorName}"/>
+						<tags:widgetActionRefreshImage method="toggleEnabled" tamperFlagMonitorId="${monitorId}"
+                                                       nameKey="disable" arguments="${monitorName}"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-						<tags:widgetActionRefreshImage2 title="enable" method="toggleEnabled" tamperFlagMonitorId="${monitorId}" titleArgument="${monitorName}" checked="false"/>
+						<tags:widgetActionRefreshImage method="toggleEnabled" tamperFlagMonitorId="${monitorId}" 
+                                                       nameKey="enable" arguments="${monitorName}"/>
 					</c:when>
 				</c:choose>
 			</td>

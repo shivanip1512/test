@@ -19,7 +19,10 @@
     <entry key="yukon.web.widgets.profileWidget.startDate">Start Date:</entry>
     <entry key="yukon.web.widgets.profileWidget.stopDate">Stop Date:</entry>
     <entry key="yukon.web.widgets.profileWidget.email">Email:</entry>
-    <entry key="yukon.web.widgets.profileWidget.viewReport">View Report</entry>
+    <entry key="yukon.web.widgets.profileWidget.start.label">Start</entry>
+    <entry key="yukon.web.widgets.profileWidget.start.labelBusy">Start</entry>
+    <entry key="yukon.web.widgets.profileWidget.viewReport.label">View Report</entry>
+    <entry key="yukon.web.widgets.profileWidget.viewReport.labelBusy">View Report</entry>
     <entry key="yukon.web.widgets.profileWidget.dailyUsageReport">Daily Usage Report:</entry>
     <entry key="yukon.web.widgets.profileWidget.retrievingReport">Retrieving report...</entry>
     <entry key="yukon.web.widgets.profileWidget.errorPastProfile">Error Retrieving Past Profile:</entry>
@@ -46,15 +49,16 @@
     <entry key="yukon.web.widgets.peakReportWidget.channel">Channel:</entry>
     <entry key="yukon.web.widgets.peakReportWidget.reportType">Report Type:</entry>
     <entry key="yukon.web.widgets.peakReportWidget.getReport.label">Get Report</entry>
-    <entry key="yukon.web.widgets.peakReportWidget.reading.label">Reading</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.getReport.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.peakReportWidget.notAuthorized">You are not authorized to view this report.</entry>
     <!-- peakReportWidget/peakSummaryReportResult.jsp -->
-    <entry key="yukon.web.widgets.peakReportWidget.report">Report:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.report">Report: {0}</entry>
     <entry key="yukon.web.widgets.peakReportWidget.period">Period:</entry>
-    <entry key="yukon.web.widgets.peakReportWidget.avgDailyTotalUsage">Avg Daily / Total Usage:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.avgDailyVsTotalUsage">Avg Daily / Total Usage:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.kwhVsKwh">{0} / {1} kWH</entry>
     <entry key="yukon.web.widgets.peakReportWidget.kwh">{0} kWH</entry>
     <entry key="yukon.web.widgets.peakReportWidget.kw">{0} KW</entry>
-    <entry key="yukon.web.widgets.peakReportWidget.peak">Peak</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.peak">Peak {0}:</entry>
     <entry key="yukon.web.widgets.peakReportWidget.peakInterval">Peak Interval Demand:</entry>
     <entry key="yukon.web.widgets.peakReportWidget.peakDay">Peak Day Total Usage:</entry>
     <entry key="yukon.web.widgets.peakReportWidget.errorRead">There was an error reading the meter.</entry>

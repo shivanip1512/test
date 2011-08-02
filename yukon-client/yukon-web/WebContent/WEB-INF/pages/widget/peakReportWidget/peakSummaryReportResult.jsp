@@ -15,7 +15,7 @@
 		<c:when test="${!peakResult.noData && peakResult.deviceError == ''}">
 			<table class="compactResultsTable">
 				<tr>
-					<th align="left"><i:inline key=".report"/><div style="font-weight:normal;display:inline;">${peakResult.peakType.reportTypeDisplayName}</div></th>
+					<th align="left"><i:inline key=".report" arguments="${peakResult.peakType.reportTypeDisplayName}"/></th>
 					<th align="left" style="font-weight:normal;color:#666666;">
                         <cti:formatDate value="${peakResult.runDate}" type="DATE" />
                     </th>
@@ -29,11 +29,11 @@
 				</tr>
 				
 				<tr>
-					<td class="label"><i:inline key=".avgDailyTotalUsage"/></td>
-					<td><i:inline key=".kwh" arguments="${peakResult.averageDailyUsage} / ${peakResult.totalUsage}"/></td>
+					<td class="label"><i:inline key=".avgDailyVsTotalUsage"/></td>
+					<td>${avgVsTotal}</td>
 				</tr>
 				<tr>
-					<td class="label"><i:inline key=".peak"/> ${peakResult.peakType.displayName}:</td>
+					<td class="label"><i:inline key=".peak" arguments="${peakResult.peakType.displayName}"/></td>
 					<td>${peakResult.peakValue}</td>
 				</tr>
 				<c:choose>
@@ -53,13 +53,14 @@
 			</table>
 		</c:when>
 		<c:otherwise>
-			<i:inline key=".errorRead"/><br>
-  			<c:forEach items="${peakResult.errors}" var="error">
-    			<tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
-    			${error.porter}<br>
-    			${error.troubleshooting}<br>
-    			</tags:hideReveal><br>
-  			</c:forEach>
+			<cti:msg2 var="errorPeakReport" key=".errorRead"/>
+			<tags:hideReveal styleClass="errorMessage" title="${errorPeakReport}" showInitially="true">
+      			<c:forEach items="${peakResult.errors}" var="error">
+        			${error.description} (${error.errorCode})<br>
+                    ${error.porter}<br>
+        			${error.troubleshooting}<br>
+      			</c:forEach>
+			</tags:hideReveal><br>
 		</c:otherwise>
 	</c:choose>
 </c:if>

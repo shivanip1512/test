@@ -147,7 +147,7 @@ public class ButtonTag extends YukonTagSupport {
             if (StringUtils.isBlank(labelText)) {
                 MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label", arguments);
                 labelText = getLocalMessage(labelTextResolvable, false);
-                if (!StringUtils.isBlank(labelText)) {
+                if (StringUtils.isNotBlank(labelText)) {
                     labelText = StringEscapeUtils.escapeHtml(labelText);
                 }
             } else {

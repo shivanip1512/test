@@ -245,23 +245,6 @@
         <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
     </bean>
 
-    <bean id="readCurrentTimeWidget"
-    	class="com.cannontech.web.widget.ReadCurrentTimeWidget">
-    	<property name="title" value="Get Current Time"/>
-    </bean>
-    
-    <bean id="pointValueDisplayWidget"
-    	class="com.cannontech.web.widget.PointValueDisplayWidget">
-    	<property name="title" value="Point Value Widget"/>
-        <property name="identityPath" value="common/pointIdentity.jsp" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.pointId"/>
-           </set>
-        </property>
-        <property name="pointDao" ref="pointDao"/>
-    </bean>
-
     <bean id="disconnectMeterWidget"
     	class="com.cannontech.web.widget.DisconnectMeterWidget">
     	<property name="title" value="Disconnect"/>

@@ -53,13 +53,13 @@
 					<td class="${tdClass}" style="text-align: right;">
 						<c:choose>
 							<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-								<tags:widgetActionRefreshImage2 method="toggleEnabled"
-									title="disable" titleArgument="${monitor.name}"
+								<tags:widgetActionRefreshImage method="toggleEnabled"
+									nameKey="disable" titleArgument="${monitor.name}"
 									monitorId="${monitor.monitorId}"/>
 							</c:when>
 							<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-								<tags:widgetActionRefreshImage2 method="toggleEnabled"
-									title="enable" titleArgument="${monitor.name}"
+								<tags:widgetActionRefreshImage method="toggleEnabled"
+									nameKey="enable" titleArgument="${monitor.name}"
 									monitorId="${monitor.monitorId}" checked="false"/>
 							</c:when>
 						</c:choose>

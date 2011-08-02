@@ -1,7 +1,6 @@
-<%@ attribute name="method" required="true" type="java.lang.String"%>
-<%@ attribute name="container" required="true" type="java.lang.String"%>
-<%@ attribute name="label" required="true" type="java.lang.String"%>
-<%@ attribute name="labelBusy" required="true" type="java.lang.String"%>
+<%@ attribute name="method" required="true"%>
+<%@ attribute name="container" required="true"%>
+<%@ attribute name="nameKey" required="true"%>
 <%@ attribute name="hide" type="java.lang.Boolean" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -18,11 +17,11 @@
 		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 	</script>
 	
-    <%-- Prepending '.' and appending '.label' here to stay consistent with the xml key style of cti:button --%>
-	<cti:msg2 var="labelBusyText" key=".${labelBusy}.label"/> 
+    <%-- Prepending '.' and appending '.labelBusy' here to stay consistent with the xml key style of cti:button --%>
+	<cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/> 
 	
 	<span id="${thisId}">
-    <cti:button key="${label}" type="button" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusyText}...', '${uniqueId}')"/>
+    <cti:button key="${nameKey}" type="button" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusyText}...', '${uniqueId}')"/>
 	<span class="widgetAction_waiting" style="display:none">
 	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
 	</span>

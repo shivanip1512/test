@@ -1,6 +1,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <script type="text/javascript">
     function toggleConnectButons() {
@@ -23,9 +24,9 @@
 </script>
 
 <div align="right" id="popupDiv">
-	<ct:widgetActionPopup2 method="helpInfo" container="helpInfo" labelBusy=".title" label=".title" deviceId="${device.deviceId}">
+	<ct:widgetActionPopup nameKey="title" method="helpInfo" container="helpInfo" deviceId="${device.deviceId}">
         <i:inline key=".infoLink"/>
-	</ct:widgetActionPopup2>
+	</ct:widgetActionPopup>
 </div>
 
 <ct:simpleDialog id="disconnectInfo"/>
@@ -42,7 +43,7 @@
 </ct:nameValueContainer>
 <br>
 <div style="text-align: right">
-	<ct:widgetActionRefresh2 hide="${!readable}" method="read" label=".readStatus" labelBusy=".reading"/>
+	<ct:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
     
     <%-- INIT VISIBILITY OF BUTTONS --%>
     <c:set var="connectStyle" value="" />
@@ -57,11 +58,11 @@
     
     <%-- CONNECT/DISCONNECT BUTTONS --%>
     <span id="connectSpan" style="${connectStyle}">
-		<ct:widgetActionRefresh2 hide="${!controllable}" method="connect" label=".connect" labelBusy=".connecting" confirmText=".confirmConnect"/>
+		<ct:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect"/>
     </span>
     
     <span id="disconnectSpan" style="${disconnectStyle}">
-		<ct:widgetActionRefresh2 hide="${!controllable}" method="disconnect" label=".disconnect" labelBusy=".disconnecting" confirmText=".confirmDisconnect"/>
+		<ct:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect"/>
     </span>
 </div>
 <br>

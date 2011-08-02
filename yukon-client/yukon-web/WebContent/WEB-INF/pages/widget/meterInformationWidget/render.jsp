@@ -32,6 +32,6 @@
     <br>
     <div id="${widgetParameters.widgetId}_results"></div>
     <div style="text-align: right">
-    	<tags:widgetActionUpdate method="ping"  label="ping" labelBusy="pinging" container="${widgetParameters.widgetId}_results" />
+    	<tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" />
     </div>
 </c:if>

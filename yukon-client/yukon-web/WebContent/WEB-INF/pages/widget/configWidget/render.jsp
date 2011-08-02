@@ -19,7 +19,7 @@
 	                        <option value="${config.id}" <c:if test="${config.id == currentConfigId}">selected</c:if>>${config.name}</option>
 	                    </c:forEach>
 	                </select>
-	                <ct:widgetActionRefresh2 method="assignConfig" label=".assign" labelBusy=".assigning"/>
+	                <ct:widgetActionRefresh method="assignConfig" nameKey="assign"/>
 	            </ct:nameValue2>
             </cti:checkRolesAndProperties>
 		</ct:nameValueContainer2>
@@ -30,10 +30,10 @@
 				<c:if test="${currentConfigId >= 0}">
 	                <div style="text-align: right">
 	                    <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-	                        <ct:widgetActionUpdate method="sendConfig" label="send" labelBusy="sending" container="${widgetParameters.widgetId}_config_results"/>
-	                        <ct:widgetActionUpdate method="readConfig" label="read" labelBusy="reading" container="${widgetParameters.widgetId}_config_results"/>
+	                        <ct:widgetActionUpdate method="sendConfig" nameKey="send" container="${widgetParameters.widgetId}_config_results"/>
+	                        <ct:widgetActionUpdate method="readConfig" nameKey="read" container="${widgetParameters.widgetId}_config_results"/>
 	                    </cti:checkRolesAndProperties>
-	                    <ct:widgetActionUpdate method="verifyConfig" label="verify" labelBusy="verifying" container="${widgetParameters.widgetId}_config_results"/>
+	                    <ct:widgetActionUpdate method="verifyConfig" nameKey="verify" container="${widgetParameters.widgetId}_config_results"/>
 					</div>
 				</c:if>
             </c:when>

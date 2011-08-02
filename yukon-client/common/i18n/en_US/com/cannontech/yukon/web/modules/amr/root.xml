@@ -8,7 +8,6 @@
     <entry key="yukon.web.modules.amr.fileFormatHtml">HTML</entry>
     <entry key="yukon.web.modules.amr.fileFormatCsv">CSV</entry>
     <entry key="yukon.web.modules.amr.fileFormatPdf">PDF</entry>
-    
 
     <!-- start.jsp -->
     <entry key="yukon.web.modules.amr.moduleName">Metering</entry>
@@ -128,8 +127,9 @@
     <!-- voltageAndTou.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageDescription">Voltage &amp; TOU</entry>
+    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle">Voltage</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.read.label">Read</entry>
-    <entry key="yukon.web.widgets.simpleAttributesWidget.reading.label">Reading</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.errorReading">Error Reading Voltage:</entry>
     
     <!-- manualCommand.jsp -->

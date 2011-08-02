@@ -104,10 +104,10 @@
 <input type="hidden" name="${fieldName}" id="${fieldId}" value="">
 
 <%-- POPUP TREE --%>
-<cti:msg2 var="titleText"  key="${title}"/>
+<cti:msg2 var="titleText"  key="${title}" javaScriptEscape="true"/>
 <cti:msg2 var="submitText" key="${submitButton}" javaScriptEscape="true"/>
 <cti:msg2 var="cancelText" key="${cancelButton}" javaScriptEscape="true"/>
-<cti:msg2 var="noSelectionAlertMessage" key="${noSelectionAlert}"/> 
+<cti:msg2 var="noSelectionAlertMessage" key="${noSelectionAlert}" javaScriptEscape="true"/> 
 
 <ext:popupTree  id="${id}"
                 treeCss="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css"

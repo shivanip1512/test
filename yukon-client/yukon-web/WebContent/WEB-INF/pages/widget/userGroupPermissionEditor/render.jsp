@@ -4,9 +4,6 @@
 
 <cti:includeScript link="/JavaScript/tableCreation.js" />
 
-<c:url var="delete" value="/WebConfig/yukon/Icons/delete.png"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.png"/>
-
 <c:set var="pickerId" value="${widgetParameters.widgetId}_${widgetParameters.pickerType}" scope="page"/>
 <c:set var="addPao" value="addPao_${pageScope.pickerId}" scope="page"/>
 <c:set var="addPaoSpanId" value="addPaoSpan_${pageScope.pickerId}" scope="page"/>
@@ -44,7 +41,7 @@ ${pageScope.addPao} = function() {
                                     <c:out value="${pao.type}" />
                                 </td>
                                 <td class="removeColumn">
-                                    <tags:widgetActionRefreshImage paoId="${pao.paoId}" method="removePao" title="Remove this PAO" imgSrc="${delete}" imgSrcHover="${deleteOver}"/>
+                                    <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}"/>
                                 </td>
                             </tr>
                             
@@ -57,7 +54,7 @@ ${pageScope.addPao} = function() {
         <div class="actionArea">
             <c:if test="${showSave}">
                 <span id="${widgetParameters.widgetId}_results">
-                    <tags:widgetActionUpdate method="save" label="save" labelBusy="saving" container="${widgetParameters.widgetId}_results"/>
+                    <tags:widgetActionUpdate method="save" nameKey="save" container="${widgetParameters.widgetId}_results"/>
                 </span>
             </c:if>
             <span class="widgetActionLink">

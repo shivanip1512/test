@@ -248,9 +248,9 @@
 		<br>
 		
 		<%-- other actions --%>
-		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions">
+		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions" htmlEscape="true">
 			<cti:param name="collectionType" value="group"/>
-			<cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
+			<cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
 		</cti:url>
 		<a href="${otherActionsUrl}"><i:inline key=".section.options.otherActions"/></a>
 	    	

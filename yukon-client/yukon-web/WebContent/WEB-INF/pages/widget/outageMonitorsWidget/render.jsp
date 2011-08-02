@@ -68,10 +68,12 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                        <tags:widgetActionRefreshImage2 title="disable" method="toggleEnabled" outageMonitorId="${monitorId}" titleArgument="${monitorName}"/>
+                        <tags:widgetActionRefreshImage method="toggleEnabled" outageMonitorId="${monitorId}" 
+                                                       nameKey="disable" arguments="${monitorName}"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                        <tags:widgetActionRefreshImage2 title="enable" method="toggleEnabled" outageMonitorId="${monitorId}" titleArgument="${monitorName}" checked="false"/>
+                        <tags:widgetActionRefreshImage method="toggleEnabled" outageMonitorId="${monitorId}"
+                                                       nameKey="enable" arguments="${monitorName}"/>
 					</c:when>
 				</c:choose>
 			</td>

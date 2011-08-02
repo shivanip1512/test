@@ -35,13 +35,13 @@
         <div style="text-align: right">
             <c:choose>
                 <c:when test="${useArming}">
-                    <tags:widgetActionRefresh2 method="connect" label=".armLabel" labelBusy=".armLabelBusy" confirmText=".confirmArm"/>
+                    <tags:widgetActionRefresh method="connect" nameKey="arm" showConfirm="true"/>
                 </c:when>
                 <c:otherwise>
-                    <tags:widgetActionRefresh2 method="connect" label=".connectLabel" labelBusy=".connectLabelBusy" confirmText=".confirmConnect"/>
+                    <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true"/>
                 </c:otherwise>
             </c:choose>
-            <tags:widgetActionRefresh2 method="disconnect" label=".disconnectLabel" labelBusy=".disconnectLabelBusy" confirmText=".confirmDisconnect"/>
+            <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true"/>
         </div>
     </c:otherwise>
 </c:choose>

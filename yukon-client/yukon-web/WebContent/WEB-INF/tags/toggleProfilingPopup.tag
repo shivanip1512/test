@@ -51,7 +51,7 @@
                     <select name="${startHour}">
                         <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
-                            <option value="${hour.hourOfDay}">${formattedHour}</option>
+                            <option value="${formattedHour}">${formattedHour}</option>
                         </c:forEach>
                     </select>
                 </td>
@@ -74,7 +74,7 @@
                     <select name="${stopHour}">
                         <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
-                            <option value="${hour.hourOfDay}">${formattedHour}</option>
+                            <option value="${formattedHour}">${formattedHour}</option>
                         </c:forEach>
                     </select>
                 </td>
@@ -100,7 +100,7 @@
                     <select name="${stopHour}">
                         <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
-                            <option value="${hour.hourOfDay}">${formattedHour}</option>
+                            <option value="${formattedHour}">${formattedHour}</option>
                         </c:forEach>
                     </select>
                 </td>

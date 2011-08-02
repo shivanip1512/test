@@ -14,9 +14,8 @@
   </ct:nameValue>
   <br>
 </ct:nameValueContainer>
-
 <div style="text-align: right">
-  <ct:widgetActionRefresh2 hide="${!readable}" method="read" label=".readNow" labelBusy=".reading"/>
+  <ct:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
 </div>
 <br>
 

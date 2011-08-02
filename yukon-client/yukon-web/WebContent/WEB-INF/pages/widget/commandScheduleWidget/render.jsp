@@ -10,33 +10,17 @@
             <i:inline key="yukon.web.widgets.commandScheduleWidget.noSchedules"/>
         </div>
     </c:when>
-
     <c:otherwise>
-    
         <table class="compactResultsTable">
-    
             <tr>
                 <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
                 <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
                 <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
                 <th class="enabledColumn"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
             </tr>
-        
+
             <c:forEach var="schedule" items="${schedules}">
-            
-                <c:choose>
-                    <c:when test="${schedule.enabled}">
-                        <c:set var="toggleEnabled" value="disable"/>
-                        <c:set var="toggleEnabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="toggleEnabled" value="enable"/>
-                        <c:set var="toggleEnabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
-                    </c:otherwise>
-                </c:choose>
-            
                 <tr>
-                    
                     <td>
                         <cti:url var="editUrl" value="/spring/stars/operator/inventory/inventoryOperations/commandSchedule">
                             <cti:param name="scheduleId" value="${schedule.commandScheduleId}" />
@@ -55,22 +39,24 @@
                     </td>
                     
                     <td class="enabledColumn">
-                        <cti:msg2 key="yukon.web.widgets.commandScheduleWidget.${toggleEnabled}Title" var="enableTitle"/>
-                        <tags:widgetActionRefreshImage method="${toggleEnabled}" imgSrc="${toggleEnabledImg}" imgSrcHover="${toggleEnabledImg}" scheduleId="${schedule.commandScheduleId}" title="${enableTitle}"/>
+                        <c:choose>
+                            <c:when test="${schedule.enabled}">
+                                <tags:widgetActionRefreshImage method="disable" nameKey="disable" scheduleId="${schedule.commandScheduleId}" />
+                            </c:when>
+                            <c:when test="${not schedule.enabled}">
+                                <tags:widgetActionRefreshImage method="enable" nameKey="enable" scheduleId="${schedule.commandScheduleId}"/> 
+                            </c:when>
+                        </c:choose>
                     </td>
-                    
                 </tr>
-            
             </c:forEach>
-        
         </table>
     </c:otherwise>
 </c:choose>
 
 <div class="actionArea">
     <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/spring/stars/operator/inventory/inventoryOperations/commandSchedule" method="get">
-        <cti:msg2 key="yukon.web.widgets.commandScheduleWidget.disableAll" var="disableAllLabel"/>
-        <tags:widgetActionRefresh labelBusy="${disableAllLabel}" label="${disableAllLabel}" method="disableAll"/>
+        <tags:widgetActionRefresh nameKey="disableAll" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">
         <cti:button key="create" type="submit"/>
     </form>
