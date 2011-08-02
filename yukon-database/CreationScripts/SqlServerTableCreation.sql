@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/2/2011 10:33:55 AM                         */
+/* Created on:     8/2/2011 2:51:52 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9760,6 +9760,8 @@ INSERT INTO YukonUserRole VALUES(-41001,-1, -108, -10811, ' ');
 
 /* Give admin login access to View Logs, */
 INSERT INTO YukonUserRole VALUES(-2000, -1, -200, -20009, ' ');
+INSERT INTO YukonUserRole VALUES(-2001, -1, -200, -20019, 'true');
+
 INSERT INTO YukonUserRole VALUES(-1000, -100, -108, -10800, '/operator/Operations.jsp');
 INSERT INTO YukonUserRole VALUES(-1002, -100, -108, -10802, ' ');
 INSERT INTO YukonUserRole VALUES(-1003, -100, -108, -10803, ' ');
