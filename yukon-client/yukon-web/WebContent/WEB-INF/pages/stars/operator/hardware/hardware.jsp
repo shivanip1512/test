@@ -47,15 +47,17 @@ YEvent.observeSelectorClick('#refresh, button[name=commissionSubmit], button[nam
     });
 });
 
-YEvent.observeSelectorClick('#assignedDevicesCommission, #assignedDevicesDecommission', function(event) {
+YEvent.observeSelectorClick('button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
     var url = '/spring/stars/operator/hardware/zb/';
     var button = event.findElement('button');
-    var deviceId = button.name;
+    var deviceId;
     
-    if (button.id == 'assignedDevicesCommission') {
+    if (button.name.startsWith('assignedDevicesCommissionSubmit_')) {
         url += 'commission';
-    } else {
+        deviceId = button.name.sub('assignedDevicesCommissionSubmit_', '');
+    } else if (button.name.startsWith('assignedDevicesDecommissionSubmit_')) {
         url += 'decommission';
+        deviceId = button.name.sub('assignedDevicesDecommissionSubmit_', '');
     }
     
     Yukon.ui.blockElement({selector:'#assignedDevices_content'});
@@ -98,8 +100,8 @@ YEvent.observeSelectorClick('#chooseButton', function(event) {
 <cti:displayForPageEditModes modes="VIEW">
 YEvent.observeSelectorClick('#sendTextMsg', function(event) {
     var params = {'accountId' : ${accountId}, 
-                        'inventoryId' : ${inventoryId},
-                        'gatewayId' : ${hardwareDto.deviceId}};
+                  'inventoryId' : ${inventoryId}, 
+                  'gatewayId' : ${hardwareDto.deviceId}};
     openSimpleDialog('ajaxDialog', 'zb/showTextMessage', null, params);
 });
 </cti:displayForPageEditModes>
@@ -545,18 +547,6 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 </tr>
                                 <tr>
                                     <td>
-                                        <cti:pointStatusColor pointId="${hardwareDto.connectStatusId}" >
-                                            <span class="fwb">
-                                                <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="VALUE"/>
-                                            </span>
-                                        </cti:pointStatusColor>
-                                    </td>
-                                    <td>
-                                        <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="DATE"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
                                         <cti:pointStatusColor pointId="${hardwareDto.commissionedId}" >
                                             <span class="fwb">
                                                 <cti:pointValue pointId="${hardwareDto.commissionedId}" format="VALUE"/>
@@ -570,7 +560,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             </table>
                             <div id="zbCommandFailure" style="display:none;" class="errorMessage zbCommandMsg"></div>
                             <div id="zbCommandSuccess" style="display:none;" class="successMessage zbCommandMsg"></div>
-                            <div class="actionArea">
+                            <div class="pageActionArea">
                                 <c:choose>
                                     <c:when test="${showDisabledRefresh}">
                                         <cti:button key="refreshDisabled" disabled="true"/>
@@ -582,6 +572,14 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <c:if test="${showCommissionActions}">
                                     <cti:button key="commission" id="commission"/>
                                     <cti:button key="decommission" id="decommission"/>
+                                    <tags:confirmDialog submitName="commissionSubmit"
+                                        nameKey=".commissionConfirmation"
+                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#commission"
+                                        endAction="hide" />
+                                    <tags:confirmDialog submitName="decommissionSubmit"
+                                        nameKey=".decommissionConfirmation"
+                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#decommission"
+                                        endAction="hide" />
                                 </c:if>
                                 
                                 <c:if test="${showDisabledCommissionActions}">
@@ -618,8 +616,16 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                                     </cti:pointStatusColor>
                                                 </td>
                                                 <td class="nonwrapping">
-                                                    <cti:button key="assignedDevices.commission" name="${device.deviceId}" renderMode="image" id="assignedDevicesCommission"/>
-                                                    <cti:button key="assignedDevices.decommission" name="${device.deviceId}" renderMode="image" id="assignedDevicesDecommission"/>
+                                                    <cti:button key="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission"/>
+                                                    <cti:button key="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission"/>
+                                                    <tags:confirmDialog submitName="assignedDevicesCommissionSubmit_${device.deviceId}"
+                                                        nameKey=".commissionConfirmation"
+                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on=".assignedDevicesCommission"
+                                                        endAction="hide" />
+                                                    <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
+                                                        nameKey=".decommissionConfirmation"
+                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on=".assignedDevicesDecommission"
+                                                        endAction="hide" />
                                                     
                                                     <cti:url value="/spring/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
                                                         <cti:param name="accountId" value="${accountId}"/>
