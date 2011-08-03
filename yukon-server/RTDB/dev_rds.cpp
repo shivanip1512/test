@@ -424,6 +424,31 @@ INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
             OutMessage = NULL;
             break;
         }
+        else if( parse.isKeyValid("hexraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
+        {
+            CtiString outputValue = parse.getsValue("hexraw");
+            if( (outputValue.size()%2) != 0 )
+            {
+                outputValue.append("0");
+            }
+            for(int i = 0; i < outputValue.size()/2; i++)
+            {
+                OutMessage->Buffer.OutMessage[i] = strtoul(outputValue.substr(i*2,2).c_str(), NULL, 16);
+            }
+            OutMessage->OutLength = outputValue.size()/2;
+            OutMessage->DeviceID    = getID();
+            OutMessage->TargetID    = getID();
+            OutMessage->Port        = getPortID();
+            OutMessage->InLength    = 0;
+            OutMessage->Source      = 0;
+            OutMessage->Retry       = 2;
+
+            resultString = "Device: " + getName() + " -- Raw hex Command sent \n\"" + (string)outputValue + "\"";
+
+            outList.push_back(OutMessage);
+            OutMessage = NULL;
+            break;
+        }
         //else fall through!
     }
     case ControlRequest:

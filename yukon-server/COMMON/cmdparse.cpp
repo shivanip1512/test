@@ -1410,6 +1410,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
     static const boost::regex   re_analog_offset(CtiString("analog ") + str_num + CtiString(" -?") + str_floatnum);
     static const boost::regex   re_analog_no_offset(CtiString("analog value -?") + str_floatnum);
     static const boost::regex   re_asciiraw(CtiString("asciiraw ") + str_quoted_token);
+    static const boost::regex   re_hexraw(CtiString("hexraw ") + str_hexnum);
 
 
     CtiTokenizer   tok(CmdStr);
@@ -1495,6 +1496,22 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
                 if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
                 {
                     _cmd["asciiraw"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
+                }
+            }
+        }
+        if(CmdStr.contains(" hexraw"))
+        {
+            if(!(token = CmdStr.match(re_hexraw)).empty())
+            {
+                size_t nstart;
+                size_t nstop;
+                nstart = token.index("hexraw ", &nstop);
+
+                nstop += nstart;
+
+                if(!(token = token.match((const boost::regex)str_hexnum, nstop)).empty())   // get the value
+                {
+                    _cmd["hexraw"] = CtiParseValue(token.substr(2, token.length() - 2), -1 );
                 }
             }
         }
