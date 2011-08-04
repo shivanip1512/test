@@ -1,6 +1,9 @@
 package com.cannontech.thirdparty.digi.service.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,54 +18,90 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeUpdateService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
 
     private static final Logger log = YukonLogManager.getLogger(DigiSmartUpdateServiceImpl.class);
     
     private ZigbeeWebService zigbeeWebService;
+    private AttributeDynamicDataSource aDynamicDataSource;
     
     private boolean smartPolling;
     
     private class SmartRunnable implements Runnable {
 
         public Duration timeToPoll;
-        private Map<ZigbeeDevice,Instant> devicesToPoll = Maps.newHashMap();
+        private Map<ZigbeeDevice,Instant> devicesToPoll = Collections.synchronizedMap(new HashMap<ZigbeeDevice, Instant>());
         
         @Override
         public void run() {
-            for (ZigbeeDevice device : devicesToPoll.keySet()) {
-                try {
-                    Instant now = new Instant();
-    
+            synchronized (devicesToPoll) {
+                
+                Instant now = new Instant();
+                Set<ZigbeeDevice> devicesToRemove = Sets.newHashSet();
+                
+                //Clean up
+                for (ZigbeeDevice device : devicesToPoll.keySet()) {
                     Instant stopTime = devicesToPoll.get(device);
                     if (now.isAfter(stopTime)) {
                         log.debug("Scanning time has expired for " + device.getName());
-                        devicesToPoll.remove(device);
+                        devicesToRemove.add(device);
                         continue;
                     }
                     
-                    if (device.getPaoIdentifier().getPaoType() == PaoType.DIGIGATEWAY) {
-                        log.debug("Updating Gateway Status with name, " + device.getName() + ". Scanning will continue until: " + stopTime.toDate());
-                        zigbeeWebService.updateGatewayStatus(device);
-                    } else {
-                        log.debug("Updating EndPoint Status with name, " + device.getName() + ". Scanning will continue until: " + stopTime.toDate());
-                        zigbeeWebService.updateEndPointStatus(device);
+                    PointValueHolder pvh = aDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                    if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState() ) {
+                        log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, halting ping. " + device.getName());
+                        devicesToRemove.add(device);
+                        continue;
                     }
                 }
-                catch(Exception e) {
-                    log.error("Error executing smart poll on device: " + device.getName(),e);
+                
+                for (ZigbeeDevice device : devicesToRemove) {
+                    log.debug("Halting Scanning of, " + device.getName() + ".");
+                    devicesToPoll.remove(device);
+                }
+                
+                //Poll away
+                for (ZigbeeDevice device : devicesToPoll.keySet()) {
+                    try {
+                        Instant stopTime = devicesToPoll.get(device);
+                        
+                        if (device.getPaoIdentifier().getPaoType() == PaoType.DIGIGATEWAY) {
+                            log.debug("Updating Gateway Status with name, " + device.getName() + ". Scanning will continue until: " + stopTime.toDate());
+                            zigbeeWebService.updateGatewayStatus(device);
+                        } else {
+                            log.debug("Updating EndPoint Status with name, " + device.getName() + ". Scanning will continue until: " + stopTime.toDate());
+                            zigbeeWebService.updateEndPointStatus(device);
+                        }
+                    }
+                    catch(Exception e) {
+                        log.error("Error executing smart poll on device: " + device.getName(),e);
+                    }
                 }
             }
         }
         
         public void enableSmartPollingForDevice(ZigbeeDevice device) {
-            Instant expireTime = new Instant().plus(timeToPoll);
-            devicesToPoll.put(device,expireTime);
+            synchronized (devicesToPoll) {
+                
+                PointValueHolder pvh = aDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState()) {
+                    log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, will not ping device " + device.getName());
+                    return;
+                }
+                
+                Instant expireTime = new Instant().plus(timeToPoll);
+                devicesToPoll.put(device,expireTime);
+            }
         }
     }
     
@@ -103,6 +142,11 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
         }
     }
 
+    @Autowired
+    public void setaDynamicDataSource(AttributeDynamicDataSource aDynamicDataSource) {
+        this.aDynamicDataSource = aDynamicDataSource;
+    }
+    
     @Autowired
     public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
         this.zigbeeWebService = zigbeeWebService;

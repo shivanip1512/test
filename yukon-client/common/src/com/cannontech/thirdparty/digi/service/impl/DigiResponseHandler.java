@@ -218,12 +218,9 @@ public class DigiResponseHandler {
             ZigbeeThermostat utilPro = zigbeeDeviceDao.getZigbeeUtilProByMACAddress(macAddress);
             //We found a MAC, so lets do something..
             if (message.contains(commissionStr)) {
-                //Commissioned
-                log.debug("Device: " + macAddress + " was commissioned.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
-                                                                            Commissioned.DISCONNECTED);
+                // Registered with the gateway
+                log.debug("Device: " + macAddress + " has been registered.");
                 return;
-                
             } else if ( message.contains(decommissionStr)) {
                 //DeCommissioned
                 log.debug("Device: " + macAddress + " was decommissioned.");
@@ -231,26 +228,28 @@ public class DigiResponseHandler {
                                                                               Commissioned.DECOMMISSIONED);
                 return;
                 
+            } else if(message.contains(connectStr)) {
+                //Has been commissioned, set to disconnected until we receive the marked active message.
+                log.debug("Device: " + macAddress + " has been commissioned.");
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                          Commissioned.DISCONNECTED);
+                
+                //"Received device announce message from known device 00:0C:C1:00:27:19:C4:D1 (NWK: E0BB)"
+                m = nodeAddrPattern.matcher(message);
+                
+                if (m.find()) {
+                    int nodeId = Integer.parseInt(m.group(1), 16);
+                    
+                    utilPro.setNodeId(nodeId);
+                    zigbeeDeviceDao.updateZigbeeUtilPro(utilPro);
+                } else {
+                    log.warn("NodeId was not in the reponse.");
+                }
             } else if ( message.contains(connectStr) || message.contains(connectStr2)) {
                 //Connected
                 log.debug("Device: " + macAddress + " has connected.");
                 zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
                                                                               Commissioned.CONNECTED);
-                
-                if (message.contains(connectStr)) {
-                    //"Received device announce message from known device 00:0C:C1:00:27:19:C4:D1 (NWK: E0BB)"
-                    m = nodeAddrPattern.matcher(message);
-                    
-                    if (m.find()) {
-                        int nodeId = Integer.parseInt(m.group(1), 16);
-                        
-                        utilPro.setNodeId(nodeId);
-                        zigbeeDeviceDao.updateZigbeeUtilPro(utilPro);
-                    } else {
-                        log.warn("NodeId was not in the reponse.");
-                    }
-                }
-                
                 return;
                 
             } else if ( message.contains(disconnectStr)) {
@@ -333,7 +332,12 @@ public class DigiResponseHandler {
             if( error == null) {
                 error = template.evaluateAsString("//description");
                 log.error("Error Communicating with ZigBee EndPoint: " + error);
-                endPointState = Commissioned.DISCONNECTED;
+                if (error.contains("Key not authorized")) {
+                    //This
+                    endPointState = Commissioned.DECOMMISSIONED;
+                } else {
+                    endPointState = Commissioned.DISCONNECTED;
+                }
             } else {
                 log.error("Error Communicating with Gateway: " + error);
                 //Disconnect gateway (This will also disconnect the end points attached)
@@ -389,7 +393,13 @@ public class DigiResponseHandler {
             //Do this only if we were disconnected before. If no change, do not call.
             List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
             for (ZigbeeDevice device : devices) {
-                zigbeeStateUpdaterService.activateSmartPolling(device);
+                pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                oldState = Commissioned.getForRawState((int)pvh.getValue());
+                
+                if (oldState != Commissioned.DECOMMISSIONED) {
+                    //Poll is commissioned
+                    zigbeeStateUpdaterService.activateSmartPolling(device);
+                }
             }
         }
     }
@@ -428,13 +438,18 @@ public class DigiResponseHandler {
                                                   state);
         
         if (changeDevices) {
-            //Change state to match on all gateways
             List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
             for (ZigbeeDevice device : devices) {
-                //This is setting the update time as now time.
-                zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                          BuiltInAttribute.ZIGBEE_LINK_STATUS, 
-                                                          state);
+                PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                Commissioned oldState = Commissioned.getForRawState((int)pvh.getValue());
+                
+                if (oldState != Commissioned.DECOMMISSIONED) {
+                    //Change state to match on all gateways if it was commissioned
+                    //This is setting the update time as now time.
+                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                              BuiltInAttribute.ZIGBEE_LINK_STATUS, 
+                                                              state);
+                }
             }
         }
     }
