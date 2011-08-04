@@ -1667,7 +1667,7 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
         {
             if(!paoids.empty())
             {
-                sql += " WHERE " + createIdSqlClause(paoids, "SPI", "paobjectid");
+                sql += " AND " + createIdSqlClause(paoids, "SPI", "paobjectid");
             }
             rdr.setCommandText(sql);
             rdr.execute();

@@ -101,7 +101,8 @@ bool CtiTableStaticPaoInfo::hasRow() const
 string CtiTableStaticPaoInfo::getSQLCoreStatement()
 {
     static const string sqlStart =  "SELECT SPI.staticpaoinfoid, SPI.paobjectid, SPI.infokey, SPI.value "
-                                    "FROM StaticPaoInfo SPI";
+                                    "FROM StaticPaoInfo SPI "
+                                    "WHERE SPI.value IS NOT NULL";
 
     return sqlStart;
 }
