@@ -236,7 +236,8 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
             row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
             row.serialNumber = overrideHistory.getSerialNumber();
             row.startTimeOfControl = enrolledControlHistory.getStart().toDate();
-            row.stopTimeOfControl = enrolledControlHistory.getEnd().toDate();
+            row.stopTimeOfControl = enrolledControlHistory.getEnd() == null
+                ? null : enrolledControlHistory.getEnd().toDate();
             row.totalProjectedControlHoursForPeriod = enrollmentControlDuration.getMillis()/oneHour;
             row.dateOverrideWasScheduled = overrideHistory.getScheduledDate();
             row.startTimeOfOverride = overrideHistory.getStartDate();
