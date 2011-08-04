@@ -51,6 +51,8 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         
         hardwareDto.setInstallCode(zigbeeThermostat.getInstallCode());
         hardwareDto.setMacAddress(zigbeeThermostat.getMacAddress());
+        hardwareDto.setDestinationEndPointId(zigbeeThermostat.getDestinationEndPointId());
+        hardwareDto.setNodeId(zigbeeThermostat.getNodeId());
         
         LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         hardwareDto.setCommissionedId(linkPt.getLiteID());
@@ -113,6 +115,8 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         thermostat.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEEUTILPRO));
         thermostat.setName(hardwareDto.getSerialNumber());
         thermostat.setGatewayId(hardwareDto.getGatewayId());
+        thermostat.setNodeId(hardwareDto.getNodeId());
+        thermostat.setDestinationEndPointId(hardwareDto.getDestinationEndPointId());
         
         zigbeeDeviceDao.updateZigbeeUtilPro(thermostat);
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());

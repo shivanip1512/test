@@ -33,6 +33,8 @@ public class HardwareDto {
     private List<HardwareHistory> hardwareHistory;
     private HardwareType hardwareType;
     private int hardwareTypeEntryId;
+    private int destinationEndPointId;
+    private int nodeId;
     
     /* Non-ZigBee two way LCR fields */
     private String twoWayDeviceName;
@@ -304,5 +306,21 @@ public class HardwareDto {
 
     public Integer getGatewayId() {
         return gatewayId;
+    }
+    
+    public int getNodeId() {
+        return nodeId;
+    }
+    
+    public void setNodeId(int nodeId) {
+        this.nodeId = nodeId;
+    }
+    
+    public void setDestinationEndPointId(int destinationEndPointId) {
+        this.destinationEndPointId = destinationEndPointId;
+    }
+    
+    public int getDestinationEndPointId() {
+        return destinationEndPointId;
     }
 }

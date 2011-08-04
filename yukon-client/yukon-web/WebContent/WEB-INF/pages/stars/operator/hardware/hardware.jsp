@@ -226,6 +226,8 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 <form:hidden path="hardwareType"/>
                 <form:hidden path="hardwareTypeEntryId"/>
                 <form:hidden path="originalDeviceStatusEntryId"/>
+                <form:hidden path="nodeId"/>
+                <form:hidden path="destinationEndPointId"/>
                 <c:if test="${not showTwoWay}">
                     <form:hidden path="deviceId"/>
                 </c:if>
