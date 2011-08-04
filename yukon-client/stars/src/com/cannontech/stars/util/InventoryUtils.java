@@ -99,7 +99,11 @@ public class InventoryUtils {
 		
 		return false;
 	}
-	
+
+	/**
+	 * @deprecated Use HardwareConfigType enum and/or HardwareType enum instead.
+	 */
+	@Deprecated
 	public static int getHardwareConfigType(int devTypeID) {
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
 		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
@@ -122,6 +126,9 @@ public class InventoryUtils {
 			return HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId();
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO)
 		    return HardwareConfigType.SEP.getHardwareConfigTypeId();
+		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000) {
+		    return HardwareConfigType.NOT_CONFIGURABLE.getHardwareConfigTypeId();
+		}
 		
 		return 0;
 	}

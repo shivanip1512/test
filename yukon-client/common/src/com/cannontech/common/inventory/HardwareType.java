@@ -27,7 +27,7 @@ public enum HardwareType implements DatabaseRepresentationSource{
     LCR_3000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.VERSACOM, true, true, true),
     LCR_3102(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102, InventoryCategory.TWO_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.EXPRESSCOM, true, true, true),
     LCR_2000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.VERSACOM, true, true, true),
-    LCR_1000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, null, true, true, true),
+    LCR_1000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.NOT_CONFIGURABLE, true, true, true),
     SA_205(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.SA205, true, true, true),
     SA_305(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.SA305, true, true, true),
     SA_SIMPLE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.SWITCH, HardwareConfigType.SA_SIMPLE, true, true, true),

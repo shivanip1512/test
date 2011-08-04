@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum HardwareConfigType {
+    NOT_CONFIGURABLE(0, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     VERSACOM(2, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     SA205(3, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
