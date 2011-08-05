@@ -35,7 +35,6 @@ import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
@@ -117,6 +116,8 @@ import com.google.common.collect.SetMultimap;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class MultispeakMeterServiceImpl implements MultispeakMeterService, MessageListener {
+    
+    private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 	
     private MultispeakFuncs multispeakFuncs;
     private BasicServerConnection porterConnection;
@@ -158,7 +159,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Adds a message listener to the pil connection instance. 
      */
     public void initialize() throws Exception {
-        CTILogger.info("New MSP instance created");
+        log.info("New MSP instance created");
         porterConnection.addMessageListener(this);
 
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
@@ -187,7 +188,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
 
         outageConfig = ImmutableSetMultimap.copyOf(outageConfigTemp);
-        CTILogger.info("outage event configuation: " + outageConfig);
+        log.info("outage event configuation: " + outageConfig);
     }
     
     /**
@@ -258,7 +259,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             event.setMeterNumber(meterNumber);
             getEventsMap().put(new Long(id), event);
             
-            CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
+            log.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
 
             String commandStr = "getstatus disconnect";
             writePilRequest(meter, commandStr, id, 13);
@@ -296,7 +297,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
         final String meterNumber = meter.getMeterNumber();
-        CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
+        log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
         writePilRequest(meter, commandStr, id, 13);
         mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
 						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
@@ -336,7 +337,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-		CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + vendor.getCompanyName());
+		log.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + vendor.getCompanyName());
 		
         for (String meterNumber : meterNumbers) {
             
@@ -365,7 +366,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-        CTILogger.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
+        log.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
         
         for (String meterNumber : meterNumbers) {
         	
@@ -404,7 +405,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-        CTILogger.info("Received " + meterNumber+ " for BlockMeterReading from " + vendor.getCompanyName());
+        log.info("Received " + meterNumber+ " for BlockMeterReading from " + vendor.getCompanyName());
         
         com.cannontech.amr.meter.model.Meter meter;
         
@@ -469,7 +470,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-        CTILogger.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
+        log.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
         
         for (ConnectDisconnectEvent cdEvent : cdEvents) {
             String meterNumber = cdEvent.getObjectID();
@@ -526,7 +527,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     
     /*
      * Writes a request to pil for the meter and commandStr using the id for mspVendor.
-     * CTILogger a message for the method name.
+     * log a message for the method name.
      */
     private void writePilRequest(com.cannontech.amr.meter.model.Meter meter, String commandStr, long id, int priority) {
         
@@ -563,7 +564,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 Thread.sleep(10);
                 millisTimeOut += 10;
             } catch (InterruptedException e) {
-                CTILogger.error(e);
+                log.error(e);
             }
         }
         if( millisTimeOut >= timeout) {// this broke the loop, more than likely, have to kill it sometime
@@ -632,14 +633,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                  "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
                                                                  "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                CTILogger.error(ex);
+                log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                                  "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
                                                                  "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                CTILogger.error(ex);
+                log.error(ex);
             }
         }//end for
 
@@ -838,7 +839,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                  SERV_LOC_CHANGED_STRING,
                                                                  mspVendor.getCompanyName());
                 errorObjects.add(err);
-                CTILogger.error(ex);
+                log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
@@ -847,7 +848,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                  SERV_LOC_CHANGED_STRING,
                                                                  mspVendor.getCompanyName());
                 errorObjects.add(err);
-                CTILogger.error(ex);
+                log.error(ex);
             }
         }
         return mspObjectDao.toErrorObject(errorObjects);
@@ -887,14 +888,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                  "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
                                                                  "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                CTILogger.error(ex);
+                log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                                  "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
                                                                  "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                CTILogger.error(ex);
+                log.error(ex);
             }
         }//end for
 
@@ -1161,7 +1162,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, yukonDevice);
         for (StoredDeviceGroup deviceGroup : deviceGroups) {
             if( deviceGroup.getName().equalsIgnoreCase(groupName) ) {
-                CTILogger.debug("MeterNumber(" + meterNumber + ") - Already in group:  " + groupName);
+                log.debug("MeterNumber(" + meterNumber + ") - Already in group:  " + groupName);
                 alreadyInGroup = true;
             } else {
                 deviceGroupMemberEditorDao.removeDevices(deviceGroup, yukonDevice);
@@ -1706,7 +1707,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             templateMeter = meterDao.getForPaoName(templateName);
         } catch (NotFoundException e) {
             //No template found to compare to
-            CTILogger.warn(e.getMessage() + "No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
+            log.warn(e.getMessage() + " No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
             return;
         }
 
@@ -1717,9 +1718,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 deviceUpdateService.changeDeviceType(meter, paoDefinition);
                 mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getPaoType() + ").", mspVendor.getCompanyName());
             } catch (DataRetrievalFailureException e) {
-                CTILogger.warn(e);
+                log.warn(e);
             } catch (PersistenceException e) {
-                CTILogger.warn(e);
+                log.warn(e);
             }
         }
     }
