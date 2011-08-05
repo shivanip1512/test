@@ -8,24 +8,25 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
 <cti:standardPage module="operator" page="optOut.main">
+<cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
 
 <!-- Helper Popup -->
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
-    <table>
-        <tr><td>
-            <cti:img key="allowOne"/>
-        </td><td>
-            <i:inline key=".allowOneIconText" />
-        </td></tr>
-        <tr height="6px"></tr>
-        <tr><td>
-            <cti:img key="resetToLimit"/>
-        </td><td>
-            <i:inline key=".resetToLimitIconText" />
-        </td></tr>
+    <table class="optOutActions">
+        <tr>
+            <td><cti:img key="allowOne"/></td>
+            <td><i:inline key=".allowOneIconText" /></td>
+        </tr>
+        <tr>
+            <td><cti:img key="decrementAllowance"/></td>
+            <td><i:inline key=".decrementAllowanceIconText"/></td>
+        <tr>
+            <td><cti:img key="resetToLimit"/></td>
+            <td><i:inline key=".resetToLimitIconText" /></td>
+        </tr>
     </table>
 </i:simplePopup>
 
@@ -165,6 +166,7 @@
                 <th><i:inline key=".device"/></th>
                 <th><i:inline key=".used"/></th>
                 <th><i:inline key=".remaining"/></th>
+                <c:set var="noOptOutLimits" value="false"/>
                 <c:if test="${!noOptOutLimits}">
                     <th><i:inline key=".actions"/>
                         <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">

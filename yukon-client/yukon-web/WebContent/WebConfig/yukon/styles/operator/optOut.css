@@ -14,6 +14,10 @@ table.selectDeviceTable td {
     text-align: left;
 }
 
+table.optOutActions td {
+    padding-bottom: 15px;
+}
+
 .surveyTitle {
     margin-bottom: 15px;
 }
