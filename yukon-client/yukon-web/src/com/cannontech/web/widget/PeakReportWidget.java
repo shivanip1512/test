@@ -1,8 +1,8 @@
 package com.cannontech.web.widget;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -132,10 +131,11 @@ public class PeakReportWidget extends WidgetControllerBase {
         
         if(peakResult != null){
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            List<String> arguments = Arrays.asList(String.valueOf(peakResult.getAverageDailyUsage()),
-                                                   String.valueOf(peakResult.getTotalUsage()));
+            DecimalFormat formatter = new DecimalFormat("#0.#");
             mav.addObject("avgVsTotal", 
-                          messageSourceAccessor.getMessage("yukon.web.widgets.peakReportWidget.kwhVsKwh", arguments.toArray()));
+                          messageSourceAccessor.getMessage("yukon.web.widgets.peakReportWidget.kwhVsKwh", 
+                                                           formatter.format(peakResult.getAverageDailyUsage()),
+                                                           formatter.format(peakResult.getTotalUsage())));
             mav.addObject("peakResult", peakResult);
         }
         

@@ -8,8 +8,8 @@
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.deviceCount">Inventory Count</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.remove">Remove</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.hoverText">Delete: {0}</entry>
-    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.confirmText">Are you sure you want to delete {0}?</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.noTasks">No Inventory Configuration Tasks</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.complete">Complete</entry>

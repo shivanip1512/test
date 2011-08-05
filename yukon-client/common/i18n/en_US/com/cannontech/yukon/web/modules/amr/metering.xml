@@ -131,7 +131,7 @@
     <entry key="yukon.web.widgets.touWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.touWidget.errorReading">Error reading the meter:</entry>
     <entry key="yukon.web.widgets.touWidget.successReading">Successfully read the meter.</entry>
-    <entry key="yukon.web.widgets.touWidget.dailyReadings">Daily readings (before ${cutOff})</entry>
+    <entry key="yukon.web.widgets.touWidget.dailyReadings">Daily readings (before {0})</entry>
     <entry key="yukon.web.widgets.touWidget.recentReadings">Recent Readings (since {0})</entry>
     <entry key="yukon.web.widgets.touWidget.currentReading">{0} Reading</entry>
     <entry key="yukon.web.widgets.touWidget.previousReadings">Previous {0} Readings</entry>
