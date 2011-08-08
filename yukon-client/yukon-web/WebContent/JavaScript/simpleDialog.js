@@ -1,3 +1,5 @@
+// We use this to keep track of the dialog box's original size.  Each time we pop up a dialog,
+// we try for this size again (in case the browser window was resized in the interim).
 var naturalDialogSizes = {};
 
 /**
@@ -6,51 +8,104 @@ var naturalDialogSizes = {};
  */
 function adjustDialogSizeAndPosition(dialogId) {
     var dialogDiv = $(dialogId);
+    dialogDiv.show();
+
+    // This whole first section here just tries to put the dialog box back into an "untouched"
+    // state (so it can naturally grow or shrink to fit its contents).  We'll shrink it if we need
+    // to later.
     var dialogDimensions = naturalDialogSizes[dialogDiv.id];
     if (!dialogDimensions) {
         dialogDimensions = {
-        		'width' : dialogDiv.getStyle('width'),
-        		'height' : dialogDiv.getStyle('height')
+            'width' : dialogDiv.getStyle('width'),
+            'height' : dialogDiv.getStyle('height')
         };
-        if (dialogDimensions.width == null) {
+
+        // Ensure width and height follow proper CSS formatting.
+        if (!dialogDimensions.width) {
         	dialogDimensions.width = 'auto';
+        } else if (dialogDimensions.width.match(/^\d+$/)) {
+            dialogDimensions.width += "px";
         }
-        if (dialogDimensions.height == null) {
+
+        if (!dialogDimensions.height) {
         	dialogDimensions.height = 'auto';
+        } else if (dialogDimensions.height.match(/^\d+$/)) {
+            dialogDimensions.height += "px";
         }
+
         naturalDialogSizes[dialogId] = dialogDimensions;
     }
-    
-    //format the arguments for prototype 1.6 changes
-    var width = (/auto/).test(dialogDimensions.width) ? dialogDimensions.width : ((/px/).test(dialogDimensions.width) ? dialogDimensions.width : (dialogDimensions.width + "px"));
-    var height = (/auto/).test(dialogDimensions.height) ? dialogDimensions.height : ((/px/).test(dialogDimensions.height) ? dialogDimensions.height : (dialogDimensions.height + "px"));
-    
-    dialogDiv.setStyle({ width: width, height: height });
-    
-    var viewportDimensions = getViewportDimensions();
-    var dialogDimensions = dialogDiv.getDimensions();
 
-    var minPadding = 34;
-    var newWidth = dialogDimensions.width;
-    if (dialogDimensions.width > viewportDimensions.width - minPadding) {
-    	dialogDimensions.width = viewportDimensions.width - minPadding;
-        dialogDiv.setStyle({
-            width: dialogDimensions.width + "px"
+    dialogDiv.setStyle({'width': dialogDimensions.width, 'height': dialogDimensions.height});
+
+    // Now, the dialog box is a as big as it wants to be, let's make sure it fits in the window
+    // and center it.
+    var viewportDimensions = document.viewport.getDimensions();
+
+    var dialogLayout = dialogDiv.getLayout();
+
+    var minPadding = 10;
+    var dialogWidth = dialogLayout.get('width');
+    var dialogWidthWithBorder = dialogLayout.get('margin-box-width');
+    var borderWidth = dialogWidthWithBorder - dialogWidth;
+    var dialogHeight = dialogLayout.get('height');
+    var dialogHeightWithBorder = dialogLayout.get('margin-box-height');
+    var borderHeight = dialogHeightWithBorder - dialogHeight;
+    var nonScrollWidth = 0;
+    var nonScrollHeight = 0;
+
+    // If the dialog has more specific area to scroll, scroll that one instead of the whole dialog.
+    var scrollAreaDiv = $(dialogId).down('.boxContainer_content');
+    if (scrollAreaDiv) {
+        // Force the scroll area back to auto and let it try to be its natural size.
+        scrollAreaDiv.setStyle({'width': 'auto', 'height': 'auto'});
+
+        // Find the difference in size between the dialog box and the scroll area...we'll put
+        // aside that much space when we fix the scroll area's size.
+        var scrollAreaDivLayout = scrollAreaDiv.getLayout();
+        nonScrollWidth = dialogWidth - scrollAreaDivLayout.get('width');
+        nonScrollHeight = dialogHeight - scrollAreaDivLayout.get('height');
+    }
+
+    var widthAllowance = 0;
+    var heightAllowance = 0;
+    var heightOffset = 0;
+    if (Prototype.Browser.IE) {
+        // IE adds an extra pixel to the width and height and also adds the top and bottom border
+        // heights to the height.  (i.e. If you run without this code on IE, you will get a sliver
+        // of extra space along the right border and a lot of extra space along the bottom.)  See
+        // YUK-9994 for pictures.
+        widthAllowance = 1;
+        heightOffset = dialogLayout.get('border-top');
+        heightAllowance = heightOffset + dialogLayout.get('border-bottom') + 1;
+    }
+
+    if (dialogWidthWithBorder > viewportDimensions.width - minPadding - widthAllowance) {
+        dialogWidth = viewportDimensions.width - minPadding - borderWidth;
+    }
+    if (dialogHeightWithBorder > viewportDimensions.height - minPadding - heightAllowance) {
+        dialogHeight = viewportDimensions.height - minPadding - borderHeight;
+    }
+
+    if (scrollAreaDiv) {
+        // Fix the size of the scroll area to (wholeDialogDimensions - unscrolledArea) so the
+        // rest of the dialog doesn't scroll, but instead this area only does.
+        scrollAreaDiv.setStyle({
+            'width': (dialogWidth - nonScrollWidth) + "px",
+            'height': (dialogHeight - nonScrollHeight) + "px"
         });
     }
-    var newHeight = dialogDimensions.height;
-    if (dialogDimensions.height > viewportDimensions.height - minPadding) {
-    	dialogDimensions.height = viewportDimensions.height - minPadding;
-    	dialogDiv.setStyle({
-    		height: dialogDimensions.height + "px"
-    	});
-    }
 
-    var x = (viewportDimensions.width - dialogDimensions.width - 24) / 2;
-    var y = (viewportDimensions.height - dialogDimensions.height - 24) / 4;
     dialogDiv.setStyle({
-        top: y + "px",
-        left: x + "px"
+        'width': (dialogWidth - widthAllowance) + "px",
+        'height': (dialogHeight - heightAllowance) + "px"
+    });
+
+    var x = (viewportDimensions.width - dialogWidth - borderWidth) / 2;
+    var y = (viewportDimensions.height - dialogHeight - borderHeight) / 4;
+    dialogDiv.setStyle({
+        'left': x + "px",
+        'top': (y + heightOffset) + "px"
     });
 }
 

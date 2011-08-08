@@ -77,6 +77,11 @@ div.simplePopup {
   top: 15%;
 }
 
+div.simplePopup div.content, .popupScrollArea {
+  overflow: auto;
+  overflow-x: hidden;
+}
+
 div.smallSimplePopup {
 	width: auto;
     min-width: 400px;
