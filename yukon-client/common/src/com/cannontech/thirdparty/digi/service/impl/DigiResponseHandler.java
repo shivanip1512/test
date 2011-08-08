@@ -32,7 +32,7 @@ import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.google.common.collect.Lists;
@@ -215,7 +215,7 @@ public class DigiResponseHandler {
        
         if (m.find()) {
             String macAddress = m.group();
-            ZigbeeThermostat utilPro = zigbeeDeviceDao.getZigbeeUtilProByMACAddress(macAddress);
+            ZigbeeEndPoint utilPro = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(macAddress);
             //We found a MAC, so lets do something..
             if (message.contains(commissionStr)) {
                 // Registered with the gateway
@@ -241,7 +241,7 @@ public class DigiResponseHandler {
                     int nodeId = Integer.parseInt(m.group(1), 16);
                     
                     utilPro.setNodeId(nodeId);
-                    zigbeeDeviceDao.updateZigbeeUtilPro(utilPro);
+                    zigbeeDeviceDao.updateZigbeeEndPoint(utilPro);
                 } else {
                     log.warn("NodeId was not in the reponse.");
                 }

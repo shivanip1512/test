@@ -3,7 +3,7 @@ package com.cannontech.thirdparty.model;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 
-public class ZigbeeThermostat implements YukonDevice {
+public class ZigbeeEndPoint implements YukonDevice {
 
     private PaoIdentifier paoIdentifier;
     private String installCode;

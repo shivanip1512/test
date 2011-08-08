@@ -18,7 +18,7 @@ import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -33,10 +33,10 @@ public class DigiXMLBuilder {
     private static int clusterId = 0x0701;
     private static int serverClient = 1;
     
-    public String buildInstallStatMessage(ZigbeeDevice gateway, ZigbeeThermostat thermostat) {
+    public String buildInstallEndPointMessage(ZigbeeDevice gateway, ZigbeeEndPoint endpoint) {
         String gatewayMacAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
-        String thermostatMac = thermostat.getMacAddress();
-        String installCode = thermostat.getInstallCode();
+        String endpointMac = endpoint.getMacAddress();
+        String installCode = endpoint.getInstallCode();
         installCode = installCode.replaceAll(":","");
         
         int crc = zigbeeCRC16(installCode);
@@ -51,7 +51,7 @@ public class DigiXMLBuilder {
                                 "<do_command target=\"RPC_request\">" +
                                     "<add_device synchronous=\"true\">" +
                                         "<device_address type=\"MAC\">" +
-                                        thermostatMac +
+                                        endpointMac +
                                         "</device_address>" +
                                         "<join_time>900</join_time>" +
                                         "<installation_code type=\"string\">" +
@@ -65,11 +65,11 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildUninstallStatMessage(ZigbeeDevice gateway, ZigbeeDevice device) {
+    public String buildUninstallEndPointMessage(ZigbeeDevice gateway, ZigbeeDevice device) {
         String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         
-        String thermostatMac = device.getZigbeeMacAddress();
-        thermostatMac = thermostatMac.replaceAll(":","");
+        String endpointMac = device.getZigbeeMacAddress();
+        endpointMac = endpointMac.replaceAll(":","");
         
         String xml = 
                "<sci_request version=\"1.0\">"
@@ -80,7 +80,7 @@ public class DigiXMLBuilder {
             + "    <rci_request version=\"1.1\">"
             + "      <do_command target=\"RPC_request\">"
             + "        <remove_device synchronous=\"true\">"
-            + "          <device_address type=\"MAC\">" + thermostatMac + "</device_address>"
+            + "          <device_address type=\"MAC\">" + endpointMac + "</device_address>"
             + "        </remove_device>"
             + "      </do_command>"
             + "    </rci_request>"
@@ -265,7 +265,7 @@ public class DigiXMLBuilder {
         String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
                 
         //Find based on the endPoint Device
-        ZigbeeThermostat tstat = zigbeeDeviceDao.getZigbeeUtilPro(endPoint.getZigbeeDeviceId());
+        ZigbeeEndPoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
         
         String xml = 
            "<sci_request version=\"1.0\">"
@@ -309,7 +309,7 @@ public class DigiXMLBuilder {
     
     public String buildReadLMAddressingForEndPoint(ZigbeeDevice gateway, ZigbeeDevice endPoint) {       
         //Find based on the endPoint Device
-        ZigbeeThermostat tstat = zigbeeDeviceDao.getZigbeeUtilPro(endPoint.getZigbeeDeviceId());
+        ZigbeeEndPoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
 
         String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         

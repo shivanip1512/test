@@ -191,7 +191,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 hardwareDto.getSwitchAssignments().add(assignement);
             }
             
-        } else if (hardwareCategory == InventoryCategory.ONE_WAY_RECEIVER || hardwareCategory == InventoryCategory.TWO_WAY_RECEIVER) {
+        } else {
             /* Must be a switch or thermostat. */
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
             
@@ -218,9 +218,6 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             
             hardwareTypeExtensionService.retrieveDevice(hardwareDto);
             
-        } else {
-            /* This is not a device we know about, maybe we should throw something smarter here. */
-            throw new NotFoundException("Device type not found for inventory id:" + inventoryId);
         }
         
         return hardwareDto;
@@ -446,7 +443,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 deviceLabel = meterHardwareBase.getDeviceLabel();
             }
         } else {
-            /* LMHardwareBase and InventoryBase*/
+            /* LMHardwareBase and InventoryBase */
             LiteStarsLMHardware lmHardware = getLmHardware(hardwareDto, accountId, energyCompany); 
             inventoryId = starsInventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyId()).getInventoryID();
             

@@ -148,7 +148,7 @@ public class ZigBeeHardwareController {
         try {
             // This gatewayId is expected to be not null since this action wouldn't have been available.
             int gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
-            zigbeeWebService.installStat(gatewayId, deviceId);
+            zigbeeWebService.installEndPoint(gatewayId, deviceId);
 
             ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
             zigbeeStateUpdaterService.activateSmartPolling(device);
@@ -207,7 +207,7 @@ public class ZigBeeHardwareController {
         try {
             // This gatewayId is expected to be not null since this action wouldn't have been available.
             int gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
-            zigbeeWebService.uninstallStat(gatewayId, deviceId);
+            zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -346,7 +346,7 @@ public class ZigBeeHardwareController {
         LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);
         zigbeeEventLogService.zigbeeDeviceUnassignAttemptedByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
         
-        zigbeeWebService.uninstallStat(gatewayId, deviceId);
+        zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
         gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
         
         zigbeeEventLogService.zigbeeDeviceUnassigned(device.getPaoName(), gateway.getPaoName());

@@ -327,7 +327,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         sql.append("SELECT YLE.*");
         sql.append("FROM YukonListEntry YLE"); 
         sql.append(  "JOIN YukonSelectionList YSL ON YSL.ListID = YLE.ListID"); 
-        sql.append("WHERE YLE.YukonDefinitionID").eq_k(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO); 
+        sql.append("WHERE YLE.YukonDefinitionID").eq(yukonDefinitionId); 
         sql.append(  "AND YSL.EnergyCompanyId").eq(ec.getEnergyCompanyId()); 
 
         return yukonJdbcTemplate.queryForObject(sql, new YukonListEntryRowMapper());

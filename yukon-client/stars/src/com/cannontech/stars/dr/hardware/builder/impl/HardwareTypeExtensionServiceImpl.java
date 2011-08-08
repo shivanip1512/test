@@ -7,7 +7,6 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
@@ -87,7 +86,9 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
         Builder<HardwareType,HardwareTypeExtensionProvider> builder = ImmutableMap.builder();
         
         for (HardwareTypeExtensionProvider hardwareBuilder : hardwareBuilders) {
-            builder.put(hardwareBuilder.getType(), hardwareBuilder);
+            for (HardwareType type : hardwareBuilder.getTypes()) {
+                builder.put(type, hardwareBuilder);
+            }
         }
         
         builderMap = builder.build();

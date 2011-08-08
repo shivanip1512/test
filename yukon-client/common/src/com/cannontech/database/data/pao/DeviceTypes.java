@@ -159,7 +159,7 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN430A3 = DEVICE_OFFSET + 123;
     public final static int RFN430KV = DEVICE_OFFSET + 124;
     
-    public final static int ZIGBEE_UTIL_PRO = DEVICE_OFFSET + 125;
+    public final static int ZIGBEE_ENDPOINT = DEVICE_OFFSET + 125;
     public final static int DIGI_GATEWAY = DEVICE_OFFSET + 126;
     public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 127;
     public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 128;

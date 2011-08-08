@@ -94,7 +94,7 @@
                             <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
                         </td>
                         <td style="text-align: left; padding-left: 10px;">
-                            <cti:msg key="${thermostat.type.displayKey}" />
+                            <cti:msg key="${thermostat.type}" />
                         </td>
                     </tr>
                 </c:forEach>

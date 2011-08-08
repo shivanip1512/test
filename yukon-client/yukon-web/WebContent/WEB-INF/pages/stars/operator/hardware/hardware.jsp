@@ -618,15 +618,15 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                                     </cti:pointStatusColor>
                                                 </td>
                                                 <td class="nonwrapping">
-                                                    <cti:button key="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission"/>
-                                                    <cti:button key="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission"/>
+                                                    <cti:button key="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}"/>
+                                                    <cti:button key="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}"/>
                                                     <tags:confirmDialog submitName="assignedDevicesCommissionSubmit_${device.deviceId}"
                                                         nameKey=".commissionConfirmation"
-                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on=".assignedDevicesCommission"
+                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesCommission_${device.deviceId}"
                                                         endAction="hide" />
                                                     <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
-                                                        nameKey=".decommissionConfirmation"
-                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on=".assignedDevicesDecommission"
+                                                        nameKey=".decommissionConfirmation" 
+                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesDecommission_${device.deviceId}"
                                                         endAction="hide" />
                                                     
                                                     <cti:url value="/spring/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">

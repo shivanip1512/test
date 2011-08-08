@@ -60,7 +60,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     DCT_501(DeviceTypes.DCT_501, "DCT-501", PaoCategory.DEVICE, PaoClass.CARRIER),
     LCR3102(DeviceTypes.LCR3102, "LCR-3102", PaoCategory.DEVICE, PaoClass.CARRIER),
     LMT_2(DeviceTypes.LMT_2, "LMT-2", PaoCategory.DEVICE, PaoClass.CARRIER),
-    ZIGBEEUTILPRO(DeviceTypes.ZIGBEE_UTIL_PRO, "ZigBee Utility Pro", PaoCategory.DEVICE, PaoClass.CARRIER),
+    ZIGBEE_ENDPOINT(DeviceTypes.ZIGBEE_ENDPOINT, "ZigBee End Point", PaoCategory.DEVICE, PaoClass.CARRIER),
 
     MCTBROADCAST(DeviceTypes.MCTBROADCAST, "MCT Broadcast", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT210(DeviceTypes.MCT210, "MCT-210", PaoCategory.DEVICE, PaoClass.CARRIER),

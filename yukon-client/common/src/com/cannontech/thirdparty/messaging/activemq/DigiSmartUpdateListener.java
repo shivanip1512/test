@@ -22,7 +22,7 @@ public class DigiSmartUpdateListener {
         
         if (paoIdentifier.getPaoType() == PaoType.DIGIGATEWAY) {
             device = gatewayDeviceDao.getZigbeeGateway(paoIdentifier.getPaoId());
-        } else if (paoIdentifier.getPaoType() == PaoType.ZIGBEEUTILPRO) {
+        } else if (paoIdentifier.getPaoType() == PaoType.ZIGBEE_ENDPOINT) {
             device = zigbeeDeviceDao.getZigbeeDevice(paoIdentifier.getPaoId());
         }
         

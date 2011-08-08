@@ -112,7 +112,7 @@
                                             <c:forEach items="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes}" var="hardwareType" varStatus="status">
                                                 <li>
                                                     <tags:checkbox path="devStars.devStarsHardware.hardwareTypes[${status.index}].create"/>
-                                                    <span><i:inline key="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes[status.index].hardwareType.displayKey}" /></span>
+                                                    <span><i:inline key="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes[status.index].hardwareType}" /></span>
                                                 </li>
                                             </c:forEach>
                                         </ul>

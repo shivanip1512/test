@@ -28,7 +28,7 @@ import com.cannontech.stars.dr.thermostat.service.AbstractCommandExecutionServic
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
@@ -125,7 +125,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
     }
     
     private String buildHexNodeId(Thermostat stat) {
-        ZigbeeThermostat zbStat = zigbeeDeviceDao.getZigbeeUtilProByInventoryId(stat.getId());
+        ZigbeeEndPoint zbStat = zigbeeDeviceDao.getZigbeeEndPointByInventoryId(stat.getId());
         int nodeId = zbStat.getNodeId();
         
         String hexNodeId = String.format("%04x",nodeId);

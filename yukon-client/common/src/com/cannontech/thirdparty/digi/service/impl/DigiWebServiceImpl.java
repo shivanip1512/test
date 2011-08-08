@@ -36,7 +36,7 @@ import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
@@ -170,12 +170,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     @Override
-    public void installStat(int gatewayId, int deviceId) {
-        log.debug("InstallStat Start");
+    public void installEndPoint(int gatewayId, int deviceId) {
+        log.debug("InstallEndPoint Start");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-        ZigbeeThermostat stat= zigbeeDeviceDao.getZigbeeUtilPro(deviceId);
+        ZigbeeEndPoint stat= zigbeeDeviceDao.getZigbeeEndPoint(deviceId);
         
-        String xml = digiXMLBuilder.buildInstallStatMessage(gateway,stat);
+        String xml = digiXMLBuilder.buildInstallEndPointMessage(gateway,stat);
         String response;
         
         try {
@@ -191,14 +191,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         
         zigbeeEventLogService.zigbeeDeviceCommissioned(stat.getName());
         
-        log.debug("InstallStat End");
+        log.debug("InstallEndPoint End");
     }
     
-    public void uninstallStat(int gatewayId, int deviceId) {
+    public void uninstallEndPoint(int gatewayId, int deviceId) {
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-        ZigbeeDevice stat = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+        ZigbeeDevice endpoint = zigbeeDeviceDao.getZigbeeDevice(deviceId);
         
-        String xml = digiXMLBuilder.buildUninstallStatMessage(gateway, stat);
+        String xml = digiXMLBuilder.buildUninstallEndPointMessage(gateway, endpoint);
         
         try {
             log.debug(xml);
@@ -208,11 +208,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         }
 
         //Set to decommissioned
-        zigbeeServiceHelper.sendPointStatusUpdate(stat, 
+        zigbeeServiceHelper.sendPointStatusUpdate(endpoint, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
         
-        zigbeeEventLogService.zigbeeDeviceDecommissioned(stat.getName());
+        zigbeeEventLogService.zigbeeDeviceDecommissioned(endpoint.getName());
     }
     
     @Override

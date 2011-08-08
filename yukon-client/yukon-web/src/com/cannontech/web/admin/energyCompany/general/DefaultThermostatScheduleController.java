@@ -120,9 +120,7 @@ public class DefaultThermostatScheduleController {
         modelMap.addAttribute("allowedModes", modes);
         
         // Set the displable form of type to the model map
-        YukonMessageSourceResolvable messageSourceResolvable = 
-            new YukonMessageSourceResolvable(schedulableThermostatType.getHardwareType().getDisplayKey());
-        String typeStr = getMessage(request).getMessage(messageSourceResolvable);
+        String typeStr = getMessage(request).getMessage(schedulableThermostatType.getHardwareType());
         modelMap.addAttribute("typeStr", typeStr);
         
         List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();

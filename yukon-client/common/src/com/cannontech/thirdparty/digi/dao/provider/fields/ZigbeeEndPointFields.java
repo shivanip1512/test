@@ -2,13 +2,13 @@ package com.cannontech.thirdparty.digi.dao.provider.fields;
 
 import com.cannontech.common.pao.service.PaoTemplatePart;
 
-public class UtilityProZigbeeFields implements PaoTemplatePart {
+public class ZigbeeEndPointFields implements PaoTemplatePart {
     private String installCode;
     private String macAddress;
     private int endPointId;
     private int nodeId;
     
-    public UtilityProZigbeeFields(String installCode, String macAddress, int endPointId, int nodeId) {
+    public ZigbeeEndPointFields(String installCode, String macAddress, int endPointId, int nodeId) {
         this.installCode = installCode;
         this.macAddress = macAddress;
         this.endPointId = endPointId;

@@ -824,9 +824,6 @@ public class OperatorHardwareController {
             
         case THERMOSTAT:
             model.addAttribute("displayTypeKey", ".thermostats.displayType");
-            if (type.isZigbee()) {
-                model.addAttribute("showInstallCode", true);
-            }
             break;
 
         case METER:
@@ -835,13 +832,17 @@ public class OperatorHardwareController {
             
         case GATEWAY:
             model.addAttribute("displayTypeKey", ".gateways.displayType");
-            model.addAttribute("showFirmwareVersion", true);
             break;
         }
 
-        if (type.isGateway() || (type.isThermostat() && type.isZigbee())) {
+        if (type.isZigbee()) {
             model.addAttribute("showMacAddress", true);
             model.addAttribute("showVoltage", false);
+            if (!type.isGateway()) {
+                model.addAttribute("showInstallCode", true);
+            } else {
+                model.addAttribute("showFirmwareVersion", true);
+            }
         }
         
         /* Hide route for meters and zigbee devices */
@@ -946,22 +947,6 @@ public class OperatorHardwareController {
                     model.addAttribute("showManualAction", true);
                 }
             }
-            
-            if (type.isZigbee()) {
-                InventoryIdentifier gateway = gatewayDeviceDao.findGatewayByDeviceMapping(dto.getDeviceId());
-                if (gateway == null) {
-                    model.addAttribute("showDisabledCommissionActions", true);
-                    model.addAttribute("showDisabledRefresh", true);
-                } else {
-                    model.addAttribute("showCommissionActions", true);
-                    model.addAttribute("gatewayInventoryId", gateway.getInventoryId());
-                }
-
-                model.addAttribute("showGateway", true);
-                List<DigiGateway> gateways = gatewayDeviceDao.getGatewaysForAccount(accountId);
-                model.addAttribute("gateways", gateways);
-                
-            }
             break;
             
         case METER:
@@ -1004,6 +989,23 @@ public class OperatorHardwareController {
             model.addAttribute("assignedDevices", assignedDevices);
             
             break;
+        }
+        
+        
+        if (type.isZigbee() && !type.isGateway()) {
+            InventoryIdentifier gateway = gatewayDeviceDao.findGatewayByDeviceMapping(dto.getDeviceId());
+            if (gateway == null) {
+                model.addAttribute("showDisabledCommissionActions", true);
+                model.addAttribute("showDisabledRefresh", true);
+            } else {
+                model.addAttribute("showCommissionActions", true);
+                model.addAttribute("gatewayInventoryId", gateway.getInventoryId());
+            }
+
+            model.addAttribute("showGateway", true);
+            List<DigiGateway> gateways = gatewayDeviceDao.getGatewaysForAccount(accountId);
+            model.addAttribute("gateways", gateways);
+            
         }
         
     }

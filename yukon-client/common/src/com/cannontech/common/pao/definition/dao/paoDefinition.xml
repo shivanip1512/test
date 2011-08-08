@@ -6116,8 +6116,8 @@
         </attributes>
     </pao>
     
-    <pao id="ZIGBEEUTILPRO">
-        <displayName>ZigBee Utility Pro</displayName>
+    <pao id="ZIGBEE_ENDPOINT">
+        <displayName>ZigBee End Point</displayName>
         <points>
             <point type="Status" offset="2">
                 <init>true</init>

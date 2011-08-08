@@ -33,7 +33,7 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	 * @param gatewayId
 	 * @param deviceId
 	 */
-	public void installStat(int gatewayId, int deviceId);
+	public void installEndPoint(int gatewayId, int deviceId);
 	
 	/**
 	 * Sends the uninstall device commands to the third party.
@@ -41,7 +41,7 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	 * @param gatewayId
 	 * @param deviceId
 	 */
-	public void uninstallStat(int gatewayId, int deviceId);
+	public void uninstallEndPoint(int gatewayId, int deviceId);
 
 	/**
 	 * Sends the device level addressing configuration attributes to the device specified.

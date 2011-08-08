@@ -250,6 +250,10 @@
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_G2">UtilityPRO G2</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_G3">UtilityPRO G3</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_ZIGBEE">UtilityPRO ZigBee</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_6200_ZIGBEE">LCR 6200 ZigBee</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_6200_EXPRESSCOM">LCR 6200 ExpressCom</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_6600_ZIGBEE">LCR 6600 ZigBee</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_6600_EXPRESSCOM">LCR 6600 ExpressCom</entry>
 
     <!-- changeLogin.jsp -->
     <entry key="yukon.dr.consumer.changelogin.header">Administration - Change Login</entry>

@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.hardware.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,8 +25,10 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
@@ -56,12 +59,22 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     
     @Override
     public List<Pair<InventoryIdentifier, ZigbeeDeviceDto>> buildZigbeeDeviceDtoList(int accountId) {
-        YukonEnergyCompany yukonEc = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
-        int definitionId = HardwareType.UTILITY_PRO_ZIGBEE.getDefinitionId();
-        YukonListEntry zigbeeDeviceTypeListEntry = yukonListDao.getYukonListEntry(definitionId, yukonEc);
+        final YukonEnergyCompany yukonEc = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
         
-        int typeId = zigbeeDeviceTypeListEntry.getEntryID();
-        List<ZigbeeDeviceAssignment> assignments = gatewayDeviceDao.getZigbeeDevicesForAccount(accountId, Lists.newArrayList(typeId));
+        Set<HardwareType> zigbeeEndpointTypes = HardwareType.getZigbeeEndpointTypes();
+        
+        Iterable<Integer> deviceTypeIds = Iterables.transform(zigbeeEndpointTypes, new Function<HardwareType, Integer> () {
+            @Override
+            public Integer apply(HardwareType from) {
+                int definitionId = from.getDefinitionId();
+                YukonListEntry zigbeeDeviceTypeListEntry = yukonListDao.getYukonListEntry(definitionId, yukonEc);
+                return zigbeeDeviceTypeListEntry.getEntryID();
+            }
+        });
+        
+        
+        
+        List<ZigbeeDeviceAssignment> assignments = gatewayDeviceDao.getZigbeeDevicesForAccount(accountId, Lists.newArrayList(deviceTypeIds));
         
         List<Pair<InventoryIdentifier, ZigbeeDeviceDto>> deviceList = Lists.newArrayList();
         
@@ -89,8 +102,8 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
         device.setDeviceType(deviceTypeEntry.getEntryText());
         device.setSerialNumber(lmHardware.getManufacturerSerialNumber());
         
-        ZigbeeThermostat tStat = new ZigbeeThermostat();
-        tStat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEEUTILPRO));
+        ZigbeeEndPoint tStat = new ZigbeeEndPoint();
+        tStat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEE_ENDPOINT));
         
         LitePoint linkPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         

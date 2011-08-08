@@ -31,6 +31,7 @@ import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableSet;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
@@ -53,7 +54,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Override
-    public void validateDevice(HardwareDto hardwareDto, Errors errors) {        
+    public void validateDevice(HardwareDto hardwareDto, Errors errors) {
 
         /* MAC Address*/
         String macAddress = hardwareDto.getMacAddress();
@@ -71,7 +72,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        //Build up all the fields for inserting a digiGateway.        
+        //Build up all the fields for inserting a digiGateway.
         YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
         GatewayFields gatewayFields = buildGatewayFields(hardwareDto);
         
@@ -115,7 +116,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     private void decommissionGatewayAndUnassignDevices(int gatewayId) {
         List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gatewayId);
         for (ZigbeeDevice device : devices) {
-            zigbeeWebService.uninstallStat(gatewayId, device.getZigbeeDeviceId());
+            zigbeeWebService.uninstallEndPoint(gatewayId, device.getZigbeeDeviceId());
         }
 
         //Decommission from iDigi
@@ -123,8 +124,8 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Override
-    public HardwareType getType() {
-        return HardwareType.DIGI_GATEWAY;
+    public ImmutableSet<HardwareType> getTypes() {
+        return ImmutableSet.of(HardwareType.DIGI_GATEWAY);
     }
 
     @Override

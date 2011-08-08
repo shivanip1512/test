@@ -24,13 +24,15 @@ import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvid
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.dao.provider.fields.UtilityProZigbeeFields;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndPointFields;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
-public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
+public class ZigbeeEndPointBuilder implements HardwareTypeExtensionProvider {
 
     private PaoCreationService paoCreationService;
     private ZigbeeDeviceDao zigbeeDeviceDao;
@@ -39,25 +41,34 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     private AttributeService attributeService;
     private ZigbeeWebService zigbeeWebService;
     private GatewayDeviceDao gatewayDeviceDao;
+    private static ImmutableSet<HardwareType> supportedTypes;
+    
+    static {
+        Builder<HardwareType> builder = ImmutableSet.builder();
+        builder.add(HardwareType.UTILITY_PRO_ZIGBEE);
+        builder.add(HardwareType.LCR_6200_ZIGBEE);
+        builder.add(HardwareType.LCR_6600_ZIGBEE);
+        supportedTypes = builder.build();
+    }
     
     @Override
-    public HardwareType getType() {
-        return HardwareType.UTILITY_PRO_ZIGBEE;
+    public ImmutableSet<HardwareType> getTypes() {
+        return supportedTypes;
     }
     
     @Override
     public void retrieveDevice(HardwareDto hardwareDto) {
-        ZigbeeThermostat zigbeeThermostat = zigbeeDeviceDao.getZigbeeUtilPro(hardwareDto.getDeviceId()); 
+        ZigbeeEndPoint zigbeeEndPoint = zigbeeDeviceDao.getZigbeeEndPoint(hardwareDto.getDeviceId()); 
         
-        hardwareDto.setInstallCode(zigbeeThermostat.getInstallCode());
-        hardwareDto.setMacAddress(zigbeeThermostat.getMacAddress());
-        hardwareDto.setDestinationEndPointId(zigbeeThermostat.getDestinationEndPointId());
-        hardwareDto.setNodeId(zigbeeThermostat.getNodeId());
+        hardwareDto.setInstallCode(zigbeeEndPoint.getInstallCode());
+        hardwareDto.setMacAddress(zigbeeEndPoint.getMacAddress());
+        hardwareDto.setDestinationEndPointId(zigbeeEndPoint.getDestinationEndPointId());
+        hardwareDto.setNodeId(zigbeeEndPoint.getNodeId());
         
-        LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        LitePoint linkPt = attributeService.getPointForAttribute(zigbeeEndPoint, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         hardwareDto.setCommissionedId(linkPt.getLiteID());
         
-        hardwareDto.setGatewayId(zigbeeThermostat.getGatewayId());
+        hardwareDto.setGatewayId(zigbeeEndPoint.getGatewayId());
     }
     
     @Override
@@ -75,7 +86,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isInstallCode(macAddress)) {
-            /*This is NOT an error..*/
+            /*This is NOT an error...*/
             //Using isInstallCode to Validate the EUI-64 version of the MAC Address since ZigBee uses it instead of the standard MAC-48
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui64");
         }
@@ -83,21 +94,21 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        //Build up all the fields for inserting a Zigbee Util Pro.        
+        //Build up all the fields for inserting a Zigbee End Point.
         //Serial Number is unique, using that as the PaoName
         YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
         
-        UtilityProZigbeeFields tStatFields = new UtilityProZigbeeFields(hardwareDto.getInstallCode(),
+        ZigbeeEndPointFields tStatFields = new ZigbeeEndPointFields(hardwareDto.getInstallCode(),
                                                                         hardwareDto.getMacAddress(),
                                                                         1,/*Constant place holder until Firmware change*/
                                                                         0/*Constant place holder until Firmware change*/);
 
         //Build Template and call Pao Creation Service
         ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
-        paoFields.put(UtilityProZigbeeFields.class, tStatFields);
+        paoFields.put(ZigbeeEndPointFields.class, tStatFields);
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
-        PaoTemplate paoTemplate = new PaoTemplate(PaoType.ZIGBEEUTILPRO, paoFields);
+        PaoTemplate paoTemplate = new PaoTemplate(PaoType.ZIGBEE_ENDPOINT, paoFields);
         
         PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
         
@@ -108,17 +119,17 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(HardwareDto hardwareDto) {
-        ZigbeeThermostat thermostat = new ZigbeeThermostat();
+        ZigbeeEndPoint endpoint = new ZigbeeEndPoint();
         
-        thermostat.setInstallCode(hardwareDto.getInstallCode());
-        thermostat.setMacAddress(hardwareDto.getMacAddress());
-        thermostat.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEEUTILPRO));
-        thermostat.setName(hardwareDto.getSerialNumber());
-        thermostat.setGatewayId(hardwareDto.getGatewayId());
-        thermostat.setNodeId(hardwareDto.getNodeId());
-        thermostat.setDestinationEndPointId(hardwareDto.getDestinationEndPointId());
+        endpoint.setInstallCode(hardwareDto.getInstallCode());
+        endpoint.setMacAddress(hardwareDto.getMacAddress());
+        endpoint.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEE_ENDPOINT));
+        endpoint.setName(hardwareDto.getSerialNumber());
+        endpoint.setGatewayId(hardwareDto.getGatewayId());
+        endpoint.setNodeId(hardwareDto.getNodeId());
+        endpoint.setDestinationEndPointId(hardwareDto.getDestinationEndPointId());
         
-        zigbeeDeviceDao.updateZigbeeUtilPro(thermostat);
+        zigbeeDeviceDao.updateZigbeeEndPoint(endpoint);
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
         
         return;
@@ -133,7 +144,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     @Override
     @Transactional
     public void deleteDevice(YukonPao pao, InventoryIdentifier id) {
-        zigbeeDeviceDao.deleteZigbeeUtilPro(pao.getPaoIdentifier().getPaoId());
+        zigbeeDeviceDao.deleteZigbeeEndPoint(pao.getPaoIdentifier().getPaoId());
         deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
@@ -149,10 +160,10 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
      * @param device
      */
     private void decommissionAndUnassignDevice(int inventoryId, YukonPao device) {
-        Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);        
+        Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
         if (gatewayId != null) {
             //Send Decommission command.
-            zigbeeWebService.uninstallStat(gatewayId, device.getPaoIdentifier().getPaoId());
+            zigbeeWebService.uninstallEndPoint(gatewayId, device.getPaoIdentifier().getPaoId());
             
             //Remove from gateway
             gatewayDeviceDao.unassignDeviceFromGateway(device.getPaoIdentifier().getPaoId());

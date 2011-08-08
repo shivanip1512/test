@@ -14,7 +14,7 @@
         <tags:boxContainer2 nameKey="defaultThermostatSchedules">
         
             <c:forEach var="schedulableThermostatType" items="${schedulableThermostatTypes}">
-                <a href="editDefaultThermostatSchedule?type=${schedulableThermostatType}&ecId=${ecId}"><i:inline key="${schedulableThermostatType.hardwareType.displayKey}" /></a>
+                <a href="editDefaultThermostatSchedule?type=${schedulableThermostatType}&ecId=${ecId}"><i:inline key="${schedulableThermostatType.hardwareType}" /></a>
                 <br>
             </c:forEach>
 

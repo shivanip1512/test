@@ -160,6 +160,10 @@
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_ZIGBEE_UTILITYPRO">UtilityPRO ZigBee</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_DIGI_GATEWAY">Digi Gateway</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_3102">LCR-3102</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6200_XCOM">LCR-6200 (ExpressCom)</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6200_ZIGBEE">LCR-6200 (ZigBee)</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6600_XCOM">LCR-6600 (ExpressCom)</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6600_ZIGBEE">LCR-6600 (ZigBee)</entry>
 
 <entry key="yukon.dr.selectionList.definition.APP_CAT_DEFAULT">(Default)</entry>
 <entry key="yukon.dr.selectionList.definition.APP_CAT_AIR_CONDITIONER">Air Conditioner</entry>

@@ -245,7 +245,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
     		
 			String newScheduleName;
     		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-    		String typeName = messageSourceAccessor.getMessage(ats.getThermostatType().getHardwareType().getDisplayKey());
+    		String typeName = messageSourceAccessor.getMessage(ats.getThermostatType().getHardwareType());
 
     		// energy company default
     		if (ats.getAccountId() == 0) {

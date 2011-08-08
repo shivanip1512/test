@@ -78,7 +78,7 @@
                             </label>
                         </td>
                         <td>
-                            <cti:msg key="${thermostat.type.displayKey}"/>
+                            <cti:msg key="${thermostat.type}"/>
                         </td>
                     </tr>
     			

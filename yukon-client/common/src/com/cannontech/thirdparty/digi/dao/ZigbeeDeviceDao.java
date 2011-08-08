@@ -3,7 +3,7 @@ package com.cannontech.thirdparty.digi.dao;
 import java.util.List;
 
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 
 
 public interface ZigbeeDeviceDao {
@@ -12,21 +12,21 @@ public interface ZigbeeDeviceDao {
     
     public List<ZigbeeDevice> getZigbeeDevicesForGroupId(int groupId);
     
-    public ZigbeeThermostat getZigbeeUtilProByInventoryId(int inventoryId);
+    public ZigbeeEndPoint getZigbeeEndPointByInventoryId(int inventoryId);
     
-    public ZigbeeThermostat getZigbeeUtilPro(int deviceId);
+    public ZigbeeEndPoint getZigbeeEndPoint(int deviceId);
     
-    public ZigbeeThermostat getZigbeeUtilProByMACAddress(String macAddress);
+    public ZigbeeEndPoint getZigbeeEndPointByMACAddress(String macAddress);
     
     public int getDeviceIdForMACAddress(String macAddress);
     
     public List<Integer> getDeviceIdsForMACAddresses(List<String> macAddresses);
     
-    public void createZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat);
+    public void createZigbeeEndPoint(ZigbeeEndPoint zigbeeEndPoint);
     
-    public void updateZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat);
+    public void updateZigbeeEndPoint(ZigbeeEndPoint zigbeeEndPoint);
     
-    public void deleteZigbeeUtilPro(int deviceId);
+    public void deleteZigbeeEndPoint(int deviceId);
     
     public Integer findGatewayIdForInventory(int inventoryId);
     
