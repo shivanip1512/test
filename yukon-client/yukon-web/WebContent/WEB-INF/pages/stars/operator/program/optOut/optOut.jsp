@@ -166,7 +166,6 @@
                 <th><i:inline key=".device"/></th>
                 <th><i:inline key=".used"/></th>
                 <th><i:inline key=".remaining"/></th>
-                <c:set var="noOptOutLimits" value="false"/>
                 <c:if test="${!noOptOutLimits}">
                     <th><i:inline key=".actions"/>
                         <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
