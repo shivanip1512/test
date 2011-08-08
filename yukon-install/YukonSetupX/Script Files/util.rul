@@ -300,6 +300,21 @@ begin
 end;
 
 //------------------------------------------------------------
+// Helper function that permits write access to a file for
+// the Users group (essentially everyone).
+//------------------------------------------------------------
+export prototype AllowWriteAccessForUsers(string);
+function AllowWriteAccessForUsers(sFilePath)
+number nResult;
+begin
+	nResult = SetObjectPermissions(sFilePath, IS_PERMISSIONS_TYPE_FILE, "", "Users", 
+				FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_EA|FILE_WRITE_ATTRIBUTES, 0);
+	if(nResult != ISERR_SUCCESS) then
+		MessageBox("Error setting file permissions. File: " + sFilePath, WARNING);
+	endif;
+end;
+
+//------------------------------------------------------------
 // Helper function that creates a backup of the current
 // TARGETDIR in a location chosen by the user.
 //------------------------------------------------------------

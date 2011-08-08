@@ -103,7 +103,7 @@ end;
 // of the setup when the setup is running in first install mode.
 //---------------------------------------------------------------------------
 function OnFirstUIAfter()
-string sProg, sCMD, sName, sKey, sEnv, sPath, sFileName, sResult;
+string sProg, sCMD, sName, sKey, sEnv, sPath, sFileName, sResult, sFilePath;
 number nResult;
 BOOL opt, bOptYes, bOptNo;
 pointer pEnv;
@@ -148,6 +148,10 @@ begin
 		//hide the "Configuring Yukon Services" popup
 	    SdShowMsg("", FALSE);
     endif;
+    
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
     
     Dialog_MasterConfig:
     Disable(BACKBUTTON);

@@ -1241,7 +1241,6 @@
 		<row><td>NewShortcut12</td><td>Trending</td></row>
 		<row><td>NewShortcut13</td><td>ESubstation Editor</td></row>
 		<row><td>NewShortcut14</td><td>Alarm Monitor</td></row>
-		<row><td>NewShortcut15</td><td>Tomcat</td></row>
 		<row><td>NewShortcut16</td><td>Tomcat</td></row>
 		<row><td>NewShortcut17</td><td>API Extras</td></row>
 		<row><td>NewShortcut2</td><td>Dispatch</td></row>
@@ -1514,7 +1513,6 @@
 		<row><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\GraphIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut13_3CF0B2CCC18A478CBEC25C6A7A54745F</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\esubEditorIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut14_476158FB29004649B0DF05910FC5DF19</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\AlarmMonitor.ico</td><td>0</td></row>
-		<row><td>NewShortcut15_E12A9EBD3D8F456E927EF546B2B80894.com</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonSetup.ico</td><td>0</td></row>
 		<row><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut9_201FF432E86F49528A97E812667856DD.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\dbEditorIcon.ico</td><td>0</td></row>
 	</table>
@@ -1736,7 +1734,6 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>NewShortcut12</td><td>newfolder2</td><td>##ID_STRING61##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\graph.jar"</td><td/><td/><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Trending Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut13</td><td>newfolder2</td><td>##ID_STRING62##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\esub-editor.jar"</td><td/><td/><td>NewShortcut13_3CF0B2CCC18A478CBEC25C6A7A54745F</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Esubstation Editor Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut14</td><td>newfolder2</td><td>##ID_STRING63##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\monitor.jar"</td><td/><td/><td>NewShortcut14_476158FB29004649B0DF05910FC5DF19</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Alarm Monitor Shortcut</td><td>18</td></row>
-		<row><td>NewShortcut15</td><td>DesktopFolder</td><td>##ID_STRING71##</td><td/><td>http://127.0.0.1:8080/setup.jsp</td><td/><td/><td/><td>NewShortcut15_E12A9EBD3D8F456E927EF546B2B80894.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Setup Link</td><td>19</td></row>
 		<row><td>NewShortcut16</td><td>DesktopFolder</td><td>##ID_STRING72##</td><td/><td>http://127.0.0.1:8080/login.jsp</td><td/><td/><td/><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Login Link</td><td>19</td></row>
 		<row><td>NewShortcut17</td><td>newfolder1</td><td>##ID_STRING77##</td><td/><td>C:\WINDOWS\system32\notepad.exe</td><td>"&lt;TARGETDIR&gt;\Server\Config\master.cfg"</td><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td>NewShortcut17</td><td>18</td></row>
 		<row><td>NewShortcut2</td><td>newfolder1</td><td>##ID_STRING50##</td><td/><td>cmd.exe</td><td>/k dispatch.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>Dispatch Shortcut</td><td>18</td></row>
