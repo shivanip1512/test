@@ -33,6 +33,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -207,9 +208,12 @@ public class LayoutController {
         String username = yukonUser.getUsername();
         String energyCompanyName = null;
         
+        
         try{
             YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
-            energyCompanyName = energyCompany.getName();
+            if (energyCompany.getEnergyCompanyId() != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+                energyCompanyName = energyCompany.getName();
+            }
         } catch(EmptyResultDataAccessException e) {}
         
         map.addAttribute("energyCompanyName", energyCompanyName);
