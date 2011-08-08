@@ -159,8 +159,7 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     @Transactional
     public void deleteServiceCompany(ServiceCompanyDto serviceCompany) {
         //Remove all of the inventory attached to this service company
-        LiteInventoryBase blankInventoryBase = new LiteInventoryBase();
-        serviceCompanyDao.moveInventory(serviceCompany.getCompanyId(), blankInventoryBase.getInstallationCompanyID());
+        serviceCompanyDao.moveInventory(serviceCompany.getCompanyId(), LiteInventoryBase.NONE_SERVICE_COMPANY_ID);
         
         //first delete dependent service company designation codes
         designationCodeDao.bulkDelete(serviceCompany.getDesignationCodes());

@@ -25,9 +25,11 @@ import com.cannontech.stars.util.InventoryUtils;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LiteInventoryBase extends LiteBase {
+    public static final int NONE_SERVICE_COMPANY_ID = 0;
+    
 	private int accountID = CtiUtilities.NONE_ZERO_ID;
 	private int categoryID = CtiUtilities.NONE_ZERO_ID;
-	private int installationCompanyID = CtiUtilities.NONE_ZERO_ID;
+	private int installationCompanyID = NONE_SERVICE_COMPANY_ID;
 	private long receiveDate = 0;
 	private long installDate = 0;
 	private long removeDate = 0;
