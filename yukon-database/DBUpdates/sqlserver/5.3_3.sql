@@ -135,6 +135,25 @@ SET Type = 'ZigBee Endpoint'
 WHERE Type = 'ZigBee Utility Pro';
 /* End YUK-10130 */
 
+/* Start YUK-10141 */ 
+ALTER TABLE DynamicBillingField 
+ADD Channel VARCHAR(5); 
+GO 
+UPDATE DynamicBillingField 
+SET Channel = 'ONE'; 
+GO 
+ALTER TABLE DynamicBillingField 
+ALTER COLUMN Channel VARCHAR(5) NOT NULL; 
+GO
+
+UPDATE DynamicBillingField
+SET ReadingType = 'DEVICE_DATA' 
+WHERE FieldName = 'Plain Text' 
+  OR FieldName = 'meterNumber' 
+  OR FieldName = 'paoName' 
+  OR FieldName = 'address';
+/* End YUK-10141 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
