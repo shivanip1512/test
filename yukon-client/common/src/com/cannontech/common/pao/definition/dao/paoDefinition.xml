@@ -6117,7 +6117,7 @@
     </pao>
     
     <pao id="ZIGBEE_ENDPOINT">
-        <displayName>ZigBee End Point</displayName>
+        <displayName>ZigBee Endpoint</displayName>
         <points>
             <point type="Status" offset="2">
                 <init>true</init>
