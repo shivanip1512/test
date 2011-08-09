@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2011 2:01:53 PM                          */
+/* Created on:     8/9/2011 2:52:49 PM                          */
 /*==============================================================*/
 
 
@@ -7081,7 +7081,7 @@ create table StaticPAOInfo  (
    StaticPAOInfoId      NUMBER                          not null,
    PAObjectId           NUMBER                          not null,
    InfoKey              VARCHAR2(128)                   not null,
-   Value                VARCHAR2(128)                   not null,
+   Value                VARCHAR2(128),
    constraint PK_StatPAOInfo primary key (StaticPAOInfoId)
 );
 

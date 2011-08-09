@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/9/2011 2:33:45 PM                          */
+/* Created on:     8/9/2011 2:51:56 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7526,7 +7526,7 @@ create table StaticPAOInfo (
    StaticPAOInfoId      numeric              not null,
    PAObjectId           numeric              not null,
    InfoKey              varchar(128)         not null,
-   Value                varchar(128)         not null,
+   Value                varchar(128)         null,
    constraint PK_StatPAOInfo primary key (StaticPAOInfoId)
 )
 go

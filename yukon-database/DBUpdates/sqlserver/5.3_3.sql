@@ -159,6 +159,11 @@ ALTER TABLE LMThermostatManualEvent
 ALTER COLUMN PreviousTemperature FLOAT;
 /* End YUK-10133 */
 
+/* Start YUK-10132 */
+ALTER TABLE StaticPAOInfo 
+ALTER COLUMN Value VARCHAR(128) NULL;
+/* End YUK-10132 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
