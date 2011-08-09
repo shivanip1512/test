@@ -12,10 +12,11 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleComparator;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableMultimap.Builder;
 
 public class RoleListHelper {
 
@@ -28,9 +29,6 @@ public class RoleListHelper {
         Collections.sort(rolesList, new YukonRoleComparator());
         Builder<YukonRoleCategory, YukonRole> builder = ImmutableMultimap.builder();
         for (YukonRole role : rolesList) {
-            /* Skip roles from the system category */
-            if (role.getCategory() == YukonRoleCategory.System) continue;
-            
             builder.put(role.getCategory(), role);
         }
         ImmutableMultimap<YukonRoleCategory, YukonRole> categoryRoleMap = builder.build();
@@ -47,9 +45,6 @@ public class RoleListHelper {
         Collections.sort(rolesList, new YukonRoleComparator());
         Builder<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> builder = ImmutableMultimap.builder();
         for (YukonRole role : rolesList) {
-            /* Skip roles from the system category */
-            if (role.getCategory().isSystem()) continue;
-            
             Pair<YukonRole, LiteYukonGroup>roleGroupPair = new Pair<YukonRole, LiteYukonGroup>(role, rolesAndGroups.get(role));
             builder.put(role.getCategory(), roleGroupPair);
         }
@@ -71,7 +66,20 @@ public class RoleListHelper {
         
         /* Add available roles */
         Set<YukonRole> availableRolesSet = Sets.difference(Sets.newHashSet(YukonRole.values()), roles);
-        ImmutableMultimap<YukonRoleCategory, YukonRole> availableRolesMap = sortRolesByCategory(availableRolesSet);
+        
+        /* Filter out System roles */
+        Set<YukonRole> filteredRoles = Sets.filter(availableRolesSet, new Predicate<YukonRole>() {
+            @Override
+            public boolean apply(YukonRole role) {
+                if (role.getCategory().isSystem()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
+        
+        ImmutableMultimap<YukonRoleCategory, YukonRole> availableRolesMap = sortRolesByCategory(filteredRoles);
         model.addAttribute("availableRolesMap", availableRolesMap.asMap());
     }
     

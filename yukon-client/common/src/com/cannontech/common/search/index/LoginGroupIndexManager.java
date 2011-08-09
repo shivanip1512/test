@@ -13,7 +13,6 @@ import org.apache.lucene.index.Term;
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.user.UserUtils;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -33,19 +32,11 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select *                                                        "
-                + " from                                                                "
-                + "     yukongroup where                                                "
-                + " not groupid = " + UserUtils.USER_ADMIN_ID;
-        return query;
+        return "select * from yukongroup";
     }
 
     protected String getDocumentCountQuery() {
-        String query = "select count(*)                                             "
-            + " from                                                                "
-            + "     yukongroup where                                                "
-            + " not groupid = " + UserUtils.USER_ADMIN_ID + "                       ";
-    return query;
+        return "select count(*) from yukongroup";
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -55,11 +46,9 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         String groupName = rs.getString("groupname");
         int groupIDInt = rs.getInt("groupid");
         String groupID = Integer.toString(groupIDInt);
-        //will not be setting password here; no need for it
         
         String all = groupName + " " + groupID;
         doc.add(new Field("group", groupName, Field.Store.YES, Field.Index.TOKENIZED));
-        /*Don't store this; we don't want to display based off of this one*/
         doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("groupid", groupID, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("groupName", groupName, Field.Store.NO, Field.Index.UN_TOKENIZED));
@@ -70,7 +59,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_YUKON_USER_DB 
                && DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category) ) {
-            // yukon user change msg
+            // login group change msg
             return this.processGroupChange(id);
         }
 
@@ -89,7 +78,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND groupid = ?");
+        sql.append(" WHERE groupid = ?");
 
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { groupId },

@@ -19,8 +19,18 @@
                 <input type="hidden" value="${group.groupID}" name="groupId">
                 
                 <tags:nameValueContainer2>
-                
-                    <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
+                    
+                    <c:choose>
+                        <c:when test="${editName}">
+                            <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
+                        </c:when>
+                        <c:otherwise>
+                            <tags:hidden path="groupName"/>
+                            <tags:nameValue2 nameKey=".name">
+                                <spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody>
+                            </tags:nameValue2>
+                        </c:otherwise>
+                    </c:choose>
                     <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
                 
                 </tags:nameValueContainer2>

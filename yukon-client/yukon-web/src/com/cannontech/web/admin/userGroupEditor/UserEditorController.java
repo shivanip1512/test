@@ -237,6 +237,8 @@ public class UserEditorController {
     
     private void setupModelMap(ModelMap model, LiteYukonUser user) {
         model.addAttribute("userId", user.getUserID());
+        model.addAttribute("editNameAndStatus", user.getUserID() > -1 ? true : false);
+        
         model.addAttribute("editingUsername", yukonUserDao.getLiteYukonUser(user.getUserID()).getUsername());
         model.addAttribute("authTypes", AuthType.values());
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());

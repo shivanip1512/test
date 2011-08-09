@@ -100,6 +100,7 @@ public class RolePropertyController {
         map.addAttribute("roleName", messageSourceAccessor.getMessage(role.getFormatKey()));
         map.addAttribute("roleId", role.getRoleId());
         map.addAttribute("groupId", liteYukonGroup.getGroupID());
+        map.addAttribute("showDelete", role.getCategory().isSystem() ? false : true);
     }
 
     private MappedPropertiesHelper<DescriptiveRoleProperty> getHelper(YukonRole yukonRole) {

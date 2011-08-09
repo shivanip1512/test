@@ -83,6 +83,7 @@ public class GroupEditorController {
         model.addAttribute("group", group);
         model.addAttribute("groupId", group.getGroupID());
         model.addAttribute("groupName", group.getGroupName());
+        model.addAttribute("editName", group.getGroupID() > -1 ? true : false);
     }
 
     /* Group Editor Edit Page*/

@@ -49,10 +49,32 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                 <input type="hidden" value="${userId}" name="userId">
                 
                 <tags:nameValueContainer2>
-
-                    <tags:inputNameValue nameKey=".username" path="username"/>
+                    
+                    <c:choose>
+                        <c:when test="${editNameAndStatus}">
+                            <tags:inputNameValue nameKey=".username" path="username"/>
+                        </c:when>
+                        <c:otherwise>
+                            <tags:hidden path="username"/>
+                            <tags:nameValue2 nameKey=".username">
+                                <spring:escapeBody htmlEscape="true">${user.username}</spring:escapeBody>
+                            </tags:nameValue2>
+                        </c:otherwise>
+                    </c:choose>
+                        
                     <tags:selectNameValue nameKey=".authentication" items="${authTypes}" path="authType" />
-                    <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus"/>
+                    
+                    <c:choose>
+                        <c:when test="${editNameAndStatus}">
+                            <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus"/>
+                        </c:when>
+                        <c:otherwise>
+                            <tags:hidden path="loginStatus"/>
+                            <tags:nameValue2 nameKey=".loginStatus">
+                                <spring:escapeBody htmlEscape="true"><i:inline key="${user.loginStatus}"/></spring:escapeBody>
+                            </tags:nameValue2>
+                        </c:otherwise>
+                    </c:choose>
                 </tags:nameValueContainer2>
                 
                 <div class="pageActionArea">
