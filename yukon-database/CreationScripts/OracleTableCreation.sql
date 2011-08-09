@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2011 1:35:29 PM                          */
+/* Created on:     8/9/2011 2:01:53 PM                          */
 /*==============================================================*/
 
 
@@ -5691,7 +5691,7 @@ create table LMThermoStatGear  (
 create table LMThermostatManualEvent  (
    EventID              NUMBER                          not null,
    InventoryID          NUMBER                          not null,
-   PreviousTemperature  NUMBER,
+   PreviousTemperature  FLOAT,
    HoldTemperature      VARCHAR2(1),
    OperationStateID     NUMBER,
    FanOperationID       NUMBER,

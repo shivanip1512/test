@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/9/2011 1:10:10 PM                          */
+/* Created on:     8/9/2011 2:33:45 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6026,7 +6026,7 @@ go
 create table LMThermostatManualEvent (
    EventID              numeric              not null,
    InventoryID          numeric              not null,
-   PreviousTemperature  numeric              null,
+   PreviousTemperature  float                null,
    HoldTemperature      varchar(1)           null,
    OperationStateID     numeric              null,
    FanOperationID       numeric              null,

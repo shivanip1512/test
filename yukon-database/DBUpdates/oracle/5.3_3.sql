@@ -187,6 +187,26 @@ WHERE FieldName = 'Plain Text'
   OR FieldName = 'address';
 /* End YUK-10141 */
 
+/* Start YUK-10133 */
+ALTER TABLE LMThermostatManualEvent
+ADD PreviousTemperatureTemp FLOAT;
+
+UPDATE LMThermostatManualEvent
+SET PreviousTemperatureTemp = PreviousTemperature;
+
+UPDATE LMThermostatManualEvent
+SET PreviousTemperature = NULL;
+
+ALTER TABLE LMThermostatManualEvent 
+MODIFY PreviousTemperature FLOAT;
+
+UPDATE LMThermostatManualEvent
+SET PreviousTemperature = PreviousTemperatureTemp ;
+
+ALTER TABLE LMThermostatManualEvent
+DROP COLUMN PreviousTemperatureTemp;
+/* End YUK-10133 */
+  
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
