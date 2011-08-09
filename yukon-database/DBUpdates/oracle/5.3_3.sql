@@ -171,13 +171,10 @@ WHERE Type = 'ZigBee Utility Pro';
 /* Start YUK-10141 */ 
 ALTER TABLE DynamicBillingField 
 ADD Channel VARCHAR2(5); 
-GO 
 UPDATE DynamicBillingField 
 SET Channel = 'ONE'; 
-GO 
 ALTER TABLE DynamicBillingField 
 MODIFY Channel VARCHAR2(5) NOT NULL; 
-GO
 
 UPDATE DynamicBillingField
 SET ReadingType = 'DEVICE_DATA' 
