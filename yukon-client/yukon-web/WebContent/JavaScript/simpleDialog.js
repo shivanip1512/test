@@ -1,42 +1,18 @@
-// We use this to keep track of the dialog box's original size.  Each time we pop up a dialog,
-// we try for this size again (in case the browser window was resized in the interim).
-var naturalDialogSizes = {};
-
 /**
  * Adjust the given dialog's size to ensure it fits within the browser window
  * and adjust its position to center it in that window.
  */
 function adjustDialogSizeAndPosition(dialogId) {
     var dialogDiv = $(dialogId);
-    dialogDiv.show();
+    // If the dialog has more specific area to scroll, scroll that one instead of the whole dialog.
+    var scrollAreaDiv = $(dialogId).down('.boxContainer_content');
 
-    // This whole first section here just tries to put the dialog box back into an "untouched"
-    // state (so it can naturally grow or shrink to fit its contents).  We'll shrink it if we need
-    // to later.
-    var dialogDimensions = naturalDialogSizes[dialogDiv.id];
-    if (!dialogDimensions) {
-        dialogDimensions = {
-            'width' : dialogDiv.getStyle('width'),
-            'height' : dialogDiv.getStyle('height')
-        };
-
-        // Ensure width and height follow proper CSS formatting.
-        if (!dialogDimensions.width) {
-        	dialogDimensions.width = 'auto';
-        } else if (dialogDimensions.width.match(/^\d+$/)) {
-            dialogDimensions.width += "px";
-        }
-
-        if (!dialogDimensions.height) {
-        	dialogDimensions.height = 'auto';
-        } else if (dialogDimensions.height.match(/^\d+$/)) {
-            dialogDimensions.height += "px";
-        }
-
-        naturalDialogSizes[dialogId] = dialogDimensions;
+    // Try to force things back to their natural state.
+    dialogDiv.setStyle({'maxWidth': '', 'maxHeight': ''});
+    if (scrollAreaDiv) {
+        scrollAreaDiv.setStyle({'width': '', 'height': ''});
     }
-
-    dialogDiv.setStyle({'width': dialogDimensions.width, 'height': dialogDimensions.height});
+    dialogDiv.show();
 
     // Now, the dialog box is a as big as it wants to be, let's make sure it fits in the window
     // and center it.
@@ -54,12 +30,7 @@ function adjustDialogSizeAndPosition(dialogId) {
     var nonScrollWidth = 0;
     var nonScrollHeight = 0;
 
-    // If the dialog has more specific area to scroll, scroll that one instead of the whole dialog.
-    var scrollAreaDiv = $(dialogId).down('.boxContainer_content');
     if (scrollAreaDiv) {
-        // Force the scroll area back to auto and let it try to be its natural size.
-        scrollAreaDiv.setStyle({'width': 'auto', 'height': 'auto'});
-
         // Find the difference in size between the dialog box and the scroll area...we'll put
         // aside that much space when we fix the scroll area's size.
         var scrollAreaDivLayout = scrollAreaDiv.getLayout();
@@ -67,27 +38,17 @@ function adjustDialogSizeAndPosition(dialogId) {
         nonScrollHeight = dialogHeight - scrollAreaDivLayout.get('height');
     }
 
-    var widthAllowance = 0;
-    var heightAllowance = 0;
-    var heightOffset = 0;
-    if (Prototype.Browser.IE) {
-        // IE adds an extra pixel to the width and height and also adds the top and bottom border
-        // heights to the height.  (i.e. If you run without this code on IE, you will get a sliver
-        // of extra space along the right border and a lot of extra space along the bottom.)  See
-        // YUK-9994 for pictures.
-        widthAllowance = 1;
-        heightOffset = dialogLayout.get('border-top');
-        heightAllowance = heightOffset + dialogLayout.get('border-bottom') + 1;
-    }
-
-    if (dialogWidthWithBorder > viewportDimensions.width - minPadding - widthAllowance) {
+    var needsToShrink = false;
+    if (dialogWidthWithBorder > viewportDimensions.width - minPadding) {
         dialogWidth = viewportDimensions.width - minPadding - borderWidth;
+        needsToShrink = true;
     }
-    if (dialogHeightWithBorder > viewportDimensions.height - minPadding - heightAllowance) {
+    if (dialogHeightWithBorder > viewportDimensions.height - minPadding) {
         dialogHeight = viewportDimensions.height - minPadding - borderHeight;
+        needsToShrink = true;
     }
 
-    if (scrollAreaDiv) {
+    if (scrollAreaDiv && needsToShrink) {
         // Fix the size of the scroll area to (wholeDialogDimensions - unscrolledArea) so the
         // rest of the dialog doesn't scroll, but instead this area only does.
         scrollAreaDiv.setStyle({
@@ -96,17 +57,16 @@ function adjustDialogSizeAndPosition(dialogId) {
         });
     }
 
-    dialogDiv.setStyle({
-        'width': (dialogWidth - widthAllowance) + "px",
-        'height': (dialogHeight - heightAllowance) + "px"
-    });
+    if (needsToShrink) {
+        dialogDiv.setStyle({
+            'maxWidth': dialogWidth + "px",
+            'maxHeight': dialogHeight + "px"
+        });
+    }
 
     var x = (viewportDimensions.width - dialogWidth - borderWidth) / 2;
     var y = (viewportDimensions.height - dialogHeight - borderHeight) / 4;
-    dialogDiv.setStyle({
-        'left': x + "px",
-        'top': (y + heightOffset) + "px"
-    });
+    dialogDiv.setStyle({'left': x + "px", 'top': y + "px"});
 }
 
 /**
@@ -144,10 +104,11 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
     var onComplete = function(transport, json) {
     	if (json && json.action == 'close') {
     		$(dialogId).hide();
-    	}
-    	else if (!skipShow) {
-    		adjustDialogSizeAndPosition(dialogId);
-    		$(dialogId).show();
+    	} else {
+    		if (!skipShow) {
+    		    adjustDialogSizeAndPosition(dialogId);
+    		    $(dialogId).show();
+    		}
     	}
     	Yukon.ui.unblockPage();
     }
