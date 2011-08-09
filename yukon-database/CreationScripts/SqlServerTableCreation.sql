@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/2/2011 4:45:13 PM                          */
+/* Created on:     8/9/2011 10:30:27 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7388,8 +7388,8 @@ INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0);
 INSERT INTO State VALUES(-14, 1, 'Questionable', 3, 6, 0); 
 INSERT INTO State VALUES(-14, 2, 'Bad', 1, 6, 0); 
 INSERT INTO State VALUES(-13, 0, 'Connected', 0, 6, 0);
-INSERT INTO State VALUES(-13, 1, 'Decommissioned', 1, 6, 0);
-INSERT INTO State VALUES(-13, 2, 'Disconnected', 2, 6, 0);
+INSERT INTO State VALUES(-13, 1, 'Decommissioned', 7, 6, 0);
+INSERT INTO State VALUES(-13, 2, 'Disconnected', 1, 6, 0);
 INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
 INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
 INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);

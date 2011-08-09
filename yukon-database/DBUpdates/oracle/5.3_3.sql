@@ -8,7 +8,12 @@ SET Text = 'Connected'
 WHERE StateGroupId = -13
   AND RawState = 0; 
 
-INSERT INTO State VALUES(-13, 2, 'Disconnected', 2, 6, 0); 
+UPDATE State 
+SET ForegroundColor = 7 
+WHERE StateGroupId = -13 
+  AND RawState = 1;
+
+INSERT INTO State VALUES(-13, 2, 'Disconnected', 1, 6, 0); 
 
 DELETE FROM PointStatus 
 WHERE PointId IN (SELECT P.PointId 
@@ -33,6 +38,22 @@ WHERE PointId IN (SELECT P.PointId
                   WHERE P.StateGroupId = -11 
                     AND (PAO.Type = 'ZigBee Utility Pro' OR 
                          PAO.Type = 'Digi Gateway')); 
+
+DELETE FROM Display2WayData
+WHERE PointId IN (SELECT P.PointId 
+                   FROM Point P 
+                     JOIN YukonPAObject PAO ON PAO.PAObjectId = P.PAObjectId 
+                   WHERE P.StateGroupId = -11 
+                     AND (PAO.Type = 'ZigBee Utility Pro' OR 
+                          PAO.Type = 'Digi Gateway'));
+
+DELETE FROM DynamicPointAlarming
+WHERE PointId IN (SELECT P.PointId 
+                   FROM Point P 
+                     JOIN YukonPAObject PAO ON PAO.PAObjectId = P.PAObjectId 
+                   WHERE P.StateGroupId = -11 
+                     AND (PAO.Type = 'ZigBee Utility Pro' OR 
+                          PAO.Type = 'Digi Gateway'));
 
 DELETE FROM Point 
 WHERE PointId IN (SELECT P.PointId 
