@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2011 10:26:13 AM                         */
+/* Created on:     8/9/2011 11:18:50 AM                         */
 /*==============================================================*/
 
 
@@ -8630,8 +8630,8 @@ INSERT INTO YukonRoleProperty VALUES(-1119,-2,'Automatic Configuration','false',
 
 INSERT INTO YukonRoleProperty VALUES(-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.');
 INSERT INTO YukonRoleProperty VALUES(-1121, -2, 'Allow Single Day Thermostat Schedules', 'true', 'Allow the use of schedules where every day shares the same values for compatible thermostats.'); 
-INSERT INTO YukonRoleProperty VALUES(-1122, -2, 'Allow 5/2 Thermostat Schedules', 'true', 'Allow the use of 5/2 day schedules (different schedule each day of the week) for compatible thermostats. Weekday/Weekend.'); 
-INSERT INTO YukonRoleProperty VALUES(-1123, -2, 'Allow 5/1/1 Thermostat Schedules', 'false', 'Allow the use of 5/1/1 schedules for compatible thermostats. Weekday/Saturday/Sunday.'); 
+INSERT INTO YukonRoleProperty VALUES(-1122, -2, 'Allow 5/2 Thermostat Schedules', 'false', 'Allow the use of 5/2 day schedules for compatible thermostats. Weekday/Weekend.'); 
+INSERT INTO YukonRoleProperty VALUES(-1123, -2, 'Allow 5/1/1 Thermostat Schedules', 'true', 'Allow the use of 5/1/1 schedules for compatible thermostats. Weekday/Saturday/Sunday.'); 
 INSERT INTO YukonRoleProperty VALUES(-1124, -2, 'Allow 7 Day Thermostat Schedules', 'false', 'Allow the use of 7 day schedules (different schedule each day of the week) for compatible thermostats.'); 
 
 INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
