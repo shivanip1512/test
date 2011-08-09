@@ -25,7 +25,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
 import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -101,11 +100,8 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
         device.setDeviceId(deviceId);
         device.setDeviceType(deviceTypeEntry.getEntryText());
         device.setSerialNumber(lmHardware.getManufacturerSerialNumber());
-        
-        ZigbeeEndPoint tStat = new ZigbeeEndPoint();
-        tStat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEE_ENDPOINT));
-        
-        LitePoint linkPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                
+        LitePoint linkPt = attributeService.getPointForAttribute(new PaoIdentifier(deviceId, PaoType.ZIGBEE_ENDPOINT), BuiltInAttribute.ZIGBEE_LINK_STATUS);
         
         device.setCommissionId(linkPt.getLiteID());
         device.setGatewayId(gatewayDeviceDao.findGatewayIdForDeviceId(deviceId));

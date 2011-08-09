@@ -3,9 +3,9 @@ package com.cannontech.thirdparty.service;
 import java.util.Map;
 
 import com.cannontech.common.model.ZigbeeTextMessage;
-import com.cannontech.thirdparty.digi.exception.DigiGatewayCommissionException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
@@ -16,9 +16,9 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	 * Sends the install commands for the gateway to the third party.
 	 * 
 	 * @param gatewayId
-	 * @throws DigiGatewayCommissionException
+	 * @throws ZigbeeCommissionException
 	 */
-	public void installGateway(int gatewayId) throws DigiGatewayCommissionException;
+	public void installGateway(int gatewayId) throws ZigbeeCommissionException;
 	
 	/**
 	 * Sends the uninstall commands for the gateway to the third party.

@@ -203,7 +203,13 @@
     <entry key="yukon.web.modules.operator.hardware.thermostatCommissioned">Commission command sent to thermostat {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostatDecommissioned">Decommission command sent to thermostat {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.messageSent">Text message sent to gateway {0}</entry>
+    
     <entry key="yukon.web.modules.operator.hardware.commandFailed">ZigBee command failed: {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandFailed.exists">Gateway exists on another account.</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandFailed.provisioned">Gateway already commissioned.</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandFailed.timeout.gateway">Gateway did not respond to request.</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandFailed.timeout.endPoint">Endpoint did not respond to request.</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandFailed.notAuthorized">Key not authorized, (re)commission this device.</entry>
     
     <entry key="yukon.web.modules.operator.hardware.refreshSuccessful">Refresh Successful</entry>
     

@@ -162,8 +162,9 @@ public class DigiPollingServiceImpl {
             
             duration = configurationSource.getDuration("DIGI_TIME_REFRESH_STATUS", Duration.standardHours(24));
             globalScheduledExecutor.scheduleWithFixedDelay(digiGatewayStatusPoll, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);
+            log.info("Digi Gateway Status polling has been started.");
         } else {
-            log.info("Digi Services not started. No URL configured in master.cfg");
+            log.info("Digi Device Notification and Gateway Status Poll was not kicked off. DIGI_ENABLED was false");
         }
     }
     

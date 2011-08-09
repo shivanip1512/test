@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,10 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.exception.DigiGatewayCommissionException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
@@ -82,14 +84,17 @@ public class ZigBeeHardwareController {
         InventoryIdentifier id = inventoryDao.getYukonInventoryForDeviceId(deviceId);
         HardwareType type = id.getHardwareType();
         
+        ZigbeePingResponse ping;
+        
         try {
             ZigbeeDevice device;
             if (type.isGateway()) {
                 device = gatewayDeviceDao.getZigbeeGateway(deviceId);
-                zigbeeStateUpdaterService.updateGatewayStatus(device);
+                ping = zigbeeStateUpdaterService.updateGatewayStatus(device);
+                
             } else {
                 device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
-                zigbeeStateUpdaterService.updateEndPointStatus(device);
+                ping = zigbeeStateUpdaterService.updateEndPointStatus(device);
             }
             
             zigbeeStateUpdaterService.activateSmartPolling(device);
@@ -97,10 +102,10 @@ public class ZigBeeHardwareController {
             commandFailed(mav.getModelMap(), accessor, e.getMessage());
             return mav;
         }
-        
-        mav.addObject("success", true);
-        mav.addObject("message", accessor.getMessage(keyPrefix + "refreshSuccessful"));
-            
+
+        mav.addObject("success", ping.isSuccess());
+        mav.addObject("message", accessor.getMessage(ping.getMessageSourceResolvable()));
+
         return mav;
     }
 
@@ -166,36 +171,49 @@ public class ZigBeeHardwareController {
     }
 
     private void commandSucceeded(ModelMap model, MessageSourceAccessor accessor, String keySuffix, int deviceId) {
-        model.addAttribute("success", true);
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
         String message = accessor.getMessage(new YukonMessageSourceResolvable(keyPrefix + keySuffix, deviceSerialNumber));
-        model.addAttribute("message", message);
+        commandResults(model,true,message);
     }
     
     private void commandFailed(ModelMap model, MessageSourceAccessor accessor, String errorMessage) {
-        model.addAttribute("success", false);
         String message = accessor.getMessage(new YukonMessageSourceResolvable(keyPrefix + "commandFailed", errorMessage));
+        commandResults(model,false,message);
+    }
+    
+    private void commandFailed(ModelMap model, String errorMessage) {
+        commandResults(model,false,errorMessage);
+    }
+    
+    private void commandResults(ModelMap model, boolean success, String message) {
+        model.addAttribute("success", success);        
         model.addAttribute("message", message);
     }
     
     private void commissionGateway(ModelMap model, MessageSourceAccessor accessor, int gatewayId) {
         boolean messageFailed = false;
         String errorMessage = null;
+        MessageSourceResolvable errorResolvable = null;
         try {
             zigbeeWebService.installGateway(gatewayId);
             
             ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
             zigbeeStateUpdaterService.activateSmartPolling(gateway);
-        } catch (DigiGatewayCommissionException e) {
+        } catch (ZigbeeCommissionException e) {
             messageFailed = true;
-            errorMessage = e.getMessage();
+            errorResolvable = e.getMessageSourceResolvable();
         } catch (DigiWebServiceException e) {
             messageFailed = true;
-            errorMessage = e.getMessage();
+            errorMessage = ExceptionUtils.getRootCauseMessage(e);
         }
         
         if (messageFailed) {
-            commandFailed(model, accessor, errorMessage);
+            if (errorResolvable != null) {
+                errorMessage = accessor.getMessage(errorResolvable);
+                commandFailed(model, errorMessage);
+            } else {
+                commandFailed(model, accessor, errorMessage);
+            }
         } else {
             commandSucceeded(model, accessor, "gatewayCommissioned", gatewayId);
         }

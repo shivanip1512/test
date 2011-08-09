@@ -32,7 +32,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
     private static final Logger log = YukonLogManager.getLogger(DigiSmartUpdateServiceImpl.class);
     
     private ZigbeeWebService zigbeeWebService;
-    private AttributeDynamicDataSource aDynamicDataSource;
+    private AttributeDynamicDataSource attributeDynamicDataSource;
     
     private boolean smartPolling;
     
@@ -57,7 +57,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
                         continue;
                     }
                     
-                    PointValueHolder pvh = aDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                    PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
                     if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState() ) {
                         log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, halting ping. " + device.getName());
                         devicesToRemove.add(device);
@@ -93,7 +93,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
         public void enableSmartPollingForDevice(ZigbeeDevice device) {
             synchronized (devicesToPoll) {
                 
-                PointValueHolder pvh = aDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
                 if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState()) {
                     log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, will not ping device " + device.getName());
                     return;
@@ -126,12 +126,11 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
                 globalScheduledExecutor.scheduleWithFixedDelay(smartPollingThread, 15, readDelay.getStandardSeconds(), TimeUnit.SECONDS);
 
                 log.debug("Started DigiSmartUpdateService.");
+            } else {
+                log.info("DigiSmartUpdateService not kicked off. DIGI_SMARTPOLL_ENABLED was false");
             }
-
-            log.info("Digi Device Notification polling has been started.");
-            
         } else {
-            log.info("DigiSmartUpdateService not started. Digi was not enabled.");
+            log.info("DigiSmartUpdateService not kicked off. DIGI_ENABLED was false.");
         }
     }
     
@@ -143,8 +142,8 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
     }
 
     @Autowired
-    public void setaDynamicDataSource(AttributeDynamicDataSource aDynamicDataSource) {
-        this.aDynamicDataSource = aDynamicDataSource;
+    public void setAttributeDynamicDataSource(AttributeDynamicDataSource attributeDynamicDataSource) {
+        this.attributeDynamicDataSource = attributeDynamicDataSource;
     }
     
     @Autowired

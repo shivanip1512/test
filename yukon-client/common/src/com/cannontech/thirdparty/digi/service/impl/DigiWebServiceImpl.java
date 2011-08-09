@@ -9,6 +9,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
@@ -18,19 +19,22 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiEmptyDeviceCoreResultException;
-import com.cannontech.thirdparty.digi.exception.DigiGatewayCommissionException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZCLStatus;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
@@ -41,6 +45,7 @@ import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterService {
 
@@ -83,15 +88,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
             
-        } catch (DigiGatewayCommissionException e) {
+            zigbeeEventLogService.zigbeeDeviceCommissioned(digiGateway.getName());
+        } catch (ZigbeeCommissionException e) {
             log.error("Caught exception in the commissioning process", e);
             //re throw
             throw e;
+        } finally {
+            log.debug("-- Install Gateway End --");
         }
-
-        zigbeeEventLogService.zigbeeDeviceCommissioned(digiGateway.getName());
-        
-        log.debug("-- Install Gateway End --");
     }
     
     @Override
@@ -118,18 +122,13 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
      * @param macAddress
      * @return
      */
-    private Integer commissionNewConnectPort(String macAddress) throws DigiGatewayCommissionException {
+    private Integer commissionNewConnectPort(String macAddress) throws ZigbeeCommissionException {
         log.debug("CommissionNewConnectPort Start");
         String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
-        
-        String response;
-        try {
-            log.debug(xml);
-            response = restTemplate.postForObject(digiBaseUrl + "ws/DeviceCore", xml, String.class);
-            log.debug(response);
-        } catch (RestClientException e) {
-            throw new DigiWebServiceException(e);
-        }
+
+        log.debug(xml);
+        String response = restTemplate.postForObject(digiBaseUrl + "ws/DeviceCore", xml, String.class);
+        log.debug(response);
 
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(response);
@@ -139,8 +138,17 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         if (location == null) {
             String error = template.evaluateAsString("//error");
             if (error != null) {
+                MessageSourceResolvable resolvable;
+                if (error.contains("already provisioned")) {
+                    resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed.provisioned", error);
+                } else if (error.contains("already exists")){
+                    resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed.exists", error);
+                } else {
+                    resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed", error);
+                }
+                log.debug(error);
                 log.error("Failed to Provision device with MAC Address: " + macAddress);
-                throw new DigiGatewayCommissionException(error);
+                throw new ZigbeeCommissionException(resolvable);
             }
         }
         
@@ -170,7 +178,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     @Override
-    public void installEndPoint(int gatewayId, int deviceId) {
+    public void installEndPoint(int gatewayId, int deviceId) throws ZigbeeCommissionException {
         log.debug("InstallEndPoint Start");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         ZigbeeEndPoint stat= zigbeeDeviceDao.getZigbeeEndPoint(deviceId);
@@ -217,11 +225,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void activateSmartPolling(ZigbeeDevice device) {
-        jmsTemplate.convertAndSend("yukon.notif.stream.thirdparty.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
+        jmsTemplate.convertAndSend("yukon.notif.obj.dr.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
     }
     
     @Override
-    public void updateEndPointStatus(ZigbeeDevice endPoint) {
+    public ZigbeePingResponse updateEndPointStatus(ZigbeeDevice endPoint) {
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());
         Validate.notNull(gatewayId, "Device not assigned to a gateway, cannot send addressing configs.");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
@@ -237,9 +245,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException(e);
         }
 
-        digiResponseHandler.handlePingResponse(response,endPoint,gateway);
+        ZigbeePingResponse pingResponse = digiResponseHandler.handlePingResponse(response,endPoint,gateway);
         
         zigbeeEventLogService.zigbeeDeviceRefreshed(endPoint.getName());
+        
+        return pingResponse;
     }
     
     @Override
@@ -260,9 +270,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         zigbeeEventLogService.zigbeeDeviceLoadGroupAddressingSent(endPoint.getName());
     }
     
-    //public void refreshGateway(ZigbeeDevice gateway) {
     @Override
-    public void updateGatewayStatus(ZigbeeDevice gateway) {
+    public ZigbeePingResponse updateGatewayStatus(ZigbeeDevice gateway) {
         log.debug("Refresh Gateway start");
         String convertedMac = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         
@@ -272,29 +281,36 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         List<ZigbeeDevice> expected = Lists.newArrayList();
         expected.add(gateway);
         
+        Map<PaoIdentifier,ZigbeePingResponse> pingResponses;
         try {
-            refreshDeviceCore(url,expected);
+            pingResponses = refreshDeviceCore(url,expected);
         } catch (DigiEmptyDeviceCoreResultException e) {
             String errorMsg = "Gateway not found on iDigi Account. Possibly need to re-commission.";
             log.error(errorMsg);
             throw new DigiWebServiceException(errorMsg);
         }
 
-        zigbeeEventLogService.zigbeeDeviceRefreshed(gateway.getName());
+        if (pingResponses.size() > 1) {
+            throw new DigiWebServiceException("Ping returned more than one result.");
+        }
         
+        zigbeeEventLogService.zigbeeDeviceRefreshed(gateway.getName());        
         log.debug("Refresh Gateway done");
+        
+        return pingResponses.get(gateway.getPaoIdentifier());
     }
     
     @Override
-    public void updateAllGatewayStatuses() {
+    public Map<PaoIdentifier,ZigbeePingResponse> updateAllGatewayStatuses() {
         log.debug("Refresh ALL Gateway start");
         
         //URL to load all gateways the account.
         String url = digiBaseUrl + "ws/DeviceCore/";
         List<ZigbeeDevice> expected = gatewayDeviceDao.getAllGateways();
+        Map<PaoIdentifier,ZigbeePingResponse> pingResponses = Maps.newHashMap();
         
         try {
-            refreshDeviceCore(url,expected);
+            pingResponses = refreshDeviceCore(url,expected);
         } catch (DigiEmptyDeviceCoreResultException e) {
             //eat the Error.. It is not REQUIRED to have a gateway
         }
@@ -302,9 +318,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         zigbeeEventLogService.zigbeeRefreshedAllGateways();
         
         log.debug("Refresh ALL Gateway done");
+        
+        return pingResponses;
     }
     
-    private void refreshDeviceCore(String url, List<ZigbeeDevice> expected) {
+    private Map<PaoIdentifier,ZigbeePingResponse> refreshDeviceCore(String url, List<ZigbeeDevice> expected) {
         String xml;
         
         try {
@@ -313,12 +331,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException(e);
         }
         
-        List<Integer> updated = digiResponseHandler.handleDeviceCoreResponse(xml,expected);
+        Map<PaoIdentifier,ZigbeePingResponse> updated = digiResponseHandler.handleDeviceCoreResponse(xml,expected);
         
         //If there were no results, toss an exception. We want this at the end so we decommission the gateway and devices.
         if (updated.isEmpty()) {
             throw new DigiEmptyDeviceCoreResultException("0 results from DeviceCore query.");
         }
+        
+        return updated;
     }
     
     @Override

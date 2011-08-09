@@ -1,6 +1,7 @@
 package com.cannontech.thirdparty.digi.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,10 +12,12 @@ import org.apache.log4j.Logger;
 import org.jdom.Namespace;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,18 +27,21 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
+import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeEventAction;
 import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.model.ZigbeeEventAction;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class DigiResponseHandler {
   
@@ -163,39 +169,51 @@ public class DigiResponseHandler {
      * 
      * @param source
      */
-    public List<Integer> handleDeviceCoreResponse(String source, List<ZigbeeDevice> expected) {
+    public Map<PaoIdentifier,ZigbeePingResponse> handleDeviceCoreResponse(String source, List<ZigbeeDevice> expected) {
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
-        
+        String successKey = "yukon.web.modules.operator.hardware.refreshSuccessful";
         List<DeviceCore> cores = template.evaluate("/result/DeviceCore", digiDeviceCoreNodeMapper);
         
-        List<Integer> updatedDeviceIds = Lists.newArrayList();
+        Map<PaoIdentifier,ZigbeePingResponse> pingResponses = Maps.newHashMap();
         for (DeviceCore core : cores) {
             DigiGateway digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());        
             digiGateway.setDigiId(core.getDevId());
             digiGateway.setFirmwareVersion(core.getDevFirmware());
             gatewayDeviceDao.updateDigiGateway(digiGateway);
 
-            updatedDeviceIds.add(digiGateway.getPaoId());
+            Commissioned state;
             
             //We are commissioned if we got here. So set connected / disconnected accordingly
             if (core.isConnected()) {
+                state = Commissioned.CONNECTED;
                 connectGateway(digiGateway);
             } else {
+                state = Commissioned.DISCONNECTED;
                 disconnectGateway(digiGateway);
             }
+            
+            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(successKey);
+            ZigbeePingResponse response = new ZigbeePingResponse(true,
+                                                                                          state,
+                                                                                          resolvable);
+            pingResponses.put(digiGateway.getPaoIdentifier(), response);
         }
         
         //Set Decommissioned to anything we did not get a response from.
         for (ZigbeeDevice gateway : expected) {
-            if (updatedDeviceIds.contains(gateway.getZigbeeDeviceId())) {
+            if (pingResponses.keySet().contains(gateway.getPaoIdentifier())) {
                 continue;
             }
-            
+            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(successKey);
+            ZigbeePingResponse response = new ZigbeePingResponse(false,
+                                                                                          Commissioned.DECOMMISSIONED,
+                                                                                          resolvable);
+            pingResponses.put(gateway.getPaoIdentifier(),response);
             decommissionGateway(gateway);
         }
         
-        return updatedDeviceIds;
+        return pingResponses;
     }
     
     /**
@@ -317,9 +335,11 @@ public class DigiResponseHandler {
      * 
      * @param source
      */
-    public void handlePingResponse(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway){
+    public ZigbeePingResponse handlePingResponse(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
         Commissioned endPointState = Commissioned.CONNECTED;
-
+        boolean success = true;
+        String key = "yukon.web.modules.operator.hardware.refreshSuccessful";
+        
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
@@ -327,28 +347,38 @@ public class DigiResponseHandler {
         
         //Error Case
         if (readResponse == null) {
+            success = false;
             String error = template.evaluateAsString("//desc");
             
             if( error == null) {
                 error = template.evaluateAsString("//description");
                 log.error("Error Communicating with ZigBee EndPoint: " + error);
                 if (error.contains("Key not authorized")) {
-                    //This
+                    //This error means the encryption key has gotten out of sync. Need a recommission to fix.
                     endPointState = Commissioned.DECOMMISSIONED;
+                    key = "yukon.web.modules.operator.hardware.commandFailed.notAuthorized";
                 } else {
+                    key = "yukon.web.modules.operator.hardware.commandFailed.timeout.endPoint";
                     endPointState = Commissioned.DISCONNECTED;
                 }
             } else {
                 log.error("Error Communicating with Gateway: " + error);
                 //Disconnect gateway (This will also disconnect the end points attached)
                 disconnectGateway(gateway);
-                return;
+                key = "yukon.web.modules.operator.hardware.commandFailed.timeout.gateway";
             }
         }
         
         zigbeeServiceHelper.sendPointStatusUpdate(endPoint, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   endPointState);
+        
+        MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(key);
+        ZigbeePingResponse response = new ZigbeePingResponse(success,
+                                                                                      endPointState,
+                                                                                      resolvable);
+        
+        return response;
     }
     
     /**
@@ -364,14 +394,16 @@ public class DigiResponseHandler {
         
         //Error case
         if (description != null) {
-            throw new DigiWebServiceException(description);
+            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed", description);
+            throw new ZigbeeCommissionException(resolvable);
         }
         
         String desc = template.evaluateAsString("//desc");
 
         //Error case
         if (desc != null) {
-            throw new DigiWebServiceException(desc);
+            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed", desc);
+            throw new ZigbeeCommissionException(resolvable);
         }
     }
     

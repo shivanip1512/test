@@ -21,7 +21,7 @@
         concurrency="1"
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-        <jms:listener destination="yukon.notif.stream.thirdparty.smartUpdateRequest" ref="digiSmartUpdateListener" method="handleSmartUpdateRequest"/>
+        <jms:listener destination="yukon.notif.obj.dr.smartUpdateRequest" ref="digiSmartUpdateListener" method="handleSmartUpdateRequest"/>
     </jms:listener-container>
     
 </beans>
