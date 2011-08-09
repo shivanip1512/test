@@ -209,12 +209,10 @@ public class LayoutController {
         String energyCompanyName = null;
         
         
-        try{
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
-            if (energyCompany.getEnergyCompanyId() != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
-                energyCompanyName = energyCompany.getName();
-            }
-        } catch(EmptyResultDataAccessException e) {}
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
+        if (energyCompany.getEnergyCompanyId() != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+            energyCompanyName = energyCompany.getName();
+        }
         
         map.addAttribute("energyCompanyName", energyCompanyName);
         map.addAttribute("username", username);
