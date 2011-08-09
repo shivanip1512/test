@@ -148,6 +148,20 @@ INSERT INTO YukonListEntry VALUES (1049, 1005, 0, 'LCR-6600(ZIGBEE)', 1322);
 INSERT INTO YukonListEntry VALUES (1050, 1005, 0, 'LCR-6600(EXPRESSCOM)', 1323);
 /* End YUK-10140 */
 
+/* Start YUK-10131 */ 
+ALTER TABLE ArchiveDataAnalysis 
+ADD AnalysisStatus VARCHAR2(60); 
+
+UPDATE ArchiveDataAnalysis 
+SET AnalysisStatus = 'COMPLETE'; 
+
+ALTER TABLE ArchiveDataAnalysis 
+MODIFY AnalysisStatus VARCHAR2(60) NOT NULL; 
+
+ALTER TABLE ArchiveDataAnalysis 
+ADD StatusId VARCHAR(60) NULL;
+/* End YUK-10131 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

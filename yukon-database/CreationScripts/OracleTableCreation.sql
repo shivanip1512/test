@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2011 11:38:03 AM                         */
+/* Created on:     8/9/2011 11:55:30 AM                         */
 /*==============================================================*/
 
 
@@ -390,6 +390,8 @@ create table ArchiveDataAnalysis  (
    ExcludeBadPointQualities CHAR(1)                         not null,
    StartDate            DATE                            not null,
    StopDate             DATE                            not null,
+   AnalysisStatus       VARCHAR2(60)                    not null,
+   StatusId             VARCHAR2(60),
    constraint PK_ArcDataAnal primary key (AnalysisId)
 );
 
