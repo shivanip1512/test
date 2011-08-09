@@ -129,6 +129,12 @@ ALTER TABLE ArchiveDataAnalysis
 ADD StatusId VARCHAR(60) NULL;
 /* End YUK-10131 */
 
+/* Start YUK-10130 */ 
+UPDATE YukonPAObject 
+SET Type = 'ZigBee Endpoint' 
+WHERE Type = 'ZigBee Utility Pro';
+/* End YUK-10130 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
