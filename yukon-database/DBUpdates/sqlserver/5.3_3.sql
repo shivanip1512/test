@@ -126,7 +126,7 @@ ALTER COLUMN AnalysisStatus VARCHAR(60) NOT NULL;
 GO
 
 ALTER TABLE ArchiveDataAnalysis 
-ADD StatusId VARCHAR(60) NULL 
+ADD StatusId VARCHAR(60) NULL;
 /* End YUK-10131 */
 
 /**************************************************************/ 
