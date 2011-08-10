@@ -70,6 +70,9 @@ public class DynamicBillingController extends MultiActionController {
 		List<String> readingTypes = getValidReadingTypes();
 		mav.addObject("readingTypes", readingTypes);
 
+		List<String> readingChannels = getValidReadingChannels();
+		mav.addObject("readingChannels", readingChannels);
+
 		List<String> roundingModes = getValidRoundingModes();
 		mav.addObject("roundingModes", roundingModes);
 
@@ -138,6 +141,9 @@ public class DynamicBillingController extends MultiActionController {
 	    List<String> readingTypes = getValidReadingTypes();
 	    mav.addObject("readingTypes", readingTypes);
 
+		List<String> readingChannels = getValidReadingChannels();
+		mav.addObject("readingChannels", readingChannels);
+
 	    List<String> roundingModes = getValidRoundingModes();
 	    mav.addObject("roundingModes", roundingModes);
 		
@@ -189,6 +195,9 @@ public class DynamicBillingController extends MultiActionController {
 		List<String> readingTypes = getValidReadingTypes();
 		mav.addObject("readingTypes", readingTypes);
 		
+		List<String> readingChannels = getValidReadingChannels();
+		mav.addObject("readingChannels", readingChannels);
+
 	    List<String> roundingModes = getValidRoundingModes();
 	    mav.addObject("roundingModes", roundingModes);
 
@@ -367,6 +376,12 @@ public class DynamicBillingController extends MultiActionController {
                 ReadingType readingType = ReadingType.valueOf(readingTypeStr);
                 field.setReadingType(readingType);
             }
+
+            String readingChannelStr = object.getString("readingChannel");
+            if(!StringUtils.isEmpty(readingChannelStr)){
+                Channel channel = Channel.valueOf(readingChannelStr);
+                field.setChannel(channel);
+            }
             
             String roundingModeStr = object.getString("roundingMode");
             if(!StringUtils.isEmpty(roundingModeStr)){
@@ -529,6 +544,13 @@ public class DynamicBillingController extends MultiActionController {
 	    ReadingType[] readingTypes = ReadingType.values();
 	    for (ReadingType readingType : readingTypes) {
 	        device.addData(Channel.ONE, readingType, billableField, data);
+	        
+	        // Add some channel 2/3 data for total fields.
+	        if (billableField == BillableField.totalConsumption ||
+	        		billableField == BillableField.totalPeakDemand ) {
+	        	device.addData(Channel.TWO, readingType, billableField, data);
+	        	device.addData(Channel.THREE, readingType, billableField, data);
+	        }
         }
     }
 
@@ -546,6 +568,19 @@ public class DynamicBillingController extends MultiActionController {
 	    return readingTypeStrs;
 	}
 	
+    private List<String> getValidReadingChannels(){
+        List<String> readingChannelStrs = new ArrayList<String>();
+
+        Set<Channel> readingChannelExcludeList = Collections.singleton(Channel.FOUR);
+	    Channel[] channels = Channel.values();
+	    for (Channel channel : channels) {
+	        if(!readingChannelExcludeList.contains(channel)){
+	        	readingChannelStrs.add(channel.toString());
+	        }
+	    }	    
+	    return readingChannelStrs;
+	}
+    
     private List<String> getValidRoundingModes(){
         List<String> roundingModeStrs = new ArrayList<String>();
         

@@ -112,4 +112,13 @@ public class BillingData {
             }
         }
     }
+
+	@Override
+	public String toString() {
+		return "BillingData [data=" + data + ", value=" + value
+				+ ", unitOfMeasure=" + unitOfMeasure + ", timestamp="
+				+ timestamp + "]";
+	}
+    
+    
 }

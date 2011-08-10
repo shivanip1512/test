@@ -22,7 +22,15 @@ function addToSelected(roundingMode){
             newOpt.setAttribute("format","#####");
         }
     }
-    newOpt.setAttribute("readingType", "ELECTRIC");
+
+    if (field.include('reading') ||
+    		field.include('timestamp')) {
+        newOpt.setAttribute("readingType", "ELECTRIC");
+    } else {
+        newOpt.setAttribute("readingType", "DEVICE_DATA");
+    }
+    
+    newOpt.setAttribute("readingChannel", "ONE");
     newOpt.setAttribute("roundingMode", roundingMode);
 	newOpt.setAttribute("maxLength","0");
     newOpt.setAttribute("padChar"," ");
@@ -202,6 +210,7 @@ function save(){
 		    'padChar': getAttributeValue(currentOption, 'padChar'),
 		    'padSide': getAttributeValue(currentOption, 'padSide'),
 		    'readingType': getAttributeValue(currentOption, 'readingType'),
+            'readingChannel': getAttributeValue(currentOption, 'readingChannel'),
 		    'roundingMode': getAttributeValue(currentOption, 'roundingMode')
 		}));
 	}
@@ -308,6 +317,10 @@ function updateFormat(headerText, method){
             case "readingType":
                 var attributeValue = $(headerText+'ReadingType').value;
                 option.setAttribute('readingType', attributeValue);
+                break;
+            case "readingChannel":
+                var attributeValue = $(headerText+'ReadingChannel').value;
+                option.setAttribute('readingChannel', attributeValue);
                 break;
             case "roundingMode":
                 var attributeValue = $(headerText+'RoundingMode').value;
@@ -509,6 +522,10 @@ function updateReadingFormatFields(option){
     var readingTypeValue = getAttributeValue(option, 'readingType');
     $('readingReadingType').value = readingTypeValue;
 
+    // gets the initial readingChannel value
+    var readingChannelValue = getAttributeValue(option, 'readingChannel');
+    $('readingReadingChannel').value = readingChannelValue;
+
     // gets the initial roundingMode value
     var roundingModeValue = getAttributeValue(option, 'roundingMode');
     $('readingRoundingMode').value = roundingModeValue;
@@ -546,6 +563,10 @@ function updateTimestampFormatFields(timestampDiv, option){
     var readingTypeValue = getAttributeValue(option, 'readingType');
     $('timestampReadingType').value = readingTypeValue;
 
+    // gets the initial readingChannel value
+    var readingTypeValue = getAttributeValue(option, 'readingChannel');
+    $('timestampReadingChannel').value = readingChannelValue;
+    
     // gets the initial format value
     var format = getAttributeValue(option, 'format');
     $('timestampFormat').value = format;
@@ -584,6 +605,10 @@ function updatePlainTextFormatFields(plainTextDiv, option){
 // gets all the initial values for the current selected field
 function updateGenericFormatFields(genericFormatDiv, option){
 
+    // gets the initial readingType value
+    var readingTypeValue = getAttributeValue(option, 'readingType');
+    $('genericReadingType').value = readingTypeValue;
+    
     // get the initial maxLength value
     var maxLength = getAttributeValue(option, 'maxLength');
     $('genericMaxLength').value = maxLength;

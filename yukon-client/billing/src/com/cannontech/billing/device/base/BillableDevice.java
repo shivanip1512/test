@@ -123,13 +123,13 @@ public interface BillableDevice {
     public Timestamp getTimestamp(Channel channel, ReadingType type, BillableField field);
 
     /**
-     * Method to get a specific piece of data from this device. Gets the data
-     * from channel one and electric type
-     * @param defaultType - The deafultType to add the data to. 
+     * Method to get a specific piece of data from this device. 
+     * Gets the data from Channel.ONE
+     * @param type - The type to add the data to. 
      * @param field - Field to get the piece of data for
      * @return The piece of data
      */
-    public String getData(ReadingType defaultType, BillableField field);
+    public String getData(ReadingType type, BillableField field);
 
     /**
      * Method to get a specific piece of data from this device.

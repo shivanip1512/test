@@ -111,7 +111,7 @@
                                         <c:if test="${status.count == 1}">
                                             <c:set var="selected" value="selected"/>
                                         </c:if>
-                                        <option ${selected} format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" padChar="<c:out value="${field.padChar}" />" padSide="<c:out value="${field.padSide}" />" readingType="<c:out value="${field.readingType}" />" roundingMode="<c:out value="${field.roundingMode}" />" >${field.name}</option>
+                                        <option ${selected} format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" padChar="<c:out value="${field.padChar}" />" padSide="<c:out value="${field.padSide}" />" readingType="<c:out value="${field.readingType}" />" readingChannel="<c:out value="${field.channel}" />" roundingMode="<c:out value="${field.roundingMode}" />" >${field.name}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -170,6 +170,13 @@
                                                 </c:forEach>
                                             </select>
                                         </ct:nameValue>
+                                        <ct:nameValue name="Reading Channel">
+                                            <select id="readingReadingChannel" onchange="updateFormat('reading', 'readingChannel');">
+                                                <c:forEach var="readingChannelValue" items="${readingChannels}">
+                                                    <option value="${readingChannelValue}">${readingChannelValue}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </ct:nameValue>
                                         <ct:nameValue name="Rounding Mode">
                                             <select id="readingRoundingMode" onchange="updateFormat('reading', 'roundingMode');">
                                                 <c:forEach var="roundingModeValue" items="${roundingModes}">
@@ -220,6 +227,13 @@
                                                 </c:forEach>
                                             </select>
                                         </ct:nameValue>
+                                        <ct:nameValue name="Reading Channel">
+                                            <select id="timestampReadingChannel" onchange="updateFormat('timestamp', 'readingChannel');">
+                                                <c:forEach var="readingChannelValue" items="${readingChannels}">
+                                                    <option value="${readingChannelValue}">${readingChannelValue}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </ct:nameValue>
                                         <ct:nameValue name="Timestamp Pattern">
                                             <select id="timestampFormatSelect" onchange="updateFormat('timestamp', 'formatWithSelect');">
                                                 <option value="No Format" selected="selected">No Format</option>
@@ -264,6 +278,7 @@
                                 </div>
                                 
                                 <div id="genericFormatDiv" style="display:none">
+                                <input type="hidden" id="genericReadingType" value="DEVICE_DATA"/>
                                 <ct:nameValueContainer>
                                     <ct:nameValue name="Field Size">
                                         <input type="text" id="genericMaxLength" size="5" maxlength="5" value="" onkeyup="updateFormat('generic', 'maxLength');" /> (0 for no max)

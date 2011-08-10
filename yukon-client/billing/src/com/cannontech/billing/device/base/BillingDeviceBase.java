@@ -43,16 +43,7 @@ public abstract class BillingDeviceBase implements BillableDevice {
                     + " does not have a value");
         }
 
-        BillingData data = null;
-
-        if (field.equals(BillableField.totalConsumption)) {
-            data = this.getTotalConsumption(channel, type);
-        } else if (field.equals(BillableField.totalPeakDemand)) {
-            data = this.getTotalDemand(channel, type);
-        } else {
-            data = this.getBillingData(channel, type, field);
-        }
-
+        BillingData data = getAdjustedBillingData(channel, type, field);
         return (data != null) ? data.getValue() : null;
     }
 
@@ -81,30 +72,11 @@ public abstract class BillingDeviceBase implements BillableDevice {
                     + " does not have a timestamp");
         }
 
-        BillingData data = null;
-
-        if (field.equals(BillableField.totalConsumption)) {
-            data = this.getTotalConsumption(channel, type);
-        } else if (field.equals(BillableField.totalPeakDemand)) {
-            data = this.getTotalDemand(channel, type);
-        } else {
-            data = this.getBillingData(channel, type, field);
-        }
-
+        BillingData data = getAdjustedBillingData(channel, type, field);
         return (data != null) ? data.getTimestamp() : null;
     };
 
-    public String getData(ReadingType defaultType, BillableField field) {
-
-        ReadingType type = defaultType;
-
-        // Check to see if the field is a device base data field
-        if (BillableField.meterNumber.equals(field) || BillableField.address.equals(field)
-                || BillableField.paoName.equals(field) || BillableField.accountNumber.equals(field)
-                || BillableField.meterPositionNumber.equals(field)) {
-            type = ReadingType.DEVICE_DATA;
-        }
-
+    public String getData(ReadingType type, BillableField field) {
         return this.getData(Channel.ONE, type, field);
     }
 
@@ -114,16 +86,7 @@ public abstract class BillingDeviceBase implements BillableDevice {
             throw new IllegalArgumentException("Field " + field.toString() + " does not have data");
         }
 
-        BillingData data = null;
-
-        if (field.equals(BillableField.totalConsumption)) {
-            data = this.getTotalConsumption(channel, type);
-        } else if (field.equals(BillableField.totalPeakDemand)) {
-            data = this.getTotalDemand(channel, type);
-        } else {
-            data = this.getBillingData(channel, type, field);
-        }
-
+        BillingData data = getAdjustedBillingData(channel, type, field);
         return (data != null) ? data.getData() : null;
     }
 
@@ -137,16 +100,7 @@ public abstract class BillingDeviceBase implements BillableDevice {
                     + " does not have unit of measure");
         }
 
-        BillingData data = null;
-
-        if (field.equals(BillableField.totalConsumption)) {
-            data = this.getTotalConsumption(channel, type);
-        } else if (field.equals(BillableField.totalPeakDemand)) {
-            data = this.getTotalDemand(channel, type);
-        } else {
-            data = this.getBillingData(channel, type, field);
-        }
-
+        BillingData data = getAdjustedBillingData(channel, type, field);
         return (data != null) ? data.getUnitOfMeasure() : null;
 
     }
@@ -165,10 +119,7 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
         // Need to check that we have some data first.
         BillingData data = this.getBillingData(channel, type, field);
-        if( data != null) {
-            return rate;
-        }
-        return null;
+        return (data != null) ? rate : null;
     }
     
     /**
@@ -228,21 +179,11 @@ public abstract class BillingDeviceBase implements BillableDevice {
      */
     protected void addMeterData(Channel channel, DeviceData deviceData) {
 
-        addData(channel,
-                ReadingType.DEVICE_DATA,
-                BillableField.meterNumber,
-                deviceData.getMeterNumber());
-        addData(channel,
-                ReadingType.DEVICE_DATA,
-                BillableField.accountNumber,
-                deviceData.getAccountNumber());
+        addData(channel, ReadingType.DEVICE_DATA, BillableField.meterNumber, deviceData.getMeterNumber());
+        addData(channel, ReadingType.DEVICE_DATA, BillableField.accountNumber, deviceData.getAccountNumber());
         addData(channel, ReadingType.DEVICE_DATA, BillableField.paoName, deviceData.getPaoName());
         addData(channel, ReadingType.DEVICE_DATA, BillableField.address, deviceData.getAddress());
-        addData(channel,
-                ReadingType.DEVICE_DATA,
-                BillableField.meterPositionNumber,
-                deviceData.getMeterPositionNumber());
-
+        addData(channel, ReadingType.DEVICE_DATA, BillableField.meterPositionNumber, deviceData.getMeterPositionNumber());
     }
 
     /**
@@ -408,4 +349,26 @@ public abstract class BillingDeviceBase implements BillableDevice {
         return returnData;
 
     }
+    
+    /**
+     * Helper method to return an adjusted billingData object.
+     * For totalConsumption, returns an aggregated field or other rate if total not populated.
+     * For totalDemand, returns peak of peaks if total not populated.
+     * Otherwise, simply return normal billingData. 
+     * @param channel
+     * @param type
+     * @param field
+     * @return
+     */
+	private BillingData getAdjustedBillingData(Channel channel, ReadingType type, BillableField field) {
+		BillingData data;
+		if (field.equals(BillableField.totalConsumption)) {
+            data = this.getTotalConsumption(channel, type);
+        } else if (field.equals(BillableField.totalPeakDemand)) {
+            data = this.getTotalDemand(channel, type);
+        } else {
+            data = this.getBillingData(channel, type, field);
+        }
+		return data;
+	}
 }
