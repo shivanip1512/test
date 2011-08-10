@@ -1,4 +1,4 @@
-package com.cannontech.web.admin.encryption;
+package com.cannontech.encryption;
 
 public class EncryptedRoute {
     
@@ -8,7 +8,7 @@ public class EncryptedRoute {
     private String value;
     private String infoKey;
     
-    public boolean isEnabled() {
+    public boolean isEncrypted() {
         return (value != null);
     }
 

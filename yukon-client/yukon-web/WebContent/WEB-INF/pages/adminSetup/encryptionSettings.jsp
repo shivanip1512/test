@@ -8,6 +8,17 @@
 
     <script type="text/javascript">
     Event.observe(window, 'load', function() {
+        
+        <c:forEach var="route" items="${encryptedRoutes}">
+        
+            if(${route.encrypted}) {
+                enable(${route.paobjectId})
+            } else {
+                eraseAndDisable(${route.paobjectId});
+            }
+
+        </c:forEach>  
+        
         Event.observe('cancelBtn', 'click', function() {
             window.location = "view";
         });
@@ -23,7 +34,6 @@
             $("dummy_"+inputId).type = "text";
             $("enableLbl_"+inputId).show();
             $("disableLbl_"+inputId).hide();
-            //$("encryptionForm").submit();
         }
         
         function enable(inputId) {
@@ -48,42 +58,21 @@
             <tr>
                 <td>${route.paoName}</td>
                 <td>${route.type}</td>
-                
-                <c:if test="${route.enabled}">
-                    <td>
-                        <span id="disableLbl_${route.paobjectId}">
-                            <cti:labeledImg  key="addDisabled"/>
-                            <cti:labeledImg  key="delete" href="javascript:eraseAndDisable('${route.paobjectId}')"/>
-                        </span>
-                        <span id="enableLbl_${route.paobjectId}" style="display:none">
-                            <cti:labeledImg  key="add" href="javascript:enable('${route.paobjectId}')"/>
-                            <cti:labeledImg  key="deleteDisabled"/>
-                        </span>
-                    </td>
-                    <td>
-                        <input id="keyid_${route.paobjectId}" name="value" type="text" value="${route.value}" size ="50"/>
-                        <input id="dummy_${route.paobjectId}" type="hidden" value="<i:inline key=".disabledMsg"/>" size="50" disabled/>
-                        <input name="paobjectId" type="hidden" value="${route.paobjectId}"/>
-                    </td>
-                </c:if>
-                
-                <c:if test="${not route.enabled}">
-                    <td>
-                        <span id="enableLbl_${route.paobjectId}">
-                            <cti:labeledImg key="add" href="javascript:enable('${route.paobjectId}')"/>
-                            <cti:labeledImg  key="deleteDisabled"/>
-                        </span>
-                        <span id="disableLbl_${route.paobjectId}" style="display:none">
-                            <cti:labeledImg  key="addDisabled"/>
-                            <cti:labeledImg key="delete" href="javascript:eraseAndDisable('${route.paobjectId}')"/>
-                        </span>
-                    </td>
-                    <td>
-                        <input id="keyid_${route.paobjectId}" name="value" type="hidden" value="${route.value}" size ="50"/>
-                        <input id="dummy_${route.paobjectId}" type="text" value="<i:inline key=".disabledMsg"/>" size="50" disabled/>
-                        <input name="paobjectId" type="hidden" value="${route.paobjectId}"/>
-                    </td>
-                </c:if>
+                <td>
+                    <span id="disableLbl_${route.paobjectId}" style="display:none">
+                        <cti:labeledImg  key="addDisabled"/>
+                        <cti:labeledImg  key="delete" href="javascript:eraseAndDisable('${route.paobjectId}')"/>
+                    </span>
+                    <span id="enableLbl_${route.paobjectId}" style="display:none">
+                        <cti:labeledImg  key="add" href="javascript:enable('${route.paobjectId}')"/>
+                        <cti:labeledImg  key="deleteDisabled"/>
+                    </span>
+                </td>
+                <td>
+                    <input id="keyid_${route.paobjectId}" name="value" type="hidden" value="${route.value}" size ="50"/>
+                    <input id="dummy_${route.paobjectId}" type="hidden" value="<i:inline key=".disabledMsg"/>" size="50" disabled/>
+                    <input name="paobjectId" type="hidden" value="${route.paobjectId}"/>
+                </td>
             </tr>
         </c:forEach>
         <c:if test="${empty encryptedRoutes}">
@@ -96,7 +85,7 @@
         </table>
         <br>
         <c:if test="${not empty encryptedRoutes}">
-            <cti:button key="saveBtn" onclick="submit()"/>
+            <cti:button key="saveBtn" type="submit"/>
             <cti:button key="cancelBtn" id="cancelBtn"/>
         </c:if>
         <c:if test="${empty encryptedRoutes}">
