@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations;
+package com.cannontech.web.stars.dr.operator.inventory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -20,6 +21,7 @@ public class InventoryOperationsController {
     
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private ConfigurationSource configurationSource;
     
     /* Home - Landing Page */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/home", method = RequestMethod.GET)
@@ -31,6 +33,8 @@ public class InventoryOperationsController {
         String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryOperations.fileUploadTitle");
         modelMap.addAttribute("fileUploadTitle", title);
         
+        boolean showLinks = configurationSource.getBoolean("DIGI_ENABLED", false);
+        modelMap.addAttribute("showLinks", showLinks);
         return "operator/inventory/inventoryOperations/home.jsp";
     }
     
@@ -42,6 +46,11 @@ public class InventoryOperationsController {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
     
 }

@@ -1786,6 +1786,9 @@
                         <menu>inventory|inventoryOperations</menu>
                         <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
                         <pages>
+                            <page name="zbProblemDevices" type="BASIC">
+                                <menu>inventory|inventoryOperations</menu>
+                            </page>
                             <page name="filterSelection" type="DETAIL">
                                 <menu>inventory|inventoryOperations</menu>
                                 <link>/spring/stars/operator/inventory/inventoryOperations/setupFilterRules</link>

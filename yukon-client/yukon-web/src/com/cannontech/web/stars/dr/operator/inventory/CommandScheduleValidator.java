@@ -1,9 +1,9 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations;
+package com.cannontech.web.stars.dr.operator.inventory;
 
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.CommandScheduleWrapper;
+import com.cannontech.web.stars.dr.operator.inventory.model.CommandScheduleWrapper;
 
 public class CommandScheduleValidator extends SimpleValidator<CommandScheduleWrapper> {
     

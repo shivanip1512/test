@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,20 +17,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.InventoryIdentifierMapper;
-import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.inventory.YukonInventory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -37,6 +42,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -49,6 +55,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -68,6 +75,63 @@ public class InventoryDaoImpl implements InventoryDao {
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
     private InventoryIdentifierMapper inventoryIdentifierMapper;
     private YukonListDao yukonListDao;
+    
+    @Override
+    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final MessageSourceAccessor accessor) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Inventory.EnergyCompanyId, Inventory.AccountId, Inventory.InventoryID, Inventory.ManufacturerSerialNumber, Inventory.LMHardwareTypeID, Inventory.DeviceLabel,");
+        sql.append("RPH1.POINTID, RPH1.TIMESTAMP, Inventory.PointType, RPH1.Value");
+        sql.append("FROM RAWPOINTHISTORY RPH1,");
+        
+        sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");
+        sql.append("    JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
+        sql.append("    JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
+        sql.append("    JOIN Point P on (P.PAObjectID = YPO.PAObjectID AND P.PointOffset = 2)");
+        sql.append("    JOIN ECToAccountMapping ECTA on ECTA.AccountID = IB.AccountID");
+        sql.append("    WHERE IB.AccountID > 0");
+        sql.append("    AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
+        sql.append("  ) Inventory,");
+        
+        sql.append("  (SELECT PointId, MAX(timestamp) latestTime");
+        sql.append("    FROM RawPointHistory rph");
+        sql.append("    WHERE PointId in (");
+        sql.append("      SELECT P.PointId FROM InventoryBase IB");
+        sql.append("        JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
+        sql.append("        JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
+        sql.append("        JOIN Point P on (P.PAObjectID = YPO.PAObjectID AND P.PointOffset = 2)");
+        sql.append("      WHERE IB.AccountID > 0");
+        sql.append("        AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
+        sql.append("    )");
+        sql.append("    group by PointId");
+        sql.append("  ) RPH2");
+        
+        sql.append("WHERE RPH1.PointId = RPH2.PointId");
+        sql.append("  AND RPH1.timestamp = RPH2.latestTime");
+        sql.append("  AND Inventory.PointId = RPH1.PointId");
+        sql.append("  AND RPH1.Value != 0.0;");
+        
+        return yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<LiteLmHardware, SimplePointValue>>() {
+            @Override
+            public Pair<LiteLmHardware, SimplePointValue> mapRow(YukonResultSet rs) throws SQLException {
+                LiteLmHardware hw = new LiteLmHardware();
+                InventoryIdentifier id = new InventoryIdentifier(rs.getInt("InventoryId"), getHardwareTypeById(rs.getInt("LMHardwareTypeId")));
+                hw.setIdentifier(id);
+                hw.setLabel(rs.getString("DeviceLabel"));
+                hw.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                hw.setAccountId(rs.getInt("AccountId"));
+                hw.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+                
+                int pointId = rs.getInt("PointId");
+                Date timestamp = rs.getDate("Timestamp");
+                int pointType = PointType.getForString(rs.getString("PointType")).getPointTypeId();
+                double pointValue = rs.getDouble("Value");
+                
+                SimplePointValue pvh = new SimplePointValue(pointId, timestamp, pointType, pointValue);
+                
+                return new Pair<LiteLmHardware, SimplePointValue>(hw, pvh);
+            }
+        });
+    }
     
     @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {

@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations;
+package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.text.ParseException;
 import java.util.List;
@@ -34,7 +34,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.CommandScheduleWrapper;
+import com.cannontech.web.stars.dr.operator.inventory.model.CommandScheduleWrapper;
 
 @Controller
 public class CommandScheduleController {

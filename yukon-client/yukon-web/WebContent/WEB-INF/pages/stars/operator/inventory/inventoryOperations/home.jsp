@@ -103,6 +103,14 @@
                 <%-- COMMAND SCHEDULE WIDGET --%>
                 <tags:widget bean="commandScheduleWidget" />
                 
+                <c:if test="${showLinks}">
+                    <br>
+                    
+                    <tags:boxContainer2 nameKey="links">
+                        <cti:link href="/spring/stars/operator/inventory/zbProblemDevices/view" key="yukon.web.modules.operator.inventoryOperations.zbProblemDevices"/>
+                    </tags:boxContainer2>
+                </c:if>
+                
             </cti:dataGridCell>
             
         </cti:dataGrid>

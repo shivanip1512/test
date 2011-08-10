@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl;
+package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
 import java.text.ParseException;
 import java.util.List;
@@ -25,9 +25,9 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.service.InventoryOperationsFilterService;
+import com.cannontech.web.stars.dr.operator.inventory.model.FilterMode;
+import com.cannontech.web.stars.dr.operator.inventory.model.RuleModel;
+import com.cannontech.web.stars.dr.operator.inventory.service.InventoryOperationsFilterService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

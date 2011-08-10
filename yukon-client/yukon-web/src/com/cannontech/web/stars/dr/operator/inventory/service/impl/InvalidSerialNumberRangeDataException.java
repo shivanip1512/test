@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl;
+package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
 public class InvalidSerialNumberRangeDataException extends RuntimeException{
     

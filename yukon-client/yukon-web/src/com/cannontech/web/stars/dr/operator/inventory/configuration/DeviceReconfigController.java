@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig;
+package com.cannontech.web.stars.dr.operator.inventory.configuration;
 
 import java.util.List;
 
@@ -37,8 +37,8 @@ import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig.model.DeviceReconfigOptions;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer;
+import com.cannontech.web.stars.dr.operator.inventory.configuration.model.DeviceReconfigOptions;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.google.common.collect.Lists;
 
 @Controller

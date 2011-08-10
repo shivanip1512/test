@@ -5,13 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
+import com.cannontech.common.util.Pair;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.model.LiteLmHardware;
 
 /**
  * Data Access interface for inventory
@@ -96,5 +100,13 @@ public interface InventoryDao {
      * Returns the HardwareType enum entry for the give inventory id.
      */
     public HardwareType getHardTypeByInventoryId(int inventoryId);
+
+    /**
+     * Returns a list of zigbee devices that are attached to an account but
+     * are not currently in the 'Connected' state, and thier point values.
+     * @param MessageSourceAccessor
+     * @return List<Pair<LiteLmHardware, SimplePointValue>>
+     */
+    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(MessageSourceAccessor accessor);
 
 }

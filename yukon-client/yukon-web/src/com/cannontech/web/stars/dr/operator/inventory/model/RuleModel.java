@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations.model;
+package com.cannontech.web.stars.dr.operator.inventory.model;
 
 import java.util.Date;
 

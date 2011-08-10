@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig.model;
+package com.cannontech.web.stars.dr.operator.inventory.configuration.model;
 
 public class DeviceReconfigOptions {
     

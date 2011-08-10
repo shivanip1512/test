@@ -29,6 +29,8 @@ public final class StateGroupUtils {
     public static final int STATEGROUP_ANALOG = -1;
 
     public static final int STATEGROUP_TWO_STATE_ACTIVE = -8;
+    
+    public static final int STATEGROUP_COMMISSIONED_STATE = -13;
 
     //Default State of point
     public static final int DEFAULT_STATE = 0;

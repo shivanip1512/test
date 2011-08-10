@@ -1458,19 +1458,19 @@
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
     </bean>
     
-    <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer" />
+    <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer" />
     
     <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
         <property name="collectionProducerList">
             <list>
-                <bean class="com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.InventoryIdListCollectionProducer" />
-                <bean class="com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.InventoryFileUploadCollectionProducer" />
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryIdListCollectionProducer" />
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryFileUploadCollectionProducer" />
                 <ref bean="memoryCollectionProducer"/>
             </list>
         </property>
     </bean>
     
-    <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InventoryOperationsFilterServiceImpl"/>
+    <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.InventoryOperationsFilterServiceImpl"/>
     
     <bean id="zigbeeDeviceService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigbeeDeviceServiceImpl"/>
     
@@ -1520,8 +1520,8 @@
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusTextUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.SuccessCountUpdaterHandler"/>
 
-    <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
-    <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.FilterModelValidator"/>
+    <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventory.CommandScheduleValidator"/>
+    <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventory.FilterModelValidator"/>
 
 	<bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
 	<bean id="yukonUserValidator" class="com.cannontech.web.admin.userGroupEditor.model.YukonUserValidator"/>

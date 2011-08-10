@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection;
+package com.cannontech.web.stars.dr.operator.inventory.model.collection;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

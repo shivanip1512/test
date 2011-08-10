@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations;
+package com.cannontech.web.stars.dr.operator.inventory;
 
 import javax.servlet.http.HttpServletRequest;
 

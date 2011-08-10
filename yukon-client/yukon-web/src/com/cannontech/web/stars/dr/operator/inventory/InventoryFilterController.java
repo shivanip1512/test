@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations;
+package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -55,13 +55,13 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterModel;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterRuleType;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.service.InventoryOperationsFilterService;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InvalidSerialNumberRangeDataException;
+import com.cannontech.web.stars.dr.operator.inventory.model.FilterMode;
+import com.cannontech.web.stars.dr.operator.inventory.model.FilterModel;
+import com.cannontech.web.stars.dr.operator.inventory.model.FilterRuleType;
+import com.cannontech.web.stars.dr.operator.inventory.model.RuleModel;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
+import com.cannontech.web.stars.dr.operator.inventory.service.InventoryOperationsFilterService;
+import com.cannontech.web.stars.dr.operator.inventory.service.impl.InvalidSerialNumberRangeDataException;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

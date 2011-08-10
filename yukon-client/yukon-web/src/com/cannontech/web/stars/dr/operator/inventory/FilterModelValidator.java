@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventoryOperations;
+package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterModel;
-import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
+import com.cannontech.web.stars.dr.operator.inventory.model.FilterModel;
+import com.cannontech.web.stars.dr.operator.inventory.model.RuleModel;
 
 public class FilterModelValidator extends SimpleValidator<FilterModel> {
     
