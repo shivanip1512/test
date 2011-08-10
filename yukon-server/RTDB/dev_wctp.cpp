@@ -250,6 +250,15 @@ INT CtiDeviceWctpTerminal::allocateDataBins(OUTMESS *oMess)
     if(_outMessage == NULL)
     {
         _outMessage = CTIDBG_new OUTMESS(*oMess);//new out message
+        if ( oMess->MessageFlags & MessageFlag_EncryptionRequired )    // One-Way Encryption
+        {
+            _outMessage->MessageFlags &= ~MessageFlag_EncryptionRequired;
+            _outMessage->Buffer.TAPSt.Length = encryptMessage( CtiTime::now(),
+                                                               oMess->Buffer.TAPSt.Message,
+                                                               oMess->Buffer.TAPSt.Length,
+                                                               _outMessage->Buffer.TAPSt.Message );
+            _outMessage->OutLength = _outMessage->Buffer.TAPSt.Length;
+        }
     }
     if(_pageBuffer == NULL)
     {

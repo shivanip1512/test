@@ -24,12 +24,14 @@
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
+#include "encryption_oneway_message.h"
 
 #define WCTP_TIMEOUT    3
 
 class SAXWctpHandler;
 
-class IM_EX_DEVDB CtiDeviceWctpTerminal  : public Cti::Devices::DevicePaging
+class IM_EX_DEVDB CtiDeviceWctpTerminal  : public Cti::Devices::DevicePaging,
+                                           protected OneWayMsgEncryption
 {
 private:
 

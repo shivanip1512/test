@@ -3,6 +3,7 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
+#include "boostutil.h"
 #include "test_cmdparse_input.h"
 #include "test_cmdparse_output.h"
 

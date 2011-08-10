@@ -31,6 +31,9 @@ private:
     void RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
     void RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
 
+    void        refreshStaticPaoInfo(const Cti::Database::id_set &paoids);
+    std::string createIdSqlClause(const Cti::Database::id_set &paoids, const std::string table, const std::string attrib);
+
 public:
 
     typedef CtiLockGuard<CtiMutex>                      LockGuard;

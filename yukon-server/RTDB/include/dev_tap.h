@@ -26,9 +26,11 @@
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
+#include "encryption_oneway_message.h"
 
 
-class IM_EX_DEVDB CtiDeviceTapPagingTerminal  : public Cti::Devices::DevicePaging
+class IM_EX_DEVDB CtiDeviceTapPagingTerminal  : public Cti::Devices::DevicePaging,
+                                                protected OneWayMsgEncryption
 {
 private:
 

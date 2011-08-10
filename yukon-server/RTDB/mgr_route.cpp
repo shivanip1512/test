@@ -29,10 +29,14 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+#include <sstream>
+
 using std::string;
 using std::endl;
 using std::list;
 using std::vector;
+using std::ostringstream;
+
 
 CtiRouteManager::CtiRouteManager() {}
 
@@ -261,6 +265,20 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                 // Updated Flag being NOT set
 
                 apply(ApplyInvalidateNotUpdated, NULL);
+            }
+
+            {   // Load the static PAO info for any route in the smart map
+
+                Cti::Database::id_set   paoids;
+                {
+                    CtiSmartMap<CtiRouteBase>::reader_lock_guard_t  guard( _smartMap.getLock() );
+
+                    for ( spiterator sp = begin(); sp != end() ; sp = nextPos(sp) )
+                    {
+                        paoids.insert(sp->first);
+                    }
+                }
+                refreshStaticPaoInfo( paoids );
             }
 
         }   // Temporary results are destroyed to free the connection
@@ -618,3 +636,119 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
 
     return !roleVector.empty();
 }
+
+
+void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
+{
+    CtiRouteManager::ptr_type route;
+
+    long tmp_paobjectid, tmp_entryid;
+
+    CtiTableStaticPaoInfo static_paoinfo;
+
+    {
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Static PAO Info" << endl;
+        }
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
+
+        string sql = CtiTableStaticPaoInfo::getSQLCoreStatement();
+
+        if( !sql.empty() )
+        {
+            if(!paoids.empty())
+            {
+                sql += " AND " + createIdSqlClause(paoids, "SPI", "paobjectid");
+            }
+            rdr.setCommandText(sql);
+            rdr.execute();
+        }
+        else
+        {
+            return;
+        }
+
+        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        {
+            string loggedSQLstring = rdr.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << loggedSQLstring << endl;
+            }
+        }
+
+        if(rdr.isValid())
+        {
+            while( rdr() )
+            {
+                static_paoinfo.DecodeDatabaseReader(rdr);
+
+                rdr["paobjectid"]       >> tmp_paobjectid;
+                rdr["staticpaoinfoid"]  >> tmp_entryid;
+
+                route = getEqual(tmp_paobjectid);
+
+                if( route )
+                {
+                    route->setStaticInfo(static_paoinfo);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - no parent found for static PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Error reading Static PAO Info from database. " <<  endl;
+        }
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Static PAO Info" << endl;
+        }
+    }
+}
+
+string CtiRouteManager::createIdSqlClause(const Cti::Database::id_set &paoids, const string table, const string attrib)
+{
+    string sqlIDs;
+
+    if( !paoids.empty() )
+    {
+        ostringstream in_list;
+
+        if( paoids.size() == 1 )
+        {
+            //  special single id case
+
+            in_list << *(paoids.begin());
+
+            sqlIDs += table + "." + attrib + " = " + in_list.str();
+
+            return sqlIDs;
+        }
+        else
+        {
+            in_list << "(";
+
+            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, ostringstream>(in_list));
+
+            in_list << ")";
+
+            sqlIDs += table + "." + attrib + " IN " + in_list.str();
+
+            return sqlIDs;
+        }
+    }
+
+    return string();
+}
+
+

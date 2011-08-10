@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cctype>
 
 #include "desolvers.h"
 #include "dsm2.h"
@@ -614,6 +615,133 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:
+            {
+                if ( hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                {
+                    isAscii = false;
+                    xcom.setUseASCII(false);
+
+                    OutMessage->OutLength            = xcom.messageSize();
+                    OutMessage->Buffer.TAPSt.Length  = xcom.messageSize();
+                }
+                else
+                {
+                    OutMessage->OutLength            = xcom.messageSize() +  2;
+                    OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() +  2;
+                }
+
+                // BEGIN serialpatch here
+                j = 0;
+                string serialpatch;
+
+                if(parse.getiValue("xcprefix", FALSE))
+                {
+                    serialpatch = parse.getsValue("xcprefixstr");
+                }
+
+                if(!serialpatch.empty() && (xcom.getByte(0) == 0))
+                {
+                    for(j = 0; j <= serialpatch.length(); j++)
+                    {
+                        OutMessage->Buffer.TAPSt.Message[j] = serialpatch[j];
+                    }
+
+                    OutMessage->OutLength            += serialpatch.length();
+                    OutMessage->Buffer.TAPSt.Length  += serialpatch.length();
+
+                    j = serialpatch.length();
+                }
+                // END serialpatch
+
+                /* Build the message */
+                if ( ! hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                {
+                    OutMessage->Buffer.TAPSt.Message[j] = xcom.getStartByte();
+                    ++j;
+                }
+
+                int curByte;
+                for(i = 0; i < xcom.messageSize(); i++)
+                {
+                    curByte = xcom.getByte(i);
+                    OutMessage->Buffer.TAPSt.Message[i + j] = curByte;
+                }
+                j += i;
+
+                if ( ! hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                {
+                    OutMessage->Buffer.TAPSt.Message[j] = xcom.getStopByte();
+                    ++j;
+                }
+                OutMessage->Buffer.TAPSt.Message[j] = '\0';
+
+                for(i = 0; i < OutMessage->OutLength; i++)
+                {
+                    if(isAscii)
+                    {
+                        byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+                    }
+                    else
+                    {
+                        if(i == 0 || i == (OutMessage->OutLength - 1))
+                        {
+                            byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+                        }
+                        else
+                        {
+                            byteString += CtiNumStr((unsigned char)OutMessage->Buffer.TAPSt.Message[i]).hex(2);
+                        }
+                    }
+                }
+
+                if ( hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                {
+                    // add password and key and adjust lengths
+
+                    std::string password = gConfigParms.getValueAsString("ONE_WAY_ENCRYPT_PASSWORD");
+                    if ( password.length() == 0 )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " - Missing One-Way Encryption Password" << endl;
+                    }
+
+                    char * endOfMsg = OutMessage->Buffer.TAPSt.Message + OutMessage->OutLength;
+
+                    for ( int i = 0; i < password.length(); ++i )
+                    {
+                        *endOfMsg++ = password[i];
+                    }
+                    *endOfMsg++ = password.length();
+
+                    std::string key(32, '0');   // defaults to all zeros
+                    getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key );
+
+                    for ( int key_i = 0; key_i < 32; key_i += 2 )
+                    {
+                        char hi4 = key[ key_i ];
+                        char lo4 = key[ key_i + 1 ];
+
+                        hi4 = ( hi4 > '9' ) ? std::tolower( hi4 ) - 'a' + 10 : hi4 - '0';
+                        lo4 = ( lo4 > '9' ) ? std::tolower( lo4 ) - 'a' + 10 : lo4 - '0';
+
+                        *endOfMsg++ = ( ( hi4 << 4 ) | lo4 );
+                    }
+
+                    OutMessage->OutLength            += password.length() + 1 + 16;
+                    OutMessage->Buffer.TAPSt.Length  =  OutMessage->OutLength;
+
+                    // set this flag so the transmitter knows to encrypt...
+
+                    OutMessage->MessageFlags |= MessageFlag_EncryptionRequired;
+                }
+
+                /* Now add it to the collection of outbound messages */
+                outList.push_back( OutMessage );
+                OutMessage = 0; // It has been used, don't let it be deleted!
+
+
+                break;
+            }
         case TYPE_TNPP:
             {
                 OutMessage->OutLength            = xcom.messageSize() +  2;

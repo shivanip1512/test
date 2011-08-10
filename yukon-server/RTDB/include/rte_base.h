@@ -30,7 +30,10 @@
 #include "msg_signal.h"
 #include "yukon.h"
 #include "string_utility.h"
+#include "tbl_static_paoinfo.h"
 #include <list>
+#include <set>
+#include <string>
 
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
@@ -92,6 +95,8 @@ public:
         CtiLockGuard<CtiMutex> guard(_classMutex);
         _tblPAO.DecodeDatabaseReader(rdr);
         _tblComm.DecodeDatabaseReader(rdr);
+
+        purgeStaticPaoInfo();
     }
 
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList)
@@ -117,6 +122,76 @@ public:
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
 
+protected:
+
+    typedef std::set<CtiTableStaticPaoInfo> StaticPaoInfoSet;
+
+    StaticPaoInfoSet _staticPaoInfo;
+
+public:
+
+    void purgeStaticPaoInfo()
+    {
+        _staticPaoInfo.clear();
+    }
+
+    bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
+    {
+        return (_staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k)) != _staticPaoInfo.end());
+    }
+
+    bool setStaticInfo(const CtiTableStaticPaoInfo &info)
+    {
+        StaticPaoInfoSet::iterator itr = _staticPaoInfo.find(info);
+
+        if( itr != _staticPaoInfo.end() )
+        {
+            *itr = info;
+            return false;       // update existing entry
+        }
+
+        _staticPaoInfo.insert(info);
+        return true;            // insert a new entry
+    }
+
+    bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, std::string &destination) const
+    {
+        StaticPaoInfoSet::const_iterator itr;
+
+        if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k))) != _staticPaoInfo.end() )
+        {
+            itr->getValue(destination);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, double &destination) const
+    {
+        StaticPaoInfoSet::const_iterator itr;
+
+        if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k))) != _staticPaoInfo.end() )
+        {
+            itr->getValue(destination);
+            return true;
+        }
+
+        return false;
+    }
+
+    long getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
+    {
+        StaticPaoInfoSet::const_iterator itr;
+
+        long value = 0;
+        if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k))) != _staticPaoInfo.end() )
+        {
+            itr->getValue(value);
+        }
+
+        return value;
+    }
 };
 
 inline LONG CtiRouteBase::getRouteID() const { return _tblPAO.getID(); }

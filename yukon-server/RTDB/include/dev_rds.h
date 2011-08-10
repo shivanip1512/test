@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dev_remote.h"
+#include "encryption_oneway_message.h"
 
 namespace Cti       {
 namespace Devices    {
@@ -8,7 +9,7 @@ namespace Devices    {
 //template<class T>
 //class std::list<T>;
 
-class IM_EX_DEVDB RDSTransmitter : public CtiDeviceRemote
+class IM_EX_DEVDB RDSTransmitter : public CtiDeviceRemote, protected OneWayMsgEncryption
 {
 public:
 

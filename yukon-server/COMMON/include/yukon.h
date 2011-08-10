@@ -438,5 +438,6 @@ enum CtiOutMessageFlags_t
     MessageFlag_AddMctDisconnectSilence    = 0x00000001 << 6,
     MessageFlag_AddCcu711CooldownSilence   = 0x00000001 << 7,
     MessageFlag_StatisticsRequested        = 0x00000001 << 8,
+    MessageFlag_EncryptionRequired         = 0x00000001 << 9,
 };
 
