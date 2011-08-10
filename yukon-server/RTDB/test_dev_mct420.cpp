@@ -427,7 +427,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct420_getUsageReportDelay)
 {
     const test_Mct420CL mct;
 
-    //  Calculation is max(36, days) * intervals/day * 10ms, rounded up to the next second
+    //  Calculation is 10s + max(36, days) * intervals/day * 10ms, rounded up to the next second
 
     //  36 * 24 * 12 * 0.01 = 103.68s
     BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 114);
