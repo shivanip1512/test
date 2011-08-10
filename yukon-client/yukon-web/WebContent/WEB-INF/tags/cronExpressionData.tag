@@ -1,79 +1,79 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%-- NOT completely safe to use multiple tags on single page yet! --%>
-<%@ attribute name="id" required="true" type="java.lang.String" description="Used to give the variable unique names so that multiple tags can be used on a single page without conflicting"%>
-<%@ attribute name="state" required="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState to configure to default state."%>
+<%@ attribute name="id" required="true" rtexprvalue="true" description="Used to give the variable unique names so that multiple tags can be used on a single page without conflicting"%>
+<%@ attribute name="state" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState to configure to default state."%>
+<%@ attribute name="allowTypeChange" rtexprvalue="true" type="java.lang.Boolean" description="Allow changing between Repeating and One-Time job options."%>
+
+<cti:includeScript link="/JavaScript/cronExpressionData.js"/>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
-<script type="text/javascript">
-
-    Event.observe(window, 'load', function() {
-		${id}_cronExpFreqChange($('${id}_cronExpFreq'));
-	});
-
-	function ${id}_cronExpFreqChange(sel) {
-
-		var selectedFreqVal = sel.options[sel.selectedIndex].value;
-
-		if (selectedFreqVal == 'DAILY') {
-			$('${id}_cronExpTimeDiv').show();
-			$('${id}_cronExpDailyDiv').show();
-			$('${id}_cronExpWeeklyDiv').hide();
-			$('${id}_cronExpMonthlyDiv').hide();
-			$('${id}_cronExpOneTimeDiv').hide();
-			$('${id}_cronExpCustomDiv').hide();
-		}
-		else if (selectedFreqVal == 'WEEKLY') {
-			$('${id}_cronExpTimeDiv').show();
-			$('${id}_cronExpDailyDiv').hide();
-			$('${id}_cronExpWeeklyDiv').show();
-			$('${id}_cronExpMonthlyDiv').hide();
-			$('${id}_cronExpOneTimeDiv').hide();
-			$('${id}_cronExpCustomDiv').hide();
-		}
-		else if (selectedFreqVal == 'MONTHLY') {
-			$('${id}_cronExpTimeDiv').show();
-			$('${id}_cronExpDailyDiv').hide();
-			$('${id}_cronExpWeeklyDiv').hide();
-			$('${id}_cronExpMonthlyDiv').show();
-			$('${id}_cronExpOneTimeDiv').hide();
-			$('${id}_cronExpCustomDiv').hide();
-		}
-		else if (selectedFreqVal == 'ONETIME') {
-			$('${id}_cronExpTimeDiv').show();
-			$('${id}_cronExpDailyDiv').hide();
-			$('${id}_cronExpWeeklyDiv').hide();
-			$('${id}_cronExpMonthlyDiv').hide();
-			$('${id}_cronExpOneTimeDiv').show();
-			$('${id}_cronExpCustomDiv').hide();
-		}
-		else if (selectedFreqVal == 'CUSTOM') {
-			$('${id}_cronExpTimeDiv').hide();
-			$('${id}_cronExpDailyDiv').hide();
-			$('${id}_cronExpWeeklyDiv').hide();
-			$('${id}_cronExpMonthlyDiv').hide();
-			$('${id}_cronExpOneTimeDiv').hide();
-			$('${id}_cronExpCustomDiv').show();
-		}
-	}
-
-</script>
+<c:set var="allowChange" value="true"/>
+<c:if test="${!empty pageScope.allowTypeChange}">
+    <c:set var="allowChange" value="${pageScope.allowTypeChange}"/>
+</c:if>
 
 <div style="height:105px;">
-
 <%-- FREQUENCY --%>
-<div style="padding-bottom:6px;">
-<select id="${id}_cronExpFreq" name="${id}_CRONEXP_FREQ" onchange="${id}_cronExpFreqChange(this);">
-	<option value="DAILY" <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>Daily</option>
-	<option value="WEEKLY" <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>Weekly</option>
-	<option value="MONTHLY" <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>Monthly</option>
-	<option value="ONETIME" <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>One-Time</option>
-	<option value="CUSTOM" <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>Custom</option>
-</select>
+<div style="padding-bottom: 6px;">
+    <select id="${id}_cronExpFreq" name="${id}_CRONEXP_FREQ" onchange="cronExpFreqChange('${id}', this);">
+        <c:choose>
+            <c:when test="${!allowChange}">
+                <c:choose>
+                    <c:when test="${state.cronTagStyleType == 'ONETIME'}">
+                        <option value="ONETIME"
+                            <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
+                            <i:inline key="yukon.web.defaults.oneTime" />
+                        </option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="DAILY"
+                            <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
+                            <i:inline key="yukon.web.defaults.daily" />
+                        </option>
+                        <option value="WEEKLY"
+                            <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
+                            <i:inline key="yukon.web.defaults.weekly" />
+                        </option>
+                        <option value="MONTHLY"
+                            <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
+                            <i:inline key="yukon.web.defaults.monthly" />
+                        </option>
+                        <option value="CUSTOM"
+                            <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
+                            <i:inline key="yukon.web.defaults.custom" />
+                        </option>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
+            <c:otherwise>
+                <option value="DAILY"
+                    <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
+                    <i:inline key="yukon.web.defaults.daily" />
+                </option>
+                <option value="WEEKLY"
+                    <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
+                    <i:inline key="yukon.web.defaults.weekly" />
+                </option>
+                <option value="MONTHLY"
+                    <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
+                    <i:inline key="yukon.web.defaults.monthly" />
+                </option>
+                <option value="ONETIME"
+                    <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
+                    <i:inline key="yukon.web.defaults.oneTime" />
+                </option>
+                <option value="CUSTOM"
+                    <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
+                    <i:inline key="yukon.web.defaults.custom" />
+                </option>
+            </c:otherwise>
+        </c:choose>
+    </select>
 </div>
 
 <%-- TIME --%>
@@ -96,17 +96,25 @@
 </select>
 
 <select name="${id}_CRONEXP_AMPM">
-	<option value="AM" <c:if test="${state.cronExpressionAmPm == 'AM'}">selected</c:if>>AM</option>
-	<option value="PM" <c:if test="${state.cronExpressionAmPm == 'PM'}">selected</c:if>>PM</option>
+	<option value="AM" <c:if test="${state.cronExpressionAmPm == 'AM'}">selected</c:if>>
+        <i:inline key="yukon.web.defaults.am"/>
+    </option>
+	<option value="PM" <c:if test="${state.cronExpressionAmPm == 'PM'}">selected</c:if>>
+        <i:inline key="yukon.web.defaults.pm"/>
+    </option>
 </select>
 </div>
 
 <%-- DAILY --%>
 <div id="${id}_cronExpDailyDiv" style="padding-top:6px;">
 
-	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="EVERYDAY" <c:if test="${state.cronExpressionDailyOption == 'EVERYDAY'}">checked</c:if> > Every Day
+	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="EVERYDAY" 
+        <c:if test="${state.cronExpressionDailyOption == 'EVERYDAY'}">checked</c:if>>
+    <i:inline key="yukon.web.defaults.everyDay"/>
 	<br>
-	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="WEEKDAYS" <c:if test="${state.cronExpressionDailyOption == 'WEEKDAYS'}">checked</c:if> > Every Weekday
+	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="WEEKDAYS" 
+        <c:if test="${state.cronExpressionDailyOption == 'WEEKDAYS'}">checked</c:if>>
+    <i:inline key="yukon.web.defaults.everyWeekday"/>
 	
 </div>
 
@@ -142,9 +150,16 @@
 		</c:otherwise>
 	</c:choose>
 
-	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="ON_DAY" <c:if test="${state.cronExpressionMontlyOption == 'ON_DAY'}">checked</c:if>> On day <input type="text" name="${id}_CRONEXP_MONTHLY_OPTION_ON_DAY_X" size="3" maxlength="3" style="text-align:right;" value="${cronExpressionMontlyOptionOnDayX}"> of month.
+	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="ON_DAY" 
+        <c:if test="${state.cronExpressionMontlyOption == 'ON_DAY'}">checked</c:if>>
+    <i:inline key="yukon.web.defaults.onDay"/>
+    <input type="text" name="${id}_CRONEXP_MONTHLY_OPTION_ON_DAY_X" size="3" maxlength="3" 
+        style="text-align:right;" value="${cronExpressionMontlyOptionOnDayX}">
+    <i:inline key="yukon.web.defaults.ofMonth"/>
 	<br>
-	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="LAST_DAY" <c:if test="${state.cronExpressionMontlyOption == 'LAST_DAY'}">checked</c:if>> On last day of month.
+	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="LAST_DAY" 
+        <c:if test="${state.cronExpressionMontlyOption == 'LAST_DAY'}">checked</c:if>>
+    <i:inline key="yukon.web.defaults.onLastDayOfMonth"/>
 	
 </div>
 
@@ -159,7 +174,7 @@
 <%-- CUSTOM --%>
 <div id="${id}_cronExpCustomDiv" style="display:none;">
 
-	Cron Expression<br>
+	<i:inline key="yukon.web.defaults.cronExpression"/><br>
 	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}"> 
 	<img onclick="$('${id}_customCronExpressInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 	
@@ -172,3 +187,9 @@
 </div>
 
 </div>
+
+<script type="text/javascript">
+callAfterMainWindowLoad(function () {
+    cronExpFreqChange('${id}', $('${id}_cronExpFreq'));
+});
+</script>

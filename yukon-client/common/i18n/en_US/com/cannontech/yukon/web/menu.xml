@@ -302,5 +302,6 @@
 <entry key="yukon.web.menu.config.adminSetup.multispeak.synchronization">Synchronization</entry>
 <entry key="yukon.web.menu.config.adminSetup.userGroupEditor">User/Group</entry>
 <entry key="yukon.web.menu.config.adminSetup.userGroupEditor.home"></entry>
+<entry key="yukon.web.menu.config.adminSetup.maintenance.VIEW">Maintenance</entry>
 
 </properties>

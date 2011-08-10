@@ -116,4 +116,11 @@ public class JobManagerStub implements JobManager {
     public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
     	throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
+
+    @Override
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
+                                        YukonTask task, String cronExpression,
+                                        YukonUserContext userContext) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
 }

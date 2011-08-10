@@ -8,6 +8,7 @@
     <entry key="yukon.web.modules.adminSetup.systemAdministration.multiSpeakSetup">MultiSpeak Setup</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.userGroupEditor">User/Group Editor</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.substations">Substations</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.maintenance">Maintenance</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.encryption">Encryption</entry>
     
     <entry key="yukon.web.modules.adminSetup.encryption.moduleName">Encryption</entry>

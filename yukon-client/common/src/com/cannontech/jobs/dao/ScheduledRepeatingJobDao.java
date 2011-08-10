@@ -19,11 +19,13 @@ public interface ScheduledRepeatingJobDao {
     public ParameterizedRowMapper<ScheduledRepeatingJob> getJobRowMapper();
     
     /**
-     * Saves the job and its properties. When it completes, its id
+     * Inserts a new job and its properties. When it completes, its id
      * will be set to the correct value to match what was set in the database.
      * @param repeatingJob
      */
     public void save(ScheduledRepeatingJob repeatingJob);
+    
+    public void update(ScheduledRepeatingJob repeatingJob);
 
     public JobDisabledStatus getJobDisabledStatusById(int jobId);
 }

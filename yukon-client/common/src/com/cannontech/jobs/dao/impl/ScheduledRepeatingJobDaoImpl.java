@@ -164,7 +164,19 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         }        
     }
     
-    
+    @Transactional(propagation=Propagation.REQUIRED)
+    public void update(ScheduledRepeatingJob repeatingJob) {
+        try {
+            // update the Job entry first
+            updateJob(repeatingJob);
+            // update the JobScheduledRepeating entry
+            template.update(repeatingJob);
+            
+        } catch (RuntimeException e) {
+            // if an exception gets thrown, the transaction will be rolled back
+            throw e;
+        }        
+    }
     
     @Required
     public void setYukonJobMapper(YukonJobBaseRowMapper yukonJobMapper) {

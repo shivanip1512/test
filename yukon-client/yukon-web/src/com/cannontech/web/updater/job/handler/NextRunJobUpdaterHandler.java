@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -24,8 +25,14 @@ public class NextRunJobUpdaterHandler implements JobUpdaterHandler {
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
 
-		ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
-		
+	    ScheduledRepeatingJob job = null;
+	    try {
+	        job = scheduledRepeatingJobDao.getById(jobId);
+	    } catch (EmptyResultDataAccessException e) {
+	        //silently returning since this job could have just been deleted
+	        return null;
+	    }
+	    
 		Date nextRun;
 		try {
 			nextRun = jobManager.getNextRuntime(job, new Date());

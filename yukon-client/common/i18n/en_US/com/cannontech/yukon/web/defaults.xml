@@ -21,6 +21,20 @@
 <entry key="yukon.web.defaults.month">Month</entry>
 <entry key="yukon.web.defaults.year">Year</entry>
 
+<entry key="yukon.web.defaults.daily">Daily</entry>
+<entry key="yukon.web.defaults.weekly">Weekly</entry>
+<entry key="yukon.web.defaults.monthly">Monthly</entry>
+<entry key="yukon.web.defaults.oneTime">One-Time</entry>
+<entry key="yukon.web.defaults.custom">Custom</entry>
+<entry key="yukon.web.defaults.am">AM</entry>
+<entry key="yukon.web.defaults.pm">PM</entry>
+<entry key="yukon.web.defaults.everyDay">Every Day</entry>
+<entry key="yukon.web.defaults.everyWeekday">Every Weekday</entry>
+<entry key="yukon.web.defaults.onDay">On day</entry>
+<entry key="yukon.web.defaults.ofMonth">of month</entry>
+<entry key="yukon.web.defaults.onLastDayOfMonth">On last day of month</entry>
+<entry key="yukon.web.defaults.cronExpression">Cron Expression</entry>
+
 <entry key="yukon.web.defaults.dashes">---</entry>
 <entry key="yukon.web.defaults.dashesTwo">--</entry>
 

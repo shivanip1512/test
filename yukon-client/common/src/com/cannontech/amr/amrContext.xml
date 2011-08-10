@@ -319,13 +319,30 @@
         </property>
     </bean>
     
+    <!-- Scheduled Rph Duplicate Deletion Execution Job Definition -->
+    <bean id="scheduledRphDuplicateDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="scheduledRphDuplicateDeletionExecutionTask" />
+        </property>
+        <property name="title" value="Scheduled Rph Duplicate Deletion Execution Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList"><list></list></property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Group Request Execution Task -->
     <bean id="scheduledGroupRequestExecutionTask" 
         class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"  
         scope="prototype">
     </bean>
     
-    
+    <!-- Scheduled Rph Duplicate Deletion Execution Task -->
+    <bean id="scheduledRphDuplicateDeletionExecutionTask" 
+        class="com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks.ScheduledRphDuplicateDeletionExecutionTask"  
+        scope="prototype">
+    </bean>
     
     <!-- Scheduled Group Request Execution Service -->
     <bean id="scheduledGroupRequestExecutionService" 

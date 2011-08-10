@@ -411,4 +411,8 @@
     <entry key="yukon.common.events.zigbee.system.zigbeeSentSEPControl">The system has sent a SEP Control message to LM Group {1}.</entry>
     <entry key="yukon.common.events.zigbee.system.zigbeeSentSEPRestore">The system has sent a SEP Restore message to LM Group {1}.</entry>
     
+<!--  System Administration -->
+    <!-- Maintenance -->
+    <entry key="yukon.common.events.systemAdmin.maintenance.rphDuplicateDeletion.delete">{7} duplicate RawPointHistory rows deleted from database.</entry>
+
 </properties>

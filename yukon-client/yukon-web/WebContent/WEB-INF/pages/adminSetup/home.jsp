@@ -21,6 +21,10 @@
             <cti:url var="substation" value="/spring/adminSetup/substations/routeMapping/view"/>
             <a href="${substation}"><i:inline key=".substations"/></a>
         </div>
+        <cti:checkRolesAndProperties value="ADMIN_SUPER_USER"><div>
+            <cti:url var="maintenance" value="/spring/adminSetup/maintenance/view"/>
+            <a href="${maintenance}"><i:inline key=".maintenance"/></a>
+        </div></cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
             <cti:checkGlobalRolesAndProperties value="SHOW_ONE_WAY_ENCRYPT">
                 <div>

@@ -22,6 +22,7 @@ public interface JobManager {
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext);
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression);
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext);
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext);
     
     public void enableJob(YukonJob job);
     public void disableJob(YukonJob job);

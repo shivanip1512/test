@@ -1185,6 +1185,10 @@
                         </option>
                     </options>
                 </option>
+                <option name="maintenance.VIEW">
+                    <requireRoleProperty value="ADMIN_SUPER_USER" />
+                    <link>/spring/adminSetup/maintenance/view</link>
+                </option>
                 <option name="encryption">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
                     <requireRoleProperty value="SHOW_ONE_WAY_ENCRYPT" />
@@ -1292,6 +1296,17 @@
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                 </pages>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="maintenance.VIEW" type="BASIC">
+                        <requireRoleProperty value="ADMIN_SUPER_USER" />
+                        <menu>maintenance|home</menu>
+                        <link>/spring/adminSetup/maintenance/view</link>
+                        <pages>
+                            <page name="maintenance.EDIT" type="BASIC">
+                                <menu>maintenance|home</menu>
+                                <link>/spring/adminSetup/maintenance/edit</link>
                             </page>
                         </pages>
                     </page>

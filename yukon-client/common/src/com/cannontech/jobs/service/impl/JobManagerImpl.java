@@ -212,6 +212,13 @@ public class JobManagerImpl implements JobManager {
         
         return oneTimeJob;
     }
+    
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
+        YukonJob job = getJob(jobId);
+        deleteJob(job);
+        YukonJob scheduledJob = scheduleJob(jobDefinition, task, cronExpression, userContext);
+        return scheduledJob;
+    }
 
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
         return scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
