@@ -405,7 +405,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException(e);
         }
         
-        log.debug("Sending SEP Restore Message Start");
+        log.debug("Sending SEP Restore Message End");
         return;
     }
     
