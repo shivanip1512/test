@@ -88,7 +88,7 @@
 	<entry key="yukon.web.modules.operator.optOut.main.helpInfoTitle">Opt Out Actions</entry>
 
     <entry key="yukon.web.modules.operator.optOut.main.confirmDecrementAllowance.title">Confirm Decrement Opt Out Allowance</entry>
-    <entry key="yukon.web.modules.operator.optOut.main.confirmDecrementAllowance.message">Are you sure you want remove an opt out for {0}?</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.confirmDecrementAllowance.message">Are you sure you want to remove an opt out for {0}?</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.imageUrl">/WebConfig/yukon/Icons/gray_subtract.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.hoverUrl">/WebConfig/yukon/Icons/gray_subtract_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.hoverText">Decrements opt out allowance for the device.</entry>
@@ -121,7 +121,7 @@
     <entry key="yukon.web.modules.operator.optOut.main.resendOptOut.successText">Opt Out Command Resent</entry>
 
     <entry key="yukon.web.modules.operator.optOut.main.confirmResetToLimit.title">Confirm Reset Opt Out Limit</entry>
-    <entry key="yukon.web.modules.operator.optOut.main.confirmResetToLimit.message">Are you sure you want reset the opt out limit for {0}?</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.confirmResetToLimit.message">Are you sure you want to reset the opt out limit for {0}?</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resetToLimit.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
     <entry key="yukon.web.modules.operator.optOut.main.resetToLimit.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resetToLimit.hoverText">Resets a device's opt out limit.</entry>
