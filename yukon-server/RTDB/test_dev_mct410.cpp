@@ -23,6 +23,8 @@ struct test_Mct410Device : Mct410Device
 
     using MctDevice::getOperation;
 
+    using Mct4xxDevice::getUsageReportDelay;
+
     using Mct410Device::getDemandData;
     using Mct410Device::extractDynamicPaoInfo;
     using Mct410Device::executeGetConfig;
@@ -862,6 +864,41 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_canDailyReadDateAlias)
     BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  9, 2001)));
     BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1, 10, 2001)));
     BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate(31, 10, 2001)));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getUsageReportDelay)
+{
+    const test_Mct410Device mct;
+
+    //  Calculation is 10s + intervals/day * days * 1ms
+
+    //  24 * 12 *  1 * 0.001 = 0.288s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 10);
+
+    //  24 * 12 * 30 * 0.001 = 8.640s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  30), 18);
+
+    //  24 * 12 * 60 * 0.001 = 17.280s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  60), 27);
+
+    //  24 *  6 *  1 * 0.001 = 0.144s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,   1), 10);
+
+    //  24 *  6 * 30 * 0.001 = 4.320s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  30), 14);
+
+    //  24 *  6 * 60 * 0.001 = 8.640s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  60), 18);
+
+    //  24 *  1 *  1 * 0.001 = 0.024s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600,  1), 10);
+
+    //  24 *  1 * 30 * 0.001 = 0.720s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 30), 10);
+
+    //  24 *  1 * 60 * 0.001 = 1.440s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 60), 11);
 }
 
 

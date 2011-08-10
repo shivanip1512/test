@@ -26,6 +26,8 @@ private:
     int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
 
+    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const = 0;
+
 protected:
 
     static std::string printable_time(unsigned long seconds);

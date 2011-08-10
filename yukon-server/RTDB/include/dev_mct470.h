@@ -141,7 +141,9 @@ private:
     bool hasChannelConfig(unsigned channel);
     bool requestChannelConfig(unsigned channel, OUTMESS *OutMessage, OutMessageList &outList);
 
-    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
+    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
+
+    virtual boost::shared_ptr<DataAccessLoadProfile> getLoadProfile();
 
     long _lastConfigRequest;
 

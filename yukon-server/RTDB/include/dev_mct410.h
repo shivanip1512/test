@@ -80,6 +80,8 @@ private:
 
     void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
 
+    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
+
 protected:
 
     static read_key_store_t initReadKeyStore();

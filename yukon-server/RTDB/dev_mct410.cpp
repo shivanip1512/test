@@ -1379,6 +1379,15 @@ bool Mct410Device::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS 
 }
 
 
+unsigned Mct410Device::getUsageReportDelay(const unsigned interval_length, const unsigned days) const
+{
+    const int fixed_delay    = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10);
+    const int variable_delay = (86400 / interval_length) * days / 1000;  //  1 ms per interval
+
+    return fixed_delay + variable_delay;
+}
+
+
 void Mct410Device::readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList) const
 {
     auto_ptr<CtiOutMessage> sspec_om(new CtiOutMessage(OutMessage));

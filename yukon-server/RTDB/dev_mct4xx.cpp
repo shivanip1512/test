@@ -1964,8 +1964,6 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
-    bool expectMore = false;
-
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -1999,17 +1997,12 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
             case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
             {
-                int variable_delay,
-                    fixed_delay;
+                unsigned delay = getUsageReportDelay(getLoadProfileInterval(_llpPeakInterest.channel), _llpPeakInterest.period);
 
-                fixed_delay     = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10) * 1000;
-
-                variable_delay  = ((3600 / getLoadProfileInterval(_llpPeakInterest.channel)) * 24 * _llpPeakInterest.period);
-
-                if( !strstr(InMessage->Return.CommandStr, " noqueue") )
+                if( delay > 2 && !strstr(InMessage->Return.CommandStr, " noqueue") )
                 {
                     //  take two seconds off if it's queued
-                    fixed_delay -= 2000;
+                    delay -= 2;
                 }
 
                 CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
@@ -2026,9 +2019,15 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
                 newReq->setCommandString(newReq->CommandString() + " read");
 
                 //  set it to execute in the future
-                newReq->setMessageTime(CtiTime::now().seconds() + ((fixed_delay + variable_delay) / 1000));
+                newReq->setMessageTime(CtiTime::now().seconds() + delay);
 
                 retList.push_back(newReq);
+
+                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
+                ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(delay) + " seconds for device peak report processing (until " + (CtiTime::now() + delay).asString() + ")");
+
+                retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
 
                 break;
             }
@@ -2079,7 +2078,7 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
                                 ReturnMsg->setUserMessageId(InMessage->Return.UserID);
                                 ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
-                                ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan");
+                                ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan (until " + (CtiTime::now() + fixed_delay).asString() + ")");
 
                                 retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
                             }

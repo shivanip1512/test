@@ -14,6 +14,8 @@ struct test_Mct470Device : Mct470Device
 
     using MctDevice::getOperation;
 
+    using Mct4xxDevice::getUsageReportDelay;
+
     using Mct470Device::extractDynamicPaoInfo;
     using Mct470Device::convertTimestamp;
     using Mct470Device::computeResolutionByte;
@@ -329,6 +331,41 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_computeResolutionByte)
     BOOST_CHECK_EQUAL(0x12, test_Mct470Device::computeResolutionByte(1.0, 10.0, 1.0));
 
     BOOST_CHECK_EQUAL(0x22, test_Mct470Device::computeResolutionByte(1.0, 10.0, 0.1));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct470_getUsageReportDelay)
+{
+    const test_Mct470Device mct;
+
+    //  Calculation is 10s + intervals/day * days * 1ms
+
+    //  24 * 12 *  1 * 0.001 = 0.288s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 10);
+
+    //  24 * 12 * 30 * 0.001 = 8.640s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  30), 18);
+
+    //  24 * 12 * 60 * 0.001 = 17.280s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  60), 27);
+
+    //  24 *  6 *  1 * 0.001 = 0.144s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,   1), 10);
+
+    //  24 *  6 * 30 * 0.001 = 4.320s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  30), 14);
+
+    //  24 *  6 * 60 * 0.001 = 8.640s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  60), 18);
+
+    //  24 *  1 *  1 * 0.001 = 0.024s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600,  1), 10);
+
+    //  24 *  1 * 30 * 0.001 = 0.720s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 30), 10);
+
+    //  24 *  1 * 60 * 0.001 = 1.440s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 60), 11);
 }
 
 

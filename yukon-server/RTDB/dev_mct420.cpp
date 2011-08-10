@@ -102,6 +102,19 @@ Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 }
 
 
+unsigned Mct420Device::getUsageReportDelay(const unsigned interval_length, const unsigned days) const
+{
+    const int fixed_delay    = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10);
+
+    //  Calculates at least 36 days of usage no matter how many days are requested
+    const unsigned intervals = std::max(days, 36U) * 86400 / interval_length;
+
+    const unsigned variable_delay = (intervals * 10 + 999) / 1000;  //  10 ms per interval, rounded up to the next second
+
+    return fixed_delay + variable_delay;
+}
+
+
 bool Mct420Device::isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const
 {
     const unsigned long intervals_since_epoch = TimeNow.seconds() / interval_len;

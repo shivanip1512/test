@@ -19,6 +19,7 @@ struct test_Mct4xxDevice : Mct4xxDevice
     ConfigPartsList getPartsList()  {  BOOST_CHECK(0);  return ConfigPartsList();  };
     bool isSupported(const Features feature) const                  {  BOOST_CHECK(0);  return false;  };
     bool sspecValid(const unsigned sspec, const unsigned rev) const {  BOOST_CHECK(0);  return false;  };
+    unsigned getUsageReportDelay(const unsigned int,const unsigned int) const {  BOOST_CHECK(0);  return 0;  }
 
     typedef Mct4xxDevice Inherited;
 

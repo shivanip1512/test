@@ -24,6 +24,8 @@ struct test_Mct420Device : Mct420Device
 
     using MctDevice::getOperation;
 
+    using Mct4xxDevice::getUsageReportDelay;
+
     using Mct420Device::decodeDisconnectConfig;
     using Mct420Device::decodeDisconnectStatus;
     using Mct420Device::isProfileTablePointerCurrent;
@@ -419,6 +421,42 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct420_getUsageReportDelay)
+{
+    const test_Mct420CL mct;
+
+    //  Calculation is max(36, days) * intervals/day * 10ms, rounded up to the next second
+
+    //  36 * 24 * 12 * 0.01 = 103.68s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 114);
+
+    //  36 * 24 * 12 * 0.01 = 103.68s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  30), 114);
+
+    //  60 * 24 * 12 * 0.01 = 172.80s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  60), 183);
+
+    //  36 * 24 *  6 * 0.01 = 51.84s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,   1),  62);
+
+    //  36 * 24 *  6 * 0.01 = 51.84s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  30),  62);
+
+    //  60 * 24 *  6 * 0.01 = 86.40s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  60),  97);
+
+    //  36 * 24 *  1 * 0.01 = 8.64s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600,  1),  19);
+
+    //  36 * 24 *  1 * 0.01 = 8.64s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 30),  19);
+
+    //  60 * 24 *  1 * 0.01 = 14.40s
+    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 60),  25);
+}
+
 
 struct getOperation_helper
 {
