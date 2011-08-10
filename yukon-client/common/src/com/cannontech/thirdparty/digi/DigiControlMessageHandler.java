@@ -9,7 +9,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -40,7 +39,6 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     private PaoDao paoDao;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private ZigbeeControlEventDao zigbeeControlEventDao;
-    private ZigbeeEventLogService zigbeeEventLogService;
     
     private Set<Integer> pendingEvents = new HashSet<Integer>();
     
@@ -57,7 +55,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Override
     public void handleControlMessage(SepControlMessage message) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
-        zigbeeEventLogService.zigbeeSendSepControlAttempted(pao.getPaoName());
+        logger.info("Sending Control Command to Load Group: " + pao.getPaoName());
         
         int eventId = nextValueHelper.getNextValue("ZBControlEvent");
         Instant now = new Instant();
@@ -90,7 +88,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Override
     public void handleRestoreMessage(SepRestoreMessage message) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
-        zigbeeEventLogService.zigbeeSendSepRestoreAttempted(pao.getPaoName());
+        logger.info("Sending Restore Command to Load Group: " + pao.getPaoName());
         
         int eventId = zigbeeControlEventDao.findCurrentEventId(message.getGroupId());
         
@@ -213,10 +211,5 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Autowired
     public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
         this.zigbeeDeviceDao = zigbeeDeviceDao;
-    }
-    
-    @Autowired
-    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
-        this.zigbeeEventLogService = zigbeeEventLogService;
     }
 }

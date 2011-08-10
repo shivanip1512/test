@@ -76,7 +76,7 @@ public class ZigBeeHardwareController {
     @RequestMapping
     public ModelAndView refresh(YukonUserContext context, int deviceId) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
-        zigbeeEventLogService.zigbeeDeviceRefreshAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        zigbeeEventLogService.zigbeeDeviceRefreshByOperator(context.getYukonUser(), pao.getPaoName());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
@@ -97,6 +97,8 @@ public class ZigBeeHardwareController {
                 ping = zigbeeStateUpdaterService.updateEndPointStatus(device);
             }
             
+            zigbeeEventLogService.zigbeeDeviceRefreshed(pao.getPaoName());
+            
             zigbeeStateUpdaterService.activateSmartPolling(device);
         } catch (DigiWebServiceException e) {
             commandFailed(mav.getModelMap(), accessor, e.getMessage());
@@ -112,7 +114,7 @@ public class ZigBeeHardwareController {
     @RequestMapping
     public ModelAndView commission(YukonUserContext context, int deviceId) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
-        zigbeeEventLogService.zigbeeDeviceCommissionAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        zigbeeEventLogService.zigbeeDeviceCommissionByOperator(context.getYukonUser(), pao.getPaoName());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
@@ -131,7 +133,7 @@ public class ZigBeeHardwareController {
     @RequestMapping
     public ModelAndView decommission(YukonUserContext context, int deviceId) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
-        zigbeeEventLogService.zigbeeDeviceDecommissionAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        zigbeeEventLogService.zigbeeDeviceDecommissionByOperator(context.getYukonUser(), pao.getPaoName());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
@@ -157,6 +159,8 @@ public class ZigBeeHardwareController {
 
             ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
             zigbeeStateUpdaterService.activateSmartPolling(device);
+            
+            zigbeeEventLogService.zigbeeDeviceCommissioned(device.getName());
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -194,11 +198,15 @@ public class ZigBeeHardwareController {
         boolean messageFailed = false;
         String errorMessage = null;
         MessageSourceResolvable errorResolvable = null;
+        
+        
         try {
             zigbeeWebService.installGateway(gatewayId);
             
             ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
             zigbeeStateUpdaterService.activateSmartPolling(gateway);
+
+            zigbeeEventLogService.zigbeeDeviceCommissioned(gateway.getName());
         } catch (ZigbeeCommissionException e) {
             messageFailed = true;
             errorResolvable = e.getMessageSourceResolvable();
@@ -226,6 +234,9 @@ public class ZigBeeHardwareController {
             // This gatewayId is expected to be not null since this action wouldn't have been available.
             int gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
             zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
+            
+            ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+            zigbeeEventLogService.zigbeeDeviceDecommissioned(device.getName());
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -243,6 +254,9 @@ public class ZigBeeHardwareController {
         String errorMessage = null;
         try {
             zigbeeWebService.removeGateway(gatewayId);
+            ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
+            
+            zigbeeEventLogService.zigbeeDeviceDecommissioned(gateway.getName());
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -305,7 +319,7 @@ public class ZigBeeHardwareController {
         int accountId = fragment.getAccountId();
 
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(gatewayId);
-        zigbeeEventLogService.zigbeeSendTextAttemptedByOperator(context.getYukonUser(), pao.getPaoName(),textMessage.getMessage());
+        zigbeeEventLogService.zigbeeSendTextByOperator(context.getYukonUser(), pao.getPaoName(),textMessage.getMessage());
         
         YukonValidationUtils.checkExceedsMaxLength(result, "message", textMessage.getMessage(), 21);
         if (result.hasErrors()) {
@@ -320,6 +334,8 @@ public class ZigBeeHardwareController {
         String errorMessage = null;
         try {
             zigbeeWebService.sendTextMessage(textMessage);
+            
+            zigbeeEventLogService.zigbeeSentText(pao.getPaoName(),textMessage.getMessage());
         } catch (ZigbeeClusterLibraryException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -345,7 +361,7 @@ public class ZigBeeHardwareController {
     public String addDeviceToGateway(YukonUserContext context, ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);
-        zigbeeEventLogService.zigbeeDeviceAssignAttemptedByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
+        zigbeeEventLogService.zigbeeDeviceAssignByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
         
         gatewayDeviceDao.updateDeviceToGatewayAssignment(deviceId, gatewayId);
 
@@ -362,7 +378,7 @@ public class ZigBeeHardwareController {
     public String removeDeviceFromGateway(YukonUserContext context, ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);
-        zigbeeEventLogService.zigbeeDeviceUnassignAttemptedByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
+        zigbeeEventLogService.zigbeeDeviceUnassignByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
         
         zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
         gatewayDeviceDao.unassignDeviceFromGateway(deviceId);

@@ -17,13 +17,10 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
@@ -58,8 +55,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     private DigiResponseHandler digiResponseHandler;
     private ConfigurationSource configurationSource;
     private ZigbeeServiceHelper zigbeeServiceHelper;
-    private ZigbeeEventLogService zigbeeEventLogService;
-    private PaoDao paoDao;
 
     private JmsTemplate jmsTemplate;
     
@@ -87,8 +82,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
-            
-            zigbeeEventLogService.zigbeeDeviceCommissioned(digiGateway.getName());
         } catch (ZigbeeCommissionException e) {
             log.error("Caught exception in the commissioning process", e);
             //re throw
@@ -108,8 +101,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
-        
-        zigbeeEventLogService.zigbeeDeviceDecommissioned(digiGateway.getName());
         
         log.debug("-- Remove Gateway Stop --");
     }
@@ -197,8 +188,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         //Throws a DigiWebServiceException if it failed.
         digiResponseHandler.evaluateAddDevice(response);
         
-        zigbeeEventLogService.zigbeeDeviceCommissioned(stat.getName());
-        
         log.debug("InstallEndPoint End");
     }
     
@@ -219,8 +208,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         zigbeeServiceHelper.sendPointStatusUpdate(endpoint, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
-        
-        zigbeeEventLogService.zigbeeDeviceDecommissioned(endpoint.getName());
     }
     
     @Override
@@ -247,8 +234,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
         ZigbeePingResponse pingResponse = digiResponseHandler.handlePingResponse(response,endPoint,gateway);
         
-        zigbeeEventLogService.zigbeeDeviceRefreshed(endPoint.getName());
-        
         return pingResponse;
     }
     
@@ -266,8 +251,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
-        
-        zigbeeEventLogService.zigbeeDeviceLoadGroupAddressingSent(endPoint.getName());
     }
     
     @Override
@@ -294,7 +277,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException("Ping returned more than one result.");
         }
         
-        zigbeeEventLogService.zigbeeDeviceRefreshed(gateway.getName());        
         log.debug("Refresh Gateway done");
         
         return pingResponses.get(gateway.getPaoIdentifier());
@@ -314,8 +296,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         } catch (DigiEmptyDeviceCoreResultException e) {
             //eat the Error.. It is not REQUIRED to have a gateway
         }
-        
-        zigbeeEventLogService.zigbeeRefreshedAllGateways();
         
         log.debug("Refresh ALL Gateway done");
         
@@ -350,8 +330,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         
         //Hijacking the text message for smuggling. This will change to Private Extensions in future revisions.
         sendTextMessage(gateway,message);
-
-        zigbeeEventLogService.zigbeeSentManualAdjustment(gateway.getName());
     }
     
     @Override
@@ -359,8 +337,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
         
         sendTextMessage(gateway,message);
-        
-        zigbeeEventLogService.zigbeeSentText(gateway.getName(),message.getMessage());
     }
     
     private void sendTextMessage(ZigbeeDevice gateway, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
@@ -414,9 +390,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException(e);
         }
         
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(controlMessage.getGroupId());
-        zigbeeEventLogService.zigbeeSentSepControl(pao.getPaoName());
-        
         log.debug("Sending SEP Control Message End");
     }
     
@@ -431,9 +404,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
-        
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(restoreMessage.getGroupId());
-        zigbeeEventLogService.zigbeeSentSepRestore(pao.getPaoName());
         
         log.debug("Sending SEP Restore Message Start");
         return;
@@ -472,16 +442,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     @Autowired
     public void setZigbeeServiceHelper(ZigbeeServiceHelper zigbeeServiceHelper) {
         this.zigbeeServiceHelper = zigbeeServiceHelper;
-    }
-    
-    @Autowired
-    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
-        this.zigbeeEventLogService = zigbeeEventLogService;
-    }
-     
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
     
     @Autowired

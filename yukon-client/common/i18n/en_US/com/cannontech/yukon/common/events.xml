@@ -387,29 +387,20 @@
     
     
 <!-- ZigBee Webservices -->
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceCommissionAttemptedByOperator">The user {1} is attempting to send a commission command to the ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceDecommissionAttemptedByOperator">The user {1} is attempting to send a decommission command to the ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.zigbee.action.zigbeeDeviceRefreshAttemptedByOperator">The user {1} is attempting to refresh the ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.zigbee.action.zigbeeSendTextAttemptedByOperator">The user {1} is attempting to send a text message to the ZigBee device {2}: "{3}"</entry>
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceAssignAttemptedByOperator">The user {1} is attempting to assign ZigBee device {2} to the ZigBee gateway {3}.</entry>
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceUnassignAttemptedByOperator">The user {1} is attempting to unassign ZigBee device {2} from the ZigBee gateway {3}.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeePollAllGatewaysAttempted">The system is attempting to poll all gateways for notifications.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeRefreshAllGatewaysAttempted">The system is attempting to refresh all gateway connection statuses.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeSendSEPControlAttempted">The system is attempting to send a SEP Control message to LM Group {1}.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeSendSEPRestoreAttempted">The system is attempting to send a SEP restore message to LM Group {1}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissionByOperator">The user {1} has pressed the commission button for ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissionByOperator">The user {1} has pressed the decommission button for ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshByOperator">The user {1} has pressed the refresh button for the ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.action.zigbeeSendTextByOperator">The user {1} has entered a text message to send to the ZigBee device {2}: "{3}"</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssignByOperator">The user {1} pressed the assign button to link ZigBee device {2} to the ZigBee gateway {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassignByOperator">The user {1} pressed the unassign button to remove the link between ZigBee device {2} and ZigBee gateway {3}.</entry>
 
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceCommissioned">Commission command has been sent for ZigBee device {1}.</entry>
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceDecommissioned">Decommission command has been sent for ZigBee device {1}.</entry>
-    <entry key="yukon.common.events.zigbee.action.zigbeeDeviceRefreshed">ZigBee device {1} was refreshed.</entry>
-    <entry key="yukon.common.events.zigbee.action.zigbeeSentText">A text message was sent to the ZigBee device {1}: "{2}"</entry>
-    <entry key="yukon.common.events.zigbee.action.zigbeeSentManualAdjustment">A manual adjustment was sent to the ZigBee device {1}.</entry>
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceAssigned">ZigBee device {1} was assigned to the ZigBee gateway {2}.</entry>
-    <entry key="yukon.common.events.zigbee.config.zigbeeDeviceUnassigned">ZigBee device {1} was unassigned from the ZigBee gateway {2}.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeDeviceLoadGroupAddressingSent">Load group addressing has been sent to device {1}.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeePolledGateway">Gateway {1} has been polled for notifications.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeRefreshedAllGateways">All gateway connection statuses have been refreshed.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeSentSEPControl">The system has sent a SEP Control message to LM Group {1}.</entry>
-    <entry key="yukon.common.events.zigbee.system.zigbeeSentSEPRestore">The system has sent a SEP Restore message to LM Group {1}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissioned">Commission command has been sent for ZigBee device {1}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissioned">Decommission command has been sent for ZigBee device {1}.</entry>
+    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshed">ZigBee device {1} was successfully refreshed.</entry>
+    <entry key="yukon.common.events.hardware.commands.action.zigbeeSentText">The text message was successfully sent to the ZigBee device {1}: "{2}"</entry>
+
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssigned">ZigBee device {1} was assigned to the ZigBee gateway {2}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} was unassigned from the ZigBee gateway {2}.</entry>
     
 <!--  System Administration -->
     <!-- Maintenance -->

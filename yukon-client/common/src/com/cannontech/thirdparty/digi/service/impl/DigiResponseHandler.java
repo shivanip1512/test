@@ -263,6 +263,8 @@ public class DigiResponseHandler {
                 } else {
                     log.warn("NodeId was not in the reponse.");
                 }
+                
+                return;
             } else if ( message.contains(connectStr) || message.contains(connectStr2)) {
                 //Connected
                 log.debug("Device: " + macAddress + " has connected.");
