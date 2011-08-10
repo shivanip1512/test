@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.survey.dao.SurveyDao;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -17,12 +19,13 @@ import com.google.common.collect.Lists;
 
 public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase<T> {
     protected YukonJdbcTemplate yukonJdbcTemplate;
+    protected DateFormattingService dateFormattingService;
     protected SurveyDao surveyDao;
     protected OptOutSurveyDao optOutSurveyDao;
     protected LoadControlProgramDao loadControlProgramDao;
     protected EnrollmentDao enrollmentDao;
     protected AssignedProgramDao assignedProgramDao;
-
+    protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     // inputs
     protected int surveyId;
@@ -143,5 +146,15 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;
+    }
+    
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }
