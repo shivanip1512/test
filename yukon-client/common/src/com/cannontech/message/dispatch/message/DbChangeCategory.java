@@ -2,6 +2,14 @@ package com.cannontech.message.dispatch.message;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+/**
+ * All original DBChangeCategory values were ported into this enum (from DBChangeMsg).
+ * However, the original DBChangeMsg category values do not mix with the new DBChangeMsg handling.
+ * To prevent mixing of old style with new style, 
+ *  the old style enums have been commented out so they are not used.
+ * When we only have one way of handling DBChangeMsg categories, 
+ *  then the commented out enums will be uncommented for use.
+ */
 
 public enum DbChangeCategory {
 //    POINT("Point"),
