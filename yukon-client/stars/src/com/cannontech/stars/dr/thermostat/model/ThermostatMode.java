@@ -13,13 +13,13 @@ public enum ThermostatMode implements ListEntryEnum, DisplayableEnum {
     DEFAULT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT, "default", HeatCoolSettingType.OTHER), 
     COOL(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool", HeatCoolSettingType.COOL), 
     HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat", HeatCoolSettingType.HEAT), 
-    OFF(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off", HeatCoolSettingType.OTHER), 
     EMERGENCY_HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT, "emheat",
-                   HeatCoolSettingType.HEAT);
+                   HeatCoolSettingType.HEAT),
+    OFF(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off", HeatCoolSettingType.OTHER);
 
     // this key prefix can be found in the following file:
-    // com.cannontech.yukon.dr.consumer.xml
-    private final static String keyPrefix = "yukon.dr.consumer.thermostat.mode.";
+    // com.cannontech.yukon.web.modules.consumer.xml
+    private final static String keyPrefix = "yukon.web.modules.consumer.thermostat.mode.";
 
     private int definitionId;
     private String commandString;

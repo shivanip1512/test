@@ -31,24 +31,6 @@ Yukon.ThermostatScheduleEditor = {
         }
     },
     
-    halfIntegerAccuracy: function(value){
-        return Math.round(value * 2) / 2.0;
-    },
-    
-    fahrenheitToCelsius: function(fahrenheit){
-        return ((fahrenheit - 32) * 5) / 9.0;  
-    },
-    
-    celsiusToFahrenheit: function(celsius){
-        return ((celsius * 9) / 5.0) + 32;
-    },
-    
-    celsiusToSafeCelsius: function(celsius) {
-        //ensure we have 0.5 accurracy
-        return parseFloat(Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(celsius).toFixed(1));
-    },
-    
-    
     //Initializes the object
     //args requires the following values:
     // upperHeatF           - floating point fahrenheit value
@@ -63,11 +45,7 @@ Yukon.ThermostatScheduleEditor = {
     // heatColor            - object - {r:{start:[0..255], end:[0..255]}, g:{start:[0..255], end:[0..255]}, b:{start:[0..255], end:[0..255]}, a:{start:[0..255], end:[0..255]}}
     // coolColor            - object - {r:{start:[0..255], end:[0..255]}, g:{start:[0..255], end:[0..255]}, b:{start:[0..255], end:[0..255]}, a:{start:[0..255], end:[0..255]}}
     init: function(args) {
-        
-        for(var key in args){
-           this._private[key] = args[key];
-        }
-        
+        Yukon.ThermostatScheduleEditor.initArgs(args);
         Yukon.ThermostatScheduleEditor.renderTime();
         Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor._private.currentUnit]();
        
@@ -101,7 +79,7 @@ Yukon.ThermostatScheduleEditor = {
             sliderValue: 72,
             onSlide: function(value) {
                 if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-                    CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.celsiusToSafeCelsius(value).toFixed(1);
+                    CURRENT_TEMP_INPUT.value = Yukon.Thermostat.celsiusToSafeCelsius(value).toFixed(1);
                 }else {
                     CURRENT_TEMP_INPUT.value = parseInt(value);
                 }
@@ -285,6 +263,13 @@ Yukon.ThermostatScheduleEditor = {
         $$(".schedule_editor").invoke('removeClassName', "vh");
     },
     
+    initArgs: function(args) {
+        for(var key in args){
+            this._private[key] = args[key];
+         }
+        Yukon.Thermostat.init(args);
+    },
+    
     resetDefaults: function(args){
         if(args.recForm != null){
             var days = args.ourForm.select(".day");
@@ -368,23 +353,23 @@ Yukon.ThermostatScheduleEditor = {
         }
         
         if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(start);
-            start = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
-            c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(end);
-            end = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            var c = Yukon.Thermostat.fahrenheitToCelsius(start);
+            start = Yukon.Thermostat.halfIntegerAccuracy(c);
+            c = Yukon.Thermostat.fahrenheitToCelsius(end);
+            end = Yukon.Thermostat.halfIntegerAccuracy(c);
         }
         
         switch(event.keyCode){
         case KEYUP:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-                value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value + 0.5);
+                value = Yukon.Thermostat.halfIntegerAccuracy(value + 0.5);
             }else {
                 value = value+1;
             }
             break;
         case KEYDOWN:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
-                value = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(value - 0.5);
+                value = Yukon.Thermostat.halfIntegerAccuracy(value - 0.5);
             }else {
                 value = value-1;
             }
@@ -427,14 +412,14 @@ Yukon.ThermostatScheduleEditor = {
         var startLabel = "";
         var endLabel = "";
         if(_self._private.currentUnit == 'C'){
-            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(start);
-            start = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            var c = Yukon.Thermostat.fahrenheitToCelsius(start);
+            start = Yukon.Thermostat.halfIntegerAccuracy(c);
             if(start < c){
                 start += 0.5;
             }
             
-            c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(end);
-            end = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            c = Yukon.Thermostat.fahrenheitToCelsius(end);
+            end = Yukon.Thermostat.halfIntegerAccuracy(c);
             if(end > c){
                 end -= 0.5;
             }
@@ -495,8 +480,8 @@ Yukon.ThermostatScheduleEditor = {
         //convert the value to fahrenheit scale
         if(_self._private.currentUnit == 'C'){
             //only .5 increments are allowed
-            value_F = Yukon.ThermostatScheduleEditor.celsiusToFahrenheit(value);
-            input.value = _self.celsiusToSafeCelsius(value).toFixed(1);
+            value_F = Yukon.Thermostat.celsiusToFahrenheit(value);
+            input.value = Yukon.Thermostat.celsiusToSafeCelsius(value).toFixed(1);
         }else {
             input.value = parseInt(value_F);
         }
@@ -505,9 +490,9 @@ Yukon.ThermostatScheduleEditor = {
             //put value into REAL input
             input.adjacent("input:hidden")[0].value = value_F;
             if(input.up('.temp').hasClassName('heat')){
-                input.up('.temp').setStyle({backgroundColor:_self.calcHeatColor(value_F)});
+                input.up('.temp').setStyle({backgroundColor:Yukon.Thermostat.calcHeatColor(value_F)});
             }else if(input.up('.temp').hasClassName('cool')){
-                input.up('.temp').setStyle({backgroundColor:_self.calcCoolColor(value_F)});
+                input.up('.temp').setStyle({backgroundColor:Yukon.Thermostat.calcCoolColor(value_F)});
             }
             return true;
         }
@@ -669,14 +654,14 @@ Yukon.ThermostatScheduleEditor = {
         _self._private.currentUnit = 'C';
         $$(".temp .value").each(function(elem){
             var f = parseFloat(elem.next("input:hidden").value);
-            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(f);
-            var rounded = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            var c = Yukon.Thermostat.fahrenheitToCelsius(f);
+            var rounded = Yukon.Thermostat.halfIntegerAccuracy(c);
             elem.innerHTML = rounded.toFixed(1);
         });
         $$(".temp input:text").each(function(elem){
             var f = parseFloat(elem.next("input:hidden").value);
-            var c = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(f);
-            var rounded = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c);
+            var c = Yukon.Thermostat.fahrenheitToCelsius(f);
+            var rounded = Yukon.Thermostat.halfIntegerAccuracy(c);
             elem.value = rounded.toFixed(1);
         });
         $$(".temp, .tempLabel").each(function(elem){
@@ -741,31 +726,12 @@ Yukon.ThermostatScheduleEditor = {
         $$(".temp input[type=hidden]").each(function(elem){
             if(elem.up('.temp').hasClassName('heat')){
                 var temp = parseInt(elem.value);
-                elem.up(".temp").setStyle({backgroundColor:Yukon.ThermostatScheduleEditor.calcHeatColor(temp)});
+                elem.up(".temp").setStyle({backgroundColor:Yukon.Thermostat.calcHeatColor(temp)});
             } else {
                 var temp = parseInt(elem.value);
-                elem.up(".temp").setStyle({backgroundColor:Yukon.ThermostatScheduleEditor.calcCoolColor(temp)});
+                elem.up(".temp").setStyle({backgroundColor:Yukon.Thermostat.calcCoolColor(temp)});
             }
         });
-    },
-    
-    calcHeatColor: function(temp){
-        var _self = Yukon.ThermostatScheduleEditor;
-        var r = _self._private.heatColor.r.start;
-        var g = Math.round(_self._private.heatColor.g.start - Math.abs((temp - _self._private.lowerHeatF) * ((_self._private.heatColor.g.end - _self._private.heatColor.g.start)/(_self._private.upperHeatF - _self._private.lowerHeatF))));
-        var b = _self._private.heatColor.b.start; 
-        return "rgb("+ r +", "+ g +", "+ b +")";
-    },
-    
-    calcCoolColor: function(temp){
-        var _self = Yukon.ThermostatScheduleEditor;
-        var tempRange = _self._private.upperCoolF - _self._private.lowerCoolF;
-        var RRange = _self._private.coolColor.r.end - _self._private.coolColor.r.start;
-        var GRange = _self._private.coolColor.g.end - _self._private.coolColor.g.start;
-        var r = Math.round(_self._private.coolColor.r.start + ((temp - _self._private.lowerCoolF) * (RRange/tempRange)));
-        var g = Math.round(_self._private.coolColor.g.start + ((temp - _self._private.lowerCoolF) * (GRange/tempRange)));
-        var b = _self._private.coolColor.b.start;
-        return "rgb("+ r +","+ g +","+ b +")";
     },
     
     _tests: {
@@ -774,7 +740,7 @@ Yukon.ThermostatScheduleEditor = {
             var c = 0;
             while(c<50) {
                 //convert to fahrenheit
-                var f = Yukon.ThermostatScheduleEditor.celsiusToFahrenheit(c);
+                var f = Yukon.Thermostat.celsiusToFahrenheit(c);
                 
                 //convert back to celsius and round like we do on display and validate
                 
@@ -782,8 +748,8 @@ Yukon.ThermostatScheduleEditor = {
                 var d = Math.round(f);
                 
                 //This is what will come back out from the DB when converted to Celsius
-                var c_prime = Yukon.ThermostatScheduleEditor.fahrenheitToCelsius(d);
-                var rounded = Yukon.ThermostatScheduleEditor.halfIntegerAccuracy(c_prime);
+                var c_prime = Yukon.Thermostat.fahrenheitToCelsius(d);
+                var rounded = Yukon.Thermostat.halfIntegerAccuracy(c_prime);
                 c_final = parseFloat(rounded.toFixed(1));
                 
                 if (c_final != c) {
@@ -797,3 +763,381 @@ Yukon.ThermostatScheduleEditor = {
         }
     }
 }
+
+Yukon.ThermostatManualEditor = {
+    _private: {
+        currentUnit: 'F',
+        increment: {C: 0.5, F:1}
+    },
+    
+    init: function(args){
+        _self = Yukon.ThermostatManualEditor;
+        
+        for(var key in args){
+            this._private[key] = args[key];
+        }
+
+        //prep schedule editor data
+        Yukon.Thermostat.init(args);
+        
+        $$(".manualThermostat .state").invoke('observe', 'click', _self.changeFanState);
+        $$(".manualThermostat .mode").invoke('observe', 'click', _self.changeThermostatMode);
+        $$(".temperatureAdjust .up").invoke('observe', 'click', _self.temperatureUp);
+        $$(".temperatureAdjust .down").invoke('observe', 'click', _self.temperatureDown);
+        $$(".temperatureUnit .unit").invoke('observe', 'click', _self.changeUnit);
+        $$("input[name=temperature_display]").invoke('observe', 'blur', _self.onBlurTemperatureDisplay);
+        $$("input[name=temperature_display]").invoke('observe', 'focus', _self.onFocusTemperatureDisplay);
+        $$("#sendSettingsSubmit").invoke('observe', 'click', _self.prepForm);
+        $$(".closePopup").invoke('observe', 'click', function(event){this.up(".popUpDiv").hide();});
+        $$(".editLabel, .cancelLabelEdit").invoke('observe', 'click', _self.toggleLabelEditor);
+        
+        _self.renderTemperature();
+        _self.renderOtherTemperatures(_self._private.currentUnit);
+    },
+    
+    toggleLabelEditor: function(){
+        $('editName').toggle();
+        $('thermostatName').toggle();
+    },
+    
+    changeUnit: function(event) {
+        Yukon.ui.exclusiveSelect(event.target);
+        var unit = event.target.readAttribute('unit');
+        Yukon.ThermostatManualEditor._private.currentUnit = unit;
+        Yukon.ThermostatManualEditor.renderTemperature();
+        Yukon.ThermostatManualEditor.renderOtherTemperatures(unit);
+    },
+    
+    changeFanState: function(event) {
+        Yukon.ui.exclusiveSelect(event.target);
+        event.target.up(".manualThermostat").down("input[name=fan]").value = event.target.readAttribute("state");
+    },
+    
+    changeThermostatMode: function(event) {
+        Yukon.ui.exclusiveSelect(event.target);
+        Yukon.ThermostatManualEditor.sanitizeInputTemperature(event.target.up(".manualThermostat"));
+        event.target.up(".manualThermostat").down("input[name=mode]").value = event.target.readAttribute("mode");
+        Yukon.ThermostatManualEditor.renderTemperature();
+    },
+    
+    onBlurTemperatureDisplay: function(event) {
+        var widget = event.target.up(".manualThermostat");
+        var mode = widget.down(".thermostatModes .selected").readAttribute("mode");
+        if(Yukon.Thermostat.isValidTemperatureF(parseFloat(this.value), Yukon.ThermostatManualEditor._private.currentUnit, mode)){
+            Yukon.ThermostatManualEditor.adjustInputTemperature({
+                widget: widget,
+                adjustment: 0
+            });
+            Yukon.ThermostatManualEditor.renderTemperature();
+        }else{
+            this.value = this.readAttribute("previousValue");
+        }
+    },
+    
+    onFocusTemperatureDisplay: function(event) {
+        this.writeAttribute("previousValue", this.value);
+    },
+    
+    prepForm: function(event){
+        var popup = $(event.target.readAttribute("popup_id"));
+        var widget = event.target.up(".manualThermostat");
+        
+        popup.select(".unit").invoke('hide');
+        popup.select("." + Yukon.ThermostatManualEditor._private.currentUnit).invoke('show');
+        
+        popup.select("input:hidden").each(function(input){
+            var name = input.readAttribute("name");
+            var source = widget.down("input[name="+ name +"]");
+            
+            if(source){
+                //not really true for the checkbox, but we overwrite it down below
+                input.value = source.value;
+            
+                if(widget.down("."+ name +".selected")){
+                    popup.down("."+ name +"Confirm").innerHTML = widget.down("."+ name +".selected").innerHTML; 
+                }else if(widget.down("input[type=text]."+ name +"")){
+                    popup.down("."+ name  +"Confirm").innerHTML = widget.down("."+ name).value;
+                }else if(widget.down("input[type=checkbox]."+ name +"")){
+                    popup.down("."+name).down("." + widget.down("."+ name).checked).show();
+                    popup.down("."+name).down("." + !widget.down("."+ name).checked).hide();
+                    input.value = source.checked;
+                }
+            }
+        });
+        
+        //send the actual requested value for logging
+        popup.down("input[name=temperature]").value = widget.down("input[name=temperature_display]").value;
+        popup.down("input[name=temperatureUnit]").value = Yukon.ThermostatManualEditor._private.currentUnit;
+        
+        popup.show();
+    },
+
+    temperatureUp: function(event) {
+        Yukon.ThermostatManualEditor.adjustInputTemperature({
+            widget: event.target.up(".manualThermostat"),
+            adjustment: _self._private.increment[Yukon.ThermostatManualEditor._private.currentUnit]
+        });
+        Yukon.ThermostatManualEditor.renderTemperature();
+    },
+    
+    temperatureDown: function(event) {
+        Yukon.ThermostatManualEditor.adjustInputTemperature({
+            widget: event.target.up(".manualThermostat"),
+            adjustment: -1 * (_self._private.increment[Yukon.ThermostatManualEditor._private.currentUnit])
+        });
+        Yukon.ThermostatManualEditor.renderTemperature();
+    },
+    
+    sanitizeInputTemperature: function(widget) {
+        //snap to limits - most thermostats have different limits based on the HEAT/COOL mode
+        var actualTemperature = widget.down("input[name=temperature]");
+        var mode = widget.down(".thermostatModes .selected").readAttribute("mode");
+        actualTemperature.value = Yukon.Thermostat.toValidTemperatureF(parseFloat(actualTemperature.value), 'F', mode);
+    },
+    
+    adjustInputTemperature: function(args){
+        var _self = Yukon.ThermostatManualEditor;
+        var temperatureDisplay = args.widget.down("input[name=temperature_display]");
+        var actualTemperature = args.widget.down("input[name=temperature]");
+        var mode = args.widget.down(".thermostatModes .selected").readAttribute("mode");
+
+        if(Yukon.Thermostat.isValidTemperatureF(parseFloat(temperatureDisplay.value)+args.adjustment, _self._private.currentUnit, mode)){
+            actualTemperature.value = Yukon.Thermostat.toValidTemperatureF(parseFloat(temperatureDisplay.value)+args.adjustment, _self._private.currentUnit, mode);
+        }
+    },
+    
+    renderTemperature: function(){
+        $$(".manualThermostat input[name=temperature]").each(function(temperatureInput){
+            var exactTemperature = parseFloat(temperatureInput.value);
+            var displayInput = temperatureInput.up().down("input[name=temperature_display]");
+            var mode = displayInput.up(".manualThermostat").down(".thermostatModes .selected").readAttribute("mode");
+
+            //bounds check the temperature
+            exactTemperature = Yukon.Thermostat.toValidTemperatureF(exactTemperature, 'F', mode);
+            //sanitize the value for our current temperature unit
+            displayInput.value = Yukon.Thermostat.convertFTemperatureToDisplaySafeTemperature(exactTemperature, Yukon.ThermostatManualEditor._private.currentUnit);
+                
+            //show the color
+            switch(mode){
+            case 'EMERGENCY_HEAT':
+            case 'HEAT':
+                displayInput.setStyle({color: Yukon.Thermostat.calcHeatColor(exactTemperature)});
+                displayInput.enable();
+                break;
+            case 'COOL':
+                displayInput.setStyle({color: Yukon.Thermostat.calcCoolColor(exactTemperature)});
+                displayInput.enable();
+                break;
+            default:
+                displayInput.setStyle({color: "#CCC"});
+                displayInput.disable();
+            }
+        });
+    },
+    
+    renderOtherTemperatures: function(unit){
+        $$(".unit_label").invoke('hide');
+        $$("."+ unit +"_label").invoke('show');
+        
+        $$(".raw_temperature_F").each(function(elem){
+            var value = parseFloat(elem.readAttribute('raw_temperature_F'));
+            switch(unit){
+            case 'F':
+                value = Math.round(value);
+                break;
+            case 'C':
+                value = Yukon.Thermostat.celsiusToSafeCelsius(Yukon.Thermostat.fahrenheitToCelsius(value));
+                break;
+            default:
+                break;
+            }
+            elem.innerHTML = value
+        });
+    }
+}
+
+Yukon.Thermostat = {
+    _private: {
+        upperHeatF: 0,
+        lowerHeatF: 0,
+        upperCoolF: 0,
+        lowerCoolF: 0,
+        secondsResolution: 0, //seconds
+        secondsBetweenPeriods: 0, //minimum time between periods in seconds
+        
+        heatColor: {
+            r: {start: 242, end: 242},
+            g: {start: 150, end: 0},
+            b: {start: 29, end: 29},
+            a: {start: 1, end: 1}
+        },
+        
+        coolColor: {
+            r: {start: 64, end: 189},
+            g: {start: 153, end: 220},
+            b: {start: 255, end: 255},
+            a: {start: 1, end: 1}
+        }  
+    },
+    
+    init: function(args){
+        for(var key in args){
+            this._private[key] = args[key];
+        }
+    },
+    
+    calcHeatColor: function(temp){
+        var _self = Yukon.Thermostat;
+        var r = _self._private.heatColor.r.start;
+        var g = Math.round(_self._private.heatColor.g.start - Math.abs((temp - _self._private.lowerHeatF) * ((_self._private.heatColor.g.end - _self._private.heatColor.g.start)/(_self._private.upperHeatF - _self._private.lowerHeatF))));
+        var b = _self._private.heatColor.b.start; 
+        return "rgb("+ r +", "+ g +", "+ b +")";
+    },
+    
+    calcCoolColor: function(temp){
+        var _self = Yukon.Thermostat;
+        var tempRange = _self._private.upperCoolF - _self._private.lowerCoolF;
+        var RRange = _self._private.coolColor.r.end - _self._private.coolColor.r.start;
+        var GRange = _self._private.coolColor.g.end - _self._private.coolColor.g.start;
+        var r = Math.round(_self._private.coolColor.r.start + ((temp - _self._private.lowerCoolF) * (RRange/tempRange)));
+        var g = Math.round(_self._private.coolColor.g.start + ((temp - _self._private.lowerCoolF) * (GRange/tempRange)));
+        var b = _self._private.coolColor.b.start;
+        return "rgb("+ r +","+ g +","+ b +")";
+    },
+    
+    halfIntegerAccuracy: function(value){
+        return Math.round(value * 2) / 2.0;
+    },
+    
+    fahrenheitToCelsius: function(fahrenheit){
+        return ((fahrenheit - 32) * 5) / 9.0;  
+    },
+    
+    celsiusToFahrenheit: function(celsius){
+        return ((celsius * 9) / 5.0) + 32;
+    },
+    
+    celsiusToSafeCelsius: function(celsius) {
+        //ensure we have 0.5 accurracy
+        return parseFloat(Yukon.Thermostat.halfIntegerAccuracy(celsius).toFixed(1)).toFixed(1);
+    },
+    
+    convertFTemperatureToDisplaySafeTemperature: function(temperature, desiredUnit){
+        var _self = Yukon.Thermostat;
+        
+        switch(desiredUnit){
+        case 'F':
+            return Math.round(temperature);
+            break;
+        case 'C':
+            return _self.celsiusToSafeCelsius(_self.fahrenheitToCelsius(temperature));
+            break;
+        default:
+            return temperature;
+            break;
+        }
+    },
+    
+    toValidTemperatureF: function(temperature, incomingUnit, mode){
+        var _self = Yukon.Thermostat;
+        var temperature_f = -1;
+        
+        switch(mode){
+        case 'EMERGENCY_HEAT':
+        case 'HEAT':
+            temperature_f = _self._toValidHeatTemperatureF(temperature, incomingUnit);
+            break;
+        case 'COOL':
+            temperature_f = _self._toValidCoolTemperatureF(temperature, incomingUnit);
+            break;
+        default:
+            return temperature;
+            break;
+        }
+        
+        return temperature_f;
+    },
+    
+    isValidTemperatureF: function(temperature, incomingUnit, mode){
+        var _self = Yukon.Thermostat;
+        var temperature_f = temperature;
+        
+        switch(incomingUnit){
+        case 'F':            
+            break;
+        case 'C':
+            temperature_f = _self.celsiusToFahrenheit(temperature);
+            break;
+        default:
+            return false;
+            break;
+        }
+        
+        switch(mode){
+        case 'EMERGENCY_HEAT':
+        case 'HEAT':
+            if((temperature_f >= _self._private.lowerHeatF) && (temperature_f <= _self._private.upperHeatF)){
+                return true;
+            }
+            break;
+        case 'COOL':
+            if((temperature_f >= _self._private.lowerCoolF) && (temperature_f <= _self._private.upperCoolF)){
+                return true;
+            }
+            break;
+        default:
+            return false;
+        }
+        
+        return false; 
+    },
+    
+    _toValidHeatTemperatureF: function(temperature, incomingUnit){
+        var _self = Yukon.Thermostat;
+        var temperature_f = temperature;
+        
+        switch(incomingUnit){
+        case 'F':            
+            break;
+        case 'C':
+            temperature_f = _self.celsiusToFahrenheit(temperature);
+            break;
+        default:
+            return -1;
+            break;
+        }
+        
+        if(temperature_f < _self._private.lowerHeatF){
+            temperature_f = _self._private.lowerHeatF;
+        }else if(temperature_f > _self._private.upperHeatF){
+            temperature_f = _self._private.upperHeatF;
+        }
+        
+        return temperature_f; 
+    },
+    
+    _toValidCoolTemperatureF: function(temperature, incomingUnit){
+        var _self = Yukon.Thermostat;
+        var temperature_f = temperature;
+        
+        switch(incomingUnit){
+        case 'F':            
+            break;
+        case 'C':
+            temperature_f = _self.celsiusToFahrenheit(temperature);
+            break;
+        default:
+            return -1;
+            break;
+        }
+        
+        if(temperature_f < _self._private.lowerCoolF){
+            temperature_f = _self._private.lowerCoolF;
+        }else if(temperature_f > _self._private.upperCoolF){
+            temperature_f = _self._private.upperCoolF;
+        }
+        
+        return temperature_f;
+    }
+}
+

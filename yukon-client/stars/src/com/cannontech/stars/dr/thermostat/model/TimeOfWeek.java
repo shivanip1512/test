@@ -19,7 +19,7 @@ public enum TimeOfWeek {
     
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.dr.consumer.xml
-    private final static String keyPrefix = "yukon.dr.consumer.thermostat.schedule.";
+    private final static String keyPrefix = "yukon.web.modules.consumer.thermostat.schedule.";
 
     private int definitionId;
     private String commandString;

@@ -269,7 +269,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         for(int statId : thermostatIds) {
             thermostats.add(inventoryDao.getThermostatById(statId));
         }
+        
+        String temperatureUnit = customerDao.getCustomerForUser(user.getUserID()).getTemperatureUnit();
+        
         map.addAttribute("thermostats", thermostats);
+        map.addAttribute("temperatureUnit", temperatureUnit);
         
         return "consumer/history.jsp";
     }

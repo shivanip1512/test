@@ -9,7 +9,7 @@ public enum ThermostatEventType implements DisplayableEnum {
     
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.dr.consumer.xml
-    private final static String keyPrefix = "yukon.dr.consumer.thermostat.eventType.";
+    private final static String keyPrefix = "yukon.web.modules.consumer.thermostat.eventType.";
     
     /**
      * I18N key for the display text for this action

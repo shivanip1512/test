@@ -15,7 +15,6 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -267,7 +266,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public Temperature getTempOrDefault(Integer temperature, String temperatureUnit) {
+    public Temperature getTempOrDefault(Double temperature, String temperatureUnit) {
         if(temperature == null) {
             return ThermostatManualEvent.DEFAULT_TEMPERATURE;
         } else {
@@ -317,8 +316,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
                                                                   boolean hold, 
                                                                   boolean runProgram, 
-                                                                  Temperature tempInF, 
-                                                                  String temperatureUnit, 
+                                                                  Temperature temperature, 
                                                                   String mode, 
                                                                   String fan, 
                                                                   CustomerAccount account, 
@@ -331,7 +329,7 @@ public class ThermostatServiceImpl implements ThermostatService {
            ThermostatManualEvent event = new ThermostatManualEvent();
            event.setThermostatId(thermostatId);
            event.setHoldTemperature(hold);
-           event.setPreviousTemperature(tempInF);
+           event.setPreviousTemperature(temperature);
            event.setRunProgram(runProgram);
            event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
            event.setAction(CustomerAction.MANUAL_OPTION);
@@ -381,7 +379,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         if (event.isRunProgram()) {
             logMsg.append(", Run Program");
         } else {
-            logMsg.append(", Temp:" + event.getPreviousTemperature().toFahrenheit().getValue() + CtiUtilities.FAHRENHEIT_CHARACTER);
+            logMsg.append(", Temp:" + event.getPreviousTemperature().toString());
             if (event.isHoldTemperature()) {
                 logMsg.append(" (HOLD)");
             }

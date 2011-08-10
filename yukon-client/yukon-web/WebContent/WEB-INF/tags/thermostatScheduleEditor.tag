@@ -13,8 +13,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msg2 var="heatLabel"  key="yukon.dr.consumer.thermostat.mode.HEAT"/>
-<cti:msg2 var="coolLabel"  key="yukon.dr.consumer.thermostat.mode.COOL"/>
+<cti:msg2 var="heatLabel"  key="yukon.web.modules.consumer.thermostat.mode.HEAT"/>
+<cti:msg2 var="coolLabel"  key="yukon.web.modules.consumer.thermostat.mode.COOL"/>
 
 <div class="schedule_editor ${pageScope.styleClass} ${pageScope.schedule.thermostatScheduleMode}">
     <form id="form_${pageScope.schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="Yukon.ThermostatScheduleEditor.prepForm(this);">
@@ -44,10 +44,10 @@
                                 <i:inline key="yukon.web.components.thermostat.period.${period}" />
                             </div>
                             <div class="temp heat">
-                                <i:inline key="yukon.dr.consumer.thermostat.mode.HEAT"/>
+                                <i:inline key="yukon.web.modules.consumer.thermostat.mode.HEAT"/>
                             </div>
                             <div class="temp cool">
-                                <i:inline key="yukon.dr.consumer.thermostat.mode.COOL"/>
+                                <i:inline key="yukon.web.modules.consumer.thermostat.mode.COOL"/>
                             </div>
                         </div>
                     </div>

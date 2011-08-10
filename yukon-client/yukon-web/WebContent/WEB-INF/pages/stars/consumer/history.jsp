@@ -7,6 +7,16 @@
 
 <cti:standardPage module="consumer" page="history">
 <cti:standardMenu/>
+<cti:msgScope paths="modules.consumer.history">
+
+<cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
+
+<script type="text/javascript">
+Event.observe(window, 'load', function(){
+    //for rendering the display safe temperatures in the correct unit for the customer    
+    Yukon.ThermostatManualEditor.renderOtherTemperatures('${temperatureUnit}');
+});
+</script>
 
 <h3>
     <cti:msg key="yukon.web.modules.consumer.history.pageTitle" /><br>
@@ -57,14 +67,9 @@
                                             <td>
                                                 <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                     <!-- Temperature and Degree Units -->
-                                                    <c:choose>
-                                                        <c:when test="${event.temperatureUnit == 'F'}">
-                                                            <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="${historyItem.manualTemp}"/> 
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="${historyItem.manualTempInC}"/>
-                                                        </c:otherwise>
-                                                    </c:choose>
+                                                    <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualTemp.value}'></span>"/>
+                                                    <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
+                                                    <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>,
                                                     <!-- Heat/Cool Mode -->
                                                     <cti:msg key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
                                                     <cti:msg key="${historyItem.manualMode}" />, 
@@ -101,4 +106,5 @@
                         </c:otherwise>
                     </c:choose>
                 </tags:pagedBox2>
+            </cti:msgScope>
 </cti:standardPage>

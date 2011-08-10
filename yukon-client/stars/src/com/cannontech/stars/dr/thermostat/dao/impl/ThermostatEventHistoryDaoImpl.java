@@ -161,7 +161,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
             msps.addValue("ThermostatId", thermostatEvent.getThermostatId());
             if(thermostatEvent instanceof ManualThermostatEvent) {
                 ManualThermostatEvent manualEvent = (ManualThermostatEvent) thermostatEvent;
-                msps.addValue("ManualTemp", manualEvent.getManualTemp());
+                msps.addValue("ManualTemp", manualEvent.getManualTemp().toFahrenheit().getValue());
                 msps.addValue("ManualFan", manualEvent.getManualFan());
                 msps.addValue("ManualMode", manualEvent.getManualMode());
                 msps.addValue("ManualHold", YNBoolean.valueOf(manualEvent.isManualHold()));

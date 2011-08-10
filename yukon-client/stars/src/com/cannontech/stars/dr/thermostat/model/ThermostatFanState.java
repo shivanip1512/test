@@ -16,7 +16,7 @@ public enum ThermostatFanState implements ListEntryEnum, DisplayableEnum {
 
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.common.device.bulk.bulkAction.xml
-    private final static String keyPrefix = "yukon.dr.consumer.thermostat.fan.";
+    private final static String keyPrefix = "yukon.web.modules.consumer.thermostat.fan.";
 
     private int definitionId;
     private String commandString;

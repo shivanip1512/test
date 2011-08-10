@@ -401,3 +401,56 @@ a.default {
     float: right;
 }
 
+.manualThermostat {
+    margin-right: 20px;
+}
+
+.manualThermostat ul {
+    padding: 0;
+    margin: 0;
+    line-height: 1.1em;
+}
+
+.manualThermostat input:disabled {
+    background-color: #f0f0f0;
+    color: #ccc;
+}
+
+.manualThermostat .thermostatModes {
+    margin: 0 18px;
+}
+
+.manualThermostat h2 {
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.manualThermostat li {
+    font-size: 12px;
+    padding-left: 20px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.manualThermostat .pipes li {
+    padding-left: 8px;
+}
+
+.manualThermostat .mode.selected, .manualThermostat .state.selected {
+    background: transparent url(../Icons/triangle-right.gif) 5px 3px no-repeat;
+}
+
+.manualThermostat .temperature {
+    border-radius: 8px;   
+}
+
+.manualThermostat .unit.selected {
+    color: black;
+    text-decoration: none;
+    cursor: default;
+}
+
+.manualThermostat .unit{
+    color: #0000EE;
+    text-decoration: underline;
+}

@@ -54,8 +54,7 @@ public interface ThermostatService {
     public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
                                                                    boolean hold, 
                                                                    boolean runProgram, 
-                                                                   Temperature tempInF, 
-                                                                   String temperatureUnit, 
+                                                                   Temperature temperature, 
                                                                    String mode, 
                                                                    String fan, 
                                                                    CustomerAccount account, 
@@ -83,7 +82,7 @@ public interface ThermostatService {
      * If the temperature value is null, returns the default temperature for a manual event in
      * If not, the temperature is returned in the supplied unit.
      */
-    public Temperature getTempOrDefault(Integer temperature, String temperatureUnit);
+    public Temperature getTempOrDefault(Double temperature, String temperatureUnit);
     
     /**
      * Parses a thermostat mode string value into a ThermostatMode object.  A blank string

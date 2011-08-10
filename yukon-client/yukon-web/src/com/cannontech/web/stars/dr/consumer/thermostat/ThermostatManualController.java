@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.temperature.Temperature;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -31,6 +33,8 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
@@ -41,6 +45,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class ThermostatManualController extends AbstractThermostatController {
     private AccountEventLogService accountEventLogService;
     private InventoryDao inventoryDao;
+    private CustomerDao customerDao;
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
@@ -64,14 +69,14 @@ public class ThermostatManualController extends AbstractThermostatController {
             // single thermostat selected
             int thermostatId = thermostatIds.get(0);
 
-            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostat.label",
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.label",
                                                                                        thermostat.getLabel());
             map.addAttribute("thermostatLabel", resolvable);
 
             event = customerEventDao.getLastManualEvent(thermostatId);
         } else {
             // multiple thermostats selected
-            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostat.multipleLabel");
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.multipleLabel");
             map.addAttribute("thermostatLabel", resolvable);
 
             event = new ThermostatManualEvent();
@@ -81,6 +86,9 @@ public class ThermostatManualController extends AbstractThermostatController {
         
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getLastNEventsByThermostatIds(thermostatIds, NUMBER_OF_HISTORY_ROWS_TO_DISPLAY);
         map.addAttribute("eventHistoryList", eventHistoryList);
+
+        String temperatureUnit = customerDao.getCustomerForUser(user.getUserID()).getTemperatureUnit();
+        map.addAttribute("temperatureUnit", temperatureUnit);
         
         return "consumer/thermostat.jsp";
     }
@@ -117,32 +125,47 @@ public class ThermostatManualController extends AbstractThermostatController {
 
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
     public String manual(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String mode, String fan, String temperatureUnit, Integer temperature,
-            YukonUserContext userContext, HttpServletRequest request, ModelMap map) 
-            throws Exception {
+                         String mode, 
+                         String fan, 
+                         String temperatureUnit, 
+                         Double temperature,
+                         FlashScope flashScope,
+                         YukonUserContext userContext,
+                         HttpServletRequest request,
+                         ModelMap map) throws Exception {
 
-        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temperature, userContext, request, map);
+        Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
+        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, flashScope, map);
 
-        return "redirect:/spring/stars/consumer/manualComplete";
+        return "redirect:/spring/stars/consumer/thermostat/view";
     }
     
     @RequestMapping(value = "/consumer/thermostat/runProgram", method = RequestMethod.POST)
     public String runProgram(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String mode, String fan, String temperatureUnit, Integer temperature, YukonUserContext userContext,
-            HttpServletRequest request, ModelMap map) throws Exception {
+                             String mode, 
+                             String fan, 
+                             String temperatureUnit, 
+                             Double temperature, 
+                             YukonUserContext userContext,
+                             FlashScope flashScope,
+                             HttpServletRequest request,
+                             ModelMap map) throws Exception {
 
-        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temperature, userContext, request, map);
+        Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
+        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, flashScope, map);
 
-        return "redirect:/spring/stars/consumer/runProgramComplete";
+        //redirect to the list of saved schedules as the restored program MAY be on this page
+        return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
     }
 
 	private void executeManualEvent(List<Integer> thermostatIds, 
 	                                String mode,
 	                                String fan, 
 	                                String temperatureUnit,
-	                                Integer temperatureValue,
+	                                Temperature temperature,
 	                                YukonUserContext userContext,
-	                                HttpServletRequest request, 
+	                                HttpServletRequest request,
+	                                FlashScope flashScope,
 	                                ModelMap map) {
 		
 	    CustomerAccount account = getCustomerAccount(request);
@@ -164,77 +187,36 @@ public class ThermostatManualController extends AbstractThermostatController {
         //button was not pressed
         boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
-        ThermostatManualEventResult result = null;
-        Temperature temperature = thermostatService.getTempOrDefault(temperatureValue, temperatureUnit);
+        ThermostatManualEventResult message = null;
         
         //Validate temperature for mode and thermostat type
         if(needsTempValidation) {
             ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIds, temperature, thermostatMode);
             
             if(limitMessage != null) {
-                map.addAttribute("message", "yukon.dr.consumer.manualevent.result.CONSUMER_" + limitMessage.name());
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.manualevent.result.CONSUMER_" + limitMessage.name()));
                 isValid = false;
             }
         }
 
         if(isValid) {
             boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
-            String key = "yukon.dr.consumer.manualevent.result.CONSUMER_";
-            result = thermostatService.setupAndExecuteManualEvent(thermostatIds, hold, runProgram, temperature, temperatureUnit, mode, fan, account, userContext);
-            if (result.isFailed()) {
-                if (thermostatIds.size() > 1) {
-                    key += "MULTIPLE_ERROR";
-                } else {
-                    key += "ERROR";
-                }
-            } else {
-                key += result.name();
+            message = thermostatService.setupAndExecuteManualEvent(thermostatIds, hold, runProgram, temperature, mode, fan, account, userContext);
+            
+            // Add thermostat labels to message
+            List<String> thermostatLabels = new ArrayList<String>();
+            for(Integer thermostatId : thermostatIds) {
+                Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+                thermostatLabels.add(thermostat.getLabel());
             }
-            map.addAttribute("message", key);
+            String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
+            String key = "yukon.dr.consumer.manualevent.result.CONSUMER_" + message.name();
+            MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
+            flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
     	}
         
         // Manually put thermsotatIds into model for redirect
         map.addAttribute("thermostatIds", thermostatIds.toString());
-	}
-
-    @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
-    public String manualComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String message, LiteYukonUser user, ModelMap map) throws Exception {
-
-        setupManualCompletePage(thermostatIds, message, user, map);
-
-        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/view");
-        
-        return "consumer/actionComplete.jsp";
-    }
-    
-    @RequestMapping(value = "/consumer/runProgramComplete", method = RequestMethod.GET)
-    public String runProgramComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String message, LiteYukonUser user, ModelMap map) throws Exception {
-
-        setupManualCompletePage(thermostatIds, message, user, map);
-
-        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/schedule/view/saved");
-        
-        return "consumer/actionComplete.jsp";
-    }
-
-	private void setupManualCompletePage(List<Integer> thermostatIds,
-			String message, LiteYukonUser user, ModelMap map) {
-		accountCheckerService.checkInventory(user, 
-                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
-        
-        List<String> thermostatLabels = new ArrayList<String>();
-        for(Integer thermostatId : thermostatIds) {
-        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        	thermostatLabels.add(thermostat.getLabel());
-        }
-        
-        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(message, thermostatLabelString);
-
-        map.addAttribute("message", resolvable);
-        map.addAttribute("thermostatIds", thermostatIds);
 	}
 
     @Autowired
@@ -260,5 +242,10 @@ public class ThermostatManualController extends AbstractThermostatController {
     @Autowired
     public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
         this.thermostatEventHistoryDao = thermostatEventHistoryDao;
+    }
+    
+    @Autowired
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
     }
 }

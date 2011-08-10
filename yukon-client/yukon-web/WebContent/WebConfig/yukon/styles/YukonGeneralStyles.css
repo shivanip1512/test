@@ -1438,6 +1438,7 @@ select:focus {
     float:left;
     line-height: 16px; /* since the 'icon' will be positioned top left */
     min-height: 16px; /* don't cut off the 'icon' */
+    cursor: pointer;
 }
 
 .search_button {
@@ -1616,4 +1617,10 @@ table.tabular th {
 
 .dateTimeInputWidth {
      width:200px;
+}
+
+.actsAsAnchor {
+    text-decoration: underline;
+    color: #0000EE;
+    cursor: pointer;
 }

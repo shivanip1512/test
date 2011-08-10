@@ -1,0 +1,153 @@
+<%@ attribute name="event" required="true" type="com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent"%>
+<%@ attribute name="scheduleableThermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
+<%@ attribute name="thermostatLabel" required="true" type="java.lang.String" description="The label of this thermostat"%>
+<%@ attribute name="canEditLabel" required="false" type="java.lang.Boolean" description="Allow editing of the Thermostat label?  (defaults to false)"%>
+<%@ attribute name="thermostatIds" required="true" type="java.lang.String" description="id(s) of the thermostat(s) we are sending manual commands to."%>
+<%@ attribute name="accountId" required="true" type="java.lang.String" description="ID of the account we are operating on." %>
+<%@ attribute name="temperatureUnit" required="true" type="java.lang.String" description="Acceptable units are: ['F', 'C'] determines the initial unit." %>
+<%@ attribute name="actionPath" required="true" type="java.lang.String" description="Where to submit the manual thermostat form to."%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<div class="boxContainer manualThermostat box fl">
+    <div class="boxContainer_titleBar">
+        <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
+        <c:choose>
+            <c:when test="${not multipleThermostatsSelected and canEditLabel}">
+                <form action="/spring/stars/consumer/thermostat/saveLabel" method="post">
+                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
+                    <span id="editName" style="display: none;">
+                        <input id="thermostatLabel" name="displayLabel" type="text" value="${thermostatLabel}" />
+                        <cti:button key="save" type="submit" styleClass="f_blocker"/>
+                        <cti:button key="cancel" styleClass="cancelLabelEdit"/>
+                    </span> 
+                    <span id="thermostatName">
+                        ${thermostatLabel}
+                        <span class="editLabel edit actsAsAnchor"><cti:msg2 key=".edit" /></span>
+                    </span>
+                </form>
+            </c:when>
+            <c:otherwise>
+                <span id="thermostatName">
+                    ${thermostatLabel}
+                </span>
+            </c:otherwise>
+        </c:choose>
+    </div>
+    <div class="boxContainer_content">
+        <div class="box clear" style="padding-bottom: .5em; font-size: .75em;">
+            <cti:msg2 var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
+            <cti:msg2 var="manualSettingsText" key="yukon.web.modules.operator.thermostatManual.manualSettings" />
+            <c:if test="${not empty event.date}">
+                <cti:formatDate value="${event.date}" type="BOTH" /> - ${(event.runProgram)? runProgramText : manualSettingsText}
+            </c:if>
+        </div>
+        
+        <div class="box temperatureDisplay fl">
+             <div class="box fl">
+                <input class="${event.modeString} temperature fl" type="text" name="temperature_display" maxlength="4" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
+                <input type="hidden" name="temperature" value="${(event.runProgram)? '' : event.previousTemperature.value}" />
+                <input type="hidden" name="temperatureUnit" value="F" /> <!-- currently always stored as Fahrenheit -->
+                <div class="box fl temperatureAdjust"> 
+                    <div class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp" htmlEscape="false" /></div>
+                    <div class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp" htmlEscape="false" /></div>
+                </div>          
+                <div class="temperatureUnit clear">
+                    <ul class="pipes">
+                        <li class="unit <c:if test="${temperatureUnit == 'C'}">selected</c:if>" unit="C"><i:inline key="yukon.web.defaults.celsius" /></li>
+                        <li class="unit <c:if test="${temperatureUnit == 'F'}">selected</c:if>" unit="F"><i:inline key="yukon.web.defaults.fahrenheit" /></li>
+                    </ul>
+                </div>
+            </div>
+        </div>    
+            
+        <div class="box fl">
+            <!-- Thermostat Modes -->
+            <div class="thermostatModes box fl">
+                <h2><cti:msg2 key="yukon.web.modules.operator.thermostatManual.mode" /></h2>
+                
+                <ul class="box">
+                <c:forEach var="thermostatMode" items="${scheduleableThermostatType.supportedModes}">
+                    <li class="mode ${(event.runProgram)? '' : (event.mode eq thermostatMode? 'selected' : '' )}" mode="${thermostatMode}">
+                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.mode.${thermostatMode}" />
+                    </li>
+                </c:forEach>
+                </ul>
+                <input id="mode" type="hidden" name="mode" value="${(event.runProgram)? '' : event.mode}">
+            </div>
+            
+            <!-- Fan States -->
+            <div class="fanStates box fl">
+                <h2><cti:msg2 key="yukon.web.modules.operator.thermostatManual.fan" /></h2>
+                
+                <ul class="box">
+                <c:forEach var="fanState" items="${scheduleableThermostatType.supportedFanStates}">
+                    <li class="state fan ${(event.runProgram)? '' : (event.fanStateString eq fanState? 'selected' : '' )}" state="${fanState}">
+                        <cti:msg2 key=".fan.${fanState}" />
+                    </li>
+                </c:forEach>
+                </ul>
+                <input id="fan" type="hidden" name="fan" value="${(event.runProgram)? '' : event.fanStateString}">
+            </div>
+        </div>
+        
+        <div class="thermostatHold box clear">
+            <input id="holdCheck" type="checkbox" name="hold" class="hold" <c:if test="${(not event.runProgram) && event.holdTemperature}">checked</c:if> />
+            <label for="holdCheck"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.hold" /></label>
+        </div>
+        
+        
+        <div class="box tac">
+            <cti:msg2 var="saveText" key="yukon.web.modules.operator.thermostatManual.submit" />
+            <input id="sendSettingsSubmit" type="button" value="${saveText}" class="formSubmit" popup_id="confirmPopup_${event.eventId}" />
+        </div>
+    </div>
+</div>
+
+<%-- Confirm Dialog for send settings --%>
+<i:simplePopup titleKey=".sendConfirm.title" on="sendSettingsSubmit" id="confirmPopup_${event.eventId}" styleClass="smallSimplePopup">
+    
+    <form action="${actionPath}" method="post">
+    
+        <input type="hidden" name="accountId"  value="${accountId}" />
+        <input type="hidden" name="thermostatIds"  value="${thermostatIds}" />
+        <input type="hidden" name="fan" value=""/>
+        <input type="hidden" name="temperature"/>
+        <input type="hidden" name="temperatureUnit" value=""/>
+        <input type="hidden" name="mode" value="">
+        <input type="hidden" name="hold"/>
+    
+        <div id="confirmMessage"><cti:msg2 key=".sendConfirm.message"/></div>
+        <br/>
+        
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".temperature" rowId="temperatureConfirm">
+                <span id="temperatureValueConfirm" class="temperatureConfirm"></span><span class="C unit"><i:inline key="yukon.web.defaults.celsius" /></span><span class="F unit"><i:inline key="yukon.web.defaults.fahrenheit" /></span>
+            </tags:nameValue2>
+            
+            <tags:nameValue2 nameKey=".mode" rowId="modeConfirm">
+                <span class="modeConfirm"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.mode.${(event.runProgram)? '' : event.modeString}"/></span>
+            </tags:nameValue2>
+            
+            <tags:nameValue2 nameKey=".fan" rowId="fanConfirm" rowClass="fan" >
+                <span class="fanConfirm"><cti:msg2 key=".fan.${(event.runProgram)? '' : event.fanStateString}"/></span>
+            </tags:nameValue2>
+            
+            <tags:nameValue2 nameKey=".hold" rowId="holdConfirm" rowClass="hold">
+                <span class="true"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.hold.on"/></span>
+                <span class="false"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.hold.off"/></span>
+            </tags:nameValue2>
+            
+        </tags:nameValueContainer2>
+        
+        <div class="actionArea">
+            <cti:button key="ok" type="submit" styleClass="f_blocker"/> 
+            <cti:button key="cancel" id="confirmCancel" styleClass="closePopup" />
+        </div>
+    </form>
+</i:simplePopup>

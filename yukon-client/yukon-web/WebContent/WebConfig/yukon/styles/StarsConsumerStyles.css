@@ -2,6 +2,20 @@ h3 {
     text-align: center;   
 }
 
+.clear {
+    clear: both;
+}
+
+.tac {
+    text-align: center;
+}
+
+.actsAsAnchor {
+    text-decoration: underline;
+    color: #0000EE;
+    cursor: pointer;
+}
+
 div.customerAccount {
 	font-size: .8em;
 }	
@@ -105,6 +119,11 @@ table.enrolledPrograms tr td.viewBordered {
 
 .plainText {
     font-size: 12px;
+    overflow:hidden;
+}
+
+.plainText ol {
+    padding-left: 2em;
 }
 
 .subItem {

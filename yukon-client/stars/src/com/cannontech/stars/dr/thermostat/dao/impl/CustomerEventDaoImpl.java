@@ -163,7 +163,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         SqlStatementBuilder eventSql = new SqlStatementBuilder();
         eventSql.append("INSERT INTO LMThermostatManualEvent");
         eventSql.append("(EventId, InventoryId, PreviousTemperature, HoldTemperature, OperationStateId, FanOperationId)");
-        eventSql.values(eventId, thermostatId, previousTemperature.toString(), YNBoolean.valueOf(holdTemperature),
+        eventSql.values(eventId, thermostatId, previousTemperature.toFahrenheit().getValue(), YNBoolean.valueOf(holdTemperature),
                         modeListEntry.getEntryID(), fanStateEntry.getEntryID());
 
         yukonJdbcTemplate.update(eventSql);

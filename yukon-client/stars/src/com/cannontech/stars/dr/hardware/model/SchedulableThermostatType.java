@@ -7,6 +7,7 @@ import org.joda.time.Duration;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
+import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.google.common.collect.Sets;
@@ -22,7 +23,10 @@ public enum SchedulableThermostatType {
                             Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
                                                   ThermostatScheduleMode.ALL),
                             Sets.immutableEnumSet(ThermostatFanState.AUTO,
-                                                  ThermostatFanState.ON)
+                                                  ThermostatFanState.ON),
+                            Sets.immutableEnumSet(ThermostatMode.COOL,
+                                                  ThermostatMode.HEAT,
+                                                  ThermostatMode.OFF)
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
 	                      Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88), 
@@ -33,7 +37,11 @@ public enum SchedulableThermostatType {
 	                      Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
 	                                            ThermostatScheduleMode.ALL),
                           Sets.immutableEnumSet(ThermostatFanState.AUTO,
-                                                ThermostatFanState.ON)
+                                                ThermostatFanState.ON),
+                          Sets.immutableEnumSet(ThermostatMode.COOL,
+                                                ThermostatMode.HEAT,
+                                                ThermostatMode.EMERGENCY_HEAT,
+                                                ThermostatMode.OFF)
 	),
     COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
                            Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
@@ -44,7 +52,10 @@ public enum SchedulableThermostatType {
                            Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, 
                                                  ThermostatScheduleMode.ALL),
                            Sets.immutableEnumSet(ThermostatFanState.AUTO,
-                                                 ThermostatFanState.ON)
+                                                 ThermostatFanState.ON),
+                           Sets.immutableEnumSet(ThermostatMode.COOL,
+                                                 ThermostatMode.HEAT,
+                                                 ThermostatMode.OFF)
     ),
 	UTILITY_PRO(HardwareType.UTILITY_PRO,
 				Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
@@ -57,7 +68,10 @@ public enum SchedulableThermostatType {
 				                      ThermostatScheduleMode.WEEKDAY_WEEKEND),
                 Sets.immutableEnumSet(ThermostatFanState.AUTO,
                                       ThermostatFanState.CIRCULATE,
-                                      ThermostatFanState.ON)
+                                      ThermostatFanState.ON),
+                Sets.immutableEnumSet(ThermostatMode.COOL,
+                                      ThermostatMode.HEAT,
+                                      ThermostatMode.OFF)
 	),
 	UTILITY_PRO_G2(HardwareType.UTILITY_PRO_G2,
                    Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
@@ -71,7 +85,10 @@ public enum SchedulableThermostatType {
                                          ThermostatScheduleMode.SEVEN_DAY),
                    Sets.immutableEnumSet(ThermostatFanState.AUTO,
                                          ThermostatFanState.CIRCULATE,
-                                         ThermostatFanState.ON)
+                                         ThermostatFanState.ON),
+                   Sets.immutableEnumSet(ThermostatMode.COOL,
+                                         ThermostatMode.HEAT,
+                                         ThermostatMode.OFF)
     ),
     UTILITY_PRO_G3(HardwareType.UTILITY_PRO_G3,
                    Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
@@ -85,7 +102,10 @@ public enum SchedulableThermostatType {
                                          ThermostatScheduleMode.SEVEN_DAY),
                    Sets.immutableEnumSet(ThermostatFanState.AUTO,
                                          ThermostatFanState.CIRCULATE,
-                                         ThermostatFanState.ON)
+                                         ThermostatFanState.ON),
+                   Sets.immutableEnumSet(ThermostatMode.COOL,
+                                         ThermostatMode.HEAT,
+                                         ThermostatMode.OFF)
     ),
 	UTILITY_PRO_ZIGBEE(HardwareType.UTILITY_PRO_ZIGBEE,
 	                   Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
@@ -99,7 +119,10 @@ public enum SchedulableThermostatType {
 	                                         ThermostatScheduleMode.SEVEN_DAY),
                        Sets.immutableEnumSet(ThermostatFanState.AUTO,
                                              ThermostatFanState.CIRCULATE,
-                                             ThermostatFanState.ON)
+                                             ThermostatFanState.ON),
+                       Sets.immutableEnumSet(ThermostatMode.COOL,
+                                             ThermostatMode.HEAT,
+                                             ThermostatMode.OFF)
 	)
 	;
 	
@@ -112,6 +135,7 @@ public enum SchedulableThermostatType {
 	private Duration minimumTimeBetweenPeriods;
 	private Set<ThermostatScheduleMode> supportedScheduleModes;
 	private Set<ThermostatFanState> supportedFanStates;
+	private Set<ThermostatMode> supportedThermostatModes;
 	private final ThermostatSchedulePeriodStyle periodStyle;
 	
 	SchedulableThermostatType(HardwareType hardwareType,
@@ -121,7 +145,8 @@ public enum SchedulableThermostatType {
 							  Duration minimumTimeBetweenPeriods,
 							  ThermostatSchedulePeriodStyle periodStyle,
 							  Set<ThermostatScheduleMode> supportedScheduleModes,
-							  Set<ThermostatFanState> supportedFanStates) {
+							  Set<ThermostatFanState> supportedFanStates,
+							  Set<ThermostatMode> supportedThermostatModes) {
 		
 		this.hardwareType = hardwareType;
 		this.lowerLimitCool = lowerLimitCool;
@@ -133,6 +158,7 @@ public enum SchedulableThermostatType {
 		this.periodStyle = periodStyle;
 		this.supportedScheduleModes = supportedScheduleModes;
 		this.supportedFanStates = supportedFanStates;
+		this.supportedThermostatModes = supportedThermostatModes;
 	}
 	
 	public HardwareType getHardwareType() {
@@ -154,6 +180,10 @@ public enum SchedulableThermostatType {
 	
 	public Set<ThermostatFanState> getSupportedFanStates() {
 	    return this.supportedFanStates;
+	}
+	
+	public Set<ThermostatMode> getSupportedModes() {
+	    return this.supportedThermostatModes;
 	}
 	
 	/**

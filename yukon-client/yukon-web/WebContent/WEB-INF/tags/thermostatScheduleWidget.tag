@@ -15,8 +15,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msg2 var="heatLabel"  key="yukon.dr.consumer.thermostat.mode.HEAT"/>
-<cti:msg2 var="coolLabel"  key="yukon.dr.consumer.thermostat.mode.COOL"/>
+<cti:msg2 var="heatLabel"  key="yukon.web.modules.consumer.thermostat.mode.HEAT"/>
+<cti:msg2 var="coolLabel"  key="yukon.web.modules.consumer.thermostat.mode.COOL"/>
 
 <div class="schedule small ${pageScope.styleClass}" id="scheduleId_${pageScope.schedule.accountThermostatScheduleId}">
     <div class="">
