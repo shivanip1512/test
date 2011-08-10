@@ -58,6 +58,8 @@ YEvent.observeSelectorClick('button[name^=assignedDevicesCommissionSubmit_], but
     } else if (button.name.startsWith('assignedDevicesDecommissionSubmit_')) {
         url += 'decommission';
         deviceId = button.name.sub('assignedDevicesDecommissionSubmit_', '');
+    } else {
+        return;
     }
     
     Yukon.ui.blockElement({selector:'#assignedDevices_content'});

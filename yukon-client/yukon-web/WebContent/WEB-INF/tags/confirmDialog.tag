@@ -12,10 +12,16 @@
 <%@ attribute name="styleClass" rtexprvalue="true"%>
 <%@ attribute name="href" rtexprvalue="true"%>
 <%@ attribute name="endAction" description="The end action for the confirmDialog. The options for this are 'nothing' (the default--the confirmDialog stays shown), 'hide', or 'block' (the confirmDialog stays shown, but the page is blocked)"%>
+<%@ attribute name="autoAdjustDialog" type="java.lang.Boolean" rtexprvalue="true" description="Automatically centers and adjusts the size of the dialog box after window load."%>
 
 <cti:uniqueIdentifier var="uniqueId"/>
 <c:if test="${!empty pageScope.id}">
     <c:set var="uniqueId" value="${pageScope.id}"/>
+</c:if>
+
+<c:set var="autoAdjust" value="false"/>
+<c:if test="${!empty pageScope.autoAdjustDialog}">
+    <c:set var="autoAdjust" value="${pageScope.autoAdjustDialog}"/>
 </c:if>
 
 <c:set var="style" value="mediumSimplePopup"/>
@@ -37,7 +43,7 @@
                         <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit"
+                        <cti:button styleClass="${pageScope.styleClass}" key="ok"
                             name="${pageScope.submitName}" href="${pageScope.href}" />
                     </c:if>
                 </c:when>
@@ -47,7 +53,7 @@
                             onclick="$('${uniqueId}').hide()" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit"
+                        <cti:button styleClass="${pageScope.styleClass}" key="ok"
                             name="${pageScope.submitName}" href="${pageScope.href}"
                             onclick="$('${uniqueId}').hide()" />
                     </c:if>
@@ -59,7 +65,7 @@
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
-                            type="submit" name="${pageScope.submitName}" href="${pageScope.href}" />
+                            name="${pageScope.submitName}" href="${pageScope.href}" />
                     </c:if>
                 </c:when>
             </c:choose>
@@ -67,3 +73,11 @@
         </div>
     </i:simplePopup>
 </cti:msgScope>
+
+<c:if test="${autoAdjust == true}">
+    <script type="text/javascript">
+        callAfterMainWindowLoad(function () {
+            adjustDialogSizeAndPosition('${uniqueId}');
+        });
+    </script>
+</c:if>
