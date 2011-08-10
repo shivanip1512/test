@@ -130,9 +130,9 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         //if average -1 < x >= -100
         //else 100
         
-        if (standardCycle > 0 || standardCycle <= 100) {
+        if (standardCycle > 0 && standardCycle <= 100) {
             chMessage.setReductionRatio(standardCycle);
-        } else if (averageCycle > 0 || averageCycle <= 100) {
+        } else if (averageCycle > 0 && averageCycle <= 100) {
             chMessage.setReductionRatio(averageCycle);
         } else {
             chMessage.setReductionRatio(100);
