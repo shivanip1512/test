@@ -8,5 +8,36 @@
     <entry key="yukon.web.modules.adminSetup.systemAdministration.multiSpeakSetup">MultiSpeak Setup</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.userGroupEditor">User/Group Editor</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.substations">Substations</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.encryption">Encryption</entry>
     
+    <entry key="yukon.web.modules.adminSetup.encryption.moduleName">Encryption</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.pageName">Encryption</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.pageDescription">Encryption</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.delete.hoverText">Erase key and disable encryption</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.delete.label"></entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteDisabled.label"></entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteDisabled.imageUrl">/WebConfig/yukon/Icons/delete_disabled_gray.gif</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.add.hoverText">Enable</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.add.label"></entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addDisabled.label"></entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addDisabled.imageUrl">/WebConfig/yukon/Icons/add_disabled_gray.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.saveBtn.label">Save</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.saveBtn.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.cancelBtn.label">Cancel Changes</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.cancelBtn.imageUrl">/WebConfig/yukon/Icons/stop.gif</entry>
+
+    <entry key="yukon.web.modules.adminSetup.encryption.paoNameLbl">Pao Name</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.paoTypeLbl">Pao Type</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.actionsLbl">Actions</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.CPSkeyLbl">CPS One-Way OTA Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.saveBtn">Save</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.cancelBtn">Cancel Changes</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.noRoutesMsg">No routes are available for encryption</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.disabledMsg">disabled</entry>
+
 </properties>

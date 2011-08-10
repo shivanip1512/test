@@ -1185,6 +1185,16 @@
                         </option>
                     </options>
                 </option>
+                <option name="encryption">
+                    <requireRoleProperty value="ADMIN_SUPER_USER" />
+                    <requireRoleProperty value="SHOW_ONE_WAY_ENCRYPT" />
+                    <link>/spring/adminSetup/encryption/view</link>
+                    <options>
+                        <option name="home">
+                            <link>/spring/adminSetup/encryption/view</link>
+                        </option>
+                    </options>
+                </option>                
             </options>
         </menu>
         
@@ -1194,6 +1204,11 @@
                 <menu>adminSetup</menu>
                 <link>/spring/adminSetup/systemAdmin</link>
                 <pages>
+                    <page name="encryption" type="BASIC">
+                        <menu>encryption|home</menu>
+                        <link>/spring/adminSetup/encryption/view</link>
+                    </page>
+                    
                     <page name="substationToRouteMapping" type="BASIC">
                         <menu>substationToRouteMapping|home</menu>
                         <link>/spring/multispeak/setup/routemapping/mappings</link>

@@ -1,6 +1,7 @@
 package com.cannontech.database.db.pao;
 
 import com.cannontech.common.pao.PaoInfo;
+import com.cannontech.core.dao.NotFoundException;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -75,7 +76,7 @@ public class StaticPaoInfo extends DBPersistent
 			setStaticPaoInfoId((Integer) results[0] );
 			setValue( (String) results[1] );
 		} else {
-			throw new Error(getClass() + " - Incorrect Number of results retrieved");
+		    throw new NotFoundException("Incorrect Number of results retrieved");
 		}
 	}
 	
@@ -96,6 +97,10 @@ public class StaticPaoInfo extends DBPersistent
         return staticPaoInfoId;
     }
 
+
+    public void setInfoKey(String infoKey) {
+        this.infoKey = infoKey;
+    }
 
     public void setStaticPaoInfoId(Integer staticPaoInfoId) {
         this.staticPaoInfoId = staticPaoInfoId;
