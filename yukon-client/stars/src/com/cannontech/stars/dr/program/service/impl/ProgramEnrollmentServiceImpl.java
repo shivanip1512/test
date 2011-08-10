@@ -152,34 +152,36 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {
                 boolean toConfig = HardwareAction.isToConfig(liteHw, liteCustomerAccount);
                 
-                if (toConfig) {
-                    //ZigBee related configs
-                    YukonListEntry yukonListEntry = yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
-                    HardwareType hardwareType = HardwareType.valueOf(yukonListEntry.getYukonDefID());
-                    
-                    // If send config commands to device.
-                    if (hardwareType.isZigbee()) {
-                        //Determine Gateway and Device Id.
-                        int deviceId = liteHw.getDeviceID();
-                        int lmGroupId = gatewayDeviceDao.getLMGroupIdByDeviceId(deviceId);
-                        
-                        //Build Attributes to send
-                        Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();
-                        
-                        //Utility Enrollment group
-                        int utilEnrollGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(lmGroupId);
-                        if (utilEnrollGroup == 0) {
-                            log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
-                        } else {
-                            attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
-                            zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
-                        }
-                    }
-                
+                if (toConfig) {                
                     // Send the reenable command if hardware status is unavailable,
                     // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-                    if (!trackHardwareAddressingEnabled && automaticConfigurationEnabled) {
-                        YukonSwitchCommandAction.sendConfigCommand( yukonEnergyCompany, liteHw, false, null );
+
+                    if (automaticConfigurationEnabled) {
+                        //ZigBee related configs
+                        YukonListEntry yukonListEntry = yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
+                        HardwareType hardwareType = HardwareType.valueOf(yukonListEntry.getYukonDefID());
+
+                        if (hardwareType.isZigbee()) {
+                            //Determine Gateway and Device Id.
+                            int deviceId = liteHw.getDeviceID();
+                            int lmGroupId = gatewayDeviceDao.getLMGroupIdByDeviceId(deviceId);
+                            
+                            //Build Attributes to send
+                            Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();
+                            
+                            //Utility Enrollment group
+                            int utilEnrollGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(lmGroupId);
+                            if (utilEnrollGroup == 0) {
+                                log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
+                            } else {
+                                attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
+                                zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
+                            }
+                        } else { //Kept this from an 'else if' to be clear we mean NOT ZigBee
+                            if (!trackHardwareAddressingEnabled) {
+                                YukonSwitchCommandAction.sendConfigCommand( yukonEnergyCompany, liteHw, false, null );
+                            }
+                        }
                     } else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
                         YukonSwitchCommandAction.sendEnableCommand( yukonEnergyCompany, liteHw, null );
                     }
