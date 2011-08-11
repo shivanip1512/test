@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -17,14 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks.ScheduledRphDuplicateDeletionExecutionTask;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -40,34 +38,27 @@ public class MaintenanceController {
     private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> scheduledRphDuplicateDeletionExecutionJobDefinition;
     private CronExpressionTagService cronExpressionTagService;
     private JobManager jobManager;
-    private DateFormattingService dateFormattingService;
     
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext) {
         ScheduledRepeatingJob job = getRphDuplicateDeletionJob(userContext);
+        model.addAttribute("mode", PageEditMode.VIEW);
         setupPage(job, model, userContext);
-        return "maintenance/maintenanceView.jsp";
+        return "maintenance/home.jsp";
     }
     
     @RequestMapping
     public String edit(ModelMap model, YukonUserContext userContext) {
         ScheduledRepeatingJob job = getRphDuplicateDeletionJob(userContext);
+        model.addAttribute("mode", PageEditMode.EDIT);
         setupPage(job, model, userContext);
-        return "maintenance/maintenanceEdit.jsp";
+        return "maintenance/home.jsp";
     }
     
     private ScheduledRepeatingJob setupPage(ScheduledRepeatingJob job, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("job", job);
         CronExpressionTagState expressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
         model.addAttribute("expressionTagState", expressionTagState);
-        
-        LocalDate startDate = new LocalDate(userContext.getJodaTimeZone());
-        startDate = startDate.minusWeeks(2);
-        String startDateString = dateFormattingService.format(startDate, DateFormatEnum.DATE, userContext);
-        LocalDate stopDate = new LocalDate(userContext.getJodaTimeZone());
-        String stopDateString = dateFormattingService.format(stopDate, DateFormatEnum.DATE, userContext);
-        model.addAttribute("startDate", startDateString);
-        model.addAttribute("stopDate", stopDateString);
         return job;
     }
 
@@ -83,7 +74,8 @@ public class MaintenanceController {
             MessageSourceResolvable invalidCronMsg =
                 new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.maintenance.invalidCron");
             flashScope.setError(invalidCronMsg);
-            return "maintenance/maintenanceEdit.jsp";
+            model.addAttribute("mode", PageEditMode.EDIT);
+            return "maintenance/home.jsp";
         }
         if (job.isDisabled()) {
             job.setCronString(cronExpression);
@@ -157,9 +149,5 @@ public class MaintenanceController {
     @Autowired
     public void setJobManager(JobManager jobManager) {
         this.jobManager = jobManager;
-    }
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
     }
 }

@@ -368,6 +368,10 @@
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}</entry>
     <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}</entry>    
+    
+    <!--  System Administration -->
+    <!-- Maintenance -->
+    <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
 
 <!--  Monitors -->
     <!-- Status Point Monitor -->
@@ -401,9 +405,5 @@
 
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssigned">ZigBee device {1} was assigned to the ZigBee gateway {2}.</entry>
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} was unassigned from the ZigBee gateway {2}.</entry>
-    
-<!--  System Administration -->
-    <!-- Maintenance -->
-    <entry key="yukon.common.events.systemAdmin.maintenance.rphDuplicateDeletion.delete">{7} duplicate RawPointHistory rows deleted from database.</entry>
 
 </properties>
