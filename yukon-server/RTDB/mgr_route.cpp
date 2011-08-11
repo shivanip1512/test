@@ -273,7 +273,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                 {
                     CtiSmartMap<CtiRouteBase>::reader_lock_guard_t  guard( _smartMap.getLock() );
 
-                    for ( spiterator sp = begin(); sp != end() ; sp = nextPos(sp) )
+                    for ( spiterator sp = begin(); sp != end() ; ++sp )
                     {
                         paoids.insert(sp->first);
                     }
