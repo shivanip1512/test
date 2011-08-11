@@ -58,11 +58,15 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     private JmsTemplate jmsTemplate;
     
-    public static String digiBaseUrl;
+    private static String digiBaseUrl;
     
     @PostConstruct
     public void initialize() {
         digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://developer.idigi.com/");
+    }
+    
+    public static String getDigiBaseUrl() {
+        return digiBaseUrl;
     }
     
     @Override

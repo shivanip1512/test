@@ -1,9 +1,7 @@
 package com.cannontech.thirdparty.digi.service.impl;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +23,6 @@ import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeUpdateService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
-import com.google.common.collect.Sets;
 
 public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
 
@@ -38,70 +35,74 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
     
     private class SmartRunnable implements Runnable {
 
-        public Duration timeToPoll;
-        private Map<ZigbeeDevice,Instant> devicesToPoll = Collections.synchronizedMap(new HashMap<ZigbeeDevice, Instant>());
-        
-        @Override
-        public void run() {
-            synchronized (devicesToPoll) {
-                
-                Instant now = new Instant();
-                Set<ZigbeeDevice> devicesToRemove = Sets.newHashSet();
-                
-                //Clean up
-                for (ZigbeeDevice device : devicesToPoll.keySet()) {
-                    Instant stopTime = devicesToPoll.get(device);
-                    if (now.isAfter(stopTime)) {
-                        log.debug("Scanning time has expired for " + device.getName());
-                        devicesToRemove.add(device);
-                        continue;
-                    }
-                    
-                    PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                    if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState() ) {
-                        log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, halting ping. " + device.getName());
-                        devicesToRemove.add(device);
-                        continue;
-                    }
-                }
-                
-                for (ZigbeeDevice device : devicesToRemove) {
-                    log.debug("Halting Scanning of, " + device.getName() + ".");
-                    devicesToPoll.remove(device);
-                }
-                
-                //Poll away
-                for (ZigbeeDevice device : devicesToPoll.keySet()) {
-                    try {
-                        Instant stopTime = devicesToPoll.get(device);
-                        
-                        if (device.getPaoIdentifier().getPaoType() == PaoType.DIGIGATEWAY) {
-                            log.debug("Updating Gateway Status with name, " + device.getName() + ". Scanning will continue until: " + stopTime.toDate());
-                            zigbeeWebService.updateGatewayStatus(device);
-                        } else {
-                            log.debug("Updating EndPoint Status with name, " + device.getName() + ". Scanning will continue until: " + stopTime.toDate());
-                            zigbeeWebService.updateEndPointStatus(device);
-                        }
-                    }
-                    catch(Exception e) {
-                        log.error("Error executing smart poll on device: " + device.getName(),e);
-                    }
-                }
+        public Duration timeToPoll; 
+
+        private class DeviceToPoll {
+            private ZigbeeDevice device;
+            private Instant pollStopTime;
+            
+            public DeviceToPoll(ZigbeeDevice device,Instant pollStopTime) {
+                this.device = device;
+                this.pollStopTime = pollStopTime;
+            }
+            
+            public ZigbeeDevice getDevice() {
+                return device;
+            }
+            public Instant getPollStopTime() {
+                return pollStopTime;
             }
         }
         
-        public void enableSmartPollingForDevice(ZigbeeDevice device) {
-            synchronized (devicesToPoll) {
-                
-                PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState()) {
-                    log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, will not ping device " + device.getName());
-                    return;
+        private ConcurrentSkipListSet<DeviceToPoll> skipListSet = new ConcurrentSkipListSet<DigiSmartUpdateServiceImpl.SmartRunnable.DeviceToPoll>();
+        
+        @Override
+        public void run() {           
+            Instant now = new Instant();
+            
+            //Clean up
+            Iterator<DeviceToPoll> iterator = skipListSet.iterator();
+            while (iterator.hasNext()) {
+                DeviceToPoll entry = iterator.next();
+               
+                Instant stopTime = entry.getPollStopTime();
+                if (now.isAfter(stopTime)) {
+                    log.debug("Scanning time has expired for " + entry.getDevice().getName());
+                    iterator.remove();
+                    continue;
                 }
                 
-                Instant expireTime = new Instant().plus(timeToPoll);
-                devicesToPoll.put(device,expireTime);
+                PointValueHolder pvh = attributeDynamicDataSource.getPointValue(entry.getDevice(), BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState() ) {
+                    log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, halting ping. " + entry.getDevice().getName());
+                    iterator.remove();
+                    continue;
+                }
+                
+                try {
+                    if (entry.device.getPaoIdentifier().getPaoType() == PaoType.DIGIGATEWAY) {
+                        log.debug("Updating Gateway Status with name, " + entry.getDevice().getName() + ". Scanning will continue until: " + stopTime.toDate());
+                        zigbeeWebService.updateGatewayStatus(entry.getDevice());
+                    } else {
+                        log.debug("Updating EndPoint Status with name, " + entry.getDevice().getName() + ". Scanning will continue until: " + stopTime.toDate());
+                        zigbeeWebService.updateEndPointStatus(entry.getDevice());
+                    }
+                } catch(Exception e) {
+                    log.error("Error executing smart poll on device: " + entry.getDevice().getName(),e);
+                }
+
+            }        
+        }
+        
+        public void enableSmartPollingForDevice(ZigbeeDevice device) {
+            PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+            if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState()) {
+                log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, will not ping device " + device.getName());
+                return;
             }
+            
+            Instant expireTime = new Instant().plus(timeToPoll);
+            skipListSet.add(new DeviceToPoll(device,expireTime));
         }
     }
     

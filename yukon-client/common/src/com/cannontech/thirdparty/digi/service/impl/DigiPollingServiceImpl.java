@@ -1,11 +1,9 @@
 package com.cannontech.thirdparty.digi.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -20,17 +18,10 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.common.util.WaitableExecutor;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
-import com.cannontech.database.db.point.stategroup.Commissioned;
-import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
-import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
-import com.google.common.collect.Lists;
 
 public class DigiPollingServiceImpl {
     private static final Logger log = YukonLogManager.getLogger(DigiPollingServiceImpl.class);
@@ -38,63 +29,39 @@ public class DigiPollingServiceImpl {
     private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
     private RestOperations restTemplate;
     private DigiResponseHandler digiResponseHandler;
-    private GatewayDeviceDao gatewayDeviceDao;
     private ScheduledExecutorService globalScheduledExecutor;
     private ConfigurationSource configurationSource;
-    private AttributeDynamicDataSource aDynamicDataSource;
 
     private ExecutorService fileReadThreadPool;
     
-    private class DigiGatewayFileReader implements Runnable {
+    private class DigiFileReader implements Runnable {
 
-        public ZigbeeDevice gateway;
+        public String filePath;
         
-        public DigiGatewayFileReader(ZigbeeDevice gateway) {
-            this.gateway = gateway;
+        public DigiFileReader(String filePath) {
+            this.filePath = filePath;
         }
      
         @Override
         public void run() {
-            String zbDeviceId = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
-            String folderUrl = DigiWebServiceImpl.digiBaseUrl + "ws/data/~/" + zbDeviceId;
-            
-            
-            String folderListResponse;
-            try {
-                //Get listing of files in folder
-                folderListResponse = restTemplate.getForObject(folderUrl + "?recursive=no", String.class);
-                
-                //Parse out file names
-                List<String> files = digiResponseHandler.handleFolderListingResponse(folderListResponse);
-                
-                log.debug("Processing " + files.size() + " files for gateway: " + gateway.getName());
-                
-                for (String fileName: files) {
-                    try {
-                        String deviceNotification;
-                        try {
-                            //Download File
-                            deviceNotification = restTemplate.getForObject(folderUrl + "/" + fileName, String.class);
-                        } catch (RestClientException e) {
-                            throw new DigiWebServiceException(e);
-                        }
-                        
-                        //Parse file for actions to take
-                        digiResponseHandler.handleDeviceNotification(deviceNotification);
-                    } catch (UnsupportedDataTypeException e) {
-                        log.error(e.getMessage());
-                    } finally {
-                        //Delete the file, already processed.
-                        restTemplate.delete(folderUrl + "/" + fileName);
-                    }
-                }
+            log.debug("Starting processing of file: " + filePath);
+            String url = DigiWebServiceImpl.getDigiBaseUrl() + "ws/data/~/" + filePath;
+
+            try {                
+                //Download File
+                String deviceNotification = restTemplate.getForObject(url, String.class);
+
+                //Parse file for actions to take
+                digiResponseHandler.handleDeviceNotification(deviceNotification);
+            } catch (UnsupportedDataTypeException e) {
+                log.error(e.getMessage());
             } catch (RestClientException e) {
-                throw new DigiWebServiceException(e);
-            } catch (DigiWebServiceException e) {
-                log.error("Exception while processing files on gateway with name, " + gateway.getName() + ":", e);
+                throw new DigiWebServiceException("Exception while reading file at: " + filePath, e);
             }
             
-            log.debug("Completed processing files for gateway: " + gateway.getName());
+            restTemplate.delete(url);
+            
+            log.debug("Completed processing file: " + url);
         }
     }
     
@@ -107,36 +74,25 @@ public class DigiPollingServiceImpl {
             log.debug("Digi Device Notification Started");
 
             try {
-                List<Future<?>> futures = Lists.newArrayList();
-   
-                //Get commissioned gateways to Poll.
-                List<ZigbeeDevice> gateways = gatewayDeviceDao.getAllGateways();
+                String recursiveFilelist = restTemplate.getForObject(DigiWebServiceImpl.getDigiBaseUrl() + "ws/data/~?_recursive=yes", String.class);
                 
-                //Grab current commissioned states
-                Map<PaoIdentifier, PointValueHolder> currentStates = aDynamicDataSource.getPointValues(gateways, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                List<String> filePaths = digiResponseHandler.handleFolderListingResponse(recursiveFilelist);
                 
-                for (ZigbeeDevice gateway : gateways) {
-                    //Only query the gateway if it is commissioned.
-                    PointValueHolder value = currentStates.get(gateway.getPaoIdentifier());
-                    if (value.getValue() != Commissioned.DECOMMISSIONED.getRawState()) {
-                        Future<?> future = fileReadThreadPool.submit(new DigiGatewayFileReader(gateway));
-                        futures.add(future);
-                    }
+                WaitableExecutor waitableExecutor = new WaitableExecutor(fileReadThreadPool);
+                
+                for (String filePath : filePaths) {
+                    waitableExecutor.execute(new DigiFileReader(filePath));
                 }
-            
-                log.debug("Waiting for " + futures.size() + " gateways to process files.");
                 
                 try {
-                    for (Future<?> future:futures) {
-                        future.get();
-                    }
+                    waitableExecutor.await();
                 } catch (InterruptedException e) {
-                    log.warn("caught exception in processAllNotificationsForGateway", e);
+                    log.warn("caught exception in digiDeviceNotificationPoll", e);
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
-                    log.warn("caught exception in processAllNotificationsForGateway", e);
+                    log.warn("caught exception in digiDeviceNotificationPoll", e);
                 }
-            
+                
             } catch (DispatchNotConnectedException dE) {
                 log.error("Dispatch is not connected. Will not Poll gateways for device notifications.", dE);
             } catch (Exception e) {
@@ -193,11 +149,6 @@ public class DigiPollingServiceImpl {
     }
     
     @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
     }
@@ -210,10 +161,5 @@ public class DigiPollingServiceImpl {
     @Autowired
     public void setDigiResponseHandler(DigiResponseHandler digiResponseHandler) {
         this.digiResponseHandler = digiResponseHandler;
-    }
-    
-    @Autowired
-    public void setAttributeDynamicDataSource(AttributeDynamicDataSource aDynamicDataSource) {
-        this.aDynamicDataSource = aDynamicDataSource;
     }
 }

@@ -71,8 +71,9 @@ public class DigiResponseHandler {
         @Override
         public String map(Node node) throws DOMException {                            
             String fileName = node.getAttributes().getNamedItem("name").getNodeValue();
+            String folderName = node.getParentNode().getAttributes().getNamedItem("name").getNodeValue();
             
-            return fileName;
+            return folderName + "/" + fileName;
         }
     };
     
@@ -153,7 +154,7 @@ public class DigiResponseHandler {
             Instant time = new Instant(seconds*1000);
             
             String description = template.evaluateAsString("//description");
-            log.info("RECV at "+ time.toDate() + " from iDigi: " + description);
+            log.info("RECV at "+ time + " from iDigi: " + description);
             parseMessageForAction(time,description);
             return;
         }
