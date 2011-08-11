@@ -22,14 +22,14 @@
         <form:hidden path="inventoryEnrollments[${status.index}].relay"/>
     </c:forEach>
 
-    <h1 class="dialogQuestion">
+    <div class="content">
         <c:if test="${isAdd}">
             <cti:msg2 key=".confirmEnroll" arguments="${assignedProgram.name.displayName}"/>
         </c:if>
         <c:if test="${!isAdd}">
             <cti:msg2 key=".confirmUpdate" arguments="${assignedProgram.name.displayName}"/>
         </c:if>
-    </h1>
+    </div>
 
     <c:if test="${fn:length(conflictingPrograms) > 0}">
         <%-- Normally, this list will never have more than one item. --%>

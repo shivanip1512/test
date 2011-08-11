@@ -34,7 +34,7 @@
     <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" />
 
     <i:simplePopup id="${uniqueId}" styleClass="${style}" titleKey=".title" on="${pageScope.on}" arguments="${pageScope.argument}">
-        <h3 class="dialogQuestion">${confirmationMsg}</h3>
+        <p>${confirmationMsg}<p>
 
         <div class="actionArea">
             <c:choose>
