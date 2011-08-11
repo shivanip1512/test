@@ -5,21 +5,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="adminSetup" page="encryption">
-
-    <script type="text/javascript">
-    function cancel() {
-        window.location = "view";
-    }
-
-    function submitForm() {
-        Yukon.ui.blockPage();
-        $("mainForm").submit();
-    }
-</script>
-
-    <cti:msg2 var="boxTitle" key=".error.boxHeading" />
-    <tags:boxContainer title="${boxTitle}" styleClass="mediumContainer" hideEnabled="false">
-        <form:form id="mainForm" commandName="encryptedRoute" action="saveKey" method="POST">
+    <form:form id="mainForm" commandName="encryptedRoute" action="saveKey" method="POST" autocomplete="off">
+        <cti:msg2 var="boxTitle" key=".error.boxHeading" />
+        <tags:boxContainer title="${boxTitle}" styleClass="mediumContainer" hideEnabled="false">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".paoNameLbl">
                     <c:out value="${encryptedRoute.paoName}"></c:out>
@@ -34,8 +22,8 @@
                 <form:input path="type" type="hidden"/>
                 <form:input path="paoName" type="hidden"/>
             </tags:nameValueContainer2>
-        </form:form>
         </tags:boxContainer><br>
-        <cti:button key="saveBtn" onclick="javascript:submitForm()" />
-        <cti:button key="cancelBtn" onclick="javascript:cancel()" />
+        <cti:button key="saveBtn" type="submit" styleClass="f_blocker" />
+        <cti:button key="cancelBtn" href="view" />
+    </form:form>
 </cti:standardPage>

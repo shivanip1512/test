@@ -14,9 +14,9 @@
     <entry key="yukon.web.modules.adminSetup.encryption.moduleName">Encryption</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.pageName">Encryption</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.pageDescription">Encryption</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.deleteBtn.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.deleteBtn.label">Disable</entry>
     
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteBtn.imageUrl">/WebConfig/yukon/Icons/lock_open.png</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteBtn.label">Disable</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.saveBtn.label">Save</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.saveBtn.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.confirmDeleteBtn.label">Delete</entry>

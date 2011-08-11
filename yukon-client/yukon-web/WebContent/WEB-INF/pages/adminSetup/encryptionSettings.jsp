@@ -7,7 +7,7 @@
 <cti:standardPage module="adminSetup" page="encryption">
 
     <script type="text/javascript">
-    Event.observe(window, 'load', function() {
+    document.observe("dom:loaded", function(){
         
         <c:forEach var="route" items="${encryptedRoutes}">
         
@@ -20,17 +20,23 @@
         </c:forEach>  
     });
     
-        function showDisabled(formId) {
-            var formChildren = $(formId).childElements();
-            formChildren[0].show();
+        function cancel(from, formId) {
+            if (from == "save") {
+                showDisabled(formId);
+            } else if (from == "delete") {
+                showEnabled(formId);
+            }
         }
         
-        function cancel() {
-            window.location = "view";
+        function showDisabled(formId) {
+            var formChildren = $(formId).childElements();
+            formChildren[2].hide();
+            formChildren[0].show();
         }
         
         function showEnabled(formId) {
             var formChildren = $(formId).childElements();
+            formChildren[3].hide();
             formChildren[1].show();
         }
         
@@ -73,7 +79,7 @@
                 <td>${route.paoName}</td>
                 <td>${route.type}</td>
                 <td width="50%">
-                    <form id="${route.paobjectId}"  method="POST">
+                    <form id="${route.paobjectId}"  method="POST" autocomplete="off">
                         <span style="display:none">
                             <cti:button key="enableEncryptionBtn" onclick="javascript:showAddKey('${route.paobjectId}')"/>
                         </span>
@@ -83,14 +89,14 @@
                         </span>
                         <span style="display:none">
                             <i:inline key=".keyLbl"/>
-                            <input name="value" type="text" value="" size ="50"/>
+                            <input name="value" type="text" size ="50"/>
                             <cti:button key="saveBtn"  onclick="javascript:addKey('${route.paobjectId}')"/>
-                            <cti:button key="cancelBtn" onclick="javascript:cancel()"/>
+                            <cti:button key="cancelBtn" onclick="javascript:cancel('save','${route.paobjectId}')"/>
                         </span>
                         <span style="display:none">
                             <i:inline key=".confirmDeleteMsg"/>
                             <cti:button key="confirmDeleteBtn" onclick="javascript:confirmDelete('${route.paobjectId}')"/>
-                            <cti:button key="cancelBtn" onclick="javascript:cancel()"/>
+                            <cti:button key="cancelBtn" onclick="javascript:cancel('delete','${route.paobjectId}')"/>
                         </span>
                         <input name="paobjectId" type="hidden" value="${route.paobjectId}"/>
                         <input name="type" type="hidden" value="${route.type}"/>
