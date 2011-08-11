@@ -303,9 +303,9 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         sql.append(     "JOIN CommandRequestExec CRE ON CRER.CommandRequestExecId = CRE.CommandRequestExecId");
         sql.append("WHERE CRER.CommandRequestExecId = (");
         sql.append(     "SELECT INSIDER.CommandRequestExecId FROM (");
-        sql.append(         "SELECT CRE.CommandRequestExecId, ROW_NUMBER() OVER (ORDER BY CRE.StartTime DESC) RN");
+        sql.append(         "SELECT CRE2.CommandRequestExecId, ROW_NUMBER() OVER (ORDER BY CRE2.StartTime DESC) RN");
         sql.append(         "FROM ScheduledGrpCommandRequest SGCR");
-        sql.append(             "JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
+        sql.append(             "JOIN CommandRequestExec CRE2 ON (SGCR.CommandRequestExecContextId = CRE2.CommandRequestExecContextId)");
         sql.append(         "WHERE SGCR.JobID").eq(jobId);
         sql.append(     ") INSIDER");
         sql.append(     "WHERE INSIDER.RN = 1)");
