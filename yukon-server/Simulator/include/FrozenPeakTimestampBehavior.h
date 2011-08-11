@@ -1,19 +1,20 @@
 #pragma once
 
-#include "PlcBehavior.h"
-#include "logger.h"
+#include "MctBehavior.h"
 
 namespace Cti {
-namespace Simulator{
+namespace Simulator {
 
-class BchBehavior : public PlcBehavior
+class FrozenPeakTimestampBehavior : public MctBehavior
 {
 public:
-    BchBehavior();
+
+    FrozenPeakTimestampBehavior();
     virtual void apply(target_type &message, Logger &logger);
     void setChance(double chance);
 
 private:
+
     double _chance;
 };
 

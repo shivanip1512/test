@@ -8,6 +8,7 @@
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/filesystem.hpp>
 
 #include "PlcInfrastructure.h"
 #include "Ccu710.h"
@@ -52,6 +53,7 @@ namespace Simulator {
 PlcInfrastructure Grid;
 
 int SimulatorMainFunction(int argc, char **argv);
+void loadGloabalSimulatorBehaviors(Logger &logger);
 bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
@@ -123,30 +125,35 @@ int SimulatorMainFunction(int argc, char **argv)
     dout.setToStdOut(true);
     dout.setWriteInterval(1000);
 
+    SimulatorLogger logger(dout);
+
     identifyProject(CompileInfo);
     setConsoleTitle(CompileInfo);
 
     if( port_min && port_max )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Port range [" << port_min << " - " << port_max << "], strategy " << strategy << endl;
+        logger.log("Port range [" + CtiNumStr(port_min) + " - " + CtiNumStr(port_max) + "], strategy " + CtiNumStr(strategy));
     }
 
     //  start up Windows Sockets
     WSADATA wsaData;
     WSAStartup(MAKEWORD (1,1), &wsaData);
 
-    // There's only one PlcInfrastructure, so this should be the place to set its BchBehavior to avoid
-    // multiple instances of the behavior being added by each thread.
-    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY") )
+    loadGloabalSimulatorBehaviors(logger);
+
+    // Load up the MCT behaviors here as well.
+    Mct410Sim::initBehaviors(logger);
+
+    filesystem::path mctFilePath( DeviceMemoryManager::memoryMapDirectory );
+
+    // Create the directory if necessary.
+    if( filesystem::create_directory( mctFilePath ) )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " BCH Behavior Enabled - Probability " << CtiNumStr(chance, 2) << "%" << endl;
-        }
-        std::auto_ptr<PlcBehavior> d(new BchBehavior());
-        d->setChance(chance);
-        Grid.setBehavior(d);
+        logger.log("Directory " + DeviceMemoryManager::memoryMapDirectory + " has been created for simulator MCT memory maps."); 
+    }
+    else
+    {
+        logger.log("Directory " + DeviceMemoryManager::memoryMapDirectory + " already exists.");
     }
 
     thread_group threadGroup;
@@ -168,15 +175,23 @@ int SimulatorMainFunction(int argc, char **argv)
 
     threadGroup.join_all();
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " " << CompileInfo.project << " exiting" << endl;
-    }
+    logger.log(string(CompileInfo.project) + " exiting");
 
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
 
     return 0;
+}
+
+void loadGloabalSimulatorBehaviors(Logger &logger)
+{
+    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY") )
+    {   
+        logger.log("BCH Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
+        std::auto_ptr<PlcBehavior> d(new BchBehavior());
+        d->setChance(chance);
+        Grid.setBehavior(d);
+    }
 }
 
 bool getPorts(vector<int> &ports)
@@ -209,7 +224,6 @@ void CcuPortMaintainer(int portNumber, int strategy)
         portThread.join();
     }
 }
-
 
 void CcuPort(int portNumber, int strategy)
 {
@@ -257,7 +271,6 @@ void CcuPort(int portNumber, int strategy)
 
     newSocket.CTINexusClose();
 }
-
 
 void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger)
 {
@@ -460,12 +473,9 @@ bool validRequest(SocketComms &socket_interface)
     {
         // It's a general request. We will need to see whether or not the command
         // fits this specific device.
-
         return (CcuType::validateCommand(socket_interface));
     }
 }
 
 }
 }
-
-

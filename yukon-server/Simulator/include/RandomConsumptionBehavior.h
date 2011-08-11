@@ -1,22 +1,24 @@
 #pragma once
 
-#include "PlcBehavior.h"
-#include "logger.h"
+#include "MctBehavior.h"
 
 namespace Cti {
-namespace Simulator{
+namespace Simulator {
 
-class BchBehavior : public PlcBehavior
+class RandomConsumptionBehavior : public MctBehavior
 {
 public:
-    BchBehavior();
+
+    RandomConsumptionBehavior();
     virtual void apply(target_type &message, Logger &logger);
     void setChance(double chance);
 
 private:
+
+    unsigned makeRandomConsumptionValue();
+
     double _chance;
 };
 
 }
 }
-

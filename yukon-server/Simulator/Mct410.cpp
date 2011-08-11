@@ -1,19 +1,27 @@
 #include "precompiled.h"
+
 #include "Mct410.h"
-#include "logger.h"
 #include "ScopedLogger.h"
 #include "dev_mct410.h"
-#include "EmetconWords.h"
 #include "cparms.h"
 #include "guard.h"
+
+/* MctBehaviors */
+#include "FrozenReadParityBehavior.h"
+#include "FrozenPeakTimestampBehavior.h"
+#include "RandomConsumptionBehavior.h"
 
 using namespace std;
 
 namespace Cti {
 namespace Simulator {
 
-const CtiTime Mct410Sim::DawnOfTime = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005),0, 0, 0);
-const double Mct410Sim::randomReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_RANDOM_READING_CHANCE_PERCENT");
+const double   Mct410Sim::Pi              = 4.0 * atan(1.0);
+const CtiTime  Mct410Sim::DawnOfTime      = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005),0, 0, 0);
+const double   Mct410Sim::alarmFlagChance = gConfigParms.getValueAsDouble("SIMULATOR_ALARM_FLAG_CHANCE_PERCENT");
+const unsigned Mct410Sim::MemoryMapSize   = 256;
+
+bool Mct410Sim::_behaviorsInited = false;
 
 //  Temporary class to access protected functions in Mct410Device and Mct4xxDevice.
 //  To be deleted when we move functions to a shared location.
@@ -23,27 +31,46 @@ struct mct410_utility : private Devices::Mct410Device
     using Mct410Device::crc8;
 };
 
-const Mct410Sim::function_reads_t  Mct410Sim::_function_reads  = Mct410Sim::initFunctionReads();
-const Mct410Sim::function_writes_t Mct410Sim::_function_writes = Mct410Sim::initFunctionWrites();
-const Mct410Sim::commands_t        Mct410Sim::_commands        = Mct410Sim::initCommands();
+const Mct410Sim::function_reads_t  Mct410Sim::_function_reads     = Mct410Sim::initFunctionReads();
+const Mct410Sim::function_writes_t Mct410Sim::_function_writes    = Mct410Sim::initFunctionWrites();
+const Mct410Sim::data_reads_t      Mct410Sim::_data_reads         = Mct410Sim::initDataReads();
+const Mct410Sim::data_writes_t     Mct410Sim::_data_writes        = Mct410Sim::initDataWrites();
+const Mct410Sim::commands_t        Mct410Sim::_commands           = Mct410Sim::initCommands();
 
-const double Mct410Sim::Pi = 4.0 * atan(1.0);
+// The static Behavior Collection for all MCT devices to share.
+BehaviorCollection<MctBehavior> Mct410Sim::_behaviorCollection;
 
 Mct410Sim::Mct410Sim(int address) :
     _address(address),
+    _memory(address, MemoryMapSize), 
+    _last_freeze_timestamp(CtiTime::neg_infin),
+    _last_voltage_freeze_timestamp(CtiTime::neg_infin),
     _mct410tag("MCT410(" + CtiNumStr(address) + ")")
 {
-    //  _llp_interest should eventually be persisted and restored.
-    //  We could access the DynamicPaoInfo table for this... ?
-    // _llp_interest.time = CtiTime::now();
-    _memory_map = bytes(20, 0x00);  // Initialize the memory map to have 20 bytes of 0s for data.
+    if( !_memory.isInitialized() )
+    {
+        /**
+         * The file we wanted to load from didn't exist. Load the memory
+         * map with the default information. 
+         */
 
-    // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order
-    // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
-    // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
-    _memory_map[MM_EventFlags1AlarmMask] = EF1_TamperFlag;
+        //  _llp_interest should eventually be persisted and restored.
+        //  We could access the DynamicPaoInfo table for this... ?
+        // _llp_interest.time = CtiTime::now();
+    
+        // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order
+        // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
+        // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
+        _memory.writeValueToMemoryMap(MM_EventFlags1AlarmMask, EF1_TamperFlag);
+    
+        // These should already be 0s, but we should explicitly say so just in case.
+        _memory.writeValueToMemoryMap(MM_FreezeCounter, 0);
+        _memory.writeValueToMemoryMap(MM_VoltageFreezeCounter, 0);
+    
+        // Default the Demand Interval to 15 minutes.
+        _memory.writeValueToMemoryMap(MM_DemandInterval, 0x0f);
+    }
 }
-
 
 Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned readMin, unsigned readMax, boost::function2<bytes, Mct410Sim *, unsigned> fn)
 {
@@ -65,6 +92,8 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
     reads[FR_AllCurrentMeterReadings]      = function_read_t(&Mct410Sim::getAllCurrentMeterReadings);
     reads[FR_AllRecentDemandReadings]      = function_read_t(&Mct410Sim::getAllRecentDemandReadings);
     reads[FR_AllCurrentPeakDemandReadings] = function_read_t(&Mct410Sim::getAllCurrentPeakDemandReadings);
+    reads[FR_GetFrozen_kWh]                = function_read_t(&Mct410Sim::getFrozenKwh);
+    reads[FR_AllFrozenChannel1Readings]    = function_read_t(&Mct410Sim::getAllFrozenChannel1Readings);
 
     read_range = makeFunctionReadRange(FR_LongLoadProfileTableMin,
                                        FR_LongLoadProfileTableMax, &Mct410Sim::getLongLoadProfile);
@@ -98,12 +127,29 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
     return reads;
 }
 
-
 Mct410Sim::function_writes_t Mct410Sim::initFunctionWrites()
 {
     function_writes_t writes;
 
-    writes[FW_PointOfInterest] = function_write_t(&Mct410Sim::putPointOfInterest);
+    writes[FW_PointOfInterest]    = function_write_t(&Mct410Sim::putPointOfInterest);
+    writes[FW_ScheduledFreezeDay] = function_write_t(&Mct410Sim::putScheduledFreezeDay);
+
+    return writes;
+}
+
+Mct410Sim::data_reads_t Mct410Sim::initDataReads()
+{
+    data_reads_t reads;
+
+    reads[DR_GetFreezeInfo]      = data_read_t(&Mct410Sim::getFreezeInfo);
+    reads[DR_ScheduledFreezeDay] = data_read_t(&Mct410Sim::getScheduledFreezeDay);
+
+    return reads;
+}
+
+Mct410Sim::data_writes_t Mct410Sim::initDataWrites()
+{
+    data_writes_t writes;
 
     return writes;
 }
@@ -113,10 +159,42 @@ Mct410Sim::commands_t Mct410Sim::initCommands()
     commands_t commands;
 
     commands[C_ClearAllEventFlags] = command_t(&Mct410Sim::clearEventFlags);
+    commands[C_PutFreezeOne]       = command_t(&Mct410Sim::putFreezeOne);
+    commands[C_PutFreezeTwo]       = command_t(&Mct410Sim::putFreezeTwo);
 
     return commands;
 }
 
+void Mct410Sim::initBehaviors(Logger &logger)
+{
+    // We only want this called once or behaviors will get out of hand.
+    if( !_behaviorsInited )
+    {
+        if( double parityChance = gConfigParms.getValueAsDouble("SIMULATOR_INVALID_FROZEN_READ_PARITY_PROBABILITY") )
+        {
+            logger.log("Frozen Read Parity Behavior Enabled - Probability: " + CtiNumStr(parityChance, 2) + "%");
+            std::auto_ptr<MctBehavior> parity(new FrozenReadParityBehavior());
+            parity->setChance(parityChance);
+            _behaviorCollection.push_back(parity);
+        }
+        if( double timestampChance = gConfigParms.getValueAsDouble("SIMULATOR_INVALID_FROZEN_PEAK_TIMESTAMP_PROBABILITY") )
+        {
+            logger.log("Frozen Peak Timestamp Behavior Enabled - Probability: " + CtiNumStr(timestampChance, 2) + "%");
+            std::auto_ptr<MctBehavior> timestamp(new FrozenPeakTimestampBehavior());
+            timestamp->setChance(timestampChance);
+            _behaviorCollection.push_back(timestamp);
+        }
+        if( double randomReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_RANDOM_READING_CHANCE_PERCENT") )
+        {
+            logger.log("Random Consimption Behavior Enabled - Probability: " + CtiNumStr(randomReadingChance, 2) + "%");
+            std::auto_ptr<MctBehavior> consumption(new RandomConsumptionBehavior());
+            consumption->setChance(randomReadingChance);
+            _behaviorCollection.push_back(consumption);
+        }
+
+        _behaviorsInited = true;
+    }
+}
 
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
 bool Mct410Sim::read(const words_t &request_words, words_t &response_words, Logger &logger)
@@ -141,45 +219,9 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words, Logg
     }
 
     // Potentially set zero usage flag or reverse-power flag...
-    double chance = gConfigParms.getValueAsDouble("SIMULATOR_ALARM_FLAG_CHANCE_PERCENT");
-    double dist = (rand() / double(RAND_MAX + 1)) * 100;
-    if( dist < chance )
-    {
-        // 50/50 chance that the reverse-power flag is set or the zero usage flag is set.
-        double value = rand() / double(RAND_MAX + 1);
+    processFlags(scope);
 
-        if( value < 0.50 )
-        {
-            // Only set the zero usage flag to true if it isn't already set...
-            if ( (_memory_map[MM_EventFlags2] & EF2_ZeroUsage) == 0 )
-            {
-                _memory_map[MM_EventFlags2] |= EF2_ZeroUsage;
-                scope.breadcrumbLog("******** Zero-Usage flag set! ********");
-            }
-        }
-        else // If value >= 0.50
-        {
-            // Only set the reverse-power flag to true if it isn't already set...
-            if( (_memory_map[MM_MeterAlarms1] & MA1_ReversePower) == 0 )
-            {
-                _memory_map[MM_MeterAlarms1] |= MA1_ReversePower;
-                scope.breadcrumbLog("******** Reverse-power flag set!********");
-            }
-        }
-    }
-
-    // Tamper flag (bit 7 of address 0x06) gets set if reverse-power or zero usage bits are set.
-    if( ((_memory_map[MM_EventFlags2] & EF2_ZeroUsage) != 0) || ((_memory_map[MM_MeterAlarms1] & MA1_ReversePower) != 0) )
-    {
-        // Only set tamper flag if it isn't already set.
-        if ( (_memory_map[MM_EventFlags1] & EF1_TamperFlag) == 0 )
-        {
-            _memory_map[MM_EventFlags1] |= EF1_TamperFlag;
-            scope.breadcrumbLog("******** Tamper flag set! ********");
-        }
-    }
-
-    const bytes response_bytes = processRead(b_word.function, b_word.function_code);
+    const bytes response_bytes = processRead(b_word.function, b_word.function_code, scope);
 
     if( response_bytes.size() < EmetconWordD1::PayloadLength +
                                 EmetconWordD2::PayloadLength +
@@ -188,61 +230,58 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words, Logg
         return false;
     }
 
-    if( b_word.words_to_follow < 1 )
+    switch( b_word.words_to_follow )
     {
-        return true;
-    }
-
-    // Check to see if the alarm bit needs to be set! If the tamper flag has
-    // previously been set, then the general alarm bit needs to be as well.
-    bool alarm = false;
-    if( _memory_map.size() >= MM_EventFlags1AlarmMask )
-    {
-        if( (_memory_map[MM_EventFlags1] & _memory_map[MM_EventFlags1AlarmMask]) > 0 )
+        case 3:
         {
-            alarm = true;
+            response_words.insert(response_words.begin(),
+                                  word_t(new EmetconWordD3(response_bytes[8],
+                                                           response_bytes[9],
+                                                           response_bytes[10],
+                                                           response_bytes[11],
+                                                           response_bytes[12],
+                                                           0,
+                                                           0)));
+        }
+        case 2:
+        {
+            response_words.insert(response_words.begin(),
+                                  word_t(new EmetconWordD2(response_bytes[3],
+                                                           response_bytes[4],
+                                                           response_bytes[5],
+                                                           response_bytes[6],
+                                                           response_bytes[7],
+                                                           0,
+                                                           0)));
+        }
+        case 1:
+        {
+            unsigned char eventFlags = _memory.getValueFromMemoryMapLocation(MM_EventFlags1);
+            unsigned char eventFlagsMask = _memory.getValueFromMemoryMapLocation(MM_EventFlags1AlarmMask);
+            bool alarm = eventFlags & eventFlagsMask;
+    
+            response_words.insert(response_words.begin(),
+                                  word_t(new EmetconWordD1(b_word.repeater_variable,
+                                                           b_word.dlc_address & ((1 << 14) - 1),  //  lowest 13 bits set
+                                                           response_bytes[0],
+                                                           response_bytes[1],
+                                                           response_bytes[2],
+                                                           0,
+                                                           alarm)));
+        }
+        case 0:
+        {
+            return true;
+        }
+        default:
+        {
+            scope.breadcrumbLog("***** Words to follow set to invalid value: " + CtiNumStr(b_word.words_to_follow) + " *****");
+            return false; // Right?
         }
     }
-
-    response_words.push_back(word_t(new EmetconWordD1(b_word.repeater_variable,
-                                                      b_word.dlc_address & ((1 << 14) - 1),  //  lowest 13 bits set
-                                                      response_bytes[0],
-                                                      response_bytes[1],
-                                                      response_bytes[2],
-                                                      0,
-                                                      alarm)));
-
-    if( b_word.words_to_follow < 2 )
-    {
-        return true;
-    }
-
-    response_words.push_back(word_t(new EmetconWordD2(response_bytes[3],
-                                                      response_bytes[4],
-                                                      response_bytes[5],
-                                                      response_bytes[6],
-                                                      response_bytes[7],
-                                                      0,
-                                                      0)));
-
-    if( b_word.words_to_follow < 3 )
-    {
-        return true;
-    }
-
-    response_words.push_back(word_t(new EmetconWordD3(response_bytes[8],
-                                                      response_bytes[9],
-                                                      response_bytes[10],
-                                                      response_bytes[11],
-                                                      response_bytes[12],
-                                                      0,
-                                                      0)));
-
-    return true;
 }
 
-
-bytes Mct410Sim::processRead(bool function_read, unsigned function)
+bytes Mct410Sim::processRead(bool function_read, unsigned function, Logger &logger)
 {
     bytes read_bytes = bytes(ReadLength, '\0');
 
@@ -261,12 +300,30 @@ bytes Mct410Sim::processRead(bool function_read, unsigned function)
     }
     else
     {
-        copy(_memory_map.begin() + min(_memory_map.size(), function),
-             _memory_map.begin() + min(_memory_map.size(), function + ReadLength),
-             read_bytes.begin());
+        // Data Read
+        data_reads_t::const_iterator data_itr = _data_reads.find(function);
+
+        if( data_itr != _data_reads.end() )
+        {
+            bytes data_read_bytes = data_itr->second(this);
+
+            copy(data_read_bytes.begin(),
+                 data_read_bytes.begin() + min(data_read_bytes.size(), (bytes::size_type)ReadLength),
+                 read_bytes.begin());
+        }
+        else
+        {
+            // This data read isn't supported yet. Grab from memory.
+            read_bytes = _memory.getValueVectorFromMemoryMap(function, ReadLength);
+        }
     }
 
-    return read_bytes;
+    MctMessageContext context = { read_bytes, function, function_read };
+
+    _behaviorCollection.processMessage(context, logger);
+
+    // Return the processed message.
+    return context.data;
 }
 
 /*
@@ -347,38 +404,287 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
     }
     else if( !function_write && (data.size() > 0) )
     {
-        if( _memory_map.size() > function )
-        {
-            copy(data.begin(),
-                 data.begin() + min(data.size(), _memory_map.size() - function),
-                 _memory_map.begin() + function);
-        }
+        _memory.writeDataToMemoryMap(function, data);
     }
 
     return true;
 }
 
-bytes Mct410Sim::getZeroes()
+void Mct410Sim::processFlags(Logger &logger)
 {
-    return bytes(13, 0x00);
+    double dist = (rand() / double(RAND_MAX + 1)) * 100;
+    if( dist < alarmFlagChance )
+    {
+        // 50/50 chance that the reverse-power flag is set or the zero usage flag is set.
+        double value = rand() / double(RAND_MAX + 1);
+
+        if( value < 0.50 )
+        {
+            // Only set the zero usage flag to true if it isn't already set...
+            unsigned char flag = _memory.getValueFromMemoryMapLocation(MM_EventFlags2);
+            if ( (flag & EF2_ZeroUsage) == 0 )
+            {
+                flag |= EF2_ZeroUsage;
+                _memory.writeValueToMemoryMap(MM_EventFlags2, flag);
+                logger.breadcrumbLog("******** Zero-Usage flag set! ********");
+            }
+        }
+        else // If value >= 0.50
+        {
+            // Only set the reverse-power flag to true if it isn't already set...
+            unsigned char flag = _memory.getValueFromMemoryMapLocation(MM_MeterAlarms1);
+            if( (flag & MA1_ReversePower) == 0 )
+            {
+                flag |= MA1_ReversePower;
+                _memory.writeValueToMemoryMap(MM_MeterAlarms1, flag);
+                logger.breadcrumbLog("******** Reverse-power flag set!********");
+            }
+        }
+    }
+
+    // Tamper flag (bit 7 of address 0x06) gets set if reverse-power or zero usage bits are set.
+    unsigned char eventFlags  = _memory.getValueFromMemoryMapLocation(MM_EventFlags2);
+    unsigned char meterAlarms = _memory.getValueFromMemoryMapLocation(MM_MeterAlarms1);
+    if( ((eventFlags & EF2_ZeroUsage) != 0) || ((meterAlarms & MA1_ReversePower) != 0) )
+    {
+        // Only set tamper flag if it isn't already set.
+        if ( (eventFlags & EF1_TamperFlag) == 0 )
+        {
+            eventFlags |= EF1_TamperFlag;
+            _memory.writeValueToMemoryMap(MM_EventFlags1, eventFlags);
+            logger.breadcrumbLog("******** Tamper flag set! ********");
+        }
+    }
+}
+
+bytes Mct410Sim::getFreezeInfo()
+{
+    bytes data;
+
+    int last_freeze = _memory.getValueFromMemoryMapLocation(MM_LastFreezeTimestamp, MML_LastFreezeTimestamp);
+    int last_voltage_freeze = _memory.getValueFromMemoryMapLocation(MM_LastVoltageFreezeTimestamp, MML_LastVoltageFreezeTimestamp);
+
+    // Last Freeze Timestamp
+    data.push_back(last_freeze >> 24);
+    data.push_back(last_freeze >> 16);
+    data.push_back(last_freeze >>  8);
+    data.push_back(last_freeze);
+
+    // Freeze Counter
+    data.push_back(_memory.getValueFromMemoryMapLocation(MM_FreezeCounter));
+
+    // Last Voltage Freeze Timestamp
+    data.push_back(last_voltage_freeze >> 24);
+    data.push_back(last_voltage_freeze >> 16);
+    data.push_back(last_voltage_freeze >>  8);
+    data.push_back(last_voltage_freeze);
+
+    // Voltage Freeze Counter
+    data.push_back(_memory.getValueFromMemoryMapLocation(MM_VoltageFreezeCounter));
+
+    return data;
+}
+
+bytes Mct410Sim::getScheduledFreezeDay()
+{
+    return bytes(1, _memory.getValueFromMemoryMapLocation(MM_ScheduledFreezeDay));
+}
+
+void Mct410Sim::putFreezeOne()
+{
+    putFreeze(1);
+}
+
+void Mct410Sim::putFreezeTwo()
+{
+    putFreeze(2);
+}
+
+/**
+ * From MCT410 SSPEC: 
+ * 
+ * MCT-410: This command will perform a Freeze on the Current 
+ * Meter Reading and Peak Demand for Channel 1, 2, and 3.  It 
+ * will also freeze the TOU Data. 
+ *  
+ * All of this will only take place if the Freeze Counter 
+ * correlates correctly to the last freeze that was received. 
+ */
+void Mct410Sim::putFreeze(unsigned incoming_freeze)
+{
+    int freeze_counter = _memory.getValueFromMemoryMapLocation(MM_FreezeCounter);
+    if( ((freeze_counter % 2) && (incoming_freeze == 2)) || (!(freeze_counter % 2) && (incoming_freeze == 1)) )
+    {
+        // The last freeze occurred now. Write it!
+        {
+            bytes data;
+
+            int last_freeze_timestamp = CtiTime::now().seconds();
+            
+            data.push_back(last_freeze_timestamp >> 24);
+            data.push_back(last_freeze_timestamp >> 16);
+            data.push_back(last_freeze_timestamp >> 8);
+            data.push_back(last_freeze_timestamp);
+
+            _memory.writeDataToMemoryMap(MM_LastFreezeTimestamp, data);
+        }
+        
+        // Increment and record the freeze counter.
+        {
+            freeze_counter = (freeze_counter + 1) % 0x100;
+    
+            _memory.writeValueToMemoryMap(MM_FreezeCounter, freeze_counter);
+        }
+
+        // Freeze the current peak demand and record it, then reset peak demand to 0.
+        {
+            bytes data, zeroes(MML_CurrentPeakDemand1, 0x00);
+            
+            short int peakDemand = _memory.getValueFromMemoryMapLocation(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
+
+            data.push_back(peakDemand >> 8);
+            data.push_back(peakDemand);
+    
+            _memory.writeDataToMemoryMap(MM_FrozenPeakDemand1, data);
+            _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1, zeroes);
+        }
+
+        // Write the current peak demand timestamp to Frozen Peak Demand timestamp
+        {
+            bytes currentPeakDemandTimestamp = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1Timestamp, 
+                                                                                   MML_CurrentPeakDemand1Timestamp);
+    
+            _memory.writeDataToMemoryMap(MM_FrozenPeakDemand1Timestamp, currentPeakDemandTimestamp);
+        }
+
+        // Reset the current peak demand timestamp to 0.
+        {
+            bytes data(MML_CurrentPeakDemand1Timestamp, 0x00);
+
+            _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1Timestamp, data);
+        }
+
+        // Freeze the current kWh value.
+        {
+            bytes data;
+
+            unsigned hwh = getHectoWattHours(_address, CtiTime());
+
+            data.push_back(hwh >> 16);
+            data.push_back(hwh >> 8);
+            data.push_back(hwh);
+
+            /**
+             * We need to set the parity of the frozen kWh value to match 
+             * the freeze command that froze the kWh. 
+             *  
+             * The least significant bit of the Frozen Meter reading should 
+             * be set to 0 if this command was a freeze one or 1 if this 
+             * command was a freeze two as per section 4.63 of the MCT 410 
+             * SSPEC-S01029.
+             */
+            if( incoming_freeze == 1 )
+            {
+                data.back() &= 0xfe;
+            }
+            else
+            {
+                data.back() |= 0x01;
+            }
+
+            _memory.writeDataToMemoryMap(MM_FrozenMeterReading1, data);
+        }
+    }
+}
+
+void Mct410Sim::putScheduledFreezeDay(const bytes &data)
+{
+    if( !data.empty() )
+    {
+        _memory.writeValueToMemoryMap(MM_ScheduledFreezeDay, data[0]);
+    }
+}
+
+bytes Mct410Sim::getFrozenKwh()
+{
+    // Bytes 0-2:  Frozen Meter Read 1
+    bytes data = _memory.getValueVectorFromMemoryMap(MM_FrozenMeterReading1, MML_FrozenMeterReading1);
+
+    // Byte 3: Freeze Counter
+    data.insert(data.end(), _memory.getValueFromMemoryMapLocation(MM_FreezeCounter));
+
+    // Bytes 4-6:  Frozen Meter Read 2
+    // Bytes 7-9:  Frozen Meter Read 3
+    // Bytes 10-12: No Data
+    data.insert(data.end(), 9, 0x00);
+
+    return data;
+}
+
+bytes Mct410Sim::getAllFrozenChannel1Readings()
+{
+    bytes data;
+
+    // Bytes 0-1: Frozen Peak Demand #1
+    short int peakDemand = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1, MML_FrozenPeakDemand1);
+    data.push_back(peakDemand >> 8);
+    data.push_back(peakDemand);
+
+    // Bytes 2-5: Frozen Time Of Peak #1
+    unsigned long frozenTime = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1Timestamp, 
+                                                                     MML_FrozenPeakDemandTimestamp);
+
+    data.push_back(frozenTime >> 24);
+    data.push_back(frozenTime >> 16);
+    data.push_back(frozenTime >> 8);
+    data.push_back(frozenTime);
+
+    // Bytes 6-8: Frozen Meter Read #1
+    unsigned long frozenRead = _memory.getValueFromMemoryMapLocation(MM_FrozenMeterReading1, MML_FrozenMeterReading1);
+    data.push_back(frozenRead >> 16);
+    data.push_back(frozenRead >> 8);
+    data.push_back(frozenRead);
+
+    // Byte 9: Freeze Counter
+    data.push_back(_memory.getValueFromMemoryMapLocation(MM_FreezeCounter));
+
+    // Bytes 10-12: Current Meter Read #1
+    unsigned hWh = getHectoWattHours(_address, CtiTime());
+    data.push_back(hWh >> 16);
+    data.push_back(hWh >> 8);
+    data.push_back(hWh);
+
+    return data;
 }
 
 bytes Mct410Sim::getAllCurrentPeakDemandReadings()
 {
-    bytes data = bytes(13, 0x00);
+    bytes data, peakDemand, peakTimestamp, consumption, zeroes(4, 0x00);
 
     CtiTime now;
 
     //  ensure reads during the same minute will return the same value.
     now -= now.second();
 
-    const unsigned consumption_Wh = getHectoWattHours(_address, now);
+    peakDemand = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
+    peakTimestamp = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1Timestamp, MML_CurrentPeakDemand1Timestamp);
 
-    const unsigned char *byte_ptr = reinterpret_cast<const unsigned char *>(&consumption_Wh);
+    const unsigned consumption_hWh = getHectoWattHours(_address, now);
 
-    // Function Read 0x93 contains the consumption read at
-    // positions 6-8 of the 13 byte data response.
-    reverse_copy(byte_ptr, byte_ptr + 3, data.begin() + 6);
+    consumption.push_back(consumption_hWh >> 16);
+    consumption.push_back(consumption_hWh >> 8);
+    consumption.push_back(consumption_hWh);
+
+    /**
+     * Bytes 0-1: Peak Demand 
+     * Bytes 2-5: Peak Demand Timestamp 
+     * Bytes 6-8: Current Meter Read 
+     * Bytes 9-12: No Data 
+     */
+    data.insert(data.begin(), peakDemand.begin(), peakDemand.end());
+    data.insert(data.end(), peakTimestamp.begin(), peakTimestamp.end());
+    data.insert(data.end(), consumption.begin(), consumption.end());
+    data.insert(data.end(), zeroes.begin(), zeroes.end());
 
     return data;
 }
@@ -404,14 +710,6 @@ bytes Mct410Sim::getAllCurrentMeterReadings()
 
 unsigned Mct410Sim::getHectoWattHours(const unsigned address, const CtiTime now )
 {
-    double dist = rand() / double(RAND_MAX + 1);
-    double chance = dist * 100;
-
-    if(chance < randomReadingChance)
-    {
-        return makeValue_random_consumption(address);
-    }
-
     const unsigned duration = now.seconds() - DawnOfTime.seconds();
     const double   consumption_Ws  = makeValue_consumption(address, DawnOfTime, duration);
     const double   consumption_Wh  = consumption_Ws / SecondsPerHour;
@@ -431,10 +729,31 @@ bytes Mct410Sim::getAllRecentDemandReadings()
 
     const unsigned beginningOfLastInterval = now_seconds - (now_seconds % Demand_Interval_seconds) - Demand_Interval_seconds;
 
-    const double   demand_Ws  = makeValue_consumption(_address, beginningOfLastInterval, Demand_Interval_seconds);
-    const double   demand_Wh  = demand_Ws / SecondsPerHour;
+    const double demand_hwh_begin = getHectoWattHours(_address, beginningOfLastInterval);
+    const double demand_hwh_end   = getHectoWattHours(_address, beginningOfLastInterval + Demand_Interval_seconds);
 
-    int dynamicDemand = mct410_utility::makeDynamicDemand(demand_Wh);
+    const double diffWh = (demand_hwh_end - demand_hwh_begin) * 100.0;
+
+    int dynamicDemand = mct410_utility::makeDynamicDemand(diffWh);
+
+    short int peakDemand = _memory.getValueFromMemoryMapLocation(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
+
+    if( dynamicDemand > peakDemand )
+    {
+        // New peak demand value and timestamp
+        bytes demandData, demandTimestamp;
+
+        demandData.push_back(dynamicDemand >> 8);
+        demandData.push_back(dynamicDemand);
+
+        demandTimestamp.push_back(now_seconds >> 24);
+        demandTimestamp.push_back(now_seconds >> 16);
+        demandTimestamp.push_back(now_seconds >>  8);
+        demandTimestamp.push_back(now_seconds);
+
+        _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1, demandData);
+        _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1Timestamp, demandTimestamp);
+    }
 
     const unsigned char *demand_ptr = reinterpret_cast<const unsigned char *>(&dynamicDemand);
 
@@ -474,16 +793,6 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
     {
         return 20.0;
     }
-}
-
-double Mct410Sim::makeValue_random_consumption(const unsigned address)
-{
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << "******** Random consumption value generated for address " << address << " ********" << endl;
-    }
-    double dist = rand() / double(RAND_MAX+1);
-    return int(dist * 10000000);
 }
 
 //  The consumption value is constructed using the current time and meter address.
@@ -604,7 +913,6 @@ bytes Mct410Sim::getLongLoadProfile(unsigned offset)
     return result_bytes;
 }
 
-
 bytes Mct410Sim::getLoadProfile(unsigned offset, unsigned channel)
 {
     CtiTime now;
@@ -632,16 +940,16 @@ bytes Mct410Sim::getLoadProfile(unsigned offset, unsigned channel)
     return result_bytes;
 }
 
-
 void Mct410Sim::fill_loadProfile(const unsigned address, const CtiTime &blockStart, const int interval_length, byte_appender &out_itr)
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
-    {
-        double value = makeValue_consumption(address, blockStart + interval * interval_length, interval_length);
+    {   
+        double valueBegin = getHectoWattHours(address, blockStart + interval * interval_length);
+        double valueEnd   = getHectoWattHours(address, blockStart + interval * interval_length + interval_length);
 
-        value /= SecondsPerHour;  //  convert from watt-seconds to watt-hours
+        double diffWh = (valueEnd - valueBegin) * 100.0; // Multiply by 100 to get wH.
 
-        int dynamicDemand = mct410_utility::makeDynamicDemand(value);
+        int dynamicDemand = mct410_utility::makeDynamicDemand(diffWh);
 
         *out_itr++ = dynamicDemand >> 8;
         *out_itr++ = dynamicDemand >> 0;
@@ -667,11 +975,15 @@ void Mct410Sim::putPointOfInterest(const bytes &payload)
     _llp_interest.time = tmp_time;
 }
 
+bytes Mct410Sim::getValueVectorFromMemory(unsigned pos, unsigned length)
+{
+    return _memory.getValueVectorFromMemoryMap(pos, length);
+}
 
 void Mct410Sim::clearEventFlags()
 {
-    _memory_map[MM_EventFlags1] = 0x00;
-    _memory_map[MM_MeterAlarms1] = 0x00;
+    _memory.writeValueToMemoryMap(MM_EventFlags1, 0x00);
+    _memory.writeValueToMemoryMap(MM_MeterAlarms1, 0x00);
 }
 
 }

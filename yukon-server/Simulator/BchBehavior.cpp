@@ -1,10 +1,7 @@
 #include "precompiled.h"
+
 #include "BchBehavior.h"
 #include "logger.h"
-
-#include <stdlib.h>
-
-using std::endl;
 
 namespace Cti {
 namespace Simulator{
@@ -22,7 +19,7 @@ BchBehavior::BchBehavior()
  *
  * @param message The message received from PLC transmission.
  */
-void BchBehavior::apply(bytes &message, Logger &logger)
+void BchBehavior::apply(target_type &message, Logger &logger)
 {
     double dist = rand() / double(RAND_MAX+1);
     double chance = dist * 100;

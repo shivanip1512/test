@@ -42,6 +42,9 @@ test_ccusim.obj \
 test_behavior_collection.obj \
 test_delay_behavior.obj \
 test_bch_behavior.obj \
+test_frozen_read_parity_behavior.obj \
+test_frozen_peak_timestamp_behavior.obj \
+test_random_consumption_behavior.obj \
 test_mct410_sim.obj \
 
 
@@ -50,9 +53,13 @@ $(OBJ)\SimulatorLogger.obj \
 $(OBJ)\ScopedLogger.obj \
 $(OBJ)\PortLogger.obj \
 $(OBJ)\EmetconWords.obj \
+$(OBJ)\DeviceMemoryManager.obj \
 $(OBJ)\Mct410.obj \
 $(OBJ)\DelayBehavior.obj \
 $(OBJ)\BchBehavior.obj \
+$(OBJ)\FrozenPeakTimestampBehavior.obj \
+$(OBJ)\FrozenReadParityBehavior.obj \
+$(OBJ)\RandomConsumptionBehavior.obj \
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \

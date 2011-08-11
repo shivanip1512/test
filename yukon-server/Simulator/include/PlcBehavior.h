@@ -4,7 +4,7 @@
 #include "SimulatorLogger.h"
 
 namespace Cti {
-namespace Simulator{
+namespace Simulator {
 
 //! The parent class for behaviors that affect PLC messages. 
 /*! 
@@ -19,8 +19,8 @@ class PlcBehavior
 public:
     typedef bytes target_type;
 
-    virtual void apply(target_type &message, Logger &logger)=0;
-    virtual void setChance(double chance)=0;
+    virtual void apply(target_type &message, Logger &logger) = 0;
+    virtual void setChance(double chance) = 0;
 };
 
 }

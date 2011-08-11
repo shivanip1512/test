@@ -45,6 +45,10 @@ SimulatorLogger.obj \
 PortLogger.obj \
 ScopedLogger.obj \
 PlcInfrastructure.obj \
+DeviceMemoryManager.obj \
+FrozenReadParityBehavior.obj \
+FrozenPeakTimestampBehavior.obj \
+RandomConsumptionBehavior.obj \
 EmetconWords.obj \
 PlcTransmitter.obj \
 Ccu710.obj \

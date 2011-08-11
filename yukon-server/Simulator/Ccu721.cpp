@@ -1376,7 +1376,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
         }
         case Klondike_ReadBuffer:
         {
-            info_description << " Read Buffer / Block Read Flags " << std::hex << info.readBuffer.flags;
+            info_description << " Read Buffer / Block Read Flags " << CtiNumStr(info.readBuffer.flags).xhex();
             break;
         }
         case Klondike_TimeSync:
@@ -1535,7 +1535,7 @@ string Ccu721::describeGeneralReply(const reply_info &info) const
         }
         case Klondike_ReadBuffer:
         {
-            info_description << "Read Buffer / block read flags " << std::hex << info.readBuffer.flags << " /";
+            info_description << "Read Buffer / block read flags " << CtiNumStr(info.readBuffer.flags).xhex() << " /";
             info_description << " buffer slots read " << info.collected_queue_entries.size();
             if( !info.collected_queue_entries.empty() )
             {

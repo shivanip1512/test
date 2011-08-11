@@ -73,6 +73,16 @@ public:
         }
     }
 
+    template<class U>
+    void visit(void (*visitor)(const long, const ptr_type, U&), U &param)
+    {
+        reader_lock_guard_t guard(_lock);
+
+        for each( const val_type &vt in _map )
+        {
+            visitor(vt.first, vt.second, param);
+        }
+    }
 
     insert_pair insert(long key, T* val)
     {

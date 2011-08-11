@@ -1,10 +1,7 @@
 #include "precompiled.h"
+
 #include "DelayBehavior.h"
 #include "logger.h"
-
-#include <stdlib.h>
-
-using std::endl;
 
 namespace Cti {
 namespace Simulator{

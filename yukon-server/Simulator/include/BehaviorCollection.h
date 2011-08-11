@@ -6,7 +6,6 @@
 #include <vector>
 #include <memory>
 
-#include "Types.h"
 #include "SimulatorLogger.h"
 
 namespace Cti {
