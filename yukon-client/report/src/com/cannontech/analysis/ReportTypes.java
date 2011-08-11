@@ -160,7 +160,9 @@ public enum ReportTypes {
     HECO_CUSTOMER_MONTHLY_BILLING("Customer Monthly Billing Settlement", HECO_CustomerMonthlyBillingSettlementModel.class, null,
         "Customer Monthly Billing Settlement."),
     HECO_DSMIS("DSMIS Settlement", HECO_DSMISModel.class, null,
-        "DSMIS Settlement.");
+        "DSMIS Settlement."),
+    ZIGBEE_CONTROL_EVENT_DEVICE("Zigbee Controlled Devices", ZigbeeControlledDeviceController.class, ReportGroup.LOAD_MANAGEMENT,
+        "Detailed report showing the control information for zigbee devices.");
 
     
     @SuppressWarnings("unchecked")
