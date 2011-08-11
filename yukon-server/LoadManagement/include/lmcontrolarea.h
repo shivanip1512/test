@@ -112,6 +112,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     void handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiNotifMsg);
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void updateTimedPrograms(LONG secondsFromBeginningOfDay);
+    void updateStateFromPrograms();
 
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
@@ -136,7 +137,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     static int InactiveState;
     static int ActiveState;
     static int ManualActiveState;
-    static int ScheduledState;
+    static int FullyScheduledState;
+    static int PartiallyScheduledState;
     static int FullyActiveState;
     static int AttemptingControlState;
 

@@ -1226,8 +1226,6 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 {
     DOUBLE expectedLoadReduced = 0.0;
     LONG newlyActivePrograms = 0;
-    LONG fullyActivePrograms = 0;
-    LONG activePrograms = 0;
 
     setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
 
@@ -1375,31 +1373,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         }
     }
 
-    for( LONG j=0;j<_lmprograms.size();j++ )
-    {
-        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
-        {
-            fullyActivePrograms++;
-            activePrograms++;
-        }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
-        {
-            activePrograms++;
-        }
-    }
-
-
-    if( fullyActivePrograms > 0 &&
-        fullyActivePrograms >= _lmprograms.size() )
-    {
-        setControlAreaState(CtiLMControlArea::FullyActiveState);
-    }
-    else if( activePrograms > 0 )
-    {
-        setControlAreaState(CtiLMControlArea::ActiveState);
-    }
+    updateStateFromPrograms();
 
     if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
     {
@@ -1500,8 +1474,6 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
 DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
-    LONG fullyActivePrograms = 0;
-    LONG activePrograms = 0;
 
     setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
 
@@ -1617,30 +1589,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
         }
     }
 
-    for( LONG j=0;j<_lmprograms.size();j++ )
-    {
-        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
-        {
-            fullyActivePrograms++;
-            activePrograms++;
-        }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
-        {
-            activePrograms++;
-        }
-    }
-
-    if( fullyActivePrograms > 0 &&
-        fullyActivePrograms >= _lmprograms.size() )
-    {
-        setControlAreaState(CtiLMControlArea::FullyActiveState);
-    }
-    else if( activePrograms > 0 )
-    {
-        setControlAreaState(CtiLMControlArea::ActiveState);
-    }
+    updateStateFromPrograms();
 
     if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
     {
@@ -1653,9 +1602,6 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
 
 void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
-    LONG fullyActivePrograms = 0;
-    LONG activePrograms = 0;
-
     //setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
     if( isControlTime(secondsFromBeginningOfDay) )
     {
@@ -1734,30 +1680,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
             }
         }
 
-        for( LONG j=0;j<_lmprograms.size();j++ )
-        {
-            if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-                (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-                (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
-            {
-                fullyActivePrograms++;
-                activePrograms++;
-            }
-            else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
-            {
-                activePrograms++;
-            }
-        }
-
-        if( fullyActivePrograms > 0 &&
-            fullyActivePrograms >= _lmprograms.size() )
-        {
-            setControlAreaState(CtiLMControlArea::FullyActiveState);
-        }
-        else if( activePrograms > 0 )
-        {
-            setControlAreaState(CtiLMControlArea::ActiveState);
-        }
+        updateStateFromPrograms();
 
         if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
         {
@@ -1769,11 +1692,6 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
 
 void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, bool forceAll)
 {
-    LONG fullyActivePrograms = 0;
-    LONG activePrograms = 0;
-
-    //setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
-
     for( LONG i=0;i<_lmprograms.size();i++ )
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
@@ -1852,30 +1770,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
         }
     }
 
-    for( LONG j=0;j<_lmprograms.size();j++ )
-    {
-        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
-        {
-            fullyActivePrograms++;
-            activePrograms++;
-        }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
-        {
-            activePrograms++;
-        }
-    }
-
-    if( fullyActivePrograms > 0 &&
-        fullyActivePrograms >= _lmprograms.size() )
-    {
-        setControlAreaState(CtiLMControlArea::FullyActiveState);
-    }
-    else if( activePrograms > 0 )
-    {
-        setControlAreaState(CtiLMControlArea::ActiveState);
-    }
+    updateStateFromPrograms();
 }
 
 /*-----------------------------------------------------------------------------
@@ -1888,8 +1783,6 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
 -----------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
-    int fullyActivePrograms = 0;
-    int activePrograms = 0;
     bool stopped_program = false;
 
     for( int i = 0; i < _lmprograms.size(); i++ )
@@ -1955,30 +1848,7 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
         }
     }
 
-    for( int j=0;j<_lmprograms.size();j++ )
-    {
-        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
-        {
-            fullyActivePrograms++;
-            activePrograms++;
-        }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
-        {
-            activePrograms++;
-        }
-    }
-
-    if( fullyActivePrograms > 0 &&
-        fullyActivePrograms >= _lmprograms.size() )
-    {
-        setControlAreaState(CtiLMControlArea::FullyActiveState);
-    }
-    else if( activePrograms > 0 )
-    {
-        setControlAreaState(CtiLMControlArea::ActiveState);
-    }
+    updateStateFromPrograms();
 
     return stopped_program;
 }
@@ -1996,6 +1866,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
     BOOL returnBoolean = FALSE;
     LONG numberOfActivePrograms = 0;
     LONG numberOfFullyActivePrograms = 0;
+    LONG numberOfScheduledPrograms = 0;
     for( LONG i=0;i<_lmprograms.size();i++ )
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
@@ -2021,8 +1892,12 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
         {
             numberOfActivePrograms++;
         }
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ScheduledState )
+        {
+            numberOfScheduledPrograms++;
+        }
     }
-    if( numberOfActivePrograms == 0 )
+    if( numberOfActivePrograms == 0 && numberOfScheduledPrograms <= 0 )
     {
         LONG newPriority = -1;
         setControlAreaState(CtiLMControlArea::InactiveState);
@@ -2051,10 +1926,22 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
     {
         setControlAreaState(CtiLMControlArea::FullyActiveState);
     }
+    else if( numberOfScheduledPrograms > 0 && numberOfActivePrograms <= 0 )
+    {
+        if( numberOfScheduledPrograms >= _lmprograms.size() )
+        {
+            setControlAreaState(CtiLMControlArea::FullyScheduledState);
+        }
+        else
+        {
+            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+        }
+    }
     else
     {
         setControlAreaState(CtiLMControlArea::ActiveState);
     }
+    
     return returnBoolean;
 }
 
@@ -2072,6 +1959,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
     LONG previousControlAreaState = getControlAreaState();
     LONG numberOfActivePrograms = 0;
     LONG numberOfFullyActivePrograms = 0;
+    LONG numberOfScheduledPrograms = 0;
     for( LONG i=0;i<_lmprograms.size();i++ )
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
@@ -2132,10 +2020,14 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
         {
             numberOfActivePrograms++;
         }
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ScheduledState )
+        {
+            numberOfScheduledPrograms++;
+        }
     }
     if( returnBOOL )
     {
-        if( numberOfActivePrograms == 0 )
+        if( numberOfActivePrograms == 0 && numberOfScheduledPrograms <= 0 )
         {
             LONG newPriority = -1;
             setControlAreaState(CtiLMControlArea::InactiveState);
@@ -2164,6 +2056,17 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
         {
             setControlAreaState(CtiLMControlArea::FullyActiveState);
         }
+        else if( numberOfScheduledPrograms > 0 && numberOfActivePrograms <= 0 )
+        {
+            if( numberOfScheduledPrograms >= _lmprograms.size() )
+            {
+                setControlAreaState(CtiLMControlArea::FullyScheduledState);
+            }
+            else
+            {
+                setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+            }
+        }
         else
         {
             setControlAreaState(CtiLMControlArea::ActiveState);
@@ -2183,6 +2086,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
     LONG previousControlAreaState = getControlAreaState();
     LONG numberOfActivePrograms = 0;
     LONG numberOfFullyActivePrograms = 0;
+    LONG numberOfScheduledPrograms = 0;
     for( LONG i=0;i<_lmprograms.size();i++ )
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
@@ -2203,6 +2107,10 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
         else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
         {
             numberOfActivePrograms++;
+        }
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ScheduledState )
+        {
+            numberOfScheduledPrograms++;
         }
     }
 
@@ -2229,7 +2137,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
             setUpdatedFlag(TRUE);
         }
     }
-    else if( numberOfActivePrograms == 0 )
+    else if( numberOfActivePrograms == 0 && numberOfScheduledPrograms <= 0 )
     {
         setControlAreaState(CtiLMControlArea::InactiveState);
         if( previousControlAreaState != CtiLMControlArea::InactiveState )
@@ -2248,6 +2156,18 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
             setCurrentStartPriority(-1);
             setUpdatedFlag(TRUE);
         }
+    }
+    else if( numberOfScheduledPrograms > 0 && numberOfActivePrograms <= 0 )
+    {
+        if( numberOfScheduledPrograms >= _lmprograms.size() )
+        {
+            setControlAreaState(CtiLMControlArea::FullyScheduledState);
+        }
+        else
+        {
+            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+        }
+        // This is really a state that is set up outside of this function so we are not logging this behavior.
     }
     else
     {
@@ -2291,6 +2211,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
     LONG previousControlAreaState = getControlAreaState();
     LONG numberOfActivePrograms = 0;
     LONG numberOfFullyActivePrograms = 0;
+    LONG numberOfScheduledPrograms = 0;
     for( LONG i=0;i<_lmprograms.size();i++ )
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
@@ -2313,6 +2234,10 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
         else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
         {
             numberOfActivePrograms++;
+        }
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ScheduledState )
+        {
+            numberOfScheduledPrograms++;
         }
     }
 
@@ -2356,7 +2281,21 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
                 dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
 
-            setControlAreaState(CtiLMControlArea::InactiveState);
+            // This is different than the manual control. Time based control does not currently schedule while manual does.
+            // In the case of timed control we still want the timed stop message even though something is scheduled.
+            if( numberOfScheduledPrograms >= _lmprograms.size() )
+            {
+                setControlAreaState(CtiLMControlArea::FullyScheduledState);
+            }
+            else if( numberOfScheduledPrograms > 0 )
+            {
+                setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+            }
+            else
+            {
+                setControlAreaState(CtiLMControlArea::InactiveState);
+            }
+
             setCurrentStartPriority(-1);
             setUpdatedFlag(TRUE);
         }
@@ -2447,6 +2386,57 @@ void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
     {
         CtiLMProgramBaseSPtr currentLMProgramBase = _lmprograms[i];
         currentLMProgramBase->createControlStatusPointUpdates(multiDispatchMsg);
+    }
+}
+
+// Updates the CA state based on the programs under this control area.
+// Note this does not set the inactive state. The reason it does not is due to
+// the attempting control state which is beyond the calculations done here but only
+// exists when there is no active or scheduled programs.
+void CtiLMControlArea::updateStateFromPrograms()
+{
+    LONG fullyActivePrograms = 0;
+    LONG activePrograms = 0;
+    LONG scheduledPrograms = 0;
+
+    for( LONG j=0;j<_lmprograms.size();j++ )
+    {
+        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
+        {
+            fullyActivePrograms++;
+            activePrograms++;
+        }
+        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
+        {
+            activePrograms++;
+        }
+        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ScheduledState )
+        {
+            scheduledPrograms++;
+        }
+    }
+
+    if( fullyActivePrograms > 0 &&
+        fullyActivePrograms >= _lmprograms.size() )
+    {
+        setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+    else if( activePrograms > 0 )
+    {
+        setControlAreaState(CtiLMControlArea::ActiveState);
+    }
+    else if( scheduledPrograms > 0 )
+    {
+        if( scheduledPrograms >= _lmprograms.size() )
+        {
+            setControlAreaState(CtiLMControlArea::FullyScheduledState);
+        }
+        else
+        {
+            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+        }
     }
 }
 
@@ -2895,7 +2885,7 @@ const string CtiLMControlArea::DefOpStateNone = "None";
 int CtiLMControlArea::InactiveState = STATEZERO;
 int CtiLMControlArea::ActiveState = STATEONE;
 int CtiLMControlArea::ManualActiveState = STATETWO;
-int CtiLMControlArea::ScheduledState = STATETHREE;
+int CtiLMControlArea::FullyScheduledState = STATETHREE;
 int CtiLMControlArea::FullyActiveState = STATEFOUR;
 int CtiLMControlArea::AttemptingControlState = STATEFIVE;
-
+int CtiLMControlArea::PartiallyScheduledState = STATESIX;

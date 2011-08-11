@@ -1621,6 +1621,7 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
     {
         //If this is a gear change, we are already controlling, dont set to scheduled!
         lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
+        controlArea->updateStateFromPrograms();
     }
 
     lmProgramDirect->setDirectStartTime(startTime);
