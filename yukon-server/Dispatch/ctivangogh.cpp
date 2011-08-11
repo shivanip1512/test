@@ -1,16 +1,7 @@
 #include "precompiled.h"
 
-#include <iomanip>
 #include <iostream>
-#include <exception>
 #include <utility>
-
-#include <rw\thr\thrfunc.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw/toolpro/inetaddr.h>
-#include <rw\rwerr.h>
-#include <rw\thr\mutex.h>
 
 #include "collectable.h"
 #include "counter.h"
@@ -72,9 +63,10 @@
 #include "debug_timer.h"
 #include "millisecond_timer.h"
 
+#include <boost/tuple/tuple_comparison.hpp>
+
 using namespace std;
 
-#define LMCTLHIST_WINDOW         30             // How often partial LM control intervals are written out to DB.
 #define MAX_ARCHIVER_ENTRIES     10             // If this many entries appear, we'll do a dump
 #define MAX_DYNLMQ_ENTRIES       100            // If this many entries appear, we'll do a dump
 #define DUMP_RATE                30             // Otherwise, do a dump every this many seconds
@@ -1768,40 +1760,53 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
     return;
 }
 
-INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
+void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 {
-    INT status = NORMAL;
-
     try
     {
         // See if I know about this point ID
-        CtiPointSPtr TempPoint = PointMgr.getCachedPoint(aPD.getId());
-
-        if(TempPoint)      // We do know this point..
+        if(const CtiPointSPtr TempPoint = PointMgr.getCachedPoint(aPD.getId()))
         {
             CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(TempPoint);
 
             if(pDyn && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))
             {
-                bool isNew = isPointDataNewInformation( aPD, pDyn );    // This must be checked before the setPoint() method is called.
+                const bool isNew = isPointDataNewInformation(aPD, *pDyn);
+                const bool isDuplicate = isDuplicatePointData(aPD, *pDyn);
+                const bool previouslyArchived = pDyn->wasArchived();
 
-                if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE)
-                    || (pDyn->getQuality() == UnintializedQuality && aPD.getQuality() != UnintializedQuality) )
+                if( aPD.getTime() >= pDyn->getTimeStamp()
+                    || (aPD.getTags() & TAG_POINT_FORCE_UPDATE)
+                    || (pDyn->getQuality() == UnintializedQuality &&
+                        aPD.getQuality() != UnintializedQuality) )
                 {
+                    // Set the point in memory to the current value.
+                    // Do not update with an older time unless we are in the forced condition or if
+                    // the point has never been updated (uninit quality)
+                    pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~SIGNAL_MANAGER_MASK) | _signalManager.getTagMask(aPD.getId()));
+
+                    if( isDuplicate && previouslyArchived )
                     {
-                        // Set the point in memory to the current value.
-                        // Do not update with an older time unless we are in the forced condition or if
-                        // the point has never been updated (uninit quality)
-                        pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~SIGNAL_MANAGER_MASK) | _signalManager.getTagMask(aPD.getId()));
+                        pDyn->setWasArchived(true);
                     }
                 }
 
                 if( aPD.getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA) )
                 {
-                    // This is a forced reading, which must be written, it should not
-                    // however cause any change in normal pending scanned readings
+                    if( isDuplicate && previouslyArchived )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Suppressing duplicate forced archive for pointid " << TempPoint->getPointID() << endl;
+                    }
+                    else
+                    {
+                        // This is a forced reading, which must be written, it should not
+                        // however cause any change in normal pending scanned readings
 
-                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
+                        _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
+
+                        pDyn->setWasArchived(true);
+                    }
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
@@ -1809,7 +1814,10 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         (TempPoint->getArchiveType() == ArchiveTypeOnTimerOrUpdated))
                 {
                     _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
-                    TempPoint->setArchivePending(FALSE);
+
+                    pDyn->setArchivePending(false);
+
+                    pDyn->setWasArchived(true);
                 }
             }
         }
@@ -1826,8 +1834,6 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
             CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Point Data Relay");
             pSig->setUser(aPD.getUser());
             queueSignalToSystemLog(pSig);
-
-            status = IDNF; // Error is ID not found!
         }
     }
     catch( ... )
@@ -1837,8 +1843,6 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
             dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
-    return status;
 }
 
 void CtiVanGogh::processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatchSPtr &pDyn, int updateType, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap)
@@ -2526,55 +2530,49 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiServer::ptr_type &Conn, const
     return bStatus;
 }
 
-BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatchSPtr &pDyn)
+bool CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn)
 {
-    bool bValueChange = true;
-    bool bQualityChange = true;
-    BOOL bStatus = TRUE;
-    bool bTimestampMatters = false;
-    bool bTimestampChange = false;
-
-    // Verify that the point has actually changed from the last known!
-    // OR it must be marked for forcing through the system
-    if(pDyn)
+    //  This is for points on devices like RTUs that send or are scanned for periodic updates.
+    //    The value might not change, but the point data is new if the timestamp is new.
+    if( Msg.getTags() & TAG_POINT_DATA_TIMESTAMP_VALID )
     {
-        if(Msg.getTags() & TAG_POINT_DATA_TIMESTAMP_VALID)
+        //  If the time is newer
+        if( (Msg.getTime() > Dyn.getTimeStamp()) ||
+            (Msg.getTime() == Dyn.getTimeStamp() && Msg.getMillis() != Dyn.getTimeStampMillis()) )
         {
-            bTimestampMatters = true;
-            if((Msg.getTime() > pDyn->getTimeStamp()) || (Msg.getTime() == pDyn->getTimeStamp() && Msg.getMillis() != pDyn->getTimeStampMillis())
-               || (pDyn->getQuality() == UnintializedQuality && Msg.getQuality() != UnintializedQuality))
-            {
-                // The timestamp is changed, OR the FORCE bit is set, then the SOE data has been tweaked.
-                bTimestampChange = true;
-            }
+            return true;
         }
 
-        if(pDyn->getValue() == Msg.getValue())
+        //  Or if we've never received a point before
+        if( Dyn.getQuality() == UnintializedQuality &&
+            Msg.getQuality() != UnintializedQuality )
         {
-            bValueChange = false;   // There was no value change.
+            return true;
         }
-
-        if( pDyn->getQuality() == NonUpdatedQuality || pDyn->getQuality() == Msg.getQuality() )
-        {
-            /*
-             *  If the qualities have not changed, or the old quality was non-updated, we do not wish to realarm the point.
-             */
-            bQualityChange = false;
-        }
-    }
-
-    if(bTimestampMatters)
-    {
-        // It matters, but is not newer!  DO NOT CALL THIS NEW
-        bStatus = bTimestampChange ? TRUE : FALSE;
     }
     else
     {
-        bStatus = ( (bValueChange || bQualityChange) ? TRUE : FALSE );
+        if( Dyn.getValue() != Msg.getValue() )
+        {
+            return true;
+        }
+
+        if( Dyn.getQuality() != NonUpdatedQuality &&
+            Dyn.getQuality() != Msg.getQuality() )
+        {
+            return true;
+        }
     }
 
-    return bStatus;
+    return false;
 }
+
+bool CtiVanGogh::isDuplicatePointData( const CtiPointDataMsg &pd, const CtiDynamicPointDispatch &dp )
+{
+    return boost::make_tuple(pd.getId(), pd.getTime(), pd.getMillis(), pd.getQuality(), pd.getValue())
+        == boost::make_tuple(dp.getDispatch().getPointID(), dp.getTimeStamp(), dp.getTimeStampMillis(), dp.getQuality(), dp.getValue());
+}
+
 
 BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn, const LONG pID)
 {

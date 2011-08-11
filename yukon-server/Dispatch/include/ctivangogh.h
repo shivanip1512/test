@@ -175,7 +175,7 @@ public:
     void  VGAppMonitorThread();
     void  VGCacheHandlerThread(int threadNumber);
 
-    INT   archivePointDataMessage(const CtiPointDataMsg &aPD);
+    void  archivePointDataMessage(const CtiPointDataMsg &aPD);
     INT   archiveSignalMessage(const CtiSignalMsg& aSig);
     INT   archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCEHM);
 
@@ -203,7 +203,8 @@ public:
     BOOL  isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
                                          const LONG                          pID);
     BOOL  isPointDataForConnection(const CtiServer::ptr_type &Conn, const CtiPointDataMsg &Msg);
-    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatchSPtr &pDyn);
+    static bool isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn);
+    static bool isDuplicatePointData(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn);
     BOOL  isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg);
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 

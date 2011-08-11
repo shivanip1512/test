@@ -189,8 +189,8 @@ cmdparse.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		optional.h sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h configkey.h configval.h logger.h thread.h \
 		CtiPCPtrQueue.h pointdefs.h ctistring.h
-cmdparsetestgenerator.obj:	precompiled.h cmdparse.h ctitokenizer.h \
-		dlldefs.h parsevalue.h numstr.h test_cmdparse_input.h
+cmdparsetestgenerator.obj:	cmdparse.h ctitokenizer.h dlldefs.h \
+		parsevalue.h test_cmdparse_input.h
 counter.obj:	precompiled.h counter.h guard.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		mutex.h
@@ -374,10 +374,10 @@ rtdb.obj:	precompiled.h dlldefs.h rtdb.h hashkey.h hash_functions.h \
 sema.obj:	precompiled.h sema.h dlldefs.h
 stdexcepthdlr.obj:	precompiled.h stdexcepthdlr.h dlldefs.h
 string_utility.obj:	precompiled.h string_utility.h dlldefs.h
-test_cmdparse.obj:	boostutil.h utility.h ctitime.h dlldefs.h queues.h \
-		cticalls.h os2_2w32.h types.h numstr.h test_cmdparse_input.h \
-		test_cmdparse_output.h cmdparse.h ctitokenizer.h parsevalue.h \
-		ctistring.h
+test_cmdparse.obj:	cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h \
+		boostutil.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h test_cmdparse_input.h \
+		test_cmdparse_output.h
 test_ctidate.obj:	ctidate.h dlldefs.h logger.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h boostutil.h

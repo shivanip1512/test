@@ -154,11 +154,11 @@ exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
 		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
-		msg_signal.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h slctdev.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h exe_pcreq.h executor.h
+		msg_signal.h tbl_static_paoinfo.h tbl_base.h tbl_stats.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		tbl_pt_property.h tbl_pt_trigger.h slctdev.h mgr_point.h \
+		mgr_route.h repeaterrole.h mgr_config.h exe_pcreq.h \
+		executor.h
 parsetest.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -180,18 +180,18 @@ pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
 		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
-		string_utility.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h dev_grp.h cparms.h configkey.h configval.h \
-		msg_lmcontrolhistory.h msg_pcrequest.h msg_pdata.h \
-		msg_multi.h pt_status.h tbl_pt_status.h pt_analog.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
-		tbl_dv_versacom.h vcomdefs.h dev_grp_point.h tbl_lmg_point.h \
-		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h \
-		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
+		string_utility.h tbl_static_paoinfo.h pointdefs.h tbl_base.h \
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h dev_grp.h \
+		cparms.h configkey.h configval.h msg_lmcontrolhistory.h \
+		msg_pcrequest.h msg_pdata.h msg_multi.h pt_status.h \
+		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h tbl_dv_versacom.h \
+		vcomdefs.h dev_grp_point.h tbl_lmg_point.h dev_mct.h \
+		dev_carrier.h dev_dlcbase.h dev_single.h msg_pcreturn.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h tbl_route.h \
+		tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
 		tbl_metergrp.h tbl_loadprofile.h da_load_profile.h \
 		tbl_dv_mctiedport.h CtiLocalConnect.h critical_section.h \
 		porter.h devicetypes.h queent.h pil_conmgr.h con_mgr.h \

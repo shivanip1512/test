@@ -10,7 +10,6 @@
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "pointtypes.h"
-#include "pt_dyn_base.h"
 #include "tbl_pt_base.h"
 #include "tbl_pt_property.h"
 #include "tbl_pt_trigger.h"

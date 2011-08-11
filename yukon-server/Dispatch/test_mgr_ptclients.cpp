@@ -1,7 +1,7 @@
 #define BOOST_AUTO_TEST_MAIN "Test Mgr PtClients"
 
-#include "precompiled.h"
 #include "mgr_ptclients.h"
+#include "tbl_pt_alarm.h"
 #include "pt_status.h"
 #include "pt_analog.h"
 

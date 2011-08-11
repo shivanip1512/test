@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_ptclients
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2008/11/20 20:37:41 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <rw/toolpro/neterr.h>
 
 #include "dllvg.h"
 #include "pt_base.h"
@@ -36,7 +21,8 @@
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
 #include "resolvers.h"
-#include "tbl_ptdispatch.h"
+#include "tbl_pt_alarm.h"
+
 #include <list>
 
 using namespace std;
@@ -742,7 +728,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
                                 }
                             case ArchiveTypeOnTimerAndUpdated:
                                 {
-                                    pDyn->setArchivePending(TRUE);                   // Mark him so the next one gets archived!
+                                    pDyn->setArchivePending(true);                   // Mark him so the next one gets archived!
                                     break;
                                 }
                             }
