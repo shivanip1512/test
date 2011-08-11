@@ -4,8 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
@@ -23,6 +25,7 @@ import com.cannontech.encryption.EncryptedRouteDao;
 public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private DBPersistentDao dbPersistentDao;
+    private Logger log = YukonLogManager.getLogger(EncryptedRouteDaoImpl.class);
 
     @Override
     public List<EncryptedRoute> getAllEncryptedRoutes() {
@@ -63,6 +66,23 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         return encryptedIDs;
     }
 
+    @Override
+    public void saveEncryptedRoute(EncryptedRoute encryptedRoute) {
+        StaticPaoInfo spi = new StaticPaoInfo(PaoInfo.CPS_ONE_WAY_ENCRYPTION_KEY);
+        spi.setPaobjectId(encryptedRoute.getPaobjectId());
+        try {
+            dbPersistentDao.performDBChange(spi, TransactionType.RETRIEVE);
+            if (encryptedRoute.getValue() != "") {
+                spi.setValue(encryptedRoute.getValue());
+            } else {
+                spi.setValue(null);
+            }
+            dbPersistentDao.performDBChange(spi, TransactionType.UPDATE);
+        } catch (Exception e) {
+            log.error("Problem while trying to save an encryption key to the database.", e);
+        }
+    }
+
     @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
@@ -72,4 +92,5 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+
 }

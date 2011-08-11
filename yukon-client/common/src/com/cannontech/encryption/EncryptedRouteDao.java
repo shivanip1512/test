@@ -6,4 +6,6 @@ public interface EncryptedRouteDao {
     
     List<EncryptedRoute> getAllEncryptedRoutes();
 
+    void saveEncryptedRoute(EncryptedRoute encryptedRoute);
+
 }

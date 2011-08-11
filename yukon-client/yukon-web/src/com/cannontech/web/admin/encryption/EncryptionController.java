@@ -1,34 +1,50 @@
 package com.cannontech.web.admin.encryption;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoInfo;
-import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.TransactionType;
-import com.cannontech.database.db.pao.StaticPaoInfo;
 import com.cannontech.encryption.EncryptedRoute;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@RequestMapping("/encryption/*")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
+@RequestMapping("/encryption/*")
 public class EncryptionController {
-    
-    private Logger log = YukonLogManager.getLogger(EncryptionController.class);
-    private static final String CPS_ONE_WAY_ENCRYPTION_KEY = "CPS_ONE_WAY_ENCRYPTION_KEY";
-    private DBPersistentDao dbPersistentDao;
     private EncryptedRouteDao encryptedRouteDao;
+    private final static String baseKey = "yukon.web.modules.adminSetup.encryption";
+
+    private Validator detailsValidator =
+        new SimpleValidator<EncryptedRoute>(EncryptedRoute.class) {
+            @Override
+            public void doValidation(EncryptedRoute encryptedRoute, Errors errors) {
+                ValidationUtils.rejectIfEmpty(errors, "value", baseKey + ".errorMsg.empty");
+                
+                Pattern hexPattern = Pattern.compile("^[0-9A-F]*$");
+                YukonValidationUtils.regexCheck(errors, "value", encryptedRoute.getValue(), hexPattern, baseKey + ".errorMsg.hex");
+
+                Pattern lengthPattern = Pattern.compile("^[0-9A-F]{32}$");
+                YukonValidationUtils.regexCheck(errors, "value", encryptedRoute.getValue(), lengthPattern, baseKey + ".errorMsg.length");
+
+            }
+        };
 
     @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model) {
@@ -39,47 +55,41 @@ public class EncryptionController {
         return "encryptionSettings.jsp";
     }
 
-    @RequestMapping("save")
-    public String save(HttpServletRequest request, ModelMap model, String[] value,
-                       Integer[] paobjectId) {
-        
-        StaticPaoInfo spi = new StaticPaoInfo(PaoInfo.CPS_ONE_WAY_ENCRYPTION_KEY);
+    @RequestMapping("deleteKey")
+    public String delete(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
+                       BindingResult bindingResult, FlashScope flashScope) {
 
-        if (paobjectId != null
-                && value != null
-                && paobjectId.length == value.length
-                && paobjectId.length != 0) {
-            
-            for (int i = 0; i < paobjectId.length; i++) {
-                spi.setInfoKey(CPS_ONE_WAY_ENCRYPTION_KEY);
-                spi.setPaobjectId(paobjectId[i]);
-                try {
-                    dbPersistentDao.performDBChange(spi, TransactionType.RETRIEVE);
-                    if (value[i].length() == 0) {
-                        spi.setValue(null);
-                    } else {
-                        spi.setValue(value[i]);
-                    }
-                    dbPersistentDao.performDBChange(spi, TransactionType.UPDATE);
-                } catch (Exception e) {
-                    log.error("Problem while trying to save an encryption key to the database.",e);
-                }
-            }
-        } else {
-            log.warn("Unable to save encryption keys in database.");
-        }
+        encryptedRoute.setValue(null);
+        encryptedRouteDao.saveEncryptedRoute(encryptedRoute);
 
         return "redirect:view";
     }
     
-    @Autowired
-    public void setEncryptedRouteDao(EncryptedRouteDao encryptedRouteDao) {
-        this.encryptedRouteDao = encryptedRouteDao;
+    @RequestMapping("saveKey")
+    public String add(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
+                       BindingResult bindingResult, FlashScope flashScope) {
+
+        encryptedRoute.setValue(encryptedRoute.getValue().toUpperCase());
+        
+        detailsValidator.validate(encryptedRoute, bindingResult);
+        
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            
+            model.addAttribute("encryptedRoute", encryptedRoute);
+            return "checkError.jsp";
+        }
+        
+        encryptedRouteDao.saveEncryptedRoute(encryptedRoute);
+
+        return "redirect:view";
     }
 
     @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
+    public void setEncryptedRouteDao(EncryptedRouteDao encryptedRouteDao) {
+        this.encryptedRouteDao = encryptedRouteDao;
     }
 
 }

@@ -12,45 +12,59 @@
         <c:forEach var="route" items="${encryptedRoutes}">
         
             if(${route.encrypted}) {
-                enable(${route.paobjectId})
+                showEnabled('${route.paobjectId}')
             } else {
-                eraseAndDisable(${route.paobjectId});
+                showDisabled('${route.paobjectId}');
             }
-
+            
         </c:forEach>  
-        
-        Event.observe('cancelBtn', 'click', function() {
-            window.location = "view";
-        });
     });
     
-        function hideById(id) {
-            $(id).hide();
-        }
-    
-        function eraseAndDisable(inputId) {
-            $("keyid_"+inputId).clear();
-            $("keyid_"+inputId).type = "hidden";
-            $("dummy_"+inputId).type = "text";
-            $("enableLbl_"+inputId).show();
-            $("disableLbl_"+inputId).hide();
+        function showDisabled(formId) {
+            var formChildren = $(formId).childElements();
+            formChildren[0].show();
         }
         
-        function enable(inputId) {
-            $("keyid_"+inputId).type = "text";
-            $("dummy_"+inputId).type = "hidden";
-            $("keyid_"+inputId).focus();
-            $("enableLbl_"+inputId).hide();
-            $("disableLbl_"+inputId).show();
+        function cancel() {
+            window.location = "view";
+        }
+        
+        function showEnabled(formId) {
+            var formChildren = $(formId).childElements();
+            formChildren[1].show();
+        }
+        
+        function showAddKey(formId) {
+            var formChildren = $(formId).childElements();
+            formChildren[0].hide();
+            formChildren[2].show();
+        }
+        
+        function addKey(formId) {
+            Yukon.ui.blockPage();
+            $(formId).action = "saveKey"
+            $(formId).submit();
+        }
+        
+        function showDeleteConfirm(formId) {
+            var formChildren = $(formId).childElements();
+            formChildren[1].hide();
+            formChildren[3].show();
+        }
+        
+        function confirmDelete(formId) {
+            $(formId).reset();
+            Yukon.ui.blockPage();
+            $(formId).action = "deleteKey"
+            $(formId).submit();
         }
     </script>
     
-    <form id="encryptionForm" action="save" method="POST">
+    
     <table class="resultsTable">
         <tr>
             <th><i:inline key=".paoNameLbl"/></th>
             <th><i:inline key=".paoTypeLbl"/></th>
-            <th><i:inline key=".actionsLbl"/></th>
             <th><i:inline key=".CPSkeyLbl"/></th>
         </tr>
         
@@ -58,20 +72,30 @@
             <tr>
                 <td>${route.paoName}</td>
                 <td>${route.type}</td>
-                <td>
-                    <span id="disableLbl_${route.paobjectId}" style="display:none">
-                        <cti:labeledImg  key="addDisabled"/>
-                        <cti:labeledImg  key="delete" href="javascript:eraseAndDisable('${route.paobjectId}')"/>
-                    </span>
-                    <span id="enableLbl_${route.paobjectId}" style="display:none">
-                        <cti:labeledImg  key="add" href="javascript:enable('${route.paobjectId}')"/>
-                        <cti:labeledImg  key="deleteDisabled"/>
-                    </span>
-                </td>
-                <td>
-                    <input id="keyid_${route.paobjectId}" name="value" type="hidden" value="${route.value}" size ="50"/>
-                    <input id="dummy_${route.paobjectId}" type="hidden" value="<i:inline key=".disabledMsg"/>" size="50" disabled/>
-                    <input name="paobjectId" type="hidden" value="${route.paobjectId}"/>
+                <td width="50%">
+                    <form id="${route.paobjectId}"  method="POST">
+                        <span style="display:none">
+                            <cti:button key="enableEncryptionBtn" onclick="javascript:showAddKey('${route.paobjectId}')"/>
+                        </span>
+                        <span style="display:none">
+                            <cti:button  key="deleteBtn" onclick="javascript:showDeleteConfirm('${route.paobjectId}')"/>
+                            <i:inline key=".keyFoundLbl"/>
+                        </span>
+                        <span style="display:none">
+                            <i:inline key=".keyLbl"/>
+                            <input name="value" type="text" value="" size ="50"/>
+                            <cti:button key="saveBtn"  onclick="javascript:addKey('${route.paobjectId}')"/>
+                            <cti:button key="cancelBtn" onclick="javascript:cancel()"/>
+                        </span>
+                        <span style="display:none">
+                            <i:inline key=".confirmDeleteMsg"/>
+                            <cti:button key="confirmDeleteBtn" onclick="javascript:confirmDelete('${route.paobjectId}')"/>
+                            <cti:button key="cancelBtn" onclick="javascript:cancel()"/>
+                        </span>
+                        <input name="paobjectId" type="hidden" value="${route.paobjectId}"/>
+                        <input name="type" type="hidden" value="${route.type}"/>
+                        <input name="paoName" type="hidden" value="${route.paoName}"/>
+                    </form>
                 </td>
             </tr>
         </c:forEach>
@@ -83,15 +107,4 @@
             </tr>
         </c:if>
         </table>
-        <br>
-        <c:if test="${not empty encryptedRoutes}">
-            <cti:button key="saveBtn" type="submit"/>
-            <cti:button key="cancelBtn" id="cancelBtn"/>
-        </c:if>
-        <c:if test="${empty encryptedRoutes}">
-            <cti:button key="saveBtn" disabled="true"/>
-            <cti:button key="cancelBtn" disabled="true"/>
-        </c:if>        
-    </form>
-
 </cti:standardPage>
