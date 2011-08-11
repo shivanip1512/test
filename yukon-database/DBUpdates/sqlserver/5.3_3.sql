@@ -182,3 +182,4 @@ DROP COLUMN IntervalLengthInMillis;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '11-Aug-2011', 'Latest Update', 3 );
