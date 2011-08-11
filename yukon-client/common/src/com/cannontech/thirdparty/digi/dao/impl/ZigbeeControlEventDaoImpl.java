@@ -58,9 +58,9 @@ public class ZigbeeControlEventDaoImpl implements ZigbeeControlEventDao {
         
         sql.append("SELECT ZBCED.ZBControlEventId, YP.PaOName as DeviceName, YP2.PaoName as LoadGroupName, ZBCED.DeviceAck, ZBCED.StartTime, ZBCED.StopTime, ZBCED.Canceled");
         sql.append("FROM ZBControlEventDevice ZBCED");
-        sql.append("JOIN YukonPaObject YP on YP.PaObjectID = ZBCED.DeviceId");
-        sql.append("JOIN ZBControlEvent ZBCE on ZBCE.ZBControlEventId = ZBCED.ZBControlEventId");
-        sql.append("JOIN YukonPAObject YP2 on YP2.PAObjectID = ZBCE.GroupId");
+        sql.append(  "JOIN YukonPaObject YP ON YP.PaObjectID = ZBCED.DeviceId");
+        sql.append(  "JOIN ZBControlEvent ZBCE ON ZBCE.ZBControlEventId = ZBCED.ZBControlEventId");
+        sql.append(  "JOIN YukonPAObject YP2 ON YP2.PAObjectID = ZBCE.GroupId");
         sql.append("WHERE ZBCE.StartTime").gte(startDate);
         sql.append(  "AND ZBCE.StartTime").lte(stopDate);
         sql.append("ORDER BY ZBCED.ZBControlEventId, LoadGroupName");
