@@ -8,17 +8,23 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jsonOLD.JSONException;
 import net.sf.jsonOLD.JSONArray;
 import net.sf.jsonOLD.JSONObject;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class DataUpdaterController extends AbstractController {
+
+    private static final Logger log = YukonLogManager.getLogger(DataUpdaterController.class);
+
     private DataUpdaterService dataUpdaterService;
 
     @Override
@@ -28,7 +34,15 @@ public class DataUpdaterController extends AbstractController {
         StringWriter jsonDataWriter = new StringWriter();
         FileCopyUtils.copy(request.getReader(), jsonDataWriter);
         String jsonStr = jsonDataWriter.toString();
-        JSONObject data = JSONObject.fromString(jsonStr);
+        
+        JSONObject data;
+        try {
+            data = JSONObject.fromString(jsonStr);
+        } catch (JSONException e) {
+            log.error("The system has recieved a string that it cannot parse.  ["+jsonStr+"]");
+            throw e;
+        }
+        
         long fromDate = data.getLong("fromDate");
         JSONArray dataArray = data.getJSONArray("data");
         
