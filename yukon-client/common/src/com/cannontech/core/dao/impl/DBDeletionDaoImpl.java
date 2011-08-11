@@ -99,12 +99,12 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 
     private static byte createDeleteStringForPaoType(final DBDeleteResult dbRes) throws java.sql.SQLException
     {
-        Integer theID = new Integer( dbRes.getItemID() );
+        Integer theID = Integer.valueOf(dbRes.getItemID());
         String str = null;   
     
        if( (str = VoltageRegulator.usedVoltageRegulator(theID)) != null )
        {
-           dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the Zone named '" + str + "'") );
+           dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the Zone named '" + str + "'");
            return DBDeletionDao.STATUS_DISALLOW;
        }
     
