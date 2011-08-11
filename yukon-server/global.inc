@@ -85,7 +85,9 @@ BOOST_VERSION = vc90-mt-1_37
 BOOST_LIBS = \
 $(BOOST)\lib\libboost_date_time-$(BOOST_VERSION).lib \
 $(BOOST)\lib\libboost_thread-$(BOOST_VERSION).lib   \
-$(BOOST)\lib\libboost_regex-$(BOOST_VERSION).lib
+$(BOOST)\lib\libboost_regex-$(BOOST_VERSION).lib \
+$(BOOST)\lib\libboost_filesystem-$(BOOST_VERSION).lib \
+$(BOOST)\lib\libboost_system-$(BOOST_VERSION).lib
 
 BOOST_TEST_LIBS = \
 $(BOOST)\lib\libboost_unit_test_framework-$(BOOST_VERSION).lib
