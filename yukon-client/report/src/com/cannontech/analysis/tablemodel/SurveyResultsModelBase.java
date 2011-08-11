@@ -1,10 +1,12 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -15,9 +17,10 @@ import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase<T> {
+public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase<T> implements ReportModelMetaInfo {
     protected YukonJdbcTemplate yukonJdbcTemplate;
     protected DateFormattingService dateFormattingService;
     protected SurveyDao surveyDao;
@@ -40,6 +43,34 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
     private final static MessageSourceResolvable unansweredReason =
         new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
 
+    
+
+    @Override
+    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
+
+        String startDate = null;
+        if (getStartDate() == null) { 
+            startDate = messageSourceAccessor.getMessage("yukon.web.modules.survey.report.noStartDate");
+        } else {
+            startDate = dateFormattingService.format(getStartDate(), DateFormattingService.DateFormatEnum.BOTH, userContext);
+        }
+
+        String stopDate = null;
+        if (getStopDate() == null) { 
+            stopDate = messageSourceAccessor.getMessage("yukon.web.modules.survey.report.noEndDate");
+        } else {
+            stopDate = dateFormattingService.format(getStopDate(), DateFormattingService.DateFormatEnum.BOTH, userContext);
+        }
+
+        info.put(messageSourceAccessor.getMessage("yukon.web.modules.survey.report.startDate"), startDate);
+        info.put(messageSourceAccessor.getMessage("yukon.web.modules.survey.report.endDate"), stopDate);
+
+        return info;
+    }
+    
     @Override
     protected T getRow(int rowIndex) {
         return data.get(rowIndex);
@@ -117,7 +148,8 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
         }
         return unansweredReason;
     }
-
+    
+    // DI Setters
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;

@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,10 +10,8 @@ import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -23,14 +20,13 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResultsDetailModel.ModelRow> implements ReportModelMetaInfo {
+public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResultsDetailModel.ModelRow> {
 
     // inputs
     private String accountNumber;
@@ -192,32 +188,6 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
         this.deviceSerialNumber = deviceSerialNumber;
     }
 
-    @Override
-    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
-        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
-        LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
-
-        String startDate = null;
-        if (getStartDate() == null) { 
-            startDate = messageSourceAccessor.getMessage("yukon.web.modules.survey.report.noStartDate");
-        } else {
-            startDate = dateFormattingService.format(getStartDate(), DateFormattingService.DateFormatEnum.BOTH, userContext);
-        }
-
-        String stopDate = null;
-        if (getStopDate() == null) { 
-            stopDate = messageSourceAccessor.getMessage("yukon.web.modules.survey.report.noEndDate");
-        } else {
-            stopDate = dateFormattingService.format(getStopDate(), DateFormattingService.DateFormatEnum.BOTH, userContext);
-        }
-
-        info.put(messageSourceAccessor.getMessage("yukon.web.modules.survey.report.startDate"), startDate);
-        info.put(messageSourceAccessor.getMessage("yukon.web.modules.survey.report.endDate"), stopDate);
-
-        return info;
-    }
-    
     // DI Setters
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
