@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/9/2011 2:51:56 PM                          */
+/* Created on:     8/11/2011 12:51:43 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -402,7 +402,6 @@ go
 create table ArchiveDataAnalysis (
    AnalysisId           numeric              not null,
    Attribute            varchar(60)          not null,
-   IntervalLengthInMillis numeric              not null,
    LastChangeId         numeric              not null,
    RunDate              datetime             not null,
    ExcludeBadPointQualities char(1)              not null,
@@ -410,6 +409,7 @@ create table ArchiveDataAnalysis (
    StopDate             datetime             not null,
    AnalysisStatus       varchar(60)          not null,
    StatusId             varchar(60)          null,
+   IntervalPeriod       varchar(60)          not null,
    constraint PK_ArcDataAnal primary key (AnalysisId)
 )
 go

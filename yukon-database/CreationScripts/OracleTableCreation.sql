@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2011 2:52:49 PM                          */
+/* Created on:     8/11/2011 12:45:04 PM                        */
 /*==============================================================*/
 
 
@@ -384,7 +384,6 @@ create table ApplianceWaterHeater  (
 create table ArchiveDataAnalysis  (
    AnalysisId           NUMBER                          not null,
    Attribute            VARCHAR2(60)                    not null,
-   IntervalLengthInMillis NUMBER                          not null,
    LastChangeId         NUMBER                          not null,
    RunDate              DATE                            not null,
    ExcludeBadPointQualities CHAR(1)                         not null,
@@ -392,6 +391,7 @@ create table ArchiveDataAnalysis  (
    StopDate             DATE                            not null,
    AnalysisStatus       VARCHAR2(60)                    not null,
    StatusId             VARCHAR2(60),
+   IntervalPeriod       VARCHAR2(60)                    not null,
    constraint PK_ArcDataAnal primary key (AnalysisId)
 );
 

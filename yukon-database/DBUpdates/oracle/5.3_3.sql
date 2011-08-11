@@ -209,6 +209,20 @@ ALTER TABLE StaticPAOInfo
 MODIFY Value VARCHAR(128) NULL;
 /* End YUK-10132 */
 
+/* Start YUK-10146 */
+ALTER TABLE ArchiveDataAnalysis 
+ADD IntervalPeriod VARCHAR2(60) NULL; 
+
+UPDATE ArchiveDataAnalysis 
+SET IntervalPeriod = 'PT' || to_char(IntervalLengthInMillis/60000) || 'M'; 
+
+ALTER TABLE ArchiveDataAnalysis 
+MODIFY IntervalPeriod VARCHAR2(60) NOT NULL; 
+
+ALTER TABLE ArchiveDataAnalysis 
+DROP COLUMN IntervalLengthInMillis;
+/* End YUK-10146 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

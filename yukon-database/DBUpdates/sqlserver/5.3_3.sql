@@ -164,6 +164,20 @@ ALTER TABLE StaticPAOInfo
 ALTER COLUMN Value VARCHAR(128) NULL;
 /* End YUK-10132 */
 
+/* Start YUK-10146 */
+ALTER TABLE ArchiveDataAnalysis 
+ADD IntervalPeriod VARCHAR(60); 
+GO 
+UPDATE ArchiveDataAnalysis 
+SET IntervalPeriod = 'PT' + CAST(CAST(IntervalLengthInMillis/60000 AS NUMERIC(20)) AS VARCHAR(60)) + 'M'; 
+GO 
+ALTER TABLE ArchiveDataAnalysis 
+ALTER COLUMN IntervalPeriod VARCHAR(60) NOT NULL; 
+GO 
+ALTER TABLE ArchiveDataAnalysis 
+DROP COLUMN IntervalLengthInMillis;
+/* End YUK-10146 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
