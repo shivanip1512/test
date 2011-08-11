@@ -27,6 +27,7 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
@@ -418,7 +419,7 @@ public class DigiResponseHandler {
     private void connectGateway(ZigbeeDevice gateway) { 
         //Check to see if we changed state
         PointValueHolder pvh = attributeDynamicDataSource.getPointValue(gateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-        Commissioned oldState = Commissioned.getForRawState((int)pvh.getValue());
+        Commissioned oldState = PointStateHelper.decodeRawState(Commissioned.class, pvh.getValue());
         
         zigbeeServiceHelper.sendPointStatusUpdate(gateway,
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS,
@@ -429,9 +430,9 @@ public class DigiResponseHandler {
             List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
             for (ZigbeeDevice device : devices) {
                 pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                oldState = Commissioned.getForRawState((int)pvh.getValue());
+                Commissioned devOldState = PointStateHelper.decodeRawState(Commissioned.class, pvh.getValue());
                 
-                if (oldState != Commissioned.DECOMMISSIONED) {
+                if (devOldState != Commissioned.DECOMMISSIONED) {
                     //Poll is commissioned
                     zigbeeStateUpdaterService.activateSmartPolling(device);
                 }
@@ -447,15 +448,12 @@ public class DigiResponseHandler {
     private void disconnectGateway(ZigbeeDevice gateway) {
         //Check to see if we changed state
         PointValueHolder pvh = attributeDynamicDataSource.getPointValue(gateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-        Commissioned oldState = Commissioned.getForRawState((int)pvh.getValue());
+        Commissioned oldState = PointStateHelper.decodeRawState(Commissioned.class, pvh.getValue());
         
         //Only change devices to disconnected if we were connected prior.
         //If we were decommissioned, the devices are not commissioned yet and this would mess up their state.
-        if (oldState == Commissioned.CONNECTED) {
-            changeGatewayStateWithEndPoints(gateway, Commissioned.DISCONNECTED,true);
-        } else {
-            changeGatewayStateWithEndPoints(gateway, Commissioned.DISCONNECTED,false);
-        }
+        boolean changeDevices = oldState == Commissioned.CONNECTED;
+        changeGatewayStateWithEndPoints(gateway, Commissioned.DISCONNECTED, changeDevices);
     }
     
     /**
@@ -467,16 +465,16 @@ public class DigiResponseHandler {
         changeGatewayStateWithEndPoints(gateway, Commissioned.DECOMMISSIONED, false);
     }
     
-    private void changeGatewayStateWithEndPoints(ZigbeeDevice gateway, Commissioned state, boolean changeDevices) {
+    private void changeGatewayStateWithEndPoints(ZigbeeDevice gateway, Commissioned state, boolean updateStateOfDevices) {
         zigbeeServiceHelper.sendPointStatusUpdate(gateway,
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS,
                                                   state);
         
-        if (changeDevices) {
+        if (updateStateOfDevices) {
             List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
             for (ZigbeeDevice device : devices) {
                 PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                Commissioned oldState = Commissioned.getForRawState((int)pvh.getValue());
+                Commissioned oldState = PointStateHelper.decodeRawState(Commissioned.class, pvh.getValue());
                 
                 if (oldState != Commissioned.DECOMMISSIONED) {
                     //Change state to match on all gateways if it was commissioned

@@ -74,7 +74,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
                 
                 PointValueHolder pvh = attributeDynamicDataSource.getPointValue(entry.getDevice(), BuiltInAttribute.ZIGBEE_LINK_STATUS);
                 if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState() ) {
-                    log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, halting ping. " + entry.getDevice().getName());
+                    log.debug("Device is in " + Commissioned.DECOMMISSIONED.name() + " state, halting ping. " + entry.getDevice().getName());
                     iterator.remove();
                     continue;
                 }
@@ -97,7 +97,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
         public void enableSmartPollingForDevice(ZigbeeDevice device) {
             PointValueHolder pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
             if (pvh.getValue() == Commissioned.DECOMMISSIONED.getRawState()) {
-                log.debug("Device is in " + Commissioned.getForRawState((int)pvh.getValue()) .name() + " state, will not ping device " + device.getName());
+                log.debug("Device is in " + Commissioned.DECOMMISSIONED.name() + " state, will not ping device " + device.getName());
                 return;
             }
             

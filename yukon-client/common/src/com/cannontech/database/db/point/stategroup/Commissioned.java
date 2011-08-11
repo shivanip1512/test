@@ -15,15 +15,4 @@ public enum Commissioned implements PointState {
     public int getRawState() {
         return rawState;
     }
-    
-    public static Commissioned getForRawState(int rawState) {
-        
-        for (Commissioned state : values() ) {
-            if (state.getRawState() == rawState) {
-                return state;
-            }
-        }
-        
-        throw new IllegalArgumentException();
-    }
 }
