@@ -147,16 +147,6 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         return job;
     }
 
-    public JobDisabledStatus getJobDisabledStatusById(int jobId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Job.Disabled");
-        sql.append("FROM JobScheduledOneTime JSO");
-        sql.append("JOIN Job ON Job.jobId = JSO.jobId");
-        sql.append("WHERE Job.jobId").eq(jobId);
-        JobDisabledStatus result = yukonJdbcTemplate.queryForObject(sql, jobDisabledStatusRowMapper);
-        return result;
-    }
-
     @Transactional(propagation = Propagation.REQUIRED)
     public void save(ScheduledOneTimeJob oneTimeJob) {
         try {

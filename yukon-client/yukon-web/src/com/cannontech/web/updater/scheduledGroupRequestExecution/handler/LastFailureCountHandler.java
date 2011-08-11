@@ -4,10 +4,10 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
-public class LastFailureResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
+public class LastFailureCountHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
 	@Override
 	public String handle(ScheduledGroupRequestExecutionBundle execution, YukonUserContext userContext) {
-	    int failureCount = execution.getFailureCount();
+	    int failureCount = execution.getExecutionCounts().getFailureCount();
 		return String.valueOf(failureCount);
 	}
 	

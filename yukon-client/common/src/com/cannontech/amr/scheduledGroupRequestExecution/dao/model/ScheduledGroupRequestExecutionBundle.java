@@ -5,17 +5,13 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 public class ScheduledGroupRequestExecutionBundle {
     private int jobId;
     private ScheduledGroupRequestExecutionStatus status;
-    private int failureCount;
-    private int successCount;
-    private int totalCount;
+    private ScheduledGroupExecutionCounts executionCounts;
 
     public ScheduledGroupRequestExecutionBundle(int jobId, ScheduledGroupRequestExecutionStatus status,
-                                                int failureCount, int successCount, int totalCount) {
+                                                ScheduledGroupExecutionCounts executionCounts) {
         this.jobId = jobId;
         this.status = status;
-        this.failureCount = failureCount;
-        this.successCount = successCount;
-        this.totalCount = totalCount;
+        this.executionCounts = executionCounts;
     }
 
     public int getJobId() {
@@ -26,15 +22,7 @@ public class ScheduledGroupRequestExecutionBundle {
         return status;
     }
 
-    public int getFailureCount() {
-        return failureCount;
-    }
-
-    public int getSuccessCount() {
-        return successCount;
-    }
-
-    public int getTotalCount() {
-        return totalCount;
+    public ScheduledGroupExecutionCounts getExecutionCounts() {
+        return executionCounts;
     }
 }

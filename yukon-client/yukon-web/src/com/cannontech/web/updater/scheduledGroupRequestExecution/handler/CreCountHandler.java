@@ -7,7 +7,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
-public class CreCountForJobLastCreIdForJobScheduledGroupRequestExecutionUpdaterHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
+public class CreCountHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
 
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	

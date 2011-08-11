@@ -25,7 +25,7 @@ public class JobDaoBase implements InitializingBean {
         new YukonRowMapper<JobDisabledStatus>() {
         @Override
         public JobDisabledStatus mapRow(YukonResultSet rs) throws SQLException {
-            JobDisabledStatus jobDisabledStatus = JobDisabledStatus.valueOf(rs.getString("disabled"));
+            JobDisabledStatus jobDisabledStatus = rs.getEnum("disabled", JobDisabledStatus.class);
             return jobDisabledStatus;
         }
     };

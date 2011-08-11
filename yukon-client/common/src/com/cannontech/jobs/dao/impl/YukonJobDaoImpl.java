@@ -3,6 +3,7 @@ package com.cannontech.jobs.dao.impl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -40,17 +41,12 @@ public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
     
     @Override
     public JobDisabledStatus getJobDisabledStatusById(int jobId) {
-        JobDisabledStatus jobDisabledStatus = null;
-        try {
-            jobDisabledStatus = scheduledOneTimeJobDao.getJobDisabledStatusById(jobId);
-        } catch (EmptyResultDataAccessException e1) {
-            try {
-                jobDisabledStatus = scheduledRepeatingJobDao.getJobDisabledStatusById(jobId);
-            } catch (EmptyResultDataAccessException e2) {
-                throw new NotFoundException("Unknown job id " + jobId); 
-            }
-        }
-        return jobDisabledStatus;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Disabled");
+        sql.append("FROM Job");
+        sql.append("WHERE jobId").eq(jobId);
+        JobDisabledStatus result = yukonJdbcTemplate.queryForObject(sql, jobDisabledStatusRowMapper);
+        return result;
     }
 
     @Override

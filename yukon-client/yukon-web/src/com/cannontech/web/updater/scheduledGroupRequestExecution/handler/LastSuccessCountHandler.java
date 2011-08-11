@@ -4,14 +4,14 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
-public class LastRequestCountForJobScheduledGroupRequestExecutionUpdaterHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
+public class LastSuccessCountHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
 	@Override
 	public String handle(ScheduledGroupRequestExecutionBundle execution, YukonUserContext userContext) {
-	    int totalCount = execution.getTotalCount();
-	    return String.valueOf(totalCount);
+	    int successCount = execution.getExecutionCounts().getSuccessCount();
+	    return String.valueOf(successCount);
 	}
 	@Override
 	public ScheduledGroupCommandRequestExecutionUpdaterTypeEnum getUpdaterType() {
-		return ScheduledGroupCommandRequestExecutionUpdaterTypeEnum.LAST_REQUEST_COUNT_FOR_JOB;
+		return ScheduledGroupCommandRequestExecutionUpdaterTypeEnum.LAST_SUCCESS_RESULTS_COUNT_FOR_JOB;
 	}
 }

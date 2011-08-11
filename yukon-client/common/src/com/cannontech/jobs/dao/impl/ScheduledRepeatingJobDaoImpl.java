@@ -138,16 +138,6 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         return job;
     }
 
-    public JobDisabledStatus getJobDisabledStatusById(int jobId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Job.Disabled");
-        sql.append("FROM JobScheduledRepeating JSR");
-        sql.append("JOIN Job ON Job.jobId = JSR.jobId");
-        sql.append("WHERE Job.jobId").eq(jobId);
-        JobDisabledStatus result = yukonJdbcTemplate.queryForObject(sql, jobDisabledStatusRowMapper);
-        return result;
-    }
-
     @Transactional(propagation=Propagation.REQUIRED)
     public void save(ScheduledRepeatingJob repeatingJob) {
         try {
@@ -166,16 +156,10 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
     
     @Transactional(propagation=Propagation.REQUIRED)
     public void update(ScheduledRepeatingJob repeatingJob) {
-        try {
-            // update the Job entry first
-            updateJob(repeatingJob);
-            // update the JobScheduledRepeating entry
-            template.update(repeatingJob);
-            
-        } catch (RuntimeException e) {
-            // if an exception gets thrown, the transaction will be rolled back
-            throw e;
-        }        
+        // update the Job entry first
+        updateJob(repeatingJob);
+        // update the JobScheduledRepeating entry
+        template.update(repeatingJob);
     }
     
     @Required

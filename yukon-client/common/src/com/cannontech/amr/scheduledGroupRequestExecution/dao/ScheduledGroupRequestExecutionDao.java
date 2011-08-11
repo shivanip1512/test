@@ -3,6 +3,7 @@ package com.cannontech.amr.scheduledGroupRequestExecution.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupExecutionCounts;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -36,29 +37,9 @@ public interface ScheduledGroupRequestExecutionDao {
 	 * @return
 	 */
 	public int getDistinctCreCountByJobId(int jobId, Date startTime, Date stopTime);
+	
+	public ScheduledGroupExecutionCounts getExecutionCountsForJobId(int jobId);
 
-	/**
-	 * Returns count of the number of failed requests of the most recent execution of the job.
-	 * @param commandRequestExecutionContextId
-	 * @return
-	 */
-	public int getLatestFailCountByJobId(int jobId);
-	
-	/**
-	 * Returns count of the number of successful requests of the most recent execution of the job.
-	 * @param commandRequestExecutionContextId
-	 * @return
-	 */
-	public int getLatestSuccessCountByJobId(int jobId);
-	
-	/**
-	 * Returns the request count of the most recent execution of this job. Retries that for the same contextId as the latest execution
-	 * are not counted - the value of the original request is what is counted (the highest value cres for the context will ever have).
-	 * @param jobId
-	 * @return
-	 */
-	public int getLatestRequestCountByJobId(int jobId);
-	
 	/**
 	 * Returns ScheduledGroupRequestExecutionStatus for given jobId
 	 * @param jobId

@@ -9,16 +9,16 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
-public class LastTooltipForJobUpdateHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
+public class LastTooltipHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
     public String handle(ScheduledGroupRequestExecutionBundle execution, YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         ScheduledGroupRequestExecutionStatus status = execution.getStatus();
-        int successCount = execution.getSuccessCount(); 
-        int failureCount = execution.getFailureCount();
-        int totalCount = execution.getTotalCount();
+        int successCount = execution.getExecutionCounts().getSuccessCount(); 
+        int failureCount = execution.getExecutionCounts().getFailureCount();
+        int totalCount = execution.getExecutionCounts().getTotalCount();
 
         String tooltipString;
         if (status == ScheduledGroupRequestExecutionStatus.RUNNING) {

@@ -15,7 +15,7 @@ import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
-public class LastRunDateForJobScheduledGroupRequestExecutionUpdaterHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
+public class LastRunDateHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
 
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private JobStatusDao jobStatusDao;
