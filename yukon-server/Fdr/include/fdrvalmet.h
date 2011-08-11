@@ -53,7 +53,10 @@ typedef struct
         /* Status Message   Function = 102 */
         struct {
             CHAR Name[16];
-            USHORT Value;
+            union {
+                USHORT Value;
+                ULONG LongValue;
+            };
             USHORT Quality;
         } Status;
 
