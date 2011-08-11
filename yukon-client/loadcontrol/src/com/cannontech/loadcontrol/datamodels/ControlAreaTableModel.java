@@ -47,11 +47,13 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 		Color.white,
 		//Active, Manual Active & Fully Active
 		Color.green,
-		//Scheduled
+		//attempted
 		Color.yellow,
 
 		//Disabled program
-		Color.red
+		Color.red,
+		//scheduled
+        Color.orange,
 	};
 
 	/**
@@ -205,9 +207,13 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 				return CELL_COLORS[1];
 			}
 			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
-						 //|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED )
 			{
 				return CELL_COLORS[2];
+			}
+			else if(getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_FULLY_SCHEDULED
+                        || getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_SCHEDULED )
+			{
+			    return CELL_COLORS[4];
 			}
 			
 		}

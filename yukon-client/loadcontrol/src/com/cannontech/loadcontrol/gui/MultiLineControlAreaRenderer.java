@@ -279,7 +279,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		
 		if( isSelected )
 		{
-			setForeground( model.getCellForegroundColor( row, column ).brighter());		
+			setForeground( model.getCellForegroundColor( row, column ));		
 			setFont( boldFont );
 		}
 		else

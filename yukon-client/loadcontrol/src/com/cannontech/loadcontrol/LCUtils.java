@@ -98,24 +98,6 @@ public class LCUtils
 	}
 
 
-	public static boolean isAreaDisplayed( String view, int areaState )
-	{
-
-		if( ControlAreaActionListener.SEL_ACTIVE_AREAS.equals(view) )
-		{
-			return
-				areaState == LMControlArea.STATE_ACTIVE
-				|| areaState == LMControlArea.STATE_FULLY_ACTIVE
-				|| areaState == LMControlArea.STATE_MANUAL_ACTIVE;
-		}
-		else if( ControlAreaActionListener.SEL_INACTIVE_AREAS.equals(view) )
-		{
-			return areaState == LMControlArea.STATE_INACTIVE;
-		}
-		else
-			return true;
-	}
-
 	public static synchronized String getFgColor( LMControlArea area ) 
 	{
 		Color retColor = Color.BLACK;
@@ -136,8 +118,9 @@ public class LCUtils
 			{
 				retColor = CELL_COLORS[1];
 			}
-			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
-						 //|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED )
+			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT
+					    || area.getControlAreaState().intValue() == LMControlArea.STATE_FULLY_SCHEDULED
+					    || area.getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_SCHEDULED )
 			{
 				retColor = CELL_COLORS[2];
 			}

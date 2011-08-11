@@ -59,6 +59,8 @@
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.PARTIALLY_ACTIVE">Partially Active</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.INACTIVE">Inactive</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.MANUAL_ACTIVE">Manual Active</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.FULLY_SCHEDULED">Scheduled</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.PARTIALLY_SCHEDULED">Partially Scheduled</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.CONTROL_ATTEMPT">Control Attempt</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.PRIORITY">{0}</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.START">{date|TIME_TZ}</entry>

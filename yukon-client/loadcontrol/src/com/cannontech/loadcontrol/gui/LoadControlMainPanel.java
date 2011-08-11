@@ -153,6 +153,8 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 			                                                  LMControlArea.STATE_FULLY_ACTIVE,
 			                                                  LMControlArea.STATE_MANUAL_ACTIVE,
 			                                                  LMControlArea.STATE_INACTIVE,
+			                                                  LMControlArea.STATE_FULLY_SCHEDULED,
+			                                                  LMControlArea.STATE_PARTIALLY_SCHEDULED,
 			                                                  LMControlArea.STATE_CNTRL_ATTEMPT},
 			                                                  getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
@@ -165,7 +167,8 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 					new FilteredControlAreaTableModel(
 						new int[] {LMControlArea.STATE_ACTIVE,
 										LMControlArea.STATE_FULLY_ACTIVE,
-										LMControlArea.STATE_MANUAL_ACTIVE},
+										LMControlArea.STATE_MANUAL_ACTIVE,
+										LMControlArea.STATE_FULLY_SCHEDULED},
 						getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
 					getGroupTableModel() } );

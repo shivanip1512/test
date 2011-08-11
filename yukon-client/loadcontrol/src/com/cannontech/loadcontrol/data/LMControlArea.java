@@ -11,10 +11,10 @@ public class LMControlArea implements ILMData, Cloneable {
 	public static final int STATE_INACTIVE = 0;
 	public static final int STATE_ACTIVE = 1;
 	public static final int STATE_MANUAL_ACTIVE = 2;
-	/* The SCHEDULED state is never set */
-	// public static final int STATE_SCHEDULED = 3;
+	public static final int STATE_FULLY_SCHEDULED = 3;
 	public static final int STATE_FULLY_ACTIVE = 4;
 	public static final int STATE_CNTRL_ATTEMPT = 5;
+	public static final int STATE_PARTIALLY_SCHEDULED = 6;
 
 	private Integer yukonID = null;
 	private String yukonName = null;
@@ -103,11 +103,11 @@ public class LMControlArea implements ILMData, Cloneable {
 			LMControlArea areaValue) {
 		if (areaValue.getDisableFlag().booleanValue())
 			return java.awt.Color.red;
-		else if (areaValue.getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT)
-		// || areaValue.getControlAreaState().intValue() ==
-		// LMControlArea.STATE_SCHEDULED )
-		{
+		else if (areaValue.getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT){
 			return java.awt.Color.yellow;
+		} else if (areaValue.getControlAreaState().intValue() == LMControlArea.STATE_FULLY_SCHEDULED
+		        || areaValue.getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_SCHEDULED){
+		    return java.awt.Color.orange;
 		} else if (areaValue.getControlAreaState().intValue() == LMControlArea.STATE_INACTIVE)
 			return java.awt.Color.black;
 		else
@@ -125,8 +125,11 @@ public class LMControlArea implements ILMData, Cloneable {
 		case STATE_MANUAL_ACTIVE:
 			return "MANUAL ACTIVE";
 
-			// case STATE_SCHEDULED:
-			// return "SCHEDULED";
+		case STATE_FULLY_SCHEDULED:
+			return "SCHEDULED";
+			
+		case STATE_PARTIALLY_SCHEDULED:
+		    return "PARTIALLY SCHEDULED";
 
 		case STATE_FULLY_ACTIVE:
 			return "FULLY ACTIVE";
