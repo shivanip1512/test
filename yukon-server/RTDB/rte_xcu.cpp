@@ -33,7 +33,7 @@
 #include "prot_lmi.h"
 using namespace std;
 
-#define RDS_MAX_EXPRESSCOM_LENGTH 115 // This number is pre encryption. We actually have 125 total bytes.
+#define RDS_MAX_EXPRESSCOM_LENGTH   125
 
 CtiRouteXCU::CtiRouteXCU()
 {
@@ -590,6 +590,8 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         xcom.setUseCRC(false);
     }
 
+    bool usingEncryption = hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key );
+
     if(!status  && xcom.entries() > 0)
     {
         OutMessage->EventCode |= ENCODED;               // Make the OM be ignored by porter...
@@ -604,19 +606,32 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                 // Possibly a ToDo, RDS may need to break apart messages to reduce the max message length.
                 // This message length problem is similar to what is done for CCU expresscom messaging.
 
-                if(xcom.messageSize() + 2 > RDS_MAX_EXPRESSCOM_LENGTH)
+                if ( usingEncryption )
                 {
-                    xmore = false;
-                    status = BADRANGE;
-                    resultString = "Message length was too large for expresscom message in RDS. Length: " + CtiNumStr(xcom.messageSize() + 2) + " Maximum: " + CtiNumStr(RDS_MAX_EXPRESSCOM_LENGTH);
-                    break;
+                    if( xcom.messageSize() > RDS_MAX_EXPRESSCOM_LENGTH - 10 )   // encryption adds 10 bytes - no header and footer
+                    {
+                        xmore = false;
+                        status = BADRANGE;
+                        resultString = "Message length was too large for an encrypted expresscom message in RDS. Length: " + CtiNumStr(xcom.messageSize() + 10) + " Maximum: " + CtiNumStr(RDS_MAX_EXPRESSCOM_LENGTH);
+                        break;
+                    }
+                }
+                else
+                {
+                    if ( xcom.messageSize() > RDS_MAX_EXPRESSCOM_LENGTH - 2 )   // header and footer byte
+                    {
+                        xmore = false;
+                        status = BADRANGE;
+                        resultString = "Message length was too large for an expresscom message in RDS. Length: " + CtiNumStr(xcom.messageSize() + 2) + " Maximum: " + CtiNumStr(RDS_MAX_EXPRESSCOM_LENGTH);
+                        break;
+                    }
                 }
             }
         case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:
             {
-                if ( hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                if ( usingEncryption )
                 {
                     isAscii = false;
                     xcom.setUseASCII(false);
@@ -654,7 +669,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                 // END serialpatch
 
                 /* Build the message */
-                if ( ! hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                if ( ! usingEncryption )
                 {
                     OutMessage->Buffer.TAPSt.Message[j] = xcom.getStartByte();
                     ++j;
@@ -668,7 +683,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                 }
                 j += i;
 
-                if ( ! hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                if ( ! usingEncryption )
                 {
                     OutMessage->Buffer.TAPSt.Message[j] = xcom.getStopByte();
                     ++j;
@@ -683,7 +698,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     }
                     else
                     {
-                        if(i == 0 || i == (OutMessage->OutLength - 1))
+                        if( ! usingEncryption && ( i == 0 || i == (OutMessage->OutLength - 1) ) )
                         {
                             byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
                         }
@@ -694,7 +709,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     }
                 }
 
-                if ( hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key ) )
+                if ( usingEncryption )
                 {
                     // add password and key and adjust lengths
 
@@ -707,24 +722,39 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                     char * endOfMsg = OutMessage->Buffer.TAPSt.Message + OutMessage->OutLength;
 
-                    for ( int i = 0; i < password.length(); ++i )
+                    // truncate password to a max of 32 bytes
+
+                    int truncatedPasswordLen = ( password.length() < 32 ) ? password.length() : 32;
+
+                    for ( int i = 0; i < truncatedPasswordLen; ++i )
                     {
                         *endOfMsg++ = password[i];
                     }
-                    *endOfMsg++ = password.length();
+                    *endOfMsg++ = truncatedPasswordLen;
 
-                    std::string key(32, '0');   // defaults to all zeros
-                    getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key );
-
-                    for ( int key_i = 0; key_i < 32; key_i += 2 )
+                    std::string key;
+                    if ( getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key ) )
                     {
-                        char hi4 = key[ key_i ];
-                        char lo4 = key[ key_i + 1 ];
+                        if ( key.length() == 32 )
+                        {
+                            // ok - parse it
+                            for ( int key_i = 0; key_i < 32; key_i += 2 )
+                            {
+                                char ascii_pair[3] = { key[ key_i ], key[ key_i + 1 ], 0 };
 
-                        hi4 = ( hi4 > '9' ) ? std::tolower( hi4 ) - 'a' + 10 : hi4 - '0';
-                        lo4 = ( lo4 > '9' ) ? std::tolower( lo4 ) - 'a' + 10 : lo4 - '0';
-
-                        *endOfMsg++ = ( ( hi4 << 4 ) | lo4 );
+                                *endOfMsg++ = std::strtoul( ascii_pair, 0, 16 );
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " - One-Way Encryption Key - invalid length" << endl;
+                        }
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " - Missing One-Way Encryption Key" << endl;
                     }
 
                     OutMessage->OutLength            += password.length() + 1 + 16;
