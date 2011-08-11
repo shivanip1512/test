@@ -5897,6 +5897,13 @@
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="114">
+                <init>true</init>
+                <name>Ignored Control Reason</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
             <point type="Analog" offset="9999">
                 <init>true</init>
                 <name>Firmware Version</name>
