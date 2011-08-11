@@ -249,7 +249,10 @@ public class DigiResponseHandler {
                 return;
                 
             } else if(message.contains(connectStr)) {
-                //Has been commissioned, set to disconnected until we receive the marked active message.
+                //This is the device announce. We are truly commissioned now. 
+                //So move to "Disconnected" and wait for the next message. 'Device marked active' 
+                //During the time from this message and the next, the device is booting up, so we must not go connected until that is complete or pings and commands will unexpectedly fail
+                
                 log.debug("Device: " + macAddress + " has been commissioned.");
                 zigbeeServiceHelper.sendPointStatusUpdate(utilPro,time,BuiltInAttribute.ZIGBEE_LINK_STATUS,
                                                           Commissioned.DISCONNECTED);
