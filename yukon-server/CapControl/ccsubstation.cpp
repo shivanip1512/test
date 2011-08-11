@@ -189,6 +189,8 @@ void CtiCCSubstation::restore(Cti::RowReader& rdr)
 
     rdr["voltreductionpointid"] >> _voltReductionControlId;
 
+    setParentId(0);
+    setDisplayOrder(0);
     setOvUvDisabledFlag(FALSE);
     setVoltReductionFlag(FALSE);
     setPFactor(-1);

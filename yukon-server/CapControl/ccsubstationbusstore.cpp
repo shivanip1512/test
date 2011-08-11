@@ -4440,16 +4440,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 if (currentCCSubstation->getPaoId() == currentSubstationId)
                 {
                      currentCCSubstation->setDynamicData(rdr);
-                     CtiCCAreaPtr currentSA = NULL;
-                     if (substationId > 0)
-                     {
-                        currentSA = findAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
-                     }
-                     else if (paobject_area_map->find(currentCCSubstation->getSaEnabledId()) != paobject_area_map->end())
-                     {
-                         currentSA = paobject_area_map->find(currentCCSubstation->getSaEnabledId())->second;
-                     }
-
+                     CtiCCSpecialPtr currentSA = findSpecialAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
                      if (!currentSA)
                      {
                          currentCCSubstation->setSaEnabledId(0);
@@ -4560,18 +4551,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                 rdr["areaid"] >> currentSpAreaId;
                 CtiCCSpecialPtr currentCCSpArea = NULL;
-                if (substationId > 0)
-                    currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
-                else
-                {
-                    if (paobject_specialarea_map->find(currentSpAreaId) != paobject_specialarea_map->end())
-                        currentCCSpArea = paobject_specialarea_map->find(currentSpAreaId)->second;
-                }
+                currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
+                
                 if (currentCCSpArea != NULL)
                 {
-                    CtiCCSubstationPtr currentStation = NULL;
-                    if (paobject_substation_map->find(currentSubId) != paobject_substation_map->end())
-                        currentStation = paobject_substation_map->find(currentSubId)->second;
+                    CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(currentSubId);
                     if (currentStation != NULL)
                     {
                         if (currentStation->getSaEnabledId() == 0)
@@ -4586,7 +4570,6 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                         if (currentStation->getParentId() <= 0)
                         {
                             currentStation->setParentId(currentSpAreaId);
-                            //currentStation->setParentId(0);
                             ccSubstations->push_back( currentStation );
                         }
 
