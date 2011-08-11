@@ -67,6 +67,7 @@ class IM_EX_FDRBASE CtiFDRManager
 
         static const CHAR * TBLNAME_PTBASE;
         static const CHAR * COLNAME_PTBASE_POINTTYPE;
+        static const CHAR * COLNAME_PTBASE_PAOBJECTID;
         static const CHAR * COLNAME_PTBASE_POINTID;
 
 

@@ -54,6 +54,7 @@ class IM_EX_FDRBASE CtiFDRInterface
                                       const std::string &logMsg,
                                       bool aSendImmediatelyFlag=false );
         CtiCommandMsg* createAnalogOutputMessage(long pointId, std::string translationName, double value);
+        CtiCommandMsg* createScanDeviceMessage(long paoId, std::string translationName);
 
         bool                sendPointRegistration();
         virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);

@@ -184,6 +184,16 @@ CtiFDRPoint & CtiFDRPoint::setPointType(CtiPointType_t aType)
     return *this;
 }
 
+long CtiFDRPoint::getPaoID() const
+{
+    return iPaoID;
+}
+CtiFDRPoint & CtiFDRPoint::setPaoID(long aPaoID)
+{
+    iPaoID = aPaoID;
+    return *this;
+}
+
 string CtiFDRPoint::getTranslateName( string &aDestinationName )
 {
     string retVal;

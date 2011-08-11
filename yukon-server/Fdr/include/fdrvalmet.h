@@ -108,15 +108,19 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         static const CHAR * KEY_TIMESYNC_UPDATE;
         static const CHAR * KEY_TIMESYNC_VARIATION;
         static const CHAR * KEY_LINK_TIMEOUT;
+        static const CHAR * KEY_SCAN_DEVICE_POINTNAME;
+        static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME; 
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);
         virtual int processControlMessage(CHAR *data);
+        virtual int processScanMessage(CHAR *data);
         virtual int processTimeSyncMessage(CHAR *data);
 
         USHORT      ForeignToYukonQuality (USHORT aQuality);
         int         ForeignToYukonStatus (USHORT aStatus);
         CtiTime      ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
+        string CtiFDR_Valmet::ForeignQualityToString(USHORT quality);
 
         std::string   YukonToForeignTime (CtiTime aTimeStamp);
         USHORT      YukonToForeignQuality (USHORT aQuality);
@@ -134,6 +138,8 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
 
         private:
             std::map<std::string,int> nameToPointId;
+            string scanDevicePointName;
+            string sendAllPointsPointName;
 
 };
 

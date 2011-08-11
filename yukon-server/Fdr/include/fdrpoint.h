@@ -63,6 +63,9 @@ public:
     CtiPointType_t getPointType() const;
     CtiFDRPoint & setPointType(CtiPointType_t aType);
 
+    long             getPaoID() const;
+    CtiFDRPoint &    setPaoID(long aPaoID);
+
     std::string      getTranslateName(std::string &aDestination);
     std::string      getTranslateName(int aIndex);
 
@@ -71,6 +74,7 @@ private:
 
         // all points have these
         long                        iPointID;
+        long                        iPaoID;
         CtiPointType_t              iPointType;
         DestinationList             iDestinationList;
         bool                        iControllable;
@@ -80,7 +84,7 @@ private:
         // maybe should be in own class someday
         double                      iMultiplier;
         double                      iOffset;
-        CtiTime                      iLastTimeStamp;
+        CtiTime                     iLastTimeStamp;
 };
 
 IM_EX_FDRBASE std::ostream& operator<< (std::ostream& os, const CtiFDRPoint& point);

@@ -1016,6 +1016,30 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             break;
         }
+    case (CtiCommandMsg::InitiateScan):
+        if(Cmd->getOpArgList().size() >= 1)
+        {
+            const long paoID = Cmd->getOpArgList()[0];
+
+            if( CtiRequestMsg *pReq = new CtiRequestMsg(paoID, "scan integrity") )
+            {
+                pReq->setUser( Cmd->getUser() );
+                pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Scan Integrity Request sent to DeviceID: " << paoID << endl;
+                }
+                writeMessageToClient(pReq, string(PIL_REGISTRATION_NAME));
+        
+                delete pReq;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "**** Error, Control Request did not have a valid command vector **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        break;
     case (CtiCommandMsg::Ablement):
     case (CtiCommandMsg::ControlAblement):
         {

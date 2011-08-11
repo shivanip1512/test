@@ -61,6 +61,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(42);
+        fdrPoint->setPaoID(52);
         fdrPoint->setOffset(17);
         fdrPoint->setPointType(PulseAccumulatorPointType);
         fdrPoint->setValue(19);
@@ -83,6 +84,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -105,6 +107,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(44);
+        fdrPoint->setPaoID(54);
         fdrPoint->setOffset(11);
         fdrPoint->setPointType(AnalogPointType);
         fdrPoint->setValue(319);

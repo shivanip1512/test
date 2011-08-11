@@ -68,6 +68,7 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);
         virtual int processControlMessage(CHAR *data);
+        virtual int processScanMessage(CHAR *data);
         virtual int processRegistrationMessage(CHAR *data);
         virtual int processTimeSyncMessage(CHAR *data);
 

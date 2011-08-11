@@ -51,6 +51,7 @@ const CHAR * CtiFDRManager::COLNAME_PTANALOG_POINTID =   "PointID";
 const CHAR * CtiFDRManager::TBLNAME_PTBASE =           "Point";
 const CHAR * CtiFDRManager::COLNAME_PTBASE_POINTID =   "PointID";
 const CHAR * CtiFDRManager::COLNAME_PTBASE_POINTTYPE =   "PointType";
+const CHAR * CtiFDRManager::COLNAME_PTBASE_PAOBJECTID =   "PaObjectID";
 
 // constructors, destructors, operators first
 
@@ -116,7 +117,7 @@ bool CtiFDRManager::loadPointList()
     {
         std::stringstream ss;
 
-        static const string sql =  "SELECT FDR.PointID, FDR.TRANSLATION, FDR.DESTINATION, FDR.DIRECTIONTYPE, PT.PointType, "
+        static const string sql =  "SELECT FDR.PointID, FDR.TRANSLATION, FDR.DESTINATION, FDR.DIRECTIONTYPE, PT.PointType, PT.PaObjectID, "
                                      "PAL.MULTIPLIER, PAL.DATAOFFSET, PAC.MULTIPLIER, PAC.DATAOFFSET "
                                    "FROM FDRTranslation FDR, Point PT "
                                      "LEFT OUTER JOIN PointAnalog PAL ON PT.PointID = PAL.PointID "
@@ -198,7 +199,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
     {
         std::stringstream ss;
 
-        static const string sql =  "SELECT FDR.PointID, FDR.TRANSLATION, FDR.DESTINATION, FDR.DIRECTIONTYPE, PT.PointType, "
+        static const string sql =  "SELECT FDR.PointID, FDR.TRANSLATION, FDR.DESTINATION, FDR.DIRECTIONTYPE, PT.PointType, PT.PaObjectID, "
                                      "PAL.MULTIPLIER, PAL.DATAOFFSET, PAC.MULTIPLIER, PAC.DATAOFFSET "
                                    "FROM FDRTranslation FDR, Point PT "
                                      "LEFT OUTER JOIN PointAnalog PAL ON PT.PointID = PAL.PointID "
@@ -293,6 +294,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
 {
     CtiFDRPointSPtr fdrPtr;
     long   pointID;
+    long   paoID;
     string translation;
     string destination;
     string direction;
@@ -326,21 +328,22 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
             rdr[2]   >> destination;
             rdr[3] >> direction;
             rdr[4] >> tmp;
-            if(!rdr[5].isNull())
-            {
-                rdr[5]    >> multiplier;
-            }
-            else
-            {
-                rdr[7]    >> multiplier;
-            }
+            rdr[5] >> paoID;
             if(!rdr[6].isNull())
             {
-                rdr[6]  >> dataOffset;
+                rdr[6]    >> multiplier;
             }
             else
             {
-                rdr[8]    >> dataOffset;
+                rdr[8]    >> multiplier;
+            }
+            if(!rdr[7].isNull())
+            {
+                rdr[7]  >> dataOffset;
+            }
+            else
+            {
+                rdr[9]    >> dataOffset;
             }
 
 
@@ -354,6 +357,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
             if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
             {
                 fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
+                fdrPtr->setPaoID(paoID);
 
                 if((fdrPtr->getPointType() == AnalogPointType) ||
                    (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
@@ -371,11 +375,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                 {
                     fdrPtr->setControllable (true);
                 }
-                else
-                {
-                    fdrPtr->setControllable (false);
-                }
-
+                
                 CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
                 fdrPtr->getDestinationList().push_back(tmpDestination);
                 fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));

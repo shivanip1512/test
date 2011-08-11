@@ -455,6 +455,11 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                 retVal = processControlMessage (aBuffer);
                 break;
             }
+        case SINGLE_SOCKET_FORCESCAN:
+            {
+                retVal = processScanMessage (aBuffer);
+                break;
+            }
         case SINGLE_SOCKET_TIMESYNC:
             {
                 if (shouldUpdatePCTime())
@@ -518,6 +523,11 @@ int CtiFDRSingleSocket::processRegistrationMessage(CHAR *data)
 }
 
 int CtiFDRSingleSocket::processControlMessage(CHAR *data)
+{
+    int retVal = NORMAL;
+    return retVal;
+}
+int CtiFDRSingleSocket::processScanMessage(CHAR *data)
 {
     int retVal = NORMAL;
     return retVal;

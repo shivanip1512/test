@@ -52,6 +52,8 @@ const CHAR * CtiFDR_Valmet::KEY_OUTBOUND_SEND_INTERVAL = "FDR_VALMET_SEND_INTERV
 const CHAR * CtiFDR_Valmet::KEY_TIMESYNC_VARIATION = "FDR_VALMET_MAXIMUM_TIMESYNC_VARIATION";
 const CHAR * CtiFDR_Valmet::KEY_TIMESYNC_UPDATE = "FDR_VALMET_RESET_PC_TIME_ON_TIMESYNC";
 const CHAR * CtiFDR_Valmet::KEY_LINK_TIMEOUT = "FDR_VALMET_LINK_TIMEOUT_SECONDS";
+const CHAR * CtiFDR_Valmet::KEY_SCAN_DEVICE_POINTNAME = "FDR_VALMET_SCAN_DEVICE_POINTNAME";
+const CHAR * CtiFDR_Valmet::KEY_SEND_ALL_POINTS_POINTNAME = "FDR_VALMET_SEND_ALL_POINTS_POINTNAME";
 
 // Constructors, Destructor, and Operators
 CtiFDR_Valmet::CtiFDR_Valmet()
@@ -188,6 +190,8 @@ int CtiFDR_Valmet::readConfig()
     else
         setInterfaceDebugMode (false);
 
+    scanDevicePointName = gConfigParms.getValueAsString(KEY_SCAN_DEVICE_POINTNAME, "DEVICE_SCAN");
+    sendAllPointsPointName = gConfigParms.getValueAsString(KEY_SEND_ALL_POINTS_POINTNAME, "SEND_ALL_POINTS");
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -312,7 +316,8 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Analog/Calculated point " << aPoint.getPointID();
                         dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
-                        dout << " value " << aPoint.getValue() << " to " << getInterfaceName() << endl;;
+                        dout << " value " << aPoint.getValue() << " with quality of " << ForeignQualityToString(ptr->Value.Quality);
+                        dout << " to " << getInterfaceName() << endl;
                     }
                     break;
                 }
@@ -393,6 +398,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                                  {
                                      dout << " state of Close ";
                                  }
+                                 dout << "with quality of " << ForeignQualityToString(ptr->Status.Quality)<< " ";
                                  dout << "to " << getInterfaceName() << endl;;
                              }
                         }
@@ -641,17 +647,17 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
             {
                 CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, value);
                 sendMessageToDispatch(aoMsg);
+                return  NORMAL;
             }
-
             pData = new CtiPointDataMsg(point->getPointID(),
-                                        value,
-                                        quality,
-                                        point->getPointType());
-
+                                            value,
+                                            quality,
+                                            point->getPointType());
             pData->setTime(timestamp);
-
+    
             // consumes a delete memory
             queueMessageToDispatch(pData);
+            
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
@@ -659,7 +665,6 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
                 dout << CtiTime() << " Analog point " << translationName;
                 dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
             }
-
         }
     }
     else
@@ -832,6 +837,44 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
     return retVal;
 }
 
+int CtiFDR_Valmet::processScanMessage(CHAR *aData)
+{
+    ValmetInterface_t  *data = (ValmetInterface_t*)aData;
+    string           translationName;
+    CtiFDRPointSPtr         point;
+    translationName = string (data->Status.Name);
+
+    // see if the point exists
+    {
+        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
+        string pointName = translationName;
+        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
+
+        std::map<string,int>::iterator iter = nameToPointId.find(pointName);
+        if( iter == nameToPointId.end() ) {
+            return !NORMAL;
+        }
+        point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
+    }
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Received Scan Request for Translation Point: " << translationName << endl;
+    }
+    if (ciStringEqual(translationName, sendAllPointsPointName))
+    {
+        CtiFDRSingleSocket::getLayer()->sendAllPoints();
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Processing Scan Request for All Valmet Translation Points." << endl;
+        }
+        return NORMAL;
+    }
+    return NORMAL;
+}
+
+
 int CtiFDR_Valmet::processControlMessage(CHAR *aData)
 {
     int retVal = NORMAL;
@@ -839,7 +882,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
     string           translationName;
     int                 quality =NormalQuality;
-    DOUBLE              value;
+    USHORT              value = ntohs(data->Control.Value);        
     CtiTime              timestamp;
     CtiFDRPointSPtr         point;
     bool                 flag = true;
@@ -867,54 +910,72 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         }
     }
 
-    if ((flag == true) && (point->getPointType() == StatusPointType) && (point->isControllable()))
+    if (flag == true && point->isControllable())
     {
-        int controlState=INVALID;
-        controlState = ForeignToYukonStatus (data->Control.Value);
-
-        if ((controlState != OPENED) && (controlState != CLOSED))
+        if (point->getPointType() == StatusPointType)
         {
+            int controlState=INVALID;
+            controlState = ForeignToYukonStatus (data->Control.Value);
+    
+            if ((controlState != OPENED) && (controlState != CLOSED))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point " << translationName;
-                dout << " from " << getInterfaceName() << " has an invalid control state " << ntohs(data->Control.Value) << endl;
-            }
-            CHAR state[20];
-            desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
-            _snprintf(action,60,"%s for pointID %d",
-                      translationName.c_str(),
-                      point->getPointID());
-            logEvent (desc,string (action));
-            retVal = !NORMAL;
-        }
-        else
-        {
-            // build the command message and send the control
-            CtiCommandMsg *cmdMsg;
-            cmdMsg = new CtiCommandMsg(CtiCommandMsg::ControlRequest);
-
-            cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
-            cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
-            cmdMsg->insert(point->getPointID());  // point for control
-            cmdMsg->insert(controlState);
-            sendMessageToDispatch(cmdMsg);
-
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point " << translationName;
-                if (controlState == OPENED)
                 {
-                    dout << " control: Open " ;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Control point " << translationName;
+                    dout << " from " << getInterfaceName() << " has an invalid control state " << ntohs(data->Control.Value) << endl;
+                }
+                CHAR state[20];
+                desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
+                _snprintf(action,60,"%s for pointID %d",
+                          translationName.c_str(),
+                          point->getPointID());
+                logEvent (desc,string (action));
+                retVal = !NORMAL;
+            }
+            else
+            {
+                // build the command message and send the control
+                CtiCommandMsg *cmdMsg = NULL;
+                if (stringContainsIgnoreCase(translationName, scanDevicePointName)) 
+                {
+                    if (controlState == CLOSED)
+                    {
+                        cmdMsg = createScanDeviceMessage(point->getPaoID(), translationName);
+                    }
                 }
                 else
                 {
-                    dout << " control: Closed " ;
+                    cmdMsg = new CtiCommandMsg(CtiCommandMsg::ControlRequest);
+                    cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
+                    cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
+                    cmdMsg->insert(point->getPointID());  // point for control
+                    cmdMsg->insert(controlState);
                 }
-
-                dout <<" from " << getInterfaceName() << " and processed for point " << point->getPointID() << endl;;
+                if (cmdMsg)
+                {
+                    sendMessageToDispatch(cmdMsg);
+                }
+    
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Control point " << translationName;
+                    string controlString = (controlState == OPENED ? " control: Open " : " control: Closed ");
+                    dout << controlString <<" from " << getInterfaceName() << " and processed for point " << point->getPointID() << endl;;
+                }
             }
-
+        }
+        else if (point->getPointType() == AnalogPointType)
+        {
+            double dValue = value;
+            CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, dValue);
+            sendMessageToDispatch(aoMsg);
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Analog Output point " << translationName;
+                dout << " value " << dValue << " from " << getInterfaceName() << " sending to device " << point->getPaoID() << endl;;
+            }
         }
     }
     else
@@ -996,23 +1057,47 @@ USHORT CtiFDR_Valmet::ForeignToYukonQuality (USHORT aQuality)
 
 USHORT CtiFDR_Valmet::YukonToForeignQuality (USHORT aQuality)
 {
-    USHORT Quality = VALMET_PLUGGED;
+    USHORT Quality = VALMET_NORMAL;
 
     /* Test for the various CTI Qualities and translate to Valmet */
     if (aQuality == NonUpdatedQuality)
         Quality = VALMET_PLUGGED;
     else if (aQuality == InvalidQuality)
-        Quality = VALMET_DATAINVALID;
+        Quality = VALMET_PLUGGED;
     else if (aQuality == ManualQuality)
         Quality = VALMET_MANUALENTRY;
     else if (aQuality == AbnormalQuality)
-        Quality = VALMET_UNREASONABLE;
+        Quality = VALMET_PLUGGED;
     if (aQuality == UnintializedQuality)
-        Quality = VALMET_DATAINVALID;
+        Quality = VALMET_PLUGGED;
 
-    return(htons (Quality));
+    return htons (Quality);
 }
 
+ string CtiFDR_Valmet::ForeignQualityToString(USHORT quality)
+ {
+     string retString;
+     quality = ntohs(quality);
+     if (quality == VALMET_NORMAL)
+        retString = "VALMET_NORMAL";
+     else if (quality == VALMET_PLUGGED)
+        retString = "VALMET_PLUGGED";
+     else if (quality == VALMET_MANUALENTRY)
+         retString = "VALMET_MANUALENTRY";
+     else if (quality == VALMET_DATAINVALID)
+         retString = "VALMET_DATAINVALID";
+     else if (quality == VALMET_UNREASONABLE)
+         retString = "VALMET_UNREASONABLE";
+     else if (quality == VALMET_OUTOFSCAN)
+         retString = "VALMET_OUTOFSCAN";
+     else
+     {    
+         retString = "UNDEFINED - 0x";
+         CHAR buf[20];
+         retString += string (itoa (quality,buf,16));
+     }
+     return retString;
+ }
 
 
 // Convert Valmet status to CTI Status

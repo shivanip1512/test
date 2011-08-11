@@ -1368,6 +1368,20 @@ CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string t
     return cmdMsg;
 }
 
+CtiCommandMsg* CtiFDRInterface::createScanDeviceMessage(long paoId, string translationName)
+{
+    // build the command message and send the control
+    CtiCommandMsg *cmdMsg = new CtiCommandMsg(CtiCommandMsg::InitiateScan);
+    cmdMsg->insert( paoId );  // This is the device id to scan
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Scan Integrity Request sent to DeviceID: " << paoId << endl;
+    }
+    return cmdMsg;
+}
+
+
 bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
 {
     bool retVal=false;
