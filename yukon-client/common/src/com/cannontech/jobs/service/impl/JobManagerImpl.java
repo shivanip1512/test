@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -44,6 +45,7 @@ import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
+import com.google.common.collect.Lists;
 
 
 public class JobManagerImpl implements JobManager {
@@ -182,6 +184,20 @@ public class JobManagerImpl implements JobManager {
             }
         }
         return unrunJobs;
+    }
+    
+    public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        Set<ScheduledRepeatingJob> repeatingJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
+        if (repeatingJobs == null || repeatingJobs.isEmpty()) {
+            return null;
+        }
+        List<ScheduledRepeatingJob> jobsNotDeleted = Lists.newArrayList();
+        for (ScheduledRepeatingJob job: repeatingJobs) {
+            if (!job.isDeleted()) {
+                jobsNotDeleted.add(job);
+            }
+        }
+        return jobsNotDeleted;
     }
     
     private boolean isJobStillRunnable(YukonJob job) {

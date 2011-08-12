@@ -14,12 +14,12 @@
                 <input type="hidden" name="cronUniqueId" value="${cronUniqueId}">
                 <tags:formElementContainer nameKey="rphDuplicateDeletion">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".status" rowClass="fwb">
+                        <tags:nameValue2 nameKey=".status">
                             <c:if test="${job.disabled}">
-                                <span class="errorMessage"><i:inline key=".status.disabled"/></span>
+                                <span class="fwb errorMessage"><i:inline key=".status.disabled"/></span>
                             </c:if>
                             <c:if test="${!job.disabled}">
-                                <span class="successMessage"><i:inline key=".status.enabled"/></span>
+                                <span class="fwb successMessage"><i:inline key=".status.enabled"/></span>
                             </c:if>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".runSchedule">

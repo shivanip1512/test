@@ -2,6 +2,7 @@ package com.cannontech.jobs.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -121,6 +122,11 @@ public class JobManagerStub implements JobManager {
     public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
                                         YukonTask task, String cronExpression,
                                         YukonUserContext userContext) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
+    @Override
+    public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 }

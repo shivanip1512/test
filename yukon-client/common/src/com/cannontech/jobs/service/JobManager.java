@@ -2,6 +2,7 @@ package com.cannontech.jobs.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
@@ -37,6 +38,7 @@ public interface JobManager {
     
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
     public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
+    public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
     
     public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException;
 

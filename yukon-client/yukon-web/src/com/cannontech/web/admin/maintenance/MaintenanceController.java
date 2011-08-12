@@ -2,7 +2,6 @@ package com.cannontech.web.admin.maintenance;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -28,7 +27,6 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/maintenance/*")
@@ -103,18 +101,14 @@ public class MaintenanceController {
     }
     
     private ScheduledRepeatingJob getRphDuplicateDeletionJob(YukonUserContext userContext) {
-        Set<ScheduledRepeatingJob> repeatingJobs = scheduledRepeatingJobDao
-                .getJobsByDefinition(scheduledRphDuplicateDeletionExecutionJobDefinition);
+        List<ScheduledRepeatingJob> jobsNotDeleted = jobManager
+                .getNotDeletedRepeatingJobsByDefinition(scheduledRphDuplicateDeletionExecutionJobDefinition);
         ScheduledRepeatingJob repeatingJob;
-        if (repeatingJobs == null || repeatingJobs.isEmpty()) {
+        if (jobsNotDeleted == null || jobsNotDeleted.isEmpty()) {
+            // If this page is being accessed for the first time
             repeatingJob = createNewDefaultRphDuplicateJob(userContext);
         } else {
-            List<ScheduledRepeatingJob> jobsNotDeleted = Lists.newArrayList();
-            for (ScheduledRepeatingJob job: repeatingJobs) {
-                if (!job.isDeleted()) {
-                    jobsNotDeleted.add(job);
-                }
-            }
+            // There should only ever be one job in the database that is not deleted (enabled or disabled)
             repeatingJob = Iterables.getOnlyElement(jobsNotDeleted);
         }
         return repeatingJob;
