@@ -135,7 +135,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
     // Possible control area states
     static int InactiveState;
-    static int ActiveState;
+    static int PartiallyActiveState;
     static int ManualActiveState;
     static int FullyScheduledState;
     static int PartiallyScheduledState;

@@ -1324,9 +1324,9 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                         }
 
                         if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
-                            getControlAreaState() != CtiLMControlArea::ActiveState )
+                            getControlAreaState() != CtiLMControlArea::PartiallyActiveState )
                         {
-                            setControlAreaState(CtiLMControlArea::ActiveState);
+                            setControlAreaState(CtiLMControlArea::PartiallyActiveState);
                         }
                     }
                     else if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
@@ -1562,9 +1562,9 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                     }
 
                     if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
-                        getControlAreaState() != CtiLMControlArea::ActiveState )
+                        getControlAreaState() != CtiLMControlArea::PartiallyActiveState )
                     {
-                        setControlAreaState(CtiLMControlArea::ActiveState);
+                        setControlAreaState(CtiLMControlArea::PartiallyActiveState);
                     }
                 }
                 else
@@ -1928,18 +1928,18 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
     }
     else if( numberOfScheduledPrograms > 0 && numberOfActivePrograms <= 0 )
     {
-        if( numberOfScheduledPrograms >= _lmprograms.size() )
+        if( numberOfScheduledPrograms < _lmprograms.size() )
         {
-            setControlAreaState(CtiLMControlArea::FullyScheduledState);
+            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
         }
         else
         {
-            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+            setControlAreaState(CtiLMControlArea::FullyScheduledState);
         }
     }
     else
     {
-        setControlAreaState(CtiLMControlArea::ActiveState);
+        setControlAreaState(CtiLMControlArea::PartiallyActiveState);
     }
     
     return returnBoolean;
@@ -2058,18 +2058,18 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
         }
         else if( numberOfScheduledPrograms > 0 && numberOfActivePrograms <= 0 )
         {
-            if( numberOfScheduledPrograms >= _lmprograms.size() )
+            if( numberOfScheduledPrograms < _lmprograms.size() )
             {
-                setControlAreaState(CtiLMControlArea::FullyScheduledState);
+                setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
             }
             else
             {
-                setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+                setControlAreaState(CtiLMControlArea::FullyScheduledState);
             }
         }
         else
         {
-            setControlAreaState(CtiLMControlArea::ActiveState);
+            setControlAreaState(CtiLMControlArea::PartiallyActiveState);
         }
     }
 
@@ -2159,21 +2159,21 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
     }
     else if( numberOfScheduledPrograms > 0 && numberOfActivePrograms <= 0 )
     {
-        if( numberOfScheduledPrograms >= _lmprograms.size() )
+        if( numberOfScheduledPrograms < _lmprograms.size() )
         {
-            setControlAreaState(CtiLMControlArea::FullyScheduledState);
+            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
         }
         else
         {
-            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+            setControlAreaState(CtiLMControlArea::FullyScheduledState);
         }
         // This is really a state that is set up outside of this function so we are not logging this behavior.
     }
     else
     {
-        if( getControlAreaState() != CtiLMControlArea::ActiveState )
+        if( getControlAreaState() != CtiLMControlArea::PartiallyActiveState )
         {
-            setControlAreaState(CtiLMControlArea::ActiveState);
+            setControlAreaState(CtiLMControlArea::PartiallyActiveState);
             if( previousControlAreaState == CtiLMControlArea::InactiveState )
             {
                 string text("Manual Start, LM Control Area: ");
@@ -2266,7 +2266,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
     }
     else if( numberOfActivePrograms == 0 )
     {
-        if( previousControlAreaState == CtiLMControlArea::ActiveState ||
+        if( previousControlAreaState == CtiLMControlArea::PartiallyActiveState ||
             previousControlAreaState == CtiLMControlArea::FullyActiveState )
         {
             string text("Timed Stop, LMControl Area: ");
@@ -2302,10 +2302,10 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
     }
     else
     {
-        if( getControlAreaState() != CtiLMControlArea::ActiveState &&
+        if( getControlAreaState() != CtiLMControlArea::PartiallyActiveState &&
             getControlAreaState() != CtiLMControlArea::FullyActiveState )
         {
-            setControlAreaState(CtiLMControlArea::ActiveState);
+            setControlAreaState(CtiLMControlArea::PartiallyActiveState);
             if( previousControlAreaState == CtiLMControlArea::InactiveState )
             {
                 string text("Timed Start, LM Control Area: ");
@@ -2370,7 +2370,7 @@ void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
 {
     if( getControlAreaStatusPointId() > 0 )
     {
-        if( getControlAreaState() == CtiLMControlArea::ActiveState ||
+        if( getControlAreaState() == CtiLMControlArea::PartiallyActiveState ||
             getControlAreaState() == CtiLMControlArea::FullyActiveState ||
             getControlAreaState() == CtiLMControlArea::ManualActiveState )//controlling
         {
@@ -2399,20 +2399,20 @@ void CtiLMControlArea::updateStateFromPrograms()
     LONG activePrograms = 0;
     LONG scheduledPrograms = 0;
 
-    for( LONG j=0;j<_lmprograms.size();j++ )
+    for each( CtiLMProgramBaseSPtr program in _lmprograms )
     {
-        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
+        if( program->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            program->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+            program->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             fullyActivePrograms++;
             activePrograms++;
         }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
+        else if( program->getProgramState() == CtiLMProgramBase::ActiveState )
         {
             activePrograms++;
         }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ScheduledState )
+        else if( program->getProgramState() == CtiLMProgramBase::ScheduledState )
         {
             scheduledPrograms++;
         }
@@ -2425,17 +2425,17 @@ void CtiLMControlArea::updateStateFromPrograms()
     }
     else if( activePrograms > 0 )
     {
-        setControlAreaState(CtiLMControlArea::ActiveState);
+        setControlAreaState(CtiLMControlArea::PartiallyActiveState);
     }
     else if( scheduledPrograms > 0 )
     {
-        if( scheduledPrograms >= _lmprograms.size() )
+        if( scheduledPrograms < _lmprograms.size() )
         {
-            setControlAreaState(CtiLMControlArea::FullyScheduledState);
+            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
         }
         else
         {
-            setControlAreaState(CtiLMControlArea::PartiallyScheduledState);
+            setControlAreaState(CtiLMControlArea::FullyScheduledState);
         }
     }
 }
@@ -2883,7 +2883,7 @@ const string CtiLMControlArea::DefOpStateDisabled = "Disabled";
 const string CtiLMControlArea::DefOpStateNone = "None";
 
 int CtiLMControlArea::InactiveState = STATEZERO;
-int CtiLMControlArea::ActiveState = STATEONE;
+int CtiLMControlArea::PartiallyActiveState = STATEONE;
 int CtiLMControlArea::ManualActiveState = STATETWO;
 int CtiLMControlArea::FullyScheduledState = STATETHREE;
 int CtiLMControlArea::FullyActiveState = STATEFOUR;

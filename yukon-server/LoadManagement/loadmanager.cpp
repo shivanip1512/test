@@ -419,7 +419,7 @@ void CtiLoadManager::controlLoop()
 
                             //This ends up refreshing any control necessary
                             if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                                currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
+                                currentControlArea->getControlAreaState() == CtiLMControlArea::PartiallyActiveState )
                             {
 //                            if( currentControlArea->isControlStillNeeded() )
                                 {
@@ -442,7 +442,7 @@ void CtiLoadManager::controlLoop()
                         }
                         else if( !currentControlArea->isControlTime(secondsFromBeginningOfDay) &&
                                  (currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                                  currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState) )
+                                  currentControlArea->getControlAreaState() == CtiLMControlArea::PartiallyActiveState) )
                         {
                             if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
                             {
@@ -1193,7 +1193,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         currentControlArea->setNewPointDataReceivedFlag(TRUE);
                         if( _LM_POINT_EVENT_LOGGING &&
                             ( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                              currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState ) )
+                              currentControlArea->getControlAreaState() == CtiLMControlArea::PartiallyActiveState ) )
                         {
                             char tempchar[80] = "";
                             text += "Current Trigger Value: ";
@@ -1231,7 +1231,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                             currentTrigger->calculateProjectedValue();
                             if( _LM_POINT_EVENT_LOGGING &&
                                 ( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                                  currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState ) )
+                                  currentControlArea->getControlAreaState() == CtiLMControlArea::PartiallyActiveState ) )
                             {
                                 char tempchar[80] = "";
                                 additional += "Projected Value: ";
