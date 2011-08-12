@@ -750,7 +750,7 @@ private void syncMenuItems()
 
 	switch( getLoadControlArea().getControlAreaState().intValue() )
 	{
-		case LMControlArea.STATE_ACTIVE:
+		case LMControlArea.STATE_PARTIALLY_ACTIVE:
 			getJMenuItemDisable().setEnabled(true);
 			break;
 		

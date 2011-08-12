@@ -9,7 +9,7 @@ public class LMControlArea implements ILMData, Cloneable {
 	public static final int INVALID_INT = -1;
 
 	public static final int STATE_INACTIVE = 0;
-	public static final int STATE_ACTIVE = 1;
+	public static final int STATE_PARTIALLY_ACTIVE = 1;
 	public static final int STATE_MANUAL_ACTIVE = 2;
 	public static final int STATE_FULLY_SCHEDULED = 3;
 	public static final int STATE_FULLY_ACTIVE = 4;
@@ -119,7 +119,7 @@ public class LMControlArea implements ILMData, Cloneable {
 		case STATE_INACTIVE:
 			return "INACTIVE";
 
-		case STATE_ACTIVE:
+		case STATE_PARTIALLY_ACTIVE:
 			return "ACTIVE";
 
 		case STATE_MANUAL_ACTIVE:

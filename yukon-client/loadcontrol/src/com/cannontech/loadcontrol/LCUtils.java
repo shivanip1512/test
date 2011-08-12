@@ -112,7 +112,7 @@ public class LCUtils
 			{
 				retColor = CELL_COLORS[0];
 			}
-			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_ACTIVE
+			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_ACTIVE
 						|| area.getControlAreaState().intValue() == LMControlArea.STATE_FULLY_ACTIVE
 						|| area.getControlAreaState().intValue() == LMControlArea.STATE_MANUAL_ACTIVE )
 			{

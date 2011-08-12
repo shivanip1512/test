@@ -149,7 +149,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		d1.setLocalTableModels(
 			new TableModel[] { 
 			        new FilteredControlAreaTableModel(
-			                                          new int[] {LMControlArea.STATE_ACTIVE,
+			                                          new int[] {LMControlArea.STATE_PARTIALLY_ACTIVE,
 			                                                  LMControlArea.STATE_FULLY_ACTIVE,
 			                                                  LMControlArea.STATE_MANUAL_ACTIVE,
 			                                                  LMControlArea.STATE_INACTIVE,
@@ -165,7 +165,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		d2.setLocalTableModels(
 			new TableModel[] { 
 					new FilteredControlAreaTableModel(
-						new int[] {LMControlArea.STATE_ACTIVE,
+						new int[] {LMControlArea.STATE_PARTIALLY_ACTIVE,
 										LMControlArea.STATE_FULLY_ACTIVE,
 										LMControlArea.STATE_MANUAL_ACTIVE,
 										LMControlArea.STATE_FULLY_SCHEDULED},

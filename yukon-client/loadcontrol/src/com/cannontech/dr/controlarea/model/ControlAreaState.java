@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum ControlAreaState {
     ACTIVE(LMControlArea.STATE_FULLY_ACTIVE),
-    PARTIALLY_ACTIVE(LMControlArea.STATE_ACTIVE),
+    PARTIALLY_ACTIVE(LMControlArea.STATE_PARTIALLY_ACTIVE),
     MANUAL_ACTIVE(LMControlArea.STATE_MANUAL_ACTIVE),
     CONTROL_ATTEMPT(LMControlArea.STATE_CNTRL_ATTEMPT),
     FULLY_SCHEDULED(LMControlArea.STATE_FULLY_SCHEDULED),
