@@ -78,7 +78,7 @@ div.simplePopup {
 }
 
 div.simplePopup div.content, .popupScrollArea {
-  overflow: auto;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -1151,13 +1151,13 @@ table.rowHighlighting tr:hover td {
 
 .smallDialogScrollArea {
     height: 150px;
-    overflow: auto;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
 .dialogScrollArea {
     height: 200px;
-    overflow: auto;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
