@@ -34,7 +34,7 @@
                     <cti:formatInterval type="DATEHM" value="${analysis.dateTimeRange}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".interval">
-                    <cti:formatPeriod value="${analysis.intervalLength}" type="DHMS_REDUCED" />
+                    <cti:formatPeriod value="${analysis.intervalPeriod}" type="DHMS_REDUCED" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".pointQuality">
                     <c:choose>

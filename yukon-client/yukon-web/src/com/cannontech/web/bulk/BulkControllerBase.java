@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.web.bulk.model.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 
 /**
  * Spring controller base class for bulk operations

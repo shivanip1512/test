@@ -11,11 +11,21 @@ public interface ArchiveDataAnalysisService {
      * @return The ID of the newly created analysis.
      */
     public int createAnalysis(ArchiveDataAnalysisBackingBean archiveDataAnalysisBackingBean);
+
+    /**
+     * Creates a new Analysis with the same parameters as an existing Analysis.
+     */
+    public int createAnalysis(int oldAnalysisId);
     
     /**
      * Runs an analysis as a background task.
      */
     public String startAnalysis(ArchiveDataAnalysisBackingBean archiveDataAnalysisBackingBean, int analysisId);
+    
+    /**
+     * Runs an analysis as a background task, using the same parameters as an existing Analysis.
+     */
+    public String startAnalysis(int oldAnalysisId, int newAnalysisId);
     
     /**
      * Builds load profile command strings for all missing intervals on all devices in a given

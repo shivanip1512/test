@@ -14,6 +14,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -21,7 +22,6 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 

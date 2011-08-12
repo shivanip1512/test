@@ -2,9 +2,9 @@ package com.cannontech.common.bulk.model;
 
 import java.util.Date;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -12,7 +12,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 public class ArchiveDataAnalysisBackingBean {
     private DeviceCollection deviceCollection;
     private BuiltInAttribute selectedAttribute;
-    private Long selectedInterval;
+    private Period selectedInterval;
     private Date startDate;
     private Date stopDate;
     private Boolean excludeBadQualities;
@@ -33,15 +33,11 @@ public class ArchiveDataAnalysisBackingBean {
         this.selectedAttribute = selectedAttribute;
     }
     
-    public Duration getSelectedIntervalDuration() {
-        return new Duration(selectedInterval);
-    }
-    
-    public Long getSelectedInterval() {
+    public Period getSelectedInterval() {
         return selectedInterval;
     }
     
-    public void setSelectedInterval(Long selectedInterval) {
+    public void setSelectedInterval(Period selectedInterval) {
         this.selectedInterval = selectedInterval;
     }
     

@@ -5,11 +5,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.joda.time.format.ISOPeriodFormat;
+import org.joda.time.format.PeriodFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.model.ADAStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
@@ -45,10 +48,10 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     private PaoLoadingService paoLoadingService;
     
     private class ArchiveDataRowMapper implements YukonRowMapper<ArchiveData> {
-        private Duration intervalDuration;
+        private Period intervalPeriod;
         
-        public ArchiveDataRowMapper(Duration intervalDuration) {
-            this.intervalDuration = intervalDuration;
+        public ArchiveDataRowMapper(Period intervalPeriod) {
+            this.intervalPeriod = intervalPeriod;
         }
         
         @Override
@@ -63,10 +66,26 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
                 readType = ReadType.DATA_PRESENT;
             }
             
-            Interval interval = new Interval(startTime, intervalDuration);
+            Interval interval = new Interval(startTime, intervalPeriod);
             ArchiveData archiveData = new ArchiveData(interval, readType, changeId);
             
             return archiveData;
+        }
+    }
+    
+    private class AnalysisDeletionThread extends Thread {
+        int analysisId;
+        
+        public AnalysisDeletionThread(int analysisId) {
+            this.analysisId = analysisId;
+        }
+        
+        public void run() {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ArchiveDataAnalysis");
+            sql.append("WHERE AnalysisId").eq(analysisId);
+            
+            yukonJdbcTemplate.update(sql);
         }
     }
     
@@ -78,28 +97,33 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             Instant startDate = rs.getInstant("startDate");
             Instant stopDate = rs.getInstant("stopDate");
             Interval dateTimeRange = new Interval(startDate, stopDate);
-            Duration intervalLength = new Duration(rs.getLong("intervalLengthInMillis"));
+            PeriodFormatter periodFormatter = ISOPeriodFormat.standard();
+            Period intervalPeriod = periodFormatter.parsePeriod(rs.getString("intervalPeriod"));
             Integer lastChangeId = rs.getInt("lastChangeId");
             Instant runDate = rs.getInstant("runDate");
             boolean excludeBadPointQualities = rs.getEnum("excludeBadPointQualities", YNBoolean.class).getBoolean();
+            ADAStatus status = rs.getEnum("AnalysisStatus", ADAStatus.class);
+            String statusId = rs.getString("StatusId");
             
             Analysis analysis = new Analysis();
             analysis.setAnalysisId(analysisId);
             analysis.setAttribute(attribute);
             analysis.setDateTimeRange(dateTimeRange);
-            analysis.setIntervalLength(intervalLength);
+            analysis.setIntervalPeriod(intervalPeriod);
             analysis.setLastChangeId(lastChangeId);
             analysis.setRunDate(runDate);
             analysis.setExcludeBadPointQualities(excludeBadPointQualities);
+            analysis.setStatus(status);
+            analysis.setStatusId(statusId);
             
             return analysis;
         }
     };
     
     @Override
-    public int createNewAnalysis(BuiltInAttribute attribute, Duration intervalLength, boolean excludeBadPointQualities, Interval dateTimeRange) {
-        int analysisId = insertIntoArchiveDataAnalysis(attribute, intervalLength, excludeBadPointQualities, dateTimeRange);
-        insertSlots(analysisId, dateTimeRange, intervalLength);
+    public int createNewAnalysis(BuiltInAttribute attribute, Period intervalPeriod, boolean excludeBadPointQualities, Interval dateTimeRange) {
+        int analysisId = insertIntoArchiveDataAnalysis(attribute, intervalPeriod, excludeBadPointQualities, dateTimeRange);
+        insertSlots(analysisId, dateTimeRange, intervalPeriod);
         
         return analysisId;
     }
@@ -149,7 +173,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Override
     public Analysis getAnalysisById(int analysisId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AnalysisId, Attribute, StartDate, StopDate, IntervalLengthInMillis, LastChangeId, RunDate, ExcludeBadPointQualities");
+        sql.append("SELECT AnalysisId, Attribute, StartDate, StopDate, IntervalPeriod, LastChangeId, RunDate, ExcludeBadPointQualities, AnalysisStatus, StatusId");
         sql.append("FROM ArchiveDataAnalysis");
         sql.append("WHERE AnalysisId").eq(analysisId);
         
@@ -160,7 +184,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Override
     public List<Analysis> getAllAnalyses() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AnalysisId, Attribute, IntervalLengthInMillis, LastChangeId, RunDate, ExcludeBadPointQualities, StartDate, StopDate");
+        sql.append("SELECT AnalysisId, Attribute, StartDate, StopDate, IntervalPeriod, LastChangeId, RunDate, ExcludeBadPointQualities, AnalysisStatus, StatusId");
         sql.append("FROM ArchiveDataAnalysis");
         sql.append("ORDER BY RunDate DESC");
         
@@ -170,11 +194,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     
     @Override
     public void deleteAnalysis(int analysisId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ArchiveDataAnalysis");
-        sql.append("WHERE AnalysisId").eq(analysisId);
-        
-        yukonJdbcTemplate.update(sql);
+        AnalysisDeletionThread deleter = new AnalysisDeletionThread(analysisId);
+        deleter.start();
     }
     
     @Override
@@ -249,6 +270,16 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return devicePointValuesList;
     }
     
+    public void updateStatus(int analysisId, ADAStatus status, String statusId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ArchiveDataAnalysis");
+        sql.append("SET AnalysisStatus").eq(status);
+        sql.append(", StatusId").eq(statusId);
+        sql.append("WHERE AnalysisId").eq(analysisId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
     private DeviceArchiveData getDeviceSlotValues(Analysis analysis, PaoIdentifier paoIdentifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT StartTime, ChangeId, AnalysisId");
@@ -257,7 +288,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         sql.append("WHERE AnalysisId").eq(analysis.getAnalysisId());
         sql.append("AND DeviceId").eq(paoIdentifier.getPaoId());
         
-        ArchiveDataRowMapper archiveDataRowMapper = new ArchiveDataRowMapper(analysis.getIntervalLength());
+        ArchiveDataRowMapper archiveDataRowMapper = new ArchiveDataRowMapper(analysis.getIntervalPeriod());
         List<ArchiveData> arsList = yukonJdbcTemplate.query(sql, archiveDataRowMapper);
         
         DeviceArchiveData data = new DeviceArchiveData();
@@ -269,7 +300,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return data;
     }
     
-    private int insertIntoArchiveDataAnalysis(BuiltInAttribute attribute, Duration intervalLength, boolean excludeBadPointQualities, Interval dateTimeRange) {
+    private int insertIntoArchiveDataAnalysis(BuiltInAttribute attribute, Period intervalPeriod, boolean excludeBadPointQualities, Interval dateTimeRange) {
         int maxChangeId = rawPointHistoryDao.getMaxChangeId();
         int analysisId = nextValueHelper.getNextValue("ArchiveDataAnalysis");
         
@@ -277,20 +308,21 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         SqlParameterSink sink = sql.insertInto("ArchiveDataAnalysis");
         sink.addValue("AnalysisId", analysisId);
         sink.addValue("Attribute", attribute.getKey());
-        sink.addValue("IntervalLengthInMillis", intervalLength.getMillis());
+        sink.addValue("IntervalPeriod", intervalPeriod.toString()); //Formats as standard ISO8601 string
         sink.addValue("LastChangeId", maxChangeId);
         sink.addValue("RunDate", new Date());
         sink.addValue("ExcludeBadPointQualities", YNBoolean.valueOf(excludeBadPointQualities));
         sink.addValue("StartDate", dateTimeRange.getStart());
         sink.addValue("StopDate", dateTimeRange.getEnd());
+        sink.addValue("AnalysisStatus", ADAStatus.RUNNING);
         
         yukonJdbcTemplate.update(sql);
         
         return analysisId;
     }
     
-    private void insertSlots(int analysisId, Interval dateTimeRange, Duration intervalLength) {
-        List<Instant> relevantTimes = ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalLength);
+    private void insertSlots(int analysisId, Interval dateTimeRange, Period intervalPeriod) {
+        List<Instant> relevantTimes = ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalPeriod);
         
         for(Instant dateTime : relevantTimes) {
             int slotId = nextValueHelper.getNextValue("ArchiveDataAnalysisSlot");

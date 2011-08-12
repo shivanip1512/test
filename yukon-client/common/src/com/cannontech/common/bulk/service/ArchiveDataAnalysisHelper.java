@@ -5,21 +5,24 @@ import java.util.List;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import com.google.common.collect.Lists;
 
 public class ArchiveDataAnalysisHelper {
     
-    public static List<Instant> getListOfRelevantDateTimes(Interval dateTimeRange, Duration intervalLength) {
+    public static List<Instant> getListOfRelevantDateTimes(Interval dateTimeRange, Period intervalPeriod) {
         List<Instant> endTimes = Lists.newArrayList();
         
-        //first point of interest is one interval into the range
-        Instant time = dateTimeRange.getStart().toInstant().plus(intervalLength);
+        Instant startTime = dateTimeRange.getStart().toInstant();
         Instant endTime = dateTimeRange.getEnd().toInstant();
+        //first point of interest is one interval into the range
+        Instant time = startTime.plus(intervalPeriod.toDurationFrom(startTime));
         
         while(!time.isAfter(endTime)) {
             endTimes.add(time);
-            time = time.plus(intervalLength);
+            Duration intervalDuration = intervalPeriod.toDurationFrom(time);
+            time = time.plus(intervalDuration);
         }
         
         return endTimes;

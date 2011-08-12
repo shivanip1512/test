@@ -40,7 +40,7 @@
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".interval">
-                        <cti:formatPeriod type="DHMS_REDUCED" value="${result.analysis.intervalLength}"/>
+                        <cti:formatPeriod type="DHMS_REDUCED" value="${result.analysis.intervalPeriod}"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".pointQuality">
@@ -64,7 +64,7 @@
             <tags:formElementContainer nameKey="actions">
                 
                 <ul class="buttonStack">
-                
+                    <%-- READ LP BUTTON --%>
                     <c:if test="${showReadOption}">
                         <c:url var="readUrl" value="/spring/bulk/archiveDataAnalysis/read/readNow">
                             <c:param name="analysisId" value="${result.analysis.analysisId}"/>
@@ -75,10 +75,14 @@
                         <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> 
                         --%>
                     </c:if>
+                    
+                    <%-- CSV BUTTON --%>
                     <c:url var="csvUrl" value="/spring/bulk/archiveDataAnalysis/tabular/csv">
                         <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
                     <li><cti:button key="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
+                    
+                    <%-- TABULAR BUTTON --%>
                     <c:choose>
                         <c:when test="${underTabularSizeLimit}">
                             <c:url var="tabularUrl" value="/spring/bulk/archiveDataAnalysis/tabular/view">
@@ -90,12 +94,21 @@
                             <li><cti:button key="viewTabularDisabled" renderMode="labeledImage" disabled="true"/></li>
                         </c:otherwise>
                     </c:choose>
+                    
+                    <%-- RE-ANALYZE BUTTON --%>
+                    <c:url var="reanalyzeUrl" value="/spring/bulk/archiveDataAnalysis/home/reanalyze">
+                        <c:param name="oldAnalysisId" value="${result.analysis.analysisId}"/>
+                    </c:url>
+                    <li><cti:button key="reanalyze" renderMode="labeledImage" href="${reanalyzeUrl}"/></li>
+                    
+                    <%-- COLLECTION ACTIONS BUTTON --%>
                     <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
                         <c:forEach var="p" items="${deviceCollection.collectionParameters}">
                             <c:param name="${p.key}" value="${p.value}"/>
                         </c:forEach>
                     </c:url>
                     <li><cti:button key="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}"/></li>
+                
                 </ul>
             </tags:formElementContainer>
         </cti:dataGridCell>

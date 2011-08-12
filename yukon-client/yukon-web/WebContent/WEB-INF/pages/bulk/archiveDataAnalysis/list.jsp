@@ -26,7 +26,6 @@
     
     function deleteAnalysis() {
         $('deleteConfirmationPopup').hide()
-        Yukon.ui.blockPage();
         var url = "/spring/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
@@ -41,52 +40,95 @@
                 <th><i:inline key="yukon.web.modules.amr.analysis.list.range"/></th>
                 <th><i:inline key="yukon.web.modules.amr.analysis.interval"/></th>
                 <th><i:inline key="yukon.web.modules.amr.analysis.pointQuality"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.list.status"/></th>
                 <th><i:inline key="yukon.web.modules.amr.analysis.list.actions"/></th>
             </tr>
             
             <c:forEach items="${analysisMap}" var="analysisEntry">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td>
-                        <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>
-                    </td>
-                    <td>
-                        <cti:formatObject value="${analysisEntry.key.attribute.description}"/>
-                    </td>
-                    <td>
-                        ${analysisEntry.value}
-                    </td>
-                    <td>
-                        <cti:formatInterval type="DATEHM" value="${analysisEntry.key.dateTimeRange}"/>
-                    </td>
-                    <td>
-                        <cti:formatPeriod value="${analysisEntry.key.intervalLength}" type="DHMS_REDUCED"/>
-                    </td>
-                    <td>
+                <c:if test="${analysisEntry.key.status != 'DELETED'}">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td>
+                            <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>
+                        </td>
+                        <td>
+                            <cti:formatObject value="${analysisEntry.key.attribute.description}"/>
+                        </td>
+                        <td>
+                            ${analysisEntry.value}
+                        </td>
+                        <td>
+                            <cti:formatInterval type="DATEHM" value="${analysisEntry.key.dateTimeRange}"/>
+                        </td>
+                        <td>
+                            <cti:formatPeriod value="${analysisEntry.key.intervalPeriod}" type="DHMS_REDUCED"/>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${analysisEntry.key.excludeBadPointQualities}">
+                                    <i:inline key="yukon.web.modules.amr.analysis.list.normalOnly"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <i:inline key="yukon.web.modules.amr.analysis.list.allQualities"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                         <c:choose>
-                            <c:when test="${analysisEntry.key.excludeBadPointQualities}">
-                                <i:inline key="yukon.web.modules.amr.analysis.list.normalOnly"/>
+                            <%--if analyzing, disable view button, disable delete button, status links to progress page--%>
+                            <c:when test="${analysisEntry.key.status == 'RUNNING'}">
+                                <td>
+                                    <cti:url var="analysisProgressUrl" value="/spring/bulk/archiveDataAnalysis/home/processing">
+                                        <cti:param name="resultsId" value="${analysisEntry.key.statusId}"/>
+                                        <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
+                                    </cti:url>
+                                    <cti:link href="${analysisProgressUrl}" key="${analysisEntry.key.status.formatKey}"/>
+                                </td>
+                                <td>
+                                    <cti:button key="viewButtonAnalyzing" renderMode="image" disabled="true"/>
+                                    <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                </td>
                             </c:when>
-                            <c:otherwise>
-                                <i:inline key="yukon.web.modules.amr.analysis.list.allQualities"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>
-                        <%-- TODO: Only display action buttons if analysis is complete? --%>
-                        <c:choose>
-                            <c:when test="${analysisEntry.value == 0}">
-                                <cti:button key="viewButtonNoDevices" renderMode="image" disabled="true"/>
+                            <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
+                            <%-- if complete with 0 devices successfully analyzed, disable view, enable delete, status doesn't link--%>
+                            <c:when test="${analysisEntry.key.status == 'COMPLETE'}">
+                                <td>
+                                    <i:inline key="${analysisEntry.key.status.formatKey}"/>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${analysisEntry.value == 0}">
+                                            <cti:button key="viewButtonNoDevices" renderMode="image" disabled="true"/>
+                                            <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+                                                <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
+                                            </cti:url>
+                                            <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
+                                            <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                             </c:when>
-                            <c:otherwise>
-                                <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
-                                    <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
-                                </cti:url>
-                                <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                            </c:otherwise>
+                            <%--if reading, enable view, disable delete, status links to read progress--%>
+                            <c:when test="${analysisEntry.key.status == 'READING'}">
+                                <td>
+                                    <cti:url var="readProgressUrl" value="/spring/bulk/archiveDataAnalysis/read/readResults">
+                                        <cti:param name="resultId" value="${analysisEntry.key.statusId}"/>
+                                        <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
+                                    </cti:url>
+                                    <cti:link href="${readProgressUrl}" key="${analysisEntry.key.status.formatKey}"/>
+                                </td>
+                                <td>
+                                    <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+                                        <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
+                                    </cti:url>
+                                    <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
+                                    <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                </td>
+                            </c:when>
                         </c:choose>
-                        <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
-                    </td>
-                </tr>
+                    </tr>
+                </c:if>
             </c:forEach>
         </table>
     </tags:boxContainer2>

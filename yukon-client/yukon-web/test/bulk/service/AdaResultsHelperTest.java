@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 import org.junit.Test;
 
 import com.cannontech.common.bulk.model.Analysis;
@@ -32,7 +33,7 @@ public class AdaResultsHelperTest {
         DateTime analysisEnd = new DateTime(2010, 1, 1, 13, 0, 0, 0);
         analysis.setDateTimeRange(new Interval(analysisStart, analysisEnd));
         // 15 min interval
-        analysis.setIntervalLength(Duration.standardMinutes(15));
+        analysis.setIntervalPeriod(Period.minutes(15));
         int barWidth = 400; 
         
         // archive data: M,M,M,M

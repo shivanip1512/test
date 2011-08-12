@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model;
+package com.cannontech.common.bulk.collection.device;
 
 /** Exception thrown when there is a problem creating a Device Collection */
 public class DeviceCollectionCreationException extends RuntimeException {

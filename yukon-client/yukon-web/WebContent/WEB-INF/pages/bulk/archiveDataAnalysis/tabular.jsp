@@ -7,17 +7,15 @@
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle" />
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle" />
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}" />
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
+        <%-- metering --%>
+        <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
+        <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
+        <%-- ADA List --%>
+        <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
+        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
         <%-- archive data analysis results--%>
         <cti:msg var="analysisResultsPageTitle" key="yukon.web.modules.amr.analysis.results.pageName" />
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results?analysisId=${analysis.analysisId}" title="${analysisResultsPageTitle}"/>
+        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results/view?analysisId=${analysis.analysisId}" title="${analysisResultsPageTitle}"/>
         <%-- archive data analysis tabular --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.tabular.pageName"/></cti:crumbLink>
 

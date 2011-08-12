@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateMidnight;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
@@ -32,16 +34,16 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.bulk.model.DeviceCollectionFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.cannontech.web.input.PeriodPropertyEditor;
 import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("archiveDataAnalysis/home/*")
 public class ArchiveDataAnalysisController {
     private Set<Attribute> attributes;
-    private Set<Duration> intervalDurations;
+    private Set<Period> intervalPeriods;
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private DeviceCollectionFactory deviceCollectionFactory;
     private ArchiveDataAnalysisService archiveDataAnalysisService;
@@ -54,12 +56,13 @@ public class ArchiveDataAnalysisController {
             attributes.add(attribute);
         }
         
-        intervalDurations = new LinkedHashSet<Duration>();
-        intervalDurations.add(Duration.standardMinutes(5));
-        intervalDurations.add(Duration.standardMinutes(10));
-        intervalDurations.add(Duration.standardMinutes(15));
-        intervalDurations.add(Duration.standardMinutes(30));
-        intervalDurations.add(Duration.standardHours(1));
+        intervalPeriods = new LinkedHashSet<Period>();
+        intervalPeriods.add(Period.minutes(5));
+        intervalPeriods.add(Period.minutes(10));
+        intervalPeriods.add(Period.minutes(15));
+        intervalPeriods.add(Period.minutes(30));
+        intervalPeriods.add(Period.hours(1));
+        intervalPeriods.add(Period.days(1));
     }
     
     @RequestMapping
@@ -68,7 +71,7 @@ public class ArchiveDataAnalysisController {
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("attributes", attributes);
-        model.addAttribute("intervalDurations", intervalDurations);
+        model.addAttribute("intervalPeriods", intervalPeriods);
         
         Instant stopDateInitialValue = new DateMidnight().toInstant();
         Instant startDateInitialValue = stopDateInitialValue.minus(Duration.standardDays(1));
@@ -87,8 +90,6 @@ public class ArchiveDataAnalysisController {
         int analysisId = archiveDataAnalysisService.createAnalysis(backingBean);
         String resultsId = archiveDataAnalysisService.startAnalysis(backingBean, analysisId);
         
-        model.addAllAttributes(deviceCollection.getCollectionParameters());
-        model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("analysisId", analysisId);
         model.addAttribute("resultsId", resultsId);
         
@@ -96,10 +97,21 @@ public class ArchiveDataAnalysisController {
     }
     
     @RequestMapping
+    public String reanalyze(ModelMap model, HttpServletRequest request, int oldAnalysisId) {
+        int newAnalysisId = archiveDataAnalysisService.createAnalysis(oldAnalysisId);
+        String resultsId = archiveDataAnalysisService.startAnalysis(oldAnalysisId, newAnalysisId);
+        
+        model.addAttribute("analysisId", newAnalysisId);
+        model.addAttribute("resultsId", resultsId);
+        
+        return "redirect:processing";
+    }
+    
+    @RequestMapping
     public String processing(ModelMap model, HttpServletRequest request, int analysisId, String resultsId) throws ServletException {
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveDataAnalysisCallbackResult callbackResult = (ArchiveDataAnalysisCallbackResult) recentResultsCache.getResult(resultsId);
+        DeviceCollection deviceCollection = callbackResult.getOriginalDeviceCollection();
         
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("deviceCollection", deviceCollection);
@@ -117,6 +129,9 @@ public class ArchiveDataAnalysisController {
         
         EnumPropertyEditor<BuiltInAttribute> attributeEditor = new EnumPropertyEditor<BuiltInAttribute>(BuiltInAttribute.class);
         binder.registerCustomEditor(BuiltInAttribute.class, attributeEditor);
+        
+        PropertyEditor periodEditor = new PeriodPropertyEditor();
+        binder.registerCustomEditor(Period.class, periodEditor);
     }
     
     @Resource(name="recentResultsCache")

@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model.collection;
+package com.cannontech.common.bulk.collection.device;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,16 +11,13 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
-import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
-import com.cannontech.web.bulk.model.DeviceCollectionProducer;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 
 /**
  * Implementation of DeviceCollectionProducer for devices in an Archive Data Analysis

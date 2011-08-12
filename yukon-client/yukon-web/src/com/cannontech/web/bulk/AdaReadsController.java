@@ -8,12 +8,15 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.PROFILE_COLLECTION)
 @Controller
 @RequestMapping("archiveDataAnalysis/read/*")
 public class AdaReadsController {
@@ -22,8 +25,18 @@ public class AdaReadsController {
     
     @RequestMapping
     public String readNow(ModelMap model, HttpServletRequest request, LiteYukonUser user, int analysisId) throws ServletRequestBindingException {
-        model.addAttribute("analysisId", analysisId);
         String resultId = archiveDataAnalysisService.runProfileReads(analysisId, user);
+        
+        model.addAttribute("resultId", resultId);
+        model.addAttribute("analysisId", analysisId);
+        
+        return "redirect:readResults";
+    }
+    
+    @RequestMapping
+    public String readResults(ModelMap model, HttpServletRequest request, int analysisId, String resultId) {
+        model.addAttribute("analysisId", analysisId);
+        
         ArchiveAnalysisProfileReadResult result = archiveDataAnalysisService.getProfileReadResultById(resultId);
         model.addAttribute("resultId", resultId);
         model.addAttribute("result", result);

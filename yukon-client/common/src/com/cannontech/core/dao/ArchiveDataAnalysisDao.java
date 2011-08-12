@@ -2,11 +2,12 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import org.joda.time.Duration;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.bulk.model.ADAStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
@@ -18,7 +19,7 @@ public interface ArchiveDataAnalysisDao {
      * This step must be completed prior to inserting any slot data for a given Analysis.
      */
     public int createNewAnalysis(BuiltInAttribute attribute, 
-                                 Duration intervalLength, 
+                                 Period intervalPeriod, 
                                  boolean excludeBadPointQualities, 
                                  Interval dateTimeRange);
     
@@ -71,4 +72,11 @@ public interface ArchiveDataAnalysisDao {
      * point values associated with each device, wrapped in DevicePointValuesHolders.
      */
     public List<DevicePointValuesHolder> getAnalysisPointValues(int analysisId);
+    
+    /**
+     * Updates the status and status id of an Analysis. StatusId may be null when
+     * the status is COMPLETE or DELETED.
+     */
+    public void updateStatus(int analysisId, ADAStatus status, String statusId);
+    
 }

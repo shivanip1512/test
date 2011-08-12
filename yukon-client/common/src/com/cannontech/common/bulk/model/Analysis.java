@@ -2,9 +2,9 @@ package com.cannontech.common.bulk.model;
 
 import java.util.List;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -13,11 +13,12 @@ public class Analysis {
     private BuiltInAttribute attribute;
     private int analysisId;
     private Interval dateTimeRange;
-    private Duration intervalLength;
-    
+    private Period intervalPeriod;
     private int lastChangeId;
     private Instant runDate;
     private boolean excludeBadPointQualities;
+    private ADAStatus status;
+    private String statusId;
     
     public BuiltInAttribute getAttribute() {
         return attribute;
@@ -43,12 +44,12 @@ public class Analysis {
         this.dateTimeRange = dateTimeRange;
     }
     
-    public void setIntervalLength(Duration intervalLength) {
-        this.intervalLength = intervalLength;
+    public void setIntervalPeriod(Period intervalPeriod) {
+        this.intervalPeriod = intervalPeriod;
     }
     
-    public Duration getIntervalLength() {
-        return intervalLength;
+    public Period getIntervalPeriod() {
+        return intervalPeriod;
     }
     
     public void setLastChangeId(int lastChangeId) {
@@ -76,6 +77,22 @@ public class Analysis {
     }
     
     public List<Instant> getIntervalEndTimes() {
-        return ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalLength);
+        return ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalPeriod);
+    }
+
+    public void setStatus(ADAStatus status) {
+        this.status = status;
+    }
+
+    public ADAStatus getStatus() {
+        return status;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+    
+    public String getStatusId() {
+        return statusId;
     }
 }

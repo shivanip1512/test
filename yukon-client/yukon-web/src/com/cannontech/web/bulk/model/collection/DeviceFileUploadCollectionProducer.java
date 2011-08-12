@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
@@ -30,8 +32,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.tools.csv.CSVReader;
-import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
-import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
 public class DeviceFileUploadCollectionProducer implements DeviceCollectionProducer {
     private ObjectMapperFactory objectMapperFactory = null;

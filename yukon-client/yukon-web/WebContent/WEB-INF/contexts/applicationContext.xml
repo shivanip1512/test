@@ -1301,7 +1301,7 @@
                     <property name="friendlyExceptionPropertyKey" value="ResultResultExpiredException" />
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.web.bulk.model.DeviceCollectionCreationException" />
+                    <property name="exceptionClass" value="com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException" />
                     <property name="friendlyExceptionPropertyKey" value="DeviceCollectionCreationException" />
                     <property name="includeCauseMessage" value="true" />
                 </bean>
@@ -1449,7 +1449,7 @@
         </property>
     </bean>
     
-    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer" />
+    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer" />
     
     <bean id="deviceIdListCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
     

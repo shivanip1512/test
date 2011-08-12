@@ -11,15 +11,18 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
-import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
-import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
 
 @Controller
@@ -29,9 +32,10 @@ public class AdaResultsController {
     private final static int BAR_WIDTH = 400;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
+    private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
-    public String view(ModelMap model, int analysisId, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String view(ModelMap model, int analysisId, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
@@ -61,7 +65,7 @@ public class AdaResultsController {
         
         model.addAttribute("barWidth", BAR_WIDTH);
         
-        if (analysis.getAttribute().isProfile()) {
+        if (analysis.getAttribute().isProfile() && rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, userContext.getYukonUser())) {
             model.addAttribute("showReadOption", true);
         }
         
@@ -78,6 +82,11 @@ public class AdaResultsController {
         model.addAttribute("result", result);
         
         return "archiveDataAnalysis/results.jsp";
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Autowired

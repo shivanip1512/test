@@ -1,6 +1,4 @@
-package com.cannontech.web.bulk.model;
-
-import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
+package com.cannontech.common.bulk.collection.device;
 
 /**
  * Factory used to get a new instance of a device collection based on request

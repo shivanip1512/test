@@ -48,9 +48,9 @@
                     
                     <tags:nameValue2 nameKey=".interval">
                         <form:select path="selectedInterval" class="dateTimeInputWidth">
-                            <c:forEach var="intervalDuration" items="${intervalDurations}">
-                                <form:option value="${intervalDuration.millis}">
-                                    <cti:formatPeriod value="${intervalDuration}" type="DHMS_REDUCED"/>
+                            <c:forEach var="intervalPeriod" items="${intervalPeriods}">
+                                <form:option value="${intervalPeriod}">
+                                    <cti:formatPeriod value="${intervalPeriod}" type="DHMS_REDUCED"/>
                                 </form:option>
                             </c:forEach>
                         </form:select>

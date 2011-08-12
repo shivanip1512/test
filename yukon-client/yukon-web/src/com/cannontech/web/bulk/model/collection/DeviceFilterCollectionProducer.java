@@ -20,6 +20,7 @@ import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.RangeBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -27,7 +28,6 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
-import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
 public class DeviceFilterCollectionProducer implements DeviceCollectionProducer, DeviceFilterCollectionHelper {
     private MeterSearchDao meterSearchDao;

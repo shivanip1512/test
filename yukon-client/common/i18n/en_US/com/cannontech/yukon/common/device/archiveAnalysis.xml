@@ -9,6 +9,10 @@
     <entry key="yukon.web.modules.amr.analysis.pointQuality">Point Quality</entry>
     <entry key="yukon.web.modules.amr.analysis.normalQualitiesOnly">Include Only Normal Qualities</entry>
     <entry key="yukon.web.modules.amr.analysis.allQualities">Include All Qualities</entry>
+    <entry key="yukon.web.modules.amr.analysis.status.RUNNING">Running</entry>
+    <entry key="yukon.web.modules.amr.analysis.status.COMPLETE">Complete</entry>
+    <entry key="yukon.web.modules.amr.analysis.status.READING">Reading</entry>
+    <entry key="yukon.web.modules.amr.analysis.status.DELETED">Deleted</entry>
     
     <!-- ANALYSIS HOME -->
     <entry key="yukon.web.modules.amr.analysis.home.pageName">Archive Data Analysis</entry>
@@ -43,20 +47,26 @@
     <entry key="yukon.web.modules.amr.analysis.results.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.analysis.results.holes">Intervals Missing</entry>
     <entry key="yukon.web.modules.amr.analysis.results.timeline">Timeline ({0} intervals)</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.reanalyze.imageUrl">/WebConfig/yukon/Icons/arrow_rotate_clockwise.png</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.reanalyze.label">Re-run Analysis</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.reanalyze.hoverText">Run a new analysis with identical parameters.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.read.imageUrl">/WebConfig/yukon/Icons/control_play_blue.gif</entry>
     <entry key="yukon.web.modules.amr.analysis.results.read.label">Read All Devices</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.read.hoverText">Attempt to read all missing load profile interval data.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.scheduleRead.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
     <entry key="yukon.web.modules.amr.analysis.results.scheduleRead.label">Schedule Reads For All Devices</entry>
     <entry key="yukon.web.modules.amr.analysis.results.csv.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
     <entry key="yukon.web.modules.amr.analysis.results.csv.label">Export CSV</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.csv.hoverText">Generate a comma-separated values file of this data.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabular.imageUrl">/WebConfig/yukon/Icons/application_view_columns.png</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabular.label">View Tabular Results</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.viewTabular.hoverText">View detailed tabular data in-browser.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.imageUrl">/WebConfig/yukon/Icons/application_view_columns_disabled.png</entry>
-    <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.label">Data set is too large</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.label">View Tabular Results</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.hoverText">This dataset is too large to render a tabular view. Download CSV instead.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.collectionActions.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
     <entry key="yukon.web.modules.amr.analysis.results.collectionActions.label">Collection Actions</entry>
-    <entry key="yukon.web.modules.amr.analysis.results.collectionActions.hoverText">Perform other actions on the selected devices</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.collectionActions.hoverText">Perform other actions on the selected devices.</entry>
     
     <!-- TABULAR DISPLAY -->
     <entry key="yukon.web.modules.amr.analysis.tabular.pageName">Tabular Results</entry>
@@ -73,6 +83,7 @@
     <entry key="yukon.web.modules.amr.analysis.list.actions">Actions</entry>
     <entry key="yukon.web.modules.amr.analysis.list.normalOnly">Normal Only</entry>
     <entry key="yukon.web.modules.amr.analysis.list.allQualities">All Qualities</entry>
+    <entry key="yukon.web.modules.amr.analysis.list.status">Status</entry>
     <entry key="yukon.web.modules.amr.analysis.list.deleteButton.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
     <entry key="yukon.web.modules.amr.analysis.list.deleteButton.hoverText">Delete analysis</entry>
     <entry key="yukon.web.modules.amr.analysis.list.deleteConfirmation.message">Are you sure you want to delete this analysis?</entry>
@@ -81,6 +92,8 @@
     <entry key="yukon.web.modules.amr.analysis.list.viewButton.hoverText">View analysis results</entry>
     <entry key="yukon.web.modules.amr.analysis.list.viewButtonNoDevices.imageUrl">/WebConfig/yukon/Icons/application_view_columns_disabled.png</entry>
     <entry key="yukon.web.modules.amr.analysis.list.viewButtonNoDevices.hoverText">No results to view</entry>
+    <entry key="yukon.web.modules.amr.analysis.list.viewButtonAnalyzing.imageUrl">/WebConfig/yukon/Icons/application_view_columns_disabled.png</entry>
+    <entry key="yukon.web.modules.amr.analysis.list.viewButtonAnalyzing.hoverText">Unable to view until analysis is complete.</entry>
     
     <!-- LP READ RESULTS -->
     <entry key="yukon.web.modules.amr.analysis.readResults.pageName">Archive Data Analysis Read Results</entry>

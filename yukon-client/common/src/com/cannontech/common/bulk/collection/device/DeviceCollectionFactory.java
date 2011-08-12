@@ -1,10 +1,8 @@
-package com.cannontech.web.bulk.model;
+package com.cannontech.common.bulk.collection.device;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestBindingException;
-
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 
 /**
  * Factory used to create the required device collection based on request
