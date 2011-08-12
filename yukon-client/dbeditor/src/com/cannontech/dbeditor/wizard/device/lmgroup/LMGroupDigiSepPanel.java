@@ -1,7 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -12,7 +11,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
@@ -223,15 +221,13 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
             setErrorString("Utility Enrollment Group must be between 1 and 255");
             return false;
         }
-
-        if (enrollmentGroup < 0 || enrollmentGroup > 255) {
-            setErrorString("Utility Enrollment Group must be between 1 and 255");
-            return false;
-        }
         
-        if (enrollmentGroup == 0) {
-            setErrorString("A value of 0 means all devices in the group will respond. " +
-            		"This is not allowed. Utility Enrollment Group must be between 1 and 255");
+        if (enrollmentGroup < 1 || enrollmentGroup > 255) {
+            String specialPrefix = "";
+            if (enrollmentGroup == 0) {
+                specialPrefix = "A value of 0 means all devices in the group...";
+            }
+            setErrorString(specialPrefix + "Utility Enrollment Group must be between 1 and 255.");
             return false;
         }
 
