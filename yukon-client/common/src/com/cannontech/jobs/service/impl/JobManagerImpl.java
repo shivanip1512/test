@@ -188,9 +188,6 @@ public class JobManagerImpl implements JobManager {
     
     public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
         Set<ScheduledRepeatingJob> repeatingJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
-        if (repeatingJobs == null || repeatingJobs.isEmpty()) {
-            return null;
-        }
         List<ScheduledRepeatingJob> jobsNotDeleted = Lists.newArrayList();
         for (ScheduledRepeatingJob job: repeatingJobs) {
             if (!job.isDeleted()) {
