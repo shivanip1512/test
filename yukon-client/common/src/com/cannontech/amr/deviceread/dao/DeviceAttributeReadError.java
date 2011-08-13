@@ -31,4 +31,9 @@ public class DeviceAttributeReadError {
     public MessageSourceResolvable getDetail() {
         return detail;
     }
+    
+    @Override
+    public String toString() {
+        return type.name() + ": " + summary + " (" + detail + ")";
+    }
 }

@@ -59,8 +59,6 @@
 
     <bean id="plcDeviceAttributeReadService" class="com.cannontech.amr.deviceread.dao.impl.PlcDeviceAttributeReadServiceImpl"/>
         
-    <bean id="groupMeterReadService" class="com.cannontech.amr.deviceread.service.impl.GroupMeterReadServiceImpl"/>
-
     <bean id="peakReportService"
         class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">
         <property name="dateFormattingService" ref="dateFormattingService" />

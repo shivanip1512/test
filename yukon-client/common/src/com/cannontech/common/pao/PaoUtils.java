@@ -4,15 +4,18 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.ImmutableList.Builder;
 
 public class PaoUtils {
     private static final Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction = new Function<PaoIdentifier, Integer>() {
@@ -102,6 +105,10 @@ public class PaoUtils {
         return Iterables.transform(paos, yukonPaoToPaoIdentifierFunction);
     }
     
+    public static <T extends YukonPao> ImmutableMap<PaoIdentifier, T> indexYukonPaos(Iterable<T> paos) {
+        return Maps.uniqueIndex(paos, yukonPaoToPaoIdentifierFunction);
+    }
+    
     public static void validateDeviceType(YukonPao pao) {
         PaoType paoType = pao.getPaoIdentifier().getPaoType();
         validateDeviceType(paoType);
@@ -129,5 +136,15 @@ public class PaoUtils {
     
     public static Function<YukonPao, PaoIdentifier> getYukonPaoToPaoIdentifierFunction() {
         return yukonPaoToPaoIdentifierFunction;
+    }
+
+    public static Iterable<PaoIdentifier> convertPaoMultisToPaoIdentifiers(Iterable<PaoMultiPointIdentifier> paoMultiPoints) {
+        return Iterables.transform(paoMultiPoints, new Function<PaoMultiPointIdentifier, PaoIdentifier>() {
+
+            @Override
+            public PaoIdentifier apply(PaoMultiPointIdentifier from) {
+                return from.getPao();
+            }
+        });
     }
 }

@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
+import com.cannontech.amr.deviceread.service.impl.CommandWrapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -114,6 +116,10 @@ public class IterableUtils {
     	return (iterable == null || Iterables.isEmpty(iterable));
     }
     
+    public static <T> boolean isNotEmpty(final Iterable<T> iterable) {
+        return (iterable != null && !Iterables.isEmpty(iterable));
+    }
+    
     /**
      * Returns an unmodifiable version of the list or an empty list if the parameter is null.
      */
@@ -167,4 +173,5 @@ public class IterableUtils {
             }
         };
     }
+
 }

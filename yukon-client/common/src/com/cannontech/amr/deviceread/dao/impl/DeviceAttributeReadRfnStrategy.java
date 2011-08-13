@@ -1,38 +1,35 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrategy {
-    private AttributeService attributeService;
     private PaoDefinitionDao paoDefinitionDao;
     private RfnMeterReadService rfnMeterReadService;
     private RfnMeterDao rfnMeterDao;
@@ -49,37 +46,28 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     }
     
     @Override
-    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes, LiteYukonUser user) {
+    public boolean isReadable(Iterable<PaoMultiPointIdentifier> devices, LiteYukonUser user) {
         // There's only one command we can send for an Eka meter and it will return everything,
         // so we'll just check if at least one of the attributes requested exists.
-        
-        // TODO consider just returning true under the assumption that this was already checked prior to calling
-        
-        for (YukonPao device : devices) {
-            Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
-            boolean noMatch = Sets.intersection(attributes, allExistingAttributes).isEmpty();
-            if (!noMatch) {
-                return true;
-            }
-        }
-        return false;
+        return !Iterables.isEmpty(devices);
     }
 
     @Override
-    public void initiateRead(Iterable<? extends YukonPao> devices,
-            Set<? extends Attribute> attributes, final DeviceAttributeReadCallback delegateCallback,
+    public void initiateRead(Iterable<PaoMultiPointIdentifier> devices,
+            final DeviceAttributeReadStrategyCallback delegateCallback,
             DeviceRequestType type, LiteYukonUser user) {
         
-        List<RfnMeter> rfnMeters = Lists.newArrayListWithExpectedSize(IterableUtils.guessSize(devices));
-        for (YukonPao yukonPao : devices) {
+        Iterable<PaoIdentifier> paoIdentifiers = PaoUtils.convertPaoMultisToPaoIdentifiers(devices);
+        final List<RfnMeter> rfnMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
+        for (PaoIdentifier paoIdentifier : paoIdentifiers) {
             RfnMeter rfnMeter;
             try {
-                rfnMeter = rfnMeterDao.getMeter(yukonPao);
+                rfnMeter = rfnMeterDao.getMeter(paoIdentifier); // TODO create bulk loader
                 rfnMeters.add(rfnMeter);
             } catch (NotFoundException e) {
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.notKnown", e.getMessage());
                 DeviceAttributeReadError lookupError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.UNKNOWN, summary);
-                delegateCallback.receivedError(yukonPao.getPaoIdentifier(), lookupError);
+                delegateCallback.receivedError(paoIdentifier, lookupError);
             }
         }
         
@@ -90,27 +78,27 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         
         final AtomicInteger pendingRequests = new AtomicInteger(rfnMeters.size());
 
-        for (final RfnMeter rfnMeter : rfnMeters) {
+        for (final RfnMeter meter : rfnMeters) {
 
             RfnMeterReadCompletionCallback callback = new RfnMeterReadCompletionCallback() {
 
                 @Override
                 public void receivedData(PointValueHolder value) {
-                    delegateCallback.receivedValue(rfnMeter.getPaoIdentifier(), value);
+                    delegateCallback.receivedValue(meter.getPaoIdentifier(), value);
                 }
                 
                 @Override
                 public void receivedDataError(RfnMeterReadingDataReplyType replyType) {
                     MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.dataError", replyType);
                     DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary);
-                    delegateCallback.receivedError(rfnMeter.getPaoIdentifier(), dataError);
+                    delegateCallback.receivedError(meter.getPaoIdentifier(), dataError);
                 }
                 
                 @Override
                 public void receivedStatusError(RfnMeterReadingReplyType replyType) {
                     MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.statusError", replyType);
                     DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.UNKNOWN, summary);
-                    delegateCallback.receivedError(rfnMeter.getPaoIdentifier(), dataError);
+                    delegateCallback.receivedError(meter.getPaoIdentifier(), dataError);
                 }
                 
                 @Override
@@ -133,7 +121,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                 }
             };
 
-            rfnMeterReadService.send(rfnMeter, callback);
+            rfnMeterReadService.send(meter, callback);
         }
     }
     
@@ -152,9 +140,4 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         this.rfnMeterReadService = rfnMeterReadService;
     }
     
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
 }

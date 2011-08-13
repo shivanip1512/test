@@ -15,8 +15,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
@@ -51,7 +51,7 @@ public class OutageProcessingController extends MultiActionController {
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	private GroupMetersDao groupMetersDao;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	private GroupMeterReadService groupMeterReadService;
+	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	private AlertService alertService;
 	
 	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
@@ -66,8 +66,8 @@ public class OutageProcessingController extends MultiActionController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(groupMeterReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		allReadsResults.addAll(groupMeterReadService.getCompletedByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(plcDeviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(plcDeviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(outageMonitorId);
@@ -134,7 +134,7 @@ public class OutageProcessingController extends MultiActionController {
             }
         };
 	
-        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = plcDeviceAttributeReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(outageMonitorId, resultKey);
 		
 		mav.addObject("outageMonitorId", outageMonitorId);
@@ -190,8 +190,8 @@ public class OutageProcessingController extends MultiActionController {
 	}
 	
 	@Autowired
-	public void setGroupMeterReadService(GroupMeterReadService groupMeterReadService) {
-		this.groupMeterReadService = groupMeterReadService;
+	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
 	}
 	
 	@Autowired

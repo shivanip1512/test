@@ -7,7 +7,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.google.common.collect.Lists;
 
-public class MessageCollectingBlockingCallback implements DeviceAttributeReadCallback {
+public class CollectingDeviceAttributeReadCallback implements DeviceAttributeReadCallback {
 
     private CountDownLatch latch = new CountDownLatch(1);
     private List<DeviceAttributeReadError> messages = Lists.newArrayList();
@@ -29,7 +29,11 @@ public class MessageCollectingBlockingCallback implements DeviceAttributeReadCal
     }
     
     @Override
-    public void receivedException(DeviceAttributeReadError exception) {
+    public void receivedLastValue(PaoIdentifier pao) {
+    }
+    
+    @Override
+    public synchronized void receivedException(DeviceAttributeReadError exception) {
         messages.add(exception);
     }
     
@@ -43,12 +47,13 @@ public class MessageCollectingBlockingCallback implements DeviceAttributeReadCal
         return messages.isEmpty();
     }
 
-    private void waitForCompletion() {
+    public void waitForCompletion() {
         try {
             latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
 
 }

@@ -17,8 +17,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.BaseAlert;
@@ -43,7 +43,7 @@ import com.cannontech.web.util.AttributeSelectorHelperService;
 
 public class GroupMeterReadController extends MultiActionController {
 
-	private GroupMeterReadService groupMeterReadService;
+	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	private AlertService alertService;
 	private DeviceGroupService deviceGroupService;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -190,7 +190,7 @@ public class GroupMeterReadController extends MultiActionController {
         // read
         try {
         
-        	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, selectedAttributes, DeviceRequestType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
+        	String resultKey = plcDeviceAttributeReadService.readDeviceCollection(deviceCollection, selectedAttributes, DeviceRequestType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {
@@ -217,8 +217,8 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		// results
 		List<GroupMeterReadResult> allReads = new ArrayList<GroupMeterReadResult>();
-		allReads.addAll(groupMeterReadService.getPending());
-		allReads.addAll(groupMeterReadService.getCompleted());
+		allReads.addAll(plcDeviceAttributeReadService.getPending());
+		allReads.addAll(plcDeviceAttributeReadService.getCompleted());
 		Collections.sort(allReads);
 		
 		// result wrappers
@@ -241,7 +241,7 @@ public class GroupMeterReadController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResultDetail.jsp");
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
-		GroupMeterReadResult result = groupMeterReadService.getResult(resultKey);
+		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
 
 		// friendly exception
 		if (result == null) {
@@ -256,7 +256,7 @@ public class GroupMeterReadController extends MultiActionController {
     public ModelAndView errorsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
-		GroupMeterReadResult result = groupMeterReadService.getResult(resultKey);
+		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/errorsList.jsp");
 		mav.addObject("result", result);
@@ -266,7 +266,7 @@ public class GroupMeterReadController extends MultiActionController {
 	public ModelAndView successList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
-		GroupMeterReadResult result = groupMeterReadService.getResult(resultKey);
+		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/successList.jsp");
 		mav.addObject("result", result);
@@ -278,8 +278,8 @@ public class GroupMeterReadController extends MultiActionController {
     }
 	
 	@Autowired
-	public void setGroupMeterReadService(GroupMeterReadService groupMeterReadService) {
-		this.groupMeterReadService = groupMeterReadService;
+	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
 	}
 	
 	@Autowired

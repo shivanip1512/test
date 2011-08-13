@@ -13,7 +13,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.MessageCollectingBlockingCallback;
+import com.cannontech.amr.deviceread.dao.CollectingDeviceAttributeReadCallback;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -104,9 +104,10 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
-        MessageCollectingBlockingCallback callback = new MessageCollectingBlockingCallback();
+        CollectingDeviceAttributeReadCallback callback = new CollectingDeviceAttributeReadCallback();
         Set<Meter> meterSingleton = Collections.singleton(meter);
         deviceAttributeReadService.initiateRead(meterSingleton, allExistingAttributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
+        callback.waitForCompletion();
         
         mav.addObject("result", callback);
         

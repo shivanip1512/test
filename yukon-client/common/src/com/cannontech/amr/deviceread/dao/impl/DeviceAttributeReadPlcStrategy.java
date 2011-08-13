@@ -1,28 +1,20 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
-import com.cannontech.amr.deviceread.service.GroupMeterReadService;
-import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -30,9 +22,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrategy {
     private PaoDefinitionDao paoDefinitionDao;
-    private GroupMeterReadService groupMeterReadService;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper; 
-    private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     
     @Override
     public DeviceAttributeReadStrategyType getType() {
@@ -46,23 +36,14 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
     }
     
     @Override
-    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
-            LiteYukonUser user) {
-        for (YukonPao device : devices) {
-            // I feel a little bad about going around the groupMeterReadService's back, but this will have to do.
-            boolean readable = meterReadCommandGeneratorService.isReadable(PaoUtils.asYukonDevice(device), attributes);
-            if (readable) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isReadable(Iterable<PaoMultiPointIdentifier> points, LiteYukonUser user) {
+        return plcDeviceAttributeReadService.isReadable(points, user);
     }
 
     @Override
-    public void initiateRead(Iterable<? extends YukonPao> devices,
-            Set<? extends Attribute> attributes, final DeviceAttributeReadCallback delegateCallback,
+    public void initiateRead(final Iterable<PaoMultiPointIdentifier> points,
+            final DeviceAttributeReadStrategyCallback delegateCallback,
             DeviceRequestType type, LiteYukonUser user) {
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.createDeviceGroupCollection(PaoUtils.asSimpleDeviceListFromPaos(devices).iterator(), null);
         CommandCompletionCallback<CommandRequestDevice> groupCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
 
             @Override
@@ -77,7 +58,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                 DeviceAttributeReadError readError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary, detail);
                 delegateCallback.receivedError(command.getDevice().getPaoIdentifier(), readError);
             }
-
+            
             @Override
             public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
                 delegateCallback.receivedValue(command.getDevice().getPaoIdentifier(), value);
@@ -90,7 +71,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                 delegateCallback.receivedException(exception);
             }
         };
-        groupMeterReadService.backgroundReadDeviceCollection(deviceCollection, attributes, type, groupCallback, user, RetryParameters.none());
+        plcDeviceAttributeReadService.backgroundReadDeviceCollection(points, type, groupCallback, user, RetryParameters.none());
     }
     
     @Autowired
@@ -99,20 +80,9 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
     }
     
     @Autowired
-    public void setMeterReadCommandGeneratorService(
-            MeterReadCommandGeneratorService meterReadCommandGeneratorService) {
-        this.meterReadCommandGeneratorService = meterReadCommandGeneratorService;
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
     
-    @Autowired
-    public void setDeviceGroupCollectionHelper(
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Autowired
-    public void setGroupMeterReadService(GroupMeterReadService groupMeterReadService) {
-        this.groupMeterReadService = groupMeterReadService;
-    }
 
 }

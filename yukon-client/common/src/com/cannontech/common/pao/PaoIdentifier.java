@@ -40,7 +40,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + paoId;
-        result = prime * result + ((paoType == null) ? 0 : paoType.hashCode());
+        result = prime * result + paoType.hashCode();
         return result;
     }
 
@@ -55,10 +55,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         PaoIdentifier other = (PaoIdentifier) obj;
         if (paoId != other.paoId)
             return false;
-        if (paoType == null) {
-            if (other.paoType != null)
-                return false;
-        } else if (!paoType.equals(other.paoType))
+        if (!paoType.equals(other.paoType))
             return false;
         return true;
     }

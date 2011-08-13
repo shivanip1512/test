@@ -14,8 +14,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
@@ -52,7 +52,7 @@ public class TamperFlagProcessingController {
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private TamperFlagMonitorService tamperFlagMonitorService;
 	private AlertService alertService;
-	private GroupMeterReadService groupMeterReadService;
+	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	private GroupCommandExecutor groupCommandExecutor;
 	private GroupMetersDao groupMetersDao;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -74,8 +74,8 @@ public class TamperFlagProcessingController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(groupMeterReadService.getPendingByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-		allReadsResults.addAll(groupMeterReadService.getCompletedByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+		allReadsResults.addAll(plcDeviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+		allReadsResults.addAll(plcDeviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(tamperFlagMonitorId);
@@ -151,7 +151,7 @@ public class TamperFlagProcessingController {
             }
         };
 	
-        String resultKey = groupMeterReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = plcDeviceAttributeReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(tamperFlagMonitorId, resultKey);
 		
 		
@@ -232,8 +232,8 @@ public class TamperFlagProcessingController {
 	}
 	
 	@Autowired
-	public void setGroupMeterReadService(GroupMeterReadService groupMeterReadService) {
-		this.groupMeterReadService = groupMeterReadService;
+	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
 	}
 	
 	@Autowired

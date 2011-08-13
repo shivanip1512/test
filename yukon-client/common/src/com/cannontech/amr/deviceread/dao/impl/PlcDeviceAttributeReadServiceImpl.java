@@ -1,69 +1,305 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
+import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
+import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
+import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.MeterReadRequestException;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeReadService {
-    private Logger log = YukonLogManager.getLogger(PlcDeviceAttributeReadServiceImpl.class);
-    private CommandRequestDeviceExecutor commandExecutor;
+    private static final Logger log = YukonLogManager.getLogger(PlcDeviceAttributeReadServiceImpl.class);
     private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
+    private AttributeService attributeService;
+    private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    private RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<GroupMeterReadResult>();
     
-    public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes, LiteYukonUser user) {
-    	log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
-    	
-    	return meterReadCommandGeneratorService.isReadable(device, attributes);
+    public boolean isReadable(YukonPao device, Set<? extends Attribute> attributes, LiteYukonUser user) {
+        log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
+        
+        List<PaoMultiPointIdentifier> paoPointIdentifiers =
+            getPaoPointIdentifiers(ImmutableSet.of(device), attributes);
+        
+        return isReadable(paoPointIdentifiers, user);
     }
 
+    @Override
+    public boolean isReadable(Iterable<PaoMultiPointIdentifier> paoPointIdentifiers, LiteYukonUser user) {
+        return meterReadCommandGeneratorService.isReadable(paoPointIdentifiers);
+    }
+    
+    @Override
     public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, DeviceRequestType type, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
-        if (!meterReadCommandGeneratorService.isReadable(device, attributes)) {
+        List<PaoMultiPointIdentifier> paoPointIdentifiers = getPaoPointIdentifiers(ImmutableSet.of(device), attributes);
+        
+        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers, type);
+        if (commandRequests.isEmpty()) {
             throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);
         }
         
-        Multimap<YukonDevice, CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(Collections.singletonList(device), attributes, type);
-        
-        return execute(new ArrayList<CommandRequestDevice>(commandRequests.values()), type, user);
-    }
-    
-    private CommandResultHolder execute(List<CommandRequestDevice> commands, DeviceRequestType type, LiteYukonUser user) {
-        
-        CommandResultHolder holder;
+        CommandRequestExecutionTemplate<CommandRequestDevice> executionTemplate = commandRequestDeviceExecutor.getExecutionTemplate(type, user);
+        CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
+        WaitableCommandCompletionCallback<Object> waitableCallback = waitableCommandCompletionCallbackFactory.createWaitable(callback);
+        executionTemplate.execute(commandRequests, waitableCallback);
         try {
-            holder = commandExecutor.execute(commands, type, user);
-        } catch (Exception e) {
+            waitableCallback.waitForCompletion();
+            return callback;
+        } catch (InterruptedException e) {
+            throw new MeterReadRequestException(e);
+        } catch (TimeoutException e) {
             throw new MeterReadRequestException(e);
         }
-        
-        return holder;
     }
     
-    @Autowired
-    public void setCommandExecutor(CommandRequestDeviceExecutor commandExecutor) {
-        this.commandExecutor = commandExecutor;
+    @Override
+    public CommandRequestExecutionContextId backgroundReadDeviceCollection(final Iterable<PaoMultiPointIdentifier> pointsToRead, 
+                                                                           DeviceRequestType type, 
+                                                                           CommandCompletionCallback<CommandRequestDevice> callback, 
+                                                                           LiteYukonUser user,
+                                                                           RetryParameters retryParameters) {
+
+
+        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(pointsToRead, type);
+
+        CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryParameters);
+
+        CommandRequestExecutionContextId contextId = retryExecutor.execute(commandRequests, callback, type, user);
+
+        return contextId;
+    }
+
+    @Override
+    public CommandRequestExecutionContextId backgroundReadDeviceCollection(DeviceCollection deviceCollection,
+                                                                           Set<? extends Attribute> attributes,
+                                                                           DeviceRequestType type,
+                                                                           CommandCompletionCallback<CommandRequestDevice> callback,
+                                                                           LiteYukonUser user,
+                                                                           RetryParameters retryParameters) {
+        List<PaoMultiPointIdentifier> attributePointIdentifiers =
+            getPaoPointIdentifiers(deviceCollection, attributes);
+        return backgroundReadDeviceCollection(attributePointIdentifiers, type, callback, user, retryParameters);
+    }
+
+    private List<PaoMultiPointIdentifier> getPaoPointIdentifiers(Iterable<? extends YukonPao> devices,
+                                                                        Set<? extends Attribute> attributes) {
+        List<PaoMultiPointIdentifier> devicesAndPoints = Lists.newArrayList();
+        for (YukonPao pao : devices) {
+            List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
+            for (Attribute attribute : attributes) {
+                PaoPointIdentifier paoPointIdentifier = 
+                    attributeService.getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
+                points.add(paoPointIdentifier);
+            }
+            if (!points.isEmpty()) {
+                devicesAndPoints.add(new PaoMultiPointIdentifier(points));
+            }
+        }
+        return devicesAndPoints;
+    }
+    
+    
+    @Override
+    public String readDeviceCollection(DeviceCollection deviceCollection, 
+                                        Set<? extends Attribute> attributes, 
+                                        DeviceRequestType type, 
+                                        final SimpleCallback<GroupMeterReadResult> callback, 
+                                        LiteYukonUser user) {
+        Set<PaoIdentifier> unsupportedDevices = Sets.newHashSet(PaoUtils.asPaoIdentifiers(deviceCollection));
+        List<PaoMultiPointIdentifier> paoPointIdentifiers = getPaoPointIdentifiers(deviceCollection, attributes);
+        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers, type);
+        for (CommandRequestDevice commandRequestDevice : commandRequests) {
+            unsupportedDevices.remove(commandRequestDevice.getDevice().getPaoIdentifier());
+        }
+        
+        for (PaoIdentifier device : unsupportedDevices) {
+            log.debug("It isn't possible to read " + attributes + " for  " + device);
+            unsupportedDevices.add(device);
+        }
+        
+        // result 
+        final GroupMeterReadResult groupMeterReadResult = new GroupMeterReadResult();
+        
+        // success/fail temporary groups
+        final StoredDeviceGroup originalDeviceCollectionCopyGroup = temporaryDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(originalDeviceCollectionCopyGroup, deviceCollection.getDeviceList());
+        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
+        final StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, PaoUtils.asDeviceList(unsupportedDevices));
+        
+        // command completion callback
+        GroupCommandCompletionCallback commandCompletionCallback = new GroupCommandCompletionCallback() {
+            
+            @Override
+            public void doComplete() {
+                try {
+                    callback.handle(groupMeterReadResult);
+                } catch (Exception e) {
+                    log.warn("There was an error executing the callback", e);
+                }
+            }
+            
+            @Override
+            public void handleSuccess(SimpleDevice device) {
+                deviceGroupMemberEditorDao.addDevices(successGroup, device);
+            }
+            
+            @Override
+            public void handleFailure(SimpleDevice device) {
+                deviceGroupMemberEditorDao.addDevices(failureGroup, device);
+            }
+            
+        };
+        
+        groupMeterReadResult.setAttributes(attributes);
+        groupMeterReadResult.setCommandRequestExecutionType(type);
+        groupMeterReadResult.setResultHolder(commandCompletionCallback);
+        groupMeterReadResult.setDeviceCollection(deviceCollection);
+        groupMeterReadResult.setCallback(commandCompletionCallback);
+        DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
+        groupMeterReadResult.setSuccessCollection(successCollection);
+        DeviceCollection failureCollectioin = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
+        groupMeterReadResult.setFailureCollection(failureCollectioin);
+        DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
+        groupMeterReadResult.setUnsupportedCollection(unsupportedCollection);
+        DeviceCollection originalDeviceCollectionCopy = deviceGroupCollectionHelper.buildDeviceCollection(originalDeviceCollectionCopyGroup);
+        groupMeterReadResult.setOriginalDeviceCollectionCopy(originalDeviceCollectionCopy);
+        groupMeterReadResult.setStartTime(new Date());
+        
+        // execute
+        CommandRequestExecutionTemplate<CommandRequestDevice> executionTemplate = commandRequestDeviceExecutor.getExecutionTemplate(type, user);
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = executionTemplate.execute(commandRequests, commandCompletionCallback);
+        groupMeterReadResult.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
+        
+        // add to cache
+        String key = resultsCache.addResult(groupMeterReadResult);
+        groupMeterReadResult.setKey(key);
+        
+        
+        return key;
+    }
+    
+    @Override
+    public List<GroupMeterReadResult> getCompleted() {
+        return resultsCache.getCompleted();
+    }
+    
+    @Override
+    public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type) {
+        List<GroupMeterReadResult> completed = getCompleted();
+        return filterByType(completed, type);
+    }
+
+    @Override
+    public List<GroupMeterReadResult> getPending() {
+        return resultsCache.getPending();
+    }
+    
+    @Override
+    public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type) {
+        List<GroupMeterReadResult> pending = getPending();
+        return filterByType(pending, type);
+    }
+
+
+
+    private List<GroupMeterReadResult> filterByType(List<GroupMeterReadResult> pending,
+                                                    DeviceRequestType type) {
+        List<GroupMeterReadResult> pendingOfType = new ArrayList<GroupMeterReadResult>();
+        for (GroupMeterReadResult result : pending) {
+            if (result.getCommandRequestExecutionType().equals(type)) {
+                pendingOfType.add(result);
+            }
+        }
+        return pendingOfType;
+    }
+
+    @Override
+    public GroupMeterReadResult getResult(String id) {
+        return resultsCache.getResult(id);
     }
     
     @Autowired
     public void setMeterReadCommandGeneratorService(MeterReadCommandGeneratorService meterReadCommandGeneratorService) {
 		this.meterReadCommandGeneratorService = meterReadCommandGeneratorService;
 	}
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+    
+    @Autowired
+    public void setCommandRequestDeviceExecutor(CommandRequestDeviceExecutor commandRequestDeviceExecutor) {
+        this.commandRequestDeviceExecutor = commandRequestDeviceExecutor;
+    }
+    
+    @Autowired
+    public void setWaitableCommandCompletionCallbackFactory(WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
+        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
+    }
+    
+    @Autowired
+    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+    }
+    
+    @Autowired
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
+    @Autowired
+    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
+        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
+    }
     
 }

@@ -89,6 +89,19 @@ public class AttributeServiceImpl implements AttributeService {
         }
     }
     
+    @Override
+    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao,
+                                                                         Attribute attribute)
+            throws IllegalUseOfAttribute {
+        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
+        if (attributeDefinition instanceof BasicAttributeDefinition) {
+            return attributeDefinition.getPointIdentifier(pao);
+        } else {
+            throw new IllegalUseOfAttribute("Illegal use of mapped attribute: " + attribute.getDescription());
+        }
+    }
+    
     public Set<Attribute> getAvailableAttributes(YukonPao pao) {
         Set<Attribute> result = Sets.newHashSet();
         

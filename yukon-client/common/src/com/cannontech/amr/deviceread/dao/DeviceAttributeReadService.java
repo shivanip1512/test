@@ -7,7 +7,15 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
+/**
+ * This the preferred Service for "reading" PAOs. This service, unlike the ones
+ * that proceeded it, correctly handles mapped attributes and RFN devices. Additionally,
+ * it maintains all of the information about the attribute so that the callback can 
+ * easily determine what the PointValueHolders that are being returned are for.
+ */
 public interface DeviceAttributeReadService {
+    
+    
     public void initiateRead(Iterable<? extends YukonPao> devices,
             Set<? extends Attribute> attributes, DeviceAttributeReadCallback callback,
             DeviceRequestType type, LiteYukonUser user);
@@ -18,6 +26,6 @@ public interface DeviceAttributeReadService {
      * 
      * This will return false if either the devices or attributes collection is empty.
      */
-    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
-            LiteYukonUser user);
+    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes, LiteYukonUser user);
+
 }

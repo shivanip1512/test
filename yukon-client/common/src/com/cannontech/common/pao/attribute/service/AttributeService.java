@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -24,9 +25,12 @@ public interface AttributeService {
      * @throws IllegalUseOfAttribute
      */
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
-
+    
     /**
-     * Method to get the paoPointIdentifier for the given deivce for the given attribute.
+     * Method to get the PaoPointIdentifier for the given PAO for the given attribute.
+     * 
+     * This method will not require a database lookup for non-mapped Attributes.
+     * 
      * @param pao - Pao to get point for
      * @param attribute - Attribute to get point for
      * @return The paoPointIdentifier for the given attribute and pao
@@ -34,7 +38,23 @@ public interface AttributeService {
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
     public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
-
+    
+    /**
+     * Method to get the PaoPointIdentifier for the given PAO for the given attribute.
+     * 
+     * This is a temporary method designed to be used by code that wishes to assert
+     * that it does not support mapped attributes. This is useful because attributes
+     * will be redefined in the 5.4 scope to no longer support the concept of "mapped".
+     * At that time, this method and the one above can be merged.
+     * 
+     * @param pao - Pao to get point for
+     * @param attribute - Attribute to get point for
+     * @return The paoPointIdentifier for the given attribute and pao
+     * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
+     * @throws IllegalArgumentException if the pao does not have that attribute
+     */
+    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    
     /**
      * Method to get a set of attributes available for the given pao
      * @param pao - The pao to get attributes for
@@ -86,7 +106,13 @@ public interface AttributeService {
      */
     public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
-    public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute usage);
+    /**
+     * This method will determine if the point identified by the PaoPointIdentifier is an
+     * Attribute of the given type for the PAO identified by the PaoPointIdentifier. There is
+     * nothing wrong with asking this question, but it would be more correct to call the other
+     * version of this method that breaks the PAO and the Point into two parameters.
+     */
+    public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute attribute);
     
     /**
      * Returns a set of attributes for which "reading" makes sense. 
@@ -110,4 +136,5 @@ public interface AttributeService {
      * @return
      */
     public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+
 }

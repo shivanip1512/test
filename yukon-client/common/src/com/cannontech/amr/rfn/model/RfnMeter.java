@@ -39,6 +39,37 @@ public class RfnMeter implements YukonDevice, DisplayablePao, Serializable {
                              meterIdentifier);
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((meterIdentifier == null) ? 0 : meterIdentifier.hashCode());
+        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RfnMeter other = (RfnMeter) obj;
+        if (meterIdentifier == null) {
+            if (other.meterIdentifier != null)
+                return false;
+        } else if (!meterIdentifier.equals(other.meterIdentifier))
+            return false;
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null)
+                return false;
+        } else if (!paoIdentifier.equals(other.paoIdentifier))
+            return false;
+        return true;
+    }
+
     
     
 }

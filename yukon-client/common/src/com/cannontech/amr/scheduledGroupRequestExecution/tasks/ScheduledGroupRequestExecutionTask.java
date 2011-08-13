@@ -10,7 +10,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.service.GroupMeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
@@ -46,10 +46,10 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 
     // Injected services and daos
     private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
-    private GroupMeterReadService groupMeterReadService;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 
     @Override
     public void start() {
@@ -97,12 +97,12 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 
     	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
     	        
-    	        contextId = groupMeterReadService.backgroundReadDeviceCollection(deviceCollection, 
-            	                                                             attributes, 
-            	                                                             getCommandRequestExecutionType(), 
-            	                                                             dummyCallback, 
-            	                                                             user, 
-            	                                                             getRetryParameters());
+    	        contextId = plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection, 
+    	                                                                                 attributes, 
+    	                                                                                 getCommandRequestExecutionType(), 
+    	                                                                                 dummyCallback, 
+    	                                                                                 user, 
+    	                                                                                 getRetryParameters());
     	        
             
             } else {
@@ -209,11 +209,6 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 		this.commandRequestDeviceExecutor = commandRequestDeviceExecutor;
 	}
 	
-	@Autowired
-	public void setGroupMeterReadService(GroupMeterReadService groupMeterReadService) {
-		this.groupMeterReadService = groupMeterReadService;
-	}
-	
     @Autowired
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
 		this.deviceGroupService = deviceGroupService;
@@ -229,4 +224,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao) {
 		this.scheduledGroupRequestExecutionResultsDao = scheduledGroupRequestExecutionResultsDao;
 	}
+    @Autowired
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
+    }
 }

@@ -189,7 +189,9 @@ public class MeterController extends MultiActionController {
         boolean highBillSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.HIGH_BILL);
         mav.addObject("highBillSupported", highBillSupported);
 
-        boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
+        boolean outageSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.OUTAGE) 
+            && (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) 
+                    || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
         mav.addObject("outageSupported", outageSupported);
 
         String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
