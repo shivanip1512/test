@@ -6,8 +6,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.Logger;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -16,6 +19,7 @@ import com.google.common.collect.ImmutableList.Builder;
 
 public class MessageScopeHelper {
     private static final String scopeAttributeName = "com.cannontech.web.scopeStack";
+    private static final Logger log = YukonLogManager.getLogger(MessageScopeHelper.class);
 
     public static MessageScope forRequest(HttpServletRequest request) {
         Deque<ScopeHolder> scopeStack = getScopeStack(request);
@@ -45,11 +49,19 @@ public class MessageScopeHelper {
         }
 
         public void pushScope(String ... searchPaths) {
-            if (searchPaths.length == 0) {
+            ScopeHolder scopeHolder = createScope(searchPaths);
+            if (scopeHolder == null) {
                 return;
             }
-            ScopeHolder scopeHolder = new BasicScopeHolder(searchPaths);
             pushScope(scopeHolder);
+        }
+
+        public static ScopeHolder createScope(String... searchPaths) {
+            if (searchPaths.length == 0) {
+                return null;
+            }
+            ScopeHolder scopeHolder = new BasicScopeHolder(searchPaths);
+            return scopeHolder;
         }
 
         public void pushScope(ScopeHolder scopeHolder) {
@@ -60,14 +72,26 @@ public class MessageScopeHelper {
             scopeStack.pop();
         }
         
+        public void popMatchingScope(ScopeHolder scopeHolder) {
+            if (scopeHolder == null) {
+                return;
+            }
+            scopeStack.removeFirstOccurrence(scopeHolder);
+        }
+        
         public MessageSourceResolvable generateResolvable(String key, Object ... arguments) {
             if (key.startsWith("yukon.")) {
                 return new YukonMessageSourceResolvable(key, arguments);
             }
             MessageSourceResolvable messageSourceResolvable;
-            List<String> codes = getFullKeys(key, "yukon.web.");
-            messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodesWithArguments(codes, arguments);
-            return messageSourceResolvable;
+            try {
+                List<String> codes = getFullKeys(key, "yukon.web.");
+                messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodesWithArguments(codes, arguments);
+                return messageSourceResolvable;
+            } catch (RuntimeException e) {
+                log.warn("unable to generate resolvable for '" + key + "' in: " + this.toString());
+                throw e;
+            }
         }
 
         /**
@@ -104,7 +128,7 @@ public class MessageScopeHelper {
                 return;
             }
             if (scopes.isEmpty()) {
-                throw new IllegalArgumentException("ran out of scopes before finding absolute key");
+                throw new IllegalArgumentException("ran out of scopes before finding absolute key for '" + suffix + "'");
             }
             
             ScopeHolder currentScope = scopes.get(0);
@@ -115,10 +139,15 @@ public class MessageScopeHelper {
                 collectKeys(result, remainingScopes, defaultPrefix, newSuffix);
             }
         }
+        
+        @Override
+        public String toString() {
+            return ObjectUtils.toString(scopeStack);
+        }
 
     }
 
-    private static interface ScopeHolder {
+    public static interface ScopeHolder {
         public List<String> getSearchPaths();
     }
     
@@ -133,6 +162,33 @@ public class MessageScopeHelper {
         public String toString() {
             return getSearchPaths().toString();
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((searchPaths == null) ? 0 : searchPaths.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ScopeHolderBase other = (ScopeHolderBase) obj;
+            if (searchPaths == null) {
+                if (other.searchPaths != null)
+                    return false;
+            } else if (!searchPaths.equals(other.searchPaths))
+                return false;
+            return true;
+        }
+        
+        
     }
     
     public static class BasicScopeHolder extends ScopeHolderBase {

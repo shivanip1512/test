@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.cannontech.web.taglib.MessageScopeHelper;
+import com.cannontech.web.taglib.MessageScopeHelper.ScopeHolder;
 
 public class WidgetInterceptor extends HandlerInterceptorAdapter {
 
@@ -44,6 +45,11 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         JSONObject object = new JSONObject(existingParams);
         response.addHeader("X-JSON", object.toString());
    
+        ScopeHolder scope = createScope(handler, existingParams);
+        MessageScopeHelper.forRequest(request).pushScope(scope);
+    }
+
+    public ScopeHolder createScope(Object handler, Map<String, String> existingParams) {
         Object target;
         if(handler instanceof WidgetMultiActionController) {
             target = ((WidgetMultiActionController) handler).getWidgetController();
@@ -53,14 +59,18 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         
         String className = target.getClass().getSimpleName();
         String beanName = existingParams.get("shortName");
-        MessageScopeHelper.forRequest(request).pushScope(beanName, "widgets." + beanName, "widgetClasses." + className);
+        ScopeHolder scope = MessageScopeHelper.MessageScope.createScope(beanName, "widgets." + beanName, "widgetClasses." + className);
+        return scope;
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     public void afterCompletion(HttpServletRequest request,
                                 HttpServletResponse response, Object handler,
                                 Exception ex) throws Exception {
-        MessageScopeHelper.forRequest(request).popScope();
+        Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
+        ScopeHolder scope = createScope(handler, existingParams);
+        MessageScopeHelper.forRequest(request).popMatchingScope(scope);
         
     }
 
