@@ -24,6 +24,7 @@ public class JarController extends AbstractController {
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         builder.put("org.springframework.aop.jar", "spring-aop-3.0.5.jar");
         builder.put("org.springframework.aspects.jar", "spring-aspects-3.0.5.jar");
+        builder.put("org.springframework.beans.jar", "spring-beans-3.0.5.jar");
         builder.put("org.springframework.context.jar", "spring-context-3.0.5.jar");
         builder.put("org.springframework.jdbc.jar", "spring-jdbc-3.0.5.jar");
         builder.put("org.springframework.transaction.jar", "spring-transaction-3.0.5.jar");
