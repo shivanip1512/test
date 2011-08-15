@@ -12,7 +12,7 @@ import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.bulk.model.ADAStatus;
+import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
@@ -102,7 +102,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             Integer lastChangeId = rs.getInt("lastChangeId");
             Instant runDate = rs.getInstant("runDate");
             boolean excludeBadPointQualities = rs.getEnum("excludeBadPointQualities", YNBoolean.class).getBoolean();
-            ADAStatus status = rs.getEnum("AnalysisStatus", ADAStatus.class);
+            AdaStatus status = rs.getEnum("AnalysisStatus", AdaStatus.class);
             String statusId = rs.getString("StatusId");
             
             Analysis analysis = new Analysis();
@@ -270,7 +270,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return devicePointValuesList;
     }
     
-    public void updateStatus(int analysisId, ADAStatus status, String statusId) {
+    public void updateStatus(int analysisId, AdaStatus status, String statusId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE ArchiveDataAnalysis");
         sql.append("SET AnalysisStatus").eq(status);
@@ -314,7 +314,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         sink.addValue("ExcludeBadPointQualities", YNBoolean.valueOf(excludeBadPointQualities));
         sink.addValue("StartDate", dateTimeRange.getStart());
         sink.addValue("StopDate", dateTimeRange.getEnd());
-        sink.addValue("AnalysisStatus", ADAStatus.RUNNING);
+        sink.addValue("AnalysisStatus", AdaStatus.RUNNING);
         
         yukonJdbcTemplate.update(sql);
         

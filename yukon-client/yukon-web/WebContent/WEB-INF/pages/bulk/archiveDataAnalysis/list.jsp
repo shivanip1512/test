@@ -21,11 +21,11 @@
     
     function confirmDelete(analysisId) {
         deleteConfirmAnalysisId = analysisId;
-        $('deleteConfirmationPopup').show()
+        $('deleteConfirmationPopup').show();
     }
     
     function deleteAnalysis() {
-        $('deleteConfirmationPopup').hide()
+        $('deleteConfirmationPopup').hide();
         var url = "/spring/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
@@ -73,7 +73,7 @@
                             </c:choose>
                         </td>
                         <c:choose>
-                            <%--if analyzing, disable view button, disable delete button, status links to progress page--%>
+                            <%--if analyzing, disable view button, enable delete, status links to progress page--%>
                             <c:when test="${analysisEntry.key.status == 'RUNNING'}">
                                 <td>
                                     <cti:url var="analysisProgressUrl" value="/spring/bulk/archiveDataAnalysis/home/processing">
@@ -84,32 +84,32 @@
                                 </td>
                                 <td>
                                     <cti:button key="viewButtonAnalyzing" renderMode="image" disabled="true"/>
-                                    <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                    <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
                                 </td>
                             </c:when>
                             <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
                             <%-- if complete with 0 devices successfully analyzed, disable view, enable delete, status doesn't link--%>
                             <c:when test="${analysisEntry.key.status == 'COMPLETE'}">
                                 <td>
-                                    <i:inline key="${analysisEntry.key.status.formatKey}"/>
+                                    <i:inline key="${analysisEntry.key.status}"/>
                                 </td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${analysisEntry.value == 0}">
                                             <cti:button key="viewButtonNoDevices" renderMode="image" disabled="true"/>
-                                            <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                            <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
                                                 <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                             </cti:url>
                                             <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                                            <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                            <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
                             </c:when>
-                            <%--if reading, enable view, disable delete, status links to read progress--%>
+                            <%--if reading, enable view, enable delete, status links to read progress--%>
                             <c:when test="${analysisEntry.key.status == 'READING'}">
                                 <td>
                                     <cti:url var="readProgressUrl" value="/spring/bulk/archiveDataAnalysis/read/readResults">
@@ -123,7 +123,7 @@
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
                                     <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                                    <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                    <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
                                 </td>
                             </c:when>
                         </c:choose>

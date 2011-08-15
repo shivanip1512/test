@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.bulk.model.ADAStatus;
+import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.google.common.collect.Maps;
@@ -25,7 +25,7 @@ public class AdaListController {
         Map<Analysis, Integer> analysisMap = Maps.newLinkedHashMap();
         for(Analysis analysis : analyses) {
             int numberOfDevices = 0;
-            if(analysis.getStatus() != ADAStatus.RUNNING){ 
+            if(analysis.getStatus() != AdaStatus.RUNNING){ 
                 numberOfDevices = archiveDataAnalysisDao.getNumberOfDevicesInAnalysis(analysis.getAnalysisId());
             }
             analysisMap.put(analysis, numberOfDevices);

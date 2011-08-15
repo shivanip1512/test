@@ -17,7 +17,7 @@ public class Analysis {
     private int lastChangeId;
     private Instant runDate;
     private boolean excludeBadPointQualities;
-    private ADAStatus status;
+    private AdaStatus status;
     private String statusId;
     
     public BuiltInAttribute getAttribute() {
@@ -80,11 +80,11 @@ public class Analysis {
         return ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalPeriod);
     }
 
-    public void setStatus(ADAStatus status) {
+    public void setStatus(AdaStatus status) {
         this.status = status;
     }
 
-    public ADAStatus getStatus() {
+    public AdaStatus getStatus() {
         return status;
     }
 

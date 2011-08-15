@@ -7,7 +7,7 @@ import org.joda.time.Period;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.bulk.model.ADAStatus;
+import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
@@ -77,6 +77,6 @@ public interface ArchiveDataAnalysisDao {
      * Updates the status and status id of an Analysis. StatusId may be null when
      * the status is COMPLETE or DELETED.
      */
-    public void updateStatus(int analysisId, ADAStatus status, String statusId);
+    public void updateStatus(int analysisId, AdaStatus status, String statusId);
     
 }

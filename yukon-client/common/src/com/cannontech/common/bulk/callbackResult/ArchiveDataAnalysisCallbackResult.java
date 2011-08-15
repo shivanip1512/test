@@ -6,7 +6,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.model.ADAStatus;
+import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -80,7 +80,7 @@ public class ArchiveDataAnalysisCallbackResult extends BackgroundProcessBulkProc
     private void addToCount() {
         numberOfDevicesProcessed++;
         if(numberOfDevicesProcessed == originalDeviceCount) {
-            adaDao.updateStatus(analysisId, ADAStatus.COMPLETE, null);
+            adaDao.updateStatus(analysisId, AdaStatus.COMPLETE, null);
             
             long seconds = new Duration(startTime, new Instant()).getStandardSeconds();
             log.info("Archive data analysis complete. Processed " + numberOfDevicesProcessed + " devices in " + seconds + " seconds.");

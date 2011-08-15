@@ -26,7 +26,7 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
-import com.cannontech.common.bulk.model.ADAStatus;
+import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.bulk.model.ArchiveData;
@@ -75,8 +75,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
     private ConfigurationSource configurationSource;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
-    private final String MAX_LP_READ_AGE_CPARM = "ADA_MAX_LP_READ_AGE";
-    private final String SLEEP_SECONDS_CPARM = "ADA_SLEEP_SECONDS";
     
     static {
         Builder<BuiltInAttribute, Integer> builder = ImmutableMap.builder();
@@ -115,10 +113,10 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Override
     public String startAnalysis(ArchiveDataAnalysisBackingBean archiveDataAnalysisBackingBean, int analysisId) {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
-        long sleepSeconds = configurationSource.getLong(SLEEP_SECONDS_CPARM, 0);
+        Duration sleepSeconds = configurationSource.getDuration("ADA_SLEEP_SECONDS", Duration.ZERO);
         SingleProcessor<YukonDevice> analysisProcessor = getAnalysisProcessor(archiveDataAnalysisBackingBean, analysis, sleepSeconds);
         String resultsId = startProcessor(archiveDataAnalysisBackingBean.getDeviceCollection(), analysisProcessor, analysisId);
-        archiveDataAnalysisDao.updateStatus(analysisId, ADAStatus.RUNNING, resultsId);
+        archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.RUNNING, resultsId);
         return resultsId;
     }
     
@@ -127,10 +125,10 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         Analysis oldAnalysis = archiveDataAnalysisDao.getAnalysisById(oldAnalysisId);
         DeviceCollection oldDeviceCollection = adaCollectionProducer.buildDeviceCollection(oldAnalysisId);
         Analysis newAnalysis = archiveDataAnalysisDao.getAnalysisById(newAnalysisId);
-        long sleepSeconds = configurationSource.getLong(SLEEP_SECONDS_CPARM, 0);
+        Duration sleepSeconds = configurationSource.getDuration("ADA_SLEEP_SECONDS", Duration.ZERO);
         SingleProcessor<YukonDevice> analysisProcessor = getAnalysisProcessor(oldAnalysis.isExcludeBadPointQualities(), oldAnalysis.getAttribute(), newAnalysis, sleepSeconds);
         String resultsId = startProcessor(oldDeviceCollection, analysisProcessor, newAnalysisId);
-        archiveDataAnalysisDao.updateStatus(newAnalysisId, ADAStatus.RUNNING, resultsId);
+        archiveDataAnalysisDao.updateStatus(newAnalysisId, AdaStatus.RUNNING, resultsId);
         return resultsId;
     }
     
@@ -163,7 +161,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
             @Override
             public void complete() {
                 result.setComplete();
-                archiveDataAnalysisDao.updateStatus(analysisId, ADAStatus.COMPLETE, null);
+                archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.COMPLETE, null);
             }
             
             @Override
@@ -176,7 +174,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         
         CommandRequestExecutionTemplate<CommandRequestDevice> creTemplate = commandRequestExecutor.getExecutionTemplate(DeviceRequestType.ARCHIVE_DATA_ANALYSIS_LP_READ, user);
         creTemplate.execute(requests, callback);
-        archiveDataAnalysisDao.updateStatus(analysisId, ADAStatus.READING, resultId);
+        archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.READING, resultId);
         
         return resultId;
     }
@@ -221,16 +219,8 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     
     private Deque<Interval> getDateRangesToRead(DeviceArchiveData data) {
         //get maximum distance back in time that we'll read
-        int daysBackToReadLp = configurationSource.getInteger(MAX_LP_READ_AGE_CPARM, 0);
-        Instant earliestLpDateAllowed;
-        if(daysBackToReadLp > 0) {
-            Instant now = new Instant();
-            Period daysBackPeriod = Period.days(daysBackToReadLp);
-            Duration daysBackDuration = daysBackPeriod.toDurationTo(now);
-            earliestLpDateAllowed = now.minus(daysBackDuration);
-        } else {
-            earliestLpDateAllowed = new Instant().withMillis(0); //1-1-1970 00:00:00
-        }
+        Duration daysBackToReadLp = configurationSource.getDuration("ADA_MAX_LP_READ_AGE", Duration.standardDays(60));
+        Instant earliestLpDateAllowed = new Instant().minus(daysBackToReadLp);
         
         //get date ranges that need reads
         Deque<Interval> intervals = new ArrayDeque<Interval>();
@@ -348,14 +338,14 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         return resultsId;
     }
     
-    private SingleProcessor<YukonDevice> getAnalysisProcessor(ArchiveDataAnalysisBackingBean backingBean, Analysis analysis, long sleepSeconds) {
+    private SingleProcessor<YukonDevice> getAnalysisProcessor(ArchiveDataAnalysisBackingBean backingBean, Analysis analysis, Duration sleepSeconds) {
         boolean excludeBadPointQualities = backingBean.getExcludeBadQualities();
         BuiltInAttribute attribute = backingBean.getSelectedAttribute();
         
         return getAnalysisProcessor(excludeBadPointQualities, attribute, analysis, sleepSeconds);
     }
     
-    private SingleProcessor<YukonDevice> getAnalysisProcessor(final boolean excludeBadPointQualities, final BuiltInAttribute attribute, final Analysis analysis, final long sleepSeconds) {
+    private SingleProcessor<YukonDevice> getAnalysisProcessor(final boolean excludeBadPointQualities, final BuiltInAttribute attribute, final Analysis analysis, final Duration sleepSeconds) {
         
         SingleProcessor<YukonDevice> analysisProcessor = new SingleProcessor<YukonDevice>() {
             @Override
@@ -369,11 +359,12 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                 }
                 
                 try {
-                    if(sleepSeconds > 0) {
-                        Thread.sleep(sleepSeconds * 1000L);
+                    if(sleepSeconds != Duration.ZERO) {
+                        Thread.sleep(sleepSeconds.getMillis());
                     }
                 } catch(InterruptedException ie) {
                     log.debug("Sleep interrupted during archive data analysis.", ie);
+                    Thread.currentThread().interrupt();
                 }
             }
         };

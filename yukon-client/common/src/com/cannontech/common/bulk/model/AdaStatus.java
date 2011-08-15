@@ -2,7 +2,7 @@ package com.cannontech.common.bulk.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum ADAStatus implements DisplayableEnum {
+public enum AdaStatus implements DisplayableEnum {
     RUNNING,  //Analysis in progress
     COMPLETE, //Analysis complete, no actions being carried out
     READING,  //"LP holes" reads in progress
