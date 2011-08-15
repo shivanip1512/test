@@ -35,7 +35,7 @@
 
     function addKey(formId) {
         Yukon.ui.blockPage();
-        $(formId).action = "saveKey"
+        $(formId).action = "save";
         $(formId).submit();
     }
 
@@ -56,7 +56,7 @@
     function confirmDelete(formId) {
         $(formId).reset();
         Yukon.ui.blockPage();
-        $(formId).action = "deleteKey"
+        $(formId).action = "delete";
         $(formId).submit();
     }
 </script>

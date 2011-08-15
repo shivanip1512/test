@@ -53,10 +53,10 @@ public class EncryptionController {
         model.addAttribute("encryptedRoutes", encryptedRoutes);
         model.addAttribute("showRouteError", null);
 
-        return "encryptionSettings.jsp";
+        return "view.jsp";
     }
 
-    @RequestMapping("deleteKey")
+    @RequestMapping("delete")
     public String delete(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
                          BindingResult bindingResult, FlashScope flashScope) {
 
@@ -66,7 +66,7 @@ public class EncryptionController {
         return "redirect:view";
     }
 
-    @RequestMapping("saveKey")
+    @RequestMapping("save")
     public String add(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
                        BindingResult bindingResult, FlashScope flashScope) {
 
@@ -81,7 +81,7 @@ public class EncryptionController {
             model.addAttribute("encryptedRoutes", encryptedRoutes);
             model.addAttribute("showRouteError", encryptedRoute.getPaobjectId());
 
-            return "encryptionSettings.jsp";
+            return "view.jsp";
         }
 
         encryptedRouteDao.saveEncryptedRoute(encryptedRoute);
