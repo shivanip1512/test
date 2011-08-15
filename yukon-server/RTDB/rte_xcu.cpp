@@ -590,7 +590,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         xcom.setUseCRC(false);
     }
 
-    bool usingEncryption = hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key );
+    const bool usingEncryption = hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key );
 
     if(!status  && xcom.entries() > 0)
     {
@@ -724,7 +724,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                     // truncate password to a max of 32 bytes
 
-                    int truncatedPasswordLen = ( password.length() < 32 ) ? password.length() : 32;
+                    int truncatedPasswordLen = std::min( password.length(), 32u );
 
                     for ( int i = 0; i < truncatedPasswordLen; ++i )
                     {
@@ -733,28 +733,22 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     *endOfMsg++ = truncatedPasswordLen;
 
                     std::string key;
-                    if ( getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key ) )
-                    {
-                        if ( key.length() == 32 )
-                        {
-                            // ok - parse it
-                            for ( int key_i = 0; key_i < 32; key_i += 2 )
-                            {
-                                char ascii_pair[3] = { key[ key_i ], key[ key_i + 1 ], 0 };
+                    getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key );
 
-                                *endOfMsg++ = std::strtoul( ascii_pair, 0, 16 );
-                            }
-                        }
-                        else
+                    if ( key.length() == 32 )   // btw - this is enforced in the client
+                    {
+                        // ok - parse it
+                        for ( int key_i = 0; key_i < 32; key_i += 2 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " - One-Way Encryption Key - invalid length" << endl;
+                            char ascii_pair[3] = { key[ key_i ], key[ key_i + 1 ], 0 };
+
+                            *endOfMsg++ = std::strtoul( ascii_pair, 0, 16 );
                         }
                     }
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " - Missing One-Way Encryption Key" << endl;
+                        dout << CtiTime() << " - One-Way Encryption Key - invalid length" << endl;
                     }
 
                     OutMessage->OutLength            += password.length() + 1 + 16;
