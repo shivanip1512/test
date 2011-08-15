@@ -113,7 +113,7 @@ public class OperatorThermostatManualController {
     			        AccountInfoFragment accountInfoFragment) {
 	    
 	    Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
-		executeManualEvent(thermostatIds, mode, fan, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
+		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
         return "redirect:view";
     }
@@ -132,7 +132,7 @@ public class OperatorThermostatManualController {
 					        AccountInfoFragment accountInfoFragment) {
 
 	    Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
-		executeManualEvent(thermostatIds, mode, fan, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
+		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
         return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
     }
@@ -140,6 +140,7 @@ public class OperatorThermostatManualController {
     private void executeManualEvent(String thermostatIds,
 				    		String mode, 
 				    		String fan, 
+				    		String temperatureUnit,
 				    		Temperature temperature,
 				    		YukonUserContext userContext,
 				            HttpServletRequest request, 
@@ -151,10 +152,9 @@ public class OperatorThermostatManualController {
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
 		thermostatService.logOperatorThermostatManualSaveAttempt(thermostatIdsList, userContext, customerAccount);
-        
-//        thermostatService.updateTempUnitForCustomer(temperatureUnit, customerAccount.getCustomerId());
-        
         ThermostatMode thermostatMode = thermostatService.getThermostatModeFromString(mode);
+        
+        thermostatService.updateTempUnitForCustomer(temperatureUnit, customerAccount.getCustomerId());
         
         // See if the run program button was clicked
         String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request, "runProgram", null);

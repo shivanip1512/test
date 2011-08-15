@@ -17,6 +17,7 @@
     <!-- Add language specific time formatter -->
     <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
     <cti:includeScript link="${timeFormatter}"/>
+    <cti:includeScript link="/JavaScript/temperature.js"/>
     <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
     <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
     
@@ -24,13 +25,22 @@
     var TIME_SLIDER = null;
     Event.observe(window, 'load', function(){
         Yukon.ThermostatScheduleEditor.init({
-            currentUnit: '${temperatureUnit}',
-            upperHeatF: parseFloat(${schedule.thermostatType.upperLimitHeat.value}),
-            lowerHeatF: parseFloat(${schedule.thermostatType.lowerLimitHeat.value}),
-            upperCoolF: parseFloat(${schedule.thermostatType.upperLimitCool.value}),
-            lowerCoolF: parseFloat(${schedule.thermostatType.lowerLimitCool.value}),
-            secondsResolution: ${schedule.thermostatType.resolution.standardSeconds},
-            secondsBetweenPeriods: ${schedule.thermostatType.minimumTimeBetweenPeriods.standardSeconds}
+            
+            thermostat: {
+                heat: {
+                    upper: new Temperature({degrees: parseFloat(${schedule.thermostatType.upperLimitHeat.value}), unit:'F'}),
+                    lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitHeat.value}), unit:'F'})
+                },
+                cool: {
+                    upper: new Temperature({degrees: parseFloat(${schedule.thermostatType.upperLimitCool.value}), unit:'F'}),
+                    lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitCool.value}), unit:'F'})
+                },
+                temperature: new Temperature({unit: '${temperatureUnit}'}),
+                mode: '${schedule.thermostatType.defaultThermostatScheduleMode}',
+                fan: '',
+                secondsResolution: ${schedule.thermostatType.resolution.standardSeconds},
+                secondsBetweenPeriods: ${schedule.thermostatType.minimumTimeBetweenPeriods.standardSeconds}
+            }
         });
     });
     </script>

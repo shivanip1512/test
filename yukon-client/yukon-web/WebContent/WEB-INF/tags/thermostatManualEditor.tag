@@ -28,7 +28,7 @@
                     </span> 
                     <span id="thermostatName">
                         ${thermostatLabel}
-                        <span class="editLabel edit actsAsAnchor"><cti:msg2 key=".edit" /></span>
+                        <a href="javascript:void(0)" class="editLabel"><i:inline key=".edit" /></a>
                     </span>
                 </form>
             </c:when>
@@ -69,12 +69,12 @@
         <div class="box fl">
             <!-- Thermostat Modes -->
             <div class="thermostatModes box fl">
-                <h2><cti:msg2 key="yukon.web.modules.operator.thermostatManual.mode" /></h2>
+                <h2><i:inline key="yukon.web.modules.operator.thermostatManual.mode" /></h2>
                 
                 <ul class="box">
                 <c:forEach var="thermostatMode" items="${scheduleableThermostatType.supportedModes}">
                     <li class="mode ${(event.runProgram)? '' : (event.mode eq thermostatMode? 'selected' : '' )}" mode="${thermostatMode}">
-                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.mode.${thermostatMode}" />
+                        <i:inline key="yukon.web.modules.operator.thermostatManual.mode.${thermostatMode}" />
                     </li>
                 </c:forEach>
                 </ul>
@@ -83,12 +83,12 @@
             
             <!-- Fan States -->
             <div class="fanStates box fl">
-                <h2><cti:msg2 key="yukon.web.modules.operator.thermostatManual.fan" /></h2>
+                <h2><i:inline key="yukon.web.modules.operator.thermostatManual.fan" /></h2>
                 
                 <ul class="box">
                 <c:forEach var="fanState" items="${scheduleableThermostatType.supportedFanStates}">
                     <li class="state fan ${(event.runProgram)? '' : (event.fanStateString eq fanState? 'selected' : '' )}" state="${fanState}">
-                        <cti:msg2 key=".fan.${fanState}" />
+                        <i:inline key=".fan.${fanState}" />
                     </li>
                 </c:forEach>
                 </ul>
@@ -98,7 +98,7 @@
         
         <div class="thermostatHold box clear">
             <input id="holdCheck" type="checkbox" name="hold" class="hold" <c:if test="${(not event.runProgram) && event.holdTemperature}">checked</c:if> />
-            <label for="holdCheck"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.hold" /></label>
+            <label for="holdCheck"><i:inline key="yukon.web.modules.operator.thermostatManual.hold" /></label>
         </div>
         
         
@@ -122,7 +122,7 @@
         <input type="hidden" name="mode" value="">
         <input type="hidden" name="hold"/>
     
-        <div id="confirmMessage"><cti:msg2 key=".sendConfirm.message"/></div>
+        <div id="confirmMessage"><i:inline key=".sendConfirm.message"/></div>
         <br/>
         
         <tags:nameValueContainer2>
@@ -131,16 +131,16 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".mode" rowId="modeConfirm">
-                <span class="modeConfirm"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.mode.${(event.runProgram)? '' : event.modeString}"/></span>
+                <span class="modeConfirm"><i:inline key="yukon.web.modules.operator.thermostatManual.mode.${event.modeString}"/></span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".fan" rowId="fanConfirm" rowClass="fan" >
-                <span class="fanConfirm"><cti:msg2 key=".fan.${(event.runProgram)? '' : event.fanStateString}"/></span>
+                <span class="fanConfirm"><i:inline key=".fan.${event.fanStateString}"/></span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".hold" rowId="holdConfirm" rowClass="hold">
-                <span class="true"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.hold.on"/></span>
-                <span class="false"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.hold.off"/></span>
+                <span class="true"><i:inline key="yukon.web.modules.operator.thermostatManual.hold.on"/></span>
+                <span class="false"><i:inline key="yukon.web.modules.operator.thermostatManual.hold.off"/></span>
             </tags:nameValue2>
             
         </tags:nameValueContainer2>

@@ -9,6 +9,7 @@
 <cti:standardMenu/>
 <cti:msgScope paths="modules.consumer.history">
 
+<cti:includeScript link="/JavaScript/temperature.js"/>
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 
 <script type="text/javascript">

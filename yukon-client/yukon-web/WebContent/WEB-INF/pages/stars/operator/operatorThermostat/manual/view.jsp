@@ -7,6 +7,7 @@
 
 <cti:standardPage module="operator" page="thermostatManual">
 
+    <cti:includeScript link="/JavaScript/temperature.js"/>
     <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 	<cti:includeCss link="/WebConfig/yukon/styles/StarsConsumerStyles.css"/>
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
@@ -20,11 +21,20 @@
 <script type="text/javascript">
 Event.observe(window, 'load', function(){
     Yukon.ThermostatManualEditor.init({
-        currentUnit: '${temperatureUnit}',
-        upperHeatF: parseFloat(${scheduleableThermostatType.upperLimitHeat.value}),
-        lowerHeatF: parseFloat(${scheduleableThermostatType.lowerLimitHeat.value}),
-        upperCoolF: parseFloat(${scheduleableThermostatType.upperLimitCool.value}),
-        lowerCoolF: parseFloat(${scheduleableThermostatType.lowerLimitCool.value})
+        thermostat: {
+            heat: {
+                upper: new Temperature({degrees: parseFloat(${scheduleableThermostatType.upperLimitHeat.value}), unit:'F'}),
+                lower: new Temperature({degrees: parseFloat(${scheduleableThermostatType.lowerLimitHeat.value}), unit:'F'})
+            },
+            cool: {
+                upper: new Temperature({degrees: parseFloat(${scheduleableThermostatType.upperLimitCool.value}), unit:'F'}),
+                lower: new Temperature({degrees: parseFloat(${scheduleableThermostatType.lowerLimitCool.value}), unit:'F'})
+            },
+            temperature: new Temperature({degrees: parseFloat(${event.previousTemperature.value}), unit: 'F'}),
+            mode: '${event.mode}',
+            fan: '${event.fanState}'
+        },
+        initialUnit: '${temperatureUnit}'
     });
 });
 </script>

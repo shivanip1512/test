@@ -11,6 +11,7 @@
 
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
 <cti:includeScript link="${timeFormatter}"/>
+<cti:includeScript link="/JavaScript/temperature.js"/>
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
 
@@ -18,13 +19,21 @@
 var TIME_SLIDER = null;
 Event.observe(window, 'load', function(){
     Yukon.ThermostatScheduleEditor.init({
-        currentUnit: '${temperatureUnit}',
-        upperHeatF: parseFloat(${type.upperLimitHeat.value}),
-        lowerHeatF: parseFloat(${type.lowerLimitHeat.value}),
-        upperCoolF: parseFloat(${type.upperLimitCool.value}),
-        lowerCoolF: parseFloat(${type.lowerLimitCool.value}),
-        secondsResolution: ${type.resolution.standardSeconds},
-        secondsBetweenPeriods: ${type.minimumTimeBetweenPeriods.standardSeconds}
+        thermostat: {
+            heat: {
+                upper: new Temperature({degrees: parseFloat(${type.upperLimitHeat.value}), unit:'F'}),
+                lower: new Temperature({degrees: parseFloat(${type.lowerLimitHeat.value}), unit:'F'})
+            },
+            cool: {
+                upper: new Temperature({degrees: parseFloat(${type.upperLimitCool.value}), unit:'F'}),
+                lower: new Temperature({degrees: parseFloat(${type.lowerLimitCool.value}), unit:'F'})
+            },
+            temperature: new Temperature({unit: '${temperatureUnit}'}),
+            mode: '${type.defaultThermostatScheduleMode}',
+            fan: '',
+            secondsResolution: ${type.resolution.standardSeconds},
+            secondsBetweenPeriods: ${type.minimumTimeBetweenPeriods.standardSeconds}
+        }
     });
 });
 </script>
