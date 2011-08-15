@@ -1,7 +1,6 @@
 package com.cannontech.encryption.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -18,9 +17,10 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.pao.StaticPaoInfo;
-import com.cannontech.encryption.EncryptedRoute;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.google.common.collect.Lists;
 
 public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -38,7 +38,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         sql.append("    OR Type ").eq(PaoType.ROUTE_SNPP_TERMINAL);
         sql.append("    OR Type ").eq(PaoType.ROUTE_WCTP_TERMINAL).append(")");
 
-        final List<EncryptedRoute> encryptedIDs = new ArrayList<EncryptedRoute>();
+        final List<EncryptedRoute> encryptedIDs = Lists.newArrayList();
 
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -50,12 +50,11 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
                 } catch (NotFoundException e) {
                     spi.setValue(PaoInfo.CPS_ONE_WAY_ENCRYPTION_KEY.getDefaultValue());
                     dbPersistentDao.performDBChange(spi, TransactionType.INSERT);
-                    dbPersistentDao.performDBChange(spi, TransactionType.RETRIEVE);
                 }
 
                 EncryptedRoute route = new EncryptedRoute();
                 route.setPaoName(rs.getString("PaoName"));
-                route.setType(rs.getString("Type"));
+                route.setType(rs.getEnum("Type", PaoType.class));
                 route.setInfoKey(spi.getPaoInfo().name());
                 route.setPaobjectId(spi.getPaobjectId());
                 route.setValue(spi.getValue());

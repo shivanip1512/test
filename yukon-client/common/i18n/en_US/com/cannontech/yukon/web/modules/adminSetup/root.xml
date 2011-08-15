@@ -30,16 +30,13 @@
     <entry key="yukon.web.modules.adminSetup.encryption.paoNameLbl">Pao Name</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.paoTypeLbl">Pao Type</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.CPSkeyLbl">CPS One-Way OTA Key</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.keyLbl">KEY:</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.keyLbl">Key:</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.saveBtn">Save</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.cancelBtn">Cancel Changes</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.noRoutesMsg">No routes are available for encryption</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.disabledMsg">disabled</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.confirmDeleteMsg">Are you sure you want to delete this key?</entry>
 
-    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.empty">Cannot have an empty key</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.hex">Can only contain Hex digits</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.length">Must be exactly 32 characters</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.format">Key must be exactly 32 hexadecimal digits.</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.error.boxHeading">Save encryption key</entry>
 
 </properties>
