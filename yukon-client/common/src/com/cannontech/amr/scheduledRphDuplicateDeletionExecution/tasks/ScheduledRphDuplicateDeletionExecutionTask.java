@@ -1,6 +1,6 @@
 package com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
@@ -13,9 +13,9 @@ public class ScheduledRphDuplicateDeletionExecutionTask extends YukonTaskBase {
 
     @Override
     public void start() {
-        DateTime start = new DateTime(getJobContext().getJob().getUserContext().getJodaTimeZone());
+        Instant start = new Instant();
         int numDeleted = rphManagementDao.deleteDuplicates();
-        DateTime finish = new DateTime(getJobContext().getJob().getUserContext().getJodaTimeZone());
+        Instant finish = new Instant();
         systemEventLogService.rphDeleteDuplicates(numDeleted, start, finish);
     }
 

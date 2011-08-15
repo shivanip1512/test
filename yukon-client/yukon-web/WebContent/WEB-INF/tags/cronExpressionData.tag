@@ -27,25 +27,25 @@
                     <c:when test="${state.cronTagStyleType == 'ONETIME'}">
                         <option value="ONETIME"
                             <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
-                            <i:inline key="yukon.web.defaults.oneTime" />
+                            <i:inline key="yukon.web.components.cronPicker.oneTime" />
                         </option>
                     </c:when>
                     <c:otherwise>
                         <option value="DAILY"
                             <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
-                            <i:inline key="yukon.web.defaults.daily" />
+                            <i:inline key="yukon.web.components.cronPicker.daily" />
                         </option>
                         <option value="WEEKLY"
                             <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
-                            <i:inline key="yukon.web.defaults.weekly" />
+                            <i:inline key="yukon.web.components.cronPicker.weekly" />
                         </option>
                         <option value="MONTHLY"
                             <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
-                            <i:inline key="yukon.web.defaults.monthly" />
+                            <i:inline key="yukon.web.components.cronPicker.monthly" />
                         </option>
                         <option value="CUSTOM"
                             <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
-                            <i:inline key="yukon.web.defaults.custom" />
+                            <i:inline key="yukon.web.components.cronPicker.custom" />
                         </option>
                     </c:otherwise>
                 </c:choose>
@@ -53,23 +53,23 @@
             <c:otherwise>
                 <option value="DAILY"
                     <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
-                    <i:inline key="yukon.web.defaults.daily" />
+                    <i:inline key="yukon.web.components.cronPicker.daily" />
                 </option>
                 <option value="WEEKLY"
                     <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
-                    <i:inline key="yukon.web.defaults.weekly" />
+                    <i:inline key="yukon.web.components.cronPicker.weekly" />
                 </option>
                 <option value="MONTHLY"
                     <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
-                    <i:inline key="yukon.web.defaults.monthly" />
+                    <i:inline key="yukon.web.components.cronPicker.monthly" />
                 </option>
                 <option value="ONETIME"
                     <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
-                    <i:inline key="yukon.web.defaults.oneTime" />
+                    <i:inline key="yukon.web.components.cronPicker.oneTime" />
                 </option>
                 <option value="CUSTOM"
                     <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
-                    <i:inline key="yukon.web.defaults.custom" />
+                    <i:inline key="yukon.web.components.cronPicker.custom" />
                 </option>
             </c:otherwise>
         </c:choose>
@@ -97,10 +97,10 @@
 
 <select name="${id}_CRONEXP_AMPM">
 	<option value="AM" <c:if test="${state.cronExpressionAmPm == 'AM'}">selected</c:if>>
-        <i:inline key="yukon.web.defaults.am"/>
+        <i:inline key="yukon.web.components.cronPicker.am"/>
     </option>
 	<option value="PM" <c:if test="${state.cronExpressionAmPm == 'PM'}">selected</c:if>>
-        <i:inline key="yukon.web.defaults.pm"/>
+        <i:inline key="yukon.web.components.cronPicker.pm"/>
     </option>
 </select>
 </div>
@@ -110,11 +110,11 @@
 
 	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="EVERYDAY" 
         <c:if test="${state.cronExpressionDailyOption == 'EVERYDAY'}">checked</c:if>>
-    <i:inline key="yukon.web.defaults.everyDay"/>
+    <i:inline key="yukon.web.components.cronPicker.everyDay"/>
 	<br>
 	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="WEEKDAYS" 
         <c:if test="${state.cronExpressionDailyOption == 'WEEKDAYS'}">checked</c:if>>
-    <i:inline key="yukon.web.defaults.everyWeekday"/>
+    <i:inline key="yukon.web.components.cronPicker.everyWeekday"/>
 	
 </div>
 
@@ -152,14 +152,14 @@
 
 	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="ON_DAY" 
         <c:if test="${state.cronExpressionMontlyOption == 'ON_DAY'}">checked</c:if>>
-    <i:inline key="yukon.web.defaults.onDay"/>
+    <i:inline key="yukon.web.components.cronPicker.onDay"/>
     <input type="text" name="${id}_CRONEXP_MONTHLY_OPTION_ON_DAY_X" size="3" maxlength="3" 
         style="text-align:right;" value="${cronExpressionMontlyOptionOnDayX}">
-    <i:inline key="yukon.web.defaults.ofMonth"/>
+    <i:inline key="yukon.web.components.cronPicker.ofMonth"/>
 	<br>
 	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="LAST_DAY" 
         <c:if test="${state.cronExpressionMontlyOption == 'LAST_DAY'}">checked</c:if>>
-    <i:inline key="yukon.web.defaults.onLastDayOfMonth"/>
+    <i:inline key="yukon.web.components.cronPicker.onLastDayOfMonth"/>
 	
 </div>
 
@@ -174,15 +174,18 @@
 <%-- CUSTOM --%>
 <div id="${id}_cronExpCustomDiv" style="display:none;">
 
-	<i:inline key="yukon.web.defaults.cronExpression"/><br>
+	<i:inline key="yukon.web.components.cronPicker.cronExpression"/><br>
 	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}"> 
 	<img onclick="$('${id}_customCronExpressInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 	
-	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="Custom Cron Expression">
-	     <br>
-	     So you've decided to use a custom Cron Expression, <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06" target="_blank">now what</a>?
-	     <br><br>
-	</tags:simplePopup>
+    <cti:msg2 var="cronTitle" key="yukon.web.components.cronPicker.cronHelpTitle"/>
+	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="${cronTitle}">
+        <br>
+        <i:inline key="yukon.web.components.cronPicker.cronHelpStart" />
+        <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06"
+            target="_blank"><i:inline key="yukon.web.components.cronPicker.cronHelpLink"/></a><i:inline key="yukon.web.components.cronPicker.cronHelpEnd" />
+        <br><br>
+    </tags:simplePopup>
 	
 </div>
 

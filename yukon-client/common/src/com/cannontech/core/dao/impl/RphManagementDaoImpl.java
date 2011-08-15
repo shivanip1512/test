@@ -2,7 +2,8 @@ package com.cannontech.core.dao.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -13,9 +14,14 @@ import com.cannontech.core.dao.RphManagementDao;
 import com.cannontech.database.LongRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 
-public class RphManagementDaoImpl implements RphManagementDao, InitializingBean {
+public class RphManagementDaoImpl implements RphManagementDao {
     private YukonJdbcTemplate yukonTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
+    
+    @PostConstruct
+    public void initialize() {
+        chunkyJdbcTemplate = new ChunkingSqlTemplate(yukonTemplate);
+    }
     
     @Override
     public int deleteDuplicates() {
@@ -34,16 +40,11 @@ public class RphManagementDaoImpl implements RphManagementDao, InitializingBean 
         @Override
         public SqlFragmentSource generate(List<Long> changeIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM RAWPOINTHISTORY WHERE CHANGEID IN (", changeIds, ")");
+            sql.append("DELETE FROM RAWPOINTHISTORY WHERE CHANGEID").in(changeIds);
             return sql;
         }
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate = new ChunkingSqlTemplate(yukonTemplate);
-    }
-
     @Autowired
     public void setJdbcTemplate(YukonJdbcTemplate yukonTemplate) {
         this.yukonTemplate = yukonTemplate;

@@ -240,4 +240,22 @@
     
     <entry key="yukon.web.components.pageloading">Loading…</entry>
     <entry key="yukon.web.components.waiting">Waiting…</entry>
+    
+    <entry key="yukon.web.components.cronPicker.daily">Daily</entry>
+    <entry key="yukon.web.components.cronPicker.weekly">Weekly</entry>
+    <entry key="yukon.web.components.cronPicker.monthly">Monthly</entry>
+    <entry key="yukon.web.components.cronPicker.oneTime">One-Time</entry>
+    <entry key="yukon.web.components.cronPicker.custom">Custom</entry>
+    <entry key="yukon.web.components.cronPicker.am">AM</entry>
+    <entry key="yukon.web.components.cronPicker.pm">PM</entry>
+    <entry key="yukon.web.components.cronPicker.everyDay">Every Day</entry>
+    <entry key="yukon.web.components.cronPicker.everyWeekday">Every Weekday</entry>
+    <entry key="yukon.web.components.cronPicker.onDay">On day</entry>
+    <entry key="yukon.web.components.cronPicker.ofMonth">of month</entry>
+    <entry key="yukon.web.components.cronPicker.onLastDayOfMonth">On last day of month</entry>
+    <entry key="yukon.web.components.cronPicker.cronExpression">Cron Expression</entry>
+    <entry key="yukon.web.components.cronPicker.cronHelpStart">So you've decided to use a custom Cron Expression, </entry>
+    <entry key="yukon.web.components.cronPicker.cronHelpLink">now what</entry>
+    <entry key="yukon.web.components.cronPicker.cronHelpEnd">?</entry>
+    <entry key="yukon.web.components.cronPicker.cronHelpTitle">Custom Cron Expression</entry>
 </properties>

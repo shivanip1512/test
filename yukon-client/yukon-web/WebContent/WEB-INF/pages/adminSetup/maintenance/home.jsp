@@ -34,12 +34,6 @@
                         <tags:nameValue2 nameKey=".nextRun">
                             <amr:scheduledGroupRequestExecutionJobNextRunDate jobId="${job.id}"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".executions">
-                            <cti:link href="/spring/common/eventLog/viewByCategory"
-                                key="yukon.web.modules.adminSetup.maintenance.executionsLink">
-                                <cti:param name="categories" value="system.maintenance.rphDeleteDuplicates" />
-                            </cti:link>
-                        </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>
                 <cti:displayForPageEditModes modes="VIEW">

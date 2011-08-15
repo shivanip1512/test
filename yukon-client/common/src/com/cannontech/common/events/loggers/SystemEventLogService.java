@@ -1,6 +1,6 @@
 package com.cannontech.common.events.loggers;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
@@ -50,7 +50,7 @@ public interface SystemEventLogService {
 /* System Admin */
     /* Maintenance */
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void rphDeleteDuplicates(int rowsDeleted, DateTime start, DateTime finish);
+    public void rphDeleteDuplicates(int rowsDeleted, Instant start, Instant finish);
     
 
 }

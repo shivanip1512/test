@@ -14,8 +14,6 @@
     <entry key="yukon.web.modules.adminSetup.maintenance.status.disabled">Disabled</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.runSchedule">Run Schedule</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.nextRun">Next Run</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.executions">Executions</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.executionsLink">View Executions</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.invalidCron">Invalid Cron Expression</entry>
     
 </properties>
