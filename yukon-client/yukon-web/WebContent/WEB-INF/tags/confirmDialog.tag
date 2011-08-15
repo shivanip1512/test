@@ -43,8 +43,14 @@
                         <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass}" key="ok"
-                            name="${pageScope.submitName}" href="${pageScope.href}" />
+                        <c:if test="${empty pageScope.href}">
+                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                                name="${pageScope.submitName}" type="submit"/>
+                        </c:if>
+                        <c:if test="${!empty pageScope.href}">
+                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                                name="${pageScope.submitName}" href="${pageScope.href}"/>
+                        </c:if>
                     </c:if>
                 </c:when>
                 <c:when test="${pageScope.endAction == 'hide'}">
@@ -53,9 +59,16 @@
                             onclick="$('${uniqueId}').hide()" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass}" key="ok"
-                            name="${pageScope.submitName}" href="${pageScope.href}"
-                            onclick="$('${uniqueId}').hide()" />
+                        <c:if test="${empty pageScope.href}">
+                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                                name="${pageScope.submitName}" type="submit" 
+                                onclick="$('${uniqueId}').hide()"/>
+                        </c:if>
+                        <c:if test="${!empty pageScope.href}">
+                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                                name="${pageScope.submitName}" href="${pageScope.href}"
+                                onclick="$('${uniqueId}').hide()"/>
+                        </c:if>
                     </c:if>
                 </c:when>
                 <c:when test="${pageScope.endAction == 'block'}">
@@ -64,8 +77,14 @@
                             type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
-                            name="${pageScope.submitName}" href="${pageScope.href}" />
+                        <c:if test="${empty pageScope.href}">
+                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                                name="${pageScope.submitName}" type="submit"/>
+                        </c:if>
+                        <c:if test="${!empty pageScope.href}">
+                            <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
+                                name="${pageScope.submitName}" href="${pageScope.href}"/>
+                        </c:if>
                     </c:if>
                 </c:when>
             </c:choose>
