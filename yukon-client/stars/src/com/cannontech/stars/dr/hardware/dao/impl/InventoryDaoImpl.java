@@ -26,6 +26,9 @@ import com.cannontech.common.inventory.InventoryIdentifierMapper;
 import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
@@ -43,6 +46,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -75,21 +79,28 @@ public class InventoryDaoImpl implements InventoryDao {
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
     private InventoryIdentifierMapper inventoryIdentifierMapper;
     private YukonListDao yukonListDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final MessageSourceAccessor accessor) {
+        BasicAttributeDefinition definition = (BasicAttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        int pointOffset = definition.getPointTemplate().getOffset();
+        PointType pointType = definition.getPointTemplate().getPointType();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Inventory.EnergyCompanyId, Inventory.AccountId, Inventory.InventoryID, Inventory.ManufacturerSerialNumber, Inventory.LMHardwareTypeID, Inventory.DeviceLabel,");
         sql.append("RPH1.POINTID, RPH1.TIMESTAMP, Inventory.PointType, RPH1.Value");
         sql.append("FROM RAWPOINTHISTORY RPH1,");
         
         sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");
-        sql.append("    JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
-        sql.append("    JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
-        sql.append("    JOIN Point P on (P.PAObjectID = YPO.PAObjectID AND P.PointOffset = 2)");
-        sql.append("    JOIN ECToAccountMapping ECTA on ECTA.AccountID = IB.AccountID");
+        sql.append("      JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
+        sql.append("      JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
+        sql.append("      JOIN Point P on P.PAObjectID = YPO.PAObjectID");
+        sql.append("      JOIN ECToAccountMapping ECTA on ECTA.AccountID = IB.AccountID");
         sql.append("    WHERE IB.AccountID > 0");
-        sql.append("    AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
+        sql.append("      AND P.PointOffset").eq_k(pointOffset);
+        sql.append("      AND P.PointType").eq_k(pointType);
+        sql.append("      AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
         sql.append("  ) Inventory,");
         
         sql.append("  (SELECT PointId, MAX(timestamp) latestTime");
@@ -98,8 +109,10 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("      SELECT P.PointId FROM InventoryBase IB");
         sql.append("        JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
         sql.append("        JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
-        sql.append("        JOIN Point P on (P.PAObjectID = YPO.PAObjectID AND P.PointOffset = 2)");
+        sql.append("        JOIN Point P on P.PAObjectID = YPO.PAObjectID");
         sql.append("      WHERE IB.AccountID > 0");
+        sql.append("        AND P.PointOffset").eq_k(pointOffset);
+        sql.append("        AND P.PointType").eq_k(pointType);
         sql.append("        AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
         sql.append("    )");
         sql.append("    group by PointId");
@@ -108,7 +121,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("WHERE RPH1.PointId = RPH2.PointId");
         sql.append("  AND RPH1.timestamp = RPH2.latestTime");
         sql.append("  AND Inventory.PointId = RPH1.PointId");
-        sql.append("  AND RPH1.Value != 0.0;");
+        sql.append("  AND RPH1.Value").neq_k(Commissioned.CONNECTED.getRawState());
         
         return yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<LiteLmHardware, SimplePointValue>>() {
             @Override
@@ -123,7 +136,7 @@ public class InventoryDaoImpl implements InventoryDao {
                 
                 int pointId = rs.getInt("PointId");
                 Date timestamp = rs.getDate("Timestamp");
-                int pointType = PointType.getForString(rs.getString("PointType")).getPointTypeId();
+                int pointType = rs.getEnum("PointType", PointType.class).getPointTypeId();
                 double pointValue = rs.getDouble("Value");
                 
                 SimplePointValue pvh = new SimplePointValue(pointId, timestamp, pointType, pointValue);
@@ -598,6 +611,11 @@ public class InventoryDaoImpl implements InventoryDao {
     @Autowired
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 
 }

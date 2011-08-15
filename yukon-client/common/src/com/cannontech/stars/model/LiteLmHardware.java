@@ -1,8 +1,9 @@
 package com.cannontech.stars.model;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.YukonInventory;
 
-public class LiteLmHardware {
+public class LiteLmHardware implements YukonInventory{
 
     private InventoryIdentifier identifier;
     private String serialNumber;
@@ -48,6 +49,11 @@ public class LiteLmHardware {
     
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
+    }
+
+    @Override
+    public InventoryIdentifier getInventoryIdentifier() {
+        return identifier;
     }
     
 }
