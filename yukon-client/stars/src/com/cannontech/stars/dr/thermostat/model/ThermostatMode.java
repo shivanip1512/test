@@ -19,7 +19,7 @@ public enum ThermostatMode implements ListEntryEnum, DisplayableEnum {
 
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.web.modules.consumer.xml
-    private final static String keyPrefix = "yukon.web.modules.consumer.thermostat.mode.";
+    private final static String keyPrefix = "yukon.common.thermostat.mode.";
 
     private int definitionId;
     private String commandString;

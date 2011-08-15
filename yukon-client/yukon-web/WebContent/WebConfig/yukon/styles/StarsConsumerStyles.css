@@ -10,12 +10,6 @@ h3 {
     text-align: center;
 }
 
-.actsAsAnchor {
-    text-decoration: underline;
-    color: #0000EE;
-    cursor: pointer;
-}
-
 div.customerAccount {
 	font-size: .8em;
 }	

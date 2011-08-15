@@ -181,4 +181,11 @@
 <entry key="yukon.common.paoType.SIMPLE_SCHEDULE">Simple</entry>
 <entry key="yukon.common.paoType.SYSTEM">SYSTEM</entry>
 <entry key="yukon.common.paoType.VIRTUAL_SYSTEM">VIRTUAL SYSTEM</entry>
+
+<entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
+<entry key="yukon.common.thermostat.mode.COOL">Cool</entry>
+<entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
+<entry key="yukon.common.thermostat.mode.EMERGENCY_HEAT">Emergency Heat</entry>
+<entry key="yukon.common.thermostat.mode.OFF">Off</entry>
+<entry key="yukon.common.thermostat.mode.DEFAULT">Default</entry>
 </properties>

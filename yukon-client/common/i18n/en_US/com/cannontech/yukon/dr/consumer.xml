@@ -111,12 +111,7 @@
     <entry key="yukon.web.modules.consumer.thermostat.hold.on">On</entry>
     <entry key="yukon.web.modules.consumer.thermostat.hold.off">Off</entry>
     <entry key="yukon.web.modules.consumer.thermostat.mode">MODE</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.mode.AUTO">Auto</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.mode.COOL">Cool</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.mode.HEAT">Heat</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.mode.EMERGENCY_HEAT">Emergency Heat</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.mode.OFF">Off</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.mode.DEFAULT">Default</entry>
+    
     <entry key="yukon.web.modules.consumer.thermostat.fan">FAN</entry>
     <entry key="yukon.web.modules.consumer.thermostat.fan.AUTO">Auto</entry>
     <entry key="yukon.web.modules.consumer.thermostat.fan.CIRCULATE">Circulate</entry>
