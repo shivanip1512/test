@@ -29,6 +29,12 @@
         var url = "/spring/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
+    
+    YEvent.observeSelectorClick('#deleteButton', function(event){
+        var analysisId = event.findElement('tr').down('input[type=hidden]');
+        deleteConfirmAnalysisId = analysisId.value;
+        $('deleteConfirmationPopup').show();
+    });
     </script>
     
     <tags:boxContainer2 nameKey="title">
@@ -47,6 +53,7 @@
             <c:forEach items="${analysisMap}" var="analysisEntry">
                 <c:if test="${analysisEntry.key.status != 'DELETED'}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <input type="hidden" value="${analysisEntry.key.analysisId}"/>
                         <td>
                             <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>
                         </td>
@@ -84,7 +91,7 @@
                                 </td>
                                 <td>
                                     <cti:button key="viewButtonAnalyzing" renderMode="image" disabled="true"/>
-                                    <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                    <cti:button id="deleteButton" key="remove" renderMode="image"/>
                                 </td>
                             </c:when>
                             <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
@@ -97,14 +104,14 @@
                                     <c:choose>
                                         <c:when test="${analysisEntry.value == 0}">
                                             <cti:button key="viewButtonNoDevices" renderMode="image" disabled="true"/>
-                                            <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                            <cti:button id="deleteButton" key="remove" renderMode="image"/>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
                                                 <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                             </cti:url>
                                             <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                                            <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                            <cti:button id="deleteButton" key="remove" renderMode="image"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -123,7 +130,7 @@
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
                                     <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                                    <cti:button id="deleteButton" key="remove" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>
+                                    <cti:button id="deleteButton" key="remove" renderMode="image"/>
                                 </td>
                             </c:when>
                         </c:choose>
