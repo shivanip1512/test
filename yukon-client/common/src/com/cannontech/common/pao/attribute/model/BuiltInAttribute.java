@@ -4,6 +4,7 @@ package com.cannontech.common.pao.attribute.model;
 public enum BuiltInAttribute implements Attribute {
     
     /* Keep this ordered alphabetically by description */
+    AUTO_BLOCK_ENABLE("Auto Block Enable"),
     AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
     CONNECTION_STATUS("Connection Status"),
@@ -44,7 +45,6 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE_X("Voltage X"), // Source Side
     VOLTAGE_Y("Voltage Y"), // Load Side
     TERMINATE("Terminate"),
-    AUTO_BLOCK_ENABLE("Auto Block Enable"),
     VOLTAGE_PROFILE("Voltage Profile", true, false),
     USAGE_WATER("Water Usage Reading", false, true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
