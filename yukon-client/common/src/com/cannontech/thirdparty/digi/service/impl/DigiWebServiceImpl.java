@@ -71,7 +71,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void installGateway(int gatewayId) {
-        log.debug("-- Install Gateway Start --");
+        log.debug("Install Gateway Start");
         
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         
@@ -86,18 +86,17 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
-        } catch (ZigbeeCommissionException e) {
-            log.error("Caught exception in the commissioning process", e);
-            //re throw
+            log.debug("Install Gateway End");
+        } catch (RuntimeException e) {
+            log.error("Install Gateway End With Exceptions");
             throw e;
         } finally {
-            log.debug("-- Install Gateway End --");
         }
     }
     
     @Override
     public void removeGateway(int gatewayId) {
-        log.debug("-- Remove Gateway Start --");
+        log.debug("Remove Gateway Start");
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         decommissionConnectPort(digiGateway.getDigiId());
 
@@ -106,7 +105,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
         
-        log.debug("-- Remove Gateway Stop --");
+        log.debug("Remove Gateway Stop");
     }
     
     /**

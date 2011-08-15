@@ -203,14 +203,15 @@ public class DigiResponseHandler {
         }
         
         //Set Decommissioned to anything we did not get a response from.
+        MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(successKey);
+        ZigbeePingResponse response = new ZigbeePingResponse(false,
+                                                             Commissioned.DECOMMISSIONED,
+                                                             resolvable);
+
         for (ZigbeeDevice gateway : expected) {
             if (pingResponses.keySet().contains(gateway.getPaoIdentifier())) {
                 continue;
             }
-            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(successKey);
-            ZigbeePingResponse response = new ZigbeePingResponse(false,
-                                                                                          Commissioned.DECOMMISSIONED,
-                                                                                          resolvable);
             pingResponses.put(gateway.getPaoIdentifier(),response);
             decommissionGateway(gateway);
         }
@@ -343,17 +344,22 @@ public class DigiResponseHandler {
      * @param source
      */
     public ZigbeePingResponse handlePingResponse(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
-        Commissioned endPointState = Commissioned.CONNECTED;
-        boolean success = true;
-        String key = "yukon.web.modules.operator.hardware.refreshSuccessful";
+        Commissioned endPointState;
+        boolean success;
+        String key;
         
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
         String readResponse = template.evaluateAsString("//read_attributes_response");
         
-        //Error Case
-        if (readResponse == null) {
+        if (readResponse != null) {
+            //Success case
+            endPointState = Commissioned.CONNECTED;
+            success = true;
+            key = "yukon.web.modules.operator.hardware.refreshSuccessful";
+        } else {
+            //Error Case
             success = false;
             String error = template.evaluateAsString("//desc");
             
@@ -370,9 +376,11 @@ public class DigiResponseHandler {
                 }
             } else {
                 log.error("Error Communicating with Gateway: " + error);
+                endPointState = Commissioned.DISCONNECTED;
+                key = "yukon.web.modules.operator.hardware.commandFailed.timeout.gateway";
+                
                 //Disconnect gateway (This will also disconnect the end points attached)
                 disconnectGateway(gateway);
-                key = "yukon.web.modules.operator.hardware.commandFailed.timeout.gateway";
             }
         }
         

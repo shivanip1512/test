@@ -7,15 +7,15 @@ import com.cannontech.database.db.point.stategroup.Commissioned;
 public class ZigbeePingResponse {
     private boolean success;
     private Commissioned state;
-    private MessageSourceResolvable messageSourceResolvable;
+    private MessageSourceResolvable pingResultResolvable;
     
     
     public ZigbeePingResponse( boolean success, 
                                           Commissioned state, 
-                                          MessageSourceResolvable messageSourceResolvable) {
+                                          MessageSourceResolvable pingResultResolvable) {
         this.success = success;
         this.state = state;
-        this.messageSourceResolvable = messageSourceResolvable;
+        this.pingResultResolvable = pingResultResolvable;
     }
 
     public boolean isSuccess() {
@@ -26,7 +26,7 @@ public class ZigbeePingResponse {
         return state;
     }
     
-    public MessageSourceResolvable getMessageSourceResolvable() {
-        return messageSourceResolvable;
+    public MessageSourceResolvable getPingResultResolvable() {
+        return pingResultResolvable;
     }
 }

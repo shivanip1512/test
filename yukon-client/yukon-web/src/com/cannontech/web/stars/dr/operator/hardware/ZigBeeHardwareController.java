@@ -106,7 +106,7 @@ public class ZigBeeHardwareController {
         }
 
         mav.addObject("success", ping.isSuccess());
-        mav.addObject("message", accessor.getMessage(ping.getMessageSourceResolvable()));
+        mav.addObject("message", accessor.getMessage(ping.getPingResultResolvable()));
 
         return mav;
     }
@@ -209,7 +209,7 @@ public class ZigBeeHardwareController {
             zigbeeEventLogService.zigbeeDeviceCommissioned(gateway.getName());
         } catch (ZigbeeCommissionException e) {
             messageFailed = true;
-            errorResolvable = e.getMessageSourceResolvable();
+            errorResolvable = e.getDescription();
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = ExceptionUtils.getRootCauseMessage(e);

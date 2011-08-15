@@ -6,11 +6,11 @@ public class ZigbeeCommissionException extends RuntimeException {
     
     private MessageSourceResolvable messageSourceResolvable;
     
-    public ZigbeeCommissionException(MessageSourceResolvable messageSourceResolvable) {
-        this.messageSourceResolvable = messageSourceResolvable;
+    public ZigbeeCommissionException(MessageSourceResolvable descriptionMsr) {
+        this.messageSourceResolvable = descriptionMsr;
     }
     
-    public MessageSourceResolvable getMessageSourceResolvable() {
+    public MessageSourceResolvable getDescription() {
         return messageSourceResolvable;
     }
 }
