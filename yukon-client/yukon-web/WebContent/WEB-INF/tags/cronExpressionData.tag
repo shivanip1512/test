@@ -180,7 +180,7 @@
 	
 	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="Custom Cron Expression">
 	     <br>
-	     So you've decided to use a custom Cron Expression, <a href="http://www.quartz-scheduler.org/docs/1.x/tutorials/crontrigger.html" target="_blank">now what</a>?
+	     So you've decided to use a custom Cron Expression, <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06" target="_blank">now what</a>?
 	     <br><br>
 	</tags:simplePopup>
 	
