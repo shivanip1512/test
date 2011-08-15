@@ -37,7 +37,7 @@ import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
@@ -176,7 +176,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     public void installEndPoint(int gatewayId, int deviceId) throws ZigbeeCommissionException {
         log.debug("InstallEndPoint Start");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-        ZigbeeEndPoint stat= zigbeeDeviceDao.getZigbeeEndPoint(deviceId);
+        ZigbeeEndpoint stat= zigbeeDeviceDao.getZigbeeEndPoint(deviceId);
         
         String xml = digiXMLBuilder.buildInstallEndPointMessage(gateway,stat);
         String response;

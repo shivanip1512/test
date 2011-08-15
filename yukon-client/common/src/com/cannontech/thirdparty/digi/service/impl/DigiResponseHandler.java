@@ -37,7 +37,7 @@ import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
@@ -235,7 +235,7 @@ public class DigiResponseHandler {
        
         if (m.find()) {
             String macAddress = m.group();
-            ZigbeeEndPoint utilPro = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(macAddress);
+            ZigbeeEndpoint utilPro = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(macAddress);
             //We found a MAC, so lets do something..
             if (message.contains(commissionStr)) {
                 // Registered with the gateway

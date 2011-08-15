@@ -6,10 +6,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.providers.BaseCreationProvider;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndPointFields;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndpointFields;
+import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 
-public class ZigbeeEndPointCreationProvider extends BaseCreationProvider<ZigbeeEndPointFields> {
+public class ZigbeeEndpointCreationProvider extends BaseCreationProvider<ZigbeeEndpointFields> {
 
     private ZigbeeDeviceDao zigbeeDeviceDao;
     
@@ -24,13 +24,13 @@ public class ZigbeeEndPointCreationProvider extends BaseCreationProvider<ZigbeeE
     }
 
     @Override
-    public Class<ZigbeeEndPointFields> getRequiredFields() {
-        return ZigbeeEndPointFields.class;
+    public Class<ZigbeeEndpointFields> getRequiredFields() {
+        return ZigbeeEndpointFields.class;
     }
     
     @Override
-    public void handleCreation(PaoIdentifier paoIdentifier, ZigbeeEndPointFields fields) {
-        ZigbeeEndPoint endpoint = new ZigbeeEndPoint();
+    public void handleCreation(PaoIdentifier paoIdentifier, ZigbeeEndpointFields fields) {
+        ZigbeeEndpoint endpoint = new ZigbeeEndpoint();
         
         endpoint.setPaoIdentifier(paoIdentifier);
         endpoint.setMacAddress(fields.getMacAddress());

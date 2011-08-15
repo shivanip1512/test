@@ -3,7 +3,7 @@ package com.cannontech.thirdparty.digi.dao;
 import java.util.List;
 
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 
 
 public interface ZigbeeDeviceDao {
@@ -12,19 +12,19 @@ public interface ZigbeeDeviceDao {
     
     public List<ZigbeeDevice> getZigbeeDevicesForGroupId(int groupId);
     
-    public ZigbeeEndPoint getZigbeeEndPointByInventoryId(int inventoryId);
+    public ZigbeeEndpoint getZigbeeEndPointByInventoryId(int inventoryId);
     
-    public ZigbeeEndPoint getZigbeeEndPoint(int deviceId);
+    public ZigbeeEndpoint getZigbeeEndPoint(int deviceId);
     
-    public ZigbeeEndPoint getZigbeeEndPointByMACAddress(String macAddress);
+    public ZigbeeEndpoint getZigbeeEndPointByMACAddress(String macAddress);
     
     public int getDeviceIdForMACAddress(String macAddress);
     
     public List<Integer> getDeviceIdsForMACAddresses(List<String> macAddresses);
     
-    public void createZigbeeEndPoint(ZigbeeEndPoint zigbeeEndPoint);
+    public void createZigbeeEndPoint(ZigbeeEndpoint zigbeeEndPoint);
     
-    public void updateZigbeeEndPoint(ZigbeeEndPoint zigbeeEndPoint);
+    public void updateZigbeeEndPoint(ZigbeeEndpoint zigbeeEndPoint);
     
     public void deleteZigbeeEndPoint(int deviceId);
     

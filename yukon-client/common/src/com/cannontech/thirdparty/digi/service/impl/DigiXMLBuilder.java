@@ -18,7 +18,7 @@ import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -33,7 +33,7 @@ public class DigiXMLBuilder {
     private static int clusterId = 0x0701;
     private static int serverClient = 1;
     
-    public String buildInstallEndPointMessage(ZigbeeDevice gateway, ZigbeeEndPoint endpoint) {
+    public String buildInstallEndPointMessage(ZigbeeDevice gateway, ZigbeeEndpoint endpoint) {
         String gatewayMacAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         String endpointMac = endpoint.getMacAddress();
         String installCode = endpoint.getInstallCode();
@@ -265,7 +265,7 @@ public class DigiXMLBuilder {
         String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
                 
         //Find based on the endPoint Device
-        ZigbeeEndPoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
+        ZigbeeEndpoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
         
         String xml = 
            "<sci_request version=\"1.0\">"
@@ -309,7 +309,7 @@ public class DigiXMLBuilder {
     
     public String buildReadLMAddressingForEndPoint(ZigbeeDevice gateway, ZigbeeDevice endPoint) {       
         //Find based on the endPoint Device
-        ZigbeeEndPoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
+        ZigbeeEndpoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
 
         String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         

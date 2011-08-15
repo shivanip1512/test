@@ -19,17 +19,17 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeEndPoint;
+import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 
 public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private GatewayDeviceDao gatewayDeviceDao;
     
-    private static YukonRowMapper<ZigbeeEndPoint> zigbeeEndPointRowMapper  = new YukonRowMapper<ZigbeeEndPoint>(){
+    private static YukonRowMapper<ZigbeeEndpoint> zigbeeEndPointRowMapper  = new YukonRowMapper<ZigbeeEndpoint>(){
         @Override
-        public ZigbeeEndPoint mapRow(YukonResultSet rs) throws SQLException {
-            ZigbeeEndPoint zigbeeEndPoint = new ZigbeeEndPoint();
+        public ZigbeeEndpoint mapRow(YukonResultSet rs) throws SQLException {
+            ZigbeeEndpoint zigbeeEndPoint = new ZigbeeEndpoint();
             
             int deviceId = rs.getInt("DeviceId");
             PaoType paoType = rs.getEnum("Type", PaoType.class);
@@ -78,36 +78,36 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
     
     @Override
-    public ZigbeeEndPoint getZigbeeEndPointByInventoryId(int inventoryId) {
+    public ZigbeeEndpoint getZigbeeEndPointByInventoryId(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();        
         
         sql.appendFragment(buildZigbeeEndPointStatement());
         sql.append("WHERE IB.InventoryID").eq(inventoryId);
         
-        ZigbeeEndPoint tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeEndPointRowMapper);
+        ZigbeeEndpoint tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeEndPointRowMapper);
 
         return tstat;
     }
     
     @Override
-    public ZigbeeEndPoint getZigbeeEndPoint(int deviceId) {
+    public ZigbeeEndpoint getZigbeeEndPoint(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();        
         
         sql.appendFragment(buildZigbeeEndPointStatement());
         sql.append("WHERE ZE.DeviceId").eq(deviceId);
         
-        ZigbeeEndPoint endpoint = yukonJdbcTemplate.queryForObject(sql, zigbeeEndPointRowMapper);
+        ZigbeeEndpoint endpoint = yukonJdbcTemplate.queryForObject(sql, zigbeeEndPointRowMapper);
 
         return endpoint;
     }
     
-    public ZigbeeEndPoint getZigbeeEndPointByMACAddress(String macAddress) {
+    public ZigbeeEndpoint getZigbeeEndPointByMACAddress(String macAddress) {
         SqlStatementBuilder sql = new SqlStatementBuilder();        
         
         sql.appendFragment(buildZigbeeEndPointStatement());
         sql.append("WHERE ZE.MacAddress").eq(macAddress);
         
-        ZigbeeEndPoint endpoint = yukonJdbcTemplate.queryForObject(sql, zigbeeEndPointRowMapper);
+        ZigbeeEndpoint endpoint = yukonJdbcTemplate.queryForObject(sql, zigbeeEndPointRowMapper);
 
         return endpoint; 
     }
@@ -128,7 +128,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     
     @Override
     @Transactional
-    public void createZigbeeEndPoint(ZigbeeEndPoint zigbeeEndPoint) {
+    public void createZigbeeEndPoint(ZigbeeEndpoint zigbeeEndPoint) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink params = sql.insertInto("ZBEndPoint");
@@ -142,7 +142,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
     
     @Override
-    public void updateZigbeeEndPoint(ZigbeeEndPoint zigbeeEndPoint) {
+    public void updateZigbeeEndPoint(ZigbeeEndpoint zigbeeEndPoint) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink params = sql.update("ZBEndPoint");
