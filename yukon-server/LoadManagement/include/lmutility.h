@@ -9,9 +9,6 @@
 #include "lmcontrolarea.h"
 
 extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, const CtiDate &startingDate);
-
-extern LONG GetOffsetFromTime(const CtiTime &time);
-
 extern std::string ControlWindowErrorMessage(const CtiTime &windowStartTime,
                                         const CtiTime &windowStopTime,
                                         const CtiTime &proposedTime,

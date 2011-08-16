@@ -19,8 +19,6 @@ public:
 
     CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901);
 
-    const std::vector<std::string>& getResults();
-
     const std::vector<ConstraintViolation>& getViolations();
     void clearViolations();
 

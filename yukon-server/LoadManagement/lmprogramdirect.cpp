@@ -5013,12 +5013,12 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
             text += getPAOName();
             text += ", a timed program, was scheduled to start but did not due to constraint violations";
             string additional = "";
-
-            for each ( const std::string & violationMsg in con_checker.getResults() )
+            const vector<ConstraintViolation>& cons_results = con_checker.getViolations();
+            for( std::vector<ConstraintViolation>::const_iterator iter = cons_results.begin(); iter != cons_results.end(); iter++ )
             {
-                additional += ( violationMsg + "\n" );
+                additional += CtiNumStr((*iter).getErrorCode());
+                additional += "\n";
             }
-
             CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
             signal->setSOE(2);
             multiDispatchMsg->insert(signal);
