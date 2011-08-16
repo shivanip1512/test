@@ -111,6 +111,8 @@ public class InventoryUtils {
 	public static int getHardwareConfigType(int devTypeID) {
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
 		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
+		    || devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6200_XCOM
+		    || devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO
