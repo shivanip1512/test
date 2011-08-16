@@ -37,10 +37,8 @@ public class EncryptionController {
 
                 Pattern lengthPattern = Pattern.compile("^[0-9A-Fa-f]{32}$");
                 YukonValidationUtils.regexCheck(errors,
-                                                "value",
-                                                encryptedRoute.getValue(),
-                                                lengthPattern,
-                                                baseKey + ".errorMsg.format");
+                                                "value", encryptedRoute.getValue(),
+                                                lengthPattern, baseKey + ".errorMsg.format");
 
             }
         };
@@ -53,7 +51,7 @@ public class EncryptionController {
         model.addAttribute("encryptedRoutes", encryptedRoutes);
         model.addAttribute("showRouteError", null);
 
-        return "view.jsp";
+        return "encryption/view.jsp";
     }
 
     @RequestMapping("delete")
@@ -81,11 +79,9 @@ public class EncryptionController {
             model.addAttribute("encryptedRoutes", encryptedRoutes);
             model.addAttribute("showRouteError", encryptedRoute.getPaobjectId());
 
-            return "view.jsp";
+            return "encryption/view.jsp";
         }
-
         encryptedRouteDao.saveEncryptedRoute(encryptedRoute);
-
         return "redirect:view";
     }
 

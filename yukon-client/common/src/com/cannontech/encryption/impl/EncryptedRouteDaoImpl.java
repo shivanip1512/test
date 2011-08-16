@@ -2,14 +2,14 @@ package com.cannontech.encryption.impl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -25,18 +25,18 @@ import com.google.common.collect.Lists;
 public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private DBPersistentDao dbPersistentDao;
-    private Logger log = YukonLogManager.getLogger(EncryptedRouteDaoImpl.class);
+    private PaoDefinitionDao paoDefinitionDao;
 
     @Override
     public List<EncryptedRoute> getAllEncryptedRoutes() {
+        
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.SUPPORTS_ROUTE_ENCRYPTION);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT paobjectid, paoname, type");
         sql.append("FROM yukonpaobject");
-        sql.append("WHERE paoclass").eq(PaoClass.ROUTE);
-        sql.append("    AND (Type ").eq(PaoType.ROUTE_RDS_TERMINAL);
-        sql.append("    OR Type ").eq(PaoType.ROUTE_TAP_PAGING);
-        sql.append("    OR Type ").eq(PaoType.ROUTE_SNPP_TERMINAL);
-        sql.append("    OR Type ").eq(PaoType.ROUTE_WCTP_TERMINAL).append(")");
+        sql.append("WHERE type IN (");
+        sql.appendArgumentList(paoTypes).append(")");
 
         final List<EncryptedRoute> encryptedIDs = Lists.newArrayList();
 
@@ -69,17 +69,13 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     public void saveEncryptedRoute(EncryptedRoute encryptedRoute) {
         StaticPaoInfo spi = new StaticPaoInfo(PaoInfo.CPS_ONE_WAY_ENCRYPTION_KEY);
         spi.setPaobjectId(encryptedRoute.getPaobjectId());
-        try {
-            dbPersistentDao.performDBChange(spi, TransactionType.RETRIEVE);
-            if (encryptedRoute.getValue() != "") {
-                spi.setValue(encryptedRoute.getValue());
-            } else {
-                spi.setValue(null);
-            }
-            dbPersistentDao.performDBChange(spi, TransactionType.UPDATE);
-        } catch (Exception e) {
-            log.error("Problem while trying to save an encryption key to the database.", e);
+        dbPersistentDao.performDBChange(spi, TransactionType.RETRIEVE);
+        if (encryptedRoute.getValue() != "") {
+            spi.setValue(encryptedRoute.getValue());
+        } else {
+            spi.setValue(null);
         }
+        dbPersistentDao.performDBChange(spi, TransactionType.UPDATE);
     }
 
     @Autowired
@@ -90,6 +86,11 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 
 }

@@ -65,6 +65,29 @@
             <tag name="LOCATE_ROUTE"/>
         </tags>
     </pao>
+    
+    <pao id="SUPPORTS_ROUTE_ENCRYPTION"  abstract="true">
+        <tags>
+            <tag name="SUPPORTS_ROUTE_ENCRYPTION"/>
+        </tags>
+    </pao>
+
+    <pao id="ROUTE_WCTP_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+        <displayName>WCTP Terminal Route</displayName>
+    </pao>
+
+    <pao id="ROUTE_SNPP_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+        <displayName>SNPP Terminal Route</displayName>
+    </pao>
+
+    <pao id="ROUTE_TAP_PAGING" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+        <displayName>Tap Paging</displayName>
+    </pao>
+
+    <pao id="ROUTE_RDS_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+        <displayName>RDS Terminal Route</displayName>
+    </pao>
+    
     <pao id="MCT_200_SERIES_TAG" abstract="true">
         <tags>
             <tag name="MCT_200_SERIES"/>

@@ -16,12 +16,12 @@ public enum PaoInfo {
     // Other....
     CPS_ONE_WAY_ENCRYPTION_KEY(null);
     
-    private final String defaultValue;
     private final boolean defaultable;
+    private final String defaultValue;
     
     PaoInfo() {
-        this.defaultValue = null;
         this.defaultable = false;
+        this.defaultValue = null;
     }
     
     PaoInfo(String defaultValue) {
@@ -29,12 +29,12 @@ public enum PaoInfo {
         this.defaultValue = defaultValue;
     }
     
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
     public boolean isDefaultable() {
         return defaultable;
     }
 
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+    
 }

@@ -6,7 +6,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="adminSetup" page="encryption">
-
     <script type="text/javascript">
     document.observe("dom:loaded", function() {
         if (${not empty showRouteError}) {
@@ -60,8 +59,6 @@
         $(formId).submit();
     }
 </script>
-
-
     <table class="resultsTable">
         <tr>
             <th><i:inline key=".paoNameLbl" /></th>
