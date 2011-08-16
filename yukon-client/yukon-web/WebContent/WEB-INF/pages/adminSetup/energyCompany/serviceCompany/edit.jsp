@@ -255,13 +255,8 @@
 
             <cti:displayForPageEditModes modes="EDIT">
             
-                <cti:url var="serviceCompanyUpdateUrl" value="${baseUrl}/update">
-                    <cti:param name="ecId" value="${ecId}"/>
-                    <cti:param name="serviceCompanyId" value="${serviceCompany.companyId}"/>
-                </cti:url>
-            
                 <cti:button key="delete" id="deleteButton"/>
-                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" href="${serviceCompanyUpdateUrl}" submitName="delete" argument="${numberOfInventoryInServiceCompany}"/>
+                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" submitName="delete" argument="${numberOfInventoryInServiceCompany}"/>
 
             </cti:displayForPageEditModes>
 
