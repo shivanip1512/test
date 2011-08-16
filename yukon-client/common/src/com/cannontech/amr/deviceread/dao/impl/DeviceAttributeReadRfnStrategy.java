@@ -114,6 +114,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
 
                 @Override
                 public void complete() {
+                    delegateCallback.receivedLastValue(meter.getPaoIdentifier());
                     int remaining = pendingRequests.decrementAndGet();
                     if (remaining == 0) {
                         delegateCallback.complete();

@@ -65,6 +65,11 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             }
             
             @Override
+            public void receivedLastResultString(CommandRequestDevice command, String value) {
+                delegateCallback.receivedLastValue(command.getDevice().getPaoIdentifier());
+            }
+            
+            @Override
             public void processingExceptionOccured(String reason) {
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.plc.exception", reason);
                 DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);

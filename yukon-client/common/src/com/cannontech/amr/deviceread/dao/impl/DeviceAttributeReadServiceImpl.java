@@ -160,6 +160,11 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
             
             @Override
+            public void receivedLastValue(PaoIdentifier pao) {
+                delegateCallback.receivedLastValue(pao);
+            }
+            
+            @Override
             public void receivedException(DeviceAttributeReadError exception) {
                 delegateCallback.receivedException(exception);
             }

@@ -214,7 +214,7 @@ public class CommandRequestRetryExecutor<T> {
         
         @Override
         public void receivedIntermediateResultString(T command, String value) {
-            delegateCallback.receivedLastResultString(command, value);
+            delegateCallback.receivedIntermediateResultString(command, value);
         }
         
         @Override

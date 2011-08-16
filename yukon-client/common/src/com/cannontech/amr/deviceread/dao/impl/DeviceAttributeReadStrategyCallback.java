@@ -12,6 +12,8 @@ public interface DeviceAttributeReadStrategyCallback {
      */
     public void receivedValue(PaoIdentifier pao, PointValueHolder value);
     
+    public void receivedLastValue(PaoIdentifier pao);
+    
     /**
      * For a given PAO, this method should be called in those cases that the receivedValue method will NOT be called.
      */
