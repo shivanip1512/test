@@ -37,7 +37,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
 
         public Duration timeToPoll; 
 
-        private class DeviceToPoll {
+        private class DeviceToPoll implements Comparable<DeviceToPoll> {
             private ZigbeeDevice device;
             private Instant pollStopTime;
             
@@ -51,6 +51,57 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
             }
             public Instant getPollStopTime() {
                 return pollStopTime;
+            }
+
+            @Override
+            public int hashCode() {
+                final int prime = 31;
+                int result = 1;
+                result = prime * result + getOuterType().hashCode();
+                result = prime * result + ((device == null) ? 0 : device.hashCode());
+                result = prime * result + ((pollStopTime == null) ? 0 : pollStopTime.hashCode());
+                return result;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj)
+                    return true;
+                if (obj == null)
+                    return false;
+                if (getClass() != obj.getClass())
+                    return false;
+                DeviceToPoll other = (DeviceToPoll) obj;
+                if (!getOuterType().equals(other.getOuterType()))
+                    return false;
+                if (device == null) {
+                    if (other.device != null)
+                        return false;
+                } else if (!device.equals(other.device))
+                    return false;
+                if (pollStopTime == null) {
+                    if (other.pollStopTime != null)
+                        return false;
+                } else if (!pollStopTime.equals(other.pollStopTime))
+                    return false;
+                return true;
+            }
+
+            private SmartRunnable getOuterType() {
+                return SmartRunnable.this;
+            }
+
+            @Override
+            public int compareTo(DeviceToPoll o) {
+                if (this.equals(o)) {
+                    return 0;
+                }
+                // Doesn't greater or less then is not important to us, just giving it an order for ConcurrentSkipListSet 
+                if (pollStopTime.isAfter(o.getPollStopTime())) {
+                    return 1;
+                } else {
+                    return -1;
+                }
             }
         }
         
