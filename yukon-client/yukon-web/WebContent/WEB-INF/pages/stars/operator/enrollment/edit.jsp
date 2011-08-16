@@ -35,7 +35,7 @@ updateOKButton = function() {
 
 <cti:msgScope paths="modules.operator.enrollmentEdit,modules.operator.enrollmentList">
 
-<div class="content"><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></div>
+<div><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></div>
 
 <cti:url var="submitUrl" value="/spring/stars/operator/enrollment/confirmSave">
     <cti:param name="isAdd" value="${isAdd}"/>

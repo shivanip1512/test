@@ -22,7 +22,7 @@
         <form:hidden path="inventoryEnrollments[${status.index}].relay"/>
     </c:forEach>
 
-    <div class="content">
+    <div>
         <c:if test="${isAdd}">
             <cti:msg2 key=".confirmEnroll" arguments="${assignedProgram.name.displayName}"/>
         </c:if>
