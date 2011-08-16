@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/11/2011 12:45:04 PM                        */
+/* Created on:     8/16/2011 9:59:22 AM                         */
 /*==============================================================*/
 
 
@@ -1185,7 +1185,7 @@ create table CTIDatabase  (
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('5.3', 'Matt K', '16-Aug-2011', 'Latest Update', 3 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -7394,7 +7394,7 @@ create table ThermostatEventHistory  (
    Username             VARCHAR2(64)                    not null,
    EventTime            DATE                            not null,
    ThermostatId         NUMBER                          not null,
-   ManualTemp           NUMBER,
+   ManualTemp           FLOAT,
    ManualMode           VARCHAR2(64),
    ManualFan            VARCHAR2(64),
    ManualHold           CHAR(1),

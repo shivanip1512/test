@@ -178,8 +178,13 @@ ALTER TABLE ArchiveDataAnalysis
 DROP COLUMN IntervalLengthInMillis;
 /* End YUK-10146 */
 
+/* Start YUK-10150 */ 
+ALTER TABLE ThermostatEventHistory 
+ALTER COLUMN ManualTemp FLOAT;
+/* End YUK-10150 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '11-Aug-2011', 'Latest Update', 3 );
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '16-Aug-2011', 'Latest Update', 3 );

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/11/2011 12:51:43 PM                        */
+/* Created on:     8/16/2011 9:57:42 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -1273,7 +1273,7 @@ create table CTIDatabase (
 )
 go
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('5.3', 'Matt K', '16-Aug-2011', 'Latest Update', 3 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -7865,7 +7865,7 @@ create table ThermostatEventHistory (
    Username             varchar(64)          not null,
    EventTime            datetime             not null,
    ThermostatId         numeric              not null,
-   ManualTemp           numeric              null,
+   ManualTemp           float                null,
    ManualMode           varchar(64)          null,
    ManualFan            varchar(64)          null,
    ManualHold           char(1)              null,
