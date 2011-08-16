@@ -90,9 +90,9 @@
                                 onclick="javascript:showAddKey('${route.paobjectId}')" /> 
                         </span>
                         <span style="display:${disableDisplay}"> 
+                            <i:inline key=".keyFoundLbl" /> 
                             <cti:button key="deleteBtn" 
                                 onclick="javascript:showDeleteConfirm('${route.paobjectId}')" /> 
-                            <i:inline key=".keyFoundLbl" /> 
                         </span>
                         <span style="display:${saveDisplay}"> 
                             <i:inline key=".keyLbl" /> 

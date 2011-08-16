@@ -35,8 +35,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT paobjectid, paoname, type");
         sql.append("FROM yukonpaobject");
-        sql.append("WHERE type IN (");
-        sql.appendArgumentList(paoTypes).append(")");
+        sql.append("WHERE type").in(paoTypes);
 
         final List<EncryptedRoute> encryptedIDs = Lists.newArrayList();
 
