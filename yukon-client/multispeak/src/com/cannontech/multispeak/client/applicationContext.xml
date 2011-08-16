@@ -83,8 +83,9 @@
     <property name="nextValueHelper" ref="nextValueHelper"/>  
   </bean>
   
-  <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl">
-  </bean>
+  <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl"/>
+  
+  <bean class="com.cannontech.multispeak.dao.impl.MeterReadProcessingServiceImpl"/>
 
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>

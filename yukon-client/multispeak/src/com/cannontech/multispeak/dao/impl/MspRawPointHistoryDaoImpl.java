@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,12 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
@@ -26,54 +34,98 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
+import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 {
 	private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 	
-	private YukonJdbcTemplate yukonJdbcTemplate = null;
-
-	@Override
-    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
-            Date endDate, String lastReceived, int maxRecords) {
-    	
-    	final long startTime = System.currentTimeMillis();
-    	
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType,");
-        sql.append("pao.type, pao.paobjectId, dmg.meterNumber");
-        sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append(  "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId");
-        sql.append("WHERE ( pointOffset < 101 OR pointOffset > 104)");
-        sql.append(  "AND timestamp").gte(startDate);
-        sql.append(  "AND timestamp").lte(endDate);
-    	if (readBy == ReadBy.METER_NUMBER) {
-    		sql.append(  "AND dmg.meterNumber").eq(readByValue);
-    	} else if (StringUtils.isNotBlank(lastReceived) ){
-    		sql.append(  "AND dmg.meterNumber").gt(lastReceived);
-    	}
-        sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp"); 
-        
-        log.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE <= " + endDate);
-        List<MeterRead> meterReadList = new ArrayList<MeterRead>();  
-        yukonJdbcTemplate.query(sql, new MeterReadResultSetExtractor(maxRecords, meterReadList));
-        
-        MeterRead[] meterReadArray = new MeterRead[meterReadList.size()];
-        meterReadList.toArray(meterReadArray);
-
-        final long stopTime = System.currentTimeMillis(); 
-        log.info( (stopTime - startTime)*.001 + "secs to load RPH data for " + readBy.name() + ": " + readByValue + 
-        		" for lastReceived: " + lastReceived + ". RecordSize: " + meterReadArray.length);
-        
-        return meterReadArray;
-    }
+	private YukonJdbcTemplate yukonJdbcTemplate;
+	private RawPointHistoryDao rawPointHistoryDao;
+	private MeterReadProcessingService meterReadProcessingService;
     
+    
+	@Override
+	public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
+	                                      Date endDate, String lastReceived, int maxRecords) {
+
+	    List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+
+	    EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+	    int estimatedSize = 0;
+
+	    EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+	    // load up results for each attribute
+	    for (BuiltInAttribute attribute : attributesToLoad) {
+
+	        ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = 
+	            rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate, 
+	                                                false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD);
+
+	        resultsPerAttribute.put(attribute, resultsForAttribute);
+	        estimatedSize += resultsForAttribute.size();
+	    }
+
+	    // build the actual MeterRead objects in the order they are to be output getPaoList returns the meters in
+	    List<MeterRead> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+	    
+
+	    // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        for (Meter meter : meters) { 
+            for (BuiltInAttribute attribute : attributesToLoad) { 
+                List<PointValueQualityHolder> rawValues =  
+                    resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
+                for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
+                    MeterRead meterRead = meterReadProcessingService.createMeterRead(meter); 
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder); 
+                    result.add(meterRead); 
+                } 
+            } 
+        }
+
+	    // this last step is kind of annoying, look at changing method signature
+	    MeterRead[] meterReadArray = new MeterRead[result.size()];
+	    result.toArray(meterReadArray);
+
+	    return meterReadArray;
+	}
+
+
+    
+    private List<Meter> getPaoList(ReadBy readBy, String readByValue, String lastReceived,
+                                           int maxRecords) {
+        // get the paos we want, using readBy, readByValue, and lastReceived
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.paObjectId, ypo.paoName, ypo.type, ypo.disableFlag,");
+        sql.append("  dmg.meterNumber, dcs.address,");
+        sql.append("  dr.routeId, rypo.paoName as route");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append("  JOIN Device d ON ypo.paObjectId = d.deviceId");
+        sql.append("  JOIN DeviceMeterGroup dmg ON d.deviceId = dmg.deviceId");
+        sql.append("  LEFT JOIN DeviceCarrierSettings dcs ON d.deviceId = dcs.deviceId");
+        sql.append("  LEFT JOIN DeviceRoutes dr ON d.deviceId = dr.deviceId");
+        sql.append("  LEFT JOIN YukonPaObject rypo ON dr.routeId = rypo.paObjectId");
+        if (readBy == ReadBy.METER_NUMBER) {
+            sql.append(  "WHERE dmg.meterNumber").eq(readByValue);
+        } else if (StringUtils.isNotBlank(lastReceived) ){
+            sql.append(  "WHERE dmg.meterNumber").gt(lastReceived);
+        }
+        sql.append("ORDER BY dmg.meterNumber"); 
+        
+        List<Meter> result = yukonJdbcTemplate.queryForLimitedResults(sql, new MeterRowMapper(), maxRecords);
+
+        return result;
+    }
+
     @Override
     public MeterRead[] retrieveLatestMeterReads(String lastReceived, int maxRecords) {
     	
@@ -358,4 +410,14 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
 		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
+    
+    @Autowired
+    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
+        this.rawPointHistoryDao = rawPointHistoryDao;
+    }
+    
+    @Autowired
+    public void setMeterReadProcessingService(MeterReadProcessingService meterReadProcessingService) {
+        this.meterReadProcessingService = meterReadProcessingService;
+    }
 }

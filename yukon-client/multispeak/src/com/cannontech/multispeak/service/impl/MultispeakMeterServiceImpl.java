@@ -1,9 +1,3 @@
- /*
- * Created on Jul 11, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.service.impl;
 
 import java.rmi.RemoteException;
@@ -12,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +25,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
@@ -38,6 +37,7 @@ import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -49,10 +49,15 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -60,6 +65,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.substation.dao.SubstationDao;
@@ -80,10 +87,16 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
 import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.MeterReadProcessingService;
+import com.cannontech.multispeak.dao.MeterReadUpdater;
+import com.cannontech.multispeak.dao.MeterReadUpdaterChain;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ExtensionsItem;
@@ -93,6 +106,7 @@ import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.OutageEventType;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
 import com.cannontech.multispeak.event.CDStatusEvent;
@@ -103,10 +117,13 @@ import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.MapMaker;
 import com.google.common.collect.SetMultimap;
 
 /**
@@ -116,9 +133,9 @@ import com.google.common.collect.SetMultimap;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class MultispeakMeterServiceImpl implements MultispeakMeterService, MessageListener {
-    
-    private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 	
+    private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
+    
     private MultispeakFuncs multispeakFuncs;
     private BasicServerConnection porterConnection;
     private MspMeterDao mspMeterDao;
@@ -128,14 +145,19 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
-    private TransactionTemplate transactionTemplate = null;
-    private PaoDefinitionDao paoDefinitionDao = null;
-    private DeviceCreationService deviceCreationService = null;
-    private DeviceUpdateService deviceUpdateService = null;
-    private SubstationDao substationDao = null;
-    private SubstationToRouteMappingDao substationToRouteMappingDao = null;
-    private DeviceDao deviceDao = null;
-    private MeterSearchDao meterSearchDao = null;
+    private TransactionTemplate transactionTemplate;
+    private PaoDefinitionDao paoDefinitionDao;
+    private DeviceCreationService deviceCreationService;
+    private DeviceUpdateService deviceUpdateService;
+    private SubstationDao substationDao;
+    private SubstationToRouteMappingDao substationToRouteMappingDao;
+    private DeviceDao deviceDao;
+    private MeterSearchDao meterSearchDao;
+    private DeviceAttributeReadService deviceAttributeReadService;
+    private MspRawPointHistoryDao mspRawPointHistoryDao;
+    private AttributeService attributeService;
+    private PointDao pointDao;
+    private MeterReadProcessingService meterReadProcessingService;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -360,43 +382,115 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
 	
     @Override
-    public synchronized ErrorObject[] meterReadEvent(MultispeakVendor vendor, 
+    public synchronized ErrorObject[] meterReadEvent(final MultispeakVendor vendor, 
             String[] meterNumbers,
-            String transactionID)
-    {
+            final String transactionID) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
         log.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
         
+        final CB_ServerSoap_PortType port = MultispeakPortFactory.getCB_ServerPort(vendor);
+        if (port == null) {
+            log.error("Port not found for CB_MR (" + vendor.getCompanyName() + ")");
+            return new ErrorObject[0]; // this doesn't quite mimic the old behavior
+        }
+        
+        List<com.cannontech.amr.meter.model.Meter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
         for (String meterNumber : meterNumbers) {
         	
-            com.cannontech.amr.meter.model.Meter meter;
             try {
-            	meter = meterDao.getForMeterNumber(meterNumber);
- 	        	
-            	long id = generateMessageID();      
- 	            MeterReadEvent event = new MeterReadEvent(vendor, id, meter, transactionID);
- 	            getEventsMap().put(new Long(id), event);
- 	                
- 	            String commandStr = "getvalue kwh";
- 	            if( DeviceTypesFuncs.isMCT4XX(meter.getPaoType().getDeviceTypeId()) )
- 	            	commandStr = "getvalue peak"; // getvalue peak returns the peak kW and the total kWh
-
- 	            writePilRequest(meter, commandStr, id, 13);
-
- 	            //Second message (legacy but kept here for reminder.
-// 	            MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
-// 	            pilRequest.setCommandString("getvalue demand");
-// 	            porterConnection.write(pilRequest);
- 	        } 
-            catch (NotFoundException e) {
- 	               
+                com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber); //TODO probably need a better load method
+                allPaosToRead.add(meter);
+ 	        } catch (NotFoundException e) {
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", vendor.getCompanyName());
             	errorObjects.add(err);            
             }
         }
         
+        final ImmutableMap<PaoIdentifier, com.cannontech.amr.meter.model.Meter> meterLookup =
+            PaoUtils.indexYukonPaos(allPaosToRead);
+        
+        final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        
+        final ConcurrentMap<PaoIdentifier, MeterReadUpdater> updaterMap = 
+            new MapMaker().concurrencyLevel(2).initialCapacity(meterNumbers.length).makeMap();
+        
+        DeviceAttributeReadCallback callback = new DeviceAttributeReadCallback() {
+
+            @Override
+            public void complete() {
+                // do we need to do anything here once we received all of the data?
+            }
+
+            @Override
+            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                // the following is expensive but unavoidable until PointData is changed
+                PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
+                BuiltInAttribute thisAttribute = getAttributeForPoint(paoPointIdentifier, attributes);
+                if (thisAttribute == null) return;
+                
+                // Get a new updater object for the current value
+                MeterReadUpdater meterReadUpdater = meterReadProcessingService.buildMeterReadUpdater(thisAttribute, value);
+                // if the map is empty, place the updater into it
+                MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                while (oldValue != null) {
+                    // looks like the map was not empty, combine the existing updater with the
+                    // new one and then place it back in the map, but we must be careful
+                    // that someone hasn't changed the map out from under us (thus the while loop)
+                    MeterReadUpdaterChain chain = new MeterReadUpdaterChain(oldValue, meterReadUpdater);
+                    boolean success = updaterMap.replace(pao, oldValue, chain);
+                    if (success) break;
+                    oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                }
+            }
+            
+            @Override
+            public void receivedLastValue(PaoIdentifier pao) {
+                com.cannontech.amr.meter.model.Meter meter = meterLookup.get(pao);
+                MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
+                
+                // because we were so careful about putting updater or updater chains into the
+                // map, we know we can safely remove it and generate a MeterRead from it
+                // whenever we want; but this happens to be a perfect time
+                MeterReadUpdater updater = updaterMap.remove(pao);
+                updater.update(meterRead);
+                
+                MeterRead[] meterReads = new MeterRead[] {meterRead};
+                try {
+                    ErrorObject[] errObjects = port.readingChangedNotification(meterReads, transactionID);
+                    if (!ArrayUtils.isEmpty(errObjects)) {
+                        String endpointURL = vendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+                        multispeakFuncs.logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
+                    }
+                } catch (RemoteException e) {
+                    log.warn("caught exception in receivedValue of meterReadEvent", e);
+                }
+            }
+
+            @Override
+            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+                // do we need to send something to the foreign system here?
+                log.warn("received error for " + pao + ": " + error);
+            }
+
+            @Override
+            public void receivedException(DeviceAttributeReadError error) {
+                log.warn("received exception in meterReadEvent callback: " + error);
+            }
+        };
+        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, UserUtils.getYukonUser());
+        
         return mspObjectDao.toErrorObject(errorObjects);
+    }
+    
+    private BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
+        for (BuiltInAttribute builtInAttribute : possibleMatches) {
+            PaoPointIdentifier pointForThisAttribute = attributeService.getPaoPointIdentifierForNonMappedAttribute(paoPointIdentifier.getPaoIdentifier(), builtInAttribute);
+            if (paoPointIdentifier.equals(pointForThisAttribute)) {
+                return builtInAttribute;
+            }
+        }
+        return null;
     }
     
     @Override
@@ -1823,5 +1917,30 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired
     public void setMeterSearchDao(MeterSearchDao meterSearchDao) {
         this.meterSearchDao = meterSearchDao;
+    }
+    
+    @Autowired
+    public void setDeviceAttributeReadService(DeviceAttributeReadService deviceAttributeReadService) {
+        this.deviceAttributeReadService = deviceAttributeReadService;
+    }
+    
+    @Autowired
+    public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
+        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
+    }
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
+    @Autowired
+    public void setMeterReadProcessingService(MeterReadProcessingService meterReadProcessingService) {
+        this.meterReadProcessingService = meterReadProcessingService;
     }
 }

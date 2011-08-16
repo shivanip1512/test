@@ -145,6 +145,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         //TODO = need to get the true number of meters remaining
         int numRemaining = (meters.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        if( meters != null && numRemaining  != 0) {
+        	multispeakFuncs.getResponseHeader().setLastSent(meters[meters.length-1].getObjectID());
+        }
+
         return meters;
     }
     
@@ -180,6 +184,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         
         int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        if( meterReads != null && numRemaining  != 0) {
+        	multispeakFuncs.getResponseHeader().setLastSent(meterReads[meterReads.length-1].getObjectID());
+        }
 
         return meterReads;
     }
@@ -508,7 +515,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
-        
+        if( meterReads != null && numRemaining  != 0) {
+        	multispeakFuncs.getResponseHeader().setLastSent(meterReads[meterReads.length-1].getObjectID());
+        }
+
         CTILogger.info("Returning " + meterReads.length + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return meterReads;
     }
