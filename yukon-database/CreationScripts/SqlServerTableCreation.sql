@@ -1273,7 +1273,7 @@ create table CTIDatabase (
 )
 go
 
-insert into CTIDatabase values('5.3', 'Matt K', '16-Aug-2011', 'Latest Update', 3 );
+/* __YUKON_VERSION__ */
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */

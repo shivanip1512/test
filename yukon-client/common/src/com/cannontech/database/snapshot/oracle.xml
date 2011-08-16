@@ -23891,9 +23891,9 @@
             <i__table reference="../../.."/>
             <i__columnName>MANUALTEMP</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>NUMBER</i__typeName>
+            <i__typeName>FLOAT</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>22</i__columnSize>
+            <i__columnSize>126</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
