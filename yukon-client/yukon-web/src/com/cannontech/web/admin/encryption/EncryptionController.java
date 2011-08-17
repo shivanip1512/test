@@ -35,7 +35,7 @@ public class EncryptionController {
             @Override
             public void doValidation(EncryptedRoute encryptedRoute, Errors errors) {
 
-                Pattern lengthPattern = Pattern.compile("^[0-9A-Fa-f]{32}$");
+                Pattern lengthPattern = Pattern.compile("^[0-9A-Fa-f]{40}$");
                 YukonValidationUtils.regexCheck(errors,
                                                 "value", encryptedRoute.getValue(),
                                                 lengthPattern, baseKey + ".errorMsg.format");
