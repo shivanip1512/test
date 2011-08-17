@@ -36,17 +36,12 @@
 
 					<%-- action icons --%>
 					<td>
-                        <cti:msg2 var="viewResponseMonitor" key=".porterResponseMonitoring"/>
-						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${fn:escapeXml(monitor.name)})" 
-							style="text-decoration: none;">
-							<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" 
-								onmouseout="javascript:this.src='${cog}'">
-						</a>
+                        <cti:button key="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}"/>
 					</td>
 
 					<%-- monitor name --%>
 					<td class="${tdClass}">
-						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${fn:escapeXml(monitor.name)})">${fn:escapeXml(monitor.name)}</a>
+						<a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitor.name}"/>">${fn:escapeXml(monitor.name)}</a>
 					</td>
 
 					<%-- enable/disable --%>
@@ -54,12 +49,12 @@
 						<c:choose>
 							<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
 								<tags:widgetActionRefreshImage method="toggleEnabled"
-									nameKey="disable" titleArgument="${monitor.name}"
+									nameKey="disable" arguments="${monitor.name}"
 									monitorId="${monitor.monitorId}"/>
 							</c:when>
 							<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
 								<tags:widgetActionRefreshImage method="toggleEnabled"
-									nameKey="enable" titleArgument="${monitor.name}"
+									nameKey="enable" arguments="${monitor.name}"
 									monitorId="${monitor.monitorId}" checked="false"/>
 							</c:when>
 						</c:choose>
@@ -69,7 +64,7 @@
 		</table>
 	</c:when>
 	<c:otherwise>
-        <i:inline key=".noMonitorsSetup"/>
+        <i:inline key=".noMonitors"/>
     </c:otherwise>
 </c:choose>
 

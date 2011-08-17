@@ -13,7 +13,7 @@
 <cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
 
 <c:if test="${showConfirm}">
-    <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${confirmArument}"/>
+    <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${arguments}"/>
 </c:if>
 
 <script type="text/javascript">
@@ -38,7 +38,7 @@
 </script>
 
 <span id="${thisId}">
-    <cti:button key="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${titleArgument}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();"/>
+    <cti:button key="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();"/>
     <span class="widgetAction_waiting" style="display:none">
         <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>">
     </span>

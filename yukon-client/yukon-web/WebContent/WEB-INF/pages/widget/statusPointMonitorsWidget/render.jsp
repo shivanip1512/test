@@ -17,7 +17,6 @@
 <c:choose>
     <c:when test="${fn:length(monitors) > 0}">
         <table class="compactResultsTable">
-        	
         	<tr>
         		<th style="width:20px;">&nbsp;</th>
         		<th><i:inline key=".tableHeader.name"/></th>
@@ -26,15 +25,13 @@
         	</tr>
         
         	<c:forEach var="monitor" items="${monitors}">
-        	
         		<c:set var="monitorId" value="${monitor.statusPointMonitorId}"/>
         		<c:set var="monitorName" value="${monitor.statusPointMonitorName}"/>
-        
         		<c:set var="tdClass" value=""/>
+                
         		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
         			<c:set var="tdClass" value="subtleGray"/>
         		</c:if>
-        		
         		<tr>
         			<cti:url var="viewStatusPointMonitoringUrl" value="/spring/amr/statusPointMonitoring/viewPage">
         				<cti:param name="statusPointMonitorId" value="${monitorId}"/>
@@ -42,15 +39,12 @@
         				
         			<%-- action icons --%>
         			<td>
-        				<cti:msg2 var="statusPointMonitoringActionTitleText" key=".actionTitle.statusPointMonitoring"/>
-                        <a href="${viewStatusPointMonitoringUrl}" title="${statusPointMonitoringActionTitleText} (${fn:escapeXml(monitorName)})" style="text-decoration:none;">
-        					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
-        				</a>
+                        <cti:button key="edit" renderMode="image" href="${viewStatusPointMonitoringUrl}" arguments="${monitorName}"/>
         			</td>
         			
         			<%-- monitor name --%>
         			<td class="${tdClass}">
-        				<a href="${viewStatusPointMonitoringUrl}" title="${statusPointMonitoringActionTitleText} (${fn:escapeXml(monitorName)})">${fn:escapeXml(monitorName)}</a>
+        				<a href="${viewStatusPointMonitoringUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
         			</td>
                     			
         			<%-- monitoring count --%>
@@ -77,7 +71,7 @@
         </table>
     </c:when>
     <c:otherwise>
-    	<i:inline key=".noMonitorsSetup"/>
+    	<i:inline key=".noMonitors"/>
     </c:otherwise>
 </c:choose>
 

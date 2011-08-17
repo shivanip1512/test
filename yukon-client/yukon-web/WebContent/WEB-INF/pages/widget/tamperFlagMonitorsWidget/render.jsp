@@ -15,7 +15,7 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty tamperFlagMonitorsWidgetError}">
-  	<div class="errorRed">${tamperFlagMonitorsWidgetError}</div>
+  	<div class="errorMessage">${tamperFlagMonitorsWidgetError}</div>
 </c:if>
 
 <%-- TABLE --%>
@@ -49,15 +49,12 @@
 				
 			<%-- action icons --%>
 			<td>
-			    <cti:msg2 var="tamperFlagProcessingActionTitleText" key=".actionTitle.tamperFlagProcessing"/>
-				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${fn:escapeXml(monitorName)})" style="text-decoration:none;">
-					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
-				</a>
+                    <cti:button key="edit" renderMode="image" href="${viewTamperFlagProcessingUrl}" arguments="${monitorName}"/>
 			</td>
 			
 			<%-- monitor name --%>
 			<td class="${tdClass}">
-				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${fn:escapeXml(monitorName)})">${fn:escapeXml(monitorName)}</a>
+				<a href="${viewTamperFlagProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
 			</td>
 			
 			<%-- violations count --%>
@@ -92,7 +89,7 @@
 </c:when>
 
 <c:otherwise>
-	<i:inline key=".noMonitorsSetup"/>
+	<i:inline key=".noMonitors"/>
 </c:otherwise>
 </c:choose>
 

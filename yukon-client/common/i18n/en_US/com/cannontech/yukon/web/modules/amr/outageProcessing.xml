@@ -7,16 +7,15 @@
 	<!-- OutageMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.widgets.outageMonitorsWidget.noMonitorsSetup">No Outage Monitors Setup</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.noMonitors">No Outage Monitors</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.name">Name</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.violations">Violations</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.enabled">Enabled</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.createNew">Create</entry>
-    <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing">Manage Processor Output</entry>
-    <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing.imageUrl">/WebConfig/yukon/Icons/cog.gif</entry>
-    <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing.hoverUrl">/WebConfig/yukon/Icons/cog_over.gif</entry>
-    <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing.hoverText">Manage Processor Output ({0})</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.edit.imageUrl">/WebConfig/yukon/Icons/cog.gif</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.edit.hoverUrl">/WebConfig/yukon/Icons/cog_over.gif</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.edit.hoverText">Edit Outage Monitor Details ({0})</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.disable.hoverText">Disable ({0})</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     <entry key="yukon.web.widgets.outageMonitorsWidget.enable.hoverText">Enable ({0})</entry>

@@ -5,19 +5,13 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
-<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
-
-<cti:msg var="enableText" key="yukon.common.enable"/> 
-<cti:msg var="disableText" key="yukon.common.disable"/> 
-
 <%-- CREATE NEW VALIDATION MONITOR FORM --%>
 <form id="createNewValidationMonitorForm_${widgetParameters.widgetId}" action="/spring/common/vee/monitor/edit" method="get">
 </form>
 
 <%-- ERROR --%>
 <c:if test="${not empty validationMonitorsWidgetError}">
-    <div class="errorRed">${validationMonitorsWidgetError}</div>
+    <div class="errorMessage">${validationMonitorsWidgetError}</div>
 </c:if>
         
 <%-- TABLE --%>
@@ -27,6 +21,7 @@
 <table class="compactResultsTable">
     
     <tr>
+        <th style="width:20px;">&nbsp;</th>
         <th><i:inline key=".tableHeader.name"/></th>
         <th style="text-align:right;"><i:inline key=".tableHeader.threshold"/> (<i:inline key=".thresholdUnits"/>)</th>
         <th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
@@ -34,28 +29,27 @@
     </tr>
 
     <c:forEach var="monitor" items="${monitors}">
-    
         <c:set var="monitorId" value="${monitor.validationMonitorId}"/>
         <c:set var="monitorName" value="${monitor.name}"/>
-
         <c:set var="tdClass" value=""/>
         <c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
             <c:set var="tdClass" value="subtleGray"/>
         </c:if>
+        <cti:url var="viewValidationMonitorEditorUrl" value="/spring/common/vee/monitor/edit">
+            <cti:param name="validationMonitorId" value="${monitorId}"/>
+        </cti:url>
         
         <tr>
-            
+            <%-- edit button --%>
             <td>
+                <cti:button key="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${monitorName}"/>
+            </td>
             
-                <%-- monitor name --%>
-                <cti:url var="viewValidationMonitorEditorUrl" value="/spring/common/vee/monitor/edit">
-                    <cti:param name="validationMonitorId" value="${monitorId}"/>
-                </cti:url>
-                <cti:msg2 var="editActionTitleText" key=".actionTitle.edit"/>
-                <a href="${viewValidationMonitorEditorUrl}" title="${editActionTitleText}">
+            <%-- monitor name --%>
+            <td>            
+                <a href="${viewValidationMonitorEditorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>" >
                     ${fn:escapeXml(monitorName)}
                 </a>
-                
             </td>
             
             <%-- threshold --%>
@@ -90,7 +84,7 @@
 </c:when>
 
 <c:otherwise>
-    <i:inline key=".noMonitorsSetup"/>
+    <i:inline key=".noMonitors"/>
 </c:otherwise>
 </c:choose>
 

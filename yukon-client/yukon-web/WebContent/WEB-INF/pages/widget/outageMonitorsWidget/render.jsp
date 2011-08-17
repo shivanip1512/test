@@ -45,13 +45,12 @@
 				
 			<%-- action icons --%>
 			<td>
-                <cti:button key="actionTitle.outageProcessing" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${monitorName}"/>
+                <cti:button key="edit" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${monitorName}"/>
 			</td>
 			
 			<%-- monitor name --%>
 			<td class="${tdClass}">
-				<cti:msg2 var="outageProcessingActionTitleText" key=".actionTitle.outageProcessing"/>
-				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${fn:escapeXml(monitorName)})">${fn:escapeXml(monitorName)}</a>
+				<a href="${viewOutageProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
 			</td>
 			
 			<%-- violations count --%>
@@ -83,7 +82,7 @@
 </c:when>
 
 <c:otherwise>
-	<i:inline key=".noMonitorsSetup"/>
+	<i:inline key=".noMonitors"/>
 </c:otherwise>
 </c:choose>
 

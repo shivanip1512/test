@@ -7,13 +7,14 @@
     <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.noSchedulesSetup">No Schedules Setup</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.noSchedules">No Schedules</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.status">Status</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.actions.editSchedule">Edit Schedule</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails">View Schedule Details</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.edit.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.edit.hoverUrl">/WebConfig/yukon/Icons/script_over.gif</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.edit.hoverText">Edit Schedule Details ({0})</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.createButton">Create</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>

@@ -5,11 +5,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
-<c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-
 <script type="text/javascript">
-
 	function setTrClassByJobState(jobId) {
 	  //assumes data is of type Hash
 	    return function(data) {
@@ -90,15 +86,12 @@
 		<tr id="tr_${jobWrapper.job.id}">
 			<%-- actions --%>
 			<td>
-			    <cti:msg2 var="viewScheduleDetailsTitleText" key=".actions.viewScheduleDetails" />
-				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${fn:escapeXml(jobWrapper.name)})" style="text-decoration:none;" >
-					<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
-				</a>
+                <cti:button key="edit" renderMode="image" href="${viewScheduleDetailsUrl}" arguments="${jobWrapper.name}"/>
 			</td>
+			
 			<%-- name --%>	
 			<td style="white-space:nowrap;">
-			
-				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${fn:escapeXml(jobWrapper.name)})" >
+				<a href="${viewScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobWrapper.name}"/>">
 					${fn:escapeXml(jobWrapper.name)}
 				</a>
 			</td>
@@ -148,7 +141,7 @@
 </c:when>
 
 <c:otherwise>
-	<i:inline key=".noSchedulesSetup"/>
+	<i:inline key=".noSchedules"/>
 </c:otherwise>
 </c:choose>
 
