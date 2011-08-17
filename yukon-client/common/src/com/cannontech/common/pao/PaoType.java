@@ -5,7 +5,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
@@ -15,7 +14,7 @@ import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum PaoType implements DatabaseRepresentationSource, DisplayableEnum {
+public enum PaoType implements DatabaseRepresentationSource {
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU711(DeviceTypes.CCU711, "CCU-711", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU721(DeviceTypes.CCU721, "CCU-721", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -196,7 +195,6 @@ public enum PaoType implements DatabaseRepresentationSource, DisplayableEnum {
     private final PaoCategory paoCategory;
     private final PaoClass paoClass;
     private final static Logger log = YukonLogManager.getLogger(PaoType.class);
-    private static final String keyPrefix = "yukon.common.paoType.";
 
     private final static ImmutableMap<Integer, PaoType> lookupById;
     private final static ImmutableMap<String, PaoType> lookupByDbString;
@@ -251,11 +249,6 @@ public enum PaoType implements DatabaseRepresentationSource, DisplayableEnum {
         this.paoClass = paoClass;
     }
 
-    @Override
-    public String getFormatKey() {
-        return keyPrefix + name();
-    }
-    
     public int getDeviceTypeId() {
         return deviceTypeId;
     }

@@ -68,7 +68,7 @@
         <c:forEach var="route" items="${encryptedRoutes}">
             <tr>
                 <td>${fn:escapeXml(route.paoName)}</td>
-                <td><i:inline key="${route.type}" /></td>
+                <td>${fn:escapeXml(route.type.paoTypeName)}</td>
                 <td width="50%">
                     <c:set var="enableDisplay" value="all" /> 
                     <c:set var="disableDisplay" value="none" /> 
