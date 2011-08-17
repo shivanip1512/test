@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
 {
     if ( argc != 5 || std::string( argv[1] ) != "--key" || std::string( argv[3] ) != "--password" )
     {
-        std::printf("Usage: pwdgen --key 00000000000000000000000000000000 --password password\n");
+        std::printf("Usage: %s --key 00000000000000000000000000000000 --password password\n", argv[0]);
         return 1;
     }
 

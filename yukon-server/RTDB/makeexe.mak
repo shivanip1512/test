@@ -48,16 +48,16 @@ routetest.obj
 CONNTESTOBJS=\
 conntest.obj
 
-PWDGENOBJS=\
-pwdgen.obj
+KEYPSWDENCRYPTOROBJS=\
+key_password_encryptor.obj
 
 
 CTIPROGS=\
 pointtest.exe \
 routetest.exe \
 memtest.exe \
-conntest.exe \
-pwdgen.exe
+# key_password_encryptor.exe \
+conntest.exe
 
 
 ALL:            $(CTIPROGS)
@@ -133,11 +133,11 @@ conntest.exe:   $(CONNTESTOBJS) makeexe.mak
                 @echo:
                 @%cd $(CWD)
 
-pwdgen.exe:   $(PWDGENOBJS) makeexe.mak
+key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(PWDGENOBJS) \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(KEYPSWDENCRYPTOROBJS) \
 			-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib \
 			$(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib \
 			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) $(OPENSSL_LIBS)
@@ -2293,6 +2293,8 @@ id_pntdll.obj:	precompiled.h id_pntdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
 id_prtdll.obj:	precompiled.h id_prtdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
+key_password_encryptor.obj:	precompiled.h encryption_cbcrbt.h \
+		dlldefs.h encryption_cmac.h encryption_oneway.h
 memtest.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2703,8 +2705,6 @@ pt_status.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		dsm2err.h words.h optional.h dbaccess.h sema.h desolvers.h \
 		tbl_pt_property.h tbl_pt_trigger.h tbl_pt_status.h \
 		tbl_pt_alarm.h
-pwdgen.obj:	precompiled.h encryption_cbcrbt.h dlldefs.h \
-		encryption_cmac.h encryption_oneway.h
 queuetest.obj:	precompiled.h queent.h dlldefs.h queue.h cparms.h \
 		rwutil.h yukon.h types.h ctidbgmem.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
