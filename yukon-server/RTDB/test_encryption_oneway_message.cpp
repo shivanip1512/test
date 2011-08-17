@@ -82,11 +82,12 @@ BOOST_AUTO_TEST_CASE(test_one_way_message_encryption)
         0x72, 0x64, 0x49, 0x73, 0x50, 0x61, 0x73, 0x73,
         0x77, 0x6f, 0x72, 0x64,
         0x14,
-        0x7f, 0x35, 0x75, 0x6f, 0xb0, 0xd6, 0xe3, 0x45,     // Key { 0x00, 0x01, 0x02, ..., 0x0f } encrypted with above
-        0x3b, 0x02, 0x14, 0x43, 0x3c, 0xc0, 0xe9, 0xa7      //  password and encryption key { 0x00, 0x01, 0x02, ..., 0x0f }
+        0xfc, 0x47, 0xcf, 0xe9, 0xe6, 0x16, 0x0b, 0x87,     // Key { 0x00, 0x01, 0x02, ..., 0x0f } encrypted with above
+        0x97, 0x7e, 0x59, 0x5d, 0xb2, 0x6e, 0x39, 0x97,     //  password and yukon's encryption key
+        0x7b, 0xe9, 0xff, 0x68                              // CMAC of encrypted key
     };
 
-    unsigned plainTextLength = 55;
+    unsigned plainTextLength = 59;
 
     char cipherText[300] = {0};
 
@@ -115,62 +116,5 @@ BOOST_AUTO_TEST_CASE(test_one_way_message_encryption)
 
     BOOST_CHECK_EQUAL_COLLECTIONS( cipherText,          cipherText + cipherTextLength,
                                    expectedCipherText,  expectedCipherText + sizeof( expectedCipherText ) );
-}
-
-/*
-    This should be made into a standalone app...
-*/
-#include "encryption_cbcrbt.h"
-#include "encryption_oneway.h"
-
-#include <cstddef>
-#include <cstdio>
-#include <openssl/md5.h>
-
-
-BOOST_AUTO_TEST_CASE(test_one_way_message___encrypted_key_generator)
-{
-    const unsigned char password[] = "MyPasswordIsPassword";
-
-    const unsigned char plainTextEncryptionKey[] =
-    {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
-    };
-
-
-    const std::size_t   passwordLength = sizeof( password ) - 1;    // don't include null terminator.
-
-    unsigned char IV[16];
-
-    MD5( password, passwordLength, IV );
-
-    unsigned char cipherTextEncryptionKey[16];
-
-    {
-        CbcRbtEncryption    encryptor( OneWayEncryption::_yukonEncryptionKey , IV );
-
-        encryptor.encrypt( OneWayEncryption::_yukonEncryptionKey, 16, cipherTextEncryptionKey );
-    }
-
-    unsigned char decryptedKey[16];
-
-    {
-        CbcRbtEncryption    encryptor( OneWayEncryption::_yukonEncryptionKey , IV );
-    
-        encryptor.decrypt( cipherTextEncryptionKey, 16, decryptedKey );
-    }
-
-    // sanity check - make sure we can decrypt
-
-    BOOST_CHECK_EQUAL_COLLECTIONS( plainTextEncryptionKey,  plainTextEncryptionKey + 16,
-                                   decryptedKey,            decryptedKey + 16 );
-
-    std::printf("\nEncrypted Key:\t < ");
-    for ( int i = 0 ; i < 16 ; ++i )
-    {
-        std::printf("%02x", cipherTextEncryptionKey[i] );
-    }
-    std::printf(" >\n");
 }
 

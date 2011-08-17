@@ -735,10 +735,10 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     std::string key;
                     getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key );
 
-                    if ( key.length() == 32 )   // btw - this is enforced in the client
+                    if ( key.length() == 40 )   // btw - this is enforced in the client
                     {
                         // ok - parse it
-                        for ( int key_i = 0; key_i < 32; key_i += 2 )
+                        for ( int key_i = 0; key_i < 40; key_i += 2 )
                         {
                             char ascii_pair[3] = { key[ key_i ], key[ key_i + 1 ], 0 };
 
@@ -751,7 +751,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                         dout << CtiTime() << " - One-Way Encryption Key - invalid length" << endl;
                     }
 
-                    OutMessage->OutLength            += password.length() + 1 + 16;
+                    OutMessage->OutLength            += password.length() + 1 + 20;
                     OutMessage->Buffer.TAPSt.Length  =  OutMessage->OutLength;
 
                     // set this flag so the transmitter knows to encrypt...
