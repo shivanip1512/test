@@ -11,6 +11,10 @@ public enum AdaStatus implements DisplayableEnum {
     
     private final String keyPrefix = "yukon.web.modules.amr.analysis.status.";
     
+    public boolean isRunning() {
+        return this == RUNNING;
+    }
+    
     @Override
     public String getFormatKey() {
         return keyPrefix + name();

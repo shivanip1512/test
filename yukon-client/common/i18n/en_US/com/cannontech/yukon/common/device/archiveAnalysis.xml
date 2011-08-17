@@ -60,7 +60,7 @@
     <entry key="yukon.web.modules.amr.analysis.results.csv.hoverText">Generate a comma-separated values file of this data.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabular.imageUrl">/WebConfig/yukon/Icons/application_view_columns.png</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabular.label">View Tabular Results</entry>
-    <entry key="yukon.web.modules.amr.analysis.results.viewTabular.hoverText">View detailed tabular data in-browser.</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.viewTabular.hoverText">View detailed tabular data in the browser.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.imageUrl">/WebConfig/yukon/Icons/application_view_columns_disabled.png</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.label">View Tabular Results</entry>
     <entry key="yukon.web.modules.amr.analysis.results.viewTabularDisabled.hoverText">This dataset is too large to render a tabular view. Download CSV instead.</entry>

@@ -35,6 +35,7 @@ import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
@@ -75,6 +76,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
     private ConfigurationSource configurationSource;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
+    private ArchiveDataAnalysisHelper archiveDataAnalysisHelper;
     
     static {
         Builder<BuiltInAttribute, Integer> builder = ImmutableMap.builder();
@@ -111,12 +113,9 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     }
     
     @Override
-    public String startAnalysis(ArchiveDataAnalysisBackingBean archiveDataAnalysisBackingBean, int analysisId) {
-        Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
-        Duration sleepSeconds = configurationSource.getDuration("ADA_SLEEP_SECONDS", Duration.ZERO);
-        SingleProcessor<YukonDevice> analysisProcessor = getAnalysisProcessor(archiveDataAnalysisBackingBean, analysis, sleepSeconds);
-        String resultsId = startProcessor(archiveDataAnalysisBackingBean.getDeviceCollection(), analysisProcessor, analysisId);
-        archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.RUNNING, resultsId);
+    public String startAnalysis(ArchiveDataAnalysisBackingBean backingBean, int analysisId) {
+        String resultsId = runAnalysis(backingBean.getExcludeBadQualities(), backingBean.getSelectedAttribute(), backingBean.getDeviceCollection(), analysisId);
+        
         return resultsId;
     }
     
@@ -124,10 +123,16 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     public String startAnalysis(int oldAnalysisId, int newAnalysisId) {
         Analysis oldAnalysis = archiveDataAnalysisDao.getAnalysisById(oldAnalysisId);
         DeviceCollection oldDeviceCollection = adaCollectionProducer.buildDeviceCollection(oldAnalysisId);
-        Analysis newAnalysis = archiveDataAnalysisDao.getAnalysisById(newAnalysisId);
+        String resultsId = runAnalysis(oldAnalysis.isExcludeBadPointQualities(), oldAnalysis.getAttribute(), oldDeviceCollection, newAnalysisId);
+        
+        return resultsId;
+    }
+    
+    private String runAnalysis(boolean excludeBadPointQualities, BuiltInAttribute attribute, DeviceCollection deviceCollection, int newAnalysisId) {
+        Analysis analysis = archiveDataAnalysisDao.getAnalysisById(newAnalysisId);
         Duration sleepSeconds = configurationSource.getDuration("ADA_SLEEP_SECONDS", Duration.ZERO);
-        SingleProcessor<YukonDevice> analysisProcessor = getAnalysisProcessor(oldAnalysis.isExcludeBadPointQualities(), oldAnalysis.getAttribute(), newAnalysis, sleepSeconds);
-        String resultsId = startProcessor(oldDeviceCollection, analysisProcessor, newAnalysisId);
+        SingleProcessor<YukonDevice> analysisProcessor = getAnalysisProcessor(excludeBadPointQualities, attribute, analysis, sleepSeconds);
+        String resultsId = startProcessor(deviceCollection, analysisProcessor, newAnalysisId);
         archiveDataAnalysisDao.updateStatus(newAnalysisId, AdaStatus.RUNNING, resultsId);
         return resultsId;
     }
@@ -182,6 +187,11 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Override
     public ArchiveAnalysisProfileReadResult getProfileReadResultById(String resultId) {
         return crdRecentResultsCache.getResult(resultId);
+    }
+    
+    @Override
+    public List<Instant> getIntervalEndTimes(Analysis analysis) {
+        return archiveDataAnalysisHelper.getListOfRelevantDateTimes(analysis.getDateTimeRange(), analysis.getIntervalPeriod());
     }
     
     private List<CommandRequestDevice> getProfileRequests(Analysis analysis, List<DeviceArchiveData> dataList) {
@@ -323,10 +333,16 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         return timeBetween.isShorterThan(maxDurationBetween);
     }
     
-    private String startProcessor(DeviceCollection deviceCollection, Processor<YukonDevice> processor, int analysisId) {
+    private String startProcessor(DeviceCollection deviceCollection, Processor<YukonDevice> processor, final int analysisId) {
         //Set up callback
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        ArchiveDataAnalysisCallbackResult callbackResult = new ArchiveDataAnalysisCallbackResult(resultsId, deviceCollection, analysisId, archiveDataAnalysisDao);
+        
+        ArchiveDataAnalysisCallbackResult callbackResult = 
+            new ArchiveDataAnalysisCallbackResult(resultsId, deviceCollection) {
+                public void doOnComplete() {
+                    archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.COMPLETE, null);
+                }
+            };
         
         //Set up cache
         bpRecentResultsCache.addResult(resultsId, callbackResult);
@@ -336,13 +352,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
         return resultsId;
-    }
-    
-    private SingleProcessor<YukonDevice> getAnalysisProcessor(ArchiveDataAnalysisBackingBean backingBean, Analysis analysis, Duration sleepSeconds) {
-        boolean excludeBadPointQualities = backingBean.getExcludeBadQualities();
-        BuiltInAttribute attribute = backingBean.getSelectedAttribute();
-        
-        return getAnalysisProcessor(excludeBadPointQualities, attribute, analysis, sleepSeconds);
     }
     
     private SingleProcessor<YukonDevice> getAnalysisProcessor(final boolean excludeBadPointQualities, final BuiltInAttribute attribute, final Analysis analysis, final Duration sleepSeconds) {
@@ -420,6 +429,11 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Autowired
     public void setArchiveDataAnalysisCollectionProducer(ArchiveDataAnalysisCollectionProducer adaCollectionProducer) {
         this.adaCollectionProducer = adaCollectionProducer;
+    }
+    
+    @Autowired
+    public void setArchiveDataAnalysisHelper(ArchiveDataAnalysisHelper archiveDataAnalysisHelper) {
+        this.archiveDataAnalysisHelper = archiveDataAnalysisHelper;
     }
     
     @Resource(name="adaProfileReadRecentResultsCache")

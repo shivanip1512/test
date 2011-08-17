@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -36,6 +37,7 @@ public class AdaTabularController {
     private DateFormattingService dateFormattingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PointFormattingService pointFormattingService;
+    private ArchiveDataAnalysisService archiveDataAnalysisService;
     
     @RequestMapping
     public String view(ModelMap model, int analysisId) {
@@ -45,7 +47,7 @@ public class AdaTabularController {
         List<DevicePointValuesHolder> devicePointValuesList = archiveDataAnalysisDao.getAnalysisPointValues(analysisId);
         model.addAttribute("devicePointValuesList", devicePointValuesList);
         
-        List<Instant> dateTimeList = analysis.getIntervalEndTimes();
+        List<Instant> dateTimeList = archiveDataAnalysisService.getIntervalEndTimes(analysis);
         model.addAttribute("dateTimeList", dateTimeList);
         
         return "archiveDataAnalysis/tabular.jsp";
@@ -56,7 +58,7 @@ public class AdaTabularController {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         List<DevicePointValuesHolder> devicePointValuesList = archiveDataAnalysisDao.getAnalysisPointValues(analysisId);
-        List<Instant> dateTimeList = analysis.getIntervalEndTimes();
+        List<Instant> dateTimeList = archiveDataAnalysisService.getIntervalEndTimes(analysis);
         
         //convert date/times into String array for header
         String[] headerRow = new String[dateTimeList.size()+1];
@@ -105,6 +107,11 @@ public class AdaTabularController {
         csvWriter.close();
         
         return "";
+    }
+    
+    @Autowired
+    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
+        this.archiveDataAnalysisService = archiveDataAnalysisService;
     }
     
     @Autowired

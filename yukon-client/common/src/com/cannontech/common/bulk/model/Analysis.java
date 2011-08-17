@@ -75,10 +75,6 @@ public class Analysis {
     public Instant getRunDate() {
         return runDate;
     }
-    
-    public List<Instant> getIntervalEndTimes() {
-        return ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalPeriod);
-    }
 
     public void setStatus(AdaStatus status) {
         this.status = status;

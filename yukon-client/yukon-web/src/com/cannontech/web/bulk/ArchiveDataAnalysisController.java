@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
-import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.model.Analysis;
@@ -48,7 +47,7 @@ public class ArchiveDataAnalysisController {
     private DeviceCollectionFactory deviceCollectionFactory;
     private ArchiveDataAnalysisService archiveDataAnalysisService;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
     
     {
         attributes = Sets.newLinkedHashSet();
@@ -110,7 +109,7 @@ public class ArchiveDataAnalysisController {
     @RequestMapping
     public String processing(ModelMap model, HttpServletRequest request, int analysisId, String resultsId) throws ServletException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
-        ArchiveDataAnalysisCallbackResult callbackResult = (ArchiveDataAnalysisCallbackResult) recentResultsCache.getResult(resultsId);
+        ArchiveDataAnalysisCallbackResult callbackResult = recentResultsCache.getResult(resultsId);
         DeviceCollection deviceCollection = callbackResult.getOriginalDeviceCollection();
         
         model.addAllAttributes(deviceCollection.getCollectionParameters());
@@ -135,7 +134,7 @@ public class ArchiveDataAnalysisController {
     }
     
     @Resource(name="recentResultsCache")
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+    public void setRecentResultsCache(RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
     

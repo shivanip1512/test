@@ -1429,6 +1429,7 @@
     
     <bean id="archiveDataAnalysisService" class="com.cannontech.common.bulk.service.impl.ArchiveDataAnalysisServiceImpl"/>
     <bean id="archiveDataAnalysisDao" class="com.cannontech.core.dao.impl.ArchiveDataAnalysisDaoImpl"/>
+    <bean id="archiveDataAnalysisHelper" class="com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper"/>
     
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
     <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"/>

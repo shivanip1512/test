@@ -4,6 +4,9 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+
+import javax.annotation.Resource;
 
 import org.joda.time.Instant;
 import org.joda.time.Interval;
@@ -42,10 +45,12 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 
 public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
+    private ArchiveDataAnalysisHelper archiveDataAnalysisHelper;
     private RawPointHistoryDao rawPointHistoryDao;
     private NextValueHelper nextValueHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoLoadingService paoLoadingService;
+    private Executor longRunningExecutor;
     
     private class ArchiveDataRowMapper implements YukonRowMapper<ArchiveData> {
         private Period intervalPeriod;
@@ -70,22 +75,6 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             ArchiveData archiveData = new ArchiveData(interval, readType, changeId);
             
             return archiveData;
-        }
-    }
-    
-    private class AnalysisDeletionThread extends Thread {
-        int analysisId;
-        
-        public AnalysisDeletionThread(int analysisId) {
-            this.analysisId = analysisId;
-        }
-        
-        public void run() {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM ArchiveDataAnalysis");
-            sql.append("WHERE AnalysisId").eq(analysisId);
-            
-            yukonJdbcTemplate.update(sql);
         }
     }
     
@@ -193,9 +182,16 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public void deleteAnalysis(int analysisId) {
-        AnalysisDeletionThread deleter = new AnalysisDeletionThread(analysisId);
-        deleter.start();
+    public void deleteAnalysis(final int analysisId) {
+        longRunningExecutor.execute(new Runnable() {
+            public void run() {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("DELETE FROM ArchiveDataAnalysis");
+                sql.append("WHERE AnalysisId").eq(analysisId);
+                
+                yukonJdbcTemplate.update(sql);
+            }
+        });
     }
     
     @Override
@@ -308,7 +304,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         SqlParameterSink sink = sql.insertInto("ArchiveDataAnalysis");
         sink.addValue("AnalysisId", analysisId);
         sink.addValue("Attribute", attribute.getKey());
-        sink.addValue("IntervalPeriod", intervalPeriod.toString()); //Formats as standard ISO8601 string
+        PeriodFormatter formatter = ISOPeriodFormat.standard();
+        sink.addValue("IntervalPeriod", formatter.print(intervalPeriod));
         sink.addValue("LastChangeId", maxChangeId);
         sink.addValue("RunDate", new Date());
         sink.addValue("ExcludeBadPointQualities", YNBoolean.valueOf(excludeBadPointQualities));
@@ -322,7 +319,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     private void insertSlots(int analysisId, Interval dateTimeRange, Period intervalPeriod) {
-        List<Instant> relevantTimes = ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalPeriod);
+        List<Instant> relevantTimes = archiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalPeriod);
         
         for(Instant dateTime : relevantTimes) {
             int slotId = nextValueHelper.getNextValue("ArchiveDataAnalysisSlot");
@@ -354,5 +351,15 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Autowired
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
         this.paoLoadingService = paoLoadingService;
+    }
+    
+    @Autowired
+    public void setArchiveDataAnalysisHelper(ArchiveDataAnalysisHelper archiveDataAnalysisHelper) {
+        this.archiveDataAnalysisHelper = archiveDataAnalysisHelper;
+    }
+    
+    @Resource(name="longRunningExecutor")
+    public void setLongRunningExecutor(Executor longRunningExecutor) {
+        this.longRunningExecutor = longRunningExecutor;
     }
 }
