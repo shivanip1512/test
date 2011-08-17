@@ -14,25 +14,14 @@ public enum PaoInfo {
     RDS_TRANSMITTER_GROUP_TYPE,
     
     // Other....
-    CPS_ONE_WAY_ENCRYPTION_KEY(null);
+    CPS_ONE_WAY_ENCRYPTION_KEY;
     
-    private final boolean defaultable;
     private final String defaultValue;
     
     PaoInfo() {
-        this.defaultable = false;
         this.defaultValue = null;
     }
     
-    PaoInfo(String defaultValue) {
-        this.defaultable = true;
-        this.defaultValue = defaultValue;
-    }
-    
-    public boolean isDefaultable() {
-        return defaultable;
-    }
-
     public String getDefaultValue() {
         return defaultValue;
     }

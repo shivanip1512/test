@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -35,11 +36,19 @@ public class EncryptionController {
             @Override
             public void doValidation(EncryptedRoute encryptedRoute, Errors errors) {
 
-                Pattern lengthPattern = Pattern.compile("^[0-9A-Fa-f]{40}$");
-                YukonValidationUtils.regexCheck(errors,
-                                                "value", encryptedRoute.getValue(),
-                                                lengthPattern, baseKey + ".errorMsg.format");
+                if (StringUtils.isEmpty(encryptedRoute.getValue())
+                        || encryptedRoute.getValue().length() != 40) {
+                    errors.rejectValue("value", baseKey + ".errorMsg.length");
+                }
 
+                // If it is empty, don't also display this error
+                if (StringUtils.isNotEmpty(encryptedRoute.getValue())) {
+                    Pattern lengthPattern = Pattern.compile("^[0-9A-Fa-f]*$");
+                    YukonValidationUtils.regexCheck(errors,
+                                                    "value", encryptedRoute.getValue(),
+                                                    lengthPattern, baseKey
+                                                                   + ".errorMsg.hexidecimal");
+                }
             }
         };
 

@@ -34,6 +34,7 @@
     <entry key="yukon.web.modules.adminSetup.encryption.noRoutesMsg">No routes are available for encryption</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.confirmDeleteMsg">Are you sure you want to delete this key?</entry>
 
-    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.format">Key must be exactly 40 hexadecimal digits.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.hexidecimal">Key can only contain hexadecimal digits.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.length">Key must be exactly 40 digits.</entry>
 
 </properties>
