@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -58,7 +59,6 @@ public class EncryptionController {
 
         List<EncryptedRoute> encryptedRoutes = encryptedRouteDao.getAllEncryptedRoutes();
         model.addAttribute("encryptedRoutes", encryptedRoutes);
-        model.addAttribute("showRouteError", null);
 
         return "encryption/view.jsp";
     }
@@ -72,8 +72,14 @@ public class EncryptionController {
 
         return "redirect:view";
     }
-
-    @RequestMapping("save")
+    
+    @RequestMapping(method = RequestMethod.GET, value = "save")
+    public String getRedirect(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
+                              BindingResult bindingResult, FlashScope flashScope) {
+        return "redirect:view";
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "save")
     public String add(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
                        BindingResult bindingResult, FlashScope flashScope) {
 
@@ -88,7 +94,7 @@ public class EncryptionController {
             model.addAttribute("encryptedRoutes", encryptedRoutes);
             model.addAttribute("showRouteError", encryptedRoute.getPaobjectId());
 
-            return "encryption/view.jsp";
+            return view(request,  model,  encryptedRoute, bindingResult,  flashScope);
         }
         encryptedRouteDao.saveEncryptedRoute(encryptedRoute);
         return "redirect:view";

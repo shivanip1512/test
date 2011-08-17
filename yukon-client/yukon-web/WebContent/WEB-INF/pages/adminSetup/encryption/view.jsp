@@ -97,7 +97,7 @@
                         <span style="display:${saveDisplay}"> 
                             <i:inline key=".keyLbl" /> 
                             <tags:input path="value" size="50" /> 
-                            <cti:button key="saveBtn" onclick="javascript:addKey('${route.paobjectId}')" /> 
+                            <cti:button key="saveBtn" onclick="javascript:addKey('${route.paobjectId}')" type="submit"/> 
                             <cti:button key="cancelBtn" href="view" /> 
                         </span>
                         <span style="display:${deleteDisplay}"> <i:inline key=".confirmDeleteMsg" />
