@@ -57,7 +57,8 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	public boolean isReadable(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
 	    if (Iterables.isEmpty(pointsToRead)) return false;
 	    
-        // the following is meant to mimic the getCommandRequests, but to short-circuit
+        // the following loop mimics what getCommandRequests does, but because we don't need
+	    // to actually build commands, it is much shorter
 
         for (PaoMultiPointIdentifier pao : pointsToRead) {
             Set<CommandWrapper> minimalCommands = getMinimalCommandSet(pao.getPao(), pao.getPointIdentifiers());

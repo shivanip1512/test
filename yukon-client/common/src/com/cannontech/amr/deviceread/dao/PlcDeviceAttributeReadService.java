@@ -60,7 +60,7 @@ public interface PlcDeviceAttributeReadService {
     public boolean isReadable(YukonPao device, Set<? extends Attribute> attribute, LiteYukonUser user);
     
     
-    // The methods below this line represent a distinct part of these service.
+    // The methods below this line represent a distinct part of this service.
     // The String returned by the first method can be used to look up the 
     // result object that is stored in memory.
     

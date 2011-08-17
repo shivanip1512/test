@@ -33,35 +33,12 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService {
     
-    private final class NullCallback implements DeviceAttributeReadCallback {
-        @Override
-        public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
-        }
-        
-        @Override
-        public void receivedLastValue(PaoIdentifier pao) {
-        }
-
-        @Override
-        public void receivedException(DeviceAttributeReadError error) {
-        }
-
-        @Override
-        public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
-        }
-
-        @Override
-        public void complete() {
-        }
-    }
-
     private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class);
     
     private AttributeService attributeService;

@@ -8,7 +8,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
- * This the preferred Service for "reading" PAOs. This service, unlike the ones
+ * This is the preferred Service for "reading" PAOs. This service, unlike the ones
  * that proceeded it, correctly handles mapped attributes and RFN devices. Additionally,
  * it maintains all of the information about the attribute so that the callback can 
  * easily determine what the PointValueHolders that are being returned are for.

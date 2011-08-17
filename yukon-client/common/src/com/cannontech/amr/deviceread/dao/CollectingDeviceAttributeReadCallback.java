@@ -51,6 +51,7 @@ public class CollectingDeviceAttributeReadCallback implements DeviceAttributeRea
         try {
             latch.await();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // reset
             throw new RuntimeException(e);
         }
     }
