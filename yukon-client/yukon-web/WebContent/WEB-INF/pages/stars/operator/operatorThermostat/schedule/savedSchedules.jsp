@@ -73,8 +73,8 @@ Event.observe(window, 'load', function(){
                     </div>
                     <br>
                     <br>
-                    <cti:button key="help" styleClass="help"/>
-                    <cti:button key="create" styleClass="create"/>
+                    <cti:button key="help" styleClass="help fl"/>
+                    <cti:button key="create" styleClass="create fl"/>
                 </c:when>
                 <c:otherwise>
                     <div class="schedules fl">
