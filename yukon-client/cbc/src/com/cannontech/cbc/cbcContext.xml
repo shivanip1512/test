@@ -22,7 +22,6 @@
   <bean id="feederDao" class="com.cannontech.cbc.dao.impl.FeederDaoImpl"/> 
   <bean id="capbankDao" class="com.cannontech.cbc.dao.impl.CapbankDaoImpl"/>
   <bean id="capbankControllerDao" class="com.cannontech.cbc.dao.impl.CapbankControllerDaoImpl"/>
-  <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
   
   <bean id="capCommentDao" class="com.cannontech.cbc.dao.impl.CapControlCommentDaoImpl">
     <property name="nextValueHelper" ref="nextValueHelper"/>

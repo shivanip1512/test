@@ -12,4 +12,5 @@
 
     <bean id="voltageRegulatorDao" class="com.cannontech.capcontrol.dao.impl.VoltageRegulatorDaoImpl"/>
     <bean id="voltageRegulatorCreationProvider" class="com.cannontech.capcontrol.dao.providers.VoltageRegulatorCreationProvider"/>
+    <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
 </beans>

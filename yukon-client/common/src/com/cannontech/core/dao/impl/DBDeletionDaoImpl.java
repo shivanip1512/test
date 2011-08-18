@@ -1,5 +1,6 @@
 package com.cannontech.core.dao.impl;
 
+import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
@@ -26,6 +27,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 {
 	private static final String CR_LF = System.getProperty("line.separator");
 	private static MACScheduleDao macScheduleDao;
+	private ZoneDao zoneDao; 
       
 	/**
 	 * DBDeletionWarn constructor comment.
@@ -102,7 +104,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         Integer theID = Integer.valueOf(dbRes.getItemID());
         String str = null;   
     
-       if( (str = VoltageRegulator.usedVoltageRegulator(theID)) != null )
+        if( (str = VoltageRegulator.usedVoltageRegulator(theID)) != null )
        {
            dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the Zone named '" + str + "'");
            return DBDeletionDao.STATUS_DISALLOW;
@@ -641,5 +643,5 @@ public class DBDeletionDaoImpl implements DBDeletionDao
     public void setMacScheduleDao(MACScheduleDao macScheduleDao) {
         this.macScheduleDao = macScheduleDao;
     }
-
+	
 }
