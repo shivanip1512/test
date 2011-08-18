@@ -1,13 +1,14 @@
 package com.cannontech.common.util;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Formattable;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
-import com.cannontech.amr.deviceread.service.impl.CommandWrapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -174,4 +175,57 @@ public class IterableUtils {
         };
     }
 
+    /**
+     * Returns a standard Collecton.toString, but with only maxElements.
+     * 
+     * Output example: [a, b, ...]
+     * @param iterable An Iterable of elemtns, works best when elements have a nice toString
+     * @param maxElements max elements to display, -1 for all
+     * @return
+     */
+    public static String toString(Iterable<?> iterable, int maxElements) {
+        if (iterable == null) {
+            return "null";
+        }
+        Iterator<?> iterator = iterable.iterator();
+        if (!iterator.hasNext()) {
+            return "[]";
+        }
+        if (maxElements == 0) {
+            return "[...]";
+        }
+        if (maxElements < 0) {
+            return iterable.toString();
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append('[').append(iterator.next());
+        int i = 1;
+        while (iterator.hasNext()) {
+            if (i++ >= maxElements) {
+                builder.append(", ...");
+                break;
+            }
+            builder.append(", ").append(iterator.next());
+        }
+        return builder.append(']').toString();
+    }
+
+    /**
+     * Wraps an Iterable in a Formattable that has a special behavior of treating
+     * the precision field as the maximum number of elements to output.
+     */
+    public static Formattable toFormattable(final Iterable<?> iterable) {
+        return new Formattable() {
+            
+            @Override
+            public void formatTo(Formatter formatter, int flags, int width, int precision) {
+                try {
+                    formatter.out().append(IterableUtils.toString(iterable, precision));
+                } catch (IOException e) {
+                }
+                
+            }
+        };
+    }
+    
 }

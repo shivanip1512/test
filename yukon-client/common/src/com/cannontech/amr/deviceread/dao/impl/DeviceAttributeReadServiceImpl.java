@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -14,6 +13,7 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -23,8 +23,6 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.util.IterableUtils;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -33,13 +31,12 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService {
     
-    private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class);
+    private static final LogHelper log = LogHelper.getInstance(YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class));
     
     private AttributeService attributeService;
     
@@ -47,17 +44,19 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     
     @Override
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
-            LiteYukonUser user) {
-        
-       ImmutableMultimap<PaoType, ? extends YukonPao> paoTypes = PaoUtils.mapPaoTypes(devices);
-        
+                              LiteYukonUser user) {
+
+        log.debug("isReadable called for %.3s and %s", devices, attributes);
+
+        ImmutableMultimap<PaoType, ? extends YukonPao> paoTypes = PaoUtils.mapPaoTypes(devices);
+
         // loop through each PaoType and strategy
         for (PaoType paoType : paoTypes.keySet()) {
             for (DeviceAttributeReadStrategyType strategy : strategies.keySet()) {
                 DeviceAttributeReadStrategy impl = strategies.get(strategy);
                 if (impl.canRead(paoType)) {
                     ImmutableCollection<? extends YukonPao> immutableCollection = paoTypes.get(paoType);
-                    List<PaoMultiPointIdentifier> devicesAndPoints = getPaoMultiPointIdentifiers(immutableCollection, attributes);
+                    List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(immutableCollection, attributes);
                     boolean readable = impl.isReadable(devicesAndPoints, user);
                     if (readable) {
                         return true;
@@ -75,12 +74,14 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                              DeviceRequestType type, 
                              LiteYukonUser user) {
         
+        log.debug("initiateRead of %s called for %.3s and %s", type, devices, attributes);
+        
         // this will represent the "plan" for how all of the input devices will be read
         Map<DeviceAttributeReadStrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
             Maps.newEnumMap(DeviceAttributeReadStrategyType.class);
         
         // we need to resolve the attributes first to figure out which physical devices we'll be reading
-        final List<PaoMultiPointIdentifier> devicesAndPoints = getPaoMultiPointIdentifiers(devices, attributes);
+        final List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(devices, attributes);
 
         Multimap<PaoType, PaoMultiPointIdentifier> byPhysicalPaoType = ArrayListMultimap.create(1, devicesAndPoints.size());
         for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {
@@ -99,6 +100,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
             Collection<PaoMultiPointIdentifier> paoPointIdentifiersForType = byPhysicalPaoType.get(paoType);
             if (foundStrategy == null) {
+                log.debug("no strategy found for %s devices: %.7s", paoType, paoPointIdentifiersForType);
                 for (PaoMultiPointIdentifier paoMultiPoints : paoPointIdentifiersForType) {
                     MessageSourceResolvable summary = 
                         YukonMessageSourceResolvable.createDefaultWithoutCode("no strategy for " + paoType);
@@ -107,6 +109,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                     delegateCallback.receivedError(paoMultiPoints.getPao(), strategyError);
                 }
             } else {
+                log.debug("strategy found for %d %s devices", paoPointIdentifiersForType.size(), paoType);
                 thePlan.put(foundStrategy, paoPointIdentifiersForType);
             }
         }
@@ -121,6 +124,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         DeviceAttributeReadStrategyCallback strategyCallback = new DeviceAttributeReadStrategyCallback() {
             public void complete() {
                 int count = completionCounter.decrementAndGet();
+                log.debug("one strategy for read is complete, %d remaining", count);
                 if (count == 0) {
                     delegateCallback.complete();
                 }
@@ -156,22 +160,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         }
     }
 
-    private List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiers(Iterable<? extends YukonPao> devices,
-                                                                      Set<? extends Attribute> attributes) {
-        final List<PaoMultiPointIdentifier> devicesAndPoints = 
-            Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
-        for (YukonPao pao : devices) {
-            List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
-            for (Attribute attribute : attributes) {
-                PaoPointIdentifier paoPointIdentifier = 
-                    attributeService.getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
-                points.add(paoPointIdentifier);
-            }
-            devicesAndPoints.add(new PaoMultiPointIdentifier(points));
-        }
-        return devicesAndPoints;
-    }
-    
     @Autowired
     public void setStrategies(List<DeviceAttributeReadStrategy> strategyList) {
         Builder<DeviceAttributeReadStrategyType, DeviceAttributeReadStrategy> builder = ImmutableMap.builder();
@@ -179,6 +167,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             builder.put(strategy.getType(), strategy);
         }
         strategies = builder.build();
+        log.debug("supported strategies: %s", strategies.keySet());
     }
     
     @Autowired

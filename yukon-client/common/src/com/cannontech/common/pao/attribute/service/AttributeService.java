@@ -5,11 +5,11 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.MappableAttribute;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -54,6 +54,20 @@ public interface AttributeService {
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
     public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    
+    
+    /**
+     * This method returns a PaoMultiPointIdentifier object for of the passed in PAO that has a point
+     * for at least one of the specified attributes.
+     * 
+     * Like the above method, this is a transitional method that assumes attributes are unmapped.
+     * @param devices
+     * @param attributes
+     * @return
+     */
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices,
+                                                                                           Set<? extends Attribute> attributes);
+    
     
     /**
      * Method to get a set of attributes available for the given pao

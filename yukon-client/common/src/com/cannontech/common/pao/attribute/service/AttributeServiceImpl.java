@@ -25,11 +25,13 @@ import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition
 import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -42,6 +44,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -100,6 +103,25 @@ public class AttributeServiceImpl implements AttributeService {
         } else {
             throw new IllegalUseOfAttribute("Illegal use of mapped attribute: " + attribute.getDescription());
         }
+    }
+    
+    @Override
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices,
+                                                                                      Set<? extends Attribute> attributes) {
+        List<PaoMultiPointIdentifier> devicesAndPoints = 
+            Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
+        for (YukonPao pao : devices) {
+            List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
+            for (Attribute attribute : attributes) {
+                PaoPointIdentifier paoPointIdentifier = 
+                    getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
+                points.add(paoPointIdentifier);
+            }
+            if (!points.isEmpty()) {
+                devicesAndPoints.add(new PaoMultiPointIdentifier(points));
+            }
+        }
+        return devicesAndPoints;
     }
     
     public Set<Attribute> getAvailableAttributes(YukonPao pao) {

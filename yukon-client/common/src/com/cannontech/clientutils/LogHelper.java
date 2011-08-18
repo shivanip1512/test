@@ -3,6 +3,8 @@ package com.cannontech.clientutils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.cannontech.common.util.IterableUtils;
+
 public class LogHelper {
     private final Logger log;
 
@@ -17,7 +19,7 @@ public class LogHelper {
     
     private static void log(Logger log, Level level, String format, Object... args) {
         if (log.isEnabledFor(level)) {
-            String output = String.format(format, args);
+            String output = String.format(format, processArgs(args));
             log.log(level, output);
         }
     }
@@ -32,7 +34,7 @@ public class LogHelper {
     
     public static void debug(Logger log, String format, Object ... args) {
         if (log.isDebugEnabled()) {
-            String output = String.format(format, args);
+            String output = String.format(format, processArgs(args));
             log.debug(output);
         }
     }
@@ -43,7 +45,7 @@ public class LogHelper {
 
     public static void trace(Logger log, String format, Object ... args) {
         if (log.isTraceEnabled()) {
-            String output = String.format(format, args);
+            String output = String.format(format, processArgs(args));
             log.trace(output);
         }
     }
@@ -52,4 +54,16 @@ public class LogHelper {
         trace(log, format, args);
     }
     
+    private static Object[] processArgs(Object[] args) {
+        Object[] result = new Object[args.length];
+        for (int i = 0; i < result.length; i++) {
+            Object value = args[i];
+            if (value instanceof Iterable) {
+                value = IterableUtils.toFormattable((Iterable<?>) value);
+            }
+            result[i] = value;
+        }
+        return result;
+    }
+
 }
