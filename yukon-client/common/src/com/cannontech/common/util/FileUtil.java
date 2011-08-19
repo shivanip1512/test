@@ -6,6 +6,8 @@ import java.util.List;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
@@ -147,6 +149,37 @@ public final class FileUtil {
         }
     }
 
+    /**
+     * Like FileCopyUtils.copy(Reader,Writer), but without flushing or closing the out.
+     * Uses InputStream, and OutputStream objects
+     * @param in will be closed
+     * @param out will not be closed
+     * @return bytes copied
+     * @throws IOException
+     */
+    public static int copyNoFlush(InputStream in, OutputStream out) throws IOException {
+        Assert.notNull(in, "No InputStream specified");
+        Assert.notNull(out, "No OutputStream specified");
+        try {
+            int byteCount = 0;
+            byte[] buffer = new byte[4096];
+            int bytesRead = -1;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+                byteCount += bytesRead;
+            }
+            return byteCount;
+        }
+        finally {
+            try {
+                in.close();
+            }
+            catch (IOException ex) {
+                log.warn("Could not close OutputStream", ex);
+            }
+        }
+    }
+    
     /**
      * Checks two files for equality, ignoring any trailing
      * separator characters in the file path.  (The File.equals

@@ -18,7 +18,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -1543,21 +1542,13 @@ public final class CtiUtilities {
         runningAsClient = true;
     }
 
-    public static String formatFileSize(long longSize, int decimalPos) {
-
-        NumberFormat fmt = NumberFormat.getNumberInstance();
-        if (decimalPos >= 0) {
-            fmt.setMaximumFractionDigits(decimalPos);
+    public static String formatFileSize(long size) {
+            if (size <= 0) {
+                return "0";
+            }
+            final String[] units = new String[] { "bytes", "kB", "MB", "GB", "TB" };
+            int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+            return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " "
+                   + units[digitGroups];
         }
-        final double size = longSize;
-        double val = size / (1024 * 1024);
-        if (val > 1) {
-            return fmt.format(val).concat(" MB");
-        }
-        val = size / 1024;
-        if (val > 10) {
-            return fmt.format(val).concat(" KB");
-        }
-        return fmt.format(val).concat(" bytes");
-    }
 }

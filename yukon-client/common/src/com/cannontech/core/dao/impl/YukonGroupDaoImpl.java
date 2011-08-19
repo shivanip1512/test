@@ -110,6 +110,18 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     }
     
     @Override
+    public List<LiteYukonGroup> getAllGroups() {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GroupId, GroupName, GroupDescription");
+        sql.append("FROM YukonGroup");
+
+        List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
+
+        return groupList;
+    }
+    
+    @Override
     public List<LiteYukonGroup> getGroupsForUser(int userId, boolean excludeYukonGroup) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();

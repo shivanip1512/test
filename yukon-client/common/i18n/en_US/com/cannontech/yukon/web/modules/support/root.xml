@@ -21,11 +21,86 @@
     <entry key="yukon.web.modules.support.setup.pageName">Setup</entry>
     <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">Login Group Role Updated</entry>
     
+    <entry key="yukon.web.modules.support.supportBundle.title">Support Bundle</entry>
+    <entry key="yukon.web.modules.support.supportBundle.pageName">Support Bundle</entry>
+    <entry key="yukon.web.modules.support.supportBundle.pageDescription">Support Bundle</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.status">Transfer Status</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.status.SEND_ERROR">The file upload failed.</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.status.SUCCESS">The file was successfully uploaded.</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.status.SENDING">The file is being uploaded. Please wait...</entry>
     
+    <entry key="yukon.web.modules.support.supportBundle.ftp.username">Username</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.password">Password</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.host">Host</entry>    
+    
+    <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.ONE_WEEK">Last week</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.TWO_WEEKS">Last two weeks</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.ONE_MONTH">Last month</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.EVERYTHING">Everything</entry>
+    
+    
+    <entry key="yukon.web.modules.support.supportBundle.errorMsg.invalidCharacters">Contains invalid characters</entry>
+    <entry key="yukon.web.modules.support.supportBundle.errorMsg.empty">Cannot be empty</entry>
+    
+    <entry key="yukon.web.modules.support.supportBundle.custNameLbl">Customer Name</entry>
+    <entry key="yukon.web.modules.support.supportBundle.dateRangeSelect">Range</entry>
+    <entry key="yukon.web.modules.support.supportBundle.includeLbl">Include</entry>
+    <entry key="yukon.web.modules.support.supportBundle.notesLbl">Notes</entry>
+    <entry key="yukon.web.modules.support.supportBundle.createNewHeading">Create New</entry>
+    <entry key="yukon.web.modules.support.supportBundle.createBundleBtn.label">Create Bundle</entry>
+    <entry key="yukon.web.modules.support.supportBundle.previousHeading">Previous Bundles</entry>
+    <entry key="yukon.web.modules.support.supportBundle.noPreviousBundlesLbl">No Previous Support Bundles Found</entry>
+    <entry key="yukon.web.modules.support.supportBundle.downloadBtn.label">Download</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.label">Upload Via FTP</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleInProgressMsg">There is already a bundle in progress.</entry>
+    <entry key="yukon.web.modules.support.supportBundle.viewProgressBtn.label">View Progress</entry>
+    <entry key="yukon.web.modules.support.supportBundle.includeLbl">Include</entry>
+    <entry key="yukon.web.modules.support.supportBundle.downloadImg.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
+    <entry key="yukon.web.modules.support.supportBundle.downloadImg.label">Download</entry>
+    <entry key="yukon.web.modules.support.supportBundle.uploadImg.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
+    <entry key="yukon.web.modules.support.supportBundle.uploadImg.label">Upload Via FTP</entry>
+    <entry key="yukon.web.modules.support.supportBundle.startUploadImg.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
+    <entry key="yukon.web.modules.support.supportBundle.startUploadImg.label">Start Upload</entry>
+    <entry key="yukon.web.modules.support.supportBundle.cancelImg.imageUrl">/WebConfig/yukon/Icons/stop.gif</entry>
+    <entry key="yukon.web.modules.support.supportBundle.cancelImg.label">Cancel</entry>
+    <entry key="yukon.web.modules.support.supportBundle.okImg.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.modules.support.supportBundle.okImg.label">Ok</entry>
+    
+    <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.doneMsg">Done</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.pendingMsg">Pending</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.inProgressMsg">In Progress...</entry>
+    <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.finishedMsg">Finished</entry>
+    
+    <entry key="yukon.web.modules.support.supportBundle.send.fileHeading">File Information</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.filenameLbl">Filename</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.fileSizeLbl">Size</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.fileDateCreatedLbl">Date Created</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.ftpSettingsHeading">FTP Settings</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.ftpDirLbl">FTP Directory:</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.uploadBtn">Upload</entry>
+    <entry key="yukon.web.modules.support.supportBundle.send.badDefaultSettings">The default settings may be incorrect. Enter the following information and try again</entry>
+    
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.paoTypeCsvSource">PAO Type Counts</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.rawPointCountCsvSource">Raw Point History Count</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.eventLogAggregatedCsvSource">Event Log</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.jobTableCsvSource">JOB Table </entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.yukonUserTableCsvSource">YukonUser Table</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.yukonUserGroupTableCsvSource">YukonUserGroup Table</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.yukonGroupTableCsvSource">YukonGroup Table</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.macScriptsCsvSource">MAC Scripts</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.masterConfigFileSource">Master.cfg</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.serverXmlFileSource">server.xml</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.deviceDefinitionXmlSource">deviceDefinition.xml</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.paoDefinitionXmlSource">paoDefinition.xml</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.logsFilesSource">Log Files</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.commFilesSource">Comm Files</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.yukonFileStructureCsvSource">Printout of Yukon file structure to csv</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.userGroupDaoSource">User Group Data</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.eventLogCsvSource">Event Log Data</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.themeDirectory">Theme Directory</entry>
     
     <entry key="yukon.web.modules.support.pointInjection.myPicker.label">Foo</entry>
     <entry key="yukon.web.modules.support.pointInjection.addRow.label">Add Row</entry>
-    
     
     <entry key="yukon.web.modules.support.pickerTest.pageName">Picker Test</entry>
     <entry key="yukon.web.modules.support.pickerTest.linkPickers.title">Link Pickers</entry>

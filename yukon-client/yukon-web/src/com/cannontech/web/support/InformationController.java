@@ -1,27 +1,23 @@
 package com.cannontech.web.support;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 
-public class InformationController implements Controller {
-    
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        // Sets up the ModelAndView Object
-        ModelAndView mav = new ModelAndView("info.jsp");
+@Controller
+public class InformationController {
 
-        mav.addObject("versionDetails", VersionTools.getYukonDetails());
-        mav.addObject("systemInformation", CtiUtilities.getSystemInfoString());
-        mav.addObject("buildInfo", VersionTools.getBuildInfo());
-        
-        return mav;
+    @RequestMapping("")
+    public String main(ModelMap model) {
+
+        model.addAttribute("versionDetails", VersionTools.getYukonDetails());
+        model.addAttribute("systemInformation", CtiUtilities.getSystemInfoString());
+        model.addAttribute("buildInfo", VersionTools.getBuildInfo());
+
+        return "info.jsp";
     }
-    
+
 }

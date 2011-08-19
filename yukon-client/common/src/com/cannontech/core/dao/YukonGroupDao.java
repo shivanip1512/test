@@ -20,6 +20,8 @@ public interface YukonGroupDao {
      */
     public List<LiteYukonGroup> getGroupsForUser(int userId, boolean excludeYukonGroup);
     
+    public List<LiteYukonGroup> getAllGroups();
+
     public LiteYukonGroup getLiteYukonGroup(int groupID);
 
     public Map<Integer, LiteYukonGroup> getLiteYukonGroups(Iterable<Integer> groupIds);

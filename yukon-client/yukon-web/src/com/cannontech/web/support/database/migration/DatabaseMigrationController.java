@@ -298,7 +298,7 @@ public class DatabaseMigrationController {
 		
 		map.addAttribute("status", status);
 		map.addAttribute("filePath", resource.getPath());
-		map.addAttribute("fileSize", CtiUtilities.formatFileSize(resource.getFile().length(), 1));
+		map.addAttribute("fileSize", CtiUtilities.formatFileSize(resource.getFile().length()));
 		map.addAttribute("orgDbUrl", orgEnvironment);
 		map.addAttribute("orgDbUsername", orgSchemaUser);
 		map.addAttribute("exportType", status.getExportType());

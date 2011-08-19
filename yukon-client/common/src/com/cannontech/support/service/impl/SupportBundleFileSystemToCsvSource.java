@@ -1,0 +1,93 @@
+package com.cannontech.support.service.impl;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.security.MessageDigest;
+
+import org.apache.log4j.Logger;
+import org.joda.time.ReadableInstant;
+
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.tools.csv.CSVWriter;
+import com.cannontech.tools.zip.ZipWriter;
+
+public class SupportBundleFileSystemToCsvSource extends AbstractSupportBundleSource {
+    private String zipDirectory;
+    private String zipFilename;
+    private static final Logger log = YukonLogManager
+        .getLogger(SupportBundleFileSystemToCsvSource.class);
+
+    @Override
+    public void addToZip(ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
+
+        Writer pw = zipWriter.getBufferedWriter(zipDirectory, zipFilename);
+
+        CSVWriter csvWriter = new CSVWriter(pw);
+
+        String[] firstLine = { "File", "Size", "MD5" };
+        csvWriter.writeNext(firstLine);
+
+        File directory = new File(CtiUtilities.getYukonBase());
+        writeDirToCSV(directory, "", csvWriter);
+
+        try {
+            pw.flush();
+        } catch (IOException e) {
+            log.warn("Error while trying to flush the print writer for the CSVWriter", e);
+        }
+
+    }
+
+    private void writeDirToCSV(File directory, String path, CSVWriter csvWriter) {
+
+        File[] filesAndDirs = directory.listFiles();
+
+        for (File file : filesAndDirs) {
+            if (file.isDirectory())
+                writeDirToCSV(file, path + file.getName() + "/", csvWriter);
+            else {
+                String[] nextLine =
+                    { path + file.getName(), CtiUtilities.formatFileSize(file.length()),
+                            getMD5(file) };
+                csvWriter.writeNext(nextLine);
+
+            }
+        }
+    }
+
+    private String getMD5(File file) {
+        try {
+
+            InputStream inputStream = new FileInputStream(file);
+            java.security.MessageDigest md5Hasher = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                md5Hasher.update(buffer, 0, read);
+            }
+            inputStream.close();
+            byte[] digest = md5Hasher.digest();
+
+            String strDigest = "";
+            for (int i = 0; i < digest.length; i++) {
+                strDigest += Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1);
+            }
+            return strDigest;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void setZipDirectory(String zipDirectory) {
+        this.zipDirectory = zipDirectory;
+    }
+
+    public void setZipFilename(String zipFilename) {
+        this.zipFilename = zipFilename;
+    }
+
+}

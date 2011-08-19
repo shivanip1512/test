@@ -973,6 +973,9 @@
             <option name="errorCodes">
               <link>/spring/support/errorCodes/view</link>
             </option>
+            <option name="supportBundle">
+              <link>/spring/support/supportBundle/view</link>
+            </option>
           </options>
         </option>
         <option name="logs">
@@ -1100,6 +1103,9 @@
                 </page>
                 <page name="errorCodes" type="BASIC">
                     <menu>information|errorCodes</menu>
+                </page>
+                <page name="supportBundle" type = "BASIC">
+                    <menu>information|supportBundle</menu>
                 </page>
                 <page name="uiToolkitDemo" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
