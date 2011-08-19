@@ -36,7 +36,6 @@ import com.cannontech.support.model.SupportBundle;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleSource;
 import com.cannontech.support.service.impl.BundleRangeSelection;
-import com.cannontech.tools.ftp.FTPStatus;
 import com.cannontech.tools.sftp.SftpStatus;
 import com.cannontech.tools.sftp.SftpWriter;
 import com.cannontech.user.YukonUserContext;
