@@ -37,18 +37,18 @@ public class EncryptionController {
             @Override
             public void doValidation(EncryptedRoute encryptedRoute, Errors errors) {
 
-                if (StringUtils.isEmpty(encryptedRoute.getValue())
-                        || encryptedRoute.getValue().length() != 40) {
-                    errors.rejectValue("value", baseKey + ".errorMsg.length");
-                }
-
-                // If it is empty, don't also display this error
                 if (StringUtils.isNotEmpty(encryptedRoute.getValue())) {
+                    if (encryptedRoute.getValue().length() != 40) {
+                        Integer [] length = new Integer[1];
+                        length[0] = Integer.valueOf(encryptedRoute.getValue().length());
+                        errors.rejectValue("value", baseKey + ".errorMsg.length",length,"");
+                    }
+    
                     Pattern lengthPattern = Pattern.compile("^[0-9A-Fa-f]*$");
-                    YukonValidationUtils.regexCheck(errors,
-                                                    "value", encryptedRoute.getValue(),
-                                                    lengthPattern, baseKey
-                                                                   + ".errorMsg.hexidecimal");
+                    YukonValidationUtils.regexCheck(errors, "value", encryptedRoute.getValue(),
+                                                    lengthPattern, baseKey + ".errorMsg.hexidecimal");
+                } else {
+                    errors.rejectValue("value", baseKey + ".errorMsg.empty");
                 }
             }
         };
