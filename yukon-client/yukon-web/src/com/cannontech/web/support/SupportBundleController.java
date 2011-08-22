@@ -51,10 +51,10 @@ public class SupportBundleController {
     private SupportBundleService supportBundleService;
     private DateFormattingService dateFormattingService;
     private List<SupportBundleSource> sourceList;
-    private static final String FTP_USER = "?"; // We have not received a user/pass yet
-    private static final String FTP_PASS = "?"; 
-    private static final String FTP_HOST = "?"; 
-    private static final String FTP_DIR = "Support Bundles";
+    private static final String FTP_USER = "yukwrite"; 
+    private static final String FTP_PASS = "P4ssw0rd"; 
+    private static final String FTP_HOST = "sftp.cooperpowereas.net"; 
+    private static final String FTP_DIR = ""; // Blank for root directory
 
     private Validator detailsValidator =
         new SimpleValidator<SupportBundle>(SupportBundle.class) {

@@ -45,7 +45,7 @@
                 </tags:nameValue2>
                 
                 <c:if test="${doUpload}">
-                    <tags:nameValue2 nameKey=".ftpTransferStatus">
+                    <tags:nameValue2 nameKey=".ftp.status">
                        <span class="${msgStyle}">
                             <i:inline key="${ftpStatus}"/>
                        </span>
