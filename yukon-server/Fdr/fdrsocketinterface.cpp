@@ -285,6 +285,11 @@ int CtiFDRSocketInterface::sendAllPoints()
     return retVal;
 }
 
+bool CtiFDRSocketInterface::alwaysSendRegistrationPoints()
+{
+    return false;
+}
+
 bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     bool retVal = true;
@@ -325,7 +330,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
         updatePointByIdInList (getSendToList(), localMsg);
 
         // if this is a response to a registration, do nothing
-        if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
+        if (localMsg->getTags() & TAG_POINT_MOA_REPORT && !alwaysSendRegistrationPoints())
         {
             findPointIdInList (localMsg->getId(), getSendToList(), point);
 

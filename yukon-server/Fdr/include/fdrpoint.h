@@ -63,18 +63,23 @@ public:
     CtiPointType_t getPointType() const;
     CtiFDRPoint & setPointType(CtiPointType_t aType);
 
-    long             getPaoID() const;
-    CtiFDRPoint &    setPaoID(long aPaoID);
+    long    getPaoID() const;
+    void    setPaoID(long aPaoID);
+
+    long    getPointOffset() const;
+    void    setPointOffset(long aPointOffset);
 
     std::string      getTranslateName(std::string &aDestination);
     std::string      getTranslateName(int aIndex);
 
+    bool isCommStatus();
 
 private:
 
         // all points have these
         long                        iPointID;
         long                        iPaoID;
+        long                        iPointOffset;
         CtiPointType_t              iPointType;
         DestinationList             iDestinationList;
         bool                        iControllable;

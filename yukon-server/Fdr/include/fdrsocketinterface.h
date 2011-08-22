@@ -72,6 +72,8 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         virtual int  sendAllPoints(void);
         virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )=0;
+        virtual bool alwaysSendRegistrationPoints();
+
 
         bool isRegistered();
         CtiFDRSocketInterface &setRegistered (bool aFlag=true);

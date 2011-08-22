@@ -854,4 +854,8 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
 }
 
 
+bool CtiFDRSingleSocket::alwaysSendRegistrationPoints ( )
+{
+    return false;
+}
 

@@ -63,7 +63,10 @@ typedef struct
         /* Control Message   Function = 103 */
         struct {
             CHAR Name[16];
-            USHORT Value;
+            union {
+                USHORT Value;
+                ULONG LongValue;
+            };
         } Control;
 
         /* Force Scan Message  Function = 110 */
@@ -95,6 +98,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
 
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
+        virtual bool alwaysSendRegistrationPoints();
         virtual int getMessageSize(CHAR *data);
         virtual std::string decodeClientName(CHAR *data);
 
@@ -133,6 +137,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         virtual void signalPointRemoved(std::string &pointName);
 
         bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex);
+        void updatePointQualitiesOnDevice(PointQuality_t quality, long paoId);
 
         enum {  Valmet_Invalid = 0,
                 Valmet_Open = 1,

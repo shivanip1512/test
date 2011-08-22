@@ -1021,17 +1021,14 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         {
             const long paoID = Cmd->getOpArgList()[0];
 
-            if( CtiRequestMsg *pReq = new CtiRequestMsg(paoID, "scan integrity") )
+            CtiRequestMsg pReq(paoID, "scan integrity");
+            pReq.setUser( Cmd->getUser() );
+            pReq.setMessagePriority( MAXPRIORITY - 1 );    
+
+            writeMessageToClient(&pReq, string(PIL_REGISTRATION_NAME));
             {
-                pReq->setUser( Cmd->getUser() );
-                pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Scan Integrity Request sent to DeviceID: " << paoID << endl;
-                }
-                writeMessageToClient(pReq, string(PIL_REGISTRATION_NAME));
-        
-                delete pReq;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Scan Integrity Request sent to DeviceID: " << paoID << endl;
             }
         }
         else

@@ -203,7 +203,9 @@ int CtiFDR_Valmet::readConfig()
         dout << CtiTime() << " Valmet send rate " << getOutboundSendRate() << endl;
         dout << CtiTime() << " Valmet send interval " << getOutboundSendInterval() << " second(s) " << endl;
         dout << CtiTime() << " Valmet max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;
+        dout << CtiTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;        
+        dout << CtiTime() << " Valmet force scan pointname " << sendAllPointsPointName << endl;
+        dout << CtiTime() << " Valmet scan device compare string " << scanDevicePointName << endl;
 
 
         if (shouldUpdatePCTime())
@@ -284,7 +286,10 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 {
     CHAR *valmet=NULL;
     bool                 retVal = true;
-
+    if (aPoint.isCommStatus() && aPoint.getValue() != 0)
+    {
+        updatePointQualitiesOnDevice(NonUpdatedQuality, aPoint.getPaoID());
+    }
    /**************************
     * we allocate a valmet message here and it will be deleted
     * inside of the write function on the connection
@@ -840,22 +845,8 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 int CtiFDR_Valmet::processScanMessage(CHAR *aData)
 {
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
-    string           translationName;
-    CtiFDRPointSPtr         point;
-    translationName = string (data->Status.Name);
+    string  translationName(data->ForceScan.Name); 
 
-    // see if the point exists
-    {
-        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
-        string pointName = translationName;
-        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
-
-        std::map<string,int>::iterator iter = nameToPointId.find(pointName);
-        if( iter == nameToPointId.end() ) {
-            return !NORMAL;
-        }
-        point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
-    }
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -867,7 +858,7 @@ int CtiFDR_Valmet::processScanMessage(CHAR *aData)
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Processing Scan Request for All Valmet Translation Points." << endl;
+            dout << CtiTime() << " Processed Scan Request for All Valmet Translation Points." << endl;
         }
         return NORMAL;
     }
@@ -885,7 +876,6 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
     USHORT              value = ntohs(data->Control.Value);        
     CtiTime              timestamp;
     CtiFDRPointSPtr         point;
-    bool                 flag = true;
 
     string           desc;
     CHAR          action[60];
@@ -902,15 +892,10 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         std::map<string,int>::iterator iter = nameToPointId.find(pointName);
         if( iter != nameToPointId.end() ) {
             point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
-            flag = true;
-        }
-        else
-        {
-            flag = false;
         }
     }
 
-    if (flag == true && point->isControllable())
+    if (point && point->isControllable())
     {
         if (point->getPointType() == StatusPointType)
         {
@@ -967,20 +952,31 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         }
         else if (point->getPointType() == AnalogPointType)
         {
-            double dValue = value;
+            double dValue = ntohieeef(data->Control.LongValue);    
+            if (point->getPointOffset() == 10001) 
+            {    
+                int controlState=INVALID;
+                controlState = ForeignToYukonStatus (data->Control.Value);
+                dValue = ForeignToYukonStatus (data->Control.Value);
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Analog Output Point " << translationName << " with PointOffset " << point->getPointOffset() << " received value of c:" << controlState << " d: " << dValue;
+                }
+            }
             CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, dValue);
             sendMessageToDispatch(aoMsg);
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog Output point " << translationName;
-                dout << " value " << dValue << " from " << getInterfaceName() << " sending to device " << point->getPaoID() << endl;;
+                dout << CtiTime() << " Analog Output point with pointOffset " << point->getPointOffset() << " " << translationName;
+                dout << " value " << dValue << " from " << getInterfaceName() << " sending to device " << point->getPaoID() << endl;
             }
         }
     }
     else
     {
-        if (flag == false)
+        if (!point)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
@@ -1235,6 +1231,46 @@ string CtiFDR_Valmet::YukonToForeignTime (CtiTime aTimeStamp)
     }
 
     return(string (tmp));
+}
+
+void CtiFDR_Valmet::updatePointQualitiesOnDevice(PointQuality_t quality, long paoId)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Updating All Point Qualities on Device with ID: "<< paoId <<" with Send Direction to Quality of " << quality << endl;
+    }
+    {
+        CtiFDRManager* mgrPtr = getSendToList().getPointList();
+        CtiFDRManager::readerLock guard(mgrPtr->getLock());
+        CtiFDRPointSPtr point;
+    
+        CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+        CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
+    
+        for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
+        {
+            // find the point id
+            point = (*myIterator).second;
+    
+            if (point->getPaoID() == paoId && !point->isCommStatus() && point->getQuality() != quality)
+            {
+                CtiPointDataMsg* localMsg = new CtiPointDataMsg (point->getPointID(), point->getValue(), quality, point->getPointType());
+                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                            {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Updating quality to: " << quality << " for PointId: "<<point->getPointID() << " for " << getInterfaceName() << " interface."<< endl;
+                }
+                sendMessageToDispatch (localMsg);
+            }
+        }
+
+    }
+
+}
+
+bool CtiFDR_Valmet::alwaysSendRegistrationPoints()
+{
+    return true;
 }
 
 /****************************************************************************************

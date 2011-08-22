@@ -14,6 +14,8 @@ using namespace std;
 
 CtiFDRPoint::CtiFDRPoint( long pointID)
 :   iPointID(pointID),
+    iPointOffset(-1),
+    iPaoID(-1),
     iControllable(false),
     iMultiplier(1.0),
     iOffset(0.0),
@@ -65,6 +67,8 @@ CtiFDRPoint& CtiFDRPoint::operator=( const CtiFDRPoint &other )
         iDestinationList = other.getDestinationList();
         iValue = other.getValue();
         iQuality = other.getQuality();
+        iPaoID = other.getPaoID();
+        iPointOffset = other.getPointOffset();
     }
     return *this;
 }
@@ -188,11 +192,22 @@ long CtiFDRPoint::getPaoID() const
 {
     return iPaoID;
 }
-CtiFDRPoint & CtiFDRPoint::setPaoID(long aPaoID)
+void CtiFDRPoint::setPaoID(long aPaoID)
 {
     iPaoID = aPaoID;
-    return *this;
+    return;
 }
+
+long CtiFDRPoint::getPointOffset() const
+{
+    return iPointOffset;
+}
+void CtiFDRPoint::setPointOffset(long aPointOffset)
+{
+    iPointOffset = aPointOffset;
+    return;
+}
+
 
 string CtiFDRPoint::getTranslateName( string &aDestinationName )
 {
@@ -221,5 +236,10 @@ string CtiFDRPoint::getTranslateName( int aIndex )
 std::ostream& operator<< (std::ostream& os, const CtiFDRPoint& point)
 {
     return os << "[point id " << point.getPointID() << "]";
+}
+
+bool CtiFDRPoint::isCommStatus()
+{
+    return (iPointOffset == 2000 ? true : false);
 }
 
