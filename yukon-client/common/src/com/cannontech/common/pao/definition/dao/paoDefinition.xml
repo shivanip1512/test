@@ -6093,32 +6093,8 @@
         	<tag name="VOLTAGE_REGULATOR"/>
         </tags>
     </pao>
-    
-    <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">
-        <displayName>Load Tap Changer</displayName>
-    </pao>
-    <pao id="GANG_OPERATED" inherits="VOLTAGE_REGULATOR">
-        <displayName>Gang Operated</displayName>
-        <attributes>
-            <attribute name="VOLTAGE_X">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TERMINATE">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="KEEP_ALIVE_TIMER">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-        </attributes>
-    </pao>
-    <pao id="PHASE_OPERATED" inherits="VOLTAGE_REGULATOR">
-        <displayName>Phase Operated</displayName>
+
+    <pao id="PHASE_AND_GANG_BASE" inherits="VOLTAGE_REGULATOR" abstract="true">
         <attributes>
             <attribute name="VOLTAGE_X">
                 <mappedLookup>
@@ -6141,6 +6117,18 @@
                 </mappedLookup>
             </attribute>
         </attributes>
+    </pao>
+    
+    <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">
+        <displayName>Load Tap Changer</displayName>
+    </pao>
+
+    <pao id="GANG_OPERATED" inherits="PHASE_AND_GANG_BASE">
+        <displayName>Gang Operated</displayName>
+    </pao>
+
+    <pao id="PHASE_OPERATED" inherits="PHASE_AND_GANG_BASE">
+        <displayName>Phase Operated</displayName>
     </pao>
     
     <pao id="ZIGBEE_ENDPOINT">
