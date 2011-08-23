@@ -244,5 +244,30 @@
 
     <target name="update-spring" depends="spring-download, spring-install" description="Update Spring JARs in third-party for the hard-coded version.">
     </target>
+	
+	<target name="prepare-sonar" depends="" description="Moves files around to make Sonar analysis easier">
+		<delete dir="${yukon.base}/combined-src" quiet="true"/>
+		<mkdir dir="${yukon.base}/combined-src" />
+        <copy todir="${yukon.base}/combined-src">
+            <fileset dir="${yukon.base}">
+                <include name="*/src/**/*.java"/>
+    	    </fileset>
+            <regexpmapper from="^.*/src/(.*)$$" to="\1" handledirsep="true"/>
+        </copy>
+		
+		<delete dir="${yukon.base}/combined-bin" quiet="true"/>
+		<mkdir dir="${yukon.base}/combined-bin" />
+        <copy todir="${yukon.base}/combined-bin">
+            <fileset dir="${yukon.base}">
+                <include name="*/build/**/*.class"/>
+    	    </fileset>
+            <regexpmapper from="^.*/build/(.*)$$" to="\1" handledirsep="true"/>
+        </copy>
+		<copy todir="${yukon.base}/combined-bin">
+            <fileset dir="${yukon-web}/build_src">
+                <include name="**/*.class"/>
+            </fileset>
+		</copy>
+	</target>
 
 </project>
