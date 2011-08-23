@@ -48,7 +48,7 @@
 
 			<c:if test="${not empty pageScope.helpText}">
 				<a href="javascript:void(0);" onclick="$('boxContainerInfoPopup_${thisId}').toggle();" >
-                    <cti:img key="help"/>
+                    <cti:img nameKey="help"/>
             	</a>
         	</c:if>
         	

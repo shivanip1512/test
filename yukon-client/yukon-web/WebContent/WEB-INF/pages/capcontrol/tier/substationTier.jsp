@@ -96,9 +96,9 @@
     				</td>
                     
                     <td>
-                        <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
-                            <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
                         </c:if>
                     </td>
                     

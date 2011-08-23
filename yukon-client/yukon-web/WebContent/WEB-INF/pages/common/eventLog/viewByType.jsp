@@ -68,7 +68,7 @@
                             </c:otherwise>
                         </c:choose>
                         
-                        <cti:img key="eventLogTypeTreeSector" id="showPopupButton"  />                        
+                        <cti:img nameKey="eventLogTypeTreeSector" id="showPopupButton"  />                        
                         
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -101,12 +101,12 @@
     <c:choose>
         <c:when test="${maxCsvRows > searchResult.hitCount}">
             <div style="text-align: right;">
-                <cti:labeledImg key="csvExport" href="${csvLink}"/>
+                <cti:labeledImg nameKey="csvExport" href="${csvLink}"/>
             </div>
         </c:when>
         <c:otherwise>
             <div style="text-align: right;">
-                <cti:labeledImg key="csvExport" id="csvExportButton"/>
+                <cti:labeledImg nameKey="csvExport" id="csvExportButton"/>
             </div>
             <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
         </c:otherwise>

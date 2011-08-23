@@ -135,30 +135,30 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-                                            <cti:labeledImg key="play" href="javascript:startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
+                                            <cti:labeledImg nameKey="play" href="javascript:startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
 										</c:when>
 										<c:otherwise>
-                                            <cti:labeledImg key="playDisabled"/>
+                                            <cti:labeledImg nameKey="playDisabled"/>
 										</c:otherwise>
 									</c:choose>
 								</div>
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-                                            <cti:labeledImg key="stop" href="javascript:stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
+                                            <cti:labeledImg nameKey="stop" href="javascript:stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
 										</c:when>
 										<c:otherwise>
-                                            <cti:labeledImg key="stopDisabled"/>
+                                            <cti:labeledImg nameKey="stopDisabled"/>
 										</c:otherwise>
 									</c:choose>
 								</div>
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasEditingRole == true}">
-                                            <cti:labeledImg key="add" href="javascript:newScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
+                                            <cti:labeledImg nameKey="add" href="javascript:newScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
 										</c:when>
 										<c:otherwise>
-											<cti:labeledImg key="addDisabled"/>
+											<cti:labeledImg nameKey="addDisabled"/>
 										</c:otherwise>
 									</c:choose>
 								</div>

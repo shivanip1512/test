@@ -45,12 +45,12 @@
     <c:choose>
         <c:when test="${maxCsvRows > searchResult.hitCount}">
             <div style="text-align: right;">
-                <cti:labeledImg key="csvExport" href="${csvLink}"/>
+                <cti:labeledImg nameKey="csvExport" href="${csvLink}"/>
             </div>
         </c:when>
         <c:otherwise>
             <div style="text-align: right;">
-                <cti:labeledImg key="csvExport" id="csvExportButton"/>
+                <cti:labeledImg nameKey="csvExport" id="csvExportButton"/>
             </div>
             <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
         </c:otherwise>

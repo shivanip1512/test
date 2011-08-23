@@ -266,7 +266,7 @@
                     <td>
                         <c:if test="${isEditable}">
                             <c:if test="${assignedProgram.first}">
-                                <cti:img key="up.disabled"/>
+                                <cti:img nameKey="up.disabled"/>
                             </c:if>
                             <c:if test="${!assignedProgram.first}">
                                 <cti:url var="moveProgramUpUrl" value="moveProgram">
@@ -274,10 +274,10 @@
                                     <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
                                     <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
                                 </cti:url>
-                                <cti:img key="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')"/>
+                                <cti:img nameKey="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')"/>
                             </c:if>
                             <c:if test="${assignedProgram.last}">
-                                <cti:img key="down.disabled"/>
+                                <cti:img nameKey="down.disabled"/>
                             </c:if>
                             <c:if test="${!assignedProgram.last}">
                                 <cti:url var="moveProgramDownUrl" value="moveProgram">
@@ -285,7 +285,7 @@
                                     <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
                                     <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
                                 </cti:url>
-                                <cti:img key="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
+                                <cti:img nameKey="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
                             </c:if>
                         </c:if>
                         ${assignedProgram.programOrder}

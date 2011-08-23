@@ -105,7 +105,7 @@
                                         <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                         <cti:param name="delete" />
                                     </cti:url>
-                                    <cti:img href="${deleteApplianceUrl}" key="deleteAppliance"/>
+                                    <cti:img href="${deleteApplianceUrl}" nameKey="deleteAppliance"/>
 
                                  </td>
                              </cti:checkRolesAndProperties>

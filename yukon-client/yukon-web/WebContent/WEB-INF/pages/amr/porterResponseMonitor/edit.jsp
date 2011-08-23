@@ -130,7 +130,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 						<th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
                         <th class="outcomeColumn"><i:inline key=".rulesTable.header.outcome" /></th>
                         <th class="errorsColumn"><i:inline key=".rulesTable.header.errors" />
-                            <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
+                            <cti:img id="errorHelp" nameKey="help" styleClass="pointer hoverableImage"/>
                         </th>
                         <th class="matchColumn"><i:inline key=".rulesTable.header.matchStyle" /></th>
                         <th class="stateColumn"><i:inline key=".rulesTable.header.state" /></th>
@@ -173,12 +173,12 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 								</form:select>
 							</td>
 							<td class="removeColumn">
-								<cti:img key="rulesTable.delete" styleClass="removeRow pointer"/>
+								<cti:img nameKey="rulesTable.delete" styleClass="removeRow pointer"/>
 							</td>
 						</tr>
 						<tr style="display: none" id="rule_${key}_undo" class="undoRow">
                             <td colspan="1">
-                                <cti:img key="rulesTable.delete"/>
+                                <cti:img nameKey="rulesTable.delete"/>
                             </td>
 							<td colspan="4"><i:inline key=".rulesTable.removedRow"/></td>
 							<td colspan="1">

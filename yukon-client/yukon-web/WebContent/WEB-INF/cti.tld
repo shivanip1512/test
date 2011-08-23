@@ -1453,7 +1453,7 @@
             Outputs localized image optionally wrapped in an anchor tag.
         </description>
         <attribute>
-            <name>key</name>
+            <name>nameKey</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
@@ -1513,7 +1513,7 @@
             Outputs localized image and label optionally wrapped in an anchor tag.
         </description>
         <attribute>
-            <name>key</name>
+            <name>nameKey</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>

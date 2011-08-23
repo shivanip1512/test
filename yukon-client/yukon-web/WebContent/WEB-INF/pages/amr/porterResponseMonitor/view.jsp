@@ -106,7 +106,7 @@
                     <span> - </span>
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
                 </span>
-                <cti:img id="supportedDevicesHelpIcon" key="help" styleClass="pointer hoverableImage nameValueLogoImage" />&nbsp
+                <cti:img id="supportedDevicesHelpIcon" nameKey="help" styleClass="pointer hoverableImage nameValueLogoImage" />&nbsp
             </tags:nameValue2>
 
 			<%-- enable/disable monitoring --%>
@@ -123,7 +123,7 @@
 						<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
 						<th><i:inline key=".rulesTable.header.outcome" /></th>
 						<th><i:inline key=".rulesTable.header.errors" />
-                            <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
+                            <cti:img id="errorHelp" nameKey="help" styleClass="pointer hoverableImage"/>
                         </th>
 						<th><i:inline key=".rulesTable.header.matchStyle" /></th>
 						<th><i:inline key=".rulesTable.header.state" /></th>

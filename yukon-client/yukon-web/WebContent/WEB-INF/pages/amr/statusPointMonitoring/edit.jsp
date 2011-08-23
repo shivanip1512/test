@@ -26,7 +26,7 @@
                 <option value="${eventType}"/>${eventType}</option>
             </c:forEach>
         </select>
-        <cti:img key="deleteAction" href="#"/>
+        <cti:img nameKey="deleteAction" href="#"/>
     </span>
     
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".delete.title" id="deleteConfirmDialog">

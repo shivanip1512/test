@@ -195,7 +195,7 @@
                                         
                                     </c:choose>
                                 </td>
-                                <td class="removeColumn"><cti:img key="remove" href="javascript:removeRule(${row.index})"/></td>
+                                <td class="removeColumn"><cti:img nameKey="remove" href="javascript:removeRule(${row.index})"/></td>
                             </tr>
                         </c:forEach>
                     </c:otherwise>

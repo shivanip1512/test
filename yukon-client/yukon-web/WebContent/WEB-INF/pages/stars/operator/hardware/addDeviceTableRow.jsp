@@ -22,12 +22,12 @@
                     </cti:classUpdater>            
             </td>
             <td nowrap="nowrap">
-                <cti:img key="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
-                <cti:img key="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
-                <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}&message=testmessage&gatewayInvId=${inventoryId}"/>
+                <cti:img nameKey="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
+                <cti:img nameKey="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
+                <cti:img nameKey="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}&message=testmessage&gatewayInvId=${inventoryId}"/>
             </td>
 			<td class="removeColumn" >
-				<cti:img key="remove" href="javascript:removeTableRow('${zigbeeDto.serialNumber}',${zigbeeDto.deviceId})"/>
+				<cti:img nameKey="remove" href="javascript:removeTableRow('${zigbeeDto.serialNumber}',${zigbeeDto.deviceId})"/>
 			</td>
          </tr>
     </table>

@@ -17,14 +17,14 @@
 <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
     <table class="optOutActions">
         <tr>
-            <td><cti:img key="allowOne"/></td>
+            <td><cti:img nameKey="allowOne"/></td>
             <td><i:inline key=".allowOneIconText" /></td>
         </tr>
         <tr>
-            <td><cti:img key="decrementAllowance"/></td>
+            <td><cti:img nameKey="decrementAllowance"/></td>
             <td><i:inline key=".decrementAllowanceIconText"/></td>
         <tr>
-            <td><cti:img key="resetToLimit"/></td>
+            <td><cti:img nameKey="resetToLimit"/></td>
             <td><i:inline key=".resetToLimitIconText" /></td>
         </tr>
     </table>
@@ -124,7 +124,7 @@
                         <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                     </td>
                     <td valign="top">
-                        <cti:img key="cancelOptOut" id="cancel${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                        <cti:img nameKey="cancelOptOut" id="cancel${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
                         <form action="/spring/stars/operator/program/optOut/cancelOptOut" class="di">
                             <input type="hidden" name="accountId" value="${accountId}"/>
                             <input type="hidden" name="eventId" value="${optOut.eventId}"/>
@@ -133,7 +133,7 @@
                         
                         <c:choose>
                             <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                <cti:img key="resendOptOut" id="resend${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                <cti:img nameKey="resendOptOut" id="resend${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
                                 <form action="/spring/stars/operator/program/optOut/resend" class="di">
                                     <input type="hidden" name="accountId" value="${accountId}"/>
                                     <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}"/>
@@ -141,7 +141,7 @@
                                 </form>
                             </c:when>
                             <c:otherwise>
-                                <cti:img key="resendOptOutDisabled"/>
+                                <cti:img nameKey="resendOptOutDisabled"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -169,7 +169,7 @@
                 <c:if test="${!noOptOutLimits}">
                     <th><i:inline key=".actions"/>
                         <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
-                            <cti:img key="help" styleClass="hoverableImage"/>
+                            <cti:img nameKey="help" styleClass="hoverableImage"/>
                         </a>
                     </th>
                 </c:if>
@@ -191,7 +191,7 @@
                     </td>
                     <td>
                         <c:if test="${!noOptOutLimits}">
-                            <cti:img key="allowOne" id="allowOne${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                            <cti:img nameKey="allowOne" id="allowOne${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
                             <form action="/spring/stars/operator/program/optOut/allowAnother" class="di">
                                 <input type="hidden" name="accountId" value="${accountId}"/>
                                 <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
@@ -199,7 +199,7 @@
                             </form>
 
                             <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
-                                <cti:img key="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                <cti:img nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
                                 <form action="/spring/stars/operator/program/optOut/decrementAllowances" class="di">
                                     <input type="hidden" name="accountId" value="${accountId}"/>
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
@@ -207,15 +207,15 @@
                                 </form>
                             </c:if>
                             <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
-                                <cti:img key="decrementAllowanceDisabled"/>
+                                <cti:img nameKey="decrementAllowanceDisabled"/>
                             </c:if>
 
                             <c:choose>
         	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-                                    <cti:img key="resetToLimitDisabled"/>
+                                    <cti:img nameKey="resetToLimitDisabled"/>
         	                    </c:when>
         	                    <c:otherwise>
-                                    <cti:img key="resetToLimit" id="resetToLimit${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                    <cti:img nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
                                     <form action="/spring/stars/operator/program/optOut/resetToLimit" class="di">
                                         <input type="hidden" name="accountId" value="${accountId}"/>
                                         <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>

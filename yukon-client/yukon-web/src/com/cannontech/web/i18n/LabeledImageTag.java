@@ -42,7 +42,7 @@ public class LabeledImageTag extends ImageTag {
 
         try {
             MessageScopeHelper.forRequest(getRequest())
-                .pushScope("." + key, "components.image." + key);
+                .pushScope("." + nameKey, "components.image." + nameKey);
             String imageUrl = getLocalMessage(messageScope, ".imageUrl", true);
             imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
             String labelText = getLocalMessage(messageScope, ".label", true);

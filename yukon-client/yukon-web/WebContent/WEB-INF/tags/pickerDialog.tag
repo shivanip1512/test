@@ -126,11 +126,11 @@
                     <c:if test="${empty pageScope.nameKey}">
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
-                    <cti:labeledImg id="picker_${id}_label" key="${pageScope.nameKey}"
+                    <cti:labeledImg id="picker_${id}_label" nameKey="${pageScope.nameKey}"
                         labelStyleClass="noSelectionPickerLabel"
                         href="javascript:${id}.show()" imageOnRight="true"/>
                     <c:if test="${pageScope.multiSelectMode}">
-                        <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" key="zoom"/>
+                        <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" nameKey="zoom"/>
                     </c:if>
                     <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
                         <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>

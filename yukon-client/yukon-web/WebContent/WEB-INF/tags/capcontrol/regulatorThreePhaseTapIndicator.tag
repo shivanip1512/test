@@ -14,46 +14,46 @@
             <span class="lastOpLeft">
                 <%-- Last Operation was a Tap Down Operation --%>
                 <span class="tapLower" style="display: none;">
-                    <cti:img key="greenDownArrow"/>
+                    <cti:img nameKey="greenDownArrow"/>
                 </span>
         
                 <%-- Last Operation was a Tap Down Operation --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapLowerWarning" style="display: none;">
-                    <cti:img key="orangeDownArrow"/>
+                    <cti:img nameKey="orangeDownArrow"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation --%>
                 <span class="tapRaise" style="display: none;">
-                    <cti:img key="greenUpArrow"/>
+                    <cti:img nameKey="greenUpArrow"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapRaiseWarning" style="display: none;">
-                    <cti:img key="orangeUpArrow"/>
+                    <cti:img nameKey="orangeUpArrow"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Down Operation and occurred recently. Animated Icon --%>
                 <span class="tapLowerRecent" style="display: none;">
-                    <cti:img key="flashingGreenDownArrow"/>
+                    <cti:img nameKey="flashingGreenDownArrow"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Down Operation and occurred recently. Animated Icon --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapLowerRecentWarning" style="display: none;">
-                    <cti:img key="flashingOrangeDownArrow"/>
+                    <cti:img nameKey="flashingOrangeDownArrow"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation and occurred recently. Animated Icon --%>
                 <span class="tapRaiseRecent" style="display: none;">
-                    <cti:img key="flashingGreenUpArrow"/>
+                    <cti:img nameKey="flashingGreenUpArrow"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation and occurred recently. Animated Icon --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapRaiseRecentWarning" style="display: none;">
-                    <cti:img key="flashingOrangeUpArrow"/>
+                    <cti:img nameKey="flashingOrangeUpArrow"/>
                 </span>
                 
                 <%-- Default output --%>

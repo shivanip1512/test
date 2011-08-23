@@ -18,7 +18,7 @@ public class ImageTag extends YukonTagSupport {
 
     protected String id = null;
     protected String name = null;
-    protected String key = null;
+    protected String nameKey = null;
     protected String href = null;
     protected String styleClass = null;
     protected String type = null;
@@ -32,8 +32,8 @@ public class ImageTag extends YukonTagSupport {
         this.name = name;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setNameKey(String nameKey) {
+        this.nameKey = nameKey;
     }
 
     public void setHref(String href) {
@@ -59,7 +59,7 @@ public class ImageTag extends YukonTagSupport {
 
         try {
             MessageScopeHelper.forRequest(getRequest())
-                .pushScope("." + key, "components.image." + key);
+                .pushScope("." + nameKey, "components.image." + nameKey);
             String imageUrl = getLocalMessage(messageScope, ".imageUrl", true);
             imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
             String hoverText = getLocalMessage(messageScope, ".hoverText", false);

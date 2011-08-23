@@ -33,12 +33,12 @@
                 </select>
             </td>
 			<td class="removeColumn">
-                <cti:img key="delete" styleClass="removeRow pointer"/>
+                <cti:img nameKey="delete" styleClass="removeRow pointer"/>
             </td>
 		</tr>
         <tr id="rule_${newMapKey}_undo" class="undoRow" style="display: none">
             <td colspan="1">
-                <cti:img key="delete"/>
+                <cti:img nameKey="delete"/>
             </td>
             <td colspan="4" class="removed"><i:inline key=".rulesTable.removedRow"/></td>
             <td colspan="1" class="removed">

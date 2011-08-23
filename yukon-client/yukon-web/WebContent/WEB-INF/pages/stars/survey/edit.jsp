@@ -66,7 +66,7 @@
                             <cti:param name="surveyId" value="${surveyId}"/>
                         </cti:url>
                         <li>
-                            <cti:labeledImg key="sampleXml" href="${sampleXmlUrl}"/>
+                            <cti:labeledImg nameKey="sampleXml" href="${sampleXmlUrl}"/>
                         </li>
                         <c:if test="${hasBeenTaken}">
                             <cti:url var="reportUrl"
@@ -74,7 +74,7 @@
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
                             <li>
-                                <cti:labeledImg key="report" href="${reportUrl}"/>
+                                <cti:labeledImg nameKey="report" href="${reportUrl}"/>
                             </li>
                         </c:if>
                     </ul>
@@ -126,7 +126,7 @@
 					                        actionUrl="${editQuestionUrl}"/>
                                         <c:if test="${!hasBeenTaken}">
 						                    <c:if test="${status.first}">
-						                        <cti:img key="up.disabled"/>
+						                        <cti:img nameKey="up.disabled"/>
 						                    </c:if>
 						                    <c:if test="${!status.first}">
 						                        <cti:url var="moveProgramUpUrl"
@@ -135,10 +135,10 @@
 						                            <cti:param name="surveyQuestionId"
 						                                value="${question.surveyQuestionId}"/>
 						                        </cti:url>
-						                        <cti:img key="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')"/>
+						                        <cti:img nameKey="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')"/>
 						                    </c:if>
 						                    <c:if test="${status.last}">
-						                        <cti:img key="down.disabled"/>
+						                        <cti:img nameKey="down.disabled"/>
 						                    </c:if>
 						                    <c:if test="${!status.last}">
 						                        <cti:url var="moveProgramDownUrl"
@@ -147,7 +147,7 @@
 						                            <cti:param name="surveyQuestionId"
 						                                value="${question.surveyQuestionId}"/>
 						                        </cti:url>
-						                        <cti:img key="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
+						                        <cti:img nameKey="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
 						                    </c:if>
 						                    <cti:url var="deleteUrl"
 						                        value="/spring/stars/survey/confirmDeleteQuestion">

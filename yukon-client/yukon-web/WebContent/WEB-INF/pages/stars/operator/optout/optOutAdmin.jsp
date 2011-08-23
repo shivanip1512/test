@@ -98,7 +98,7 @@
                                                          immediateSelectMode="true"
                                                          extraDestinationFields="paoName:disabledProgramName;paoName:disabledProgramNameDisplaySpan"
                                                          extraArgs="${energyCompanyId}">
-                                        <cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
+                                        <cti:img nameKey="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
                                      </tags:pickerDialog>
                                      
                                      <span id="disabledProgramNameDisplaySpan" style="font-weight:bold;"></span>
@@ -143,7 +143,7 @@
 						                                 immediateSelectMode="true"
 						                                 extraDestinationFields="paoName:cancelOptOutsProgramName;paoName:cancelOptOutsProgramNameDisplaySpan"
 						                                 extraArgs="${energyCompanyId}">
-						             	<cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
+						             	<cti:img nameKey="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
 		                             </tags:pickerDialog>
 		                             
 		                             <span id="cancelOptOutsProgramNameDisplaySpan" style="font-weight:bold;"></span>
@@ -214,7 +214,7 @@
 						                                 immediateSelectMode="true"
 						                                 extraDestinationFields="paoName:disabledCountProgramName;paoName:disabledCountProgramNameDisplaySpan"
 						                                 extraArgs="${energyCompanyId}">
-						                <cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
+						                <cti:img nameKey="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
 		                             </tags:pickerDialog>
 		                             
 		                             <span id="disabledCountProgramNameDisplaySpan" style="font-weight:bold;"></span>

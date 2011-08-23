@@ -152,7 +152,7 @@
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                             </cti:url>
-                            <cti:labeledImg key="pdfExport" href="${pdfExportUrl}"/>
+                            <cti:labeledImg nameKey="pdfExport" href="${pdfExportUrl}"/>
                     
                         </div>
 

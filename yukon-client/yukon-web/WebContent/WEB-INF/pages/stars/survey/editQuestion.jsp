@@ -12,11 +12,11 @@
 <cti:msgScope paths="modules.survey.edit">
 
 <span id="templateIcons" style="display: none">
-<cti:img key="up" href="#"/>
-<cti:img key="down" href="#"/>
-<cti:img key="deleteAnswer" href="#"/>
-<cti:img key="up.disabled"/>
-<cti:img key="down.disabled"/>
+<cti:img nameKey="up" href="#"/>
+<cti:img nameKey="down" href="#"/>
+<cti:img nameKey="deleteAnswer" href="#"/>
+<cti:img nameKey="up.disabled"/>
+<cti:img nameKey="down.disabled"/>
 </span>
 
 <script type="text/javascript">
@@ -116,7 +116,7 @@ questionTypeChanged = function() {
 			    </table>
 	        </div>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:labeledImg key="addAnswer" href="javascript: addAnswer()"/>
+                <cti:labeledImg nameKey="addAnswer" href="javascript: addAnswer()"/>
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>

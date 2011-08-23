@@ -44,15 +44,15 @@
                         <div align="left" id="systemCommandLink">
                             <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
                                 <tags:dynamicChooseOption optionId="enabled">
-                                    <cti:labeledImg key="disableSystem" href="javascript:handleSystemCommand(true)" id="systemOn"/>
+                                    <cti:labeledImg nameKey="disableSystem" href="javascript:handleSystemCommand(true)" id="systemOn"/>
                                 </tags:dynamicChooseOption>
                                 <tags:dynamicChooseOption optionId="disabled">
-                                    <cti:labeledImg key="enableSystem" href="javascript:handleSystemCommand(false)" id="systemOff"/>
+                                    <cti:labeledImg nameKey="enableSystem" href="javascript:handleSystemCommand(false)" id="systemOff"/>
                                 </tags:dynamicChooseOption>
                             </tags:dynamicChoose>
                         </div>
         				<div align="left">
-                            <cti:labeledImg key="resetOpCount" href="javascript:sendResetOpCountCommand()" id="systemResetOpCountsLink"/>
+                            <cti:labeledImg nameKey="resetOpCount" href="javascript:sendResetOpCountCommand()" id="systemResetOpCountsLink"/>
         				</div>
                     </tags:boxContainer>
                 </div>
@@ -127,9 +127,9 @@
 	        			</td>
                         
                         <td>
-                            <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
 	                        <c:if test="${hasEditingRole}">
-                                <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                                <cti:img nameKey="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
                             </c:if>
                         </td>
 	        			

@@ -105,11 +105,11 @@
                 </td>
                 
                 <td>
-                    <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substation.ccId}" styleClass="tierIconLink"/>
+                    <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substation.ccId}" styleClass="tierIconLink"/>
                     <c:if test="${hasEditingRole}">
-                        <cti:img key="remove" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}" styleClass="tierIconLink"/>
                     </c:if>
-                    <cti:img key="location" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
+                    <cti:img nameKey="location" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
                 </td>
                 
                 <td>
@@ -186,16 +186,16 @@
                     </td>
                     
                     <td>
-                        <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisSubBusId}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisSubBusId}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
-                            <cti:img key="remove" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}" styleClass="tierIconLink"/>
                         </c:if>
-                        <cti:img key="location" href="${locationLink}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="location" href="${locationLink}" styleClass="tierIconLink"/>
                         <c:if test="${!hideOneLine}">
-                            <cti:img key="oneline" href="${oneLineLink}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="oneline" href="${oneLineLink}" styleClass="tierIconLink"/>
                         </c:if>
                         <c:if test="${viewableSubBus.ivvcControlled}">
-                            <cti:img key="ivvc" href="${ivvcLink}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="ivvc" href="${ivvcLink}" styleClass="tierIconLink"/>
                         </c:if>
                     </td>
                     
@@ -363,7 +363,7 @@
     </tags:boxContainer>
     <c:if test="${fn:length(subBusList) > 1}">
         <tags:boxContainerFooter>
-            <cti:labeledImg key="filter"/>
+            <cti:labeledImg nameKey="filter"/>
             <select id='subBusFilter' onchange='applySubBusFilter(this);'>
                 <option>All SubBuses</option>
                 <c:forEach var="sub" items="${subBusList}" >
@@ -415,11 +415,11 @@
                     </td>
                     
                     <td>
-                        <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisFeederId}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisFeederId}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
-                            <cti:img key="remove" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}" styleClass="tierIconLink"/>
                         </c:if>
-                        <cti:img key="location" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="location" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
                     </td>
                     
                     <td>
@@ -526,7 +526,7 @@
     </tags:abstractContainer>
     <c:if test="${fn:length(feederList) > 1}">
         <tags:boxContainerFooter>
-            <cti:labeledImg key="filter"/>
+            <cti:labeledImg nameKey="filter"/>
             <select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
                 <option>All Feeders</option>
                 <c:forEach var="feeder" items="${feederList}">
@@ -593,14 +593,14 @@
                     
                     <td>
                         <c:if test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
-                            <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" styleClass="tierIconLink"/>
                             <c:if test="${hasEditingRole}">
-                                <cti:img key="copy" href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" styleClass="tierIconLink"/>
+                                <cti:img nameKey="copy" href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" styleClass="tierIconLink"/>
                             </c:if>
                         </c:if>
                         <c:if test="${viewableCapBank.twoWayCbc}">
                             <span onmouseover="statusMsgAbove(this,'Click here to see the timestamp information for the cap bank controller device.');">
-                                <cti:img key="view" href="javascript:showCbcPointList(${viewableCapBank.controlDevice.liteID}, '${viewableCapBank.controlDevice.paoName}')" styleClass="tierIconLink"/>
+                                <cti:img nameKey="view" href="javascript:showCbcPointList(${viewableCapBank.controlDevice.liteID}, '${viewableCapBank.controlDevice.paoName}')" styleClass="tierIconLink"/>
                             </span>
                         </c:if>
                     </td>
@@ -612,13 +612,13 @@
                     </td>
                     
                     <td>
-                        <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisCapBankId}" styleClass="tierIconLink"/>
+                        <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisCapBankId}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
-                            <cti:img key="remove" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" styleClass="tierIconLink"/>
+                            <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" styleClass="tierIconLink"/>
                         </c:if>
                         <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <span onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
-                                <cti:img key="view" href="javascript:showCapBankAddInfo(${thisCapBankId}, '${viewableCapBank.capBankDevice.ccName}')" styleClass="tierIconLink"/>
+                                <cti:img nameKey="view" href="javascript:showCapBankAddInfo(${thisCapBankId}, '${viewableCapBank.capBankDevice.ccName}')" styleClass="tierIconLink"/>
                             </span>
                         </cti:checkRolesAndProperties>
                     </td>

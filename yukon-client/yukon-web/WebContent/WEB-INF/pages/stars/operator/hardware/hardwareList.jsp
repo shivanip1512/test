@@ -403,7 +403,7 @@
                                                 nameKey="changeOut"/>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
-                                <cti:img key="editConfig" href="${editConfigUrl}${switch.inventoryId}"/>
+                                <cti:img nameKey="editConfig" href="${editConfigUrl}${switch.inventoryId}"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -485,14 +485,14 @@
                                     </c:if>
                                 </cti:checkRolesAndProperties>
                                 
-                                <cti:img key="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
+                                <cti:img nameKey="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
                                 
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
                                     <c:if test="${thermostat.hardwareType.supportsSchedules}">
-                                        <cti:img key="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
+                                        <cti:img nameKey="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
                                     </c:if>
                                     <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
-                                        <cti:img key="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
+                                        <cti:img nameKey="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
                                     
@@ -612,11 +612,11 @@
                                         
                                     </cti:checkRolesAndProperties>
                                     
-                                    <cti:img key="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
+                                    <cti:img nameKey="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
                                     
                                     <cti:checkRolesAndProperties value="METERING">
                                         <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                            <cti:img key="meterDetail" />
+                                            <cti:img nameKey="meterDetail" />
                                         </cti:paoDetailUrl>
                                     </cti:checkRolesAndProperties>
                                 </td>

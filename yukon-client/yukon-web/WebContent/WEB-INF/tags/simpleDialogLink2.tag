@@ -25,10 +25,10 @@
     value="javascript:openSimpleDialog('${pageScope.dialogId}', '${pageScope.actionUrl}', ${pageScope.dialogTitle})"/>
 
 <c:if test="${!pageScope.skipLabel}">
-    <cti:labeledImg key="${pageScope.key}" href="${pageScope.simpleDialogUrl}"
+    <cti:labeledImg nameKey="${pageScope.key}" href="${pageScope.simpleDialogUrl}"
         styleClass="${pageScope.styleClass}"/>
 </c:if>
 <c:if test="${pageScope.skipLabel}">
-    <cti:img key="${pageScope.key}" href="${simpleDialogUrl}"
+    <cti:img nameKey="${pageScope.key}" href="${simpleDialogUrl}"
         styleClass="${pageScope.styleClass}"/>
 </c:if>

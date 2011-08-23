@@ -167,7 +167,7 @@
                                         </c:choose>
                                     </td>
                                     <td>
-                                        <cti:img key="remove" href="javascript:deleteComment(${comment.id})"/>
+                                        <cti:img nameKey="remove" href="javascript:deleteComment(${comment.id})"/>
                                     </td>
                                 </tr>
                             </c:forEach>
