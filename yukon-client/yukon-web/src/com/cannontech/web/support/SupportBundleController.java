@@ -54,7 +54,6 @@ public class SupportBundleController {
     private static final String FTP_USER = "yukwrite"; 
     private static final String FTP_PASS = "P4ssw0rd"; 
     private static final String FTP_HOST = "sftp.cooperpowereas.net"; 
-    private static final String FTP_DIR = ""; // Blank for root directory
 
     private Validator detailsValidator =
         new SimpleValidator<SupportBundle>(SupportBundle.class) {
@@ -163,10 +162,10 @@ public class SupportBundleController {
 
             SftpWriter ftp = null;
             
-            if (ftpStatus == SftpStatus.SEND_ERROR) {
-                ftp = new SftpWriter(username, password, FTP_DIR, host);
+            if (ftpStatus != SftpStatus.SENDING) {
+                ftp = new SftpWriter(username, password, host);
             } else {
-                ftp = new SftpWriter(FTP_USER, FTP_PASS, FTP_DIR, FTP_HOST);
+                ftp = new SftpWriter(FTP_USER, FTP_PASS, FTP_HOST);
             }
             
             ftpStatus = ftp.sendFile(bundleToSend);

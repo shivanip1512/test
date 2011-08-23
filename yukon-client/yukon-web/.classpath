@@ -72,7 +72,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/ezmorph-1.0.6.jar"/>
-    <classpathentry kind="lib" path="/third-party/commons-vfs-1.1.jar"/>
     <classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock.jar" sourcepath="/third-party/linked-sources/easymock-2.4-src.zip"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>

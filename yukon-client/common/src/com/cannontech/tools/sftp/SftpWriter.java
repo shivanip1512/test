@@ -1,66 +1,67 @@
 package com.cannontech.tools.sftp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.FileNotFoundException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
+import org.apache.log4j.Logger;
 
-import com.cannontech.common.util.FileUtil;
+import com.cannontech.clientutils.YukonLogManager;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public class SftpWriter {
     private String username;
     private String password;
-    private String ftpDirectory;
     private String host;
+    private static Logger log = YukonLogManager.getLogger(SftpWriter.class);
 
-    public SftpWriter(String username, String password, String ftpDirectory, String host) {
-        this.ftpDirectory = ftpDirectory;
+    public SftpWriter(String username, String password, String host) {
         this.username = username;
         this.password = password;
         this.host = host;
     }
-    
+
     public SftpStatus sendFile(File file) throws Exception {
         SftpStatus sendStatus = SftpStatus.SUCCESS;
-        
-        FileSystemOptions fsOptions = new FileSystemOptions();
-        SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
-        DefaultFileSystemManager fsManager = (DefaultFileSystemManager)VFS.getManager();
-        
-        String uri = "sftp://" + username + ":" + password + "@" + host + "/";
-        if (StringUtils.isEmpty(ftpDirectory)) {
-            uri += file.getName();
-        } else {
-            uri += ftpDirectory +"/" + file.getName();
-        }
-        
-        FileObject fo = null;
-        
+
+        JSch jsch = new JSch();
+        Session session = null;
         try {
-            fo = fsManager.resolveFile(uri, fsOptions);
-            OutputStream out = new BufferedOutputStream(fo.getContent().getOutputStream());
-            InputStream in = new BufferedInputStream(new FileInputStream(file));
-            
-            FileUtil.copyNoFlush(in, out);
-            
-            out.close();
-            fo.close();
-        } catch (FileSystemException e) {
+            session = jsch.getSession(username, host, 22);
+
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.setPassword(password);
+            session.connect();
+
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+
+            ChannelSftp sftpChannel = (ChannelSftp) channel;
+
+            try {
+                sftpChannel.put(new FileInputStream(file), file.getName());
+            } catch (FileNotFoundException e) {
+                log.error("Problem trying to send file to SFTP server, file might have been removed before the send process started.",
+                          e);
+                sendStatus = SftpStatus.SEND_ERROR;
+            }
+
+            sftpChannel.exit();
+            session.disconnect();
+        } catch (JSchException e) {
+            log.warn("Bad username or password", e);
+            sendStatus = SftpStatus.BAD_USER_PASS;
+        } catch (SftpException e) {
+            log.error("Problem trying to send file to SFTP server", e);
             sendStatus = SftpStatus.SEND_ERROR;
         }
 
         return sendStatus;
-    }
 
-    
+    }
 }

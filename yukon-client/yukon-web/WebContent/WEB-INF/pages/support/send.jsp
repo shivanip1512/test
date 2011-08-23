@@ -25,7 +25,7 @@
         
     });
 </script>
-    <c:if test="${ftpStatus == 'SEND_ERROR'}">
+    <c:if test="${ftpStatus != 'SUCCESS'}">
         <c:set var="msgStyle" value="errorMessage" />
     </c:if>
     <c:if test="${ftpStatus == 'SUCCESS'}">
@@ -57,8 +57,8 @@
     <form:form id="uploadBundle" action="upload" method="POST">
         <input type="hidden" name="fileNum" id="fileNum" value="${fileNum}" />
         <input type="hidden" name="ftpStatus" value="${ftpStatus}" /> 
-        <tags:nameValueContainer2>               
-            <c:if test="${ftpStatus == 'SEND_ERROR'}">
+        <c:if test="${ftpStatus != 'SUCCESS' and ftpStatus != 'SENDING'}">
+            <tags:nameValueContainer2>
             <i:inline key=".send.badDefaultSettings"/><br>
                 <tags:nameValue2 nameKey=".ftp.username">
                    <input name="username" type="text" />
@@ -69,8 +69,8 @@
                 <tags:nameValue2 nameKey=".ftp.host">
                    <input name="host" type="text" />
                 </tags:nameValue2>
-            </c:if>
-        </tags:nameValueContainer2><br>
+            </tags:nameValueContainer2><br>
+        </c:if>
         <c:if test="${ftpStatus != 'SUCCESS'}">
             <cti:button nameKey="startUploadImg" id="startBtn" type="submit"/>
             <cti:button nameKey="cancelImg" id="cancelBtn"/>

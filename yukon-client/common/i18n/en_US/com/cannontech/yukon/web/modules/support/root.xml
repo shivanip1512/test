@@ -26,6 +26,7 @@
     <entry key="yukon.web.modules.support.supportBundle.pageDescription">Support Bundle</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.status">Transfer Status</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.status.SEND_ERROR">The file upload failed.</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftp.status.BAD_USER_PASS">The username or password is incorrect</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.status.SUCCESS">The file was successfully uploaded.</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.status.SENDING">The file is being uploaded. Please wait...</entry>
     
@@ -39,7 +40,7 @@
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.EVERYTHING">Everything</entry>
     
     
-    <entry key="yukon.web.modules.support.supportBundle.errorMsg.invalidCharacters">Contains invalid characters</entry>
+    <entry key="yukon.web.modules.support.supportBundle.errorMsg.invalidCharacters">Can only contain alphanumeric and "_-%.#" characters</entry>
     <entry key="yukon.web.modules.support.supportBundle.errorMsg.empty">Cannot be empty</entry>
     
     <entry key="yukon.web.modules.support.supportBundle.custNameLbl">Customer Name</entry>
