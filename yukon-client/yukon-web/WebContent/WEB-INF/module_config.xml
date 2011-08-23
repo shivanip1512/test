@@ -1519,9 +1519,11 @@
                     <options>
                         <option name="home">
                             <!-- Future home of old stars inventory page: <link>/spring/stars/operator/inventory/home</link>-->
+                            <requireRoleProperty value="DEVICE_RECONFIG" />
                             <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
                         </option>
                         <option name="inventoryOperations">
+                            <requireRoleProperty value="DEVICE_RECONFIG" />
                             <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
                         </option>
                     </options>

@@ -51,7 +51,7 @@
 <entry key="yukon.web.menu.portal.hardwareInventory">Hardware Inventory</entry>
 <entry key="yukon.web.menu.portal.hardwareInventory.inventory">Inventory</entry>
 <entry key="yukon.web.menu.portal.hardwareInventory.purchasing">Purchasing</entry>
-<entry key="yukon.web.menu.portal.hardwareInventory.deviceReconfig">Inventory Configuration</entry>
+<entry key="yukon.web.menu.portal.hardwareInventory.deviceReconfig">Inventory Operations</entry>
 
 <!-- Work Orders -->
 <entry key="yukon.web.menu.portal.workOrders">Work Orders</entry>
