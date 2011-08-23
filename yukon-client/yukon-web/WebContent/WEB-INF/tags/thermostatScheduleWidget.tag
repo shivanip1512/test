@@ -82,9 +82,9 @@
                 </c:when>
                 <c:otherwise>
                     <div class="actions">
-                        <cti:button key="edit" renderMode="labeledImage" styleClass="edit edit_${pageScope.schedule.accountThermostatScheduleId}" />
-                        <cti:button key="sendNow" renderMode="labeledImage" styleClass="send" />
-                        <cti:button key="copy" renderMode="labeledImage" styleClass="copy copy_${pageScope.schedule.accountThermostatScheduleId}" />
+                        <cti:button nameKey="edit" renderMode="labeledImage" styleClass="edit edit_${pageScope.schedule.accountThermostatScheduleId}" />
+                        <cti:button nameKey="sendNow" renderMode="labeledImage" styleClass="send" />
+                        <cti:button nameKey="copy" renderMode="labeledImage" styleClass="copy copy_${pageScope.schedule.accountThermostatScheduleId}" />
                     </div>
                 </c:otherwise>
             </c:choose>
@@ -111,12 +111,12 @@
             </div>
             <div class="actions">
                 <div class="fr">
-                    <cti:button key="save"  styleClass="f_blocker save"/>
-                    <cti:button key="delete" styleClass="delete" />
-                    <cti:button key="cancel" styleClass="cancel" />
+                    <cti:button nameKey="save"  styleClass="f_blocker save"/>
+                    <cti:button nameKey="delete" styleClass="delete" />
+                    <cti:button nameKey="cancel" styleClass="cancel" />
                 </div>
                 <div class="fl">
-                    <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
+                    <cti:button nameKey="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
                 </div>
             </div>
         </i:simplePopup>

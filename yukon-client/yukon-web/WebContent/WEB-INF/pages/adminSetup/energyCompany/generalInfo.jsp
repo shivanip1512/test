@@ -65,24 +65,24 @@ Event.observe(window, "load", function() {
                     <div class="pageActionArea">
                         <cti:displayForPageEditModes modes="VIEW">
                             <c:if test="${canEdit}">
-                                <cti:button key="edit" type="submit" name="edit"/>
+                                <cti:button nameKey="edit" type="submit" name="edit"/>
                             </c:if>
                             <c:if test="${canEditRoles}">
                                 <cti:url var="editRolesUrl" value="/spring/adminSetup/groupEditor/view">
                                     <cti:param name="groupId" value="${groupId}"/>
                                 </cti:url>
-                                <cti:button key="editRoles" type="button" href="${editRolesUrl}"/>
+                                <cti:button nameKey="editRoles" type="button" href="${editRolesUrl}"/>
                             </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button key="save" type="submit" name="save"/>
+                            <cti:button nameKey="save" type="submit" name="save"/>
                             <c:if test="${canDelete}">
                                 <cti:url value="delete" var="deleteUrl" >
                                     <cti:param name="ecId" value="${ecId}"/>
                                 </cti:url>
-                                <cti:button key="delete" type="button" href="${deleteUrl}" />
+                                <cti:button nameKey="delete" type="button" href="${deleteUrl}" />
                             </c:if>
-                            <cti:button key="cancel" type="submit" name="cancel"/>
+                            <cti:button nameKey="cancel" type="submit" name="cancel"/>
                         </cti:displayForPageEditModes>
                     </div>
                 
@@ -121,7 +121,7 @@ Event.observe(window, "load", function() {
                                                     <c:if test="${canManageMembers}">
                                                         <td class="removeColumn">
                                                             <div class="dib">
-                                                                <cti:button key="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
+                                                                <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
                                                             </div>
                                                         </td>
                                                     </c:if>
@@ -134,7 +134,7 @@ Event.observe(window, "load", function() {
                             
                             <div>
                                 <c:if test="${canCreateMembers}">
-                                    <span style="float: left;margin-top: 15px;"><cti:button key="create" type="submit" name="create"/></span>
+                                    <span style="float: left;margin-top: 15px;"><cti:button nameKey="create" type="submit" name="create"/></span>
                                 </c:if>
                                 <c:if test="${canManageMembers && !empty memberCandidates}">
                                     <span class="actionArea" style="float: right;">
@@ -143,7 +143,7 @@ Event.observe(window, "load", function() {
                                                 <option value="${member.energyCompanyId}">${member.name}</option>
                                             </c:forEach>
                                         </select>
-                                        <cti:button key="add" type="submit" name="add"/>
+                                        <cti:button nameKey="add" type="submit" name="add"/>
                                     </span>
                                 </c:if>
                             </div>
@@ -168,7 +168,7 @@ Event.observe(window, "load", function() {
                                             <c:if test="${fn:length(operatorGroups) > 1}">
                                                 <td class="removeColumn">
                                                     <div class="dib">
-                                                        <cti:button key="remove" type="submit" name="removeOperatorGroup" value="${group.groupID}" renderMode="image"/>
+                                                        <cti:button nameKey="remove" type="submit" name="removeOperatorGroup" value="${group.groupID}" renderMode="image"/>
                                                     </div>
                                                 </td>
                                             </c:if>
@@ -200,7 +200,7 @@ Event.observe(window, "load", function() {
                                                     <td><spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody></td>
                                                     <td class="removeColumn">
                                                         <div class="dib">
-                                                            <cti:button key="remove" type="submit" name="removeCustomerGroup" value="${group.groupID}" renderMode="image"/>
+                                                            <cti:button nameKey="remove" type="submit" name="removeCustomerGroup" value="${group.groupID}" renderMode="image"/>
                                                         </div>
                                                     </td>
                                                 </tr>

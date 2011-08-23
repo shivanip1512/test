@@ -84,7 +84,7 @@
             
             <form action="/spring/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
                 <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
-                <cti:button key="delete" type="submit"/>
+                <cti:button nameKey="delete" type="submit"/>
             </form>
             
         </tags:boxContainer2>

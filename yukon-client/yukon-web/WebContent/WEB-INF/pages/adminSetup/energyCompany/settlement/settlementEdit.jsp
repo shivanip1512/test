@@ -109,8 +109,8 @@ Event.observe(window, 'load', function() {
     
         <div class="pageActionArea">
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="save" type="submit" name="save"/>
-                <cti:button key="cancel" type="submit" name="cancel"/>
+                <cti:button nameKey="save" type="submit" name="save"/>
+                <cti:button nameKey="cancel" type="submit" name="cancel"/>
             </cti:displayForPageEditModes>
         </div>
     </form:form>

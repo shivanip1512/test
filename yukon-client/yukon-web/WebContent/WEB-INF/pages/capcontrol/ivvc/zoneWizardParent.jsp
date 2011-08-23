@@ -41,8 +41,8 @@
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div class="actionArea">
-        <cti:button key="cancel" onclick="cancelZoneWizard()"/>
-        <cti:button key="next" onclick="submitParentSelect()"/>
+        <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
+        <cti:button nameKey="next" onclick="submitParentSelect()"/>
     </div>
 
 </form:form>

@@ -188,7 +188,7 @@
             <span class="textFieldLabel"><a href="javascript:addComment()">Save</a> <a href="javascript:hideNewRow()">Cancel</a></span>
         </div>
         <div class="compactResultsFooter">
-            <cti:button key="add" onclick="javascript:showNewRow()"/>
+            <cti:button nameKey="add" onclick="javascript:showNewRow()"/>
         </div>
     </c:if>
 </cti:msgScope>

@@ -58,7 +58,7 @@
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".executeCommand">
                                     <input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
-                                    <cti:button key="execute" name="execute" onclick="disableButton(this)" type="submit" />
+                                    <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" />
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>  
 							<br>
@@ -66,8 +66,8 @@
                                 <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
                             </div>
                             <div>
-                                <cti:button key="clearResults" name="clearText" type="submit"/>
-                                <cti:button key="refresh" name="refresh" onclick="window.location.reload()"/>
+                                <cti:button nameKey="clearResults" name="clearText" type="submit"/>
+                                <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
                             </div>
                         </form>
                     </tags:boxContainer2>

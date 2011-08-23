@@ -39,7 +39,7 @@
         				
         			<%-- action icons --%>
         			<td>
-                        <cti:button key="edit" renderMode="image" href="${viewStatusPointMonitoringUrl}" arguments="${monitorName}"/>
+                        <cti:button nameKey="edit" renderMode="image" href="${viewStatusPointMonitoringUrl}" arguments="${monitorName}"/>
         			</td>
         			
         			<%-- monitor name --%>

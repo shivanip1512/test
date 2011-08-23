@@ -31,8 +31,8 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="actionArea">
-                <cti:button key="save" type="submit"/>
-                <cti:button key="cancel" type="button" id="cancelChangePassword"/>
+                <cti:button nameKey="save" type="submit"/>
+                <cti:button nameKey="cancel" type="button" id="cancelChangePassword"/>
             </div>
         </form:form>
     </i:simplePopup>
@@ -79,14 +79,14 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                 
                 <div class="pageActionArea">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <cti:button key="save" name="update" type="submit"/>
-                        <%-- TODO implement this later <cti:button key="delete" name="delete" type="submit"/> --%>
-                        <cti:button key="cancel" name="cancel" type="submit"/>
+                        <cti:button nameKey="save" name="update" type="submit"/>
+                        <%-- TODO implement this later <cti:button nameKey="delete" name="delete" type="submit"/> --%>
+                        <cti:button nameKey="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:button key="edit" name="edit" type="submit"/>
+                        <cti:button nameKey="edit" name="edit" type="submit"/>
                         <c:if test="${showChangePassword}">
-                            <cti:button key="changePassword" id="changePasswordButton" type="button"/>
+                            <cti:button nameKey="changePassword" id="changePasswordButton" type="button"/>
                         </c:if>
                     </cti:displayForPageEditModes>
                 </div>

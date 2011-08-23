@@ -129,7 +129,7 @@
                 <c:set var="setupDbBtnDisabled" value="true"/>
                 <c:set var="cancelBtnStyle" value=""/>
             </c:if>
-            <cti:button id="setupDevDatabaseButtonId" key="setupDevDatabase" type="submit" styleClass="setupDevDatabaseButton pageActionArea" disabled="${setupDbBtnDisabled}"/>
+            <cti:button id="setupDevDatabaseButtonId" nameKey="setupDevDatabase" type="submit" styleClass="setupDevDatabaseButton pageActionArea" disabled="${setupDbBtnDisabled}"/>
         </form:form>
         </tags:sectionContainer>
     </cti:dataGridCell>
@@ -181,7 +181,7 @@
             </div>
         </c:if>
         <div id="cancelDevDatabaseSetupButtonId" style="${cancelBtnStyle}">
-            <cti:button key="cancel" styleClass="cancelDevDatabaseSetup pageActionArea"/>
+            <cti:button nameKey="cancel" styleClass="cancelDevDatabaseSetup pageActionArea"/>
         </div>
     </cti:dataGridCell>
 </cti:dataGrid>

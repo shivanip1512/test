@@ -9,7 +9,7 @@
     <cti:dataGridCell>
         <tags:sectionContainer title="ISOC">
         <form action="insertProgramTypes" method="post">
-            <cti:button key="insertProgramTypes" type="submit"/>
+            <cti:button nameKey="insertProgramTypes" type="submit"/>
         </form>
         </tags:sectionContainer>
     </cti:dataGridCell>

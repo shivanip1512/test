@@ -37,13 +37,13 @@
                 
                 <div class="pageActionArea">
                     <cti:displayForPageEditModes modes="EDIT">
-                        <cti:button key="save" name="update" type="submit"/>
-                        <%-- TODO implement this later <cti:button key="delete" id="deleteButton" type="button"/>
+                        <cti:button nameKey="save" name="update" type="submit"/>
+                        <%-- TODO implement this later <cti:button nameKey="delete" id="deleteButton" type="button"/>
                         <tags:confirmDialog nameKey=".confirmDelete" argument="${groupName}" on="#deleteButton" submitName="delete"/>--%>
-                        <cti:button key="cancel" name="cancel" type="submit"/>
+                        <cti:button nameKey="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:button key="edit" name="edit" type="submit"/>
+                        <cti:button nameKey="edit" name="edit" type="submit"/>
                     </cti:displayForPageEditModes>
                 </div>
             </form:form>
@@ -93,7 +93,7 @@
                                     </optgroup>
                                 </c:forEach>
                             </select>
-                            <cti:button key="add" type="submit" id="addButton"/>
+                            <cti:button nameKey="add" type="submit" id="addButton"/>
                         </form>
                     </div>
                 </tags:boxContainer2>

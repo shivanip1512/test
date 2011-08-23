@@ -193,9 +193,9 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
 
     <div class="actionArea">
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <cti:button type="submit" key="ok"/>
+            <cti:button type="submit" nameKey="ok"/>
         </cti:displayForPageEditModes>
-        <cti:button key="cancel" onclick="$('acDialog').hide()"/>
+        <cti:button nameKey="cancel" onclick="$('acDialog').hide()"/>
     </div>
 
 </form:form>

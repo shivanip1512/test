@@ -69,10 +69,10 @@
                         <c:url var="readUrl" value="/spring/bulk/archiveDataAnalysis/read/readNow">
                             <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                         </c:url>
-                        <li><cti:button key="read" renderMode="labeledImage" href="${readUrl}"/></li>
+                        <li><cti:button nameKey="read" renderMode="labeledImage" href="${readUrl}"/></li>
                         <%-- 
                         not enabled in 5.3.2 
-                        <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> 
+                        <li><cti:button nameKey="scheduleRead" renderMode="labeledImage"/></li> 
                         --%>
                     </c:if>
                     
@@ -80,7 +80,7 @@
                     <c:url var="csvUrl" value="/spring/bulk/archiveDataAnalysis/tabular/csv">
                         <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
-                    <li><cti:button key="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
+                    <li><cti:button nameKey="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
                     
                     <%-- TABULAR BUTTON --%>
                     <c:choose>
@@ -88,10 +88,10 @@
                             <c:url var="tabularUrl" value="/spring/bulk/archiveDataAnalysis/tabular/view">
                                 <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                             </c:url>
-                            <li><cti:button key="viewTabular" renderMode="labeledImage" href="${tabularUrl}"/></li>
+                            <li><cti:button nameKey="viewTabular" renderMode="labeledImage" href="${tabularUrl}"/></li>
                         </c:when>
                         <c:otherwise>
-                            <li><cti:button key="viewTabularDisabled" renderMode="labeledImage" disabled="true"/></li>
+                            <li><cti:button nameKey="viewTabularDisabled" renderMode="labeledImage" disabled="true"/></li>
                         </c:otherwise>
                     </c:choose>
                     
@@ -99,7 +99,7 @@
                     <c:url var="reanalyzeUrl" value="/spring/bulk/archiveDataAnalysis/home/reanalyze">
                         <c:param name="oldAnalysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
-                    <li><cti:button key="reanalyze" renderMode="labeledImage" href="${reanalyzeUrl}"/></li>
+                    <li><cti:button nameKey="reanalyze" renderMode="labeledImage" href="${reanalyzeUrl}"/></li>
                     
                     <%-- COLLECTION ACTIONS BUTTON --%>
                     <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
@@ -107,7 +107,7 @@
                             <c:param name="${p.key}" value="${p.value}"/>
                         </c:forEach>
                     </c:url>
-                    <li><cti:button key="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}"/></li>
+                    <li><cti:button nameKey="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}"/></li>
                 
                 </ul>
             </tags:formElementContainer>

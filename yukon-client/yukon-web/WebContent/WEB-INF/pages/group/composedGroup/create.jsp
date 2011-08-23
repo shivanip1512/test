@@ -133,7 +133,7 @@
         <tfoot>
     		<tr>
     			<td colspan="3">
-                    <cti:button key="addAnotherDeviceGroup" type="submit" name="addRow"/>
+                    <cti:button nameKey="addAnotherDeviceGroup" type="submit" name="addRow"/>
     			</td>
     		</tr>
 	   </tfoot>

@@ -161,12 +161,12 @@
                             <td class="rightActionColumn">
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
-                                        <cti:button key="edit" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
-                                        <cti:button id="delete_${zone.zoneId}" key="remove" renderMode="image" href="${zoneDeleteUrl}"/>
+                                        <cti:button nameKey="edit" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
+                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image" href="${zoneDeleteUrl}"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button key="disabledEdit" renderMode="image" disabled="true"/>
-                                        <cti:button key="disabledRemove" renderMode="image" disabled="true"/>
+                                        <cti:button nameKey="disabledEdit" renderMode="image" disabled="true"/>
+                                        <cti:button nameKey="disabledRemove" renderMode="image" disabled="true"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
@@ -179,7 +179,7 @@
         				<c:if test="${unassignedBanksExist}">
         					<span class="strongWarningMessage fl"><i:inline key=".zoneList.unassignedBanks"/></span>
         				</c:if>
-						<cti:button key="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');"/>
+						<cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');"/>
 					</div>
 				</c:if>
 				

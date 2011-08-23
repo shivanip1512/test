@@ -200,7 +200,7 @@
     </tags:sectionContainer2>
     <br>
     <form action="/spring/amr/phaseDetect/phaseDetectResults" method="get">
-        <cti:button key="cancelTest" name="cancel" type="submit"/>
-        <cti:button key="phaseDetectResults" id="resultsButton" disabled="${testStep != 'results'}" type="submit"/>
+        <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
+        <cti:button nameKey="phaseDetectResults" id="resultsButton" disabled="${testStep != 'results'}" type="submit"/>
     </form>
 </cti:standardPage>

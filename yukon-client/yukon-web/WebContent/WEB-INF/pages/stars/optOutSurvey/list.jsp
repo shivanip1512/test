@@ -90,7 +90,7 @@
         <form id="addForm" action="${addUrl}">
             <div class="actionArea">
                 <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
-                <cti:button key="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
+                <cti:button nameKey="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
             </div>
         </form>
     </tags:pagedBox>

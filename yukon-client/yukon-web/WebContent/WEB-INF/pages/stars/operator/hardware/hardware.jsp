@@ -197,9 +197,9 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <cti:button key="delete" type="submit" name="delete" styleClass="f_blocker" />
+                            <cti:button nameKey="delete" type="submit" name="delete" styleClass="f_blocker" />
                         </cti:checkRolesAndProperties>
-                        <cti:button key="cancel" onclick="hideDeletePopup()"/>
+                        <cti:button nameKey="cancel" onclick="hideDeletePopup()"/>
                     </td>
                 </tr>
             </table>
@@ -345,7 +345,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                             viewOnlyMode="${mode == 'VIEW'}"/>
                                         
                                     <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                        <cti:button key="new" id="newButton"/>
+                                        <cti:button nameKey="new" id="newButton"/>
                                     </cti:displayForPageEditModes><form:errors path="deviceId" cssClass="errorMessage"/>
                                     
                                 </div>
@@ -354,7 +354,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                     <spring:bind path="twoWayDeviceName">
                                         <c:if test="${status.error}"><c:set var="inputToClass" value="error"/></c:if>
                                         <form:input path="twoWayDeviceName" id="twoWayDeviceName"  cssClass="${inputToClass}"/>
-                                        <cti:button key="choose" id="chooseButton"/>
+                                        <cti:button nameKey="choose" id="chooseButton"/>
                                         <c:if test="${status.error}">
                                             <br>
                                             <form:errors path="twoWayDeviceName" cssClass="errorMessage"/>
@@ -395,14 +395,14 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                        <cti:button key="save" type="submit" name="save"/>
+                        <cti:button nameKey="save" type="submit" name="save"/>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button key="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
+                            <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <cti:button key="cancel" type="submit" name="cancel"/>
+                            <cti:button nameKey="cancel" type="submit" name="cancel"/>
                         </cti:displayForPageEditModes>
                     </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
@@ -428,7 +428,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <cti:param name="inventoryId" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button key="editConfig" href="${configUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="editConfig" href="${configUrl}" renderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -469,7 +469,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button key="savedSchedules" href="${savedSchedulesUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="savedSchedules" href="${savedSchedulesUrl}" renderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -479,7 +479,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button key="manual" href="${editManualUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="manual" href="${editManualUrl}" renderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -490,14 +490,14 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <cti:param name="meterId" value="${hardwareDto.deviceId}"/>
                             </cti:url>
                             <li>
-                                <cti:button key="editConfig" href="${configUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="editConfig" href="${configUrl}" renderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
                         <c:if test="${showMeterDetailAction}">
                             <cti:paoDetailUrl yukonPao="${hardwareDto.yukonPao}" var="meterDetailUrl"/>
                             <li>
-                                 <cti:button key="meterDetail" href="${meterDetailUrl}" renderMode="labeledImage"/>
+                                 <cti:button nameKey="meterDetail" href="${meterDetailUrl}" renderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -519,7 +519,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                         
                         <c:if test="${showTextMessageAction}">
                             <li>
-                                <cti:button key="textMessage" id="sendTextMsg" renderMode="labeledImage" dialogButton="true"/>
+                                <cti:button nameKey="textMessage" id="sendTextMsg" renderMode="labeledImage" dialogButton="true"/>
                             </li>
                         </c:if>
                         
@@ -567,15 +567,15 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             <div class="pageActionArea">
                                 <c:choose>
                                     <c:when test="${showDisabledRefresh}">
-                                        <cti:button key="refreshDisabled" disabled="true"/>
+                                        <cti:button nameKey="refreshDisabled" disabled="true"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button id="refresh" key="refresh"/>
+                                        <cti:button id="refresh" nameKey="refresh"/>
                                     </c:otherwise>
                                 </c:choose>
                                 <c:if test="${showCommissionActions}">
-                                    <cti:button key="commission" id="commission"/>
-                                    <cti:button key="decommission" id="decommission"/>
+                                    <cti:button nameKey="commission" id="commission"/>
+                                    <cti:button nameKey="decommission" id="decommission"/>
                                     <tags:confirmDialog submitName="commissionSubmit"
                                         nameKey=".commissionConfirmation"
                                         styleClass="commissionConfirmationMsg smallSimplePopup" on="#commission"
@@ -587,8 +587,8 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 </c:if>
                                 
                                 <c:if test="${showDisabledCommissionActions}">
-                                    <cti:button key="commission.disabled" disabled="true"/>
-                                    <cti:button key="decommission.disabled" disabled="true"/>
+                                    <cti:button nameKey="commission.disabled" disabled="true"/>
+                                    <cti:button nameKey="decommission.disabled" disabled="true"/>
                                 </c:if>
                             </div>
                         </tags:boxContainer2>
@@ -620,8 +620,8 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                                     </cti:pointStatusColor>
                                                 </td>
                                                 <td class="nonwrapping">
-                                                    <cti:button key="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}"/>
-                                                    <cti:button key="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}"/>
+                                                    <cti:button nameKey="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}"/>
+                                                    <cti:button nameKey="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}"/>
                                                     <tags:confirmDialog submitName="assignedDevicesCommissionSubmit_${device.deviceId}"
                                                         nameKey=".commissionConfirmation"
                                                         styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesCommission_${device.deviceId}"
@@ -637,7 +637,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                                         <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
                                                         <cti:param name="deviceId" value="${device.deviceId}"/>
                                                     </cti:url>
-                                                    <cti:button key="remove" href="${removeUrl}" renderMode="image" styleClass="f_blocker"/>
+                                                    <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" styleClass="f_blocker"/>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -663,7 +663,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                             <option value="${device.deviceId}">${device.serialNumber}</option>
                                         </c:forEach>
                                     </select>
-                                    <cti:button key="add" type="submit" styleClass="f_blocker"/>
+                                    <cti:button nameKey="add" type="submit" styleClass="f_blocker"/>
                                 </form>
                             </div>
                         </c:if>
@@ -738,7 +738,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 <cti:param name="accountId" value="${accountId}"/>
                 <cti:param name="inventoryId" value="${inventoryId}"/>
             </cti:url>
-            <cti:button key="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
     
 </cti:standardPage>

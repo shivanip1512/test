@@ -82,7 +82,7 @@
             <cti:url var="resultsUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
                 <cti:param name="analysisId" value="${analysis.analysisId}"/>
             </cti:url>
-            <cti:button key="viewResultsButton" href="${resultsUrl}"/>
+            <cti:button nameKey="viewResultsButton" href="${resultsUrl}"/>
         </div>
     </tags:boxContainer2>
 </cti:standardPage>

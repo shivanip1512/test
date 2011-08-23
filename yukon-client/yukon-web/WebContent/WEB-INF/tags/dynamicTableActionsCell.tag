@@ -20,10 +20,10 @@
 
 <td class="actions">
     <c:if test="${!skipMoveButtons}">
-        <cti:button renderMode="image" key="up.disabled" disabled="true" styleClass="disabledMoveUpBtn"/>
-        <cti:button renderMode="image" key="up" styleClass="moveUpBtn"/> 
-        <cti:button renderMode="image" key="down.disabled" disabled="true" styleClass="disabledMoveDownBtn"/>
-        <cti:button renderMode="image" key="down" styleClass="moveDownBtn"/>
+        <cti:button renderMode="image" nameKey="up.disabled" disabled="true" styleClass="disabledMoveUpBtn"/>
+        <cti:button renderMode="image" nameKey="up" styleClass="moveUpBtn"/> 
+        <cti:button renderMode="image" nameKey="down.disabled" disabled="true" styleClass="disabledMoveDownBtn"/>
+        <cti:button renderMode="image" nameKey="down" styleClass="moveDownBtn"/>
     </c:if>
-    <cti:button renderMode="image" key="remove" styleClass="removeBtn"/>
+    <cti:button renderMode="image" nameKey="remove" styleClass="removeBtn"/>
 </td>

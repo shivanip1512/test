@@ -110,7 +110,7 @@
                     <tfoot>
     					<tr>
     						<td colspan="3">
-    							 <cti:button key="addNotification" type="submit" name="newNotification"/>
+    							 <cti:button nameKey="addNotification" type="submit" name="newNotification"/>
     						</td>
     					</tr>
                     </tfoot>
@@ -138,7 +138,7 @@
                 </cti:url>
             </cti:displayForPageEditModes>
             
-            <cti:button key="cancel" href="${cancelUrl}"/>
+            <cti:button nameKey="cancel" href="${cancelUrl}"/>
             
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
@@ -146,7 +146,7 @@
                 <cti:param name="accountId" value="${accountId}"/>
                 <cti:param name="contactId" value="${contactId}"/>
             </cti:url>
-            <cti:button key="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
 	</form:form>
 	

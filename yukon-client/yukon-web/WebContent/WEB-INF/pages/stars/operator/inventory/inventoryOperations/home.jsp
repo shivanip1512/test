@@ -56,7 +56,7 @@
                         <tr>
                             <td class="button middle">
                                 <form id="selectByFilterForm" action="/spring/stars/operator/inventory/inventoryOperations/setupFilterRules" method="get">
-                                    <cti:button key="selectFilterButton" type="submit" styleClass="buttonGroup" name="filterButton"/>
+                                    <cti:button nameKey="selectFilterButton" type="submit" styleClass="buttonGroup" name="filterButton"/>
                                 </form>
                             </td>
                 
@@ -66,7 +66,7 @@
                         <%-- FILE UPLOAD --%>
                         <tr>
                             <td class="button">
-                                <cti:button key="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
+                                <cti:button nameKey="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
                                 <tags:simplePopup id="fileUploadPopup" title="${fileUploadTitle}" styleClass="mediumSimplePopup">
                                     <form id="selectByFileForm" method="post" action="/spring/stars/operator/inventory/inventoryOperations/uploadFile" enctype="multipart/form-data">
                                         <tags:nameValueContainer2>
@@ -78,7 +78,7 @@
                                         </tags:nameValueContainer2>
                                         <div class="actionArea">
                                             <tags:slowInput2 key="ok" formId="selectByFileForm"/>
-                                            <cti:button key="cancel" onclick="closeFileUpload();"/>            
+                                            <cti:button nameKey="cancel" onclick="closeFileUpload();"/>            
                                         </div>
                                     </form>
                                 </tags:simplePopup>

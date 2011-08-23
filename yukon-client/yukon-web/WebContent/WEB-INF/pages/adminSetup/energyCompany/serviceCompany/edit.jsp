@@ -200,7 +200,7 @@
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <c:if test="${canEditDesignationCodes}">
                             <div><input type="text" maxlength=60 id="newDesignationCode"
-                                class="zip"> <cti:button key="assignDesignationCode"
+                                class="zip"> <cti:button nameKey="assignDesignationCode"
                                 id="addDesignationCodeButton" /></div>
                             </c:if>
                         </cti:displayForPageEditModes>
@@ -242,20 +242,20 @@
                     <cti:param name="ecId" value="${ecId}"/>
                     <cti:param name="serviceCompanyId" value="${serviceCompany.companyId}"/>
                 </cti:url>
-                <cti:button key="edit" href="${serviceCompanyEditUrl}"/>
+                <cti:button nameKey="edit" href="${serviceCompanyEditUrl}"/>
             </cti:displayForPageEditModes>
             
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button key="save" name="create" type="submit"/>
+                <cti:button nameKey="save" name="create" type="submit"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="save" name="update" type="submit"/>
+                <cti:button nameKey="save" name="update" type="submit"/>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
             
-                <cti:button key="delete" id="deleteButton"/>
+                <cti:button nameKey="delete" id="deleteButton"/>
                 <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" submitName="delete" argument="${numberOfInventoryInServiceCompany}"/>
 
             </cti:displayForPageEditModes>
@@ -264,7 +264,7 @@
             <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
-            <cti:button key="cancel" href="${serviceCompanyIndexUrl}"/>
+            <cti:button nameKey="cancel" href="${serviceCompanyIndexUrl}"/>
         </div>
      </form:form>
   

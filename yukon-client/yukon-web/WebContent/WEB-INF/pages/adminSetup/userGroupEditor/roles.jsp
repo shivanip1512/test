@@ -50,12 +50,12 @@ function showPointingPopup(event) {
         </table>
         <br>
 <%--        <tags:csrfTokenRequest> --%>
-          <cti:button key="save" name="save" type="submit"/>
+          <cti:button nameKey="save" name="save" type="submit"/>
           <c:if test="${showDelete}">
-              <cti:button key="delete" id="deleteButton" type="button"/>
+              <cti:button nameKey="delete" id="deleteButton" type="button"/>
               <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" argument="${groupName}" submitName="delete"/>
           </c:if>
-          <cti:button key="cancel" name="cancel" type="submit"/>
+          <cti:button nameKey="cancel" name="cancel" type="submit"/>
 <%--        </tags:csrfTokenRequest> --%>
     </form:form>
     

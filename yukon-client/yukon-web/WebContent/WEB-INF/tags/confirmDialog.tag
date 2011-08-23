@@ -40,32 +40,32 @@
             <c:choose>
                 <c:when test="${empty pageScope.endAction || pageScope.endAction == 'nothing'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" />
+                        <cti:button styleClass="${pageScope.styleClass}" nameKey="ok" type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
-                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                            <cti:button styleClass="${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                            <cti:button styleClass="${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"/>
                         </c:if>
                     </c:if>
                 </c:when>
                 <c:when test="${pageScope.endAction == 'hide'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit"
+                        <cti:button styleClass="${pageScope.styleClass}" nameKey="ok" type="submit"
                             onclick="$('${uniqueId}').hide()" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
-                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                            <cti:button styleClass="${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit" 
                                 onclick="$('${uniqueId}').hide()"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                            <cti:button styleClass="${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"
                                 onclick="$('${uniqueId}').hide()"/>
                         </c:if>
@@ -73,22 +73,22 @@
                 </c:when>
                 <c:when test="${pageScope.endAction == 'block'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
+                        <cti:button styleClass="${pageScope.styleClass} f_blocker" nameKey="ok"
                             type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
-                            <cti:button styleClass="${pageScope.styleClass}" key="ok"
+                            <cti:button styleClass="${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button styleClass="${pageScope.styleClass} f_blocker" key="ok"
+                            <cti:button styleClass="${pageScope.styleClass} f_blocker" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"/>
                         </c:if>
                     </c:if>
                 </c:when>
             </c:choose>
-            <cti:button key="cancel" onclick="$('${uniqueId}').hide()" />
+            <cti:button nameKey="cancel" onclick="$('${uniqueId}').hide()" />
         </div>
     </i:simplePopup>
 </cti:msgScope>

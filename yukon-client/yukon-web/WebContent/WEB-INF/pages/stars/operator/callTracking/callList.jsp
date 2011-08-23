@@ -78,7 +78,7 @@
         <div class="actionArea">
             <form id="createCallForm" action="/spring/stars/operator/callTracking/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
-                <cti:button key="create" type="submit"/>
+                <cti:button nameKey="create" type="submit"/>
             </form>
         </div>
     </cti:displayForPageEditModes>

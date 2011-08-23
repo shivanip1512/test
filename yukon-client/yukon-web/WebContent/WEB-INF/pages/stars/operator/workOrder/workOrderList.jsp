@@ -116,8 +116,8 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
             <input type="hidden" name="deleteWorkOrderId" value="">
             <div id="confirmMessage"></div>
             <div class="actionArea">
-                <cti:button key="ok" type="submit"/> 
-                <cti:button key="cancel" id="confirmCancel" />
+                <cti:button nameKey="ok" type="submit"/> 
+                <cti:button nameKey="cancel" id="confirmCancel" />
             </div>
         </form>
     </tags:simplePopup>
@@ -127,7 +127,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
         <div class="actionArea">
             <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
-                <cti:button key="create" type="submit"/>
+                <cti:button nameKey="create" type="submit"/>
             </form>
         </div>
     </cti:displayForPageEditModes>

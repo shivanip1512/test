@@ -40,8 +40,8 @@
                         </ct:nameValue2>
                     </ct:nameValueContainer2>
                     <div class="actionArea">
-                        <cti:button key="ok" type="submit"/>
-                        <cti:button key="cancel" onclick="$('createAppliancePopup').hide();"/>
+                        <cti:button nameKey="ok" type="submit"/>
+                        <cti:button nameKey="cancel" onclick="$('createAppliancePopup').hide();"/>
                     </div>
                 </form>
             </i:simplePopup>
@@ -122,7 +122,7 @@
                     <tr align="right">
                         <td colspan="4">
                             <br>
-                            <cti:button key="create" type="submit" onclick="showCreateAppliancePopup();"/>
+                            <cti:button nameKey="create" type="submit" onclick="showCreateAppliancePopup();"/>
                         </td>
                     </tr>
                 </cti:checkRolesAndProperties>

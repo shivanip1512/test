@@ -19,4 +19,4 @@
     var ${dialogTitle} = '${dialogTitleText}';
 </script>
 
-<cti:button key="${nameKey}" onclick="openSimpleDialog('${dialogId}', '${actionUrl}', ${dialogTitle})"/>
+<cti:button nameKey="${nameKey}" onclick="openSimpleDialog('${dialogId}', '${actionUrl}', ${dialogTitle})"/>

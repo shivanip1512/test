@@ -67,7 +67,7 @@
                     <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
                         <cti:param name="ecId" value="${ecId}"/>
                     </cti:url>
-                    <cti:button key="create" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
+                    <cti:button nameKey="create" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
                 </div>
             </cti:checkRolesAndProperties>
             

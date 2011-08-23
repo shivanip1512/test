@@ -138,7 +138,7 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="checkInventoryButton" onclick="showInvCheckingPopup('switch');" type="submit"/>
+            <cti:button nameKey="checkInventoryButton" onclick="showInvCheckingPopup('switch');" type="submit"/>
         </div>
         
         </form:form>
@@ -164,7 +164,7 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="checkInventoryButton" onclick="showInvCheckingPopup('thermostat');" type="submit"/>
+            <cti:button nameKey="checkInventoryButton" onclick="showInvCheckingPopup('thermostat');" type="submit"/>
         </div>
         
     </form:form>
@@ -190,7 +190,7 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="checkInventoryButton" onclick="showInvCheckingPopup('gateway');" type="submit"/>
+            <cti:button nameKey="checkInventoryButton" onclick="showInvCheckingPopup('gateway');" type="submit"/>
         </div>
     
     </form:form>
@@ -230,8 +230,8 @@
             <input type="hidden" name="fromAccount" value="false">
             
             <div class="actionArea">
-                <cti:button key="ok" type="submit"/>
-                <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
+                <cti:button nameKey="ok" type="submit"/>
+                <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
         </form>
     </i:simplePopup>
@@ -277,8 +277,8 @@
             <input type="hidden" name="fromAccount" value="true">
             
             <div class="actionArea">
-                <cti:button key="ok" type="submit"/>
-                <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
+                <cti:button nameKey="ok" type="submit"/>
+                <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
             
         </form>
@@ -302,8 +302,8 @@
             <input type="hidden" name="hardwareTypeId" value="${checkingAdd.hardwareTypeId}">
             
             <div class="actionArea">
-                <cti:button key="ok" type="submit" styleClass="f_blocker"/>
-                <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
+                <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
             
         </form>
@@ -321,8 +321,8 @@
         <div class="hardwarePopup"><i:inline key=".error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
         
         <div class="actionArea">
-            <cti:button key="ok" type="submit" styleClass="f_blocker"/>
-            <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
+            <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
     </i:simplePopup>
@@ -339,7 +339,7 @@
         <div class="hardwarePopup"><i:inline key=".error.sameAccount.serialNumber" arguments="${sameAccountSerial}"/></div>
         
         <div class="actionArea">
-            <cti:button key="ok" onclick="window.location='${hardwareListUrl}';"/>
+            <cti:button nameKey="ok" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
     </i:simplePopup>
@@ -356,7 +356,7 @@
         <div class="hardwarePopup"><i:inline key=".error.anotherEC.serialNumber" arguments="${anotherEC}"/></div>
         
         <div class="actionArea">
-            <cti:button key="ok" onclick="window.location='${hardwareListUrl}';"/>
+            <cti:button nameKey="ok" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
     </i:simplePopup>
@@ -430,11 +430,11 @@
                     <c:choose>
                         <c:when test="${not inventoryChecking}">
                             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                <cti:button key="add" type="submit"/>
+                                <cti:button nameKey="add" type="submit"/>
                             </cti:checkRolesAndProperties>
                         </c:when>
                         <c:otherwise>
-                            <cti:button key="add" onclick="showInvCheckingPopup('switch');" dialogButton="true"/>
+                            <cti:button nameKey="add" onclick="showInvCheckingPopup('switch');" dialogButton="true"/>
                         </c:otherwise>
                     </c:choose>
                 </form>
@@ -532,11 +532,11 @@
                                 <c:choose>
                                     <c:when test="${not inventoryChecking}">
                                         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                            <cti:button key="add" type="submit"/>
+                                            <cti:button nameKey="add" type="submit"/>
                                         </cti:checkRolesAndProperties>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button key="add" onclick="showInvCheckingPopup('thermostat');" dialogButton="true"/>
+                                        <cti:button nameKey="add" onclick="showInvCheckingPopup('thermostat');" dialogButton="true"/>
                                     </c:otherwise>
                                 </c:choose>
                             </form>
@@ -641,7 +641,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${starsMeters}">
-                                        <cti:button key="add" type="submit"/>
+                                        <cti:button nameKey="add" type="submit"/>
                                     </c:when>
                             
                                     <c:otherwise>
@@ -736,11 +736,11 @@
                         <c:choose>
                             <c:when test="${not inventoryChecking}">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                    <cti:button key="add" type="submit"/>
+                                    <cti:button nameKey="add" type="submit"/>
                                 </cti:checkRolesAndProperties>
                             </c:when>
                             <c:otherwise>
-                                <cti:button key="add" type="button" onclick="showInvCheckingPopup('gateway');" dialogButton="true"/>
+                                <cti:button nameKey="add" type="button" onclick="showInvCheckingPopup('gateway');" dialogButton="true"/>
                             </c:otherwise>
                         </c:choose>
     

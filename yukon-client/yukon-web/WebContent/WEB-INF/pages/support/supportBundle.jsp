@@ -69,10 +69,10 @@
                         <form:textarea rows="6" cols="40" path="comments"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2><br>
-                <cti:button key="createBundleBtn" id="createBundleBtn"/>
+                <cti:button nameKey="createBundleBtn" id="createBundleBtn"/>
                 <span id="inProgressMessage" style="display:none"> 
                     <br><br><i:inline key='.bundleInProgressMsg' />
-                    <cti:button key="viewProgressBtn" id="viewProgressBtn"/>
+                    <cti:button nameKey="viewProgressBtn" id="viewProgressBtn"/>
                 </span>
             </form:form>
         </cti:dataGridCell>
@@ -109,8 +109,8 @@
                     <tr><td>&nbsp;</td></tr>
                     <tr>
                         <td>
-                            <cti:button key="downloadImg" id="downloadBtn" disabled="${empty bundleList}" />
-                            <cti:button key="uploadImg" id="ftpUploadBtn" disabled="${empty bundleList}" />
+                            <cti:button nameKey="downloadImg" id="downloadBtn" disabled="${empty bundleList}" />
+                            <cti:button nameKey="uploadImg" id="ftpUploadBtn" disabled="${empty bundleList}" />
                         </td>
                     </tr>
                 </table>

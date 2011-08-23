@@ -59,13 +59,13 @@
             <cti:url value="/spring/stars/operator/residence/view" var="viewUrl">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
-			<cti:button key="cancel" href="${viewUrl}"/>
+			<cti:button nameKey="cancel" href="${viewUrl}"/>
 		</cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
             <cti:url value="/spring/stars/operator/residence/edit" var="editUrl">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
-            <cti:button key="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
 
 	</form:form>

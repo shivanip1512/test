@@ -37,7 +37,7 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
         <div class="noItemsMessage">${pageScope.noItemsMsg}</div>
     </c:if>
     <div class="actionArea">
-        <cti:button key="add" styleClass="f_blocker ${addButtonClass}"/>
+        <cti:button nameKey="add" styleClass="f_blocker ${addButtonClass}"/>
     </div>
     <div style="display: none;" class="tempRequest"></div>
 </div>

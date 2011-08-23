@@ -75,8 +75,8 @@
         </cti:dataGrid>
         
         <div class="pageActionArea">
-            <cti:button key="save" type="submit" name="save"/>
-            <cti:button key="cancel" type="submit" name="cancel"/>
+            <cti:button nameKey="save" type="submit" name="save"/>
+            <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </div>
     
     </form:form>

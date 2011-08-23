@@ -64,8 +64,8 @@
     </tags:nameValueContainer2>
 
     <div class="actionArea">
-        <cti:button key="back" onclick="backToParentSelect()"/>
-        <cti:button key="next" onclick="submitTypeSelect()"/>
+        <cti:button nameKey="back" onclick="backToParentSelect()"/>
+        <cti:button nameKey="next" onclick="submitTypeSelect()"/>
     </div>
 </form:form>
 

@@ -75,9 +75,9 @@
 
     <div class="pageActionArea">
         <c:if test="${showNextButton}">
-            <cti:button key="save" type="submit"/>
+            <cti:button nameKey="save" type="submit"/>
         </c:if>
-        <cti:button key="cancel" name="cancel" type="submit"/>
+        <cti:button nameKey="cancel" name="cancel" type="submit"/>
     </div>
 
     <form:hidden path="durationInDays"/>

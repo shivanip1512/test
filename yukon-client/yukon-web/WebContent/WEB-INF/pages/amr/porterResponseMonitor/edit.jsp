@@ -190,24 +190,24 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 			</table>
 			</div>
             <div class="actionArea">
-                <cti:button key="rulesTable.add" styleClass="addRuleTableRow"/>
+                <cti:button nameKey="rulesTable.add" styleClass="addRuleTableRow"/>
             </div>
 		</tags:boxContainer2>
 
 		<%-- update / enable_disable / delete / cancel --%>
 		<div class="pageActionArea">
-            <cti:button key="update" type="submit"/>
+            <cti:button nameKey="update" type="submit"/>
 
             <c:set var="monitoringKey" value="monitoringEnable"/>
 			<c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
                 <c:set var="monitoringKey" value="monitoringDisable"/>
 			</c:if>
 
-            <cti:button key="${monitoringKey}" type="submit" name="toggleEnabled"/>
-			<cti:button id="deleteButton" key="delete"/>
+            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled"/>
+			<cti:button id="deleteButton" nameKey="delete"/>
 			<tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitorDto.name}" submitName="delete" on="#deleteButton"/>
 
-            <cti:button key="cancel" type="submit" name="cancelToView"/>
+            <cti:button nameKey="cancel" type="submit" name="cancelToView"/>
 		</div>
 	</form:form>
 

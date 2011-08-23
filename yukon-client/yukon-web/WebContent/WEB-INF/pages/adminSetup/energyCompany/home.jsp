@@ -38,7 +38,7 @@ YEvent.observeSelectorClick('button.loginButton', function(event) {
                                     <c:if test="${canManageMembers && company.parent != null}">
                                         <c:set var="parentLoginId" value="${parentLogins[company.energyCompanyId]}"/>
                                         <c:if test="${not empty parentLoginId}">
-                                            <cti:button key="login" styleClass="loginButton" name="${parentLoginId}"/>
+                                            <cti:button nameKey="login" styleClass="loginButton" name="${parentLoginId}"/>
                                         </c:if>
                                     </c:if>
                                 </td>
@@ -50,7 +50,7 @@ YEvent.observeSelectorClick('button.loginButton', function(event) {
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                     <div class="actionArea">
                         <form action="/spring/adminSetup/energyCompany/new">
-                            <cti:button key="create" type="submit" name="create"/>
+                            <cti:button nameKey="create" type="submit" name="create"/>
                         </form>
                     </div>
                 </cti:checkRolesAndProperties>

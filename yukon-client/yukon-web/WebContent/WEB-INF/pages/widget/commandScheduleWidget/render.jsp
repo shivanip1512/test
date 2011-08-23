@@ -58,6 +58,6 @@
     <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/spring/stars/operator/inventory/inventoryOperations/commandSchedule" method="get">
         <tags:widgetActionRefresh nameKey="disableAll" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">
-        <cti:button key="create" type="submit"/>
+        <cti:button nameKey="create" type="submit"/>
     </form>
 </div>

@@ -1579,7 +1579,7 @@
             Outputs localized button with optional image and label.
         </description>
         <attribute>
-            <name>key</name>
+            <name>nameKey</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>

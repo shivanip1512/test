@@ -19,7 +19,7 @@ import com.cannontech.web.taglib.YukonTagSupport;
 public class ButtonTag extends YukonTagSupport {
 
     protected String id = null;
-    protected String key = null;
+    protected String nameKey = null;
     protected String arguments = null;
     protected String href = null;
     protected String onclick = null;
@@ -46,8 +46,8 @@ public class ButtonTag extends YukonTagSupport {
         this.id = id;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setNameKey(String nameKey) {
+        this.nameKey = nameKey;
     }
     
     public void setArguments(String arguments) {
@@ -128,7 +128,7 @@ public class ButtonTag extends YukonTagSupport {
         }
 
         try {
-            MessageScopeHelper.forRequest(getRequest()).pushScope("." + key, "components.button." + key);
+            MessageScopeHelper.forRequest(getRequest()).pushScope("." + nameKey, "components.button." + nameKey);
 
             MessageScope messageScope = MessageScopeHelper.forRequest(getRequest());
 
@@ -155,7 +155,7 @@ public class ButtonTag extends YukonTagSupport {
             }
             
             if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
-                throw new RuntimeException("at least one of .imageUrl or .label is required for " + key);
+                throw new RuntimeException("at least one of .imageUrl or .label is required for " + nameKey);
             }
             
             if (dialogButton && !override) {
@@ -165,7 +165,7 @@ public class ButtonTag extends YukonTagSupport {
             
             if ((renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) 
                     && StringUtils.isBlank(imageUrl)) {
-                throw new RuntimeException(".imageUrl is required for " + key + " when renderMode is 'image' or 'labeledImage'");
+                throw new RuntimeException(".imageUrl is required for " + nameKey + " when renderMode is 'image' or 'labeledImage'");
             }
 
             /* Hover Text */

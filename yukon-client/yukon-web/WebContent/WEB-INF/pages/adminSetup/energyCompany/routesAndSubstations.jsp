@@ -70,7 +70,7 @@
                                         <option value="${routeCandidate.yukonID}"><spring:escapeBody htmlEscape="true">${routeCandidate.paoName}</spring:escapeBody></option>
                                     </c:forEach>
                                 </select>
-                                <cti:button key="add" type="submit" name="addRoute"/>
+                                <cti:button nameKey="add" type="submit" name="addRoute"/>
                             </span>
                         </c:if>
                     </div>
@@ -130,7 +130,7 @@
                                     <option value="${substationCandidate.substationID}"><spring:escapeBody htmlEscape="true">${substationCandidate.substationName}</spring:escapeBody></option>
                                 </c:forEach>
                             </select>
-                            <cti:button key="add" type="submit" name="addSubstation"/>
+                            <cti:button nameKey="add" type="submit" name="addSubstation"/>
                         </span>
                     </c:if>
 

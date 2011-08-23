@@ -42,7 +42,7 @@
         <tr>
             <%-- edit button --%>
             <td>
-                <cti:button key="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${monitorName}"/>
+                <cti:button nameKey="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${monitorName}"/>
             </td>
             
             <%-- monitor name --%>

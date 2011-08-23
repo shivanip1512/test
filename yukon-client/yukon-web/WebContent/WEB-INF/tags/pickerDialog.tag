@@ -115,7 +115,7 @@
                     <c:if test="${not empty pageScope.buttonRenderMode}">
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
-                    <cti:button key="${pageScope.nameKey}" onclick="${id}.show()" renderMode="${pageScope.renderMode}" 
+                    <cti:button nameKey="${pageScope.nameKey}" onclick="${id}.show()" renderMode="${pageScope.renderMode}" 
                         styleClass="${pageScope.buttonStyleClass}"/>
         	    </c:when>
         	    <c:when test="${pageScope.linkType == 'selection'}">

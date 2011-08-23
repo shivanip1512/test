@@ -212,7 +212,7 @@
                                 <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
                             </c:forEach>
                         </select>
-                        <cti:button key="add" type="submit" name="addButton"/>
+                        <cti:button nameKey="add" type="submit" name="addButton"/>
                      </td>
                 </tr>
             </tfoot>
@@ -226,10 +226,10 @@
                     <button disabled="disabled" class="formSubmit"><i:inline key=".select.label"/></button>
                 </c:when>
                 <c:otherwise>
-                    <cti:button key="select" type="submit" name="apply"/>
+                    <cti:button nameKey="select" type="submit" name="apply"/>
                 </c:otherwise>
             </c:choose>
-            <cti:button key="cancel" type="submit" name="cancelButton"/>
+            <cti:button nameKey="cancel" type="submit" name="cancelButton"/>
         </div>
     
     </form:form>

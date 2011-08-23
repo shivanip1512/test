@@ -28,7 +28,7 @@
 		<%-- create / cancel --%>
 		<div class="pageActionArea">
 			<tags:slowInput2 formId="basicInfoForm" key="create" />
-            <cti:button key="cancel" type="submit" name="cancel"/>
+            <cti:button nameKey="cancel" type="submit" name="cancel"/>
 		</div>
 
 	</form:form>

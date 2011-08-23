@@ -73,16 +73,16 @@
         <div>
             <tags:slowInput2 key="save" formId="updateForm"/>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="delete" type="button" onclick="javascript:$('confirmDeletePopup').show();"/>
+                <cti:button nameKey="delete" type="button" onclick="javascript:$('confirmDeletePopup').show();"/>
             </cti:displayForPageEditModes>
-            <cti:button key="cancel" type="submit" name="cancel"/>
+            <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </div>
         
         <tags:simplePopup title="${confirmDeleteTitle}" id="confirmDeletePopup" styleClass="mediumSimplePopup">
             <i:inline key=".confirmDeleteMessage"/>
             <div class="actionArea">
-                <cti:button key="ok" type="submit" name="delete"/>
-                <cti:button key="cancel" type="button" onclick="javascript:$('confirmDeletePopup').hide();"/>
+                <cti:button nameKey="ok" type="submit" name="delete"/>
+                <cti:button nameKey="cancel" type="button" onclick="javascript:$('confirmDeletePopup').hide();"/>
             </div>
         </tags:simplePopup>
     

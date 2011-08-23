@@ -25,15 +25,15 @@
     </table>
     <br>
     <c:if test="${inProgress}">
-        <cti:button key="downloadBtn" disabled="true"/>
-        <cti:button key="ftpUploadBtn" disabled="true"/>
+        <cti:button nameKey="downloadBtn" disabled="true"/>
+        <cti:button nameKey="ftpUploadBtn" disabled="true"/>
         <span class="errorMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.inProgressMsg'/> </span>
     </c:if>
     <c:if test="${not inProgress}">
         <form id="sendForm" method="POST" action="send">
             <input type=hidden name="fileNum" id="fileNum" value="0"/>
-            <cti:button key="downloadBtn" href="download?fileNum=0"/>
-            <cti:button key="ftpUploadBtn" href="send?fileNum=0"/>
+            <cti:button nameKey="downloadBtn" href="download?fileNum=0"/>
+            <cti:button nameKey="ftpUploadBtn" href="send?fileNum=0"/>
             <span class="successMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.finishedMsg'/></span>
         </form>
     </c:if>

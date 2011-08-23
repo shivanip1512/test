@@ -351,12 +351,12 @@
 
 	<div class="actionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-			<cti:button key="save" onclick="zoneSubmit()"/>
-            <cti:button key="cancel" onclick="cancelZoneWizard()"/>
+			<cti:button nameKey="save" onclick="zoneSubmit()"/>
+            <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="CREATE">
-            <cti:button key="back" onclick="backToTypeSelect()"/>
-            <cti:button key="create" onclick="zoneSubmit()"/>
+            <cti:button nameKey="back" onclick="backToTypeSelect()"/>
+            <cti:button nameKey="create" onclick="zoneSubmit()"/>
 		</cti:displayForPageEditModes>
 	</div>
     

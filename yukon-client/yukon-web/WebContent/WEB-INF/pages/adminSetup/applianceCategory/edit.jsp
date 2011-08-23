@@ -102,8 +102,8 @@
             </table>
 
             <div class="actionArea">
-                <cti:button type="submit" key="filterButton"/>
-                <cti:button key="showAllButton" onclick="clearFilter();"/>
+                <cti:button type="submit" nameKey="filterButton"/>
+                <cti:button nameKey="showAllButton" onclick="clearFilter();"/>
             </div>
         </form:form>
     </i:simplePopup>
@@ -297,7 +297,7 @@
         </c:if>
         <c:if test="${isEditable}">
             <div class="actionArea">
-                <cti:button key="assignPrograms" onclick="programPicker.show()"/>
+                <cti:button nameKey="assignPrograms" onclick="programPicker.show()"/>
 
                 <c:if test="${canAddVirtual}">
                     <cti:url var="createVirtualProgramUrl" value="createVirtualProgram">
@@ -319,19 +319,19 @@
                 <cti:param name="ecId" value="${param.ecId}"/>
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
-            <cti:button key="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" href="${editUrl}"/>
         </c:if>
     </cti:displayForPageEditModes>
 
     <cti:displayForPageEditModes modes="CREATE,EDIT">
-        <cti:button key="save" name="save" type="submit"/>
+        <cti:button nameKey="save" name="save" type="submit"/>
         <c:if test="${empty applianceCategoryId}">
             <cti:url var="backUrl" value="list">
                 <cti:param name="ecId" value="${param.ecId}"/>
             </cti:url>
         </c:if>
         <c:if test="${!empty applianceCategoryId}">
-            <cti:button id="deleteButton" key="delete"/>
+            <cti:button id="deleteButton" nameKey="delete"/>
             <tags:confirmDialog nameKey=".deleteConfirmation" argument="${applianceCategory.name}"
                 on="#deleteButton" submitName="delete"/>
         </c:if>
@@ -341,7 +341,7 @@
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
         </c:if>
-        <cti:button key="cancel" href="${backUrl}"/>
+        <cti:button nameKey="cancel" href="${backUrl}"/>
     </cti:displayForPageEditModes>
 </div>
 

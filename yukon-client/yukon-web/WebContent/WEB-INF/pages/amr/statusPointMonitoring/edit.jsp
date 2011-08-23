@@ -111,7 +111,7 @@
             </div>
             <br>
             <span style="float:right;">
-                <cti:button key="addAction" onclick="addAction()"/>
+                <cti:button nameKey="addAction" onclick="addAction()"/>
             </span>
         </tags:boxContainer2>
 		

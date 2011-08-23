@@ -49,7 +49,7 @@
 				
 			<%-- action icons --%>
 			<td>
-                    <cti:button key="edit" renderMode="image" href="${viewTamperFlagProcessingUrl}" arguments="${monitorName}"/>
+                    <cti:button nameKey="edit" renderMode="image" href="${viewTamperFlagProcessingUrl}" arguments="${monitorName}"/>
 			</td>
 			
 			<%-- monitor name --%>

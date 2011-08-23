@@ -48,8 +48,8 @@ YEvent.observeSelectorClick('#showAllButton', clearFilter);
         </table>
 
         <div class="actionArea">
-            <cti:button type="submit" key="filterButton"/>
-            <cti:button id="showAllButton" key="showAllButton"/>
+            <cti:button type="submit" nameKey="filterButton"/>
+            <cti:button id="showAllButton" nameKey="showAllButton"/>
         </div>
     </form:form>
 </i:simplePopup>

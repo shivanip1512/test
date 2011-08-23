@@ -70,7 +70,7 @@
                 </tags:nameValueContainer2>
             </div>
             
-            <cti:button type="submit" key="submitButton"/>
+            <cti:button type="submit" nameKey="submitButton"/>
         </form:form>
     </tags:bulkActionContainer>
 </cti:standardPage>

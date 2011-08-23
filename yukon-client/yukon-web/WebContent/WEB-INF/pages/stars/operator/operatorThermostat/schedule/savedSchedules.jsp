@@ -73,8 +73,8 @@ Event.observe(window, 'load', function(){
                     </div>
                     <br>
                     <br>
-                    <cti:button key="help" styleClass="help fl"/>
-                    <cti:button key="create" styleClass="create fl"/>
+                    <cti:button nameKey="help" styleClass="help fl"/>
+                    <cti:button nameKey="create" styleClass="create fl"/>
                 </c:when>
                 <c:otherwise>
                     <div class="schedules fl">
@@ -94,8 +94,8 @@ Event.observe(window, 'load', function(){
                         </c:if>
                         <div class="box clear">
                             <div class="fr">
-                                <cti:button key="create" styleClass="create fl"/>
-                                <cti:button key="help" styleClass="help fl"/>
+                                <cti:button nameKey="create" styleClass="create fl"/>
+                                <cti:button nameKey="help" styleClass="help fl"/>
                             </div>
                             <div class="tempControls fl">
                                 <form method="post" action="/spring/stars/operator/thermostatSchedule/updateTemperaturePreference">
@@ -146,7 +146,7 @@ Event.observe(window, 'load', function(){
             
                 <div class="actionArea">
                     <div class="fr">
-                        <cti:button key="next" styleClass="f_next"/>
+                        <cti:button nameKey="next" styleClass="f_next"/>
                     </div>
                 </div>
             </div>
@@ -166,12 +166,12 @@ Event.observe(window, 'load', function(){
             
                 <div class="actions">
                     <div class="fr">
-                        <cti:button key="previous" styleClass="f_prev"/>
-                        <cti:button key="save" styleClass="save f_blocker" />
-                        <cti:button key="cancel" styleClass="cancel" />
+                        <cti:button nameKey="previous" styleClass="f_prev"/>
+                        <cti:button nameKey="save" styleClass="save f_blocker" />
+                        <cti:button nameKey="cancel" styleClass="cancel" />
                     </div>
                     <div class="fl">
-                        <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="createDefault"/>
+                        <cti:button nameKey="recommendedSettings" renderMode="labeledImage" styleClass="createDefault"/>
                     </div>
                 </div>
             </div>

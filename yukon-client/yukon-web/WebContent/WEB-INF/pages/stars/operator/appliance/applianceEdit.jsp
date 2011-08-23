@@ -116,22 +116,22 @@
                     
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <cti:displayForPageEditModes modes="CREATE">
-                            <cti:button key="save" name="create" type="submit"/>
+                            <cti:button nameKey="save" name="create" type="submit"/>
                             <cti:url value="/spring/stars/operator/appliances/applianceList" var="cancelUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                             </cti:url>
                         </cti:displayForPageEditModes>
                         
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button key="save" name="update" type="submit"/>
-                            <cti:button key="delete" name="delete" type="submit"/>
+                            <cti:button nameKey="save" name="update" type="submit"/>
+                            <cti:button nameKey="delete" name="delete" type="submit"/>
                             <cti:url value="/spring/stars/operator/appliances/view" var="cancelUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
                             </cti:url>
                         </cti:displayForPageEditModes>
                         
-                        <cti:button key="cancel" href="${cancelUrl}"/>
+                        <cti:button nameKey="cancel" href="${cancelUrl}"/>
                     </cti:displayForPageEditModes>
                     
                     <cti:displayForPageEditModes modes="VIEW">
@@ -139,7 +139,7 @@
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
                         </cti:url>
-                        <cti:button key="edit" href="${editUrl}"/>
+                        <cti:button nameKey="edit" href="${editUrl}"/>
                     </cti:displayForPageEditModes>
                     
                 </form:form>

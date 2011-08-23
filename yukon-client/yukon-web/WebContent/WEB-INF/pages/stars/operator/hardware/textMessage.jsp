@@ -40,8 +40,8 @@ submitForm = function() {
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div class="actionArea">
-        <cti:button key="send" type="submit" styleClass="f_blocker"/>
-        <cti:button key="cancel" onclick="$('ajaxDialog').hide()"/>
+        <cti:button nameKey="send" type="submit" styleClass="f_blocker"/>
+        <cti:button nameKey="cancel" onclick="$('ajaxDialog').hide()"/>
     </div>
 </form:form>
 

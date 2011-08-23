@@ -101,7 +101,7 @@
 	
 	<%-- RESULTS TABLE --%>
     <div style="padding-bottom:5px;">
-        <cti:button key="filter" styleClass="navlink" renderMode="labeledImage" id="filterButton" />
+        <cti:button nameKey="filter" styleClass="navlink" renderMode="labeledImage" id="filterButton" />
     </div>
 
 	<table id="jobsTable" class="resultsTable activeResultsTable">

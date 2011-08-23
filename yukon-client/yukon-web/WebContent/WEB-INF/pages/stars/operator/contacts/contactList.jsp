@@ -95,7 +95,7 @@
     				
     					<c:choose>
     						<c:when test="${!contact.primary}">
-                                <cti:button key="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" renderMode="labeledImage"/>
+                                <cti:button nameKey="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" renderMode="labeledImage"/>
     						</c:when>
     						<c:otherwise>
     							<i:inline key=".isPrimary"/>
@@ -118,7 +118,7 @@
                         <form id="addContactForm" action="/spring/stars/operator/contacts/create" method="get">
                             <input type="hidden" name="contactId" value="0"/>
                             <input type="hidden" name="accountId" value="${accountId}"/>
-                            <cti:button key="create" type="submit"/>
+                            <cti:button nameKey="create" type="submit"/>
                         </form>
                     </td>
                 </tr>

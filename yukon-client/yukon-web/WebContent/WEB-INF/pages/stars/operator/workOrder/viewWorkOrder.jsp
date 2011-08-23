@@ -60,8 +60,8 @@
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
           <div class="actionArea">
-            <cti:button id="workOrderConfirmDelete" type="submit" key="delete"/>
-            <cti:button id="workOrderConfirmCancel" type="button" key="cancel"/>  
+            <cti:button id="workOrderConfirmDelete" type="submit" nameKey="delete"/>
+            <cti:button id="workOrderConfirmCancel" type="button" nameKey="cancel"/>  
           </div>
         </form>
     </i:simplePopup>
@@ -113,7 +113,7 @@
                         <i:simplePopup titleKey=".currentStateChangedTitle" id="currentStateChangedDialog">
                         	<cti:msg2 key=".currentStateChanged" htmlEscape="false"/>
                         	<div class="actionArea">
-                        		<cti:button key="ok" onclick="$('currentStateChangedDialog').hide()"/>
+                        		<cti:button nameKey="ok" onclick="$('currentStateChangedDialog').hide()"/>
                        		</div>
                         </i:simplePopup>
                         
@@ -193,10 +193,10 @@
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                 </cti:url>
-                <cti:button key="delete" id="confirmDelete"/>
+                <cti:button nameKey="delete" id="confirmDelete"/>
             </cti:displayForPageEditModes>
            
-           <cti:button key="cancel" href="${cancelUrl}"/>
+           <cti:button nameKey="cancel" href="${cancelUrl}"/>
         </cti:displayForPageEditModes>
         
        
@@ -205,7 +205,7 @@
                 <cti:param name="accountId" value="${accountId}"/>
                 <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
             </cti:url>
-            <cti:button key="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
         
     </form:form>

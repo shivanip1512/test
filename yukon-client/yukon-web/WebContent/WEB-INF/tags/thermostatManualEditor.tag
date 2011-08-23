@@ -23,8 +23,8 @@
                     <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                     <span id="editName" style="display: none;">
                         <input id="thermostatLabel" name="displayLabel" type="text" value="${thermostatLabel}" />
-                        <cti:button key="save" type="submit" styleClass="f_blocker"/>
-                        <cti:button key="cancel" styleClass="cancelLabelEdit"/>
+                        <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                        <cti:button nameKey="cancel" styleClass="cancelLabelEdit"/>
                     </span> 
                     <span id="thermostatName">
                         ${thermostatLabel}
@@ -146,8 +146,8 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="ok" type="submit" styleClass="f_blocker"/> 
-            <cti:button key="cancel" id="confirmCancel" styleClass="closePopup" />
+            <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/> 
+            <cti:button nameKey="cancel" id="confirmCancel" styleClass="closePopup" />
         </div>
     </form>
 </i:simplePopup>

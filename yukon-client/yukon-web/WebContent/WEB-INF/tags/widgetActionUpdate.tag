@@ -21,7 +21,7 @@
 	<cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/> 
 	
 	<span id="${thisId}">
-    <cti:button key="${nameKey}" type="button" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusyText}...', '${uniqueId}')"/>
+    <cti:button nameKey="${nameKey}" type="button" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusyText}...', '${uniqueId}')"/>
 	<span class="widgetAction_waiting" style="display:none">
 	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
 	</span>

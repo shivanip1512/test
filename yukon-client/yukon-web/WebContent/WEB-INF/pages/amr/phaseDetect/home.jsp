@@ -126,6 +126,6 @@
 		        </tr>
 		    </table>
         </tags:sectionContainer2>
-        <cti:button id="nextButton" key="next" name="next" type="submit" disabled="true" />
+        <cti:button id="nextButton" nameKey="next" name="next" type="submit" disabled="true" />
 	</form>
 </cti:standardPage>

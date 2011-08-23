@@ -71,7 +71,7 @@
                 </cti:url>
             </cti:displayForPageEditModes>
             
-            <cti:button key="cancel" href="${cancelUrl}"/>
+            <cti:button nameKey="cancel" href="${cancelUrl}"/>
             
         </cti:displayForPageEditModes>
 		
@@ -80,7 +80,7 @@
                 <cti:param name="accountId" value="${accountId}"/>
                 <cti:param name="callId" value="${callReport.callId}"/>
             </cti:url>
-            <cti:button key="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
         
 	</form:form>

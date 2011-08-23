@@ -28,8 +28,8 @@
                 </tags:formElementContainer>
                 
                 <div class="pageActionArea">
-                    <cti:button key="save" type="submit"/>
-                    <cti:button key="cancel" name="cancelButton" type="submit"/>
+                    <cti:button nameKey="save" type="submit"/>
+                    <cti:button nameKey="cancel" name="cancelButton" type="submit"/>
                 </div>
             </form:form>
             

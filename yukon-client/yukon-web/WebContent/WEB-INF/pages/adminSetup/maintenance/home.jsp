@@ -37,20 +37,20 @@
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>
                 <cti:displayForPageEditModes modes="VIEW">
-                    <cti:button key="edit" href="edit"/>
+                    <cti:button nameKey="edit" href="edit"/>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="EDIT">
-                    <cti:button key="update" type="submit"/>
+                    <cti:button nameKey="update" type="submit"/>
                     <cti:url value="toggleJobEnabled" var="toggleJobEnabled">
                         <cti:param name="jobId" value="${job.id}"/>
                     </cti:url>
                     <c:if test="${job.disabled}">
-                        <cti:button key="enable" href="${toggleJobEnabled}"/>
+                        <cti:button nameKey="enable" href="${toggleJobEnabled}"/>
                     </c:if>
                     <c:if test="${!job.disabled}">
-                        <cti:button key="disable" href="${toggleJobEnabled}"/>
+                        <cti:button nameKey="disable" href="${toggleJobEnabled}"/>
                     </c:if>
-                    <cti:button key="cancel" href="view"/>
+                    <cti:button nameKey="cancel" href="view"/>
                 </cti:displayForPageEditModes>
             </form>
         </cti:dataGridCell>

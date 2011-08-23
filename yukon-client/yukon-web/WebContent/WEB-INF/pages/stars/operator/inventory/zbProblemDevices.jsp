@@ -8,7 +8,7 @@
 <cti:standardPage module="operator" page="zbProblemDevices">
 
     <div class="tar padBottom">
-        <cti:button key="csv" renderMode="labeledImage" href="/spring/stars/operator/inventory/zbProblemDevices/csv"/>
+        <cti:button nameKey="csv" renderMode="labeledImage" href="/spring/stars/operator/inventory/zbProblemDevices/csv"/>
     </div>
     
     <br>

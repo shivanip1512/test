@@ -86,7 +86,7 @@
 		<tr id="tr_${jobWrapper.job.id}">
 			<%-- actions --%>
 			<td>
-                <cti:button key="edit" renderMode="image" href="${viewScheduleDetailsUrl}" arguments="${jobWrapper.name}"/>
+                <cti:button nameKey="edit" renderMode="image" href="${viewScheduleDetailsUrl}" arguments="${jobWrapper.name}"/>
 			</td>
 			
 			<%-- name --%>	

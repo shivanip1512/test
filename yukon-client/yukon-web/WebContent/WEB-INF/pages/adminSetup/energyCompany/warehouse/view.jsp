@@ -25,13 +25,13 @@
             <cti:param name="ecId" value="${ecId}"/>
             <cti:param name="warehouseId" value="${warehouseDto.warehouse.warehouseID}"/>
         </cti:url>
-        <cti:button key="edit" onclick="javascript:window.location ='${warehouseEditUrl}'"/>
+        <cti:button nameKey="edit" onclick="javascript:window.location ='${warehouseEditUrl}'"/>
     </cti:checkRolesAndProperties>
     
     <cti:url var="warehouseIndexUrl" value="${baseUrl}/home">
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
-    <cti:button key="cancel" href="${warehouseIndexUrl}"/>
+    <cti:button nameKey="cancel" href="${warehouseIndexUrl}"/>
     </div>
     
 </cti:standardPage>

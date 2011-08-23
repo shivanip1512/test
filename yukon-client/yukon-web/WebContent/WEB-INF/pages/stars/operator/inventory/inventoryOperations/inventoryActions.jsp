@@ -34,7 +34,7 @@
                             <td class="actionCell">
                                 <form action="deviceReconfig/setup" method="get">
                                     <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                    <cti:button key="deviceReconfig" type="submit" styleClass="buttonGroup" name="deviceReconfig"/>
+                                    <cti:button nameKey="deviceReconfig" type="submit" styleClass="buttonGroup" name="deviceReconfig"/>
                                 </form>
                             </td>
                             <td class="actionCell"><i:inline key=".deviceReconfigDescription"/></td>

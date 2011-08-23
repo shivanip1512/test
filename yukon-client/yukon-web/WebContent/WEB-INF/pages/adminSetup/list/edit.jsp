@@ -89,8 +89,8 @@ Event.observe(window, 'load', function() {
 </tags:boxContainer2>
 
 <div class="pageActionArea">
-    <cti:button key="save" name="save" type="submit"/>
-    <cti:button id="restoreDefaultBtn" key="restoreDefault"/>
+    <cti:button nameKey="save" name="save" type="submit"/>
+    <cti:button id="restoreDefaultBtn" nameKey="restoreDefault"/>
     <cti:msg2 var="listType" key="${list.type}"/>
     <tags:confirmDialog nameKey=".confirmRestoreDefault" argument="${listType}"
         on="#restoreDefaultBtn" submitName="restoreDefault"/>
@@ -98,7 +98,7 @@ Event.observe(window, 'load', function() {
         <cti:param name="ecId" value="${list.energyCompanyId}"/>
         <cti:param name="listId" value="${list.listId}"/>
     </cti:url>
-    <cti:button key="cancel" href="${viewUrl}"/>
+    <cti:button nameKey="cancel" href="${viewUrl}"/>
 </div>
 
 </form:form>

@@ -158,10 +158,10 @@
 						<td class="rightActionColumn">
 							<c:choose>
 								<c:when test="${hasEditingRole}">
-                                    <cti:button key="edit" renderMode="image" onclick="javascript:showZoneWizard('${zoneEditorUrl}');"/> 
+                                    <cti:button nameKey="edit" renderMode="image" onclick="javascript:showZoneWizard('${zoneEditorUrl}');"/> 
 								</c:when>
 								<c:otherwise>
-									<cti:button key="disabledEdit" renderMode="image" disabled="true"/>
+									<cti:button nameKey="disabledEdit" renderMode="image" disabled="true"/>
 								</c:otherwise>
 							</c:choose>
                         </td>
@@ -184,7 +184,7 @@
                                 </spring:escapeBody>
                             </td>
                             <td class="rightActionColumn">
-                                <cti:button key="edit" renderMode="image" 
+                                <cti:button nameKey="edit" renderMode="image" 
                                     href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdMap[phaseKey]}"/>
                             </td>
                         </tr>
@@ -207,7 +207,7 @@
                             <td>
                                 <ul class="buttonStack">
                                     <li>
-                                        <cti:button renderMode="labeledImage" key="scan" 
+                                        <cti:button renderMode="labeledImage" nameKey="scan" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${scanCommandHolder.cmdId}',
                                                                     '${scanCommandHolder.commandName}',
@@ -215,7 +215,7 @@
                                                                     'false');"/>
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" key="up" 
+                                        <cti:button renderMode="labeledImage" nameKey="up" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${tapUpCommandHolder.cmdId}',
                                                                     '${tapUpCommandHolder.commandName}',
@@ -223,7 +223,7 @@
                                                                     'false');"/>
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" key="down" 
+                                        <cti:button renderMode="labeledImage" nameKey="down" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${tapDownCommandHolder.cmdId}',
                                                                     '${tapDownCommandHolder.commandName}',
@@ -231,7 +231,7 @@
                                                                     'false');"/>
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" key="enable" 
+                                        <cti:button renderMode="labeledImage" nameKey="enable" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${enableRemoteCommandHolder.cmdId}',
                                                                     '${enableRemoteCommandHolder.commandName}',
@@ -239,7 +239,7 @@
                                                                     'false');"/>
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" key="disable" 
+                                        <cti:button renderMode="labeledImage" nameKey="disable" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${disableRemoteCommandHolder.cmdId}',
                                                                     '${disableRemoteCommandHolder.commandName}',

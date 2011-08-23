@@ -72,12 +72,12 @@
             </c:if>
         </tags:nameValueContainer2><br>
         <c:if test="${ftpStatus != 'SUCCESS'}">
-            <cti:button key="startUploadImg" id="startBtn" type="submit"/>
-            <cti:button key="cancelImg" id="cancelBtn"/>
+            <cti:button nameKey="startUploadImg" id="startBtn" type="submit"/>
+            <cti:button nameKey="cancelImg" id="cancelBtn"/>
             <input type="hidden" id="okBtn"/>
         </c:if>
         <c:if test="${ftpStatus == 'SUCCESS'}">
-            <cti:button key="okImg" id="okBtn"/>
+            <cti:button nameKey="okImg" id="okBtn"/>
             <input type="hidden" id="cancelBtn"/>
             <input type="hidden" id="startBtn"/>
         </c:if>

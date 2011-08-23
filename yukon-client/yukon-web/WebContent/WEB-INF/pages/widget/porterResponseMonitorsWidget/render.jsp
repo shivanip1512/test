@@ -36,7 +36,7 @@
 
 					<%-- action icons --%>
 					<td>
-                        <cti:button key="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}"/>
+                        <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}"/>
 					</td>
 
 					<%-- monitor name --%>

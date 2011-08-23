@@ -62,7 +62,7 @@ document.observe("dom:loaded", function() {
                     <cti:param name="ecId" value="${ecId}"/>
                 </cti:url>
                 <div class="actionArea">
-                    <cti:button key="create" href="${operatorLoginCreateUrl}"/>
+                    <cti:button nameKey="create" href="${operatorLoginCreateUrl}"/>
                 </div>
             </tags:boxContainer2>
 

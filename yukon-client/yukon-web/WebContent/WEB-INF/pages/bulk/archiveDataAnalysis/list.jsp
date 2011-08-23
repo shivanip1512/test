@@ -90,8 +90,8 @@
                                     <cti:link href="${analysisProgressUrl}" key="${analysisEntry.key.status.formatKey}"/>
                                 </td>
                                 <td>
-                                    <cti:button key="viewButtonAnalyzing" renderMode="image" disabled="true"/>
-                                    <cti:button id="deleteButton" key="remove" renderMode="image"/>
+                                    <cti:button nameKey="viewButtonAnalyzing" renderMode="image" disabled="true"/>
+                                    <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
                                 </td>
                             </c:when>
                             <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
@@ -103,15 +103,15 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${analysisEntry.value == 0}">
-                                            <cti:button key="viewButtonNoDevices" renderMode="image" disabled="true"/>
-                                            <cti:button id="deleteButton" key="remove" renderMode="image"/>
+                                            <cti:button nameKey="viewButtonNoDevices" renderMode="image" disabled="true"/>
+                                            <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
                                                 <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                             </cti:url>
-                                            <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                                            <cti:button id="deleteButton" key="remove" renderMode="image"/>
+                                            <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}"/>
+                                            <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -129,8 +129,8 @@
                                     <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
-                                    <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
-                                    <cti:button id="deleteButton" key="remove" renderMode="image"/>
+                                    <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}"/>
+                                    <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
                                 </td>
                             </c:when>
                         </c:choose>
@@ -143,8 +143,8 @@
     <i:simplePopup id="deleteConfirmationPopup" styleClass="mediumSimplePopup" titleKey="yukon.web.modules.amr.analysis.list.deleteConfirmation.title">
         <h3 class="dialogQuestion"><cti:msg key="yukon.web.modules.amr.analysis.list.deleteConfirmation.message"/></h3>
         <div class="actionArea">
-            <cti:button key="ok" onclick="deleteAnalysis()"/>
-            <cti:button key="cancel" onclick="$('deleteConfirmationPopup').hide();" />
+            <cti:button nameKey="ok" onclick="deleteAnalysis()"/>
+            <cti:button nameKey="cancel" onclick="$('deleteConfirmationPopup').hide();" />
         </div>
     </i:simplePopup>
     

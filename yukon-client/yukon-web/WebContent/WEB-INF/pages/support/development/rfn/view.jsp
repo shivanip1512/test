@@ -13,7 +13,7 @@
                 <tags:nameValue name="Model"><input name="model" type="text" value="FocusAXD"></tags:nameValue>
                 <tags:nameValue name="Wh Value"><input name="value" type="text" value="34543.4"></tags:nameValue>
             </tags:nameValueContainer>
-            <div clas="actionArea"><cti:button key="send" type="submit"/></div>
+            <div clas="actionArea"><cti:button nameKey="send" type="submit"/></div>
         </form>
     </tags:sectionContainer>
 

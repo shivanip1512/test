@@ -48,6 +48,6 @@
 	            </tr>
 	        </table>
         </tags:sectionContainer2>
-        <cti:button key="cancelTest" name="cancel" type="submit"/>
+        <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
     </form>
 </cti:standardPage>

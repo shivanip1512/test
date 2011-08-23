@@ -86,23 +86,23 @@
                     <form:form id="${route.paobjectId}" name="allForms" 
                         commandName="encryptedRoute" method="POST" autocomplete="off">
                         <span style="display:${enableDisplay}">
-                            <cti:button key="enableEncryptionBtn"
+                            <cti:button nameKey="enableEncryptionBtn"
                                 onclick="javascript:showAddKey('${route.paobjectId}')" /> 
                         </span>
                         <span style="display:${disableDisplay}"> 
                             <i:inline key=".keyFoundLbl" /> 
-                            <cti:button key="deleteBtn" 
+                            <cti:button nameKey="deleteBtn" 
                                 onclick="javascript:showDeleteConfirm('${route.paobjectId}')" /> 
                         </span>
                         <span style="display:${saveDisplay}"> 
                             <i:inline key=".keyLbl" /> 
                             <tags:input path="value" size="50" /> 
-                            <cti:button key="saveBtn" onclick="javascript:addKey('${route.paobjectId}')" type="submit"/> 
-                            <cti:button key="cancelBtn" href="view" /> 
+                            <cti:button nameKey="saveBtn" onclick="javascript:addKey('${route.paobjectId}')" type="submit"/> 
+                            <cti:button nameKey="cancelBtn" href="view" /> 
                         </span>
                         <span style="display:${deleteDisplay}"> <i:inline key=".confirmDeleteMsg" />
-                        <cti:button key="confirmDeleteBtn" onclick="javascript:confirmDelete('${route.paobjectId}')" /> 
-                            <cti:button key="cancelBtn" href="view" /> 
+                        <cti:button nameKey="confirmDeleteBtn" onclick="javascript:confirmDelete('${route.paobjectId}')" /> 
+                            <cti:button nameKey="cancelBtn" href="view" /> 
                         </span>
                         <input name="paobjectId" type="hidden" value="${route.paobjectId}" />
                         <input name="type" type="hidden" value="${route.type}" />
