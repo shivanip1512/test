@@ -1861,8 +1861,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
             } else if(val instanceof RfnBase) {
                 RfnBase rfnBase = (RfnBase)val;
-                String serialNumber = StringUtils.trimToNull(getSerialNumberTextField().getText());
-                rfnBase.getRfnAddress().setSerialNumber(serialNumber == null ? null : getSerialNumberTextField().getText());
+                rfnBase.getRfnAddress().setSerialNumber(StringUtils.trimToNull(getSerialNumberTextField().getText())); // Don't respect leading or trailing spaces
                 String manufacturer = StringUtils.trimToNull(getManufacturerTextField().getText());
                 rfnBase.getRfnAddress().setManufacturer(manufacturer == null ? null : getManufacturerTextField().getText());
                 String model = StringUtils.trimToNull(getModelTextField().getText());
@@ -2033,6 +2032,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	/* Check RFN Address settings */
     	if (deviceBase instanceof RfnBase) {
     	    String serialNumber = getSerialNumberTextField().getText();
+    	    
+    	    if (serialNumber.startsWith(" ") || serialNumber.endsWith(" ")) {
+                setErrorString("Serial Number can not have leading or trailing spaces.");
+                return false;
+            }
+    	    
     	    String manufacturer = getManufacturerTextField().getText();
     	    String model = getModelTextField().getText();
     	    

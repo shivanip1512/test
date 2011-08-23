@@ -147,7 +147,7 @@ public class RfnMeterPanel extends DataInputPanel implements CaretListener {
     @Override
     public Object getValue(Object o) throws EditorInputValidationException {
         /* Check for duplicates */
-        String serialNumber = StringUtils.isBlank(getSerialNumberTextField().getText()) ? null : getSerialNumberTextField().getText();
+        String serialNumber = StringUtils.trimToNull(getSerialNumberTextField().getText()); // Don't respect leading or trailing spaces
         String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
         String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
         
