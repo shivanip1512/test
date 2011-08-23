@@ -28,6 +28,11 @@ Yukon.ui = {
         }
     },
     
+    exclusiveSelect: function(item) {
+        item.siblings().invoke('removeClassName', 'selected');
+        item.addClassName('selected');
+    },
+    
     autoWire: function() {
         // register listeners
         $$("a.f_blocker").each(function(elem) {
