@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
@@ -665,11 +666,7 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof Character )
       {
-/* TODO Temperary until eka fixes there whitespace issue in serial numbers
- *       	
- * String str = StringUtils.trimSpaces(o.toString());
- */
-      	String str = o.toString();
+          String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
       		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
@@ -698,11 +695,7 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof String )
       {
-          /* TODO Temperary until eka fixes there whitespace issue in serial numbers
-           *          
-           * String str = StringUtils.trimSpaces(o.toString());
-           */
-        String str = o.toString();
+          String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
       		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");

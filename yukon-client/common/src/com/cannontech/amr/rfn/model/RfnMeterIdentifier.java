@@ -43,9 +43,7 @@ public class RfnMeterIdentifier implements Serializable{
     }
     
     public String getCombinedIdentifier() {
-        /* TODO Temporary: for now we only send manufacturer and serial number 
-        return String.format("%s_%s_%s", sensorManufacturer, sensorModel, sensorSerialNumber); */
-        return String.format("%s_%s", sensorManufacturer, sensorSerialNumber); 
+        return String.format("%s_%s_%s", sensorManufacturer, sensorModel, sensorSerialNumber);
     }
 
     
