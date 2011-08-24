@@ -37,7 +37,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.enums.Phase;
-import com.cannontech.thirdparty.model.DeviceCore;
 import com.google.common.collect.Sets;
 
 public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, PointDataListener {
