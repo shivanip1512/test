@@ -155,6 +155,18 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     	return cap;
     }
     
+    public CapBankDevice getCapBankDeviceByStatusPointID(int capBankStatusID)throws NotFoundException {
+    	//CapBankDevice cap = capBankMap.get( capBankStatusID );
+    	
+    	for (CapBankDevice c: capBankMap.values()){
+    		if (c.getStatusPointID() == capBankStatusID) {
+    	    	checkObjectFound(c, capBankStatusID, CapBankDevice.class);
+    	    	return c;
+    		}
+    	}
+    	return null;
+    }
+    
     public List<Feeder> getFeedersBySubBus(int subBusId) {
     	SubBus subBus = getSubBus(subBusId);
         try {

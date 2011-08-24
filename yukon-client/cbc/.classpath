@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/batik.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.6-all.jar" sourcepath="/third-party/linked-sources/spring-ws-1.5.6-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

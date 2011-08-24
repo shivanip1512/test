@@ -66,6 +66,11 @@ public interface CapControlCache {
 	 * @return CapBankDevice
 	 */
 	public CapBankDevice getCapBankDevice(int capBankDeviceID);
+	
+	/**
+	 * @return CapBankDevice
+	 */
+	public CapBankDevice getCapBankDeviceByStatusPointID(int capBankStatusID);
 
 	/**
 	 * @return List<Feeder>

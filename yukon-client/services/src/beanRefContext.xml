@@ -18,6 +18,7 @@
             <list merge="true">
                 <value>com/cannontech/core/service/serverServicesContext.xml</value>
                 <value>com/cannontech/services/server/serviceManagerContext.xml</value>
+                <value>com/cannontech/cbc/cbcContext.xml</value>
                 <value>com/cannontech/stars/starsContext.xml</value>
             </list>
         </constructor-arg>

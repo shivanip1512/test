@@ -2,6 +2,7 @@ package com.cannontech.cbc.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,11 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -42,7 +45,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     private static final ParameterizedRowMapper<SubstationBus> rowMapper;
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
@@ -125,7 +128,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATIONBUS
 		bus.setId(pao.getPaObjectID());
-    	int rowsAffected = simpleJdbcTemplate.update(insertSql, bus.getId(),
+    	int rowsAffected = yukonJdbcTemplate.update(insertSql, bus.getId(),
                                                      bus.getCurrentVarLoadPointId(),
                                                      bus.getCurrentWattLoadPointId(),
                                                      bus.getMapLocationId(),
@@ -158,7 +161,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 
     @Override
     public boolean remove(SubstationBus bus) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,bus.getId());
+        int rowsAffected = yukonJdbcTemplate.update(removeSql,bus.getId());
         boolean result = (rowsAffected == 1);
         
         if (result) {
@@ -196,7 +199,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		}
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATIONBUS
-    	rowsAffected = simpleJdbcTemplate.update(updateSql, bus.getCurrentVarLoadPointId(),
+    	rowsAffected = yukonJdbcTemplate.update(updateSql, bus.getCurrentVarLoadPointId(),
                                                      bus.getCurrentWattLoadPointId(),
                                                      bus.getMapLocationId(),
                                                      bus.getCurrentVoltLoadPointId(),
@@ -222,7 +225,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SubstationBus getById(int id){
-        SubstationBus s = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+        SubstationBus s = yukonJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
         return s;
     }
     
@@ -238,7 +241,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         String orphanedSubs = "SELECT substationBusID FROM CapControlSubstationBus WHERE ";
         orphanedSubs += "substationBusID NOT IN (SELECT substationBusId FROM CCSubstationSubBusList) ";
         orphanedSubs += "ORDER BY substationBusID";
-        List<Integer> listmap = simpleJdbcTemplate.query(orphanedSubs, mapper);
+        List<Integer> listmap = yukonJdbcTemplate.query(orphanedSubs, mapper);
         
         return listmap;
     }
@@ -247,7 +250,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     @Override
 	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
 	    /* Get the unordered total count */
-        int orphanCount = simpleJdbcTemplate.queryForInt("SELECT COUNT(*) FROM CapControlSubstationBus WHERE SubstationBusID not in (SELECT SubstationBusId FROM CCSubstationSubBusList)");
+        int orphanCount = yukonJdbcTemplate.queryForInt("SELECT COUNT(*) FROM CapControlSubstationBus WHERE SubstationBusID not in (SELECT SubstationBusId FROM CCSubstationSubBusList)");
         
         /* Get the paged subset of cc objects */
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -258,7 +261,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("ORDER BY PAOName");
         
         PagingResultSetExtractor orphanExtractor = new PagingResultSetExtractor(start, count, liteCapControlObjectRowMapper);
-        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
         List<LiteCapControlObject> unassignedBuses = (List<LiteCapControlObject>) orphanExtractor.getResultList();
         
@@ -282,8 +285,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		//remove any existing assignment
     	unassignSubstationBus(substationBusId);
     	
-		int displayOrder = simpleJdbcTemplate.queryForInt(getDisplayOrderSql, substationId);
-		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql, substationId,substationBusId,++displayOrder);
+		int displayOrder = yukonJdbcTemplate.queryForInt(getDisplayOrderSql, substationId);
+		int rowsAffected = yukonJdbcTemplate.update(insertAssignmentSql, substationId,substationBusId,++displayOrder);
 		
 		boolean result = (rowsAffected == 1);
 		return result;
@@ -298,7 +301,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     public boolean unassignSubstationBus(int substationBusId) {
     	String deleteAssignmentSql = "DELETE FROM CCSUBSTATIONSUBBUSLIST WHERE SubstationBusID = ?";
     	
-		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,substationBusId);
+		int rowsAffected = yukonJdbcTemplate.update(deleteAssignmentSql,substationBusId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;
@@ -308,13 +311,13 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 	public int getParentId(SubstationBus stationBus) {
 		String getParentSql = "SELECT SubStationID FROM CCSUBSTATIONSUBBUSLIST WHERE SubstationBusId= ?";
 		
-		int id = simpleJdbcTemplate.queryForInt(getParentSql, stationBus.getId());
+		int id = yukonJdbcTemplate.queryForInt(getParentSql, stationBus.getId());
 		return id;
 	}
 	    
     @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Autowired
@@ -331,5 +334,25 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 	public void setHolidayScheduleDao(HolidayScheduleDao holidayScheduleDao) {
 		this.holidayScheduleDao = holidayScheduleDao;
 	}
+
+    @Override
+    public Collection<Integer> getBankStatusPointIdsBySubbusId(int substationId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT P.PointId");
+        sql.append("FROM Point P");
+        sql.append("WHERE P.POINTTYPE = 'Status'");
+        sql.append("  AND P.PointOffset = 1 ");
+        sql.append("  AND P.PAObjectID IN (SELECT DeviceId ");
+        sql.append("                       FROM CCFeederBankList");
+        sql.append("                       WHERE FeederId IN (SELECT FeederId ");
+        sql.append("                                          FROM CCFeederSubAssignment ");
+        sql.append("                                          WHERE SubStationBusID").eq(substationId).append("))");
+        
+        
+        List<Integer> statusPointIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        
+        return statusPointIds;
+    }
 
 }

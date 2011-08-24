@@ -30,27 +30,47 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     
     @Override
     public void setPointValue(LitePoint point, double value) {
-        setPointValue(point, new Date(), value, PointTypes.ANALOG_POINT);
+        setPointValue(point.getPointID(), new Date(), value, PointTypes.ANALOG_POINT);
+    }
+
+    @Override
+    public void setPointValue(int pointId, double value) {
+        setPointValue(pointId, new Date(), value, PointTypes.ANALOG_POINT);
     }
     
     @Override
     public void setPointValue(LitePoint point, PointState pointState) {
-        setPointValue(point, new Date(), pointState.getRawState(), PointTypes.STATUS_POINT);
+        setPointValue(point.getPointID(), new Date(), pointState.getRawState(), PointTypes.STATUS_POINT);
+    }
+    
+    @Override
+    public void setPointValue(int pointId, PointState pointState) {
+        setPointValue(pointId, new Date(), pointState.getRawState(), PointTypes.STATUS_POINT);
     }
     
     @Override
     public void setPointValue(LitePoint point, Date time, double value) {
-        setPointValue(point, time, value, PointTypes.ANALOG_POINT);
+        setPointValue(point.getPointID(), time, value, PointTypes.ANALOG_POINT);
+    }
+
+    @Override
+    public void setPointValue(int pointId, Date time, double value) {
+        setPointValue(pointId, time, value, PointTypes.ANALOG_POINT);
     }
     
     @Override
     public void setPointValue(LitePoint point,  Date time, PointState pointState) {
-        setPointValue(point,time,pointState.getRawState(),PointTypes.STATUS_POINT);
+        setPointValue(point.getPointID(),time,pointState.getRawState(),PointTypes.STATUS_POINT);
     }
     
-    private void setPointValue(LitePoint point, Date time, double value, int pointType) {
+    @Override
+    public void setPointValue(int pointId, Date time, PointState pointState) {
+        setPointValue(pointId,time,pointState.getRawState(),PointTypes.STATUS_POINT);
+    }
+    
+    private void setPointValue(int pointId, Date time, double value, int pointType) {
         PointData pointData = new PointData();
-        pointData.setId(point.getPointID());
+        pointData.setId(pointId);
         pointData.setValue(value);
         pointData.setType(pointType);
         pointData.setPointQuality(PointQuality.Normal);

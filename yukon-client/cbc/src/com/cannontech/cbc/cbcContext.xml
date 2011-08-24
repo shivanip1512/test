@@ -59,4 +59,5 @@
 
     <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl">
     </bean>
+
 </beans>

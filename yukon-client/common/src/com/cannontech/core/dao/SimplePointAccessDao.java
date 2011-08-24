@@ -12,10 +12,14 @@ public interface SimplePointAccessDao {
     public double getPointValue(LitePoint point) throws PointDataException;
 
     public void setPointValue(LitePoint point, double value);
+    public void setPointValue(int pointId, double value);
     public void setPointValue(LitePoint point, PointState pointState);
+    public void setPointValue(int pointId, PointState pointState);
     
     public void setPointValue(LitePoint point, Date time, double value);
+    public void setPointValue(int pointId, Date time, double value);
     public void setPointValue(LitePoint point,  Date time, PointState pointState);
+    public void setPointValue(int pointId,  Date time, PointState pointState);
     
     public void writePointData(PointData pointData);
 

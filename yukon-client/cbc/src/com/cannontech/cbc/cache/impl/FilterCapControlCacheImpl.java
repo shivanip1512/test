@@ -265,11 +265,12 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return cache.getUpdatedObjMap();
     }
 
-    public List<CapBankDevice> getCapBanksBySpecialArea(int areaID) {
-        CCSpecialArea area = cache.getCBCSpecialArea(areaID);
-        if ( filter.valid(area) )
-            return cache.getCapBanksByArea(areaID);
-
+    public List<CapBankDevice> getCapBanksBySpecialArea(int areaId) {
+        CCSpecialArea area = cache.getCBCSpecialArea(areaId);
+        if (filter.valid(area)) {
+            return cache.getCapBanksByArea(areaId);
+        }
+        
         return null;
     }
     
@@ -285,9 +286,28 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
         CCSpecialArea area = cache.getCBCSpecialArea(areaId);
-        if ( filter.valid(area) )
+        if (filter.valid(area)) {
             return cache.getSubstationsByArea(areaId);
+        }
         
         return Collections.emptyList();
     }
+
+	@Override
+	public CapBankDevice getCapBankDeviceByStatusPointID(int capBankStatusId) {
+		CapBankDevice capBank = cache.getCapBankDeviceByStatusPointID(capBankStatusId);
+
+		if (capBank == null) {
+			return null;
+		}
+		
+		int areaId = getParentAreaID(capBank.getCcId());
+    	StreamableCapObject area = cache.getArea(areaId);
+	    if (filter.valid(area)) {
+	    	return capBank;
+	    }
+    	
+    	return null;
+		
+	}
 }

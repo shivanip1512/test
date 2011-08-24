@@ -1,5 +1,6 @@
 package com.cannontech.cbc.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
@@ -29,4 +30,6 @@ public interface SubstationBusDao {
     public boolean unassignSubstationBus(SubstationBus substationBus);
     
     public boolean unassignSubstationBus(int substationBusId);
+    
+    public Collection<Integer> getBankStatusPointIdsBySubbusId(int substationId);
 }
