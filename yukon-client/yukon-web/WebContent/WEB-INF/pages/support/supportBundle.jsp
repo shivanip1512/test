@@ -95,7 +95,7 @@
                                 <c:set var="checkedAtt" value=" checked=\"checked\""/>
                             </c:if>
                                 <td><input type="radio" name="previousBundles"${checkedAtt}
-                                    value="${status.index}" /> ${bundle.name}</td>
+                                    value="${status.index}" /> ${fn:escapeXml(bundle.name)}</td>
                             </tr>
                         </c:forEach>
                     </c:if>

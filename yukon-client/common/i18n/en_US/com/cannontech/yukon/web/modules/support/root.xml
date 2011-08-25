@@ -95,7 +95,7 @@
     <entry key="yukon.web.modules.support.supportBundle.sourceName.paoDefinitionXmlSource">paoDefinition.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.sourceName.logsFilesSource">Log Files</entry>
     <entry key="yukon.web.modules.support.supportBundle.sourceName.commFilesSource">Comm Files</entry>
-    <entry key="yukon.web.modules.support.supportBundle.sourceName.yukonFileStructureCsvSource">Printout of Yukon file structure to csv</entry>
+    <entry key="yukon.web.modules.support.supportBundle.sourceName.yukonFileStructureCsvSource">Printout of Yukon file structure to CSV</entry>
     <entry key="yukon.web.modules.support.supportBundle.sourceName.userGroupDaoSource">User Group Data</entry>
     <entry key="yukon.web.modules.support.supportBundle.sourceName.eventLogCsvSource">Event Log Data</entry>
     <entry key="yukon.web.modules.support.supportBundle.sourceName.themeDirectory">Theme Directory</entry>
