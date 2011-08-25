@@ -20,6 +20,8 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cyme.CymDISTSimulatorService;
 import com.cannontech.cbc.cyme.CymDISTWebService;
 import com.cannontech.cbc.cyme.CymeResultCap;
+import com.cannontech.cbc.cyme.impl.PointStateHelper.BankState;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -52,40 +54,28 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
     private SubstationBusDao substationBusDao;
 
     private static ObjectMapper<Node, CymeResultCap> cymeCapBankNodeMapper = new ObjectMapper<Node, CymeResultCap>() {
+        
         @Override
         public CymeResultCap map(Node node) throws DOMException {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
             template.setNamespaces(CymDISTWebServiceImpl.cymeDcProperties);
+            
 
+            
             String eqNo = template.evaluateAsString("EqNo");
             String fdrNwId = template.evaluateAsString("NetworkId");
-            float iA = template.evaluateAsFloat("IA");
-            float iB = template.evaluateAsFloat("IB");
-            float iC = template.evaluateAsFloat("IC");
-            float vBaseA = template.evaluateAsFloat("VBaseA");
-            float vBaseB = template.evaluateAsFloat("VBaseB");
-            float vBaseC = template.evaluateAsFloat("VBaseC");
-            float kVarA = template.evaluateAsFloat("KVARA");
-            float kVarB = template.evaluateAsFloat("KVARB");
-            float kVarC = template.evaluateAsFloat("KVARC");
-            float kWA = template.evaluateAsFloat("KWA");
-            float kWB = template.evaluateAsFloat("KWB");
-            float kWC = template.evaluateAsFloat("KWC");
-
+            
+            PhaseInformation phaseA = new PhaseInformation(template.evaluateAsFloat("IA"), template.evaluateAsFloat("VBaseA"),
+                                                           template.evaluateAsFloat("KVARA"), template.evaluateAsFloat("KWA"));
+            PhaseInformation phaseB = new PhaseInformation(template.evaluateAsFloat("IB"), template.evaluateAsFloat("VBaseB"),
+                                                           template.evaluateAsFloat("KVARB"), template.evaluateAsFloat("KWB"));
+            PhaseInformation phaseC = new PhaseInformation(template.evaluateAsFloat("IC"), template.evaluateAsFloat("VBaseC"),
+                                                           template.evaluateAsFloat("KVARC"), template.evaluateAsFloat("KWC"));         
             return new CymeResultCap(eqNo,
                                      fdrNwId,
-                                     iA,
-                                     iB,
-                                     iC,
-                                     vBaseA,
-                                     vBaseB,
-                                     vBaseC,
-                                     kVarA,
-                                     kVarB,
-                                     kVarC,
-                                     kWA,
-                                     kWB,
-                                     kWC);
+                                     phaseA,
+                                     phaseB,
+                                     phaseC);
         }
     };
 
@@ -107,6 +97,8 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
             // Register for points
             Set<Integer> pointList = Sets.newHashSet(statusPointIds);
             asyncDynamicDataSource.registerForPointData(this, pointList);
+        } else {
+            logger.info("Simulator is disabled and will not run.");
         }
     }
 
@@ -114,14 +106,15 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
     public void pointDataReceived(PointValueQualityHolder pointData) {
         String simulationId;
         LitePoint point = pointDao.getLitePoint(pointData.getId());
+        BankState state = PointStateHelper.decodeRawState(BankState.class, pointData.getValue());
 
-        if (pointData.getValue() == 6.0) {
+        if (state == BankState.OpenPending) {
             // Open Pending
             String bankName = paoDao.getYukonPAOName(point.getPaobjectID());
             String xmlData = CymeXMLBuilder.openCapbank(bankName);
 
             simulationId = cymDISTWebService.runSimulation(xmlData);
-        } else if (pointData.getValue() == 7.0) {
+        } else if (state == BankState.ClosePending) {
             // Close Pending
             String bankName = paoDao.getYukonPAOName(point.getPaobjectID());
             String xmlData = CymeXMLBuilder.closeCapbank(bankName);
@@ -129,22 +122,28 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
 
             simulationId = cymDISTWebService.runSimulation(xmlData);
         } else {
-            // No Operation needed
+            logger.info("CapBank status change other than Openpending or Closepending.");
             return;
         }
 
-        while (!cymDISTWebService.getSimulationReportStatus(simulationId)) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.warn("caught exception in pointDataReceived", e);
+        for(int i = 0; i < 15; i++){
+            if(!cymDISTWebService.getSimulationReportStatus(simulationId)){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    logger.warn("caught exception in pointDataReceived", e);
+                }
             }
+            else{
+                String report = cymDISTWebService.getSimulationReport(simulationId);
+
+                // Process report into list of Point changes and send to dispatch
+                processReport(report);
+                break;
+            }
+                
         }
-        String report = cymDISTWebService.getSimulationReport(simulationId);
-
-        // Process report into list of Point changes and send to dispatch
-        processReport(report);
-
+        logger.debug("Simulation status not complete, timed out. ");
         return;
     }
 
@@ -170,11 +169,11 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
                     int pointId = entry.getKey();
 
                     if (phase == Phase.A) {
-                        simplePointAccessDao.setPointValue(pointId, cap.getVBaseA());
+                        simplePointAccessDao.setPointValue(pointId, cap.getPhaseA().getVoltage());
                     } else if (phase == Phase.B) {
-                        simplePointAccessDao.setPointValue(pointId, cap.getVBaseB());
+                        simplePointAccessDao.setPointValue(pointId, cap.getPhaseB().getVoltage());
                     } else if (phase == Phase.C) {
-                        simplePointAccessDao.setPointValue(pointId, cap.getVBaseC());
+                        simplePointAccessDao.setPointValue(pointId, cap.getPhaseC().getVoltage());
                     }
                 }
             }

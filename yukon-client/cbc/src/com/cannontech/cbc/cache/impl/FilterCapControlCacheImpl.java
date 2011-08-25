@@ -293,21 +293,4 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return Collections.emptyList();
     }
 
-	@Override
-	public CapBankDevice getCapBankDeviceByStatusPointID(int capBankStatusId) {
-		CapBankDevice capBank = cache.getCapBankDeviceByStatusPointID(capBankStatusId);
-
-		if (capBank == null) {
-			return null;
-		}
-		
-		int areaId = getParentAreaID(capBank.getCcId());
-    	StreamableCapObject area = cache.getArea(areaId);
-	    if (filter.valid(area)) {
-	    	return capBank;
-	    }
-    	
-    	return null;
-		
-	}
 }

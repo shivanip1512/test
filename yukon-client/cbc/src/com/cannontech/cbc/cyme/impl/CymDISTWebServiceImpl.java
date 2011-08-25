@@ -53,12 +53,11 @@ public class CymDISTWebServiceImpl implements CymDISTWebService {
     public String runSimulation(String xmlData) {
         // TODO Auto-generated method stub
         String response = restTemplate.postForObject(baseCymeURL + simulationURLpart + runStudyURLEnd, xmlData, String.class);
-        log.info(response);
+        log.info("Simulation ran on CYME"); 
+        log.debug(response); 
 
-        StringReader reader = new StringReader(response);
-        StreamSource source = new StreamSource(reader);
         SimpleXPathTemplate template = new SimpleXPathTemplate();
-        template.setContext(source);
+        template.setContext(response);
         template.setNamespaces(cymeDcProperties);
 
         String simulationId = template.evaluateAsString("//ns1:SimulationId");
@@ -67,14 +66,15 @@ public class CymDISTWebServiceImpl implements CymDISTWebService {
 
     @Override
     public boolean getSimulationReportStatus(String simulationId) {
-        // TODO Auto-generated method stub
         String response = restTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + checkReportStatusURLEnd, String.class);
-
+        log.info("Checked Simulation Status with CYME"); 
+        log.debug(response);
+        
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(response);
         template.setNamespaces(cymeDcProperties);
 
-        String status = template.evaluateAsString("/ns1:GetSimulationStatusResponse/ns1:Status");
+        String status = template.evaluateAsString("/ns1:GetSimulationStatusResponse/ns1:Status");   
 
         if ("Completed".equals(status)) {
             return true;
@@ -88,7 +88,8 @@ public class CymDISTWebServiceImpl implements CymDISTWebService {
         // Generate Reports
         String summary = restTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + generateResultSummaryURLend, String.class);
 
-        log.info(summary);
+        log.info("Generate reports command sent to CYME"); 
+        log.debug(summary);
 
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(summary);
@@ -101,6 +102,9 @@ public class CymDISTWebServiceImpl implements CymDISTWebService {
         String response = restTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId
                                                     + generateReportURLpart + ReportId + "/" + NetworkId
                                                     + "/", String.class);
+        log.info("Retrieved report from CYME"); 
+        log.debug(response);
+        
         return response;
     }
 
