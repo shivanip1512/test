@@ -33,8 +33,8 @@ public class SupportBundleDateRangeFileSource extends AbstractSupportBundleSourc
             File candidate = new File(directory, file.getName());
             Instant modified = new Instant(candidate.lastModified());
             if (candidate.isFile()
-                        && modified.compareTo(start) >= 0
-                        && modified.compareTo(stop) <= 0) {
+                        && modified.isAfter(start)
+                        && modified.isBefore(stop)) {
                 fileList.add(candidate);
             }
         }

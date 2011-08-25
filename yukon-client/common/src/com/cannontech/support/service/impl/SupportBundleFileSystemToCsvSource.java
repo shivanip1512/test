@@ -72,11 +72,11 @@ public class SupportBundleFileSystemToCsvSource extends AbstractSupportBundleSou
             inputStream.close();
             byte[] digest = md5Hasher.digest();
 
-            String strDigest = "";
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < digest.length; i++) {
-                strDigest += Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1);
+                sb.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
             }
-            return strDigest;
+            return sb.toString();
         } catch (Exception e) {
             return null;
         }

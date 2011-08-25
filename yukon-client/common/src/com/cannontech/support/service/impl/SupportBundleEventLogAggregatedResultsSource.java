@@ -8,7 +8,7 @@ public class SupportBundleEventLogAggregatedResultsSource extends SupportBundleS
     @Override
     protected SqlFragmentSource getSqlFragmentSource() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*), EventType");
+        sql.append("SELECT EventType, COUNT(*)");
         sql.append("FROM EventLog");
         sql.append("GROUP BY EventType");
         return sql;

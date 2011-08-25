@@ -32,8 +32,14 @@
     <c:if test="${not inProgress}">
         <form id="sendForm" method="POST" action="send">
             <input type=hidden name="fileNum" id="fileNum" value="0"/>
-            <cti:button nameKey="downloadBtn" href="download?fileNum=0"/>
-            <cti:button nameKey="ftpUploadBtn" href="send?fileNum=0"/>
+            <cti:url var="downloadUrl" value="download">
+                <cti:param name="fileNum" value="0"/>
+            </cti:url>
+            <cti:button nameKey="downloadBtn" href="${downloadUrl}"/>
+            <cti:url var="uploadUrl" value="send">
+                <cti:param name="fileNum" value="0"/>
+            </cti:url>
+            <cti:button nameKey="ftpUploadBtn" href="${uploadUrl}"/>
             <span class="successMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.finishedMsg'/></span>
         </form>
     </c:if>

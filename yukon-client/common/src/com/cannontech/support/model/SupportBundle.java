@@ -4,6 +4,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.support.service.SupportBundleSource;
 import com.cannontech.support.service.impl.BundleRangeSelection;
 
@@ -38,29 +41,42 @@ public class SupportBundle {
     }
 
     public String getComments() {
-        if (comments == null)
+        if (StringUtils.isEmpty(comments)) {
             return "";
+        }
         return comments;
     }
 
     public String getInfo() {
-        String commentsAndMore = "";
-        commentsAndMore += "Time Range Selected: "
-                           + bundleRangeSelection + "\r\n";
-        commentsAndMore += "Optional Sources Chosen:\r\n";
+        String eol = System.getProperty("line.separator");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Time Range Selected: ");
+        sb.append(bundleRangeSelection);
+        sb.append(eol);
+        sb.append("Optional Sources Chosen:");
+        sb.append(eol);
         if (optionalSourcesToInclude.length > 0) {
-            for (int num=0;num<optionalSourcesToInclude.length;num++) {
-                commentsAndMore += num +"." + optionalSourcesToInclude[num] + "\r\n";
+            for (int num = 0; num < optionalSourcesToInclude.length; num++) {
+                sb.append(num);
+                sb.append(".");
+                sb.append(optionalSourcesToInclude[num]);
+                sb.append(eol);
             }
         } else {
-            commentsAndMore += "none\r\n";
+            sb.append("none");
+            sb.append(eol);
         }
-        commentsAndMore += "\r\n";
-        if (comments == null) {
-            return commentsAndMore;
+        sb.append(eol);
+        
+        if (StringUtils.isNotEmpty(comments)) {
+            sb.append(eol);
+            sb.append("Comments:");
+            sb.append(eol);
+            sb.append(eol);
+            sb.append(comments);
         }
-        commentsAndMore += "\r\nComments:\r\n\r\n" + comments;
-        return commentsAndMore;
+        
+        return sb.toString();
     }
 
     public void setComments(String comments) {
@@ -76,7 +92,7 @@ public class SupportBundle {
     }
 
     public String[] getOptionalSourcesToInclude() {
-        if (this.optionalSourcesToInclude == null) {
+        if (ArrayUtils.isEmpty(this.optionalSourcesToInclude)) {
             return new String[0];
         }
         return optionalSourcesToInclude;

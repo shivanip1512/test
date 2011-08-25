@@ -2,7 +2,6 @@ package com.cannontech.support.service.impl;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -44,20 +43,17 @@ public class SupportBundleUserGroupRoleSource extends AbstractSupportBundleSourc
                     rolePropertyEditorDao.getForGroupAndPredicate(group, true, predicate);
 
                 List<RolePropertyValue> roles = groupCollection.getRolePropertyValues();
-                for (RolePropertyValue role : roles) {
-                    List<String> ls = new ArrayList<String>(4);
-                    ls.add(group.getGroupName());
-                    ls.add(String.valueOf(group.getGroupID()));
-                    ls.add(role.getYukonRoleProperty().name());
-                    if (role.getValue() == null) {
-                        ls.add("");
-                    } else {
-                        ls.add(role.getValue().toString());
-                    }
-                    String[] nextLine = ls.toArray(new String[0]);
-                    csvWriter.writeNext(nextLine);
 
+                for (RolePropertyValue role : roles) {
+                    String[] nextLine = new String[] {
+                            group.getGroupName(),
+                            String.valueOf(group.getGroupID()),
+                            role.getYukonRoleProperty().name(),
+                            role.getValue() == null ? "" : role.getValue().toString() };
+
+                    csvWriter.writeNext(nextLine);
                 }
+
             } catch (IllegalArgumentException e) {
                 String[] nextLine =
                   { group.getGroupName(), String.valueOf(group.getGroupID()),
