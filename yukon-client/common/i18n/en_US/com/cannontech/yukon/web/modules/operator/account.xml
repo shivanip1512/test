@@ -136,6 +136,7 @@
 	<entry key="yukon.web.modules.operator.accountImport.accountImportFile">Customer File</entry>
 	<entry key="yukon.web.modules.operator.accountImport.hardwareImportFile">Hardware File</entry>
 	<entry key="yukon.web.modules.operator.accountImport.email">Email (optional)</entry>
+    <entry key="yukon.web.modules.operator.accountImport.prescan.label">Prescan</entry>
 	<entry key="yukon.web.modules.operator.accountImport.sampleAccountFile">Sample Account File</entry>
 	<entry key="yukon.web.modules.operator.accountImport.sampleHardwareFile">Sample Hardware File</entry>
 	<entry key="yukon.web.modules.operator.accountImport.sampleAccountAndHardwareFile">Sample Account And Hardware File</entry>

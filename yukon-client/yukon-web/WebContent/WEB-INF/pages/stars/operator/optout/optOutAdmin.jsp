@@ -124,7 +124,7 @@
 				        <cti:msg key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelOptOutsWarning" />
 				        <br><br>
 				        
-				        <form id="cancelAllOptOutsForm" action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
+				        <form action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
 				        
 				        	<table style="padding:10px;background-color:#EEE;width:100%;">
 				        		<tr><td>
@@ -151,8 +151,8 @@
 				        		</td></tr>
 				        	</table>
 				        	<br>
-				        
-				        	<tags:slowInput2 formId="cancelAllOptOutsForm" key="cancelOptOuts.cancelAllOptOutsButton"/>
+
+                            <cti:button nameKey="cancelOptOuts.cancelAllOptOutsButton" type="submit" styleClass="f_blocker"/>
 				        </form>    
 				    </tags:boxContainer2>
 			    </cti:checkProperty>

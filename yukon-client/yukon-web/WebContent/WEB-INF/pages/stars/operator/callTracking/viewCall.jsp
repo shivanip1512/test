@@ -10,15 +10,14 @@
 	<script type="text/javascript">
 
 		var combineDateAndTimeFieldsAndSubmit = function() {
-			
 		    combineDateAndTimeFields('dateTaken');
-
-            $("callReportUpdateForm").submit();
+		    return true;
 		}
 
 	</script>
-	
-	<form:form id="callReportUpdateForm" commandName="callReport" action="/spring/stars/operator/callTracking/updateCall">
+
+    <cti:url var="submitUrl" value="/spring/stars/operator/callTracking/updateCall"/>
+	<form:form commandName="callReport" action="${submitUrl}" onsubmit="combineDateAndTimeFieldsAndSubmit()">
 	
 		<input type="hidden" name="accountId" value="${accountId}">
 	
@@ -55,8 +54,7 @@
 		
 		<%-- buttons --%>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-    		
-            <tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:url value="/spring/stars/operator/callTracking/view" var="cancelUrl">

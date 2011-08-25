@@ -71,7 +71,7 @@
         <br>
         
         <div>
-            <tags:slowInput2 key="save" formId="updateForm"/>
+            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button nameKey="delete" type="button" onclick="javascript:$('confirmDeletePopup').show();"/>
             </cti:displayForPageEditModes>

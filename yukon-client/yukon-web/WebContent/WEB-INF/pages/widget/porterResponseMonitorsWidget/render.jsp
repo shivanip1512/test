@@ -70,8 +70,7 @@
 
 <div class="widgetActionArea">
 	<%-- CREATE NEW MONITOR FORM --%>
-	<form id="createNewPorterResponseMonitorForm_${widgetParameters.widgetId}"
-		action="/spring/amr/porterResponseMonitor/createPage" method="get">
-        <tags:slowInput2 formId="createNewPorterResponseMonitorForm_${widgetParameters.widgetId}" key="createNew"/>
+	<form action="/spring/amr/porterResponseMonitor/createPage" method="get">
+        <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
 	</form>
 </div>

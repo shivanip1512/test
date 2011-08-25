@@ -8,10 +8,6 @@
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
 
-<%-- CREATE NEW OUTAGE MONITOR FORM --%>
-<form id="createNewOutageMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
-</form>
-
 <%-- ERROR --%>
 <c:if test="${not empty outageMonitorsWidgetError}">
   	<div class="errorRed">${outageMonitorsWidgetError}</div>
@@ -87,6 +83,7 @@
 </c:choose>
 
 <div style="text-align:right;padding-top:5px;">
-	<cti:msg2 var="createNewText" key=".createNew"/>
-    <tags:slowInput myFormId="createNewOutageMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+    <form action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
+        <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
+    </form>
 </div>

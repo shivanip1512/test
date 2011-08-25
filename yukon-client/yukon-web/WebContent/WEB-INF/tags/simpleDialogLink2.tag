@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="dialogId" required="true" %>
-<%@ attribute name="key" required="true" %>
+<%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="actionUrl" required="true" %>
 <%@ attribute name="styleClass" description="link class, defaults to 'simpleLink'" %>
 <%@ attribute name="skipLabel" type="java.lang.Boolean" %>
@@ -12,7 +12,7 @@
 
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 
-<cti:msgScope paths=".${pageScope.key}">
+<cti:msgScope paths=".${pageScope.nameKey}">
     <cti:msg2 var="dialogTitleText" key=".title" javaScriptEscape="true"/>
 </cti:msgScope>
 
@@ -25,10 +25,10 @@
     value="javascript:openSimpleDialog('${pageScope.dialogId}', '${pageScope.actionUrl}', ${pageScope.dialogTitle})"/>
 
 <c:if test="${!pageScope.skipLabel}">
-    <cti:labeledImg nameKey="${pageScope.key}" href="${pageScope.simpleDialogUrl}"
+    <cti:labeledImg nameKey="${pageScope.nameKey}" href="${pageScope.simpleDialogUrl}"
         styleClass="${pageScope.styleClass}"/>
 </c:if>
 <c:if test="${pageScope.skipLabel}">
-    <cti:img nameKey="${pageScope.key}" href="${simpleDialogUrl}"
+    <cti:img nameKey="${pageScope.nameKey}" href="${simpleDialogUrl}"
         styleClass="${pageScope.styleClass}"/>
 </c:if>

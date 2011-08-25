@@ -22,7 +22,7 @@
     			
     			<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
     			
-    			<tags:slowInput2 formId="searchForm" key="search"/>
+                <cti:button nameKey="search" type="submit" styleClass="f_blocker"/>
     		
     		</div>
     		

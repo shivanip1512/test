@@ -248,7 +248,7 @@
                             <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
                         </cti:url>
                         <tags:simpleDialogLink2 dialogId="acDialog"
-                            key="editAssignedProgram" skipLabel="true" 
+                            nameKey="editAssignedProgram" skipLabel="true" 
                             actionUrl="${editProgramUrl}"/>
 
                         <c:if test="${isEditable}">
@@ -258,7 +258,7 @@
                                 <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="acDialog"
-                                key="unassignProgram" skipLabel="true"
+                                nameKey="unassignProgram" skipLabel="true"
                                 actionUrl="${unassignProgramUrl}"/>
                         </c:if>
                     </td>

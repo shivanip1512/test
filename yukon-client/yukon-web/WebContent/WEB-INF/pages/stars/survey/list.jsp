@@ -39,7 +39,7 @@
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="ajaxDialog"
-                                key="delete" actionUrl="${deleteUrl}"
+                                nameKey="delete" actionUrl="${deleteUrl}"
                                 skipLabel="true"/>
                         </td>
                     </tr>

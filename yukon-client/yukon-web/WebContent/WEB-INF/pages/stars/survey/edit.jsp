@@ -50,7 +50,7 @@
 	                        </cti:url>
 	                        <li>
 	                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-	                                key="edit" actionUrl="${detailUrl}"/>
+	                                nameKey="edit" actionUrl="${detailUrl}"/>
 	                        </li>
 	                        <cti:url var="addQuestionUrl"
 	                            value="/spring/stars/survey/addQuestion">
@@ -58,7 +58,7 @@
 	                        </cti:url>
 	                        <li>
 	                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-	                                key="addQuestion" actionUrl="${addQuestionUrl}"/>
+	                                nameKey="addQuestion" actionUrl="${addQuestionUrl}"/>
 	                        </li>
                         </c:if>
                         <cti:url var="sampleXmlUrl"
@@ -122,7 +122,7 @@
 					                            value="${question.surveyQuestionId}"/>
 					                    </cti:url>
 					                    <tags:simpleDialogLink2 dialogId="ajaxDialog"
-					                        key="editQuestion" skipLabel="true" 
+					                        nameKey="editQuestion" skipLabel="true" 
 					                        actionUrl="${editQuestionUrl}"/>
                                         <c:if test="${!hasBeenTaken}">
 						                    <c:if test="${status.first}">
@@ -155,7 +155,7 @@
 						                            value="${question.surveyQuestionId}"/>
 						                    </cti:url>
 						                    <tags:simpleDialogLink2 dialogId="ajaxDialog"
-						                        key="deleteQuestion" actionUrl="${deleteUrl}"
+						                        nameKey="deleteQuestion" actionUrl="${deleteUrl}"
 						                        skipLabel="true"/>
 					                    </c:if>
 					                </td>

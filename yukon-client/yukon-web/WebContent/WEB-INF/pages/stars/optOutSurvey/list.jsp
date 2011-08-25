@@ -72,13 +72,13 @@
                                     value="${optOutSurvey.optOutSurveyId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="ajaxDialog"
-                                key="edit" skipLabel="true" 
+                                nameKey="edit" skipLabel="true" 
                                 actionUrl="${editUrl}"/>
                             <cti:url var="deleteUrl" value="/spring/stars/optOutSurvey/confirmDelete">
                                 <cti:param name="optOutSurveyId" value="${optOutSurveyId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="ajaxDialog"
-                                key="delete" actionUrl="${deleteUrl}"
+                                nameKey="delete" actionUrl="${deleteUrl}"
                                 skipLabel="true"/>
                         </td>
                     </tr>

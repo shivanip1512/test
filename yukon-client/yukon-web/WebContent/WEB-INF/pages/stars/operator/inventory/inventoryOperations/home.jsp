@@ -68,7 +68,8 @@
                             <td class="button">
                                 <cti:button nameKey="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
                                 <tags:simplePopup id="fileUploadPopup" title="${fileUploadTitle}" styleClass="mediumSimplePopup">
-                                    <form id="selectByFileForm" method="post" action="/spring/stars/operator/inventory/inventoryOperations/uploadFile" enctype="multipart/form-data">
+                                    <cti:url var="submitUrl" value="/spring/stars/operator/inventory/inventoryOperations/uploadFile"/>
+                                    <form method="post" action="${submitUrl}" enctype="multipart/form-data">
                                         <tags:nameValueContainer2>
                                             <tags:nameValue2 nameKey=".fileLabel">
                                                 <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">
@@ -77,8 +78,8 @@
                                             </tags:nameValue2>
                                         </tags:nameValueContainer2>
                                         <div class="actionArea">
-                                            <tags:slowInput2 key="ok" formId="selectByFileForm"/>
-                                            <cti:button nameKey="cancel" onclick="closeFileUpload();"/>            
+                                            <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+                                            <cti:button nameKey="cancel" onclick="closeFileUpload();"/>
                                         </div>
                                     </form>
                                 </tags:simplePopup>

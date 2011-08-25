@@ -9,7 +9,7 @@
     
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardwareConfig.css"/>
 
-    <form:form id="updateForm" commandName="meter" action="/spring/stars/operator/hardware/config/updateMeterConfig">
+    <form:form commandName="meter" action="/spring/stars/operator/hardware/config/updateMeterConfig">
         <input type="hidden" name="accountId" value="${accountId}"/>
         <form:hidden path="deviceId"/>
         <form:hidden path="disabled"/>
@@ -48,7 +48,7 @@
         
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <tags:slowInput2 formId="updateForm" key="save" />
+                <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
                 <button type="submit" name="cancel" class="formSubmit">
                         <i:inline key=".cancel"/>
                     </button>

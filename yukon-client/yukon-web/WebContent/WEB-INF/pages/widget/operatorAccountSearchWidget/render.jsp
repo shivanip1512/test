@@ -4,11 +4,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
-    <form id="searchForm" action="/spring/stars/operator/account/search" method="get">
-    		
+    <cti:url var="submitUrl" value="/spring/stars/operator/account/search"/>
+    <form action="${submitUrl}" method="get">
+
     	<div style="padding-top:8px;padding-bottom:8px;">
     		
-    		<select name="searchBy" onchange="$('searchForm').value = ''">
+    		<select name="searchBy" onchange="$('searchValue').value = ''">
     			<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
     				<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
     					<i:inline key="${operatorAccountSearchBy.formatKey}"/>
@@ -18,7 +19,7 @@
     		
     		<input type="text" name="searchValue" value="${searchValue}">
     		
-    		<tags:slowInput2 formId="searchForm" key="search"/>
+            <cti:button nameKey="search" type="submit" styleClass="f_blocker"/>
     	
     	</div>
     	

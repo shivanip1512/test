@@ -333,7 +333,7 @@
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <cti:displayForPageEditModes modes="EDIT">
-                    <tags:slowInput2 formId="updateForm" key="save" disableOtherButtons="true"/>
+                    <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
                     <button type="button" onclick="$('confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
  		            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
 			            <cti:param name="accountId" value="${accountId}"/>
@@ -342,7 +342,7 @@
                 </cti:displayForPageEditModes>
             </cti:checkRolesAndProperties>
             <cti:displayForPageEditModes modes="CREATE">
-                <tags:slowInput2 formId="updateForm" key="create" disableOtherButtons="true"/>
+                <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
                 <input name="cancelCreation" type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
             </cti:displayForPageEditModes>
         </cti:displayForPageEditModes>

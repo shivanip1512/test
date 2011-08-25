@@ -36,7 +36,6 @@
 	<entry key="yukon.web.components.slowInput.ok.label">OK</entry>
 	<entry key="yukon.web.components.slowInput.submit.label">Submit</entry>
 	<entry key="yukon.web.components.slowInput.import.label">Import</entry>
-	<entry key="yukon.web.components.slowInput.prescan.label">Prescan</entry>
 	<entry key="yukon.web.components.slowInput.cancel.label">Cancel</entry>
 	<entry key="yukon.web.components.slowInput.cancel.labelBusy">Canceling</entry>
 
@@ -237,7 +236,10 @@
 
     <entry key="yukon.web.components.button.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
     <entry key="yukon.web.components.button.down.disabled.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
-    
+
+    <entry key="yukon.web.components.button.search.label">Search</entry>
+
+
     <entry key="yukon.web.components.pageloading">Loading…</entry>
     <entry key="yukon.web.components.waiting">Waiting…</entry>
     

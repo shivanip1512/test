@@ -29,30 +29,31 @@
         <cti:img nameKey="deleteAction" href="#"/>
     </span>
     
+    <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
+
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".delete.title" id="deleteConfirmDialog">
         <h1 class="dialogQuestion">
             <i:inline key=".deleteConfirm" arguments="${statusPointMonitor.statusPointMonitorName}"/>
         </h1>
 
         <div class="actionArea">
-            <tags:slowInput2 formId="monitorDeleteForm" key="ok"/>
-            <input type="button" value="<i:inline key=".cancel"/>" onclick="$('deleteConfirmDialog').hide()" class="formSubmit">
+            <cti:url var="submitUrl" value="/spring/amr/statusPointMonitoring/delete"/>
+            <form action="${submitUrl}" method="post">
+                <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
+                <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="cancel" onclick="$('deleteConfirmDialog').hide()"/>
+            </form>
         </div>
     </i:simplePopup>
-    
-    <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
-    
+
 	<%-- MISC FORMS --%>
-    <form id="monitorDeleteForm" action="/spring/amr/statusPointMonitoring/delete" method="post">
-        <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
-    </form>
-    
 	<form id="toggleEnabledForm" action="/spring/amr/statusPointMonitoring/toggleEnabled" method="post">
 		<input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
 	</form>
 	
 	<%-- UPDATE FORM --%>
-	<form:form commandName="statusPointMonitor" id="basicInfoForm" action="/spring/amr/statusPointMonitoring/update" method="post">
+    <cti:url var="submitUrl" value="/spring/amr/statusPointMonitoring/update"/>
+	<form:form commandName="statusPointMonitor" action="${submitUrl}" method="post">
 	
 		<form:hidden path="statusPointMonitorId"/>
         <form:hidden path="evaluatorStatus"/>
@@ -117,17 +118,15 @@
 		
 		<%-- create / update / delete --%>
 		<div class="pageActionArea">
-            <tags:slowInput2 formId="basicInfoForm" key="update"/>
-    			<c:choose>
-    				<c:when test="${statusPointMonitor.evaluatorStatus eq 'ENABLED'}">
-    					<tags:slowInput2 formId="toggleEnabledForm" key="statusPointMonitoringDisable"/>
-    				</c:when>
-    				<c:when test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
-    					<tags:slowInput2 formId="toggleEnabledForm" key="statusPointMonitoringEnable"/>
-    				</c:when>
-    			</c:choose>
-            <input type="button" onclick="$('deleteConfirmDialog').show()" value="<i:inline key=".delete"/>" class="formSubmit">
-			<input type="submit" name="cancel" class="formSubmit" value="<i:inline key=".cancel"/>">
+            <cti:button nameKey="update" type="submit" styleClass="f_blocker"/>
+            <c:set var="enableDisableKey" value="statusPointMonitoringDisable"/>
+            <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
+                <c:set var="enableDisableKey" value="statusPointMonitoringEnable"/>
+            </c:if>
+            <cti:button nameKey="${enableDisableKey}" styleClass="f_blocker"
+                onclick="$('toggleEnabledForm').submit()"/>
+            <cti:button nameKey="delete" onclick="$('deleteConfirmDialog').show()"/>
+            <cti:button nameKey="cancel" type="submit" name="cancel" styleClass="f_blocker"/>
         </div>
 	</form:form>
     

@@ -17,9 +17,10 @@
 			</c:when>
 			
 			<c:otherwise>
-			
-				<form id="selectTrendsForm" action="/spring/stars/operator/metering/saveSelectedTrends">
-		
+
+                <cti:url var="submitUrl" value="/spring/stars/operator/metering/saveSelectedTrends"/>
+				<form action="${submitUrl}">
+
 					<input type="hidden" name="accountId" value="${accountId}">
 					
 					
@@ -37,10 +38,11 @@
 							</label>
 						</div>
 					</c:forEach>
-					
-					<br>
-					<tags:slowInput2 formId="selectTrendsForm" key="save" />
-				
+
+					<div class="pageActionArea">
+                        <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                    </div>
+
 				</form>
 			
 			</c:otherwise>

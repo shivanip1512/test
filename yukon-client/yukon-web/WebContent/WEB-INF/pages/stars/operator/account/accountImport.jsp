@@ -35,9 +35,9 @@
                     </tags:nameValueContainer2>
                     
                     <br>
-                    
-                    <tags:slowInput2 formId="importForm" key="prescan" />
-                    
+
+                    <cti:button nameKey="prescan" type="submit" styleClass="f_blocker"/>
+
                     <br><br>
                     
                 </form:form>

@@ -19,7 +19,7 @@
         <%@ include file="../../../consumer/optout/survey.jspf" %>
 
         <div class="pageActionArea">
-            <tags:slowInput2 key="save" formId="form" type="submit"/>
+            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             <button type="submit" name="cancel"><i:inline key=".cancel"/></button>
         </div>
     </tags:formElementContainer>

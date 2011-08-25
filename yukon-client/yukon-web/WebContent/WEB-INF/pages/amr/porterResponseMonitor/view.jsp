@@ -155,7 +155,7 @@
 	<div class="pageActionArea">
 		<form id="editMonitorForm" action="/spring/amr/porterResponseMonitor/editPage" method="get">
 			<input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
-			<tags:slowInput2 formId="editMonitorForm" key="edit" />
+            <cti:button nameKey="edit" type="submit" styleClass="f_blocker"/>
 		</form>
 	</div>
 

@@ -77,9 +77,8 @@
 
 <div style="text-align:right;padding-top:5px;">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
-    <form id="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/statusPointMonitoring/creationPage" method="get">
-        <cti:msg2 var="createNewText" key=".createNew"/>
-        <tags:slowInput myFormId="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+    <form action="/spring/amr/statusPointMonitoring/creationPage" method="get">
+        <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
         <input type="hidden" value="0" name="statusPointMonitorId">
     </form>
 </div>

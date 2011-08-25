@@ -9,7 +9,6 @@
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.name">Name</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.createNew">Create</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.imageUrl">/WebConfig/yukon/Icons/cog.gif</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.hoverUrl">/WebConfig/yukon/Icons/cog_over.gif</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.hoverText">Edit Status Point Monitor Details ({0})</entry>
@@ -68,8 +67,8 @@
          Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
          <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.hoverText">Add a processing action.</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.label">Add Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.title">Add Action</entry>

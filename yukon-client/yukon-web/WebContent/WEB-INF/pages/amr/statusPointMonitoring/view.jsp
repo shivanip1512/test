@@ -66,9 +66,9 @@
         </c:choose>
         
         <div class="pageActionArea">        
-            <form id="editMonitorForm" action="/spring/amr/statusPointMonitoring/editPage" method="get">
+            <form action="/spring/amr/statusPointMonitoring/editPage" method="get">
                 <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
-                <tags:slowInput2 formId="editMonitorForm" key="edit"/>
+                <cti:button nameKey="edit" type="submit" styleClass="f_blocker"/>
             </form>
         </div>
     

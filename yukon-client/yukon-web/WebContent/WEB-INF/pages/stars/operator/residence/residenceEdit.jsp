@@ -7,7 +7,8 @@
 <cti:standardPage module="operator" page="residence">
 <tags:setFormEditMode mode="${mode}"/>
 
-	<form:form id="residenceUpdateForm" commandName="customerResidence" action="/spring/stars/operator/residence/residenceUpdate" method="POST">
+    <cti:url var="submitUrl" value="/spring/stars/operator/residence/residenceUpdate"/>
+	<form:form commandName="customerResidence" action="${submitUrl}" method="POST">
 	
 		<input type="hidden" name="accountId" value="${accountId}"/>
 		<form:hidden path="accountSiteId"/>
@@ -53,9 +54,9 @@
 		</tags:formElementContainer>
 		
 		<%-- BUTTONS --%>
+        <div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-			<br>
-			<tags:slowInput2 formId="residenceUpdateForm" key="save"/>
+            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             <cti:url value="/spring/stars/operator/residence/view" var="viewUrl">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
@@ -67,6 +68,7 @@
             </cti:url>
             <cti:button nameKey="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
+        </div>
 
 	</form:form>
 	

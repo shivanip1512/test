@@ -10,7 +10,7 @@
 
 <cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
 
-<form:form id="form" commandName="optOutBackingBean" method="POST"
+<form:form commandName="optOutBackingBean" method="POST"
     action="/spring/stars/operator/program/optOut/optOutQuestions">
 
     <form:hidden path="durationInDays" />
@@ -39,7 +39,8 @@
         </table>
 
      <div class="pageActionArea">
-         <tags:slowInput2 key="save" formId="form"/>
+         <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+         
          <button type="submit" name="cancel"><i:inline key=".cancel"/></button>
      </div>
 

@@ -18,18 +18,15 @@
                 Event.observe('workOrderBase.currentStateId', "change", function() {
                     var newState = $F('workOrderBase.currentStateId');
                     var enabled = initialState != newState;
-    
+
                     if ($("eventDateDatePart") != null && 
                         $("eventDateTimePart") != null) {
-    
-                    	$("eventDateDatePart").disabled = !enabled;
-                        $("eventDateTimePart").disabled = !enabled;
+                        setDateTimeInputEnabled('eventDate', enabled);    
                     }
                 });
             }
-            
         });
-        
+
         YEvent.observeSelectorClick('#workOrderConfirmCancel', function() {
             $('confirmDeleteWorkOrderDialog').hide();
         });
@@ -39,17 +36,16 @@
                 $('workOrderBase.currentStateId').value = ${assignedEntryId};
                 $('currentStateChangedDialog').show();
             }
-            $("eventDateDatePart").disabled = false;
-            $("eventDateTimePart").disabled = false;
+            setDateTimeInputEnabled('eventDate', true);
         }
-    
+
         var combineDateAndTimeFieldsAndSubmit = function() {
         	var dateReported = $("eventDateDatePart");
         	if (dateReported != null) {
                 combineDateAndTimeFields('eventDate');
             }
 
-            $("workOrderUpdateForm").submit();
+        	return true;
         }
 
     </script>
@@ -65,8 +61,9 @@
           </div>
         </form>
     </i:simplePopup>
-    
-    <form:form id="workOrderUpdateForm" commandName="workOrderDto" action="/spring/stars/operator/workOrder/updateWorkOrder">
+
+    <cti:url var="submitUrl" value="/spring/stars/operator/workOrder/updateWorkOrder"/>
+    <form:form commandName="workOrderDto" action="${submitUrl}" onsubmit="combineDateAndTimeFieldsAndSubmit()">
         <input type="hidden" name="accountId" value="${accountId}">
         <form:hidden path="workOrderBase.accountId"/>
         <form:hidden path="workOrderBase.orderId"/>
@@ -181,7 +178,7 @@
         
         <%-- buttons --%>
         <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <tags:slowInput2 formId="workOrderUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:url value="/spring/stars/operator/workOrder/workOrderList" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>

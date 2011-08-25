@@ -9,7 +9,6 @@
 
 <cti:standardPage module="operator" page="enrollmentList">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/enrollment.css"/>
-<cti:includeScript link="/JavaScript/slowInput2.js"/>
 
 <tags:simpleDialog id="peDialog"/>
 <script type="text/javascript">
@@ -94,14 +93,14 @@ var programIdsAlreadyEnrolled = [];
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
-                        <tags:simpleDialogLink2 dialogId="peDialog" key="edit"
+                        <tags:simpleDialogLink2 dialogId="peDialog" nameKey="edit"
                             skipLabel="true" actionUrl="${editUrl}"/>
 
                         <cti:url var="unenrollUrl" value="/spring/stars/operator/enrollment/confirmUnenroll">
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
-                        <tags:simpleDialogLink2 dialogId="peDialog" key="remove"
+                        <tags:simpleDialogLink2 dialogId="peDialog" nameKey="remove"
                             skipLabel="true" actionUrl="${unenrollUrl}"/>
                     </td>
                 </cti:checkRolesAndProperties>

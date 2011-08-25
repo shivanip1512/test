@@ -12,8 +12,8 @@ enrollmentChanged = function(inventoryId) {
     var isEnrolled = $('enrolledCB' + inventoryId).checked;
     if (isEnrolled) {
         $('relaySelect' + inventoryId).enable();
-        if ($('slowInput2Button_ok')) {
-            $('slowInput2Button_ok').disabled = false;
+        if ($('okBtn')) {
+            $('okBtn').disabled = false;
         }
     } else {
         $('relaySelect' + inventoryId).disable();
@@ -25,11 +25,11 @@ inventoryIds = [];
 updateOKButton = function() {
     for (var index = 0; index < inventoryIds.length; index++) {
         if ($('enrolledCB' + inventoryIds[index]).checked) {
-            $('slowInput2Button_ok').disabled = false;
+            $('okBtn').disabled = false;
             return;
         }
     }
-    $('slowInput2Button_ok').disabled = true;
+    $('okBtn').disabled = true;
 }
 </script>
 
@@ -101,7 +101,7 @@ updateOKButton = function() {
     </tags:boxContainer2>
 
     <div class="actionArea">
-        <tags:slowInput2 id="ok" formId="inputForm" key="ok"/>
+        <cti:button id="okBtn" nameKey="ok" type="submit" styleClass="f_blocker"/>
         <input class="formSubmit" type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('peDialog').hide()"/>
     </div>
@@ -116,7 +116,7 @@ updateOKButton = function() {
             $('relaySelect' + inventoryId).disable();
         }
     }
-    $('slowInput2Button_ok').disabled = !okEnabled;
+    $('okBtn').disabled = !okEnabled;
     </script>
 
 </form:form>

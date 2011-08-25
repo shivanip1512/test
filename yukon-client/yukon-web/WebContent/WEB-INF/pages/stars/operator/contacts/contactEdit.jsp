@@ -124,7 +124,7 @@
 		<br>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
         
-    		<tags:slowInput2 formId="contactsUpdateForm" key="save"/>
+            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:url value="/spring/stars/operator/contacts/view" var="cancelUrl">

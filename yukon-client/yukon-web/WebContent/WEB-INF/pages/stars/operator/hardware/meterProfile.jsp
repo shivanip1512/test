@@ -52,7 +52,7 @@
         <c:set var="action" value="/spring/stars/operator/hardware/create"/>
     </cti:displayForPageEditModes>
     
-    <form:form id="updateForm" commandName="hardwareDto" action="${action}">
+    <form:form commandName="hardwareDto" action="${action}">
     
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="inventoryId" value="${hardwareDto.inventoryId}">
@@ -124,19 +124,19 @@
         </cti:dataGrid>
         
         <%-- BUTTONS --%>
-        <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <br>
-            <tags:slowInput2 formId="updateForm" key="save" />
-            
-            <cti:displayForPageEditModes modes="EDIT">
-                <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
-            </cti:displayForPageEditModes>
-            
+        <div class="pageActionArea">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
+                <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+
+                <cti:displayForPageEditModes modes="EDIT">
+                    <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
+                </cti:displayForPageEditModes>
+
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
+                </cti:displayForPageEditModes>
             </cti:displayForPageEditModes>
-            
-        </cti:displayForPageEditModes>
-        
+        </div>
+
     </form:form>
 </cti:standardPage>
