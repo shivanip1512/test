@@ -175,7 +175,7 @@ public final class FileUtil {
                 in.close();
             }
             catch (IOException ex) {
-                log.warn("Could not close OutputStream", ex);
+                log.warn("Could not close InputStream", ex);
             }
         }
     }
