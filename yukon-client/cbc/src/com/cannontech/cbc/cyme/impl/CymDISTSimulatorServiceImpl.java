@@ -160,11 +160,8 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
                                                                     PaoType.CAPBANK.getPaoCategory().getCategoryId(),
                                                                     PaoType.CAPBANK.getPaoClass().getPaoClassId(),
                                                                     PaoType.CAPBANK.getDeviceTypeId());
-                Set<Entry<Integer, Phase>> phaseSet = (zoneDao.getMonitorPointsForBankAndPhase(pao.getLiteID()).entrySet());
-                Iterator<Map.Entry<Integer, Phase>> phaseIter = phaseSet.iterator();
-
-                while (phaseIter.hasNext()) {
-                    Entry<Integer, Phase> entry = phaseIter.next();
+                Map<Integer, Phase>phaseSetMap = zoneDao.getMonitorPointsForBankAndPhase(pao.getLiteID());
+                for (Entry<Integer, Phase> entry : phaseSetMap.entrySet()) {
                     Phase phase = entry.getValue();
                     int pointId = entry.getKey();
 
