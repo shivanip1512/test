@@ -65,7 +65,7 @@ public class UserEditorController {
 
         @Override
         protected void doValidation(PasswordChange target, Errors errors) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "user.password", target.getPassword(), 64);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "password", target.getPassword(), 64);
             YukonValidationUtils.checkExceedsMaxLength(errors, "confirmPassword", target.getConfirmPassword(), 64);
             if (!StringUtils.isBlank(target.getPassword()) || !StringUtils.isBlank(target.getConfirmPassword())) {
                 
