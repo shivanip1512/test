@@ -351,6 +351,9 @@
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>Database Editor</td></row>
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>API Extras</td></row>
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>API WAR</td></row>
+		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>Default Master Config</td></row>
+		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>Log Config Files</td></row>
+		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>Master Config Example</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Client Base</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Default Master Config</td></row>
