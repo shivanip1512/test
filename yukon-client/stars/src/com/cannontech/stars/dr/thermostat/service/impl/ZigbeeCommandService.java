@@ -212,8 +212,8 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                 command.append("R,");
             }
             
-            /* Temp */
-            command.append(event.getPreviousTemperature() + ",");
+            /* Temp - needs to be sent as an integer fahrenheit value */
+            command.append(event.getPreviousTemperature().toFahrenheit().toIntValue() + ",");
             
             /* Fan */
             if (event.getFanState() == ThermostatFanState.AUTO) {
