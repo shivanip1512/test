@@ -2032,12 +2032,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	/* Check RFN Address settings */
     	if (deviceBase instanceof RfnBase) {
     	    String serialNumber = getSerialNumberTextField().getText();
-    	    
-    	    if (serialNumber.startsWith(" ") || serialNumber.endsWith(" ")) {
-                setErrorString("Serial Number can not have leading or trailing spaces.");
-                return false;
-            }
-    	    
     	    String manufacturer = getManufacturerTextField().getText();
     	    String model = getModelTextField().getText();
     	    
