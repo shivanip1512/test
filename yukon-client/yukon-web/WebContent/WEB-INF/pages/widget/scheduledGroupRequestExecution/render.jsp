@@ -44,14 +44,11 @@
         };
     }
 </script>
-    
-    
-<%-- CREATE NEW SCHEDULE FORM --%>
-<form id="createNewSchduleForm_${widgetParameters.widgetId}" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
-</form>
 
 
 <%-- TABLE --%>
+<cti:url var="submitUrl" value="/spring/group/scheduledGroupRequestExecution/home"/>
+<form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(jobWrappers) > 0}">
 
@@ -147,11 +144,7 @@
 
 <c:if test="${canManage}">
 	<div style="text-align:right;padding-top:5px;">
-		<cti:msg2 var="createButtonText" key=".createButton" />
-        <tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
+        <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
 	</div>
 </c:if>
-
-
-
-
+</form>

@@ -9,16 +9,14 @@
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
 
 
-<%-- CREATE NEW TAMPERFLAG MONITOR FORM --%>
-<form id="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/tamperFlagProcessing/edit" method="get">
-</form>
-
 <%-- ERROR --%>
 <c:if test="${not empty tamperFlagMonitorsWidgetError}">
   	<div class="errorMessage">${tamperFlagMonitorsWidgetError}</div>
 </c:if>
 
 <%-- TABLE --%>
+<cti:url var="submitUrl" value="/spring/amr/tamperFlagProcessing/edit"/>
+<form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
 
@@ -94,6 +92,6 @@
 </c:choose>
 
 <div style="text-align:right;padding-top:5px;">
-	<cti:msg2 var="createNewText" key=".createNew"/>
-    <tags:slowInput myFormId="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+    <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
 </div>
+</form>

@@ -5,16 +5,14 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<%-- CREATE NEW VALIDATION MONITOR FORM --%>
-<form id="createNewValidationMonitorForm_${widgetParameters.widgetId}" action="/spring/common/vee/monitor/edit" method="get">
-</form>
-
 <%-- ERROR --%>
 <c:if test="${not empty validationMonitorsWidgetError}">
     <div class="errorMessage">${validationMonitorsWidgetError}</div>
 </c:if>
         
 <%-- TABLE --%>
+<cti:url var="submitUrl" value="/spring/common/vee/monitor/edit"/>
+<form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
 
@@ -96,9 +94,9 @@
     		<a href="${reviewUrl}"><i:inline key=".review"/></a>
 		</td>
 		<td align="right">
-			<cti:msg2 var="createNewText" key=".createNew"/>
-            <tags:slowInput myFormId="createNewValidationMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+            <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
 		</td>
 	</tr>
 </table>
 </div>
+</form>
