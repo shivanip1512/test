@@ -119,7 +119,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         hardwareDto.setDeviceNotes("Device Notes for inventoryId: " + inventoryIdIteratorString);
         /* Non-ZigBee two way LCR fields */
         if (hardwareType.isTwoWay() && !hardwareType.isZigbee()) {
-            hardwareDto.setTwoWayDeviceName("twoWayDeviceName" + inventoryIdIteratorString);
+            hardwareDto.setTwoWayDeviceName(hardwareType + " " + inventoryIdIteratorString);
             hardwareDto.setCreatingNewTwoWayDevice(true);
         }
         String ccuName = DevCCU.SIM_711.getName();
