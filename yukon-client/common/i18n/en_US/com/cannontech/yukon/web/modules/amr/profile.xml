@@ -29,15 +29,16 @@
     <entry key="yukon.web.widgets.profileWidget.errorDailyReport">Error Retrieving Daily Usage Report:</entry>
     <entry key="yukon.web.widgets.profileWidget.errorToggleChannel">Error Toggling Channel: </entry>
     <entry key="yukon.web.widgets.profileWidget.operationNotSupported">Device type: {0} does not support this operation.</entry>
+    
     <!-- profileWidget/channelScanning.jsp -->
-    <entry key="yukon.web.widgets.profileWidget.channel">Channel</entry>
-    <entry key="yukon.web.widgets.profileWidget.interval">Interval</entry>
-    <entry key="yukon.web.widgets.profileWidget.collectionState">Collection State</entry>
-    <entry key="yukon.web.widgets.profileWidget.action">Action</entry>
-    <entry key="yukon.web.widgets.profileWidget.starts">(Starts {0})</entry>
-    <entry key="yukon.web.widgets.profileWidget.stops">(Stops {0})</entry>
-    <entry key="yukon.web.widgets.profileWidget.neverStarts">(Never Starts)</entry>
-    <entry key="yukon.web.widgets.profileWidget.neverStops">(Never Stops)</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.channel">Channel</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.interval">Interval</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.collectionState">Collection State</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.action">Action</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.starts">(Starts {0})</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.stops">(Stops {0})</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.neverStarts">(Never Starts)</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.neverStops">(Never Stops)</entry>
     <!-- toggleProfilingPopup.tag -->
     <entry key="yukon.web.widgets.profileWidget.scheduleStart">Schedule Start</entry>
     <entry key="yukon.web.widgets.profileWidget.scheduleStop">Schedule Stop</entry>

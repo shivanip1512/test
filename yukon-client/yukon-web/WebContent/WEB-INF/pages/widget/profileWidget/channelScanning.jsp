@@ -16,11 +16,11 @@
 <input type="hidden" name="newToggleVal" id="newToggleVal" value="">
 <table class="compactResultsTable">
     <tr align="left">
-      <th align="left"><i:inline key=".channel"/></th>
-      <th><i:inline key=".interval"/></th>
-      <th><i:inline key=".collectionState"/></th>
+      <th align="left"><i:inline key=".scanning.channel"/></th>
+      <th><i:inline key=".scanning.interval"/></th>
+      <th><i:inline key=".scanning.collectionState"/></th>
       <c:if test="${hasScanningRoleProperty}">
-        <th><i:inline key=".action"/></th>
+        <th><i:inline key=".scanning.action"/></th>
       </c:if>
     </tr>
     
@@ -36,11 +36,11 @@
                         <tr>
                             <c:if test="${c.channelProfilingOn}">
                                 <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/></div></td>
-                                <td><i:inline key=".neverStops"/></td>
+                                <td><i:inline key=".scanning.neverStops"/></td>
                             </c:if>
                             <c:if test="${not c.channelProfilingOn}">
                                 <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/></div></td>
-                                <td><i:inline key=".neverStarts"/></td>
+                                <td><i:inline key=".scanning.neverStarts"/></td>
                             </c:if>                        
                         </tr>
                     </c:when>
@@ -65,13 +65,13 @@
                                 <c:when test="${jobInfo.newToggleVal}">
                                     <td>
                                         <cti:formatDate value="${jobInfo.startTime}" type="FULL" var="formattedScheduleDate" />
-                                        <i:inline key=".starts" arguments="${formattedScheduleDate}"/>
+                                        <i:inline key=".scanning.starts" arguments="${formattedScheduleDate}"/>
                                     </td>
                                 </c:when>
                                 <c:otherwise>
                                     <td>
                                         <cti:formatDate value="${jobInfo.startTime}" type="FULL" var="formattedScheduleDate" />
-                                        <i:inline key=".stops" arguments="${formattedScheduleDate}"/>
+                                        <i:inline key=".scanning.stops" arguments="${formattedScheduleDate}"/>
                                     </td>
                                 </c:otherwise>
                             </c:choose>
