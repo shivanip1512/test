@@ -24,7 +24,7 @@
     </tags:hideReveal><br>
   </c:forEach>
   <c:if test="${not empty result.exceptionReason}">
-  	${result.exceptionReason}
+  	<span class="errorMessage">${result.exceptionReason}</span>
   </c:if>
   
 </div>

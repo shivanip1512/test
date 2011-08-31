@@ -23,7 +23,7 @@
     }
 </script>
 
-<div align="right" id="popupDiv">
+<div align="right" id="popupDiv" class="widgetText">
 	<ct:widgetActionPopup nameKey="title" method="helpInfo" container="helpInfo" deviceId="${device.deviceId}">
         <i:inline key=".infoLink"/>
 	</ct:widgetActionPopup>
@@ -66,17 +66,16 @@
     </span>
 </div>
 <br>
-<c:if test="${configString != ''}">
-<div style="max-height: 240px; overflow: auto">
-    <cti:msg2 var="disconnectConfigSettings" key=".disconnectConfigSettings"/>
-    <ct:hideReveal title="${disconnectConfigSettings}" showInitially="false">
-		${configString}
-    </ct:hideReveal><br>
-</div>
-</c:if>
-<br>
 <c:if test="${isRead}">
 	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
+</c:if>
+<c:if test="${configString != ''}">
+<div style="max-height: 240px; overflow: auto" class="userMessage">
+    <cti:msg2 var="disconnectConfigSettings" key=".disconnectConfigSettings"/>
+    <ct:hideReveal title="${disconnectConfigSettings}" showInitially="false">
+        ${configString}
+    </ct:hideReveal>
+</div>
 </c:if>
 
 <%-- UPDATER WILL TOGGLE WHICH BUTTON IS DISPLAYED IF REMOTELY CONTROLED --%>
