@@ -49,9 +49,9 @@ public class TierPopupMenuController extends MultiActionController {
     
     static {
         allowedOperationStates  = new CapBankOperationalState[] {
-                                                                 CapBankOperationalState.Fixed,
-                                                                 CapBankOperationalState.StandAlone,
-                                                                 CapBankOperationalState.Switched};
+                                                                 CapBankOperationalState.FIXED,
+                                                                 CapBankOperationalState.STANDALONE,
+                                                                 CapBankOperationalState.SWITCHED};
     }
     
     public ModelAndView specialAreaMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -398,7 +398,7 @@ public class TierPopupMenuController extends MultiActionController {
         
         final CapBankDevice capBank = capControlCache.getCapBankDevice(paoId);
         String operationalStateReason = capControlCommentService.getReason(paoId, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
-        CapBankOperationalState operationalState = CapBankOperationalState.valueOf(capBank.getOperationalState());
+        CapBankOperationalState operationalState = CapBankOperationalState.getStateByName(capBank.getOperationalState());
         mav.addObject("paoId", paoId);
         
         String paoName = capBank.getCcName();

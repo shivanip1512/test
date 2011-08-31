@@ -25,13 +25,15 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.thirdparty.digi.dao.provider.fields.GatewayFields;
+import com.cannontech.thirdparty.digi.dao.provider.fields.DigiGatewayFields;
+import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeGatewayFields;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.MutableClassToInstanceMap;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
@@ -74,11 +76,13 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     public void createDevice(HardwareDto hardwareDto) {
         //Build up all the fields for inserting a digiGateway.
         YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
-        GatewayFields gatewayFields = buildGatewayFields(hardwareDto);
+        DigiGatewayFields digiGatewayFields = buildDigiGatewayFields(hardwareDto);
+        ZigbeeGatewayFields zigbeeGatewayFields = buildZigbeeGatewayFields(hardwareDto);
         
         //Build Template and call Pao Creation Service
-        ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
-        paoFields.put(GatewayFields.class, gatewayFields);
+        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
+        paoFields.put(DigiGatewayFields.class, digiGatewayFields);
+        paoFields.put(ZigbeeGatewayFields.class, zigbeeGatewayFields);
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
         PaoTemplate paoTemplate = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);
@@ -133,14 +137,13 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         DigiGateway digiGateway = buildDigiGateway(hardwareDto);
         
         gatewayDeviceDao.updateDigiGateway(digiGateway);
+        gatewayDeviceDao.updateZigbeeGateway(digiGateway);
+        
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
     }
 
-    private GatewayFields buildGatewayFields(HardwareDto hardwareDto) {
-        GatewayFields fields = new GatewayFields();
-        
-        fields.setFirmwareVersion(hardwareDto.getFirmwareVersion());
-        fields.setMacAddress(hardwareDto.getMacAddress());
+    private DigiGatewayFields buildDigiGatewayFields(HardwareDto hardwareDto) {
+        DigiGatewayFields fields = new DigiGatewayFields();
 
         //The DigiId is set later after we commission the device on Digi
         //Default to the value in hardwareDto
@@ -148,6 +151,16 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         
         return fields;
     }    
+    
+    private ZigbeeGatewayFields buildZigbeeGatewayFields(HardwareDto hardwareDto) {
+    	ZigbeeGatewayFields fields = new ZigbeeGatewayFields();
+    	
+    	fields.setFirmwareVersion(hardwareDto.getFirmwareVersion());
+    	fields.setMacAddress(hardwareDto.getMacAddress());
+    	
+    	return fields;
+    }
+    
     private DigiGateway buildDigiGateway(HardwareDto hardwareDto) {
         DigiGateway digiGateway = new DigiGateway();
         

@@ -183,6 +183,7 @@ public class DigiResponseHandler {
             digiGateway.setDigiId(core.getDevId());
             digiGateway.setFirmwareVersion(core.getDevFirmware());
             gatewayDeviceDao.updateDigiGateway(digiGateway);
+            gatewayDeviceDao.updateZigbeeGateway(digiGateway);
 
             Commissioned state;
             

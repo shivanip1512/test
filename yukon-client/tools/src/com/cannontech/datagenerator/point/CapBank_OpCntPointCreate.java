@@ -14,7 +14,7 @@ package com.cannontech.datagenerator.point;
  */
 import java.util.Vector;
 
-import com.cannontech.cbc.dao.CapbankDao;
+import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;

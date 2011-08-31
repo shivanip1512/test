@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<capControlImportResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportResponse.xsd"
+           version="1.0">
+
+	<hierarchyResponseList>
+		<hierarchyImportResponse success="false">
+			<hierarchyImportResultType>Missing Data</hierarchyImportResultType>
+		</hierarchyImportResponse>
+		<hierarchyImportResponse success="false">
+			<hierarchyImportResultType>Object Doesn't Exist</hierarchyImportResultType>
+			<resultDetail>Update failed for object with name "ImportSub".</resultDetail>
+		</hierarchyImportResponse>
+		<hierarchyImportResponse success="false">
+			<hierarchyImportResultType>Invalid Import Action</hierarchyImportResultType>
+		</hierarchyImportResponse>
+		<hierarchyImportResponse success="false">
+			<hierarchyImportResultType>Invalid Parent Name</hierarchyImportResultType>
+			<resultDetail>Add failed for object with name "ImportFeeder".</resultDetail>
+		</hierarchyImportResponse>
+		<hierarchyImportResponse success="false">
+			<hierarchyImportResultType>Object Already Exists</hierarchyImportResultType>
+			<resultDetail>Add failed for object with name "ImportCapBank".</resultDetail>
+		</hierarchyImportResponse>
+	</hierarchyResponseList>
+	
+	<cbcResponseList>
+		<cbcImportResponse success="false">
+			<cbcImportResultType>Device Already Exists</cbcImportResultType>
+			<resultDetail>Add failed for CBC with name "CBC Import 1".</resultDetail>
+		</cbcImportResponse>
+		<cbcImportResponse success="false">
+			<cbcImportResultType>Device Already Exists</cbcImportResultType>
+			<resultDetail>Add failed for CBC with name "CBC Import 2".</resultDetail>
+		</cbcImportResponse>
+	</cbcResponseList>
+	
+</capControlImportResponse>

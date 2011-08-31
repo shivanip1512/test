@@ -1,0 +1,266 @@
+package com.cannontech.capcontrol.dao.impl;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+
+import com.cannontech.capcontrol.dao.SubstationDao;
+import com.cannontech.capcontrol.model.Area;
+import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.Substation;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
+
+public class SubstationDaoImpl implements SubstationDao {
+	private static final Logger log = YukonLogManager.getLogger(SubstationDaoImpl.class);
+	
+    private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
+    
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    
+    static {
+        liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
+    }
+    
+    @Autowired
+    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+	@Override
+    public void add(Substation substation) {
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = sql.insertInto("CapControlSubstation");
+		params.addValue("SubstationID", substation.getId());
+		params.addValue("VoltReductionPointID", substation.getVoltReductionPointId());
+		params.addValue("MapLocationID", substation.getMapLocationId());
+		
+		yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public boolean remove (Substation substation) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	
+    	sql.append("DELETE FROM CAPCONTROLSUBSTATION");
+    	sql.append("WHERE SubstationId").eq(substation.getId());
+    	
+        int rowsAffected = yukonJdbcTemplate.update(sql);
+        boolean result = (rowsAffected == 1);
+        
+        return result;
+    }
+    
+    @Override
+    public boolean update (Substation substation) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = sql.update("CapControlSubstation");
+		params.addValue("VoltReductionPointID", substation.getVoltReductionPointId());
+		params.addValue("MapLocationID", substation.getMapLocationId());
+		
+		sql.append("WHERE SubstationID").eq(substation.getId());
+		
+		int rowsAffected = yukonJdbcTemplate.update(sql);
+		
+		boolean result = (rowsAffected == 1);
+		
+		if (result == false) {
+			log.debug("Update of Substation, " + substation.getName() + ", in CAPCONTROLSUBSTATION table failed.");
+		}
+		
+		return result;
+    }
+    
+    @Override
+    public Substation getSubstationById (int id) {
+    	throw new UnsupportedOperationException();
+    }
+    
+	@Override
+	public boolean assignSubstation(Area area, Substation substation) {
+		return assignSubstation(area.getId(), substation.getId());
+	}
+
+	@Override
+	public boolean assignSubstation(int areaId, int substationId) {
+		SqlStatementBuilder displaySql = new SqlStatementBuilder();
+		
+		displaySql.append("SELECT MAX(DisplayOrder)");
+		displaySql.append("FROM CCSubAreaAssignment");
+		displaySql.append("WHERE AreaId").eq(areaId);
+
+		int displayOrder = yukonJdbcTemplate.queryForInt(displaySql);	
+		
+		//remove any existing assignment
+		unassignSubstation(substationId);
+		
+		SqlStatementBuilder assignSql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = assignSql.insertInto("CCSubAreaAssignment");
+		params.addValue("AreaID", areaId);
+		params.addValue("SubstationBusID", substationId);
+		params.addValue("DisplayOrder", ++displayOrder);
+		
+		int rowsAffected = yukonJdbcTemplate.update(assignSql);
+		
+		boolean result = (rowsAffected == 1);
+		
+		return result;
+	}
+	
+	@Override
+	public boolean unassignSubstation(Substation substation) {
+		return unassignSubstation(substation.getId());
+	}
+
+	@Override
+	public boolean unassignSubstation(int substationId) {
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		sql.append("DELETE FROM CCSubAreaAssignment");
+		sql.append("WHERE SubstationBusID").eq(substationId);
+		
+		int rowsAffected = yukonJdbcTemplate.update(sql);
+		
+		boolean result = (rowsAffected == 1);
+		
+		return result;
+	}
+    
+    public List<Integer> getAllUnassignedSubstationIds() {
+
+        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int num) throws SQLException{
+                Integer i = new Integer ( rs.getInt("paobjectid") );
+                return i;
+            }
+        };
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT PAObjectID");
+        sql.append("FROM YukonPAObject");
+        sql.append("WHERE Type").eq(PaoType.CAP_CONTROL_SUBSTATION);
+        sql.append(   "AND PAObjectID NOT IN");
+        sql.append(      "(SELECT SubstationBusID");
+        sql.append(      " FROM CCSubAreaAssignment)");
+        sql.append("ORDER BY PAObjectID");
+        
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        
+        return listmap;
+    }
+    
+    @Override
+	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+	    /* Get the unordered total count */
+    	SqlStatementBuilder orphanSql = new SqlStatementBuilder();
+    	
+    	orphanSql.append("SELECT COUNT(*)");
+    	orphanSql.append("FROM CapControlSubstation");
+    	orphanSql.append("WHERE SubstationID NOT IN");
+    	orphanSql.append(   "(SELECT SubstationBusID");
+    	orphanSql.append(   " FROM CCSubAreaAssignment)");
+    	
+        int orphanCount = yukonJdbcTemplate.queryForInt(orphanSql);
+        
+        /* Get the paged subset of cc objects */
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAObjectID, PAOName, Type, Description");
+        sql.append("FROM YukonPAObject");
+        sql.append("  WHERE Type").eq(PaoType.CAP_CONTROL_SUBSTATION);
+        sql.append("    AND PAObjectID not in (SELECT SubstationBusID FROM CCSubAreaAssignment)");
+        sql.append("ORDER BY PAOName");
+        
+        PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
+        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        
+        List<LiteCapControlObject> unassignedSubstations = (List<LiteCapControlObject>) orphanExtractor.getResultList();
+        
+        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        searchResult.setResultList(unassignedSubstations);
+        searchResult.setBounds(start, count, orphanCount);
+        
+        return searchResult;
+	}
+    
+    public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId) {
+        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int num) throws SQLException{
+                Integer i = new Integer ( rs.getInt("PAObjectID") );
+                return i;
+            }
+        };
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT PAObjectID");
+        sql.append("FROM YukonPAObject");
+        sql.append("WHERE Type").eq(PaoType.CAP_CONTROL_SUBSTATION);
+        sql.append(   "AND PAObjectID NOT IN");
+        sql.append(      "(SELECT SubstationBusID");
+        sql.append(      " FROM CCSubSpecialAreaAssignment");
+        sql.append(      " WHERE AreaID").eq(areaId);
+        sql.append(      ")");
+        
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        
+        return listmap;
+    }
+
+    public List<Integer> getAllSubstationIds() {
+        //does not appear to be used
+        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int num) throws SQLException{
+                Integer i = new Integer ( rs.getInt("SubstationID") );
+                return i;
+            }
+        };
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT SubstationID");
+        sql.append("FROM CapControlSubstation");
+        
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        
+        return listmap;
+    }
+    
+    public Integer getSubstationIdByName(String name) throws EmptyResultDataAccessException{
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	
+    	sql.append("SELECT SubstationID");
+    	sql.append("FROM CapControlSubstation, YukonPAObject");
+    	sql.append("WHERE SubstationID = PAObjectID AND PAOName LIKE '" + name + "'");
+
+        Integer i = yukonJdbcTemplate.queryForInt(sql);
+        
+        return i;
+    }
+	
+    @Override
+	public int getParentId(Substation station) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	
+    	sql.append("SELECT AreaID");
+    	sql.append("FROM CCSubAreaAssignment");
+    	sql.append("WHERE SubstationBusID").eq(station.getId());
+		
+		int id = yukonJdbcTemplate.queryForInt(sql);
+		
+		return id;
+	}
+}

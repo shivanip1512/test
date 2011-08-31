@@ -114,8 +114,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     
     @Override
     public void createDigiGateway(DigiGateway digiGateway) {
-        addZBGateway(digiGateway);
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink params = sql.insertInto("DigiGateway");
@@ -125,7 +123,8 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         yukonJdbcTemplate.update(sql);
     }
     
-    private void addZBGateway(DigiGateway digiGateway) {
+    @Override
+    public void createZigbeeGateway(DigiGateway digiGateway) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         PaoIdentifier paoIdentifier = digiGateway.getPaoIdentifier();
         
@@ -149,9 +148,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
     @Override
     public void updateDigiGateway(DigiGateway digiGateway) {
-        
-    	updateZBGateway(digiGateway);
-    	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink param = sql.update("DigiGateway");
@@ -162,7 +158,8 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         yukonJdbcTemplate.update(sql);
     }
 
-    private void updateZBGateway(DigiGateway digiGateway) {
+    @Override
+    public void updateZigbeeGateway(DigiGateway digiGateway) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
     	SqlParameterSink params = sql.update("ZBGateway");

@@ -1,16 +1,11 @@
 package com.cannontech.database.db.capcontrol;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 
 /**
  * This type was created in VisualAge.
  */
+@SuppressWarnings("serial")
 public class CapBank extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
@@ -25,7 +20,6 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	private Integer recloseDelay = new Integer(0);
 	private Integer maxDailyOps = new Integer(0);
 	private Character maxOpDisable = new Character('N');
-
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 

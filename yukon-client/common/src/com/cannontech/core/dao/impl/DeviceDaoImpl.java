@@ -420,10 +420,11 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
-        SimpleDevice device = new SimpleDevice();
-        device.setDeviceId(oldDevice.getPAObjectID());
         String typeStr = oldDevice.getPAOType();
-        device.setDeviceType(PaoType.getForDbString(typeStr));
+        PaoType paoType = PaoType.getForDbString(typeStr);
+    	PaoIdentifier paoIdentifier = new PaoIdentifier(oldDevice.getPAObjectID(), paoType);
+        SimpleDevice device = new SimpleDevice(paoIdentifier);
+
         return device;
     }
 

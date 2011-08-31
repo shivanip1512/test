@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 
 public interface PointDao {
@@ -153,4 +154,6 @@ public interface PointDao {
      * @return LitePoint or null
      */
     public LitePoint findPointByName(YukonPao pao, String pointName);
+    
+    public List<PointBase> getPointBasesForPao(int paoId);
 }

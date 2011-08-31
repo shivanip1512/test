@@ -96,13 +96,13 @@ public class CapBankTagView extends LxAbstractView implements TagView {
             tagString += ":";
         }
         
-        CapBankOperationalState state = CapBankOperationalState.valueOf(capBank.getOperationalState());
+        CapBankOperationalState state = CapBankOperationalState.getStateByName(capBank.getOperationalState());
         switch (state) {
-            case Fixed : {
+            case FIXED : {
                 tagString += "F:";
                 break;
             }
-            case StandAlone : {
+            case STANDALONE : {
                 tagString += "S:";
                 break;
             }

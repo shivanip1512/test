@@ -11,15 +11,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.capcontrol.dao.CapbankControllerDao;
+import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.capcontrol.dao.FeederDao;
+import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.dao.CapbankControllerDao;
-import com.cannontech.cbc.dao.CapbankDao;
-import com.cannontech.cbc.dao.FeederDao;
-import com.cannontech.cbc.dao.SubstationBusDao;
-import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.exceptions.MissingSearchType;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUtils;
@@ -36,7 +36,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -177,8 +176,8 @@ public class ResultsController {
                 row.setIsPaobject(true);
                 
                 //If this is not a device, it is not a controller. Next call will catch it.
-                int type = PAOGroups.getDeviceType(item.getType());
-                boolean isController = CBCUtils.checkControllerByType(type);
+                PaoType paoType = PaoType.getForDbString(item.getType());
+                boolean isController = CBCUtils.checkControllerByType(paoType);
                 row.setIsController(isController);
                 
                 String parentString = ParentStringPrinter.ORPH_STRING;

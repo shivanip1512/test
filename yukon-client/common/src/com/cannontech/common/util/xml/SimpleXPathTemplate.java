@@ -210,7 +210,11 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     
     public Integer evaluateAsInt(String expression, Integer defaultInt) throws XPathException {
         Double num = evaluateNumber(expression);
-        return num == null ? defaultInt : num.intValue();
+        if (num == null) {
+        	return defaultInt;
+        } else {
+        	return num.intValue();
+        }
     }
     
     /**

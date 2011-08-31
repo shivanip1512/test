@@ -19,8 +19,9 @@
 
     <bean id="digiControlMessageHandler" class="com.cannontech.thirdparty.digi.DigiControlMessageHandler"/>
 
-    <bean id="gatewayCreationProvider" class="com.cannontech.thirdparty.digi.dao.provider.GatewayCreationProvider"/>
-    <bean class="com.cannontech.thirdparty.digi.dao.provider.ZigbeeEndpointCreationProvider"/>
+    <bean class="com.cannontech.thirdparty.digi.dao.provider.DigiGatewayProvider"/>
+    <bean class="com.cannontech.thirdparty.digi.dao.provider.ZigbeeGatewayProvider"/>
+    <bean class="com.cannontech.thirdparty.digi.dao.provider.ZigbeeEndpointProvider"/>
 
     <bean id="gatewayDeviceDao" class="com.cannontech.thirdparty.digi.dao.impl.GatewayDeviceDaoImpl"/>
     <bean id="zigbeeDeviceDao" class="com.cannontech.thirdparty.digi.dao.impl.ZigbeeDeviceDaoImpl"/>

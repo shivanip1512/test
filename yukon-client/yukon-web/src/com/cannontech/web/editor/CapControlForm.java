@@ -30,12 +30,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
+import com.cannontech.capcontrol.dao.CapbankControllerDao;
+import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.dao.CapbankControllerDao;
-import com.cannontech.cbc.dao.CapbankDao;
-import com.cannontech.cbc.dao.FeederDao;
-import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
@@ -50,6 +50,8 @@ import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
@@ -80,6 +82,7 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.PAOFactory;
@@ -981,9 +984,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
         final int type = wizard.getSelectedType();
         final boolean disabled = wizard.getDisabled();
+        PaoType paoType = PaoType.getForId(type);
+        final boolean isController = CBCUtils.checkControllerByType(paoType);
         final int portId = wizard.getPortID();
-        final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK 
-                && wizard.isCreateNested());
+        final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested());
 
         try {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -992,16 +996,21 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                     if (isCapBankAndNested) {
                         /* Create the cbc, then the cap bank, then assign cbc to cap bank */
                         CBCWizardModel cbcWizard = wizard.getNestedWizard();
-                        int cbcType = cbcWizard.getSelectedType();
+                        PaoType cbcType = PaoType.getForId(cbcWizard.getSelectedType());
                         boolean cbcDisabled = cbcWizard.getDisabled();
                         String cbcName = cbcWizard.getName();
                         int cbcPortId = cbcWizard.getPortID();
-                        int controllerId = capControlCreationService.create(cbcType, cbcName, cbcDisabled, cbcPortId);
-                        int tempItemId = capControlCreationService.create(type, name, disabled, portId);
+                        int controllerId = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId);
+                        int tempItemId = capControlCreationService.create(type, name, disabled);
                         capbankControllerDao.assignController(tempItemId, controllerId);
                         itemId = tempItemId;
                     } else {
-                        itemId = capControlCreationService.create(type, name, disabled, portId);
+                    	if (isController) {
+                    		PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
+                    		itemId = capControlCreationService.createCbc(cbcType, name, disabled, portId);
+                    	} else {
+                    		itemId = capControlCreationService.create(type, name, disabled);
+                    	}
                     }
                 }
             });

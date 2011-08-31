@@ -26,6 +26,8 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
@@ -304,11 +306,10 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     }
     
     private SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
-        SimpleDevice device = new SimpleDevice();
-        device.setDeviceId(oldDevice.getPAObjectID());
         String typeStr = oldDevice.getPAOType();
-        int deviceType = PAOGroups.getDeviceType(typeStr);
-        device.setType(deviceType);
+    	PaoType paoType = PaoType.getForDbString(typeStr);
+    	PaoIdentifier paoIdentifier = new PaoIdentifier(oldDevice.getPAObjectID(), paoType);
+        SimpleDevice device = new SimpleDevice(paoIdentifier);
         return device;
     }
 

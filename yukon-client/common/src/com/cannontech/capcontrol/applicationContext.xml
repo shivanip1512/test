@@ -11,6 +11,31 @@
     <bean id="voltageRegulatorService" class="com.cannontech.capcontrol.service.VoltageRegulatorService"/>
 
     <bean id="voltageRegulatorDao" class="com.cannontech.capcontrol.dao.impl.VoltageRegulatorDaoImpl"/>
-    <bean id="voltageRegulatorCreationProvider" class="com.cannontech.capcontrol.dao.providers.VoltageRegulatorCreationProvider"/>
+    <bean id="voltageRegulatorCreationProvider" class="com.cannontech.capcontrol.dao.providers.VoltageRegulatorProvider"/>
+
+	<bean id="areaDao" class="com.cannontech.capcontrol.dao.impl.AreaDaoImpl"/>
+	<bean id="substationBusDao" class="com.cannontech.capcontrol.dao.impl.SubstationBusDaoImpl"/>
+	<bean id="ccSubstationDao" class="com.cannontech.capcontrol.dao.impl.SubstationDaoImpl"/>
+	<bean id="feederDao" class="com.cannontech.capcontrol.dao.impl.FeederDaoImpl"/> 
+	<bean id="capbankDao" class="com.cannontech.capcontrol.dao.impl.CapbankDaoImpl"/>
+	<bean id="capbankControllerDao" class="com.cannontech.capcontrol.dao.impl.CapbankControllerDaoImpl"/>
+	
+	<bean class="com.cannontech.capcontrol.creation.service.impl.CapControlImportServiceImpl"/>
+	<bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
+	
+	<bean class="com.cannontech.capcontrol.dao.providers.AreaProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.CapbankProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.CapbankAdditionalProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.DeviceAddressProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.DeviceCbcProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.DeviceDirectCommSettingsProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.DeviceScanRateProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.DeviceWindowProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.FeederProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.SpecialAreaProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.SubstationProvider"/>
+	<bean class="com.cannontech.capcontrol.dao.providers.SubstationBusProvider"/>
+	
+	<bean class="com.cannontech.capcontrol.creation.service.impl.PaoTableParserServiceImpl"/>
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
 </beans>

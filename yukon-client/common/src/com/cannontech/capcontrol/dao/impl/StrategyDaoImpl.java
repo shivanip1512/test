@@ -18,7 +18,6 @@ import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.FieldMapper;
@@ -153,7 +152,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     
     @Override
     public List<LiteCapControlStrategy> getAllLiteStrategies() {
-        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT StrategyId, StrategyName");
         sql.append("FROM CapControlStrategy");
         sql.append("ORDER BY StrategyName");
@@ -171,7 +170,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             
         } );
         
-        return yukonJdbcTemplate.query(sql.toString(), rowMapperAdapter);
+        return yukonJdbcTemplate.query(sql, rowMapperAdapter);
     }
     
     @Override
@@ -194,7 +193,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     
     @Override
     public List<CapControlStrategy> getAllStrategies() {
-        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT StrategyID, StrategyName, ControlMethod, MaxDailyOperation,");
         sql.append("  MaxOperationDisableFlag, PeakStartTime, PeakStopTime,");
         sql.append("  ControlInterval, MinResponseTime, MinConfirmPercent,");
@@ -204,7 +203,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         sql.append("FROM CapControlStrategy");
         sql.append("ORDER BY StrategyName");
         
-        List<CapControlStrategy> strategies = yukonJdbcTemplate.query(sql.toString(), rowMapper);
+        List<CapControlStrategy> strategies = yukonJdbcTemplate.query(sql, rowMapper);
         
         for(CapControlStrategy strategy : strategies) {
             strategy.setTargetSettings(getPeakSettings(strategy));

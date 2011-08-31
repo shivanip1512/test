@@ -13,7 +13,7 @@ public class PointAnalog extends com.cannontech.database.db.DBPersistent {
 	private Double dataOffset = new Double(0.0);
 
 
-	private static final String tableName = "PointAnalog";
+	public static final String TABLE_NAME = "PointAnalog";
 /**
  * PointAnalogSetting constructor comment.
  */
@@ -33,14 +33,14 @@ public PointAnalog(Integer pointID, Double deadband, String transducerType, Doub
 public void add() throws java.sql.SQLException {
 
 	Object addValues[]= { getPointID(), getDeadband(), getTransducerType(), getMultiplier(), getDataOffset() };
-	add( this.tableName, addValues );
+	add( this.TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException {
 
-	delete( this.tableName, "POINTID", getPointID() );
+	delete( this.TABLE_NAME, "POINTID", getPointID() );
 }
 /**
  * This method was created in VisualAge.
@@ -101,7 +101,7 @@ public void retrieve() throws java.sql.SQLException {
 	String constraintColumns[] = { "POINTID" };
 	Object constraintValues[] = { getPointID() };
 
-	Object[] results = retrieve(selectColumns, this.tableName, constraintColumns, constraintValues );
+	Object[] results = retrieve(selectColumns, this.TABLE_NAME, constraintColumns, constraintValues );
 
 	if( results.length == selectColumns.length )
 	{
@@ -159,6 +159,6 @@ public void update() throws java.sql.SQLException {
 	String constraintColumns[] = { "POINTID" };
 	Object constraintValues[] = { getPointID() };
 
-	update( this.tableName, setColumns, setValues, constraintColumns, constraintValues );
+	update( this.TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
 }
 }

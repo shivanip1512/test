@@ -17,6 +17,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DeviceDao;
@@ -46,9 +47,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
-        
-        SimpleDevice newYukonDevice = new SimpleDevice();
-
 
         // CREATE NEW DEVICE
         DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
@@ -66,21 +64,22 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
 
         // MAKE new, template YukonDevice
-        newYukonDevice.setDeviceId(newDeviceId);
-        newYukonDevice.setDeviceType(PaoType.getForDbString(newDevice.getPAOType()));
+        PaoType paoType = PaoType.getForDbString(newDevice.getPAOType());
+        PaoIdentifier paoIdentifier = new PaoIdentifier(newDeviceId, paoType);
+        SimpleDevice newYukonDevice = new SimpleDevice(paoIdentifier);
 
         // COPY POINTS
         if (copyPoints) {
             List<PointBase> points = this.getPointsForPao(templateDeviceId);
-            paoCreationHelper.applyPoints(newYukonDevice, points);
+            paoCreationHelper.applyPoints(newYukonDevice.getPaoIdentifier().getPaoId(), points);
         }
         
         // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
         paoCreationHelper.processDbChange(newYukonDevice, DbChangeType.ADD);
 
-        SimpleDevice templateYukonDevice = new SimpleDevice();
-        templateYukonDevice.setDeviceId(templateDeviceId);
-        templateYukonDevice.setDeviceType(PaoType.getForDbString(templateDevice.getPAOType()));
+        PaoType templateType = PaoType.getForDbString(templateDevice.getPAOType());
+        PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, templateType);
+        SimpleDevice templateYukonDevice = new SimpleDevice(templateIdentifier);
 
         // add to template's device groups
         addToTemplatesGroups(templateYukonDevice, newYukonDevice);
@@ -92,8 +91,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Transactional
     public SimpleDevice createCarrierDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
 
-        SimpleDevice yukonDevice = new SimpleDevice();
-
+    	SimpleDevice yukonDevice = null;
+    	
         try {
             
             // test
@@ -116,8 +115,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             Transaction.createTransaction(TransactionType.INSERT, newDevice).execute();
             
             // MAKE YukonDevice
-            yukonDevice.setDeviceId(newDeviceId);
-            yukonDevice.setType(deviceType);
+            PaoIdentifier paoIdentifier = new PaoIdentifier(newDeviceId, type);
+            yukonDevice = new SimpleDevice(paoIdentifier);
 
             // db change msg
             paoCreationHelper.processDbChange(yukonDevice, DbChangeType.ADD);

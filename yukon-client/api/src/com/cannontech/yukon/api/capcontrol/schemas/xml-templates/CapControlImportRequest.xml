@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<capControlImportRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd"
+           version="1.0">
+
+	<hierarchyList>
+		<area action="Add">
+			<name>ImportArea</name>
+			<description>Import Test</description>
+			<disabled>N</disabled>
+			<mapLocationId>T1</mapLocationId>
+		</area>
+		
+		<substation action="Add">
+			<name>ImportSub</name>
+			<parent>ImportArea</parent>
+			<description>Import Test</description>
+			<disabled>N</disabled>
+			<mapLocationId>T1S1</mapLocationId>
+		</substation>
+		
+		<substationBus action="Add">
+			<name>ImportSubBus</name>
+			<parent>ImportSub</parent>
+			<description>Import Test</description>
+			<disabled>N</disabled>
+			<mapLocationId>T1S1SS1</mapLocationId>
+		</substationBus>
+		
+		<feeder action="Add">
+			<name>ImportFeeder</name>
+			<parent>ImportSubBus</parent>
+			<description>Import Test</description>
+			<disabled>N</disabled>
+			<mapLocationId>T1S1SS1F1</mapLocationId>
+		</feeder>
+		
+		<capBank action="Add">
+			<name>ImportCapBank</name>
+			<parent>ImportFeeder</parent>
+			<description>Import Test</description>
+			<disabled>N</disabled>
+			<mapLocationId>T1S1SS1F1C1</mapLocationId>
+		</capBank>
+	</hierarchyList>
+	
+	<cbcList>
+		<cbc action="Add">
+			<name>CBC Import 1</name>
+			<type>CBC 7020</type>
+			<serialNumber>100</serialNumber>
+			<capBankName>testCapBank2</capBankName>
+			<masterAddress>59</masterAddress>
+			<slaveAddress>57</slaveAddress>
+			<commChannel>Cart A 710 Comm</commChannel>
+			<scanEnabled>false</scanEnabled>
+			<scanInterval>60</scanInterval>
+			<altInterval>1440</altInterval>
+		</cbc>
+
+		<cbc action="Add">
+			<name>CBC Import 2</name>
+			<type>CBC 7020</type>
+			<serialNumber>101</serialNumber>
+			<masterAddress>56</masterAddress>
+			<slaveAddress>60</slaveAddress>
+			<commChannel>Cart A 710 Comm</commChannel>
+		</cbc>
+	</cbcList>
+	
+</capControlImportRequest>

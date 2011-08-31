@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.util.HtmlUtils;
 
+import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;

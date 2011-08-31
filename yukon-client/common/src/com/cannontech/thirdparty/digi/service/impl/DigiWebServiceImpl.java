@@ -86,6 +86,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
+            gatewayDeviceDao.updateZigbeeGateway(digiGateway);
             log.debug("Install Gateway End");
         } catch (RuntimeException e) {
             log.error("Install Gateway End With Exceptions");

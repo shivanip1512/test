@@ -16,12 +16,6 @@
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
-  <bean id="areaDao" class="com.cannontech.cbc.dao.impl.AreaDaoImpl"/>
-  <bean id="substationBusDao" class="com.cannontech.cbc.dao.impl.SubstationBusDaoImpl"/>
-  <bean id="ccSubstationDao" class="com.cannontech.cbc.dao.impl.SubstationDaoImpl"/>
-  <bean id="feederDao" class="com.cannontech.cbc.dao.impl.FeederDaoImpl"/> 
-  <bean id="capbankDao" class="com.cannontech.cbc.dao.impl.CapbankDaoImpl"/>
-  <bean id="capbankControllerDao" class="com.cannontech.cbc.dao.impl.CapbankControllerDaoImpl"/>
   
   <bean id="capCommentDao" class="com.cannontech.cbc.dao.impl.CapControlCommentDaoImpl">
     <property name="nextValueHelper" ref="nextValueHelper"/>

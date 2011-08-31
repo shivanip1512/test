@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            elementFormDefault="qualified" version="1.0"
+            targetNamespace="http://yukon.cannontech.com/api">
+            
+	<xsd:include schemaLocation="CapControlImportRequest.xsd"/>
+	<xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+	
+	<xsd:complexType name="CbcImportResponse">
+		<xsd:sequence>
+			<xsd:element name="cbcImportResultType" minOccurs="0" maxOccurs="1" type="yukon:CbcImportResultType"/>
+			<xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+		<xsd:attribute name="success" use="required" type="xsd:boolean"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="HierarchyImportResponse">
+		<xsd:sequence>
+			<xsd:element name="hierarchyImportResultType" minOccurs="0" maxOccurs="1" type="yukon:HierarchyImportResultType"/>
+			<xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+		<xsd:attribute name="success" use="required" type="xsd:boolean"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="HierarchyResponseList">
+		<xsd:sequence>
+			<xsd:element name="hierarchyImportResponse" minOccurs="0" maxOccurs="unbounded" type="yukon:HierarchyImportResponse"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CbcResponseList">
+		<xsd:sequence>
+			<xsd:element name="cbcImportResponse" minOccurs="0" maxOccurs="unbounded" type="yukon:CbcImportResponse"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="CbcImportResultType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Missing Data"/>
+			<xsd:enumeration value="Invlid Comm Channel"/>
+			<xsd:enumeration value="Invalid Import Action"/>
+			<xsd:enumeration value="Invalid Type"/>
+			<xsd:enumeration value="Device Already Exists"/>
+			<xsd:enumeration value="Object Doesn't Exist"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="HierarchyImportResultType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Invalid Parent Name"/>
+			<xsd:enumeration value="Invalid Hierarchy Type"/>
+			<xsd:enumeration value="Invalid Import Action"/>
+			<xsd:enumeration value="Invalid Disabled Value"/>
+			<xsd:enumeration value="Missing Data"/>
+			<xsd:enumeration value="Object Already Exists"/>
+			<xsd:enumeration value="Object Doesn't Exist"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:complexType name="CapControlImportResponse">
+		<xsd:complexContent>
+			<xsd:extension base="yukon:YukonMessage">
+				<xsd:sequence>
+					<xsd:element name="hierarchyResponseList" minOccurs="0" maxOccurs="1" type="yukon:HierarchyResponseList"/>
+					<xsd:element name="cbcResponseList" minOccurs="0" maxOccurs="1" type="yukon:CbcResponseList"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+    <xsd:element name="capControlImportResponse" type="yukon:CapControlImportResponse"/>
+</xsd:schema>

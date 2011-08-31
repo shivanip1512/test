@@ -119,7 +119,7 @@ public class CapControlCommandExecutor
     private int getOperationalState(String value) {
         if (value == null) return defaultOperationalState;
         try {
-            int operationalState = CapBankOperationalState.valueOf(value).ordinal();
+            int operationalState = CapBankOperationalState.getStateByName(value).ordinal();
             return operationalState;
         } catch (IllegalArgumentException e) {
             return defaultOperationalState;

@@ -5,7 +5,7 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class YukonPaObjectFields implements PaoTemplatePart {
     private String name;
-    private String description = CtiUtilities.STRING_DASH_LINE;
+    private String description = CtiUtilities.STRING_NONE;
     private boolean disabled = false;
     private String statistics = CtiUtilities.STRING_DASH_LINE;
     

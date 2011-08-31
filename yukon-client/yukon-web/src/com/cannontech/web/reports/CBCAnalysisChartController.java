@@ -19,10 +19,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.capcontrol.dao.FeederDao;
+import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.dao.FeederDao;
-import com.cannontech.cbc.dao.SubstationBusDao;
-import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
@@ -131,7 +131,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    	else if(capControlCache.isFeeder(targetId)) {
     	    		
     	    		com.cannontech.yukon.cbc.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-    	    		com.cannontech.cbc.model.Feeder feeder_dao = feederDao.getById(targetId);
+    	    		com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.getById(targetId);
     	    		
     	    		if ("Y".equalsIgnoreCase(feeder_dao.getUsePhaseData())) {
     	    			

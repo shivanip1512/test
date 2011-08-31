@@ -22,6 +22,10 @@ public interface GatewayDeviceDao {
     
     public void deleteDigiGateway(int deviceId);
     
+    public void createZigbeeGateway(DigiGateway digiGateway);
+    
+    public void updateZigbeeGateway(DigiGateway digiGateway);
+    
     /**
      * Updates the device to gateway assignment. If gatewayId is null, any device to gateway mapping
      * for this device will be removed. 

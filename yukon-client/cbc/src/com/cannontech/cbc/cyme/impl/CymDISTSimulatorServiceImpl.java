@@ -1,7 +1,6 @@
 package com.cannontech.cbc.cyme.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,23 +9,19 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
-import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cyme.CymDISTSimulatorService;
 import com.cannontech.cbc.cyme.CymDISTWebService;
 import com.cannontech.cbc.cyme.CymeResultCap;
 import com.cannontech.cbc.cyme.impl.PointStateHelper.BankState;
-import com.cannontech.database.db.point.stategroup.PointStateHelper;
-import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -38,6 +33,7 @@ import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.enums.Phase;
 import com.google.common.collect.Sets;
 

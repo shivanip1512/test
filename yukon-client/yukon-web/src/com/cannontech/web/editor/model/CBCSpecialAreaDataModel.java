@@ -10,7 +10,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
-import com.cannontech.cbc.dao.SubstationDao;
+import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;

@@ -10,8 +10,8 @@
 
     <bean id="paoCreationService" class="com.cannontech.common.pao.service.impl.PaoCreationServiceImpl"/>
     
-    <bean id="yukonPaObjectCreationProvider" class="com.cannontech.common.pao.service.providers.YukonPaObjectCreationProvider"/>
-    <bean id="yukonDeviceCreationProvider" class="com.cannontech.common.pao.service.providers.YukonDeviceCreationProvider"/>
+    <bean class="com.cannontech.common.pao.service.providers.YukonPaObjectProvider"/>
+    <bean class="com.cannontech.common.pao.service.providers.YukonDeviceProvider"/>
     
     <bean id="paoCreationHelper" class="com.cannontech.common.pao.service.impl.PaoCreationHelper"/>
     <bean id="paoSelectionDao" class="com.cannontech.common.pao.dao.impl.PaoSelectionDaoImpl"/>

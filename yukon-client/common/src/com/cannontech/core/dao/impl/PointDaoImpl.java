@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import oracle.net.aso.p;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -17,6 +19,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.alert.alarms.PointAlarmAlertGenerator;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -44,11 +47,14 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+import com.cannontech.database.db.point.Point;
+import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.Phase;
@@ -78,6 +84,32 @@ public final class PointDaoImpl implements PointDao {
         "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID " +
         "LEFT OUTER JOIN YUKONPAOBJECT YPO ON P.PAOBJECTID=YPO.PAOBJECTID ) ";
 
+    private static final YukonRowMapper<PointBase> pointBaseRowMapper = new YukonRowMapper<PointBase>() {
+		public PointBase mapRow(YukonResultSet rs) throws SQLException {
+			Point point = new Point();
+			point.setPointType(rs.getString("PointType"));
+			point.setPointName(rs.getString("PointName"));
+			point.setLogicalGroup(rs.getString("LogicalGroup"));
+			point.setStateGroupID(rs.getInt("StateGroupID"));
+			point.setServiceFlag(rs.getString("ServiceFlag").charAt(0));
+			point.setAlarmInhibit(rs.getString("AlarmInhibit").charAt(0));
+			point.setPointOffset(rs.getInt("PointOffset"));
+			point.setArchiveType(rs.getString("ArchiveType"));
+			point.setArchiveInterval(rs.getInt("ArchiveInterval"));
+			
+			PointAlarming pointAlarming = new PointAlarming();
+			pointAlarming.setAlarmStates(rs.getString("AlarmStates"));
+			pointAlarming.setExcludeNotifyStates(rs.getString("ExcludeNotifyStates"));
+			pointAlarming.setNotifyOnAcknowledge(rs.getString("NotifyOnAcknowledge"));
+			pointAlarming.setNotificationGroupID(rs.getInt("NotificationGroupID"));
+			
+			PointBase pointBase = new PointBase();
+			pointBase.setPoint(point);
+			pointBase.setPointAlarming(pointAlarming);
+			
+			return pointBase;
+		}
+	};
     
     private static final YukonRowMapper<LitePoint> litePointYukonRowMapper =
         new YukonRowMapper<LitePoint>() {
@@ -729,4 +761,18 @@ public final class PointDaoImpl implements PointDao {
         return lrph;
     }
 
+	@Override
+	public List<PointBase> getPointBasesForPao(int paoId) {
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		sql.append("SELECT PointType, PointName, LogicalGroup, StateGroupID, ServiceFlag,");
+		sql.append(   "AlarmInhibit, PointOffset, ArchiveType, ArchiveInterval, AlarmStates,");
+		sql.append(   "ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupID");
+		sql.append("FROM Point JOIN PointAlarming on Point.PointID = PointAlarming.PointID");
+		sql.append("WHERE PAObjectID").eq(paoId);
+		
+		List<PointBase> points = yukonJdbcTemplate.query(sql, pointBaseRowMapper);
+		
+		return points;
+	}
 }

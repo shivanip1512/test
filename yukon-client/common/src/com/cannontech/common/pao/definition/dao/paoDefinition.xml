@@ -5195,6 +5195,117 @@
         </tags>
     </pao>
     
+    <!-- CapControl -->
+    <pao id="CAP_CONTROL_AREA">
+    	<displayName>Area</displayName>
+    	<changeGroup>cap</changeGroup>
+    	<points>
+            <point type="Analog" offset="1">
+            	<init>true</init>
+                <name>Estimated Var Load</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="2">
+            	<init>true</init>
+                <name>Daily Operations</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="3">
+            	<init>true</init>
+                <name>Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="4">
+            	<init>true</init>
+                <name>Estimated Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+        </points>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,CAPCONTROLAREA</value>
+        	</tag>
+        </tags>
+    </pao>
+    
+    <pao id="CAP_CONTROL_SUBBUS">
+    	<displayName>Substation Bus</displayName>
+    	<changeGroup>cap</changeGroup>
+    	<points>
+            <point type="Analog" offset="1">
+            	<init>true</init>
+                <name>Estimated Var Load</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="2">
+            	<init>true</init>
+                <name>Daily Operations</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="3">
+            	<init>true</init>
+                <name>Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="4">
+            	<init>true</init>
+                <name>Estimated Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+        </points>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,CAPCONTROLSUBSTATIONBUS</value>
+        	</tag>
+        </tags>
+    </pao>
+    
+    <pao id="CAP_CONTROL_SPECIAL_AREA">
+    	<displayName>Special Area</displayName>
+    	<changeGroup>cap</changeGroup>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,CAPCONTROLSPECIALAREA</value>
+        	</tag>
+        </tags>
+    </pao>
+    
+    <pao id="CAP_CONTROL_SUBSTATION">
+    	<displayName>Substation</displayName>
+    	<changeGroup>cap</changeGroup>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,CAPCONTROLSUBSTATION</value>
+        	</tag>
+        </tags>
+    </pao>
+    
+    <pao id="CAP_CONTROL_FEEDER">
+    	<displayName>Feeder</displayName>
+    	<changeGroup>cap</changeGroup>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,CAPCONTROLFEEDER</value>
+        	</tag>
+        </tags>
+    </pao>
+    
     <!-- CBCs -->
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>
@@ -5224,6 +5335,11 @@
     <pao id="CBC_DNP" inherits="CBC_DNP_BASE">
         <displayName>CBC DNP</displayName>
         <changeGroup>cap</changeGroup>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
+        	</tag>
+        </tags>
     </pao>
     
     <pao id="CBC_EXPRESSCOM" inherits="CBC_1WAY_BASE">
@@ -5234,6 +5350,11 @@
     <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE">
         <displayName>CBC 6510</displayName>
         <changeGroup>cap</changeGroup>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICEADDRESS</value>
+        	</tag>
+        </tags>
     </pao>
     
     <pao id="CBC_FP_2800" inherits="CBC_1WAY_BASE">
@@ -5250,6 +5371,11 @@
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,DEVICECBC</value>
+        	</tag>
+        </tags>
     </pao>
     
     <pao id="CBC_DNP_BASE" abstract="true">
@@ -5302,6 +5428,12 @@
                 <basicLookup point = "Average Line Voltage" />            
             </attribute>
         </attributes>
+        <tags>
+            <tag name="TWO_WAY_CBC"/>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
+        	</tag>
+        </tags>
     </pao>
     
     <pao id="CBC_702X_BASE" inherits="CBC_2WAY_BASE" abstract="true">
@@ -6054,6 +6186,11 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,CAPBANK,CAPBANKADDITIONAL</value>
+        	</tag>
+        </tags>
     </pao>
     
     <pao id="VOLTAGE_REGULATOR" abstract="true">
@@ -6117,6 +6254,11 @@
                 </mappedLookup>
             </attribute>
         </attributes>
+        <tags>
+        	<tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,REGULATOR</value>
+        	</tag>
+       	</tags>
     </pao>
     
     <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">
@@ -6151,6 +6293,9 @@
         </attributes>
         <tags>
             <tag name="DB_EDITOR_INCOMPATIBLE"/>
+            <tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,ZBENDPOINT</value>
+        	</tag>
         </tags>
     </pao>
 
@@ -6174,6 +6319,9 @@
         </attributes>
         <tags>
             <tag name="DB_EDITOR_INCOMPATIBLE"/>
+            <tag name="PAO_CREATION_SERVICE">
+        		<value>YUKONPAOBJECT,DEVICE,ZBGATEWAY,DIGIGATEWAY</value>
+        	</tag>
         </tags>
     </pao>
     

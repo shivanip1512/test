@@ -54,9 +54,9 @@ public class OnelinePopupMenuController extends MultiActionController {
     
     static {
         allowedOperationStates  = new CapBankOperationalState[] {
-                                                                 CapBankOperationalState.Fixed,
-                                                                 CapBankOperationalState.StandAlone,
-                                                                 CapBankOperationalState.Switched};
+                                                                 CapBankOperationalState.FIXED,
+                                                                 CapBankOperationalState.STANDALONE,
+                                                                 CapBankOperationalState.SWITCHED};
     }
 
     public ModelAndView subTagMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -199,7 +199,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         boolean isDisabledOVUV = capBank.getOvUVDisabled();
         mav.addObject("isDisabledOVUV", isDisabledOVUV);
 
-        CapBankOperationalState operationalState = CapBankOperationalState.valueOf(capBank.getOperationalState());
+        CapBankOperationalState operationalState = CapBankOperationalState.getStateByName(capBank.getOperationalState());
         mav.addObject("operationalState", operationalState);
         mav.addObject("allowedOperationStates", allowedOperationStates);
 

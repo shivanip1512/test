@@ -46,6 +46,9 @@ public enum PaoTag {
 	WATER_METER_DETAIL_DISPLAYABLE("Water Detail Displayable"),
 	DB_EDITOR_INCOMPATIBLE("Not Displayable in Database Editor"),   // Excludes devices from DeviceTreeModel.java, hiding them in DB Editor and Commander
 	SUPPORTS_ROUTE_ENCRYPTION("Supports Route Encryption"),
+	CBC("CBC"),
+	TWO_WAY_CBC("Two-Way CBC"),
+	PAO_CREATION_SERVICE("PAO Creation Service Compatible", stringType());
 	;
 
 	private final String description;

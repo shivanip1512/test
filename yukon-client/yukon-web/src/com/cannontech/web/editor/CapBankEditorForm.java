@@ -19,8 +19,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;

@@ -13,7 +13,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
@@ -31,14 +30,12 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CCArea;
@@ -58,8 +55,8 @@ public final class CBCUtils {
     public static final int TEMP_MOVE_REFRESH = 1000;
     // responsible for how to render data for CBC displays
     private static final CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
-    private static final AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
     private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
+    private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
 
     public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
         @Override
@@ -524,31 +521,31 @@ public final class CBCUtils {
     
     // must be a better way to do this
     public static List<String> getAvailableStatesList(LiteYukonUser user){
-        String availableStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.AVAILABLE_DEFINITION);
+        String availableStatesString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.AVAILABLE_DEFINITION, user);
         String[] array = availableStatesString.split(",");
         List<String> list = Arrays.asList(array);
         return list;
     }
     
-//  must be a better way to do this
+    //  must be a better way to do this
     public static List<String> getUnavailableStatesList(LiteYukonUser user){
-        String unavailableStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.UNAVAILABLE_DEFINITION);
+    	String unavailableStatesString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.UNAVAILABLE_DEFINITION, user);
         String[] array = unavailableStatesString.split(",");
         List<String> list = Arrays.asList(array);
         return list;
     }
     
-//  must be a better way to do this
+    //  must be a better way to do this
     public static List<String> getClosedStatesList(LiteYukonUser user){
-        String closedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.CLOSED_DEFINITION);
+    	String closedStatesString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CLOSED_DEFINITION, user);
         String[] array = closedStatesString.split(",");
         List<String> list = Arrays.asList(array);
         return list;
     }
     
-//  must be a better way to do this
+    //  must be a better way to do this
     public static List<String> getTrippedStatesList(LiteYukonUser user){
-        String trippedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.TRIPPED_DEFINITION);
+    	String trippedStatesString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.TRIPPED_DEFINITION, user);
         String[] array = trippedStatesString.split(",");
         List<String> list = Arrays.asList(array);
         return list;
@@ -692,25 +689,25 @@ public final class CBCUtils {
     }
     
     public static boolean isController(LiteWrapper lite) {
-        int type = lite.getRawType();
-        return checkControllerByType(type);
+        PaoType paoType = PaoType.getForId(lite.getRawType());
+        return checkControllerByType(paoType);
     }
     
-    public static boolean checkControllerByType(int type) {
-        switch (type) {
-	        case PAOGroups.CBC_7010:
-	        case PAOGroups.CBC_7011:
-	        case PAOGroups.CBC_7012:
-	        case PAOGroups.CBC_7020:
-	        case PAOGroups.CBC_7022:
-	        case PAOGroups.CBC_7023:
-	        case PAOGroups.CBC_7024:
-	        case PAOGroups.CBC_8020:
-	        case PAOGroups.CBC_8024:
-	        case PAOGroups.CBC_EXPRESSCOM:
-	        case PAOGroups.CAPBANKCONTROLLER:
-	        case PAOGroups.CBC_DNP:
-	        case PAOGroups.CBC_FP_2800:
+    public static boolean checkControllerByType(PaoType paoType) {
+        switch (paoType) {
+	        case CBC_7010:
+	        case CBC_7011:
+	        case CBC_7012:
+	        case CBC_7020:
+	        case CBC_7022:
+	        case CBC_7023:
+	        case CBC_7024:
+	        case CBC_8020:
+	        case CBC_8024:
+	        case CBC_EXPRESSCOM:
+	        case CAPBANKCONTROLLER:
+	        case CBC_DNP:
+	        case CBC_FP_2800:
 	            return true;
 	    default:
 	        return false;

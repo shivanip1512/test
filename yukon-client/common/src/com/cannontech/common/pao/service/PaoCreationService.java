@@ -1,7 +1,9 @@
 package com.cannontech.common.pao.service;
 
+import java.util.List;
+
 import com.cannontech.common.pao.PaoIdentifier;
-import com.google.common.collect.ClassToInstanceMap;
+import com.cannontech.database.data.point.PointBase;
 
 public interface PaoCreationService {
     /**
@@ -11,12 +13,10 @@ public interface PaoCreationService {
      */
     public PaoIdentifier createPao(PaoTemplate paoTemplate);
     
-    /**
-     * Creates a map with a default entry of NullFields. PaoTemplate objects that use NullFields don't
-     * have to add it manually.
-     * 
-     * @return
-     */
-    public ClassToInstanceMap<PaoTemplatePart> createFieldMap();
+    public PaoIdentifier createTemplatePao(PaoTemplate paoTemplate, List<PointBase> points);
+    
+    public void updatePao(int paoId, PaoTemplate paoTemplate);
+    
+    public void deletePao(PaoIdentifier paoIdentifier);
 
 }

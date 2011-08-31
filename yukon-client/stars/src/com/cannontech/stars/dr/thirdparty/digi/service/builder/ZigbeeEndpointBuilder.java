@@ -31,6 +31,7 @@ import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.MutableClassToInstanceMap;
 
 public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
 
@@ -104,7 +105,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
                                                                         0/*Constant place holder until Firmware change*/);
 
         //Build Template and call Pao Creation Service
-        ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
+        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
         paoFields.put(ZigbeeEndpointFields.class, tStatFields);
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
