@@ -56,7 +56,6 @@
                                         <tags:inputNameValue path="devCapControl.numSubBuses" nameKey=".setupDevDatabase.option.capcontrol.object.subBuses" size="2"/>
                                         <tags:inputNameValue path="devCapControl.numFeeders" nameKey=".setupDevDatabase.option.capcontrol.object.feeders" size="2"/>
                                         <tags:inputNameValue path="devCapControl.numCapBanks" nameKey=".setupDevDatabase.option.capcontrol.object.capBanks" size="2"/>
-                                        <tags:inputNameValue path="devCapControl.numCBCs" nameKey=".setupDevDatabase.option.capcontrol.object.cbcs" size="2"/>
                                         <tags:inputNameValue path="devCapControl.numRegulators" nameKey=".setupDevDatabase.option.capcontrol.object.regulators" size="2"/>
                                         <tags:inputNameValue path="devCapControl.offset" nameKey=".setupDevDatabase.option.capcontrol.object.offset" size="10"/>
                                     </tags:nameValueContainer2>
@@ -64,10 +63,14 @@
                                 <li>
                                     <tags:hideReveal2 titleKey=".setupDevDatabase.option.capcontrol.cbcTypes" showInitially="false" slide="true">
                                         <ul>
-                                            <c:forEach items="${devDbSetupTask.devCapControl.cbcTypes}" var="cbcType" varStatus="status">
+                                            <li>
+                                                <input type="radio" name="devCapControl.cbcType" value="${null}" <c:if test="${devDbSetupTask.devCapControl.cbcType == null}">checked="checked"</c:if>/>
+                                                <label for="devCapControl.cbcType">None</label>
+                                            </li>
+                                            <c:forEach items="${devDbSetupTask.devCapControl.cbcTypes}" var="cbcType">
                                                 <li>
-                                                    <tags:checkbox path="devCapControl.cbcTypes[${status.index}].create"/>
-                                                    <span>${devDbSetupTask.devCapControl.cbcTypes[status.index].paoType}</span>
+                                                    <input type="radio" name="devCapControl.cbcType" value="${cbcType.paoType}" <c:if test="${devDbSetupTask.devCapControl.cbcType.paoType == cbcType.paoType}">checked="checked"</c:if>/>
+                                                    <label for="devCapControl.cbcType">${cbcType.paoType}</label>
                                                 </li>
                                             </c:forEach>
                                         </ul>

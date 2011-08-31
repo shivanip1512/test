@@ -49,7 +49,7 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
         } catch (Exception e) {
             devDbSetupTask.setHasRun(false);
             devDbSetupTask.setRunning(false);
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e);
         }
         logExecutionDetails();
         devDbSetupTask.setHasRun(true);

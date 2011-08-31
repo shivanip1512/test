@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -27,6 +28,7 @@ import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.support.development.database.objects.DevPaoType;
 import com.cannontech.web.support.development.database.objects.DevStars;
 import com.cannontech.web.support.development.database.objects.DevStarsAccounts;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
@@ -138,6 +140,18 @@ public class SetupDevDbMethodController {
             public void setAsText(String energyCompanyIdString) throws IllegalArgumentException {
                 LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(Integer.valueOf(energyCompanyIdString));
                 setValue(energyCompany);
+            }
+        });
+        binder.registerCustomEditor(DevPaoType.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String paoTypeString) throws IllegalArgumentException {
+                if (paoTypeString.isEmpty()) {
+                    setValue(null);
+                    return;
+                }
+                PaoType paoType = PaoType.valueOf(paoTypeString);
+                DevPaoType devPaoType = new DevPaoType(paoType);
+                setValue(devPaoType);
             }
         });
     }

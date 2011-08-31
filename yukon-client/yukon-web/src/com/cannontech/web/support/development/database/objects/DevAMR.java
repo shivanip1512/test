@@ -67,6 +67,9 @@ public class DevAMR extends DevObject {
     }
     @Override
     public int getTotal() {
+        if (!isCreate()) {
+            return 0;
+        }
         int total;
         if (createCartObjects) {
             total = getNumObjectsToCreate() + DevMeter.values().length;

@@ -30,27 +30,24 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     
     private void createCapControl(DevCapControl devCapControl) {
         log.info("Creating (and assigning) Cap Control Objects ...");
-        int offset = devCapControl.getOffset();
-        for (int areaIndex = offset; areaIndex  < offset + devCapControl.getNumAreas(); areaIndex++) { // Areas
+        for (int areaIndex = 0; areaIndex  < devCapControl.getNumAreas(); areaIndex++) { // Areas
             String areaName = createArea(devCapControl, areaIndex);
-            for (int subIndex = offset; subIndex < offset + devCapControl.getNumSubs(); subIndex++) { // Substations
+            for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
                 String subName = createSubstation(devCapControl, areaIndex, areaName, subIndex);
-                for (int subBusIndex = offset; subBusIndex < offset + devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
+                for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
                     String subBusName = createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, subName, subBusIndex);
-                    for (int feederIndex = offset; feederIndex < offset + devCapControl.getNumFeeders(); feederIndex++) { // Feeders
+                    for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
                         String feederName = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusName, feederIndex);
-                        for (int capBankIndex = offset; capBankIndex < offset + devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks
+                        for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
                             String capBankName = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex);
-                            for (int cbcIndex = offset; cbcIndex < offset + devCapControl.getNumCBCs(); cbcIndex++) { // CBCs
-                                createAndAssignCBCs(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex, capBankName, cbcIndex);
-                            }
+                            createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex, capBankName);
                         }
                     }
                 }
             }
         }
         
-        for (int regIndex = offset; regIndex < offset + devCapControl.getNumRegulators(); regIndex++) { //Regulators
+        for (int regIndex = 0; regIndex < devCapControl.getNumRegulators(); regIndex++) { //Regulators
             createRegulators(devCapControl, regIndex);
         }
     }
@@ -85,22 +82,22 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         }
     }
 
-    private void createAndAssignCBCs(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, String feederName,
-                             int capBankIndex, String capBankName, int cbcIndex) {
-        for (DevPaoType cbcType: devCapControl.getCbcTypes()) {
-            if (cbcType.isCreate()) {
-                String cbcName = cbcType.getPaoType().getPaoTypeName() + " "+ Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex) + Integer.toString(cbcIndex);
-                createCapControlCBC(devCapControl, cbcType.getPaoType().getDeviceTypeId(), cbcName, false, DevCommChannel.SIM);
-                int cbcPaoId = getPaoIdByName(cbcName);
-                capControlCreationService.assignController(cbcPaoId, cbcType.getPaoType(), capBankName);
-                logCapControlAssignment(cbcName, capBankName);
-            }
+    private void createAndAssignCBC(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, String feederName,
+                             int capBankIndex, String capBankName) {
+        DevPaoType cbcType = devCapControl.getCbcType();
+        if (cbcType == null) {
+            return;
         }
+        String cbcName = cbcType.getPaoType().getPaoTypeName() + " " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
+        createCapControlCBC(devCapControl, cbcType.getPaoType().getDeviceTypeId(), cbcName, false, DevCommChannel.SIM);
+        int cbcPaoId = getPaoIdByName(cbcName);
+        capControlCreationService.assignController(cbcPaoId, cbcType.getPaoType(), capBankName);
+        logCapControlAssignment(cbcName, capBankName);
     }
 
     private String createAndAssignCapBank(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, String feederName,
                              int capBankIndex) {
-        String capBankName = "CapBank " + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
+        String capBankName = "CapBank " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
         createCapControlObject(devCapControl, CapControlTypes.CAP_CONTROL_CAPBANK, capBankName, false, 0);
         int capBankPaoId = getPaoIdByName(capBankName);
         capControlCreationService.assignCapbank(capBankPaoId, feederName);
@@ -109,7 +106,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     }
 
     private String createAndAssignFeeder(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, String subBusName, int feederIndex) {
-        String feederName = "Feeder " + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
+        String feederName = "Feeder " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
         createCapControlObject(devCapControl, CapControlTypes.CAP_CONTROL_FEEDER, feederName, false, 0);
         int feederPaoId = getPaoIdByName(feederName);
         capControlCreationService.assignFeeder(feederPaoId, subBusName);
@@ -118,7 +115,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     }
 
     private String createAndAssignSubstationBus(DevCapControl devCapControl, int areaIndex, int subIndex, String subName, int subBusIndex) {
-        String subBusName = "Substation Bus " + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
+        String subBusName = "Substation Bus " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
         createCapControlObject(devCapControl, CapControlTypes.CAP_CONTROL_SUBBUS, subBusName, false, 0);
         int subBusPaoId = getPaoIdByName(subBusName);
         capControlCreationService.assignSubstationBus(subBusPaoId, subName);
@@ -127,7 +124,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     }
 
     private String createSubstation(DevCapControl devCapControl, int areaIndex, String areaName, int subIndex) {
-        String subName = "Substation " + Integer.toString(areaIndex) + Integer.toString(subIndex);
+        String subName = "Substation " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex);
         createCapControlObject(devCapControl, CapControlTypes.CAP_CONTROL_SUBSTATION, subName, false, 0);
         int subPaoId = getPaoIdByName(subName);
         capControlCreationService.assignSubstation(subPaoId, areaName);
@@ -136,7 +133,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     }
 
     private String createArea(DevCapControl devCapControl, int areaIndex) {
-        String areaName = "Area " + Integer.toString(areaIndex);
+        String areaName = "Area " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex);
         createCapControlObject(devCapControl, CapControlTypes.CAP_CONTROL_AREA, areaName, false, 0);
         return areaName;
     }

@@ -11,9 +11,9 @@ public class DevCapControl extends DevObject {
     private int numSubBuses = 1;
     private int numFeeders = 1;
     private int numCapBanks = 3;
-    private int numCBCs = 3;
     private int numRegulators = 10;
     private int offset = 0;
+    private DevPaoType cbcType;
     private List<DevPaoType> cbcTypes =
         Lists
             .newArrayList(new DevPaoType(PaoType.CBC_7010),
@@ -72,14 +72,6 @@ public class DevCapControl extends DevObject {
         this.numCapBanks = numCapBanks;
     }
 
-    public int getNumCBCs() {
-        return numCBCs;
-    }
-
-    public void setNumCBCs(int numCBCs) {
-        this.numCBCs = numCBCs;
-    }
-
     public int getNumRegulators() {
         return numRegulators;
     }
@@ -94,6 +86,14 @@ public class DevCapControl extends DevObject {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public DevPaoType getCbcType() {
+        return cbcType;
+    }
+
+    public void setCbcType(DevPaoType cbcType) {
+        this.cbcType = cbcType;
     }
 
     public List<DevPaoType> getCbcTypes() {
@@ -112,16 +112,6 @@ public class DevCapControl extends DevObject {
         this.regulatorTypes = regulatorTypes;
     }
 
-    private int getNumCBCsToCreate() {
-        int num = 0;
-        for (DevPaoType type: cbcTypes) {
-            if (type.isCreate()) {
-                num += numCBCs;
-            }
-        }
-        return num;
-    }
-    
     private int getNumRegulatorsToCreate() {
         int num = 0;
         for (DevPaoType type: regulatorTypes) {
@@ -134,11 +124,14 @@ public class DevCapControl extends DevObject {
     
     @Override
     public int getTotal() {
+        if (!isCreate()) {
+            return 0;
+        }
         int numTotalSubs = numAreas * numSubs;
         int numTotalSubBuses = numTotalSubs * numSubBuses;
         int numTotalFeeders = numTotalSubBuses * numFeeders;
         int numTotalCapBanks = numTotalFeeders * numCapBanks;
-        int numTotalCBCs = numTotalCapBanks * getNumCBCsToCreate();
+        int numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
         int numTotalRegulators = getNumRegulatorsToCreate();
         int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
         return total;

@@ -33,6 +33,9 @@ public class DevStars extends DevObject {
 
     @Override
     public int getTotal() {
+        if (!isCreate()) {
+            return 0;
+        }
         int accounts = devStarsAccounts.getNumAccounts();
         int accountHardware = devStarsAccounts.getNumAccounts() * devStarsHardware.getNumHardwarePerAccount();
         int extraHardware = devStarsHardware.getNumExtraTotal();

@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoType;
 
 public enum DevCommChannel {
     CART_PORT_1(PaoType.TSERVER_SHARED, "Wireless Cart Port 1", "127.0.0.1", 2101, 1200),
-    SIM(PaoType.TSERVER_SHARED, "Sim Comm Channel", "127.0.0.1", 2101, 1200),
+    SIM(PaoType.TSERVER_SHARED, "Sim Comm Channel", "127.0.0.1", 2102, 1200),
     ;
 
     private final PaoType paoType;
