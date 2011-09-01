@@ -20,6 +20,7 @@
 #include "pointdefs.h"
 
 #define  FDR_VALMET "VALMET"
+#define  FDR_VALMETMULTI "VALMETMULTI"
 #define  FDR_ACS    "ACS"
 #define  FDR_SYSTEM "SYSTEM"
 

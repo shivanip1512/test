@@ -39,6 +39,7 @@ INCLPATHS+= \
 
 
 FDRINTERFACES=\
+fdrvalmetutil.obj 
 
 FDRINTERFACEOBJS=\
 fdrdestination.obj  \
@@ -63,7 +64,7 @@ fdrsocketserver.obj \
 fdrscadaserver.obj \
 fdrclientserverconnection.obj \
 fdrscadahelper.obj \
-fdrdnphelper.obj
+fdrdnphelper.obj 
 
 
 FDRTELEGYROBJS=\
@@ -75,6 +76,7 @@ FDRPIOBJS=\
 fdrpibase.obj \
 fdrpipoll.obj \
 fdrpinotify.obj
+
 
 CTIFDRLIBS=\
 $(COMPILEBASE)\lib\cticparms.lib \
@@ -94,7 +96,6 @@ FDRPILIBS=\
 $(COMPILEBASE)\Fdr\OSIPI\lib\piapi32.lib \
 $(COMPILEBASE)\Fdr\OSIPI\lib\pilog32.lib
 
-
 CTIFDRDLLS=\
 cti_fdr.dll \
 fdrbepc.dll \
@@ -107,6 +108,7 @@ fdrcygnet.dll \
 fdracs.dll \
 fdracsmulti.dll \
 fdrvalmet.dll \
+fdrvalmetmulti.dll \
 fdrinet.dll \
 fdrstec.dll \
 fdrtristate.dll \
@@ -217,10 +219,18 @@ fdrcygnet.dll: fdrcygnet.obj Makefile
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
-fdrvalmet.dll: fdrvalmet.obj Makefile
+fdrvalmet.dll:  fdrvalmet.obj $(FDRINTERFACES)  Makefile
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrvalmet.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS)
+                $(CC) $(DLLFLAGS) fdrvalmet.obj $(FDRINTERFACES) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS)
+                @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrvalmetmulti.dll: fdrvalmetmulti.obj $(FDRINTERFACES)  Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                $(CC) $(DLLFLAGS) fdrvalmetmulti.obj $(FDRINTERFACES) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS)
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -409,11 +419,22 @@ fdracsmulti.obj : fdracsmulti.cpp
                 @echo Compiling: $< Output: ..\$@
                 @echo:
                 $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRACSMULTI -DWINDOWS -Fo$(OBJ)\ -c $<
+
+fdrvalmetutil.obj : fdrvalmetutil.cpp
+                @echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrvalmet.obj : fdrvalmet.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
                 $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRVALMET -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrvalmetmulti.obj : fdrvalmetmulti.cpp
+                @echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRVALMETMULTI -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrinet.obj : fdrinet.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
@@ -1158,20 +1179,18 @@ fdrtristatesub.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h \
 		readers_writer_lock.h critical_section.h fdrpoint.h \
 		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
 		msg_cmd.h ctidate.h
-fdrvalmet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h logger.h \
-		thread.h mutex.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h cparms.h rwutil.h \
-		yukon.h ctidbgmem.h database_connection.h dbaccess.h \
-		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
-		optional.h sema.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h pointtypes.h message.h msg_ptreg.h \
-		msg_cmd.h msg_reg.h msg_signal.h connection.h exchange.h \
-		string_utility.h queue.h fdrsocketinterface.h fdrinterface.h \
-		msg_dbchg.h mgr_fdrpoint.h smartmap.h readers_writer_lock.h \
-		critical_section.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
-		fdrsocketlayer.h fdrsocketconnection.h fdrvalmet.h
+fdrvalmet.obj:  precompiled.h ctitime.h ctidate.h utility.h cparms.h \
+                msg_multi.h msg_ptreg.h msg_cmd.h message.h msg_reg.h \
+                msg_pdata.h msg_signal.h connection.h pointtypes.h dllbase.h \
+                logger.h guard.h fdrsocketinterface.h fdrpointlist.h \
+                fdrsinglesocket.h fdrsocketlayer.h fdrvalmet.h \
+                fdrvalmetutil.h
+fdrvalmetmulti.obj:     precompiled.h ctitime.h ctidate.h utility.h \
+                cparms.h msg_multi.h msg_ptreg.h msg_cmd.h message.h \
+                msg_reg.h msg_pdata.h msg_signal.h connection.h pointtypes.h \
+                dllbase.h logger.h guard.h fdrsocketinterface.h \
+                fdrscadahelper.h fdrvalmetmulti.h
+fdrvalmetutil.obj:      precompiled.h ctitime.h ctidate.h fdrvalmetutil.h
 fdrwabash.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \

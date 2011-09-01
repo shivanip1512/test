@@ -33,9 +33,11 @@
 
 // this class header
 #include "fdrvalmet.h"
+#include "fdrvalmetutil.h"
 
 using std::string;
 using std::endl;
+using namespace Fdr::Valmet;
 
 /** local definitions **/
 
@@ -436,7 +438,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemHeartbeatMsg ()
     if (valmet != NULL)
     {
         ptr->Function = htons (SINGLE_SOCKET_NULL);
-        strcpy (ptr->TimeStamp, YukonToForeignTime (CtiTime()).c_str());
+        strcpy (ptr->TimeStamp, YukonToForeignTime(CtiTime()).c_str());
     }
     return valmet;
 }
@@ -461,7 +463,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
     string           desc;
     string               action;
 
-    timestamp = ForeignToYukonTime (data->TimeStamp,true);
+    timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow(),true);
     if (timestamp == PASTDATE)
     {
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
@@ -629,7 +631,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
         value *= point->getMultiplier();
         value += point->getOffset();
 
-        timestamp = ForeignToYukonTime (data->TimeStamp);
+        timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
         if (timestamp == PASTDATE)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
@@ -752,7 +754,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
         quality = ForeignToYukonQuality (data->Status.Quality);
 
         value = ForeignToYukonStatus (data->Status.Value);
-        timestamp = ForeignToYukonTime (data->TimeStamp);
+        timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
         if (timestamp == PASTDATE)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
@@ -1029,208 +1031,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
     return retVal;
 }
 
-USHORT CtiFDR_Valmet::ForeignToYukonQuality (USHORT aQuality)
+bool CtiFDR_Valmet::alwaysSendRegistrationPoints()
 {
-    USHORT Quality = NormalQuality;
-    USHORT HostQuality;
-
-    HostQuality = ntohs (aQuality);
-
-    /* Test for the various Valmet Qualities and translate to CTI */
-    if (HostQuality & VALMET_PLUGGED)
-        Quality = NonUpdatedQuality;
-    else if (HostQuality & VALMET_MANUALENTRY)
-        Quality = ManualQuality;
-    else if (HostQuality & VALMET_DATAINVALID)
-        Quality = InvalidQuality;
-    else if (HostQuality & VALMET_UNREASONABLE)
-        Quality = AbnormalQuality;
-    else if (HostQuality & VALMET_OUTOFSCAN)
-        Quality = AbnormalQuality;
-
-    return(Quality);
-}
-
-USHORT CtiFDR_Valmet::YukonToForeignQuality (USHORT aQuality)
-{
-    USHORT Quality = VALMET_NORMAL;
-
-    /* Test for the various CTI Qualities and translate to Valmet */
-    if (aQuality == NonUpdatedQuality)
-        Quality = VALMET_PLUGGED;
-    else if (aQuality == InvalidQuality)
-        Quality = VALMET_PLUGGED;
-    else if (aQuality == ManualQuality)
-        Quality = VALMET_MANUALENTRY;
-    else if (aQuality == AbnormalQuality)
-        Quality = VALMET_PLUGGED;
-    if (aQuality == UnintializedQuality)
-        Quality = VALMET_PLUGGED;
-
-    return htons (Quality);
-}
-
- string CtiFDR_Valmet::ForeignQualityToString(USHORT quality)
- {
-     string retString;
-     quality = ntohs(quality);
-     if (quality == VALMET_NORMAL)
-        retString = "VALMET_NORMAL";
-     else if (quality == VALMET_PLUGGED)
-        retString = "VALMET_PLUGGED";
-     else if (quality == VALMET_MANUALENTRY)
-         retString = "VALMET_MANUALENTRY";
-     else if (quality == VALMET_DATAINVALID)
-         retString = "VALMET_DATAINVALID";
-     else if (quality == VALMET_UNREASONABLE)
-         retString = "VALMET_UNREASONABLE";
-     else if (quality == VALMET_OUTOFSCAN)
-         retString = "VALMET_OUTOFSCAN";
-     else
-     {    
-         retString = "UNDEFINED - 0x";
-         CHAR buf[20];
-         retString += string (itoa (quality,buf,16));
-     }
-     return retString;
- }
-
-
-// Convert Valmet status to CTI Status
-int CtiFDR_Valmet::ForeignToYukonStatus (USHORT aStatus)
-{
-    int tmpstatus=INVALID;
-
-    switch (ntohs (aStatus))
-    {
-        case Valmet_Open:
-            tmpstatus = OPENED;
-            break;
-        case Valmet_Closed:
-            tmpstatus = CLOSED;
-            break;
-        case Valmet_Indeterminate:
-            tmpstatus = INDETERMINATE;
-            break;
-
-    }
-    return(tmpstatus);
-}
-
-USHORT CtiFDR_Valmet::YukonToForeignStatus (int aStatus)
-{
-    USHORT tmpstatus=Valmet_Invalid;
-
-    switch (aStatus)
-    {
-        case OPENED:
-            tmpstatus = Valmet_Open;
-            break;
-        case CLOSED:
-            tmpstatus = Valmet_Closed;
-            break;
-        case INDETERMINATE:
-            tmpstatus = Valmet_Indeterminate;
-            break;
-    }
-    return(htons (tmpstatus));
-}
-
-
-CtiTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
-{
-    struct tm ts;
-    CtiTime retVal;
-
-    if (sscanf (aTime,
-                "%4ld%2ld%2ld%2ld%2ld%2ld",
-                &ts.tm_year,
-                &ts.tm_mon,
-                &ts.tm_mday,
-                &ts.tm_hour,
-                &ts.tm_min,
-                &ts.tm_sec) != 6)
-    {
-        retVal = PASTDATE;
-    }
-
-    ts.tm_year -= 1900;
-    ts.tm_mon--;
-
-    /*********************
-    * valmet doesn't fill this in apparently so
-    * use whatever we think daylight savings is
-    *********************
-    */
-    ts.tm_isdst = CtiTime().isDST();
-
-    CtiTime returnTime(&ts);
-
-    if (aTimeSyncFlag)
-    {
-        // just check for validy
-        if (!returnTime.isValid())
-        {
-            retVal = PASTDATE;
-        }
-        else
-        {
-            retVal = returnTime;
-        }
-    }
-    else
-    {
-        // if CtiTime can't make a time or we are outside the window
-        if ((returnTime.seconds() > (CtiTime::now().seconds() + getTimestampReasonabilityWindow())) ||
-            (returnTime.seconds() < (CtiTime::now().seconds() - getTimestampReasonabilityWindow())) ||
-            (!returnTime.isValid()))
-    //    if ((returnTime.seconds() > (CtiTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
-        {
-            retVal = PASTDATE;
-        }
-        else
-        {
-            retVal = returnTime;
-        }
-    }
-
-    return retVal;
-}
-
-string CtiFDR_Valmet::YukonToForeignTime (CtiTime aTimeStamp)
-{
-    CHAR      tmp[30];
-
-    /*******************************
-    * if the timestamp is less than 01-01-2000 (completely arbitrary number)
-    * then set it to now because its probably an error or its uninitialized
-    * note: uninitialized points come across as 11-10-1990
-    ********************************
-    */
-    if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
-    {
-        aTimeStamp = CtiTime();
-    }
-
-    CtiDate tmpDate (aTimeStamp);
-
-    // Place it into the Valmet structure */
-    _snprintf (tmp,
-             30,
-             "%4ld%02ld%02ld%02ld%02ld%02ldCST",
-             tmpDate.year(),
-             tmpDate.month(),
-             tmpDate.dayOfMonth(),
-             aTimeStamp.hour(),
-             aTimeStamp.minute(),
-             aTimeStamp.second());
-
-    if (aTimeStamp.isDST())
-    {
-        tmp[15] = 'D';
-    }
-
-    return(string (tmp));
+    return true;
 }
 
 void CtiFDR_Valmet::updatePointQualitiesOnDevice(PointQuality_t quality, long paoId)
@@ -1266,11 +1069,6 @@ void CtiFDR_Valmet::updatePointQualitiesOnDevice(PointQuality_t quality, long pa
 
     }
 
-}
-
-bool CtiFDR_Valmet::alwaysSendRegistrationPoints()
-{
-    return true;
 }
 
 /****************************************************************************************

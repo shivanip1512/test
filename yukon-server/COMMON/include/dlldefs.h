@@ -328,6 +328,14 @@
    #define IM_EX_FDRVALMET       __declspec(dllimport)
 #endif
 
+#ifdef _DLL_FDRVALMETMULTI
+   #define IM_EX_FDRVALMETMULTI       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRVALMETMULTI
+#else
+   #define IM_EX_FDRVALMETMULTI       __declspec(dllimport)
+#endif
+
 #ifdef _DLL_FDRINET
    #define IM_EX_FDRINET       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )

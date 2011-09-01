@@ -353,3 +353,6 @@ template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiAcsId>;
 #include "fdrdnpslave.h"
 template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiDnpId>;
 
+#include "fdrvalmetmulti.h"
+template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiValmetPortId>;
+
