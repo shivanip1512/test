@@ -346,26 +346,24 @@
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
 <entry key="yukon.web.modules.dr.home.noFavorites">No Favorites</entry>
 <entry key="yukon.web.modules.dr.home.favorites">Favorites</entry>
-<entry key="yukon.web.modules.dr.home.nameHeader">Name</entry>
-<entry key="yukon.web.modules.dr.home.typeHeader">Type</entry>
 <entry key="yukon.web.modules.dr.home.quickSearches">Quick Searches</entry>
 <entry key="yukon.web.modules.dr.home.activeControlAreasQuickSearch">Active Control Areas</entry>
 <entry key="yukon.web.modules.dr.home.activeProgramsQuickSearch">Active Programs</entry>
 <entry key="yukon.web.modules.dr.home.activeLoadGroupsQuickSearch">Active Load Groups</entry>
 <entry key="yukon.web.modules.dr.home.noRecents">No Recently Viewed Items</entry>
 <entry key="yukon.web.modules.dr.home.recents">Recently Viewed Items</entry>
-<entry key="yukon.web.modules.dr.home.nameHeader">Name</entry>
-<entry key="yukon.web.modules.dr.home.typeHeader">Type</entry>
-<entry key="yukon.web.modules.dr.home.stateHeader">State</entry>
+<entry key="yukon.web.modules.dr.home.nameHeader.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.home.typeHeader.linkText">Type</entry>
+<entry key="yukon.web.modules.dr.home.stateHeader.linkText">State</entry>
 <entry key="yukon.web.modules.dr.home.actionsHeader">Actions</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.searchResult">Search Results for &quot;{0}&quot;</entry>
 <entry key="yukon.web.modules.dr.searchResults.noResults">No items matched.</entry>
-<entry key="yukon.web.modules.dr.searchResults.nameHeader">Name</entry>
-<entry key="yukon.web.modules.dr.searchResults.typeHeader">Type</entry>
-<entry key="yukon.web.modules.dr.searchResults.stateHeader">State</entry>
+<entry key="yukon.web.modules.dr.searchResults.nameHeader.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.searchResults.typeHeader.linkText">Type</entry>
+<entry key="yukon.web.modules.dr.searchResults.stateHeader.linkText">State</entry>
 <entry key="yukon.web.modules.dr.searchResults.actionsHeader">Actions</entry>
 <entry key="yukon.web.modules.dr.searchResults.searchBoxLabel">Find:</entry>
 <entry key="yukon.web.modules.dr.searchResults.searchBoxSubmitImg">/WebConfig/yukon/Buttons/GoButtonGray.gif</entry>
@@ -380,7 +378,7 @@
 <entry key="yukon.web.modules.dr.scenarioList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>
-<entry key="yukon.web.modules.dr.scenarioList.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.scenarioList.heading.name.linkText">Name</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.actions">Actions</entry>
 
 
@@ -421,15 +419,14 @@
 <entry key="yukon.web.modules.dr.controlAreaList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.clear">Show All</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.name">Name</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.name.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.state.linkText">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold">Value / Threshold</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.peakProjection">Peak / Projection</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.atku">ATKU</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.priority">Priority</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow">Time Window</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold.linkText">Value / Threshold</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.peakProjection.linkText">Peak / Projection</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.atku.linkText">ATKU</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.priority.linkText">Priority</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow.linkText">Time Window</entry>
 
 
 <!-- Control Area Detail -->
@@ -511,15 +508,14 @@
 <entry key="yukon.web.modules.dr.programList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.programList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.programList.filter.clear">Show All</entry>
-<entry key="yukon.web.modules.dr.programList.heading.name">Name</entry>
-<entry key="yukon.web.modules.dr.programList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.programList.heading.name.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.programList.heading.state.linkText">State</entry>
 <entry key="yukon.web.modules.dr.programList.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.programList.heading.start">Start</entry>
-<entry key="yukon.web.modules.dr.programList.heading.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.programList.heading.currentGear">Current Gear</entry>
-<entry key="yukon.web.modules.dr.programList.heading.priority">Priority</entry>
-<entry key="yukon.web.modules.dr.programList.heading.reduction">Reduction</entry>
-<entry key="yukon.web.modules.dr.programList.heading.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.programList.heading.start.linkText">Start</entry>
+<entry key="yukon.web.modules.dr.programList.heading.stop.linkText">Stop</entry>
+<entry key="yukon.web.modules.dr.programList.heading.currentGear.linkText">Current Gear</entry>
+<entry key="yukon.web.modules.dr.programList.heading.priority.linkText">Priority</entry>
+<entry key="yukon.web.modules.dr.programList.heading.reduction.linkText">Reduction</entry>
 <entry key="yukon.web.modules.dr.programList.typeMismatch.java.util.Date">Invalid date</entry>
 <entry key="yukon.web.modules.dr.programList.typeMismatch.java.lang.Integer">Must be an integer.</entry>
 <entry key="yukon.web.modules.dr.programList.startFromTimeAfterToTime">Beginning of date range for Start must be before or equal to end.</entry>
@@ -601,13 +597,12 @@
 <entry key="yukon.web.modules.dr.loadGroupList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.clear">Show All</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.heading.name">Name</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.name.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.state.linkText">State</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.action">Actions</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.heading.lastAction">Last Action</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics">Day/Month/Season/Year Hrs</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.heading.reduction">Reduction</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.heading.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.lastAction.linkText">Last Action</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics.linkText">Day/Month/Season/Year Hrs</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.reduction.linkText">Reduction</entry>
 
 <!-- Load Group Detail -->
 <entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>

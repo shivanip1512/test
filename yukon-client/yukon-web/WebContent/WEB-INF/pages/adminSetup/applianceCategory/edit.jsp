@@ -223,7 +223,7 @@
         <table id="programList" class="compactResultsTable rowHighlighting">
             <tr>
                 <th>
-                    <tags:sortLink key=".programName" baseUrl="${baseUrl}"
+                    <tags:sortLink nameKey="programName" baseUrl="${baseUrl}"
                         fieldName="PROGRAM_NAME" isDefault="${!applianceCategory.consumerSelectable}"/>
                 </th>
                 <th>
@@ -231,7 +231,7 @@
                 </th>
                 <c:if test="${applianceCategory.consumerSelectable}">
                     <th>
-                        <tags:sortLink key=".displayOrder" baseUrl="${baseUrl}"
+                        <tags:sortLink nameKey="displayOrder" baseUrl="${baseUrl}"
                             fieldName="PROGRAM_ORDER" isDefault="true"/>
                     </th>
                 </c:if>

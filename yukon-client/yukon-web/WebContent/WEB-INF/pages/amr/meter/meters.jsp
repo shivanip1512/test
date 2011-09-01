@@ -93,33 +93,26 @@
             <table class="compactResultsTable rowHighlighting">
                 <tr>
                     <th>
-                        <tags:sortLink key=".columnHeader.deviceName"
-                                       baseUrl="${baseUrl}" fieldName="PAONAME"
-                                       sortParam="orderBy" descendingParam="descending"/>
+                        <tags:sortLink nameKey="columnHeader.deviceName" baseUrl="${baseUrl}"
+                            fieldName="PAONAME" sortParam="orderBy"
+                            isDefault="${defaultSearchField == 'PAONAME'}"/>
                     </th>
                     <th>
-                        <tags:sortLink key=".columnHeader.meterNumber"
-                                       baseUrl="${baseUrl}" fieldName="METERNUMBER"
-                                       sortParam="orderBy" descendingParam="descending"/>
-                    
+                        <tags:sortLink nameKey="columnHeader.meterNumber" baseUrl="${baseUrl}"
+                            fieldName="METERNUMBER" sortParam="orderBy"
+                            isDefault="${defaultSearchField == 'METERNUMBER'}"/>
                     </th>
                     <th>
-                        <tags:sortLink key=".columnHeader.deviceType"
-                                       baseUrl="${baseUrl}" fieldName="TYPE"
-                                       sortParam="orderBy" descendingParam="descending"/>
-                    
+                        <tags:sortLink nameKey="columnHeader.deviceType" baseUrl="${baseUrl}"
+                            fieldName="TYPE" sortParam="orderBy"/>
                     </th>
                     <th>
-                        <tags:sortLink key=".columnHeader.address"
-                                       baseUrl="${baseUrl}" fieldName="ADDRESS"
-                                       sortParam="orderBy" descendingParam="descending"/>
-                    
+                        <tags:sortLink nameKey="columnHeader.address" baseUrl="${baseUrl}"
+                            fieldName="ADDRESS" sortParam="orderBy"/>
                     </th>
                     <th>
-                        <tags:sortLink key=".columnHeader.route"
-                                       baseUrl="${baseUrl}" fieldName="ROUTE"
-                                       sortParam="orderBy" descendingParam="descending"/>
-                    
+                        <tags:sortLink nameKey="columnHeader.route" baseUrl="${baseUrl}"
+                            fieldName="ROUTE" sortParam="orderBy"/>
                     </th>
                 </tr>
 

@@ -73,9 +73,8 @@
 				<table id="scenarioList" class="compactResultsTable rowHighlighting">
 					<tr>
 						<th class="favoritesColumn"></th>
-						<th><tags:sortLink
-							key="yukon.web.modules.dr.scenarioList.heading.name"
-							baseUrl="${baseUrl}" fieldName="NAME" /></th>
+						<th><tags:sortLink nameKey="heading.name"
+							baseUrl="${baseUrl}" fieldName="NAME"/></th>
 						<th><cti:msg
 							key="yukon.web.modules.dr.scenarioList.heading.actions" /></th>
 					</tr>

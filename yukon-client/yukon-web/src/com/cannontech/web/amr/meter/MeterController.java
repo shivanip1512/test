@@ -104,8 +104,8 @@ public class MeterController extends MultiActionController {
         if (request.getParameter("Filter") != null) {
             startIndex = 0;
         }
-        
-        boolean isQuickSearch = request.getParameter("Quick Search") != null;
+
+        boolean isQuickSearch = StringUtils.isNotBlank(request.getParameter("Quick Search"));
         MeterSearchField defaultField = isQuickSearch ? MeterSearchField.METERNUMBER : MeterSearchField.PAONAME;
 
         // Get the order by field
@@ -142,6 +142,7 @@ public class MeterController extends MultiActionController {
         }
         
         mav = new ModelAndView("meters.jsp");
+        mav.addObject("defaultSearchField", defaultField);
         // Create a device collection (only used to generate a link)
         DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
         

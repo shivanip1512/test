@@ -45,15 +45,9 @@
 				<table class="compactResultsTable rowHighlighting">
 					<tr>
 						<th></th>
-						<th><tags:sortLink
-							key="yukon.web.modules.dr.searchResults.nameHeader"
-							baseUrl="${baseUrl}" fieldName="NAME" /></th>
-						<th><tags:sortLink
-							key="yukon.web.modules.dr.searchResults.typeHeader"
-							baseUrl="${baseUrl}" fieldName="TYPE" /></th>
-						<th><tags:sortLink
-							key="yukon.web.modules.dr.searchResults.stateHeader"
-							baseUrl="${baseUrl}" fieldName="STATE" /></th>
+						<th><tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"/></th>
+						<th><tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"/></th>
+						<th><tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"/></th>
 						<th><cti:msg
 							key="yukon.web.modules.dr.searchResults.actionsHeader" /></th>
 					</tr>

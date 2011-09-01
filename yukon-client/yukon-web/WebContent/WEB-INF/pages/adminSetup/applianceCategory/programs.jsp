@@ -69,11 +69,11 @@ YEvent.observeSelectorClick('#showAllButton', clearFilter);
                         <table id="programList" class="compactResultsTable rowHighlighting">
                             <tr>
                                 <th>
-                                    <tags:sortLink key=".programName" baseUrl="programs"
+                                    <tags:sortLink nameKey="programNameHeader" baseUrl="programs"
                                         fieldName="PROGRAM_NAME" isDefault="true"/>
                                 </th>
                                 <th>
-                                    <tags:sortLink key=".applianceCategoryName" baseUrl="programs"
+                                    <tags:sortLink nameKey="applianceCategoryNameHeader" baseUrl="programs"
                                         fieldName="APPLIANCE_CATEGORY_NAME"/>
                                 </th>
                             </tr>

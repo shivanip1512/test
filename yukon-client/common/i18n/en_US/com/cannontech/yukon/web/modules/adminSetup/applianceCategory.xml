@@ -18,8 +18,8 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.programName">Program Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.assignedPrograms">Assigned Programs</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.noAssignedPrograms">There are currently no programs assigned to an appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.programName">Program Name</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.applianceCategoryName">Appliance Category Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.programNameHeader.linkText">Program Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.applianceCategoryNameHeader.linkText">Appliance Category Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.virtualProgramName">Virtual Program {0}</entry>
 
 <!-- Create Appliance Category -->
@@ -83,10 +83,10 @@
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms">Assigned Programs</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.noAssignedPrograms">There are currently no programs assigned to this appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.programName">Program Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.programName.linkText">Program Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.virtualProgramName">Virtual Program {0}</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.actions">Actions</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.displayOrder">Display Order</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.displayOrder.linkText">Display Order</entry>
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>

@@ -27,18 +27,15 @@
                         <tr>
                             <th></th>
                             <th>
-                                <tags:sortLink key="yukon.web.modules.dr.home.nameHeader"
-                                    baseUrl="${baseUrl}" fieldName="NAME"
+                                <tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"
                                     sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
-                                <tags:sortLink key="yukon.web.modules.dr.home.typeHeader"
-                                    baseUrl="${baseUrl}" fieldName="TYPE"
+                                <tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"
                                     sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
-                                <tags:sortLink key="yukon.web.modules.dr.home.stateHeader"
-                                    baseUrl="${baseUrl}" fieldName="STATE"
+                                <tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"
                                     sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
@@ -101,18 +98,15 @@
                         <tr>
                             <th></th>
                             <th>
-                                <tags:sortLink key="yukon.web.modules.dr.home.nameHeader"
-                                    baseUrl="${baseUrl}" fieldName="NAME"
+                                <tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"
                                     sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
-                                <tags:sortLink key="yukon.web.modules.dr.home.typeHeader"
-                                    baseUrl="${baseUrl}" fieldName="TYPE"
+                                <tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"
                                     sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
-                                <tags:sortLink key="yukon.web.modules.dr.home.stateHeader"
-                                    baseUrl="${baseUrl}" fieldName="STATE"
+                                <tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"
                                     sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
