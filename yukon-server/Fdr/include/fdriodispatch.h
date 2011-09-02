@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __FDRIODISPATCH_H__
-#define __FDRIODISPATCH_H__
+#pragma once
 
 #include "message.h"
 #include "connection.h"
@@ -20,9 +18,4 @@ private:
 protected:
     CtiConnection *_dispatchConn;
     BOOL _dbChange;
-
-public:
-
 };
-
-#endif  //  #ifndef __FDRIODISPATCH_H__

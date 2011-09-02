@@ -1,8 +1,4 @@
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMSERVICE_H
-#define CTILMSERVICE_H
+#pragma once
 
 #include "cservice.h"
 #include "loadmanager.h"
@@ -32,5 +28,3 @@ private:
     bool _quit;
     std::string _config_file;
 };
-#endif
-

@@ -1,38 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mcserver
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------
-        Filename:  mc_server.h
-
-        Programmer:  Aaron Lauinger
-
-        Description:  Header file for CtiMCServer
-
-                      CtiMCServer is where the MACS main loop lives.
-
-        Initial Date: 1/9/01
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-
-#ifndef _CTIMCSERVER_H
-#define _CTIMCSERVER_H
+#pragma once
 
 #include <time.h>
 #include <deque>
@@ -148,5 +114,3 @@ private:
     unsigned long secondsToNextMinute() const;
     unsigned long secondsToTime(const CtiTime& t) const;
 };
-
-#endif

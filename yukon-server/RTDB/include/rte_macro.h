@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_macro
-*
-* Class:  CtiRouteMacro
-* Date:   9/30/1999
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_macro.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __RTE_MACRO_H__
-#define __RTE_MACRO_H__
-
+#pragma once
 
 #include <rw/tpordvec.h>
 #include <rw/tvordvec.h>
@@ -78,5 +60,3 @@ public:
 };
 
 typedef boost::shared_ptr<CtiRouteMacro> CtiRouteMacroSPtr;
-
-#endif // #ifndef __RTE_MACRO_H__

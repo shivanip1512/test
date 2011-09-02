@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_tap
-*
-* Class:  CtiDeviceTapPagingTerminal
-* Date:   5/9/2000
-*
-* Author: Corey G. Plender
-*
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.15.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:28 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_TAP_H__
-#define __DEV_TAP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <rw\thr\mutex.h>
 
@@ -149,9 +129,3 @@ public:
 #define CHAR_ACK        0x06
 #define CHAR_NAK        0x15
 #define CHAR_RS         0x1e
-
-
-
-
-
-#endif // #ifndef __DEV_TAP_H__

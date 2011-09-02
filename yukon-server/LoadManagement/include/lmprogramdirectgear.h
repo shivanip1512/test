@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramdirectgear.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMProgramDirectGear
-                        CtiLMProgramDirectGear
-
-        Initial Date:  2/5/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMDIRECTGEARIMPL_H
-#define CTILMPROGRAMDIRECTGEARIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -180,5 +165,3 @@ private:
     LONG _back_ramp_time;
     DOUBLE _kw_reduction;
 };
-#endif
-

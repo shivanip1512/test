@@ -1,23 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   dev_grp_sa205
-*
-* Class:
-* Date:   3/25/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __DEV_GRP_SA205_H__
-#define __DEV_GRP_SA205_H__
-
+#pragma once
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -58,5 +39,3 @@ public:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 };
-
-#endif // #ifndef __DEV_GRP_SA205_H__

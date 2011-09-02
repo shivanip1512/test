@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_tcpip
-*
-* Class:  CtiPortTCPIPDirect
-* Date:   3/31/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_TCPIP_H__
-#define __PORT_TCPIP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "port_serial.h"
 #include "port_dialable.h"
@@ -86,5 +67,3 @@ public:
 };
 
 typedef boost::shared_ptr< CtiPortTCPIPDirect > CtiPortTCPIPDirectSPtr;
-
-#endif // #ifndef __PORT_TCPIP_H__

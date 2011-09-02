@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramthermostatgear.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMProgramThermoStatGear
-                        CtiLMProgramThermoStatGear
-
-        Initial Date:  11/5/2002
-        
-        COPYRIGHT:  Copyright (C) Cooper Industries, 2002
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMTHERMOSTATGEARIMPL_H
-#define CTILMPROGRAMTHERMOSTATGEARIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -79,5 +64,3 @@ private:
     LONG _valuetf;
     float _rampRate;
 };
-#endif
-

@@ -1,28 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ion_value_struct
-*
-* Class:  CtiIONStruct
-* Date:   1/30/2003
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_STRUCT_H__
-#define __ION_VALUE_STRUCT_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <vector>
 
 #include "ion_value.h"
-
 
 class CtiIONStruct : public CtiIONValue
 {
@@ -110,8 +90,3 @@ public:
         StructType_StringArray
     };
 };
-
-
-
-
-#endif // #ifndef __ION_VALUE_STRUCT_H__

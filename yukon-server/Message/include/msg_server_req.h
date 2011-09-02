@@ -1,7 +1,4 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __MSG_SERVER_REQ_H_
-#define __MSG_SERVER_REQ_H_
+#pragma once
 
 #include <string>
 
@@ -43,12 +40,7 @@ public:
 
     virtual void dump() const;
 
-
-
 protected:
     int _id;
     RWCollectable* _payload;
 };
-
-
-#endif

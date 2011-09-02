@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_fulcrum
-*
-* Class:  CtiDeviceFulcrum
-* Date:   09/07/2000
-*
-* Author: David Sutton
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_fulcrum.h-arc  $
-* REVISION     :  $Revision: 1.11.10.2 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_FULCRUM_H__
-#define __DEV_FULCRUM_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -286,6 +266,4 @@ public:
    BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak,  FulcrumScanData_t *aScanData);
    INT ResultDisplay (INMESS *InMessage);
 };
-
-#endif // #ifndef __DEV_FULCRUM_H__
 

@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgrouppoint.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMGroupPoint
-                        CtiLMGroupPoint
-
-        Initial Date:  3/13/2002
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2002
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPPOINTIMPL_H
-#define CTILMGROUPPOINTIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -70,5 +55,3 @@ private:
 
     void restore(Cti::RowReader &rdr);
 };
-#endif
-

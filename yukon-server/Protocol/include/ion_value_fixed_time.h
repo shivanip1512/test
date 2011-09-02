@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_value_fixed_time.h
- *
- * Class:  CtiION*
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_FIXED_TIME_H__
-#define __ION_VALUE_FIXED_TIME_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include "ion_value_fixed.h"
 
@@ -49,8 +35,3 @@ public:
         MillisecondsToFractionalMultiplier = 2147000
     };
 };
-
-
-#endif  //  #ifndef __ION_VALUE_FIXED_TIME_H__
-
-

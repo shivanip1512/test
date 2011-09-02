@@ -1,24 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   config_base
-*
-* Date:   8/5/2005
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_base.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __CONFIG_BASE_H__
-#define __CONFIG_BASE_H__
+#pragma once
+
 #include "yukon.h"
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 using boost::shared_ptr;
-
 
 #include "logger.h"
 #include "dllbase.h"
@@ -59,5 +45,3 @@ typedef shared_ptr< Base > BaseSPtr;
 
 }
 }
-
-#endif //__CONFIG_BASE_H__

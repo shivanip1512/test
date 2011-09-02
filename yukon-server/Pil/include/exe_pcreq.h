@@ -1,5 +1,4 @@
-#ifndef __EXE_PCREQ_H__
-#define __EXE_PCREQ_H__
+#pragma once
 
 #include "executor.h"
 
@@ -23,7 +22,5 @@ public:
 
    int  ServerExecute(CtiServer *Svr);
 };
-
-#endif //#ifndef __EXE_PCREQ_H__
 
 

@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_emetcon
-*
-* Class:  CtiDeviceGroupEmetcon
-* Date:   10/4/1999
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_GRP_EMETCON_H__
-#define __DEV_GRP_EMETCON_H__
-
+#pragma once
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -64,6 +46,4 @@ public:
                               std::list< OUTMESS* >         &outList);
 
    static std::string CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage);
-
 };
-#endif // #ifndef __DEV_GRP_EMETCON_H__

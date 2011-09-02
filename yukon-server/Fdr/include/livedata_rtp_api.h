@@ -1,18 +1,4 @@
-#ifndef __LIVEDATA_RTP_API_H__
-#define __LIVEDATA_RTP_API_H__
-
-/**
- * File:   livedata_rtp_api
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Author: Tom Mack
- *
- * PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive: $
- *    REVISION     :  $Revision: 1.1 $
- *    DATE         :  $Date: 2005/04/15 15:34:41 $
- */
+#pragma once
 
 #include <string>
 #include <exception>
@@ -129,10 +115,4 @@ protected:
   WriteCallback   *_writeCallback;
   unsigned long _initReturnValue;
   bool   _connectionOpen;
-
-
 };
-
-
-#endif // #ifndef __LIVEDATA_RTP_API_H__
-

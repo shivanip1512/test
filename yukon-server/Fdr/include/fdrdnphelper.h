@@ -1,13 +1,4 @@
-
-/*
- *    FILE NAME: fdrscadahelper.h
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
-
-#ifndef __FDRDNPHELPER_H__
-#define __FDRDNPHELPER_H__
+#pragma once
 
 #include <windows.h>
 
@@ -47,7 +38,3 @@ class IM_EX_FDRBASE CtiFDRDNPHelper
 
         CtiFDRSocketServer* _parent;
 };
-
-
-#endif  //  #ifndef __FDRDNPHELPER_H__
-

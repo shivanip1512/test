@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_shr
-*
-* Class:  CtiPortShare
-* Date:   8/6/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/06/25 19:20:44 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_SHR_H__
-#define __PORT_SHR_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "ctinexus.h"
 #include "dlldefs.h"
@@ -115,5 +96,3 @@ public:
 };
 
 inline CtiPortShare& CtiPortShare::setListenPort(INT prt) { _internalPort = prt; return *this; }
-
-#endif // #ifndef __PORT_SHR_H__

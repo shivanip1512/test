@@ -1,22 +1,3 @@
-// EventLog.h file
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   EventLog
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVICE/INCLUDE/EventLog.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:51 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-// CEventLog Class - Implements event logging functions
-
 #include "dlldefs.h"
 
 class IM_EX_SERVICE CEventLog

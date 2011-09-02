@@ -1,26 +1,4 @@
-/*****************************************************************************
-*
-*    FILE NAME: fdrbepc.h
-*
-*    DATE: 04/11/2003
-*
-*    PVCS KEYWORDS:
-*    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.h-arc  $
-*    REVISION     :  $Revision: 1.6.2.2 $
-*    DATE         :  $Date: 2008/11/18 20:11:30 $
-*
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Text file export for Basin Electric Public Coop members
-*
-****************************************************************************
-*/
-
-#ifndef __FDRBEPC_H__
-#define __FDRBEPC_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -71,7 +49,3 @@ private:
     bool _appendFlag;
     std::map<std::string,std::string> coopIdToFileName;
 };
-
-#endif
-
-

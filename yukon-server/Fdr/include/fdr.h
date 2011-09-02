@@ -1,21 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   fdr
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/09/15 21:09:16 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __FDR_H__
-#define __FDR_H__
+#pragma once
 
 #include "pointdefs.h"
 
@@ -45,8 +28,3 @@ typedef enum {
      Initial,
      ForceReload
 } FDRDbReloadReason;
-
-
-
-
-#endif //  #ifndef __FDR_H__

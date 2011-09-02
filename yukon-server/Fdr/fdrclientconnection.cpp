@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 #include "precompiled.h"
 #include "logger.h"
 #include "guard.h"

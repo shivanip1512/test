@@ -1,19 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   SCANGLOB
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/SCANGLOB.H-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/29 20:49:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-
 /* Global definitions for the scanner */
 
 #include "dlldefs.h"

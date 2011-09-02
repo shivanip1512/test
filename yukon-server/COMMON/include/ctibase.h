@@ -1,16 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ctibase
-*
-* Date:   10/5/1999
-*
-* Author: Corey G. Plender
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __CTIBASE_H__
-#define __CTIBASE_H__
-
+#pragma once
 
 #include <rw\thr\mutex.h>
 #include <rw/thr/guard.h>
@@ -24,5 +12,3 @@
 #define PORTER_SHUTDOWN_EVENT    "CtiPorterShutdownEvent"
 #define SCANNER_SHUTDOWN_EVENT   "CtiScannerShutdownEvent"
 #define VANGOGH_SHUTDOWN_EVENT   "CtiVanGoghShutdownEvent"
-
-#endif // #ifndef __CTIBASE_H__

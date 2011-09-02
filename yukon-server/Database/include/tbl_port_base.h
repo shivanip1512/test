@@ -1,23 +1,4 @@
-
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_base
-*
-* Date:   9/13/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __TBL_PORT_BASE_H__
-#define __TBL_PORT_BASE_H__
+#pragma once
 
 #include "dbmemobject.h"
 #include "dbaccess.h"
@@ -82,4 +63,3 @@ private:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual void DumpData();
 };
-#endif // #ifndef __TBL_PORT_BASE_H__

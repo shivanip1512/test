@@ -1,37 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   interp.h
-*
-* Date:   6/23/2003
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_interp.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/11/12 16:47:40 $
-*
-* Copyright (c) 2003, Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*-----------------------------------------------------------------------------
-    Filename:  interp.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiInterpreter
-                    CtiInterpreter provides an interface to an interpreter
-                    implementation that executes TCL scripts as well as
-                    stand alone commands.
-
-    Initial Date:  4/7/99
-                   9/4/03
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999, 2003
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __INTERP__H__
-#define __INTERP__H__
+#pragma once
 
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>
@@ -112,5 +79,3 @@ private:
     static int event_proc(Tcl_Event* evtPtr, int flags );
 
 };
-
-#endif

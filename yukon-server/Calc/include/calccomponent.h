@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __CALCCOMPONENT_H__
-#define __CALCCOMPONENT_H__
+#pragma once
 
 #include "ctitime.h"
 #include "ctidate.h"
@@ -93,5 +91,3 @@ public:
 //   void              saveGuts( RWvostream &aStream ) const;
 //   void              restoreGuts( RWvistream &aStream );
 };
-
-#endif   // #ifndef __CALCCOMPONENT_H__

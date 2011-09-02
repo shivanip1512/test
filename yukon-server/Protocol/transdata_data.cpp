@@ -1,22 +1,3 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   transdata_data
-*
-* Date:   9/19/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "precompiled.h"
 
 #include "logger.h"

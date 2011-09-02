@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   std_ansi_tbl_08
-*
-* Class:  CtiAnsiTable08
-* Date:   9/13/2002
-*
-* Author: Eric Schmit
-*
-
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#ifndef __STD_ANSI_TBL_08_H__
-#define __STD_ANSI_TBL_08_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "dlldefs.h"
 #include "types.h"
@@ -126,5 +111,3 @@ public:
     int getLPOffset(void);
 
 };
-#endif // #ifndef __STD_ANSI_TBL_08_H__
-

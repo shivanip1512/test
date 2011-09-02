@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  cfdata.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for wisconsin public service company(corp)
-                    file format decoders.
-
-    Initial Date:  4/7/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-
-#ifndef WPSC_H
-#define WPSC_H
+#pragma once
 
 #include <iostream>
 
@@ -44,4 +30,3 @@ static bool DecodeWepcoServiceLine( char* line, std::vector<RWCollectableString*
 static bool DecodeWepcoConfigLine( char* line, std::vector<RWCollectableString*>* results );
 
 static std::string GetSelectCustomRouteID(long serial_num);
-#endif

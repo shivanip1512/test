@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_serial
-*
-* Date:   3/29/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_serial.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PORT_SERIAL_H__
-#define __TBL_PORT_SERIAL_H__
+#pragma once
 
 #include "dbaccess.h"
 #include "dbmemobject.h"
@@ -45,4 +29,3 @@ public:
    CtiTablePortLocalSerial& setPhysicalPort(const std::string& str );
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
-#endif // #ifndef __TBL_PORT_SERIAL_H__

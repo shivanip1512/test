@@ -1,5 +1,5 @@
-#ifndef __CON_MGR_PIL_H__
-#define __CON_MGR_PIL_H__
+#pragma once
+
 #include <limits.h>
 
 #include <rw/thr/mutex.h>
@@ -46,7 +46,3 @@ public:
       return (unsigned)&aRef;            // The address of the Object?
    }
 };
-
-#endif //#ifndef __CON_MGR_PIL_H__
-
-

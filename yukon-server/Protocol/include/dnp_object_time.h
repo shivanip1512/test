@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_time
-*
-* Class:  DNP Time objects
-* Date:   7/8/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/09 20:42:47 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_OBJECT_TIME_H__
-#define __DNP_OBJECT_TIME_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dnp_objects.h"
 
@@ -121,5 +102,3 @@ public:
 }
 }
 }
-
-#endif  //  #ifndef __DNP_OBJECT_TIME_H__

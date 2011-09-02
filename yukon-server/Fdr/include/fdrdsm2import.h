@@ -1,24 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrdsm2import.h
-*
-*    DATE: 03/06/2002
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Class to retrieve the DSM2 FILEOUT file
-*
-*    DESCRIPTION: 
-*
-*    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRDSM2IMPORT_H__
-#define __FDRDSM2IMPORT_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -67,10 +47,3 @@ class IM_EX_FDRDSM2IMPORT CtiFDR_Dsm2Import : public CtiFDRAsciiImportBase
         static const CHAR * KEY_QUEUE_FLUSH_RATE;
         static const CHAR * KEY_DELETE_FILE;
 };
-
-
-
-#endif  //  #ifndef __FDR_STEC_H__
-
-
-

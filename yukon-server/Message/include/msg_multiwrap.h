@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_MULTIWRAP_H__
-#define __MSG_MULTIWRAP_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_multiwrap
-*
-* Class:  CtiMultiWrapper
-* Date:   11/7/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_multiwrap.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:26 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include "dlldefs.h"
 #include "msg_multi.h"
@@ -48,4 +28,3 @@ public:
    size_t entries() const;
 
 };
-#endif // #ifndef __MSG_MULTIWRAP_H__

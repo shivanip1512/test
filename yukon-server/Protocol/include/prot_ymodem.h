@@ -1,22 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   prot_ymodem
-*
-* Class:
-* Date:   8/4/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __PROT_YMODEM_H__
-#define __PROT_YMODEM_H__
+#pragma once
 
 #include "xfer.h"
 #include "dllbase.h"
@@ -108,5 +90,3 @@ class IM_EX_PROT CtiProtocolYmodem
 
       BYTE  *_storage;
 };
-
-#endif // #ifndef __PROT_YMODEM_H__

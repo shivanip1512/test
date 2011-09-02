@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_fpcbc
-*
-* Class:  CtiProtocolFisherPierceCBC
-* Date:   6/15/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_fpcbc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_FPCBC_H__
-#define __PROT_FPCBC_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "cmdparse.h"
 #include "dsm2.h"
@@ -84,14 +65,10 @@ public:
     INT assemblePutStatus(CtiCommandParser  &parse, const FPSTRUCT &aFPSt);
     INT assembleControl(CtiCommandParser  &parse, const FPSTRUCT &aFPSt);
 
-
     /*-------------------------------------------------------------------------*
      * Constructs a message buffer for a capacitor control
      * command.  The argument trips control if non-zero, or closes
      * it if zero.
      *-------------------------------------------------------------------------*/
     INT capacitorControlCommand(BOOL Trip);
-
-
 };
-#endif // #ifndef __PROT_FPCBC_H__

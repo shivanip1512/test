@@ -1,23 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ctidbgmem
-*
-* Class:
-* Date:   11/14/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3.34.1 $
-* DATE         :  $Date: 2008/11/13 17:23:50 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #pragma once
-#pragma warning( disable : 4786)
 
 #define _CRTDBG_MAP_ALLOC
-
 
 #if !defined (NOMINMAX)
 #define NOMINMAX

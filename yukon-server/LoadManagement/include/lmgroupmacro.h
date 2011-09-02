@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupmacro.h
-        
-        Programmer:  Aaron Lauinger
-        
-        Description:    Header file for CtiLMGroupMacro
-                        CtiLMGroupMacro
-
-        Initial Date:  6/24/2004
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001-2004
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __LMGROUPMACRO_H__
-#define __LMGROUPMACRO_H__
+#pragma once
 
 #include <vector>
 
@@ -47,4 +32,3 @@ protected:
     
     void restore(Cti::RowReader &rdr);
 };
-#endif

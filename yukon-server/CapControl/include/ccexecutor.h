@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 #pragma once
 
 #include "ccmessage.h"

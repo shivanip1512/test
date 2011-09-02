@@ -1,23 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrsocketinterface.h
-*
-*    DATE: 04/27/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: base class for the socket interfaces such as ACS,VALMET, INET
-*
-*    DESCRIPTION:  base class for the socket type interfaces
-*
-*    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRSOCKETINTERFACE_H__
-#define __FDRSOCKETINTERFACE_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -118,6 +99,3 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         */
         int                   iLinkTimeout;
 };
-
-#endif
-

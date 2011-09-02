@@ -1,67 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_sa305
-*
-* Class:  CtiProtocolSA305
-* Date:   3/8/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
-* HISTORY      :
-* $Log: prot_sa305.h,v $
-* Revision 1.11  2005/12/20 17:19:59  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.10.2.2  2005/07/14 22:27:02  jliu
-* RWCStringRemoved
-*
-* Revision 1.10.2.1  2005/07/12 21:08:43  jliu
-* rpStringWithoutCmpParser
-*
-* Revision 1.10  2005/05/04 20:49:33  cplender
-* Adjusted coldload and tamper detect code for the SA stuff.
-*
-* Revision 1.9  2005/03/17 05:15:34  mfisher
-* 305 currently doesn't share any similarities with Protocol::Interface, so it's going to be orphaned for a while
-*
-* Revision 1.8  2005/03/10 19:22:50  mfisher
-* changed CtiProtocolBase to Cti::Protocol::Interface
-*
-* Revision 1.7  2005/02/10 23:23:58  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.6  2005/01/04 22:16:03  cplender
-* Completed the asString() method.
-*
-* Revision 1.5  2004/12/14 22:25:16  cplender
-* Various to wring out config commands.  Should be pretty good.
-*
-* Revision 1.4  2004/11/17 23:42:38  cplender
-* Complete 305 for RTC transmitter
-*
-* Revision 1.3  2004/11/08 14:40:39  cplender
-* 305 Protocol should send controls on RTCs now.
-*
-* Revision 1.2  2004/11/05 17:25:59  cplender
-*
-* Getting 305s to work
-*
-* Revision 1.1  2004/03/18 19:46:44  cplender
-* Added code to support the SA305 protocol and load group
-*
-*
-* Copyright (c) 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_SA305_H__
-#define __PROT_SA305_H__
+#pragma once
 
 #include <vector>
-
 
 #include "cmdparse.h"
 #include "dlldefs.h"
@@ -263,4 +202,3 @@ public:
     std::string  asString() const;
 
 };
-#endif // #ifndef __PROT_SA305_H__

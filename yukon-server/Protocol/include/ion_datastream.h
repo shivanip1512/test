@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_datastream.h
- *
- * Class:  CtiIONDataStream
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_DATASTREAM_H__
-#define __ION_DATASTREAM_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <vector>
 
@@ -82,7 +68,3 @@ public:
     virtual void putSerialized( unsigned char *buf ) const;
     virtual unsigned int getSerializedLength( void ) const;
 };
-
-
-#endif  //  #ifndef __ION_DATASTREAM_H__
-

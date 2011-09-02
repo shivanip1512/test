@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_macro
-*
-* Class:  CtiDeviceGroupMacro
-* Date:   10/12/2001
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_GRP_MACRO_H__
-#define __DEV_GRP_MACRO_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -68,5 +49,3 @@ public:
     virtual INT initTrxID( int trx, CtiCommandParser &parse, std::list< CtiMessage* >  &vgList );
     virtual std::string getDescription(const CtiCommandParser & parse) const;
 };
-
-#endif // #ifndef __DEV_GRP_MACRO_H__

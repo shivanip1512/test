@@ -1,22 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rawpthistory
-*
-* Date:   4/27/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_rawpthistory.h-arc  $
-* REVISION     :  $Revision: 1.5.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_RAWPTHISTORY_H__
-#define __TBL_RAWPTHISTORY_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -95,7 +77,4 @@ public:
    CtiTableRawPointHistory&   setQuality(const INT &qual);
    CtiTableRawPointHistory&   setValue(const DOUBLE &val);
    CtiTableRawPointHistory&   setBookmark(const std::string &mark);
-
-
 };
-#endif // #ifndef __TBL_RAWPTHISTORY_H__

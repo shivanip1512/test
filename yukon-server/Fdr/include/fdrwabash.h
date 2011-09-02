@@ -1,22 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrwabash.cpp
-*
-*    DATE: 1/26/2007
-*
-*    AUTHOR: Thain Spar
-*
-*    PURPOSE: Replace MACS scripts for client wabash
-*
-*    DESCRIPTION: Whenever a Load Program status is changed, this program will
-*                 write out a line of text in a file specified by the status point
-*                 indicating the action needed to the froeign system.
-*
-*****************************************************************************/
-#ifndef __FDRWABASH_H__
-#define __FDRWABASH_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -64,5 +46,3 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
         bool   _writeInitialLoad;
 
 };
-
-#endif

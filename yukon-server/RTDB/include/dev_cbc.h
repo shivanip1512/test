@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_cbc
-*
-* Class:  CtiDeviceCBC
-* Date:   8/24/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_CBC_H__
-#define __DEV_CBC_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_base.h"
 #include "tbl_dv_cbc.h"       // TYPEVERSACOMCBC, TYPEFISHERPCBC
@@ -83,6 +64,3 @@ public:
 
 
 };
-
-
-#endif // #ifndef __DEV_CBC_H__

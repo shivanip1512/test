@@ -1,20 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_TAG_H__
-#define __MSG_TAG_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_tag.h
-*
-* Class:  CtiTagMsg
-* Date:   8/2/2003
-*
-* Author: Aaron Lauinger
-*
-* Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
+#pragma once
 
 #include "dllbase.h"
 #include "message.h"
@@ -94,4 +78,3 @@ public:
    virtual void dump() const;
 
 };
-#endif // #ifndef __MSG_TAG_H__

@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  lmserver.h
-                
-    Programmer:  Josh Wolberg
-    
-    Description: Header file for CtiLMServer
-        
-    Initial Date:  8/16/2000
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMSERVER_H
-#define CTILMSERVER_H
+#pragma once
                                 
 #include <rw/thr/recursiv.h>
 #include <rw/thr/mutex.h>
@@ -52,5 +37,3 @@ private:
     static CtiLMServer* _instance;
     static int _defaultport;
 };
-
-#endif

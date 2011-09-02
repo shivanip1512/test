@@ -1,8 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __QUEENT_H__
-#define __QUEENT_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -70,6 +66,3 @@ public:
 
    // const int MaxPriorty = 15;
 };
-
-
-#endif // #ifndef  __QUEENT_H__

@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DLLVG_H__
-#define __DLLVG_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   dllvg
-*
-* Class:
-* Date:   12/6/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/dllvg.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/07 20:30:51 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include "dlldefs.h"
 
@@ -44,5 +24,3 @@ IM_EX_CTIVANGOGH extern INT gCommErrorDays;
 
 
 IM_EX_CTIVANGOGH void InitDispatchGlobals(void);
-
-#endif // #ifndef __DLLVG_H__

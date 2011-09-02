@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_modem
-*
-* Class:  CtiHayesModem
-* Date:   12/5/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_MODEM_H__
-#define __PORT_MODEM_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "port_base.h"
 
@@ -143,4 +125,3 @@ public:
     static bool validModemResponse (PCHAR Response);
 
 };
-#endif // #ifndef __PORT_MODEM_H__

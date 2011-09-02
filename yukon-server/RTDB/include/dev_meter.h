@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_meter
-*
-* Class:  CtiDeviceMeter
-* Date:   8/18/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_METER_H__
-#define __DEV_METER_H__
-
+#pragma once
 
 #include <rw\thr\mutex.h>
 
@@ -104,6 +86,3 @@ public:
    virtual bool isMeter() const;
 
 };
-
-
-#endif // #ifndef __DEV_METER_H__

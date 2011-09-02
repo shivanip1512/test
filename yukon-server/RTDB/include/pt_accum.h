@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pt_accum
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_accum.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PT_ACCUM_H__
-#define __PT_ACCUM_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -172,5 +157,3 @@ public:
 };
 
 typedef boost::shared_ptr< CtiPointAccumulator > CtiPointAccumulatorSPtr;
-
-#endif // #ifndef __PT_ACCUM_H__

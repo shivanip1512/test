@@ -1,44 +1,4 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_script
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_script.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:12 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------
-*
- *
- *    FILE NAME: mc_script.h
- *
- *    DATE: 3/10/2001
- *
- *    PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_script.h-arc  $
- *    REVISION     :  $Revision: 1.3 $
- *    DATE         :  $Date: 2002/04/16 15:59:12 $
- *
- *
- *    AUTHOR:  Aaron Lauinger
- *
- *    DESCRIPTION: Represents a MACS Script.
- *                 Supports persistence to disk and
- *                 to RogueWave streams.
- *
- *
- *    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
- *---------------------------------------------------------------------------*/
-
-
-#ifndef __MC_SCRIPT_H__
-#define __MC_SCRIPT_H__
+#pragma once
 
 // Uses ANSI c file io
 #include <stdio.h>
@@ -83,4 +43,3 @@ private:
     std::string _name;
     std::string _contents;
 };
-#endif

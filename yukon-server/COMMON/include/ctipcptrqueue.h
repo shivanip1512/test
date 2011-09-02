@@ -9,8 +9,7 @@
  * queue will no longer do anything with the object.
  */
 
-#ifndef CTIPCPTRQUEUE_H
-#define CTIPCPTRQUEUE_H
+#pragma once
 
 #include <list>
 #include <LIMITS>
@@ -154,6 +153,4 @@ class CtiPCPtrQueue{
         };
 
 };
-
-#endif
 

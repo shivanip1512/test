@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   xfer
-*
-* Class:  CtiXfer
-* Date:   3/28/2000
-*
-* Author: Corey Plender
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __XFER_H__
-#define __XFER_H__
-#pragma warning( disable : 4786)
-
-
-// IM_EX_YUKONDB
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -148,4 +131,3 @@ public:
    static ULONG TRACE_DEBUG  ;
    static ULONG TRACE_REMOTE ;
 };
-#endif // #ifndef __XFER_H__

@@ -1,22 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rtcomm
-*
-* Date:   9/30/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_rtcomm.h-arc  $
-* REVISION     :  $Revision: 1.4.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __TBL_RTCOMM_H__
-#define __TBL_RTCOMM_H__
+#pragma once
 
 #include "row_reader.h"
 #include <limits.h>
@@ -80,4 +62,3 @@ public:
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    static std::string getTableName();
 };
-#endif // #ifndef __TBL_RTCOMM_H__

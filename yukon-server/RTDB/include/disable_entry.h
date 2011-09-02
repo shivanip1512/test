@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   disable_entry.h
-*
-* Class:  CtiDisabledEntry
-* Date:   1/6/2006
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/disable_entry.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DISABLE_ENTRY_H__
-#define __DISABLE_ENTRY_H__
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -69,6 +52,3 @@ public:
 };
 
 typedef shared_ptr< CtiDisabledEntry > CtiDisabledEntrySPtr;
-
-
-#endif // #ifndef __DISABLE_ENTRY_H__

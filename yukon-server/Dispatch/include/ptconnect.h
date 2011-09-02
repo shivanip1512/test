@@ -1,21 +1,4 @@
-#ifndef __PTCONNECT_H__
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   ptconnect
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ptconnect.h-arc  $
-* REVISION     :  $Revision: 1.8.4.1 $
-* DATE         :  $Date: 2008/11/20 20:37:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#define __PTCONNECT_H__
+#pragma once
 
 #include "ctitime.h"
 #include <rw/thr/recursiv.h>
@@ -57,5 +40,3 @@ public:
    CollectionType  getManagerList() const;
     
 };
-
-#endif // __PTCONNECT_H__

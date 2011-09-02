@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_snpp
-*
-* Class:  CtiDeviceSnppPagingTerminal
-* Date:   5/9/2000
-*
-* Author: Corey G. Plender
-*
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_SNPP_H__
-#define __DEV_SNPP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <rw\thr\mutex.h>
 
@@ -154,5 +134,3 @@ private:
 #define CHAR_NAK        0x15
 #define CHAR_RS         0x1e
 */
-
-#endif // #ifndef __DEV_SNPP_H__

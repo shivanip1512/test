@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pao_lite
-*
-* Date:   8/15/2008
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.3.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 2008 Cooper Industries. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PAO_LITE_H__
-#define __TBL_PAO_LITE_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -77,5 +58,3 @@ public:
 };
 
 inline bool CtiTblPAOLite::isInhibited() const { return _disableFlag; }
-
-#endif // #ifndef __TBL_PAO_LITE_H__

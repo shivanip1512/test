@@ -1,7 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __FDRSOCKETCONNECTION_H__
-#define __FDRSOCKETCONNECTION_H__
+#pragma once
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -41,9 +38,5 @@ class IM_EX_FDRBASE CtiFDRSocketConnection
         FDRConnectionStatus     iConnectionStatus;
         SOCKADDR_IN             iAddr;
 
-        CtiFDRSocketLayer         *iParent;    
-
-
+        CtiFDRSocketLayer         *iParent;
 };
-#endif
-

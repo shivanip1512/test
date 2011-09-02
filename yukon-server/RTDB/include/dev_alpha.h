@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_alpha
-*
-* Class:  CtiDeviceAlpha
-* Date:   02/21/2000
-*
-* Author: David Sutton
-*
-* Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_ALPHA_H__
-#define __DEV_ALPHA_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -273,7 +258,6 @@ public:
     // all the following functions need to be defined in the lower classes
     virtual UCHAR touBlockMapping( UCHAR config, USHORT type ) { return YukonBaseError; }
 };
-#endif // #ifndef __DEV_APLUS_H__
 
 
 

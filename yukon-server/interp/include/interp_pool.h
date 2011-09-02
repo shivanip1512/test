@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  interp_pool.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiInterpreterPool
-
-    Initial Date:  4/7/99
-                   9/4/03
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999, 2003
------------------------------------------------------------------------------*/
-
-#ifndef __INTERP_POOL_H__
-#define __INTERP_POOL_H__
-
-#pragma warning( disable : 4786 )
+#pragma once
 
 #include <set>
 
@@ -53,6 +37,3 @@ private:
 
     CtiInterpreter* createInterpreter();
 };
-
-#endif
-

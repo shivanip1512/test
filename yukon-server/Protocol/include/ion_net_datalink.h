@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:    ion_net_datalink.h
- *
- * Classes: CtiIONDatalinkLayer, CtiIONFrame
- * Date:    07/06/2001
- *
- * Author:  Matthew Fisher
- *
- *          ION pseudo-ISO network layer classes for the ION serial protocol
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_NET_DATALINK_H__
-#define __ION_NET_DATALINK_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <vector>
 
@@ -165,8 +149,4 @@ public:
     bool isValid( void );
 };
 
-
 #pragma pack(pop, ion_packing)
-
-#endif  //  #ifndef __ION_NET_DATALINK_H__
-

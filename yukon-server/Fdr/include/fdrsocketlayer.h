@@ -1,7 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __FDRSOCKETLAYER_H__
-#define __FDRSOCKETLAYER_H__
+#pragma once
 
 #include <rw/thr/mutex.h>
 #include <rw/thr/barrier.h>
@@ -120,7 +117,3 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         HEV                     iSemaphore;
         long                    iLinkStatusID;
 };
-
-
-#endif // #ifndef __FDRSOCKETLAYER_H__
-

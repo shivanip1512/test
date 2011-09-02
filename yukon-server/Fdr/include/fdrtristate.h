@@ -1,23 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrtristate.h
-*
-*    DATE: 05/30/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Class to retrieve the tristate file
-*
-*    DESCRIPTION: 
-*
-*    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRTRISTATE_H__
-#define __FDRTRISTATE_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -67,5 +48,3 @@ class IM_EX_FDRTRISTATE CtiFDR_Tristate : public CtiFDRFtpInterface
 			static const CHAR * KEY_30_MINUTE_AVG_LABEL;
 
 };
-#endif  //  #ifndef __FDRTRISTATE_H__
-

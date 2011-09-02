@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_value_variable_program.h
- *
- * Class:  CtiIONProgram
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_VARIABLE_PROGRAM_H__
-#define __ION_VALUE_VARIABLE_PROGRAM_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <vector>
 
@@ -179,8 +165,3 @@ public:
         ReadCollectiveState          = 0x05E1
     };
 };
-
-
-#endif  //  #ifndef __ION_VALUE_VARIABLE_PROGRAM_H__
-
-

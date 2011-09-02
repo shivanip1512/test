@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramdirect.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiLMProgramDirect
-                        CtiLMProgramDirect
-
-        Initial Date:  2/2/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMDIRECTIMPL_H
-#define CTILMPROGRAMDIRECTIMPL_H
+#pragma once
 
 #include <vector>
 #include <set>
@@ -232,5 +217,3 @@ private:
 
     void restore(Cti::RowReader &rdr);
 };
-#endif
-

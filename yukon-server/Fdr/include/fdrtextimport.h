@@ -1,7 +1,4 @@
-#ifndef __FDRTEXTIMPORT_H__
-#define __FDRTEXTIMPORT_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -96,8 +93,3 @@ private:
     std::vector <CtiFDRTextFileInterfaceParts> _fileInfoList;
     std::map<std::string,int> nameToPointId;
 };
-
-
-
-#endif  //  #ifndef __FDR_STEC_H__
-

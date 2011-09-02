@@ -1,26 +1,4 @@
-/*************************************************************************
- *
- * rtdb.h      7/7/99
- *
- *****
- *
- *  A templatized run/real time data base class.  Initially done with a
- *  RogueWave singly linked list solely for the benefits of the apply and
- *  find functionality without the need for Standard C++ library.
- *
- * Originated by:
- *     Corey G. Plender    7/7/99
- *
- *
- * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
- * All Rights Reserved
- *
- ************************************************************************/
-#ifndef __RTDB_H__
-#define __RTDB_H__
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -229,9 +207,4 @@ public:
    {
        _dberrorcode = 0;      // Only set it if there was an error (don't re-set it)
    }
-
-
 };
-
-#endif      // #ifndef __RTDB_H__
-

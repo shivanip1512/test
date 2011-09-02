@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PT_ANALOG_H__
-#define __TBL_PT_ANALOG_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_analog
-*
-* Class:  CtiTablePointAnalog;
-* Date:   8/14/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include "row_reader.h"
 
@@ -68,4 +48,3 @@ public:
    //CtiTablePointAnalog& setTransducerType(string &str);
 
 };
-#endif // #ifndef __TBL_PT_ANALOG_H__

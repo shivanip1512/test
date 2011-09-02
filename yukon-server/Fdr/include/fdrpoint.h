@@ -1,7 +1,4 @@
-#ifndef __FDRPOINT_H__
-#define __FDRPOINT_H__
-
-/** include files **/
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -93,5 +90,3 @@ private:
 };
 
 IM_EX_FDRBASE std::ostream& operator<< (std::ostream& os, const CtiFDRPoint& point);
-
-#endif  //  #ifndef __FDRPOINT_H__

@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_datalink_packet
-*
-* Date:   1/23/2003
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/02/15 21:06:10 $
-*
-* Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_DATALINK_PACKET_H__
-#define __DNP_DATALINK_PACKET_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 namespace Cti       {
 namespace Protocol  {
@@ -105,5 +88,3 @@ namespace DatalinkPacket {
 };
 };
 };
-
-#endif // #ifndef __DNP_DATALINK_PACKET_H__

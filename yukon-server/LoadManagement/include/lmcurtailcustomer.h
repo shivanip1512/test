@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmcurtailcustomer.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMCurtailCustomer
-
-        Initial Date:  3/26/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMCURTAILCUSTOMERIMPL_H
-#define CTILMCURTAILCUSTOMERIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -96,5 +82,3 @@ private:
 
     void updateLMCurtailCustomerActivityTable(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 };
-#endif
-

@@ -1,29 +1,11 @@
-/*-----------------------------------------------------------------------------
-    Filename:  mccmd.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for metering and control functions that can
-                    be added to a Tcl interpreter.
-
-    Initial Date:  4/7/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )
-
-#ifndef MCCMD_H
-#define MCCMD_H
+#pragma once
 
 #include <tcl.h>
-
 
 #include <functional>
 #include <iostream>
 #include <set>
 #include <queue>
-
 
 #include <rw/collect.h>
 #include <rw/tvhdict.h>
@@ -217,6 +199,4 @@ void WriteOutput(const char* output);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

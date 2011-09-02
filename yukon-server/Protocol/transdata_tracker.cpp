@@ -1,20 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   transdata_tracker
-*
-* Date:   8/14/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28.6.1 $
-* DATE         :  $Date: 2008/11/17 23:06:31 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
 #include "precompiled.h"
 #include "transdata_tracker.h"
 #include "guard.h"

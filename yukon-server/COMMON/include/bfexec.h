@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  tfexec.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiBatchedFunctorExecutor.
-                    CtiBatchedFunctorExecutor executes all the functors in it's
-                    queue every certain number of milliseconds.  The functors
-                    are removed from the queue once they are executed.
-
-                    See Rogue Wave docs on rwMakeFunctor and RWFunctor0
-
-    Initial Date:  4/25/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-#ifndef __TFEXEC_H__
-#define __TFEXEC_H__
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#pragma once
 
 #include <queue>
 
@@ -43,5 +25,3 @@ private:
 
     void _timed_thr_func();
 };
-
-#endif

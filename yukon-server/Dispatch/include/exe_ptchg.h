@@ -1,21 +1,4 @@
-#ifndef __EXE_PTCHG_H__
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   exe_ptchg
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/exe_ptchg.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:28 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#define __EXE_PTCHG_H__
+#pragma once
 
 #include "executor.h"
 
@@ -34,7 +17,5 @@ public:
    virtual ~CtiPointChangeExecutor();
    INT  ServerExecute(CtiServer *Svr);
 };
-
-#endif //#ifndef __EXE_PTCHG_H__
 
 

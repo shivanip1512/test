@@ -1,18 +1,3 @@
-/*---------------------------------------------------------------------------
-  Filename:  lmgroupsadigitalorgolay.cpp
-
-  Programmer:  Aaron Lauinger
-        
-  Description:    Source file for CtiLMGroupSADigitalORGolay.
-  CtiLMGroupSADigitalORGolay maintains the state and handles
-  the persistence of sa 305 groups in Load Management.
-
-  Initial Date:  3/6/2004
-         
-  COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
-  ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 #include "lmgroupsadigitalorgolay.h"
 #include "lmid.h"
 #include "logger.h"

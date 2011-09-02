@@ -1,24 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   std_ansi_tbl_91
-*
-* Class:
-* Date:   10/24/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_91.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/21 16:30:32 $
-*    History:
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#ifndef __STD_ANSI_TBL_91_H__
-#define __STD_ANSI_TBL_91_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dlldefs.h"
 #include "types.h"
@@ -88,4 +68,3 @@ public:
    int getSetupStringLength();
 
 };
-#endif // #ifndef __STD_ANSI_TBL_91_H__

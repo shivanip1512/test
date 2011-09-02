@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_versacom
-*
-* Date:   12/14/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_VERSACOM_H__
-#define __TBL_DV_VERSACOM_H__
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -97,4 +81,3 @@ public:
    virtual bool Delete();
 
 };
-#endif // #ifndef __TBL_DV_VERSACOM_H__

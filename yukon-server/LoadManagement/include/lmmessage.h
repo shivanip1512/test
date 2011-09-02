@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  lmmessage.h
-    
-    Programmer:  Josh Wolberg
-    
-    Description:    Header file for message classes.
-                            
-    Initial Date:  2/5/2001
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-   
-#ifndef LMMESSAGE_H
-#define LMMESSAGE_H
+#pragma once
 
 #include <vector>
 
@@ -479,5 +464,3 @@ private:
     LONG _currentdailystoptime;
     std::vector<CtiLMDynamicTriggerDataMsg> _triggers;
 };
-
-#endif

@@ -1,22 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_devicereadrequestlog
-*
-* Date:   3/6/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/Include/tbl_devicereadrequestlog.h-arc  $
-* REVISION     :  $Revision: 1.1.22.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_DEVICEREADREQUESTLOG_H__
-#define __TBL_DEVICEREADREQUESTLOG_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -79,5 +61,3 @@ public:
     CtiTblDeviceReadRequestLog& setCommand( std::string& cmd );
 
 };
-
-#endif

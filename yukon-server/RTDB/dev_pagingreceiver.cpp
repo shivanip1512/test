@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_pagerreceive
-*
-* Date:   5/22/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.8.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:21 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-#pragma warning( disable : 4786)
-
 
 #include <map>
 #include <string>

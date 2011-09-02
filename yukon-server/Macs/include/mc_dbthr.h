@@ -1,22 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_dbthr
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_dbthr.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/01/11 21:58:23 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __MCDBTHR_H__
-#define __MCDBTHR_H__
+#pragma once
 
 #include "mc.h"
 #include "thread.h"
@@ -46,5 +28,3 @@ private:
     CtiMCScheduleManager& _schedule_manager;
 
 };
-
-#endif

@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __CALC_LOGIC_H__
-#define __CALC_LOGIC_H__
+#pragma once
 
 #include "connection.h"
 #include "cservice.h"
@@ -66,5 +64,3 @@ private:
     time_t   _nextCheckTime;
 
 };
-
-#endif //  __CALC__LOGIC_H__

@@ -1,24 +1,5 @@
+#pragma once
 
-#pragma warning( disable : 4786)
-#ifndef __MSG_NOTIF_EMAIL_H__
-#define __MSG_NOTIF_EMAIL_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   msg_notif_email
-*
-* Class:
-* Date:   1/22/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/04/26 19:43:31 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
 #include <string>
 
 #include "collectable.h"
@@ -73,9 +54,6 @@ public:
    std::string getToBCC( void );
    void setToBCC( std::string );
    std::vector<CtiNotifEmailAttachmentMsg*>& getAttachments( void );
-
-protected:
-
 };
 
 
@@ -126,8 +104,4 @@ public:
    std::string getToBCC( void );
    void setToBCC( std::string );
    RWOrdered& getAttachments( void );
-
-protected:
-
 };
-#endif // #ifndef __MSG_NOTIF_EMAIL_H__

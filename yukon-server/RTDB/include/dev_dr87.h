@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dr87
-*
-* Class:  CtiDeviceDR87
-* Date:   01/02/2000
-*
-* Author: David Sutton
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.12.4.2 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_DR87_H__
-#define __DEV_DR87_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -426,7 +406,3 @@ public:
         return *this;
     }
 };
-
-
-
-#endif // #ifndef __DEV_DR87_H__

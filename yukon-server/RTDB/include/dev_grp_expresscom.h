@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_expresscom
-*
-* Class:  CtiDeviceGroupExpresscom
-* Date:   9/23/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_GRP_EXPRESSCOM_H__
-#define __DEV_GRP_EXPRESSCOM_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -70,4 +52,3 @@ public:
     virtual void clearChildren();
 
 };
-#endif // #ifndef __DEV_GRP_EXPRESSCOM_H__

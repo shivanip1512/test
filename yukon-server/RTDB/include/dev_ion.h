@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   dev_ion.h
- *
- * Class:  CtiDeviceION
- * Date:   06/05/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __DEV_ION_H__
-#define __DEV_ION_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <windows.h>
 
@@ -91,6 +77,3 @@ public:
 };
 
 typedef boost::shared_ptr<CtiDeviceION> CtiDeviceIONSPtr;
-
-#endif //  #ifndef __DEV_ION_H__
-

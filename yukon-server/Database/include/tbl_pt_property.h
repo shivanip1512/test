@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_property
-*
-* Date:   2/12/2008
-*
-* PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
-*
-* Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __TBL_PT_PROPERTY_H__
-#define __TBL_PT_PROPERTY_H__
+#pragma once
 
 #include "row_reader.h"
 
@@ -77,5 +63,3 @@ public:
 };
 
 typedef boost::shared_ptr< CtiTablePointProperty > CtiTablePointPropertySPtr;
-
-#endif // #ifndef __TBL_PT_PROPERTY_H__

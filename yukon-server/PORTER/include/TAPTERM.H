@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   TAPTERM
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/TAPTERM.H-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:35 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-
 #define TAPTIME_T1      2
-
-
 
 #define TAPTIME_T2      1
 #define TAPTIME_T3      10
@@ -44,4 +26,3 @@ int TAPTermHandShake (OUTMESS *OutMessage,
                       INMESS *InMessage,
                       CtiPort *PortRecord,
                       CtiDeviceBase *RemoteRecord);
-

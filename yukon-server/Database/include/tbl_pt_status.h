@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PT_STATUS_H__
-#define __TBL_PT_STATUS_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_status
-*
-* Class:  CtiTablePointStatus
-* Date:   8/14/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_status.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/09/28 15:43:05 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include "row_reader.h"
 #include <limits.h>
@@ -94,4 +74,3 @@ public:
    UINT getStaticTags() const;
    UINT adjustStaticTags(UINT &tags) const;
 };
-#endif // #ifndef __TBL_PT_STATUS_H__

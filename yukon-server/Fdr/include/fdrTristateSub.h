@@ -1,26 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrTriStateSub.cpp
-*
-*    DATE: 5/15/2007
-*
-*    AUTHOR: Thain Spar
-*
-*    PURPOSE: Read in load data
-*
-*    DESCRIPTION: FTP interface to bring in load data from San Migul's Subs.
-*    
-*    "20070516101500","Nucla 115/69 Xfmr.","MW",4.326
-*    "20070516101500","Happy Canyon 661Idarado","MW",2.11
-*    "20070516101500","Cascade 115/69 (T2)","MW",5.978
-*    "20070516101500","Ames Generation","MW",3.721
-*    "20070516101500","Dallas Creek MW","MW",4.079
-*    "20070516101500","Dallas Creek MV","MW",-2.671
-*****************************************************************************/
-#ifndef __FDRTriStateSub_H__
-#define __FDRTriStateSub_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -95,6 +73,3 @@ class __declspec(dllexport) StringMessageContainer
         boost::shared_ptr<CtiMessage> msg;
         std::string      name;
 };
-#endif
-
-

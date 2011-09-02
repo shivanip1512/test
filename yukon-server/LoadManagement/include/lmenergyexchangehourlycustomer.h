@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangehourlycustomer.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMEnergyExchangeHourlyCustomer
-
-        Initial Date:  5/15/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMENERGYEXCHANGEHOURLYCUSTOMERIMPL_H
-#define CTILMENERGYEXCHANGEHOURLYCUSTOMERIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -77,5 +63,3 @@ private:
     LONG _hour;
     DOUBLE _amountcommitted;
 };
-#endif
-

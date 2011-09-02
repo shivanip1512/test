@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangeofferrevision.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMEnergyExchangeOfferRevision
-
-        Initial Date:  5/9/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMENERGYEXCHANGEOFFERREVISIONIMPL_H
-#define CTILMENERGYEXCHANGEOFFERREVISIONIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -88,5 +74,3 @@ private:
 
     std::vector<CtiLMEnergyExchangeHourlyOffer*> _lmenergyexchangehourlyoffers;
 };
-#endif
-

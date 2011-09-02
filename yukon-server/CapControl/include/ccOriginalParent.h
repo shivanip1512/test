@@ -1,19 +1,4 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  ccoriginalparent.h
-        
-        Programmer:  Julie Richter
-                
-        Description:    Header file for CCOriginalParent
-                        
-
-        Initial Date:  2/24/2009
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
----------------------------------------------------------------------------*/
-
-#ifndef CCORIGINALPARENT_H
-#define CCORIGINALPARENT_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -74,7 +59,3 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty; 
 };
-
-
-#endif
-

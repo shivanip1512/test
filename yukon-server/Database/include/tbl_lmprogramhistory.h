@@ -1,14 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_lmprogramhistory
-*
-* Date:   12/8/2008
-* 
-* Copyright (c) 2008 Cooper Industries, All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __TBL_LMPROGHIST_H__
-#define __TBL_LMPROGHIST_H__
+#pragma once
 
 #include "row_reader.h"
 
@@ -59,5 +49,3 @@ public:
 
     static long getNextProgramHistId();
 };
-
-#endif

@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/runfunc.h>

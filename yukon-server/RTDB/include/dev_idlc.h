@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_idlc
-*
-* Class:  CtiDeviceIDLC
-* Date:   2/25/2000
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.17.2.3 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_IDLC_H__
-#define __DEV_IDLC_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -233,4 +213,3 @@ public:
     }
 
 };
-#endif // #ifndef __DEV_IDLC_H__

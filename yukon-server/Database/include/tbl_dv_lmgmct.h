@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_lmgmct
-*
-* Class:  CtiTableLMGroupMCT
-* Date:   5/23/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_LMGMCT_H__
-#define __TBL_DV_LMGMCT_H__
+#pragma once
 
 #include <string>
 
@@ -64,5 +47,3 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
-
-#endif // #ifndef __TBL_DV_LMGMCT_H__

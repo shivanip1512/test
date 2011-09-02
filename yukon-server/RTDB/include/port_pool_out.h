@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_pool_out
-*
-* Class:  CtiPortPoolDialout
-* Date:   3/4/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_POOL_OUT_H__
-#define __PORT_POOL_OUT_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "port_base.h"
 
@@ -79,4 +62,3 @@ public:
     INT allocateQueueEntsToChildPort();
 
 };
-#endif // #ifndef __PORT_POOL_OUT_H__

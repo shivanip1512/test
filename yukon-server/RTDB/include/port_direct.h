@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_direct
-*
-* Class:  CtiPortDirect
-* Date:   3/29/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_DIRECT_H__
-#define __PORT_DIRECT_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "port_serial.h"
 #include "port_dialable.h"
@@ -109,4 +90,3 @@ public:
    int disableRTSCTS();
 
 };
-#endif // #ifndef __PORT_DIRECT_H__

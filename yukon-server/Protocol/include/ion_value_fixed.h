@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ion_value_fixed
-*
-* Class:  CtiIONValueFixed
-* Date:   1/30/2003
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:46 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_FIXED_H__
-#define __ION_VALUE_FIXED_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "ion_value.h"
 #include "ion_value_numeric.h"
@@ -89,6 +70,3 @@ public:
         Fixed_UnsignedInt,
     };
 };
-
-
-#endif // #ifndef __ION_VALUE_FIXED_H__

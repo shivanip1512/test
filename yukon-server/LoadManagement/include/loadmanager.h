@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  loadmanager.h
-    
-    Programmer:  Josh Wolberg
-    
-    Description:    Header file for CtiLoadManager
-                    Once started CtiLoadManager is reponsible
-                    for determining if and when to run the
-                    programs provided in the CtiLMControlAreaStore.
-                        
-    Initial Date:  2/6/2001
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
- 
-#ifndef CTILOADMANAGER_H
-#define CTILOADMANAGER_H
+#pragma once
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/runfunc.h>
@@ -99,4 +81,3 @@ private:
     
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
-#endif

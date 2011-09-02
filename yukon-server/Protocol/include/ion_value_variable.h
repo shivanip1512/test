@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ion_value_variable
-*
-* Class:  CtiIONValueVariable
-* Date:   1/30/2003
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/06 16:12:08 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_VARIABLE_H__
-#define __ION_VALUE_VARIABLE_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "ion_value.h"
 #include "ion_value_numeric.h"
@@ -148,6 +129,3 @@ public:
         setValid(true);
     }
 };
-
-
-#endif // #ifndef __ION_VALUE_VARIABLE_H__

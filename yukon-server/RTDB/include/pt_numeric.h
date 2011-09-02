@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pt_numeric
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PT_NUMERIC_H__
-#define __PT_NUMERIC_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -75,6 +60,3 @@ typedef CtiPointNumeric    CtiPointPseudoAnalog;
 typedef CtiPointNumeric    CtiPointCalculated;
 
 typedef shared_ptr< CtiPointNumeric > CtiPointNumericSPtr;
-
-#endif // #ifndef __PT_NUMERIC_H__
-

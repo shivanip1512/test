@@ -1,24 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_ymodem
-*
-* Date:   8/4/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*
-*  NOTE: this is just a shell of the ymodem protocol and only incorporates what
-         the transdata mk-V meter needs.  if you need more, you'll have to fill in
-         some more
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
 #include "precompiled.h"
 #include "guard.h"
 #include "logger.h"

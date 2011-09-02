@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupsa105.h
-        
-        Programmer:  Aaron Lauinger
-        
-        Description:    Header file for CtiLMGroupSA105
-
-        Initial Date:  03/05/2004
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPSA105_H
-#define CTILMGROUPSA105_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -53,5 +39,3 @@ private:
 
     void restore(Cti::RowReader &rdr);
 };
-#endif
-

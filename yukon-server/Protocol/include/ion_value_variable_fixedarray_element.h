@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_value_variable_fixedarray_element.h
- *
- * Class:  CtiIONFixedArrayElement
- * Date:   2003-feb-06
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__
-#define __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 //  this definition is here so the elements can make proper friends
 //    with their respective array instantiations
@@ -30,6 +16,3 @@ public:
     virtual unsigned int getElementLength( void ) const = 0;
     virtual void putElement( unsigned char *buf ) const = 0;
 };
-
-
-#endif  //  #ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__

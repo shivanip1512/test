@@ -1,5 +1,4 @@
-#ifndef __MGR_DEVICE_SCANNABLE_H__
-#define __MGR_DEVICE_SCANNABLE_H__
+#pragma once
 
 #include "mgr_device.h"
 
@@ -31,5 +30,3 @@ public:
 };
 
 }
-
-#endif                  // #ifndef __MGR_DEVICE_SCANNABLE_H__

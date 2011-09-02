@@ -1,12 +1,8 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __CALCTHREAD_H__
-#define __CALCTHREAD_H__
+#pragma once
 
 #include <functional>
 
 #include <rw/tphdict.h>
-//#include <rw/tvdeque.h>
-//#include <rw/tpdeque.h>
 #include <rw/thr/thrfunc.h>
 #include <map>
 #include <vector>
@@ -21,7 +17,6 @@
 //ecs 1/5/2005
 #include "thread_monitor.h"
 #include "thread_register_data.h"
-//
 
 class CtiCalculateThread
 {
@@ -145,6 +140,4 @@ public:
 
     void removePointStoreObject( const long aPointID );
 };
-
-#endif // #ifndef __CALCTHREAD_H__
 

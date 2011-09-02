@@ -1,14 +1,4 @@
-/*  ELOGGER.H
-
-    Include file for ELOGGER and routines using
-    this process.
-    by:  Ben    3/23/90
-        updated: 3/04/92   bdw
-        Revised for Win32  3/30/99 CGP
-*/
-
-#ifndef ELOGGER_H
-#define ELOGGER_H
+#pragma once
 
 #ifndef NORMAL
     #define NORMAL      0
@@ -62,6 +52,4 @@ IM_EX_CTIBASE int SendTextToLogger (PCHAR Source,
                                     PCHAR Message = NULL,
                                     const std::string& majorName = std::string(""),
                                     const std::string& minorName = std::string(""));
-
-#endif      // #ifndef ELOGGER_H
 

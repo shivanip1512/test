@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portsvc
-*
-* Date:   12/2/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:35 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORTSVC_H__
-#define __PORTSVC_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "cservice.h"
 
@@ -47,4 +31,3 @@ public:
    virtual ~CtiPorterService();
 
 };
-#endif // #ifndef __PORTSVC_H__

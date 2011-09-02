@@ -1,22 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_scanrate
-*
-* Date:   8/18/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_scanrate.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __TBL_SCANRATE_H__
-#define __TBL_SCANRATE_H__
+#pragma once
 
 #include "row_reader.h"
 #include <limits.h>
@@ -89,4 +71,3 @@ public:
    static std::string getTableName();
 
 };
-#endif // #ifndef __TBL_SCANRATE_H__

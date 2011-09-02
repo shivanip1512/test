@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupemetcon.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMGroupEmetcon
-                        CtiLMGroupEmetcon
-
-        Initial Date:  2/5/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPEMETCONIMPL_H
-#define CTILMGROUPEMETCONIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -64,4 +49,3 @@ private:
 protected:
     void restore(Cti::RowReader &rdr);
 };
-#endif

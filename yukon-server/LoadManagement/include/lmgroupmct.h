@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupmct.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiLMGroupMCT
-                        CtiLMGroupMCT
-
-        Initial Date:  7/23/2003
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2003
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPMCTIMPL_H
-#define CTILMGROUPMCTIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -56,4 +41,3 @@ RWDECLARE_COLLECTABLE( CtiLMGroupMCT )
 
     /* Static Members */
 };
-#endif

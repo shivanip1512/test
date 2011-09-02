@@ -1,8 +1,4 @@
-#pragma warning( disable : 4786)
-
-#ifndef __HASHKEY_H__
-#define __HASHKEY_H__
-
+#pragma once
 
 #include <limits.h>
 #include <string>
@@ -98,7 +94,3 @@ public:
    }
 
 };
-
-#endif      // #ifndef __HASHKEY_H__
-
-

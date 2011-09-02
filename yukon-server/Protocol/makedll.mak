@@ -289,8 +289,8 @@ ansi_kv2_mtable_110.obj:	precompiled.h logger.h dlldefs.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
 		ansi_kv2_mtable_110.h std_ansi_tbl_base.h
-dll_prot.obj:	precompiled.h dll_prot.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h
+dll_prot.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h
 dnp_application.obj:	precompiled.h dnp_application.h dnp_objects.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \

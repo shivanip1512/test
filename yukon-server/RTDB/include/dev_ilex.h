@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_ilex
-*
-* Class:  CtiDeviceILEX
-* Date:   12/18/2001
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.14.4.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_ILEX_H__
-#define __DEV_ILEX_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <windows.h>
 
@@ -92,4 +73,3 @@ public:
     INT exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, std::list< OUTMESS* > &outList);
 
 };
-#endif // #ifndef __DEV_ILEX_H__

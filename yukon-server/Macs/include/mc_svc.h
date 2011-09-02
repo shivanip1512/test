@@ -1,35 +1,4 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mcsvc
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_svc.h-arc  $
-* REVISION     :  $Revision: 1.4.12.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------
-
-        Filename:  mc_svc.h
-
-        Programmer:  Aaron Lauinger
-
-        Description:  Header file for CtiMCService
-
-        Initial Date: 4/7/99
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTIMCSERVICE_H
-#define CTIMCSERVICE_H
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -68,5 +37,3 @@ private:
 
     CtiMCServer* _mc_server;
 };
-#endif
-

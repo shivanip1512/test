@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_alarm
-*
-* Class:  CtiTablePointAlarming
-* Date:   10/9/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/11/12 22:10:40 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __TBL_PT_ALARM_H__
-#define __TBL_PT_ALARM_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <limits.h>
 
@@ -144,5 +126,3 @@ public:
 
    CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt ) { return Inherited::setAlarmCategory(offset,aInt); }
 };
-
-#endif // #ifndef __TBL_PT_ALARM_H__

@@ -1,5 +1,4 @@
-#ifndef __MSG_NOTIF_ALARM_H_
-#define __MSG_NOTIF_ALARM_H_
+#pragma once
 
 #include <vector>
 
@@ -66,4 +65,3 @@ private:
     bool _acknowledged;
     bool _abnormal;
 };
-#endif

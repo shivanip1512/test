@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmcicustomerbase.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMCICustomerBase
-
-        Initial Date:  2/11/2003
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2003
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMCICUSTOMERBASEIMPL_H
-#define CTILMCICUSTOMERBASEIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -78,5 +64,3 @@ private:
     std::string _time_zone;
     LONG _customerorder;
 };
-#endif
-

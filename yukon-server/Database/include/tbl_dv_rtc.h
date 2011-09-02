@@ -1,35 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_rtc
-*
-* Class:  CtiTableDeviceRTC
-* Date:   3/18/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-* HISTORY      :
-* $Log: tbl_dv_rtc.h,v $
-* Revision 1.2  2005/12/20 17:16:08  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.1.4.1  2005/07/12 21:08:34  jliu
-* rpStringWithoutCmpParser
-*
-* Revision 1.1  2004/03/18 19:50:34  cplender
-* Initial Checkin
-* Builds, but not too complete.
-*
-*
-* Copyright (c) 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_RTC_H__
-#define __TBL_DV_RTC_H__
+#pragma once
 
 #include "dlldefs.h"
 #include "row_reader.h"
@@ -70,4 +39,3 @@ public:
 
     static std::string getTableName();
 };
-#endif // #ifndef __TBL_DV_RTC_H__

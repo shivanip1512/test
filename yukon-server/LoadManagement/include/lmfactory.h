@@ -1,5 +1,4 @@
-#ifndef __LMFACTORY_H__
-#define __LMFACTORY_H__
+#pragma once
 
 #include "lmgroupbase.h"
 #include "row_reader.h"
@@ -9,5 +8,3 @@ class CtiLMGroupFactory
 public:
     CtiLMGroupPtr createLMGroup(Cti::RowReader &rdr);
 };
-
-#endif

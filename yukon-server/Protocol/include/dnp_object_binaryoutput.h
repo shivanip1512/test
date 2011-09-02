@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_binaryoutput
-*
-* Class:  DNP Binary Output objects
-* Date:   7/3/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_OBJECT_BINARYOUTPUT_H__
-#define __DNP_OBJECT_BINARYOUTPUT_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dnp_objects.h"
 
@@ -171,5 +152,3 @@ public:
 }
 }
 }
-
-#endif  //  #ifndef __DNP_OBJECT_BINARYOUTPUT_H__

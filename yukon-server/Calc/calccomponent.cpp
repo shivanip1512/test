@@ -1,12 +1,9 @@
 #include "precompiled.h"
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 #include <math.h>
 #include <iostream>
 #include <sstream>
 using namespace std;
-
 
 #include <rw/thr/mutex.h>
 #include "calccomponent.h"

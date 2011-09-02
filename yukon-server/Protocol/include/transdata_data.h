@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TRANSDATA_DATA_H__
-#define __TRANSDATA_DATA_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   transdata_data
-*
-* Class:
-* Date:   9/19/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
+#pragma once
 
 #include "xfer.h"
 
@@ -69,9 +49,4 @@ private:
    FLOAT          _reading;
    bool           _isNegative;
    int            _formatCode;
-
-protected:
-
 };
-
-#endif // #ifndef __TRANSDATA_DATA_H__

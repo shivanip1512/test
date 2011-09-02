@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __FDRIO_H__
-#define __FDRIO_H__
+#pragma once
 
 #include <queue>
 
@@ -82,5 +80,3 @@ public:
                                         //    returns element from incoming queue;  NULL if none waiting.
                                         //    this element is on the heap, so delete it when you're finished
 };
-
-#endif  //  #ifndef __FDRIO_H__

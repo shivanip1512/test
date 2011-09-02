@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  observe.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiObserver and CtiObservable
-                    which are implementations of the Observer pattern.
-                    Many CtiObservers can be regiseterd with a CtiObservable
-                    in order to receive notifications of state changes in the
-                    CtiObservable.  Each CtiObserver can be registered with
-                    many CtiObservables also.
-    Initial Date:  4/7/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-
-#ifndef CTIOBSERVE_H
-#define CTIOBSERVE_H
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -74,5 +56,3 @@ protected:
     BOOL _notifyenabled;
 
 };
-
-#endif

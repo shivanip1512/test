@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __CALC_H__
-#define __CALC_H__
+#pragma once
 
 #include <rw/slistcol.h>
 #include <rw/tvdlist.h>
@@ -96,7 +94,6 @@ public:
     double pop( void );
 };
 
-#endif   // #ifndef __CALC_H__
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059
 

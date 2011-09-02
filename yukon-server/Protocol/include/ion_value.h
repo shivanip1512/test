@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_value.h
- *
- * Class:  CtiIONValue
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_H__
-#define __ION_VALUE_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <vector>
 
@@ -110,7 +96,3 @@ public:
     static bool  isStructArray( CtiIONValue *toCheck );
     bool         isStructArray( void ) const;
 };
-
-
-#endif  //  #ifndef __ION_VALUE_H__
-

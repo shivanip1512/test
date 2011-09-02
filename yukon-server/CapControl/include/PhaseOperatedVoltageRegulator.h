@@ -1,10 +1,6 @@
-
-#pragma warning( disable : 4786)
-
 #pragma once
 
 #include "VoltageRegulator.h"
-
 
 namespace Cti           {
 namespace CapControl    {

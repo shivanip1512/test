@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_serial
-*
-* Class:  CtiPortSerial
-* Date:   3/3/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_SERIAL_H__
-#define __PORT_SERIAL_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "port_base.h"
 #include "tbl_port_settings.h"
@@ -66,7 +49,3 @@ inline INT CtiPortSerial::getBits() const { return getTablePortSettings().getBit
 inline INT CtiPortSerial::getStopBits() const { return getTablePortSettings().getStopBits(); }
 inline INT CtiPortSerial::getParity() const { return getTablePortSettings().getParity(); }
 inline ULONG CtiPortSerial::getCDWait() const { return getTablePortSettings().getCDWait(); }
-
-
-
-#endif // #ifndef __PORT_SERIAL_H__

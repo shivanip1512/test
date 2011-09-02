@@ -1,7 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __FDRSERVERCONNECTION_H__
-#define __FDRSERVERCONNECTION_H__
+#pragma once
 
 #include <rw/thr/thrfunc.h> 
 #include "dlldefs.h"
@@ -32,7 +29,4 @@ class IM_EX_FDRBASE CtiFDRServerConnection : public CtiFDRSocketConnection
         
         void threadFunctionGetDataFrom( void );
         void threadFunctionConnectionStatus( void );
-
 };
-#endif
-

@@ -1,22 +1,4 @@
-#pragma warning( disable : 4786 )
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rtroute
-*
-* Date:   8/18/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_rtroute.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-#ifndef __TBL_RTROUTE_H__
-#define __TBL_RTROUTE_H__
+#pragma once
 
 #include "yukon.h"
 #include <rw\thr\mutex.h>
@@ -73,4 +55,3 @@ public:
 
    CtiTableRoute& setRouteID( const LONG aRouteID );
 };
-#endif // #ifndef __TBL_RTROUTE_H__

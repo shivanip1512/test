@@ -1,5 +1,4 @@
-#ifndef __PIL_EXEFCT_H__
-#define __PIL_EXEFCT_H__
+#pragma once
 
 #include "collectable.h"
 #include "message.h"
@@ -23,9 +22,3 @@ public:
 
    virtual CtiExecutor *getExecutor(CtiMessage*);
 };
-#endif // #ifndef __PIL_EXEFCT_H__
-
-
-
-
-

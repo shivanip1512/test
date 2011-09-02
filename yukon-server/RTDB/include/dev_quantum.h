@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   dev_quantum.h
- *
- * Class:  CtiDeviceQuantum
- * Date:   06/05/2001
- *
- * Author: Matthew Fisher
- *
- *          Copied from dev_vectron.h
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __DEV_QUANTUM_H__
-#define __DEV_QUANTUM_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -281,8 +264,3 @@ public:
 
    BOOL getMeterDataFromScanStruct( int aOffset, DOUBLE &aValue, CtiTime &peak, QuantumScanData_t *aScanData );
 };
-
-
-#endif  //  __DEV_QUANTUM_H__
-
-

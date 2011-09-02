@@ -1,26 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrlodestarinfo.h
-*
-*    DATE: 03/31/2004
-*
-*    AUTHOR: Julie Richter
-*
-*    PURPOSE: CtiFDR_LodeStarInfoTable class header
-*
-*    DESCRIPTION: contains destination information for a point 
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRLODESTARINFO_H__
-#define __FDRLODESTARINFO_H__
-
-/** include files **/
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -53,5 +31,3 @@ private:
     std::string _lodeStarFolderName;
 
 };
-
-#endif

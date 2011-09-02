@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   counter.h
- *
- * Class:  CtiCounter, CtiTXCounter
- * Date:   2001-oct-02
- *
- * Author: Matthew Fisher
- *
- * PVCS KEYWORDS:
- * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.8 $
- * DATE         :  $Date: 2005/12/20 17:25:49 $
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __COUNTER_H__
-#define __COUNTER_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <map>
 #include "guard.h"
@@ -70,7 +51,5 @@ public:
 
     void resetTXCounts( void );
 };
-
-#endif  //  __COUNTERS_H__
 
 

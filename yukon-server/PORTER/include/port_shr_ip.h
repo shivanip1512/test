@@ -1,6 +1,4 @@
 #pragma once
-#pragma warning( disable : 4786)
-
 
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>

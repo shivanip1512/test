@@ -1,21 +1,4 @@
-/*
- * class CtiString
- *
- * Author: Jian Liu
- * Date: 07/23/2005 15:20:00
- *
- *
- * This class initailly is to replace the string in cmdparse.cpp. It is not part of the DLL interface.
- *
- * The class use C++ standard string class and boost regular expression library.
- *
- * Its interface and methods are the same as sTring.
- *
- * Please refer to string document to see its functionalities.
- */
-
-#ifndef  __STRING_WRAPER_H__
-#define  __STRING_WRAPER_H__
+#pragma once
 
 #include <string.h>
 #include <boost/regex.hpp>
@@ -71,5 +54,3 @@ public:
 
 IM_EX_CTIBASE CtiString operator+ (const CtiString &rs1, const CtiString &rs);
 
-
-#endif

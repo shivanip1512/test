@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  lmserver.cpp
-                    
-    Programmer:  Josh Wolberg
-    
-    Description:  Source file for CtiLMServer.
-        
-    Initial Date:  2/12/2001
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 #include "lmserver.h"
 #include "ctibase.h"
 #include "logger.h"

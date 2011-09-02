@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_davis
-*
-* Class:  CtiDeviceDavis
-* Date:   6/17/2002
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.8.4.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_DAVIS_H__
-#define __DEV_DAVIS_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -54,4 +35,3 @@ public:
 
    static std::string getPointOffsetName(int offset);
 };
-#endif // #ifndef __DEV_DAVIS_H__

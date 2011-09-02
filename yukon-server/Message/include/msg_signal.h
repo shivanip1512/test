@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_signal
-*
-* Date:   1/21/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/05/04 22:42:36 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_SIGNAL_H__
-#define __MSG_SIGNAL_H__
+#pragma once
 
 #include "message.h"
 
@@ -111,4 +95,3 @@ public:
 
    static unsigned int getInstanceCount() { return _instanceCount; }
 };
-#endif // #ifndef __MSG_SIGNAL_H__

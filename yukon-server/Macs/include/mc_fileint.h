@@ -1,38 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_fileint
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_fileint.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*-----------------------------------------------------------------------------
-    Filename:  fileint.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiMCFileInterface.
-                    CtiMCFileInterface adds MACS specific functionality
-                    to CtiFileInterface
-
-    Initial Date:  6/29/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTIMCFILEINTERFACE_H
-#define CTIMCFILEINTERFACE_H
+#pragma once
 
 #define MC_FILE_BUF_SIZE 100
 
@@ -45,8 +11,6 @@
 #include "queue.h"
 
 #include "mgr_mcsched.h"
-
-
 
 class CtiMCFileInterface : public CtiFileInterface
 {
@@ -77,4 +41,3 @@ private:
 
     void execute(const std::string& function, const std::string& name);
 };
-#endif

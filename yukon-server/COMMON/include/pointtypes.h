@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pointtypes
-*
-* Class:
-* Date:   4/17/2000
-*
-* Author: Corey G. Plender
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __POINTTYPES_H__
-#define __POINTTYPES_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 // #define SYS_DID_SYSTEM        0    // A catchall for any op which needs an ID
 #define SYS_PID_SYSTEM                    0        // Catch all
@@ -88,7 +74,3 @@ typedef enum
    CalcTypeVoltsFromV2H
 
 } PointCalc_t;
-
-
-
-#endif // #ifndef __POINTTYPES_H__

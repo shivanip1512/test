@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_welco
-*
-* Class:
-* Date:   6/20/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_welco.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/20 22:39:25 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_WELCO_H__
-#define __PROT_WELCO_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #define IDLC_FREEZE             0x0a
 #define IDLC_ACCUMDUMP          0x0b
@@ -67,6 +48,3 @@
 
 
 #define EW_ERR_BIT_MASK         (EW_PWR_BIT | EW_FMW_BIT | EW_HDW_BIT | EW_SYN_BIT )
-
-
-#endif // #ifndef __PROT_WELCO_H__

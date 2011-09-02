@@ -1,27 +1,4 @@
-/*************************************************************************
- *
- * mgr_port.h      7/7/99
- *
- *****
- *
- * The class which owns and manages port real time database
- *
- * Originated by:
- *     Corey G. Plender    7/7/99
- *
- *
- * PVCS KEYWORDS:
- * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.15 $
- * DATE         :  $Date: 2008/07/17 20:26:39 $
- *
- * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
- * All Rights Reserved
- *
- ************************************************************************/
-#ifndef __PORT_MGR_H__
-#define __PORT_MGR_H__
-
+#pragma once
 
 #include "dlldefs.h"
 #include "smartmap.h"
@@ -85,5 +62,3 @@ public:
     bool removePortExclusionBlocks(ptr_type anxiousPort);
     bool refreshExclusions(LONG id = 0);
 };
-
-#endif                  // #ifndef __PORT_MGR_H__

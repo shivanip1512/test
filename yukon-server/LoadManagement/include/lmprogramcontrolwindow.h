@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramcontrolwindow.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMProgramControlWindow
-                        CtiLMProgramControlWindow 
-
-        Initial Date:  2/13/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMCONTROLWINDOWIMPL_H
-#define CTILMPROGRAMCONTROLWINDOWIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -69,5 +54,3 @@ private:
 
     void restore(Cti::RowReader &rdr);
 };
-#endif
-

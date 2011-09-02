@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_NOTIF_EMAIL_ATTACHMENT_H__
-#define __MSG_NOTIF_EMAIL_ATTACHMENT_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   msg_notif_email_attachment
-*
-* Class:
-* Date:   1/22/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
+#pragma once
 
 #include "logger.h"
 #include "dllbase.h"
@@ -46,9 +26,4 @@ public:
    int getLength( void );
    void setLength( int len );
    CtiMessage* replicateMessage() const;
-
-protected:
-
 };
-
-#endif // #ifndef __MSG_NOTIF_EMAIL_ATTACHMENT_H__

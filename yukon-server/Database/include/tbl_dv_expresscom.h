@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_EXPRESSCOM_H__
-#define __TBL_DV_EXPRESSCOM_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_expresscom
-*
-* Class:  CtiTableExpresscomLoadGroup
-* Date:   9/23/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5.6.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -111,4 +91,3 @@ public:
     virtual bool Delete();
 
 };
-#endif // #ifndef __TBL_DV_EXPRESSCOM_H__

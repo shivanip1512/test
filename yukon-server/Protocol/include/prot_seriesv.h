@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_seriesv
-*
-* Class:  CtiProtocolSeriesV
-* Date:   2004-jan-14
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_SERIESV_H__
-#define __PROT_SERIESV_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <map>
 #include <vector>
@@ -288,5 +270,3 @@ public:
         PassthroughCRC = 0x1234
     };
 };
-
-#endif // #ifndef __PROT_SERIESV_H__

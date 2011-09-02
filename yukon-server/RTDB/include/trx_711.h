@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   trx_711
-*
-* Class:  CtiTransmitter711Info
-* Date:   3/19/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/04/25 18:47:09 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __TRX_711_H__
-#define __TRX_711_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "trx_info.h"
 
@@ -115,4 +96,3 @@ public:
     }
 
 };
-#endif // #ifndef __TRX_711_H__

@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_mcsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-
-#ifndef __MGR_MCSCHEDULE_H__
-#define __MGR_MCSCHEDULE_H__
+#pragma once
 
 #include <set>
 
@@ -63,5 +46,3 @@ private:
 };
 
 std::ostream& operator<<( std::ostream& ostrm, CtiMCScheduleManager& mgr );
-
-#endif

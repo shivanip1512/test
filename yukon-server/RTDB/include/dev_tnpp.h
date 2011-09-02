@@ -1,25 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_tnpp
-*
-* Class:  CtiDeviceTnppPagingTerminal
-* Date:   5/9/2000
-*
-* Author: Jess Otteson
-*
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_TNPP_H__
-#define __DEV_TNPP_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #include <rw\thr\mutex.h>
 
@@ -190,5 +169,3 @@ static const int CtiDeviceTnppPagingTerminal::_a_capcode_max;
 static const int CtiDeviceTnppPagingTerminal::_a_capcode_min;
 
 };
-
-#endif // #ifndef __DEV_TNPP_H__

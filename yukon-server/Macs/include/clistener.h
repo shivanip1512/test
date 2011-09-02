@@ -1,32 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   clistener
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clistener.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/06/30 21:23:26 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*-----------------------------------------------------------------------------
-    Filename:  clistener.h
-
-    Programmer:  Aaron Lauinger
-
-    Description: Header file for CtiMCClientListener
-
-    Initial Date:  5/12/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTIMCCLIENTLISTENER_H
-#define CTIMCCLIENTLISTENER_H
+#pragma once
 
 #include <rw/toolpro/sockaddr.h>
 #include <rw/toolpro/sockport.h>
@@ -92,8 +64,3 @@ private:
 
     bool removeInvalidConnections(CtiMCConnection& conn);
 };
-
-
-
-#endif
-

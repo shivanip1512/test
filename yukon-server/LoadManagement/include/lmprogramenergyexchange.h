@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramenergyexchange.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiLMProgramEnergyExchange
-
-        Initial Date:  5/4/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMENERGYEXCHANGEIMPL_H
-#define CTILMPROGRAMENERGYEXCHANGEIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -97,6 +83,3 @@ private:
 };
 
 typedef boost::shared_ptr< CtiLMProgramEnergyExchange > CtiLMProgramEnergyExchangeSPtr;
-
-#endif
-

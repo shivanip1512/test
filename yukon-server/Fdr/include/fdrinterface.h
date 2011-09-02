@@ -1,25 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*****************************************************************************
-*
-*    FILE NAME: fdrinterface.h
-*
-*    DATE: 07/15/2000
-*
-*    AUTHOR: Matt Fisher
-*
-*    PURPOSE: pure vitural Base Class header for Foreign Data
-*
-*    DESCRIPTION: Profides an interface for all Foreign Data Interfaces
-*                 data exchanges.  The Interfaces implement methods to
-*                 exchange data with other systems.
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRINTERFACE_H__
-#define __FDRINTERFACE_H__
+#pragma once
 
 #include <rw/thr/mutex.h>
 #include <rw/thr/barrier.h>
@@ -187,6 +166,3 @@ class IM_EX_FDRBASE CtiFDRInterface
         int  readConfig( void );
         void disconnect( void );
 };
-
-
-#endif  //  #ifndef __FDRINTERFACE_H__

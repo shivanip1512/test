@@ -1,23 +1,7 @@
 #define STATE_NO_CHANGE 0xffffffff
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   cservice
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVICE/INCLUDE/cservice.h-arc  $
-* REVISION     :  $Revision: 1.3.90.1 $
-* DATE         :  $Date: 2008/11/13 17:23:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
 #define NUMEVENTS 4
 #define MAX_SERVICE_LEN 256
-
 
 #if !defined (NOMINMAX)
 #define NOMINMAX

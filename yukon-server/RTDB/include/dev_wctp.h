@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_wctp
-*
-* Class:  CtiDeviceWctpTerminal
-* Date:   5/29/2002
-*
-* Author: Zhihong Yao
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_WCTP_H__
-#define __DEV_WCTP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <rw\thr\mutex.h>
 
@@ -224,8 +210,3 @@ private:
     bool    inConfirmation;
     bool    inSuccess;
 };
-
-
-
-
-#endif // #ifndef __DEV_WCTP_H__

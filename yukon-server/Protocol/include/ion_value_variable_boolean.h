@@ -1,22 +1,7 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_valuevariable_boolean.h
- *
- * Class:  CtiIONBoolean
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_VARIABLE_BOOLEAN_H__
-#define __ION_VALUE_VARIABLE_BOOLEAN_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include "ion_value_variable.h"
 #include "ion_value_variable_fixedarray_element.h"
-
 
 class CtiIONBoolean : public CtiIONValueVariable, /*public CtiIONNumeric, */public CtiIONFixedArrayElement
 {
@@ -54,7 +39,3 @@ public:
     virtual bool isNumeric( void ) const  {  return true;  };
     double getNumericValue( void ) const;
 };
-
-
-#endif  //  #ifndef __ION_VALUE_VARIABLE_BOOLEAN_H__
-

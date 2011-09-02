@@ -1,6 +1,4 @@
-#ifndef __DEV_EXCLUSION_H__
-#define __DEV_EXCLUSION_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -101,4 +99,3 @@ public:
     void setMinTimeInSec(unsigned int sec);
 
 };
-#endif // #ifndef __DEV_EXCLUSION_H__

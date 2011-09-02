@@ -1,28 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ion_value_structarray
-*
-* Class:  CtiIONValueStructArray
-* Date:   1/30/2003
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_STRUCTARRAY_H__
-#define __ION_VALUE_STRUCTARRAY_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "ion_value.h"
 #include "ion_value_struct_types.h"
 #include "string_utility.h"
-
 
 class CtiIONStructArray : public CtiIONValue
 {
@@ -180,9 +160,5 @@ public:
     }
 };
 
-
 typedef CtiIONStructArrayTemplate<CtiIONAlarm>          CtiIONAlarmArray;
 typedef CtiIONStructArrayTemplate<CtiIONLogRecord>      CtiIONLogArray;
-
-
-#endif // #ifndef __ION_VALUE_STRUCTARRAY_H__

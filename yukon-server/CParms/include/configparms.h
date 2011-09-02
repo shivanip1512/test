@@ -1,5 +1,4 @@
-#ifndef __CONFIGPARMS_H__
-#define __CONFIGPARMS_H__
+#pragma once
 
 #include "dlldefs.h"
 #include "cparms.h"
@@ -20,10 +19,3 @@ typedef BOOL (*CPARM_GETCONFIGSTRING)(const std::string&, char*, int);
 #ifdef __cplusplus
 }
 #endif
-
-
-
-
-#endif // #ifndef __CONFIGPARMS_H__
-
-

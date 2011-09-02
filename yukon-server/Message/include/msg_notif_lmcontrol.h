@@ -1,5 +1,4 @@
-#ifndef __MSG_NOTIF_LMCONTROL_H_
-#define __MSG_NOTIF_LMCONTROL_H_
+#pragma once
 
 #include <rw/collect.h>
 
@@ -47,6 +46,3 @@ private:
     CtiTime _start_time;
     CtiTime _stop_time;
 };
-
-
-#endif

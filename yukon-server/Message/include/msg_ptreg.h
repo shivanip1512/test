@@ -1,22 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_ptreg
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_ptreg.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/05/22 18:44:13 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __MSG_PTREG_H__
-#define __MSG_PTREG_H__
-
+#pragma once
 
 #include <rw\thr\threadid.h>
 #include <rw\tvslist.h>
@@ -75,6 +57,3 @@ public:
 
    virtual void dump() const;
 };
-
-#endif   // #ifndef __MSG_PTREG_H__
-

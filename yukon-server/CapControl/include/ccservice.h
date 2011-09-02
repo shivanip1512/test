@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccservice.h
-
-    Programmer:  Josh Wolberg
-
-    Description: Header file for CtiCCService
-
-    Initial Date:  9/04/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTICCSERVICE_H
-#define CTICCSERVICE_H
+#pragma once
 
 #include "ccclientlistener.h"
 #include "cservice.h"
@@ -46,6 +31,5 @@ private:
     CtiCapController* controller;
     CtiCCClientListener* clientListener;
 };
-#endif
 
 

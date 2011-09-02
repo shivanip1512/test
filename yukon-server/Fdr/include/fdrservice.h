@@ -1,28 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __FDR_SERVICE_H__
-#define __FDR_SERVICE_H__
-
-/*****************************************************************************
-*
-*    FILE NAME: fdrservice.h
-*
-*    DATE: 11/08/2000
-*
-*    AUTHOR: Ben Wallace
-*
-*    PURPOSE: Create a wrapper Class for the Main FDR program.
-*
-*    DESCRIPTION: Runs the FDR program as a service or console app.
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-
-
-/** include files **/
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -73,6 +49,3 @@ class CtiFDRService : public CService
         int     iInterfaceCount;
         
 };
-
-#endif //  __FDR_SERVICE_H__
-

@@ -1,25 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrprotectedmaplist.h
-*
-*    DATE: 04/26/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: The point lists for the interfaces with mutex protection
-*
-*    DESCRIPTION: This class implements an object that contains a list of 
-*                    fdr points for each interface and a mutex to protect them
-*                    when they are being accessed and reloaded
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRPROTECTEDMAPLIST_H__
-#define __FDRPROTECTEDMAPLIST_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -57,5 +36,3 @@ class IM_EX_FDRBASE CtiFDRProtectedIdMapList
         FDRIdMapList        iPointList;
         CtiMutex            iMux;
 };
-
-#endif

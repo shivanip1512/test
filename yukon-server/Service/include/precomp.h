@@ -1,23 +1,3 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   precomp
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVICE/INCLUDE/precomp.h-arc  $
-* REVISION     :  $Revision: 1.4.24.2 $
-* DATE         :  $Date: 2008/11/13 17:23:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-//#define UNICODE
-//#define _UNICODE
-
-
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif

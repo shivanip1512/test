@@ -1,22 +1,4 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_dbchg
-*
-* Date:   10/10/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_dbchg.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-#ifndef __MSG_DBCHG_H__
-#define __MSG_DBCHG_H__
+#pragma once
 
 #include "message.h"
 #include "dlldefs.h"
@@ -59,4 +41,3 @@ public:
 
    virtual void dump() const;
 };
-#endif // #ifndef __MSG_DBCHG_H__

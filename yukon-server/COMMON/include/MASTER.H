@@ -1,5 +1,4 @@
-#ifndef MASTER_H
-#define MASTER_H
+#pragma once
 
 /* Include file for various mastercomm devices */
 
@@ -101,5 +100,3 @@ IM_EX_CTIBASE INT MasterHeader (PBYTE, USHORT, USHORT, USHORT);
 IM_EX_CTIBASE INT PreMaster (PBYTE, USHORT);
 IM_EX_CTIBASE INT PostMaster (PBYTE, USHORT, PULONG);
 IM_EX_CTIBASE INT MasterReply (PBYTE, USHORT);
-
-#endif

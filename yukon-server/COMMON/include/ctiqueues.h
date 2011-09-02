@@ -7,8 +7,7 @@
  *
  */
 
-#ifndef CTIQUEUES_H
-#define CTIQUEUES_H
+#pragma once
 
 #include <queue>
 #include <stack>
@@ -130,6 +129,5 @@ class CtiStack{
         }
 
 };
-#endif
 
 

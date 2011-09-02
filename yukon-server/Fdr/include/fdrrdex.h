@@ -1,6 +1,4 @@
-#ifndef __FDRRDEX_H__
-#define __FDRRDEX_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -212,10 +210,4 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         enum {Rdex_Open = 0, Rdex_Closed = 1, Rdex_Invalid=99};
         virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aDestinationIndex);
         virtual bool isRegistrationNeeded(void);
-
-
 };
-
-
-#endif  //  #ifndef __FDRRDEX_H__
-

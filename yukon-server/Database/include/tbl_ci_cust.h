@@ -1,26 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_CI_CUST_H__
-#define __TBL_CI_CUST_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_ci_cust.h
-*
-* Class:  CtiTableCICustomerBase
-* Date:   4/2/2001
-*
-* Author: Corey G. Plender
-*         Aaron Lauinger
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_ci_cust.h-arc  $
-* REVISION     :  $Revision: 1.2.24.2 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -79,4 +57,3 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
-#endif // #ifndef __TBL_CI_CUST_H__

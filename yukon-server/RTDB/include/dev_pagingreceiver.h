@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_pagerreceive
-*
-* Date:   5/22/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_PAGERRECEIVE_H__
-#define __DEV_PAGERRECEIVE_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <map>
 #include <string>
@@ -116,5 +101,3 @@ private:
     static const char *_header;
     static const char *_footer;
 };
-#endif // #ifndef __DEV_CBC_H__
-

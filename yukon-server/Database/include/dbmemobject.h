@@ -1,22 +1,4 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   dbmemobject
-*
-* Date:   9/7/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/dbmemobject.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/09/10 22:26:12 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-#ifndef __DBMEMOBJECT_H__
-#define __DBMEMOBJECT_H__
+#pragma once
 
 class CtiMemDBObject
 {
@@ -73,4 +55,3 @@ public:
     virtual void setDirty(BOOL b = TRUE)   { _dirty = b;}
     void resetDirty(BOOL b = FALSE)        { _dirty = b;}
 };
-#endif // #ifndef __DBMEMOBJECT_H__

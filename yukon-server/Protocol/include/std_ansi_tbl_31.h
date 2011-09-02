@@ -1,22 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   std_ansi_tbl_31
-*
-* Class:
-* Date:   2/1/2005
-*
-* Author: Julie Richter
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_31.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/21 16:30:32 $
-
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#ifndef __STD_ANSI_TBL_31_H__
-#define __STD_ANSI_TBL_31_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "dlldefs.h"
 #include "types.h"
@@ -74,8 +56,4 @@ public:
    bool  getOnTimeFlag( );
    bool  getOffTimeFlag( );
    bool  getHoldTimeFlag( );
-
-
 };
-
-#endif // #ifndef __STD_ANSI_TBL_31_H__

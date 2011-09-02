@@ -1,43 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_scheduler
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_scheduler.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/08/01 17:58:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*-----------------------------------------------------------------------------
-    Filename:  mc_scheduler.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiMCScheduler
-                    CtiMCScheduler keeps track of macs scheduled events
-                    and contains most* of the logic as to when/how scheduled
-                    events will happen.
-
-                    It relies on state info in CtiMCSchedule and there
-                    their details are married enough to cause side effects.
-                    Modifying this class can be a bit like riding a snake.
-
-    Initial Date:  2/20/01
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#ifndef __MC_SCHEDULER_H__
-#define __MC_SCHEDULER_H__
-
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <deque>
 #include <list>
@@ -203,5 +164,3 @@ public:
         Inherited::calcDayOfMonthStart(now, sched, start_time);
     }
 };
-
-#endif

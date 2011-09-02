@@ -1,24 +1,5 @@
+#pragma once
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_PT_LIMIT_H__
-#define __TBL_PT_LIMIT_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_limit.h
-*
-* Class:  CtiTablePointLimit
-* Date:   8/14/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_limit.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <float.h>
 
 #include <limits.h>
@@ -76,4 +57,3 @@ public:
    static void getSQL(std::string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds = std::set<long>());
    void dump() const;
 };
-#endif // #ifndef __TBL_PT_LIMIT_H__

@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mcsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_sched.h-arc  $
-* REVISION     :  $Revision: 1.8.12.1 $
-* DATE         :  $Date: 2008/11/21 20:56:59 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-
-#ifndef __MCSCHED_H__
-#define __MCSCHED_H__
-
+#pragma once
 #include <time.h>
 
 #include "row_reader.h"
@@ -178,6 +160,3 @@ private:
 };
 
 std::ostream& operator<<( std::ostream& ostrm, CtiMCSchedule& sched );
-
-
-#endif

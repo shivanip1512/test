@@ -1,30 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrxa21lm.h
-*
-*    DATE: 11/20/2004
-*
-*    AUTHOR: Aaron Lauinger
-*
-*    PURPOSE: Interface to the CTI XA/21 lms engine.
-*
-*    DESCRIPTION: This interface listens for a connection from lmsdlnk running
-*                 on XA/21.  It has two main functions.
-*                 1) Receive MPC commands originating from lmsengine and send
-*                    the appropriate control commands on to dispatch.
-*                 2) Receive ripple group control status point changes and
-*                    translate this into MPC status messages so that lmseengine
-*                    can properly do load group accounting. (Regardless of where
-*                    the control command originates)*
-*
-*    Copyright (C) 2004 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRXA21LM_H__
-#define __FDRXA21LM_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -335,7 +309,3 @@ private:
     std::vector<CurrentControl> _current_controls;
     CtiCriticalSection _control_cs;
 };
-
-
-#endif  //  #ifndef __FDRXA21LM_H__
-

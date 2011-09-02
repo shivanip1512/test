@@ -1,22 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   thread_monitor
-*
-* Class:  CtiThreadMonitor
-* Date:   9/3/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20.4.1 $
-* DATE         :  $Date: 2008/11/12 17:27:30 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __THREAD_MONITOR_H__
-#define __THREAD_MONITOR_H__
+#pragma once
 
 #include <map>
 #include "smartmap.h"
@@ -106,5 +88,3 @@ private:
 //  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22;
 //    include thread_monitor.h if you want to use the thread monitor in your code
 IM_EX_CTIBASE extern CtiThreadMonitor  ThreadMonitor;
-
-#endif // #ifndef __THREAD_MONITOR_H__

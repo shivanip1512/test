@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupgolay.h
-        
-        Programmer:  Aaron Lauinger
-        
-        Description:    Header file for CtiLMGroupGolay
-
-        Initial Date:  03/05/2004
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPGOLAY_H
-#define CTILMGROUPGOLAY_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -58,5 +44,3 @@ private:
     
     void restore(Cti::RowReader &rdr);
 };
-#endif
-

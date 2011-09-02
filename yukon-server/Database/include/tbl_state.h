@@ -1,5 +1,3 @@
-
-#pragma warning( disable : 4786)
 #pragma once
 
 #include <rw/thr/recursiv.h>

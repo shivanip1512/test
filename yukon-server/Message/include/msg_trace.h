@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_TRACE_H__
-#define __MSG_TRACE_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_trace
-*
-* Class:  CtiTraceMsg
-* Date:   10/29/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_trace.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include <wincon.h>         // console colors.
 
@@ -111,8 +91,3 @@ inline CtiTraceMsg& CtiTraceMsg::setBrightWhite()      { return setWhite().setBr
 
 inline CtiTraceMsg& CtiTraceMsg::clearEnd()            { _end = false; return *this; }
 inline bool CtiTraceMsg::isEnd() const                 { return _end; }
-
-
-
-
-#endif // #ifndef __MSG_TRACE_H__

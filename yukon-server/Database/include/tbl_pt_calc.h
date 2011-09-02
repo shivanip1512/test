@@ -1,32 +1,7 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PT_CALC_H__
-#define __TBL_PT_CALC_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_calc
-*
-* Class:  CtiTablePointCalculated
-* Date:   8/14/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:17 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 class IM_EX_CTIYUKONDB CtiTablePointCalculated : public CtiMemDBObject
 {
-
-protected:
-
-private:
-
 public:
 
    CtiTablePointCalculated();
@@ -37,4 +12,3 @@ public:
 
    CtiTablePointCalculated& operator=(const CtiTablePointCalculated& aRef);
 };
-#endif // #ifndef __TBL_PT_CALC_H__

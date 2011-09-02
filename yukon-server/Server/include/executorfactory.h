@@ -1,21 +1,4 @@
-#ifndef __EXECUTORFACTORY_H__
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   executorfactory
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/executorfactory.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#define __EXECUTORFACTORY_H__
+#pragma once
 
 #include "collectable.h"
 #include "message.h"
@@ -37,7 +20,6 @@ public:
    ~CtiExecutorFactory();
    virtual CtiExecutor *getExecutor(CtiMessage*);
 };
-#endif // #ifndef __EXECUTORFACTORY_H__
 
 
 

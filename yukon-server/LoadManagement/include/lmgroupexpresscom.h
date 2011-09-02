@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupexpresscom.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMGroupExpresscom
-                        CtiLMGroupExpresscom
-
-        Initial Date:  10/24/2002
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2002
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPEXPRESSCOMIMPL_H
-#define CTILMGROUPEXPRESSCOMIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -67,5 +52,3 @@ private:
 
     void restore(Cti::RowReader &rdr);
 };
-#endif
-

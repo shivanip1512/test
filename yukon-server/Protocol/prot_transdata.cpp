@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_transdata
-*
-* Date:   7/16/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
 #include "precompiled.h"
-
 
 #include "guard.h"
 #include "logger.h"

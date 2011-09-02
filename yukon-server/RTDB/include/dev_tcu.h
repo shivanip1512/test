@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_tcu
-*
-* Class:  CtiDeviceTCU
-* Date:   9/14/1999
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.11.10.2 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_TCU_H__
-#define __DEV_TCU_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -96,4 +77,3 @@ public:
    virtual INT getProtocolWrap() const;
 
 };
-#endif // #ifndef __DEV_TCU_H__

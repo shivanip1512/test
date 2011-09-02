@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_season
-*
-* Date:   4/16/2003
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_season.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __MGR_SEASON_H__
-#define __MGR_SEASON_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <map>
 
@@ -55,5 +39,3 @@ private:
 
     static const std::string _season_sql;
 };
-#endif
-

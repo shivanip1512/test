@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_value_variable_fixedarray.h
- *
- * Class:  CtiIONFixedArray
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_H__
-#define __ION_VALUE_VARIABLE_FIXEDARRAY_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include "ion_value_variable.h"
 #include "ion_value_variable_fixedarray_element.h"
@@ -274,8 +260,3 @@ public:
         }
     }
 };
-
-
-#endif  //  #ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_H__
-
-

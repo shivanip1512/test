@@ -1,7 +1,5 @@
-#pragma warning( disable : 4786)
+#pragma once
 
-#ifndef __COLLECTABLE_H__
-#define __COLLECTABLE_H__
 /*
  *  Defines for DEFINE_COLLECTABLES
  */
@@ -40,8 +38,6 @@
 
 #define MSG_QUEUEDATA                     ((MSG_BASE) + 150)
 #define MSG_REQUESTCANCEL                 ((MSG_BASE) + 151)
-
-#endif      // #ifndef __COLLECTABLE_H__
 
 
 

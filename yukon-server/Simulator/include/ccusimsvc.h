@@ -1,5 +1,3 @@
-#ifndef CCUSIMSVC_H
-#define CCUSIMSVC_H
 #pragma once
 
 #include "cservice.h"
@@ -33,5 +31,3 @@ public:
    virtual ~CtiSimulatorService();
 
 };
-
-#endif

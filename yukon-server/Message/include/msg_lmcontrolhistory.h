@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_lmcontrolhistory
-*
-* Date:   9/24/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_lmcontrolhistory.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_LMCONTROLHISTORY_H__
-#define __MSG_LMCONTROLHISTORY_H__
+#pragma once
 
 #include "pointdefs.h"
 #include "message.h"
@@ -102,4 +86,3 @@ public:
 
    static unsigned int getInstanceCount() { return _instanceCount; }
 };
-#endif // #ifndef __MSG_LMCONTROLHISTORY_H__

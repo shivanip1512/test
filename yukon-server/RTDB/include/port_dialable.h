@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_dialable
-*
-* Class:  CtiPortDialable
-* Date:   12/16/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_DIALABLE_H__
-#define __PORT_DIALABLE_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "port_base.h"
 #include "port_modem.h"
@@ -90,9 +72,3 @@ inline void CtiPortDialable::setShouldDisconnect(BOOL b)
 {
     _shouldDisconnect = b;
 }
-
-
-
-
-
-#endif // #ifndef __PORT_DIALABLE_H__

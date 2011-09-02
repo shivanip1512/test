@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_paoexclusion
-*
-* Class:  CtiTablePaoExclusion
-* Date:   5/14/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PAOEXCLUSION_H__
-#define __TBL_PAOEXCLUSION_H__
+#pragma once
 
 #include "row_reader.h"
 #include "rwutil.h"
@@ -122,4 +104,3 @@ public:
     CtiTablePaoExclusion &setMaxTransmitTime(int maxtransmittime);
 
 };
-#endif // #ifndef __TBL_PAOEXCLUSION_H__

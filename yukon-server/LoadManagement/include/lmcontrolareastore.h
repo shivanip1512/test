@@ -1,22 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  controlareastore.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMControlAreaStore.
-                        CtiLMControlAreaStore maintains a pool of
-                        CtiLMControlArea handles.
-                       
-
-        Initial Date:  2/1/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMCONTROLAREASTORE_H
-#define CTILMCONTROLAREASTORE_H
+#pragma once
 
 #include <map>
 
@@ -155,6 +137,3 @@ private:
     //The singleton instance of CtiLMControlAreaStore
     static CtiLMControlAreaStore* _instance;
 };
-
-#endif
-

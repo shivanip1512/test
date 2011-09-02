@@ -1,25 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   telegyrgroup
-*
-* Class:
-* Date:   5/16/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:46 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TELEGYRGROUP_H__
-#define __TELEGYRGROUP_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -69,5 +48,3 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
 
         std::vector< CtiFDRPoint > _pointList;
 };
-
-#endif // #ifndef __TELEGYRGROUP_H__

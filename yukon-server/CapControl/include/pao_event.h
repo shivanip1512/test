@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  pao_event.h
-    
-    Programmer:  Julie Richter
-        
-    Description:    
-                        
-    Initial Date:  1/27/2005
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
- 
-#ifndef CTIPAOEVENT_H
-#define CTIPAOEVENT_H
+#pragma once
 
 #include "row_reader.h"
 
@@ -61,4 +46,3 @@ private:
     BOOL         _disableOvUvFlag;
     
 };
-#endif

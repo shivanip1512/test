@@ -1,25 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_tag
-*
-* Class:  CtiTableTag
-* Date:   12/23/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_TAG_H__
-#define __TBL_TAG_H__
-
-
+#pragma once
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -61,4 +40,3 @@ public:
     bool getInhibit() const;
     std::string getTagName() const;
 };
-#endif // #ifndef __TBL_TAG_H__

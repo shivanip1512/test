@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 #include <iostream>
 
 #include "ctitime.h"

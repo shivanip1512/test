@@ -1,21 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mark_v
-*
-* Date:   7/16/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2008/10/17 11:14:38 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-
 #include "precompiled.h"
 #include "cparms.h"
 #include "porter.h"

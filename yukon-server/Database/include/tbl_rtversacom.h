@@ -1,23 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rtversacom
-*
-* Date:   9/30/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_rtversacom.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/07/19 19:02:01 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __TBL_RTVERSACOM_H__
-#define __TBL_RTVERSACOM_H__
-
+#pragma once
 
 #include "dbmemobject.h"
 #include "dlldefs.h"
@@ -88,4 +69,3 @@ public:
    INT  getSubstation() const;
    UINT getIndividual() const;
 };
-#endif // #ifndef __TBL_RTVERSACOM_H__

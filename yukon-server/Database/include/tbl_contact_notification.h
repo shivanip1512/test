@@ -1,25 +1,5 @@
+#pragma once
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_CONTACT_NOTIFICATION__
-#define __TBL_CONTACT_NOTIFICATION__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_contact_notification
-*
-* Class:  CtiTableContactNotification
-* Date:   02/05/2003
-*
-* Author: Corey G. Plender
-*         Aaron Lauinger
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_contact_notification.h-arc  $
-* REVISION     :  $Revision: 1.2.24.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <rw/thr/recursiv.h>
 #include "row_reader.h"
 
@@ -74,4 +54,3 @@ public:
   virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
 };
-#endif // #ifndef __TBL_CONTACT_NOTIFICATION__

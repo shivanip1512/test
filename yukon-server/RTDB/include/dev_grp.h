@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp
-*
-* Class:  CtiDeviceGroupBase
-* Date:   2/2/2000
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_GRP_H__
-#define __DEV_GRP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #define GRP_CONTROL_STATUS      1       // status point which can intiate control on the group.  Also indicates control status.
 
@@ -233,5 +214,3 @@ public:
     virtual void clearChildren() {}
 
 };
-
-#endif // #ifndef __DEV_GRP_H__

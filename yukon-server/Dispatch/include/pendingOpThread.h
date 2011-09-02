@@ -1,78 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pendingOpThread
-*
-* Class:  CtiPendingOpThread
-* Date:   11/2/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14.6.1 $
-* DATE         :  $Date: 2008/11/20 20:37:42 $
-* HISTORY      :
-* $Log: pendingOpThread.h,v $
-* Revision 1.14.6.1  2008/11/20 20:37:42  jmarks
-* [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-* * Builds through "Dispatch" subdirectory
-* * A few new lines commented out to link successfully
-*
-* Revision 1.14  2008/04/24 19:41:51  jotteson
-* YUK-4897 Load management implementation of Expresscom priorities
-* Moved the handling of control status points to Dispatch.
-* Enabled dispatch to know what the current control priority of any group is.
-*
-* Revision 1.13  2006/09/26 14:11:52  mfisher
-* moved headers to the top so Slick's diff ignores them
-*
-* Revision 1.12  2006/09/08 20:18:05  jotteson
-* Fixed a bug that would cause delayed limits to not be ack-able.
-*
-* Revision 1.11  2006/06/16 20:04:56  jotteson
-* Now modifies tags when removing a control. Can be told not to write control history if desired.
-*
-* Revision 1.10  2006/03/23 15:29:19  jotteson
-* Mass update of point* to smart pointers. Point manager now uses smart pointers.
-*
-* Revision 1.9  2006/01/05 21:05:14  cplender
-* Changed a CtiQueue (sorted) to CtiFIFOQueue for speed.
-*
-* Revision 1.8  2006/01/05 19:30:10  cplender
-* Que_t changed to Que_t typedef name.
-*
-* Revision 1.7  2005/12/20 17:16:58  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.6  2005/07/25 16:40:53  cplender
-* Working on lmcontrolhistory for Minnkota.
-* Revision 1.5.4.2  2005/08/12 19:53:43  jliu
-* Date Time Replaced
-*
-* Revision 1.5.4.1  2005/07/14 22:26:55  jliu
-* RWCStringRemoved
-*
-* Revision 1.5  2004/12/01 20:15:04  cplender
-* LMControlHistory.
-*
-* Revision 1.4  2004/11/18 23:56:08  cplender
-* Control History Getting closer.
-*
-* Revision 1.3  2004/11/09 06:12:51  cplender
-* Working to calm dispatch down
-*
-* Revision 1.2  2004/11/08 14:40:38  cplender
-* 305 Protocol should send controls on RTCs now.
-*
-* Revision 1.1  2004/11/05 17:22:48  cplender
-* IR
-*
-*
-* Copyright (c) 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __PENDINGOPTHREAD_H__
-#define __PENDINGOPTHREAD_H__
+#pragma once
 
 #include <set>
 
@@ -176,4 +102,3 @@ public:
     static CtiPointNumericSPtr getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
 
 };
-#endif // #ifndef __PENDINGOPTHREAD_H__

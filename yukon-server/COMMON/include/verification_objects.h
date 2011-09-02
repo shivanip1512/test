@@ -1,22 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   verification_objects
-*
-* Class:
-* Date:   4/9/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/01/26 19:56:14 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __VERIFICATION_OBJECTS_H__
-#define __VERIFICATION_OBJECTS_H__
+#pragma once
 
 #include "dlldefs.h"
 #include "dsm2.h"
@@ -201,6 +183,3 @@ public:
     std::deque< long > getExpectations() const;
     std::deque< std::pair< long, boost::posix_time::ptime > > getReceipts () const;
 };
-
-
-#endif // #ifndef __VERIFICATION_H__

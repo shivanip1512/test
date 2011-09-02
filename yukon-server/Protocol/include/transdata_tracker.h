@@ -1,25 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TRANSDATA_TRACKER_H__
-#define __TRANSDATA_TRACKER_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   transdata_tracker
-*
-* Class:
-* Date:   8/14/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/01/14 20:09:35 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-
+#pragma once
 
 #include "xfer.h"
 #include "numstr.h"
@@ -209,5 +188,3 @@ class IM_EX_PROT CtiTransdataTracker
       CtiProtocolYmodem    _ymodem;
 
 };
-
-#endif // #ifndef __TRANSDATA_TRACKER_H__

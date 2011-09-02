@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning( disable : 4786 )
 
 #include "dev_dnp.h"
 #include "tbl_dv_address.h"

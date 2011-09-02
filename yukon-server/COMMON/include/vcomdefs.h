@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   vcomdefs
-*
-* Class:
-* Date:   5/9/2000
-*
-* Author: Corey G. Plender
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __VCOMDEFS_H__
-#define __VCOMDEFS_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #define U_MASK       0x00000008
 #define S_MASK       0x00000004
@@ -36,7 +21,3 @@
 #define RELAY_14_MASK 0x00002000
 #define RELAY_15_MASK 0x00004000
 #define RELAY_16_MASK 0x00008000
-
-
-
-#endif // #ifndef __VCOMDEFS_H__

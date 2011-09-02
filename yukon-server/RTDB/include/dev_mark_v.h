@@ -1,23 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   dev_mark_v
-*
-* Class:  CtiDeviceMarkV
-* Date:   7/16/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23.2.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#ifndef __DEV_MARK_V_H__
-#define __DEV_MARK_V_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "prot_transdata.h"
 #include "dev_meter.h"
@@ -143,5 +124,3 @@ public:
    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
-
-#endif // #ifndef __DEV_H__

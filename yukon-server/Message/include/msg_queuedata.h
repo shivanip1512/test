@@ -1,23 +1,4 @@
-  #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_queuedata
-*
-* Date:   1/22/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.2.20.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-#ifndef __MSG_QUEUEDATA_H__
-#define __MSG_QUEUEDATA_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -92,4 +73,3 @@ public:
 
    virtual void dump() const;
 };
-#endif

@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pt_calc
-*
-* Date:   20 Dec 2000 15:09:58
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PT_CALC_H__
-#define __PT_CALC_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <rw/tpsrtvec.h>
 #include "sorted_vector"
@@ -111,11 +95,4 @@ public:
       Inherited::DumpData();       // get the base class handled
       cout << " Update Frequency                         : " << UpdateFrequency << std::endl;
    }
-
-
-
 };
-
-
-#endif // #ifndef __PT_CALC_H__
-

@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   repeaterrole
-*
-* Class:
-* Date:   6/27/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:27 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __REPEATERROLE_H__
-#define __REPEATERROLE_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dlldefs.h"
 
@@ -54,5 +36,3 @@ public:
     BYTE getStages() const;
     CtiDeviceRepeaterRole& setStages(BYTE stages);
 };
-
-#endif // #ifndef __REPEATERROLE_H__

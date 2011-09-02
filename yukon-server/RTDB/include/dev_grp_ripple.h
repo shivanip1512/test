@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_ripple
-*
-* Class:  CtiDeviceGroupRipple
-* Date:   10/4/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_ripple.h-arc  $
-* REVISION     :  $Revision: 1.12.2.1 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_GRP_RIPPLE_H__
-#define __DEV_GRP_RIPPLE_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -69,5 +50,3 @@ public:
 
 inline CtiTableRippleLoadGroup CtiDeviceGroupRipple::getRippleTable() const     { CtiLockGuard<CtiMutex> guard(_classMutex); return _rippleTable;}
 inline CtiTableRippleLoadGroup& CtiDeviceGroupRipple::getRippleTable()          { CtiLockGuard<CtiMutex> guard(_classMutex); return _rippleTable;}
-
-#endif // #ifndef __DEV_GRP_RIPPLE_H__

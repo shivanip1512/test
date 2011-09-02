@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PORTGLOB
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/29 18:16:48 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
 #include "dlldefs.h"
 #include "types.h"
 #include "ctinexus.h"

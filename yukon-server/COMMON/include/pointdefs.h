@@ -1,18 +1,4 @@
-#pragma warning( disable : 4786)
-#ifndef __POINTDEFS_H__
-#define __POINTDEFS_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   pointdefs
-*
-* Class:
-* Date:   6/7/2000
-*
-* Author: Corey G. Plender
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #define COMM_FAIL_OFFSET            2000
 #define PAGECOUNTOFFSET             2001
@@ -245,5 +231,3 @@ typedef enum
 // Relatively arbitrary, but should be ok.
 #define MAX_HIGH_REASONABILITY          (1e30)
 #define MIN_LOW_REASONABILITY           (-1e30)
-
-#endif // #ifndef __POINTDEFS_H__

@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_serializable.h
- *
- * Class:  CtiIONSerializable
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_SERIALIZABLE_H__
-#define __ION_SERIALIZABLE_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <vector>
 using std::vector;
@@ -43,7 +29,3 @@ public:
     CtiIONSerializable( )  { };
     virtual ~CtiIONSerializable( )  { };
 };
-
-
-#endif  //  #ifndef __ION_SERIALIZABLE_H__
-

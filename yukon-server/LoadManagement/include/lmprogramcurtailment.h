@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramcurtailment.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiLMProgramCurtailment
-
-        Initial Date:  3/23/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMCURTAILMENTIMPL_H
-#define CTILMPROGRAMCURTAILMENTIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -128,6 +114,3 @@ private:
 };
 
 typedef boost::shared_ptr< CtiLMProgramCurtailment > CtiLMProgramCurtailmentSPtr;
-
-#endif
-

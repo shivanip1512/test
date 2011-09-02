@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_welco
-*
-* Class:  CtiDeviceWelco
-* Date:   8/27/1999
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.15.4.2 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_WELCO_H__
-#define __DEV_WELCO_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -113,4 +93,3 @@ public:
    virtual void resetForScan(int scantype);
 
 };
-#endif // #ifndef __DEV_WELCO_H__

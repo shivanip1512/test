@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_seriesv
-*
-* Date:   8/23/2005
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __TBL_DV_SERIESV_H__
-#define __TBL_DV_SERIESV_H__
-
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -72,4 +55,3 @@ public:
 
     static std::string getTableName();
 };
-#endif // #ifndef __TBL_DV_SERIESV_H__

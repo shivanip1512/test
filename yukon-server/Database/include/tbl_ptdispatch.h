@@ -1,22 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PTPERSISTENCE_H__
-#define __TBL_PTPERSISTENCE_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_ptpersistence
-*
-* Class:  CtiTablePointDispatch
-* Date:   6/16/2000
-*
-* Author: Corey G. Plender
-*
-* This class is used to store the state of a point across runs of the dispatch
-* application.  It allows dispatch to maintain the state of the system's points
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include <limits.h>
 
@@ -114,4 +96,3 @@ private:
                                             const CtiTime& archivetime,
                                             UINT num );
 };
-#endif // #ifndef __TBL_PTPERSISTENCE_H__

@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_base_lite
-*
-* Class:  CtiDeviceBaseLite
-* Date:   1/2/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.12.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_BASE_LITE_H__
-#define __DEV_BASE_LITE_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -84,4 +64,3 @@ protected:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual bool Restore();
 };
-#endif // #ifndef __DEV_BASE_LITE_H__

@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#ifndef __POINTSTORE_H__
-#define __POINTSTORE_H__
+#pragma once
 
 #include <functional>
 
@@ -273,7 +271,3 @@ private:
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
-
-
-#endif   // #ifndef __POINTSTORE_H__
-

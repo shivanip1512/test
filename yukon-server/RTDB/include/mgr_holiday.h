@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_holiday
-*
-* Date:   3/18/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_holiday.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/03/11 16:43:17 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __MGR_HOLIDAY_H__
-#define __MGR_HOLIDAY_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <map>
 
@@ -58,5 +42,3 @@ private:
 
     static const std::string holidaysql;
 };
-#endif
-

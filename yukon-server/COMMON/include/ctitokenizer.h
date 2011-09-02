@@ -1,17 +1,5 @@
-/*
- * class CtiTokenzier
- *  
- * Author: Jian Liu 
- * Date: 07/20/2005 15:37:47 
- * 
- * 
- * This class initailly is to replace the RWCTokinizer in cmdparse.cpp. It is not part of the DLL interface.
- * The class use boost tokenizer library to perform the string tokenizing. Its interface and methods are the 
- * same as RWCTokenizer. Please refer to RWTokenizer document to see its functionalities.
- */
+#pragma once
 
-#ifndef _TOKENIZER_WRAPER_
-#define _TOKENIZER_WRAPER_
 #include <string>
 #include <boost/tokenizer.hpp>
 #include "dlldefs.h"
@@ -29,5 +17,3 @@ public:
     CtiTokenizer(std::string& s);
     std::string operator()(char* d = " ");
 };
-
-#endif

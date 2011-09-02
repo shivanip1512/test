@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_mct
-*
-* Class:  CtiDeviceGroupMCT
-* Date:   5/23/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9.2.1 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __DEV_GRP_MCT_H__
-#define __DEV_GRP_MCT_H__
+#pragma once
 
 #include "dev_grp.h"
 #include "tbl_dv_lmgmct.h"
@@ -68,5 +51,3 @@ public:
     virtual INT executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
 
 };
-
-#endif // #ifndef __DEV_GRP_MCT_H__

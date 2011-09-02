@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  executor.h
-    
-    Programmer:  Josh Wolberg
-    
-    Description:    Header file for the various Load Management executor classes.
-                            
-    Initial Date:  2/13/2001
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef EXECUTOR_H
-#define EXECUTOR_H
+#pragma once
 
 #include <rw/thr/countptr.h>   
 #include <rw/thr/thrfunc.h>
@@ -206,4 +191,3 @@ public:
     CtiLMExecutor* createExecutor(const CtiMessage* message);
 
 };
-#endif

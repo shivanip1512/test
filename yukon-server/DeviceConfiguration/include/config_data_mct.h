@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   config_data_mct
-*
-* Date:   11/29/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/12/03 22:15:57 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __CONFIG_DATA_MCT_H_
-#define __CONFIG_DATA_MCT_H_
+#pragma once
 
 #include "yukon.h"
 #include "dllbase.h"
@@ -189,4 +174,3 @@ public:
 
 }
 }
-#endif //__CONFIG_DATA_470

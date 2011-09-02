@@ -1,35 +1,4 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_mcsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/tbl_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------
-
-        Filename:  tbl_mcsched.h
-
-        Programmer:  Aaron Lauinger
-
-        Description:    Header file for CtiMCSchedule.
-
-        Initial Date:  4/7/99
-                       1/11/01
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-#ifndef __TBL_MCSCHED_H__
-#define _TBL_MCSCHED_H__
+#pragma once
 
 #include <string>
 
@@ -146,4 +115,3 @@ private:
     int             _template_type;
 
 };
-#endif

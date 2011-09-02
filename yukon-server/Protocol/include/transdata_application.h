@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TRANSDATA_APPLICATION_H__
-#define __TRANSDATA_APPLICATION_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   transdata_application
-*
-* Class:
-* Date:   7/22/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
+#pragma once
 
 #include <vector>
 
@@ -94,6 +74,3 @@ class IM_EX_PROT CtiTransdataApplication
 
       BYTE                 *_storage;
 };
-
-#endif // #ifndef __TRANSDATA_APPLICATION_H__
-

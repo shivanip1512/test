@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pttrigger
-*
-* Date:   5/16/2006
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pttrigger.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PTTRIGGER_H__
-#define __PTTRIGGER_H__
+#pragma once
 
 #include "yukon.h"
 #include <boost/shared_ptr.hpp>
@@ -66,5 +52,3 @@ public:
 
     CtiMutex& getMux();
 };
-
-#endif // __PTTRIGGER_H__

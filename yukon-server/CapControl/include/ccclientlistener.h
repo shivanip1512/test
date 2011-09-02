@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <rw/toolpro/sockaddr.h>
 #include <rw/toolpro/sockport.h>

@@ -1,11 +1,8 @@
-
-#ifndef __CTI_LOGIC_H__
-#define __CTI_LOGIC_H__
+#pragma once
 
 #include <string>
 
 #include <tcl.h>
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +15,4 @@ static int SetPoint(ClientData clientData, Tcl_Interp* interp, int argc, char* a
 
 #ifdef __cplusplus
 }
-#endif
-    
 #endif

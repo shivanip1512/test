@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_ptclients
-*
-* mgr_ptclients.h      7/7/99
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __MGR_PTCLIENTS_H__
-#define __MGR_PTCLIENTS_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <list>
 
@@ -148,6 +133,3 @@ public:
     void addAlarming(CtiTablePointAlarming &table) { Inherited::addAlarming(table); }
     void removeAlarming(unsigned long pointID)     { Inherited::removeAlarming(pointID); }
 };
-
-
-#endif                  // #ifndef __MGR_PTCLIENTS_H__

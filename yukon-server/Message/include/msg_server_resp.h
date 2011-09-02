@@ -1,7 +1,4 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __MSG_SERVER_RESP_H_
-#define __MSG_SERVER_RESP_H_
+#pragma once
 
 #include <string>
 
@@ -65,6 +62,3 @@ protected:
 
     CtiMessage* _payload;
 };
-
-
-#endif

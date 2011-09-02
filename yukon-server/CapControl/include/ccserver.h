@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccserver.h
-
-    Programmer:  Josh Wolberg
-
-    Description: Header file for CtiCCServer
-
-    Initial Date:  9/04/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTICCSERVER_H
-#define CTICCSERVER_H
+#pragma once
                                 
 #include <rw/thr/recursiv.h>
 #include <rw/thr/mutex.h>
@@ -55,5 +40,3 @@ private:
     static CtiCCServer* _instance;
     static int _capcontrolclientsport;
 };
-
-#endif

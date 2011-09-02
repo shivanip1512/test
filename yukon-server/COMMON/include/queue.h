@@ -1,8 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __CtiQUE_H__
-#define __CtiQUE_H__
-
+#pragma once
 
 #include <iostream>
 #include <functional>
@@ -596,5 +592,3 @@ public:
         return *this;
     }
 };
-
-#endif //#ifndef __CtiQUE_H__

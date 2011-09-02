@@ -1,26 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   protocol_sa
-*
-* Class:
-* Date:   7/21/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/11/08 14:40:39 $
-*
-*
-* Notes:
-*       Proposed format for protocol DLL - Win32 format.
-*
-* Copyright (c) 2003
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __PROTOCOL_SA_H__
-#define __PROTOCOL_SA_H__
+#pragma once
 
 typedef struct schedCode
 {
@@ -379,6 +357,3 @@ INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
  *
  *----------------------------------------------------------------------------*/
 INT lastSAError( CHAR *buf, INT *buflen );
-
-#endif // #ifndef __PROTOCOL_SA_H__
-

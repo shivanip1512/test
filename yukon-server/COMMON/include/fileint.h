@@ -1,27 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  fileint.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiFileInterface.
-                    An abstract class that watches a directory for new files.
-                    It calls the pure virtual function handleFile when
-                    a new file is found.  Subclass should implement handleFile
-                    to take the appropriate action when a file is found.
-                    CtiFileInterface is 'thread-hot' in that it creates a thread
-                    when the start member function is called.  This thread is
-                    stopped when either the stop member function or the
-                    destructor is called.
-
-
-    Initial Date:  6/29/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-#ifndef CTIFILEINTERFACE_H
-#define CTIFILEINTREFACE_H
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <iostream>
 
@@ -70,5 +47,3 @@ private:
     CtiFileInterface(const CtiFileInterface& other) { };
     CtiFileInterface& operator=(const CtiFileInterface& right) { return *this; };
 };
-
-#endif

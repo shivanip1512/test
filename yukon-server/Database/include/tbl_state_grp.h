@@ -1,24 +1,5 @@
+#pragma once
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_STATE_GRP_H__
-#define __TBL_STATE_GRP_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_state_grp
-*
-* Class:  CtiTableStateGroup
-* Date:   12/29/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_state_grp.h-arc  $
-* REVISION     :  $Revision: 1.4.24.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <set>
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
@@ -76,4 +57,3 @@ public:
    void dump() const;
 
 };
-#endif // #ifndef __TBL_STATE_GRP_H__

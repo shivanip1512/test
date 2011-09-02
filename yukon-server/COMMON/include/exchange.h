@@ -1,36 +1,16 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   exchange
-*
-* Date:   5/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.10.10.1 $
-* DATE         :  $Date: 2008/11/12 17:27:30 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __EXCHANGE_H__
-#define __EXCHANGE_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #include <iostream>
 
-
 #include <rw/rwerr.h>
-
 #include <rw/thr/recursiv.h>
-
 #include <rw/toolpro/portal.h>
 #include <rw/toolpro/portstrm.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
-
 #include <rw/defs.h>
 #include <rw/pstream.h>
+
 #include <boost/utility.hpp>
 
 #include "dlldefs.h"
@@ -179,5 +159,3 @@ public:
     }
 
 };
-
-#endif // #ifndef __EXCHANGE_H__

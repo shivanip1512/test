@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  tfexec.h
-            
-    Programmer:  Aaron Lauinger
-    
-    Description:    Header file for CtiTimedFunctorExecutor.
-                    CtiTimedFunctorExecutor executes all the functors in it's
-                    queue every certain number of milliseconds.  The functors
-                    are removed from the queue once they are executed.
-                    
-                    See Rogue Wave docs on rwMakeFunctor and RWFunctor0
-                                       
-    Initial Date:  4/25/99
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __TFEXEC_H__
-#define __TFEXEC_H__
+#pragma once
      
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>
@@ -41,5 +22,3 @@ private:
 
     void _timed_thr_func();
 };
-
-#endif

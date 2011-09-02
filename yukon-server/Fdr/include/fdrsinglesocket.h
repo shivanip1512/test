@@ -1,6 +1,4 @@
-#ifndef __FDRSINGLESOCKET_H__
-#define __FDRSINGLESOCKET_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -88,8 +86,3 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
     private:
         CtiFDRSocketLayer           *iLayer;
 };
-
-
-#endif  //  #ifndef __FDRSingleSocket_H__
-
-

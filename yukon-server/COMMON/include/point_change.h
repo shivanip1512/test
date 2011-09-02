@@ -1,5 +1,4 @@
-#ifndef __POINT_CHANGE_H__
-#define __POINT_CHANGE_H__
+#pragma once
 
 #include <rw\thr\mutex.h>
 #include "yukon.h"
@@ -56,5 +55,3 @@ public:
 
    void           Dump();
 };
-
-#endif //#ifndef __POINT_CHANGE_H__

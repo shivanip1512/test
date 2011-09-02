@@ -1,67 +1,4 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_msg
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_msg.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 19:35:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------
-        Filename:  mc_msg.h
-
-        Programmer:  Aaron Lauinger
-
-        Description:    Header file for the following classes:
-                            CtiMCUpdateSchedule
-                            CtiMCAddSchedule
-                            CtiMCRetrieveSchedule
-                            CtiMCOverrideRequest
-
-        Messages the server will send to it's clients:
-
-        CtiMCSchedule (see mc_sched.h)
-        -   A CtiMCSchedule will be sent whenever a significant state
-            change in a schedule occures, or when a client requests
-            a CtiMCSchedule be sent via the CtiMCRetrieveSchedule
-            message.
-
-        CtiMCDeleteSchedule
-        -   A CtiMCDeleteSchedule will be sent whenever a schedule is
-            deleted.
-
-        CtiMCInfo
-        -   A CtiMCInfo will be sent when significant events occur,
-            i.e. something started or stopped, or an error occured.
-            Most likely only the text string will be of interest to
-            the client.
-
-        Messages the client will send to the server:
-
-        CtiMCUpdateSchedule
-        CtiMCAddSchedule
-        CtiMCDeleteSchedule
-        CtiMCRetrieveSchedule
-        CtiMCOverrideRequest
-        CtiMCInfo
-
-        Initial Date:  4/7/99
-                       1/11/01
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-#ifndef __MSG_MCCMD_H__
-#define __MSG_MCCMD_H__
+#pragma once
 
 #include "message.h"
 #include "mc_sched.h"
@@ -351,4 +288,3 @@ private:
     long _id;
     std::string _info;
 };
-#endif

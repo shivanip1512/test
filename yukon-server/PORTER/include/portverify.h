@@ -1,22 +1,4 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   portverify
-*
-* Class:  CtiPorterVerification
-* Date:   4/14/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/01/05 21:05:57 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __PORTVERIFY_H__
-#define __PORTVERIFY_H__
+#pragma once
 
 #include <map>
 #include <queue>
@@ -92,5 +74,3 @@ public:
 
     long report() const;
 };
-
-#endif // #ifndef __PORTVERIFY_H__

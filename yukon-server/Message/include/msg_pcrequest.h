@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_pcrequest
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcrequest.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __MSG_PCREQUEST_H__
-#define __MSG_PCREQUEST_H__
-
+#pragma once
 
 #include "dlldefs.h"
 #include "message.h"
@@ -84,5 +66,3 @@ public:
 
     virtual void dump() const;
 };
-
-#endif

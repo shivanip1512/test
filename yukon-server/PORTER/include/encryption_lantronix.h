@@ -1,5 +1,4 @@
-#ifndef __LANTRONICSENCRYPTION__
-#define __LANTRONICSENCRYPTION__
+#pragma once
 
 #include "EncodingFilter.h"
 #include <string>
@@ -36,6 +35,3 @@ class LantronixEncryptionImpl : public EncodingFilter
         unsigned char _iv[16];
         unsigned char _key[16];
 };
-
-
-#endif

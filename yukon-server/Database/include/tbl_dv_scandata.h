@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_SCANDATA_H__
-#define __TBL_DV_SCANDATA_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_scandata
-*
-* Class:  CtiTableDeviceScanData
-* Date:   8/16/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_scandata.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include "row_reader.h"
 
@@ -83,4 +63,3 @@ private:
    bool Update(Cti::Database::DatabaseConnection &conn);
 
 };
-#endif // #ifndef __TBL_DV_SCANDATA_H__

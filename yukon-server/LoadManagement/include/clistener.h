@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  clistener.h
-                    
-    Programmer:  Josh Wolberg
-    
-    Description: Header file for CtiLMClientListener
-        
-    Initial Date:  2/5/2001
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMCLIENTLISTENER_H
-#define CTILMCLIENTLISTENER_H
+#pragma once
 
 #include <rw/toolpro/sockaddr.h>
 #include <rw/toolpro/sockport.h>
@@ -54,6 +40,3 @@ private:
     void _listen( );
     void _check( );
 };
-
-#endif
-

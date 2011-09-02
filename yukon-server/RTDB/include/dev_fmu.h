@@ -1,45 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_fmu
-*
-* Class:  CtiDeviceFMU
-* Date:   9/26/2006
-*
-* Author: Julie Richter
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
-* HISTORY      :
-* $Log: dev_fmu.h,v $
-* Revision 1.6  2008/06/06 20:28:01  jotteson
-* YUK-6005 Porter LLP expect more set incorrectly
-* Added an option to override expect more in the error decode call.
-* Made LLP retry 3 times before failing.
-*
-* Revision 1.5  2007/09/24 19:48:36  mfisher
-* changed DawnOfTime to an enum to prevent tagging difficulties
-*
-* Revision 1.4  2007/08/07 21:05:12  mfisher
-* removed "using namespace std;" from header files
-*
-* Revision 1.3  2007/08/07 19:56:17  mfisher
-* removed "using namespace Cti;" from header files
-*
-* Revision 1.2  2007/02/12 19:19:16  jotteson
-* Communications with the FMU are now working.
-*
-* Revision 1.1  2007/01/26 19:56:14  jrichter
-* FMU stuff for jess....
-*
-*
-* Copyright (c) 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_FMU_H__
-#define __DEV_FMU_H__
+#pragma once
 
 #include <queue>
 #include "dev_ied.h"
@@ -177,4 +136,3 @@ public:
     bool isTransactionComplete();
 
 };
-#endif // #ifndef __DEV_FMU_H__

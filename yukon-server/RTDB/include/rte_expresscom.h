@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_expresscom
-*
-* Class:  CtiRouteExpresscom
-* Date:   7/18/2006
-*
-* Author: Jess Otteson
-*
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_versacom.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __RTE_EXPRESSCOM_H__
-#define __RTE_EXPRESSCOM_H__
-
+#pragma once
 
 #include "dsm2.h"
 #include "rte_xcu.h"
@@ -56,4 +37,3 @@ public:
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void DecodeVersacomDatabaseReader(Cti::RowReader &rdr);
 };
-#endif // #ifndef __RTE_EXPRESSCOM_H__

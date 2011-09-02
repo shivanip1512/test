@@ -1,7 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TELEGYRCONTROLCENTER_H__
-#define __TELEGYRCONTROLCENTER_H__
+#pragma once
 
 #include <vector>
 
@@ -68,4 +65,3 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
 
       CtiMutex                            _mux;
 };
-#endif // #ifndef __TELEGYRCONTROLCENTERS_H__

@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   server_b
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.15.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __SERVER_B_H__
-#define __SERVER_B_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -109,6 +91,3 @@ public:
 
    ptr_type findConnectionManager( long cid );
 };
-
-
-#endif      // #ifndef __SERVER_B_H__

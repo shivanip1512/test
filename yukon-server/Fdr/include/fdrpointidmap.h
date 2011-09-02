@@ -1,28 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __FDRPOINTIDMAP_H__
-#define __FDRPOINTIDMAP_H__
-
-/*******************************************************************
-*
-*    FILE NAME: fdrpointidmap.h
-*
-*    DATE: 10/23/2000
-*
-*    AUTHOR: Ben Wallace
-*
-*    PURPOSE:  Class CtiFDRPointIdMap
-*
-*
-*    DESCRIPTION: This class models a generic FDR Translation record.
-*                 It uses a single String for an Id on the other system
-*                 and include the points multiplier and offset.
-*
-********************************************************************
-*/
-
-
-/** include files **/
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -87,7 +63,4 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         std::string        iDestinationName;
         FDRDbReloadReason  iReasonForReload;
         bool               iControllable;
-}; 
-
-#endif  //  #ifndef __FDRPOINTIDMAP_H__
-
+};

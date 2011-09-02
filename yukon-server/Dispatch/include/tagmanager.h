@@ -1,23 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tagmanager
-*
-* Class:  CtiTagManager
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __TAGMANAGER_H__
-#define __TAGMANAGER_H__
+#pragma once
 
 #include <map>
 #include <set>
@@ -110,4 +91,3 @@ public:
     bool isPointControlInhibited(LONG pid);
 
 };
-#endif // #ifndef __TAGMANAGER_H__

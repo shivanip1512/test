@@ -1,25 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_LMG_SA_SIMPLE_H__
-#define __TBL_LMG_SA_SIMPLE_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   tbl_lmg_sa_simple
-*
-* Class:
-* Date:   3/9/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -81,4 +60,3 @@ public:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
-#endif // #ifndef __TBL_LMG_SA_SIMPLE_H__

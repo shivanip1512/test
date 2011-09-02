@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_versacom
-*
-* Class:  CtiDeviceGroupVersacom
-* Date:   12/14/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_GRP_VERSACOM_H__
-#define __DEV_GRP_VERSACOM_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -58,4 +39,3 @@ public:
    virtual std::string getPutConfigAssignment(UINT modifier = 0);
 
 };
-#endif // #ifndef __DEV_GRP_VERSACOM_H__

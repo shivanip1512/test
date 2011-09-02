@@ -1,24 +1,5 @@
+#pragma once
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DYN_LMCONTROLHIST_H__
-#define __TBL_DYN_LMCONTROLHIST_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_lmcontrolhist
-*
-* Class:  CtiTableDynamicLMControlHistory
-* Date:   12/5/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dyn_lmcontrolhist.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "tbl_lm_controlhist.h"
 
 class CtiTableDynamicLMControlHistory : public CtiTableLMControlHistory
@@ -59,4 +40,3 @@ protected:
     }
 
 };
-#endif // #ifndef __TBL_DYN_LMCONTROLHIST_H__

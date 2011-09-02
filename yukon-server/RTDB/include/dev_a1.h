@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_alphaA1
-*
-* Class:  CtiDeviceAlphaA1
-* Date:   01/10/2001
-*
-* Author: David Sutton
-*
-* Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_ALPHAA1_H__
-#define __DEV_ALPHAA1_H__
-#pragma warning( disable : 4786 )
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -27,7 +12,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_meter.h"
-
 
 // possible load profile mappings
 #define A1_DISABLED              0
@@ -579,11 +563,8 @@ public:
    // from alpha base class in dev_alpha.cpp
    virtual UCHAR touBlockMapping (UCHAR config, USHORT type);
    virtual INT freeDataBins ();
-    USHORT calculateStartingByteCountForCurrentScanState (int aClass);
-
-
+   USHORT calculateStartingByteCountForCurrentScanState (int aClass);
 };
-#endif // #ifndef __DEV_ALPHAA1_H__
 
 
 

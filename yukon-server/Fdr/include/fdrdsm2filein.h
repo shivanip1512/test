@@ -1,7 +1,4 @@
-#ifndef __FDRDSM2FILEIN_H__
-#define __FDRDSM2FILEIN_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -64,8 +61,3 @@ private:
     bool                _deleteFileAfterImportFlag;
     bool                _useSystemTime;
 };
-
-
-
-#endif  //  #ifndef __FDR_STEC_H__
-

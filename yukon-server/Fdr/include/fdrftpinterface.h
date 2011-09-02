@@ -1,24 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrftpinterface.h
-*
-*    DATE: 05/30/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Generic class for any interface retrieving a file using ftp
-*
-*    DESCRIPTION: This class implements an interface that retrieves data using
-*                                               ftp
-*
-*    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRFTPINTERFACE_H__
-#define __FDRFTPINTERFACE_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -117,7 +97,3 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         std::string      iLocalFileName;
         std::string      iFTPDirectory;
 };
-
-#endif  //  #ifndef __FDRFTPINTERFACE_H__
-
-

@@ -1,25 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_TRANSDATA_H__
-#define __PROT_TRANSDATA_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   prot_transdata
-*
-* Class:
-* Date:   7/16/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18.6.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -110,4 +89,3 @@ class IM_EX_PROT CtiProtocolTransdata
 
       CtiTransdataApplication    _application;
 };
-#endif // #ifndef __PROT_TRANSDATA_H__

@@ -1,21 +1,4 @@
-
-
-/*-----------------------------------------------------------------------------
-    Filename:  pao_schedule.h
-    
-    Programmer:  Julie Richter
-        
-    Description:    
-                        
-    Initial Date:  1/27/3005
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
- 
-#ifndef CTIPAOSCHEDULE_H
-#define CTIPAOSCHEDULE_H
+#pragma once
 
 #include "row_reader.h"
 
@@ -55,7 +38,6 @@ public:
     BOOL isDirty();
     void setDirty(BOOL flag);
 
-
 private:
     
     BOOL _dirty;
@@ -65,8 +47,5 @@ private:
     CtiTime      _nextRunTime;
     CtiTime      _lastRunTime;
     long         _intervalRate; //in seconds!
-    bool         _disabledFlag;                    
-
-    
+    bool         _disabledFlag;  
 };
-#endif

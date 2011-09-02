@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  clientconn.h
-                
-    Programmer:  Josh Wolberg
-    
-    Description: Header file for CtiLMConnection
-        
-    Initial Date:  2/5/2001
-    
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMCONNECTION_H
-#define CTILMCONNECTION_H
+#pragma once
 
 #include <vector>
 
@@ -81,9 +66,3 @@ private:
 
     unsigned _max_out_queue_size;
 };
-
-
-
-#endif
-
-

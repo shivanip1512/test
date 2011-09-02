@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_sixnet
-*
-* Class:  CtiProtocolSixnet
-* Date:   7/9/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.5.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_SIXNET_H__
-#define __PROT_SIXNET_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -269,4 +249,3 @@ private:
     uint32 getBytesLeftInRead() const;
 
 };
-#endif // #ifndef __PROT_SIXNET_H__

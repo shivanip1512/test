@@ -1,21 +1,4 @@
-#ifndef __TBL_DV_ADDRESS_H__
-#define __TBL_DV_ADDRESS_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_address
-*
-* Date:   2002-aug-27
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -80,4 +63,3 @@ public:
    virtual bool Delete();
 
 };
-#endif // #ifndef __TBL_DV_ADDRESS_H__

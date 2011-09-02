@@ -1,5 +1,4 @@
-#ifndef PORTER_H
-#define PORTER_H
+#pragma once
 
 // Forward Declarations...
 
@@ -229,5 +228,3 @@ struct REMOTESEQUENCE
 #define INACTNSHED      0x0400
 #define INUSE           0x0001
 #define INCCU           0x0002
-
-#endif

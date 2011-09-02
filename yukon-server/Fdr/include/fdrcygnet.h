@@ -1,27 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   fdrcygnet
-*
-*    DATE: 10/01/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9.2.2 $
-* DATE         :  $Date: 2008/11/18 20:11:30 $
-*    DESCRIPTION: This class implements an interface that retrieves point data
-*                 from a Foreign System.  The data is status and Analog data.
-*                 This interface only receives at this time.  It links with
-*                 a Cygnet library provided by Visual Systems.  The library
-*                 and headers provide access to their API.
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __FDRCYGNET_H__
-#define __FDRCYGNET_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -112,9 +89,4 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         ConnectState        iAnalogServiceState;
         ConnectState        iStatusServiceState;
         double              iHiReasonabilityFilter;
-
-
 };
-
-
-#endif  //  #ifndef __FDRCYGNET_H__

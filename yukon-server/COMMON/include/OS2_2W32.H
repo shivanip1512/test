@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786)
+#pragma once
 /****************************************************************************
  *
  * Type conversions from OS/2 to Win32 types..
@@ -10,9 +10,6 @@
 
 #include "dlldefs.h"
 #include "types.h"
-
-#ifndef _OS2_2_W32_
-#define _OS2_2_W32_
 
 /****************************************************************************
  * OS2 - Helpful Macros
@@ -169,7 +166,5 @@
 
 // #define ERROR_TIMEOUT         0x0000      // FIX this
 #define ERROR_OCCURRED        0x0000      // FIX this
-
-#endif                     // _OS2_2_W32_
 
 

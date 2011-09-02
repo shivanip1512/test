@@ -1,23 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrstec.h
-*
-*    DATE: 05/30/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Class to retrieve the stec file
-*
-*    DESCRIPTION: 
-*
-*    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRSTEC_H__
-#define __FDRSTEC_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -66,9 +47,3 @@ class IM_EX_FDRSTEC CtiFDR_STEC : public CtiFDRFtpInterface
 			static const CHAR * KEY_SYSTEM_TOTAL_LABEL;
 			static const CHAR * KEY_STEC_TOTAL_LABEL;
 };
-
-
-#endif  //  #ifndef __FDR_STEC_H__
-
-
-

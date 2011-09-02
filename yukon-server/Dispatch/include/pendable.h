@@ -1,37 +1,4 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   pendable
-*
-* Class:  CtiPendable
-* Date:   11/2/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
-* HISTORY      :
-* $Log: pendable.h,v $
-* Revision 1.3  2005/12/20 17:16:58  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.2.4.1  2005/08/12 19:53:42  jliu
-* Date Time Replaced
-*
-* Revision 1.2  2004/11/09 06:12:51  cplender
-* Working to calm dispatch down
-*
-* Revision 1.1  2004/11/05 17:22:48  cplender
-* IR
-*
-*
-* Copyright (c) 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __PENDABLE_H__
-#define __PENDABLE_H__
+#pragma once
 
 #include "pending_info.h"
 
@@ -116,4 +83,3 @@ public:
 
     INT getAction() const { return _action; }
 };
-#endif // #ifndef __PENDABLE_H__

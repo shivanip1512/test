@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   message
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.10.22.2 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __CTIMESSAGE_H__
-#define __CTIMESSAGE_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -128,7 +112,3 @@ namespace std
     }
   };
 };
-
-
-#endif      // #ifndef __CTIMESSAGE_H__
-

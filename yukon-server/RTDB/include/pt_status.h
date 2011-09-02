@@ -1,13 +1,4 @@
-/*
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-*/
-#ifndef __PT_STATUS_H__
-#define __PT_STATUS_H__
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -60,11 +51,6 @@ public:
     void setControlType  ( CtiControlType_t type )  {  _pointStatus.setControlType(type);  }
 };
 
-
 typedef CtiPointStatus CtiPointCalculatedStatus;
 
 typedef boost::shared_ptr< CtiPointStatus > CtiPointStatusSPtr;
-
-
-#endif // #ifndef __PT_STATUS_H__
-

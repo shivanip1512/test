@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_versacom
-*
-* Date:   6/26/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_VERSACOM_H__
-#define __PROT_VERSACOM_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #include "dsm2.h"
 #include "dllbase.h"
@@ -415,4 +398,3 @@ public:
    INT VersacomFullAddressCommand(BYTE uid, BYTE aux, BYTE sec, USHORT clsmask, USHORT divmask, BYTE svc);
 
 };
-#endif // #ifndef __PROT_VERSACOM_H__

@@ -1,6 +1,4 @@
-#ifndef __TBL_LMG_POINT_H__
-#define __TBL_LMG_POINT_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -48,5 +46,3 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
-
-#endif // #ifndef __TBL_LMG_POINT_H__

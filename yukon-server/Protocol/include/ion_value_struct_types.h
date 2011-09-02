@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:   ion_value_struct_types.h
- *
- * Class:  CtiIONLogRecord, CtiIONAlarm, CtiIONEvent, CtiIONRange, CtiIONList,
- *           CtiIONException, CtiIONWaveform, CtiIONDate, CtiIONCalendar,
- *           CtiIONProfile, CtiIONStringArray, CtiIONMultiArray, CtiIONStructArray
- * Date:   07/06/2001
- *
- * Author: Matthew Fisher
- *
- *         Structure type classes for the ION serial protocol
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_VALUE_STRUCT_TYPES_H__
-#define __ION_VALUE_STRUCT_TYPES_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include "ion_value_struct.h"
 
@@ -24,15 +6,11 @@
 #include "ion_value_fixed_time.h"
 #include "ion_value_variable_fixedarray.h"
 
-
 template < class T >
 class CtiIONStructArrayTemplate;
 
-
 class CtiIONLogRecord : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONLogRecord>;
@@ -57,12 +35,8 @@ public:
     };
 };
 
-
-
 class CtiIONAlarm : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONAlarm>;
@@ -83,12 +57,8 @@ public:
     };
 };
 
-
-
 class CtiIONEvent : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONEvent>;
@@ -122,12 +92,8 @@ public:
     };
 };
 
-
-
 class CtiIONRange : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONRange>;
@@ -146,12 +112,8 @@ public:
     };
 };
 
-
-
 class CtiIONList : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONList>;
@@ -164,12 +126,8 @@ public:
 /*    CtiIONValue *operator[]( unsigned long index )  { return getArrayElement( index ); };*/
 };
 
-
-
 class CtiIONException : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONException>;
@@ -192,12 +150,8 @@ public:
     };
 };
 
-
-
 class CtiIONWaveform : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONWaveform>;
@@ -220,12 +174,8 @@ public:
     };
 };
 
-
-
 class CtiIONDate : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONDate>;
@@ -246,12 +196,8 @@ public:
     };
 };
 
-
-
 class CtiIONCalendar : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONCalendar>;
@@ -270,12 +216,8 @@ public:
     };
 };
 
-
-
 class CtiIONProfile : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONProfile>;
@@ -294,11 +236,8 @@ public:
     };
 };
 
-
 class CtiIONStringArray : public CtiIONStruct
 {
-private:
-
 protected:
 
     friend class CtiIONStructArrayTemplate<CtiIONStringArray>;
@@ -309,6 +248,3 @@ public:
     CtiIONStringArray( std::vector< CtiIONValue * > structValues );
 
 };
-
-#endif  //  #ifndef __ION_VALUE_STRUCT_TYPES_H__
-

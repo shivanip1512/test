@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "dsm2.h"

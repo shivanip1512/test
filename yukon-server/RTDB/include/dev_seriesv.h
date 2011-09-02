@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_seriesv
-*
-* Class:  CtiDeviceSeriesV
-* Date:   2004-jan-12
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_SERIESV_H__
-#define __DEV_SERIESV_H__
-#pragma warning( disable : 4786 )
+#pragma once
 
 #include "dev_ied.h"
 #include "prot_seriesv.h"
@@ -41,6 +23,3 @@ public:
 
     virtual INT ResultDecode(INMESS *InMessage, CtiTime &Now, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 };
-
-
-#endif // #ifndef __DEV_SERIESV_H__

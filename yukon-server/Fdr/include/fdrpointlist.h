@@ -1,6 +1,4 @@
-#ifndef __FDRPOINTLIST_H__
-#define __FDRPOINTLIST_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -36,5 +34,3 @@ class IM_EX_FDRBASE CtiFDRPointList
         CtiFDRManager       *iPointList;
         CtiMutex            iMux;
 };
-
-#endif

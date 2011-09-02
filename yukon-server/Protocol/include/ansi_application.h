@@ -1,6 +1,4 @@
-
 #pragma once
-#pragma warning( disable : 4786)
 
 #include "dllbase.h"
 #include "ansi_datalink.h"
@@ -8,7 +6,6 @@
 #define MAXRETRIES        5
 #define ANSI_C12_18        0x00
 #define ANSI_C12_21        0x02
-
 
 class IM_EX_PROT CtiANSIApplication
 {

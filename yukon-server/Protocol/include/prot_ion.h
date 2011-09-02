@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_ion
-*
-* Class:  CtiProtocolDNP
-* Date:   5/6/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26.6.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_ION_H__
-#define __PROT_ION_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "dllbase.h"
 #include "dlldefs.h"
@@ -418,5 +400,3 @@ public:
         EventLogPointOffset          = 2600
     };
 };
-
-#endif // #ifndef __PROT_ION_H__

@@ -1,7 +1,4 @@
-#ifndef __FDRLODESTARIMPORT_ENH_H__
-#define __FDRLODESTARIMPORT_ENH_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -97,6 +94,3 @@ private:
     std::vector <CtiFDR_LodeStarInfoTable> _fileInfoList;
 
 };
-
-#endif  //  #ifndef __FDRLODESTARIMPORT_ENH_H__
-

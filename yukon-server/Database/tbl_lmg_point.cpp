@@ -1,33 +1,3 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_lmg_point
-*
-* Date:   4/3/2006
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/08/04 20:08:44 $
-*
-* HISTORY      :
-* $Log: tbl_lmg_point.cpp,v $
-* Revision 1.4  2006/08/04 20:08:44  mfisher
-* Fixed SQL for multiple pointgroups in DB
-*
-* Revision 1.3  2006/04/27 19:38:04  cplender
-* Removed some debug printouts.
-*
-* Revision 1.2  2006/04/05 16:22:18  cplender
-* Initial Revision
-*
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-
 #include "precompiled.h"
 #include "logger.h"
 #include "tbl_lmg_point.h"

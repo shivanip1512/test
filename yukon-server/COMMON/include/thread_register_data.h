@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __THREAD_REGISTER_DATA_H__
-#define __THREAD_REGISTER_DATA_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   thread_register_data
-*
-* Class:
-* Date:   9/2/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18.2.2 $
-* DATE         :  $Date: 2008/11/12 17:27:30 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
+#pragma once
 
 #include <string>
 
@@ -135,7 +115,4 @@ namespace std
   };
 };
 
-
 typedef boost::shared_ptr< CtiThreadRegData > CtiThreadRegDataSPtr;
-
-#endif // #ifndef __THREAD_REGISTER_DATA_H__

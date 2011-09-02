@@ -1,13 +1,4 @@
-/*
- *    FILE NAME: fdrscadahelper.h
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
-
-#ifndef __FDRSCADAHELPER_H__
-#define __FDRSCADAHELPER_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -60,7 +51,3 @@ class IM_EX_FDRBASE CtiFDRScadaHelper
 
         CtiFDRScadaServer* _parent;
 };
-
-
-#endif  //  #ifndef __FDRSCADAHELPER_H__
-

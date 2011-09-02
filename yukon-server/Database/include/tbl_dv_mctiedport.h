@@ -1,20 +1,4 @@
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_MCTIEDPORT_H__
-#define __TBL_DV_MCTIEDPORT_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_mctiedport
-*
-* Date:   2/25/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -96,4 +80,3 @@ public:
     virtual bool Delete();
 
 };
-#endif // #ifndef __TBL_DV_MCTIEDPORT_H__

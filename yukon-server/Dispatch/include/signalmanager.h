@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   signalmanager
-*
-* Class:  CtiSignalManager
-* Date:   8/13/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/04/10 21:04:49 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __SIGNALMANAGER_H__
-#define __SIGNALMANAGER_H__
+#pragma once
 
 #include <map>
 #include <set>
@@ -83,4 +65,3 @@ public:
     bool dirty() const;
     void setDirty(bool set, long paoID);
 };
-#endif // #ifndef __SIGNALMANAGER_H__

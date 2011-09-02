@@ -1,24 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-/*****************************************************************************
-*
-*    FILE NAME: fdrrccs.h
-*
-*    DATE: 08/20/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Interface to the rccs subsystem
-*
-*    DESCRIPTION: This class implements an interface that exchanges point data
-*                 in a standard device/point format
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-#ifndef __FDRRCCS_H__
-#define __FDRRCCS_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -88,6 +68,3 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         std::string                 iBatchMarkerName;
         bool                        iStandalone;
 };
-
-#endif
-

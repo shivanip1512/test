@@ -1,24 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TRANSDATA_DATALINK_H__
-#define __TRANSDATA_DATALINK_H__
-
-/*---------------------------------------------------------------------------------*
-*
-* File:   transdata_datalink
-*
-* Class:
-* Date:   7/22/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/01/14 19:57:31 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
+#pragma once
 
 #include "xfer.h"
 
@@ -72,5 +52,3 @@ class IM_EX_PROT CtiTransdataDatalink
       std::string  _received;
       std::string  _lookFor;
 };
-
-#endif // #ifndef __TRANSDATA_DATALINK_H__

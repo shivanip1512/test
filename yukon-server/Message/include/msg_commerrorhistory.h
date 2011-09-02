@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_commerrorhistory
-*
-* Date:   9/21/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_commerrorhistory.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
-#ifndef __MSG_COMMERRORHISTORY_H__
-#define __MSG_COMMERRORHISTORY_H__
-
+#pragma once
 
 #include "message.h"
 #include "yukon.h"
@@ -90,4 +73,3 @@ public:
 
    virtual bool isValid();
 };
-#endif // #ifndef __MSG_COMMERRORHISTORY_H__

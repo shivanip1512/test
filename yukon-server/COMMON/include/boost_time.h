@@ -1,5 +1,4 @@
-#ifndef __BOOST_TIME_H__
-#define __BOOST_TIME_H__
+#pragma once
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/date_time/gregorian/greg_date.hpp"
@@ -17,5 +16,3 @@ inline boost::posix_time::ptime::time_duration_type ptime_to_utc_duration(const 
 
     return t;
 }
-
-#endif // __BOOST_TIME_H__

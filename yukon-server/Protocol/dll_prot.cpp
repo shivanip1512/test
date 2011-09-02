@@ -18,7 +18,6 @@ using namespace std;
 
 #include <rw\thr\mutex.h>
 
-#include "dll_prot.h"
 #include "utility.h"
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

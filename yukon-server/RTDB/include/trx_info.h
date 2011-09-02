@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   trx_info
-*
-* Class:  CtiTransmitterInfo
-* Date:   3/19/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.11.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __TRX_INFO_H__
-#define __TRX_INFO_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -191,4 +172,3 @@ public:
     }
 
 };
-#endif // #ifndef __TRX_INFO_H__

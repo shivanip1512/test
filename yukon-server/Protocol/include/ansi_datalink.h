@@ -1,6 +1,4 @@
-
 #pragma once
-#pragma warning( disable : 4786)
 
 #include "dllbase.h"
 #include "xfer.h"
@@ -15,8 +13,6 @@
 #define ANSI_COUNT         0
 #define ANSI_MSG           1
 #define HEADER_LEN         6
-
-
 
 struct TBL_IDB_BFLD
 {

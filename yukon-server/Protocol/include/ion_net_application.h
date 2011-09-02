@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
- *
- * File:    ion_net_application.h
- *
- * Classes: CtiIONApplicationLayer, CtiIONNetworkLayer, CtiIONDatalinkLayer
- * Date:    07/06/2001
- *
- * Author:  Matthew Fisher
- *
- *          ION pseudo-ISO network layer classes for the ION serial protocol
- *
- * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-#ifndef __ION_NET_APPLICATION_H__
-#define __ION_NET_APPLICATION_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include <vector>
 
@@ -161,8 +145,4 @@ protected:
     }
 };
 
-
 #pragma pack(pop, ion_packing)
-
-#endif  //  #ifndef __ION_NET_APPLICATION_H__
-

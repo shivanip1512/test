@@ -1,6 +1,4 @@
-#ifndef __FDRACS_H__
-#define __FDRACS_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -170,7 +168,3 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
         virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aDestinationIndex);
 
 };
-
-
-#endif  //  #ifndef __FDRACS_H__
-

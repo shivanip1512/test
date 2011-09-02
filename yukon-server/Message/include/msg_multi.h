@@ -1,21 +1,4 @@
-#ifndef __MSG_MULTI_H__
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_multi
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_multi.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#define __MSG_MULTI_H__
+#pragma once
 
 #include "collectable.h"
 #include "dlldefs.h"
@@ -61,6 +44,3 @@ public:
    virtual void dump() const;
 
 };
-
-#endif   // #ifndef __MSG_MULTI_H__
-

@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   expresscom
-*
-* Class:  CtiProtocolExpresscom
-* Date:   8/13/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:42 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __EXPRESSCOM_H__
-#define __EXPRESSCOM_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <vector>
 #include "cmdparse.h"
@@ -387,4 +370,3 @@ public:
     void setUseASCII(bool useASCII);
     bool getUseASCII();
 };
-#endif // #ifndef __EXPRESSCOM_H__

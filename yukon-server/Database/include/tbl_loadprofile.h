@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_loadprofile
-*
-* Date:   8/20/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_loadprofile.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/03/22 17:22:39 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-#ifndef __TBL_LOADPROFILE_H__
-#define __TBL_LOADPROFILE_H__
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -76,5 +60,3 @@ public:
 
    LONG getDeviceID() const;
 };
-
-#endif // #ifndef __TBL_LOADPROFILE_H__

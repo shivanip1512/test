@@ -1,38 +1,6 @@
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_mcsimpsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/tbl_mcsimpsched.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------
-
-        Filename:  tbl_mcsimpsched.h
-
-        Programmer:  Aaron Lauinger
-
-        Description:    Header file for CtiMCSimpleSchedule.
-
-        Initial Date:  1/11/01
-
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-#ifndef __TBL_MCSIMPSCHED_H__
-#define __TBL_MCSIMPSCHED_H__
+#pragma once
 
 #include <string>
-
 
 #include "mutex.h"
 #include "guard.h"
@@ -81,4 +49,3 @@ private:
     std::string  _stop_command;
     long    _repeat_interval;
 };
-#endif

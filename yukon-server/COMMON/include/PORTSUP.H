@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PORTSUP
-*
-* Class:
-* Date:   1/23/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/PORTSUP.H-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:27 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORTSUP_H__
-#define __PORTSUP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 /* Prototypes from portsup.c */
 IM_EX_CTIBASE void     DumpHexString(UCHAR* buffer, ULONG len);
@@ -53,5 +34,3 @@ IM_EX_CTIBASE INT ModemHangup (HANDLE, PCHAR, USHORT, USHORT, BOOL dcdTest = TRU
 IM_EX_CTIBASE INT ModemSetup (HANDLE, PCHAR, USHORT, USHORT, BOOL dcdTest = TRUE);
 IM_EX_CTIBASE INT ModemConnect (HANDLE, PCHAR, USHORT, USHORT, BOOL dcdTest = TRUE);
 #endif
-
-#endif // #ifndef __PORTSUP_H__

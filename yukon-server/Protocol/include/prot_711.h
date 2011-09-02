@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_711
-*
-* Class:  CtiProtocol711
-* Date:   4/27/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_711.h-arc  $
-* REVISION     :  $Revision: 1.5.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_711_H__
-#define __PROT_711_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -70,11 +50,6 @@ public:
    void describeSlaveStatD(const BYTE *stat) const;
    void describeSlaveStatP(const BYTE *stat) const;
 
-
-
    void describeRCOLQResponse(const BYTE *data, INT len) const;
    void describeACTNResponse() const;
-
 };
-#endif // #ifndef __PROT_711_H__
-

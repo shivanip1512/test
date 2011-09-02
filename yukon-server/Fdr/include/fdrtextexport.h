@@ -1,7 +1,4 @@
-#ifndef __FDRTEXTEXPORT_H__
-#define __FDRTEXTEXPORT_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -57,5 +54,3 @@ private:
     bool                _appendFlag;
     int                 _format;
 };
-#endif
-

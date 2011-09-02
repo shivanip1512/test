@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_counter
-*
-* Class:  DNP Counter objects
-* Date:   7/3/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/02/15 21:08:15 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_OBJECT_COUNTER_H__
-#define __DNP_OBJECT_COUNTER_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dnp_objects.h"
 #include "dnp_object_time.h"
@@ -177,5 +158,3 @@ public:
 }
 }
 }
-
-#endif  //  #ifndef __DNP_OBJECT_COUNTER_H__

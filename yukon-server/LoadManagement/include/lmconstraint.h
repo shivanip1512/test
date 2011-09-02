@@ -1,7 +1,4 @@
-#ifndef __CTILMCONSTRAINT_H__
-#define __CTILMCONSTRAINT_H__
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#pragma once
 
 #include <vector>
 #include <string>
@@ -97,4 +94,3 @@ private:
     std::vector<std::string> _results;
     std::vector<ConstraintViolation> _constraintViolations;
 };
-#endif

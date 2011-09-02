@@ -1,35 +1,3 @@
-
-#pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   ctiid
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/ctiid.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:11 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------
-        Filename:  ctiid.h
-
-        Programmer:  Aaron Lauinger
-
-        Description:    Header file containing id numbers for various
-                        Cti classes that inherit from RWCollectable.
-
-        Initial Date:  5/27/99
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
----------------------------------------------------------------------------*/
-
-/* Various message classes */
-
 #define CTIPING_ID  140
 
 #define CTIMCERROR_ID     150

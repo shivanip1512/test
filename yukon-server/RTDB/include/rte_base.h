@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_base
-*
-* Class:  CtiRouteBase
-* Date:   9/30/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.16.2.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __RTE_BASE_H__
-#define __RTE_BASE_H__
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -199,11 +182,6 @@ inline std::string CtiRouteBase::getName() const { return _tblPAO.getName(); }
 inline INT CtiRouteBase::getType() const { return _tblPAO.getType(); }
 inline bool CtiRouteBase::processAdditionalRoutes( INMESS *InMessage ) const { return false; }
 
-
 typedef CtiRouteBase CtiRoute;
 
-
 typedef boost::shared_ptr< CtiRouteBase > CtiRouteSPtr;
-
-
-#endif // #ifndef __RTE_BASE_H__

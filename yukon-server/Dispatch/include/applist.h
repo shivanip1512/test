@@ -1,7 +1,4 @@
 #pragma once
-#pragma warning( disable : 4786)
-
-#define __CtiAPPLIST_H__
 
 #include <rw/collect.h>
 

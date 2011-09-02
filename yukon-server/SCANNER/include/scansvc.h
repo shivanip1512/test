@@ -1,22 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   scansvc
-*
-* Date:   12/2/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:20 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __SCANSVC_H__
-#define __SCANSVC_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "cservice.h"
-
 
 class CtiScannerService : public CService
 {
@@ -45,6 +29,4 @@ public:
    DECLARE_SERVICE(CtiScannerService, Scanner)
 
    virtual ~CtiScannerService();
-
 };
-#endif // #ifndef __SCANSVC_H__

@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   con_mgr
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/10/19 21:08:31 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __CON_MGR_H__
-#define __CON_MGR_H__
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#pragma once
 
 #include <limits.h>
 
@@ -87,7 +72,3 @@ public:
 
    int WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true, int payload_status = 0, std::string payload_string = std::string() );
 };
-
-#endif      // #ifndef __CON_MGR_H__
-
-
