@@ -12,3 +12,33 @@
     padding: 0;
     list-style-type: disc;
 }
+
+p.pageDescription {
+    margin-bottom: 10px;
+}
+
+div.scopeDemo {
+    background: #eee;
+    border: 1px solid black;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+h1.i18nDemo {
+    margin-bottom: 7px;
+}
+
+span.messageSample {
+    color: #080;
+}
+
+div.messageSample {
+    margin-bottom: 7px;
+}
+
+h2.keyList {
+    
+}
+
+ul.keyList {
+}

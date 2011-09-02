@@ -132,7 +132,9 @@
     <entry key="yukon.web.modules.support.pickerTest.pick20.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
 
     <entry key="yukon.web.modules.support.pickerTest.rememberingPickers.title">Remembering Pickers</entry>
-    
+
+    <entry key="yukon.web.modules.support.i18nDemo.pageName">I18N Demo</entry>
+
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.log">* See console log for execution details</entry>
@@ -173,5 +175,10 @@
     
     <entry key="yukon.web.modules.support.rfnTest.pageName">RFN Test</entry>
     <entry key="yukon.web.modules.support.rfnTest.send.label">Send Archive Request</entry>
-    
+
+    <entry key="yukon.web.modules.support.i18nDemo.scope.title">Scope {0}</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.testMessage">Test "i18nDemo"</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.nested.testMessage">Test "i18nDemo.nested"</entry>
+    <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>
+
 </properties>

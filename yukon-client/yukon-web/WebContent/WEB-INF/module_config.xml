@@ -1034,6 +1034,9 @@
             <option name="pickerTest">
               <link>/spring/support/development/pickerTest/main</link>
             </option>
+            <option name="i18nDemo">
+              <link>/spring/support/development/i18nDemo/main</link>
+            </option>
             <option name="uiToolkitDemo">
               <link>/spring/support/development/uiToolkitDemo/main</link>
             </option>
@@ -1096,6 +1099,10 @@
                 <page name="pickerTest" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
                     <menu>development|pickerTest</menu>
+                </page>
+                <page name="i18nDemo" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                    <menu>development|i18nDemo</menu>
                 </page>
                 <page name="setup" type="BASIC">
                     <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
