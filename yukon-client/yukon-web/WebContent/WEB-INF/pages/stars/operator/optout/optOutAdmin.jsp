@@ -107,8 +107,8 @@
                             </table>
                             <br>
                             
-                            <input type="submit" name="disable" value="<i:inline key=".disableOptOuts.currentDisabledPrograms.disableOptOutsButton" />" class="formSubmit">
-                            <input type="submit" name="enable" value="<i:inline key=".disableOptOuts.currentDisabledPrograms.enableOptOutsButton" />" class="formSubmit">
+                            <input type="submit" name="disable" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.disableOptOutsButton" />" class="formSubmit">
+                            <input type="submit" name="enable" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.enableOptOutsButton" />" class="formSubmit">
                         </form>       
                     </tags:boxContainer2>
                 </cti:checkProperty>
