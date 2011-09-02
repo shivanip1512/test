@@ -8,6 +8,7 @@
 #include "mutex.h"
 #include "logger.h"
 #include "guard.h"
+#include "CParms.h"
 
 #include <openssl/md5.h>
 
@@ -84,7 +85,9 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
 
     // Encrypt the message
 
-    OneWayEncryption    oneWay( parentKey );                
+    unsigned long counter = gConfigParms.getValueAsULong("ONE_WAY_ENCRYPT_KEY_ROLL");   // defaults to zero
+
+    OneWayEncryption    oneWay( counter, parentKey );                
 
     oneWay.encrypt( lastXmitTime, utcCounter, cuc_inMessage, passwordStart, uc_outMessage );
 

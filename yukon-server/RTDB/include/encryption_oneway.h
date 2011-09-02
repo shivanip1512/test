@@ -16,9 +16,7 @@ public:
     static const std::size_t    key_size = 16;
     typedef unsigned char       Key[key_size];
 
-    OneWayEncryption( const unsigned char * counter, const unsigned char * parentKey );
-
-    OneWayEncryption( const unsigned char * parentKey );
+    OneWayEncryption( const unsigned long counter, const unsigned char * parentKey );
 
     void encrypt( const CtiTime       & msgTime,
                   const int             sequenceNum,
@@ -33,11 +31,6 @@ public:
     static const Key _yukonEncryptionKey;
 
 protected:
-
-    void coreKeyGen( const unsigned char * parentKey,
-                     const unsigned char * counter,
-                     const unsigned char   seedVal,
-                     Key                 & generatedKey );
 
     void fillSequenceBytes( const CtiTime & msgTime, const int msgCounter, unsigned char * sequenceNum );
 

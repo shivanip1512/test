@@ -28,23 +28,48 @@ const OneWayEncryption::Key OneWayEncryption::_yukonEncryptionKey =
 };
 
 
-OneWayEncryption::OneWayEncryption( const unsigned char * counter, const unsigned char * parentKey )
+OneWayEncryption::OneWayEncryption( const unsigned long counter, const unsigned char * parentKey )
 {
-    coreKeyGen( parentKey, counter, 0x01, _encryptKey );
-    coreKeyGen( parentKey, counter, 0x02, _authKey );
-}
-
-
-OneWayEncryption::OneWayEncryption( const unsigned char * parentKey )
-{
-    const unsigned char counter[] =
+    unsigned char seedEncryptKey[] =
     {
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        0x0c, 0x0a, 0x03, 0x06, 0x05, 0x08, 0x0c, 0x02,
+        0x08, 0x0b, 0x04, 0x0a, 0x08, 0x0d, 0x02, 0x08
     };
 
-    coreKeyGen( parentKey, counter, 0x01, _encryptKey );
-    coreKeyGen( parentKey, counter, 0x02, _authKey );
+    unsigned char seedAuthKey[] =
+    {
+        0xe0, 0x60, 0xf0, 0x60, 0x30, 0x90, 0xa0, 0x80,
+        0xe0, 0xd0, 0x80, 0x40, 0x60, 0x10, 0x40, 0x70
+    };
+
+    unsigned char seedCounter[16];
+
+//    if counter = 0xdeadbeef we want
+//    seedCounter =
+//    {
+//        ~0xde, ~0xad, ~0xbe, ~0xef,  0xde,  0xad,  0xbe,  0xef,
+//        ~0xde, ~0xad, ~0xbe, ~0xef,  0xde,  0xad,  0xbe,  0xef,
+//    }
+
+    for ( int i = 0; i < 4; ++i )
+    {
+        unsigned char byte = ( counter >> ( 24 - ( 8 * i ) ) ) & 0xff;
+    
+        seedCounter[ i ]     = seedCounter[ i + 8 ]  = ~byte;
+        seedCounter[ i + 4 ] = seedCounter[ i + 12 ] =  byte;
+    }
+
+    for ( int i = 0; i < 16; ++i )
+    {
+        seedEncryptKey[ i ] ^=  seedCounter[ i ];
+        seedAuthKey[ i ]    ^= ~seedCounter[ i ];
+    }
+
+    AES_KEY key;
+    AES_set_encrypt_key( parentKey, key_size * 8, &key );
+
+    AES_encrypt( seedEncryptKey, _encryptKey, &key );
+    AES_encrypt( seedAuthKey, _authKey, &key );
 }
 
 
@@ -95,26 +120,6 @@ bool OneWayEncryption::decrypt( const unsigned char * cipherText,
     decryptor.decrypt( cipherText, cipherTextLen - 10, plainText );
 
     return authenticated;
-}
-
-
-void OneWayEncryption::coreKeyGen( const unsigned char * parentKey,
-                                   const unsigned char * counter,
-                                   const unsigned char   seedVal,
-                                   Key                 & generatedKey )
-{
-    AES_KEY key;
-    AES_set_encrypt_key( parentKey, key_size * 8, &key );
-
-    Key iv, seed;
-
-    std::copy( counter, counter + key_size, iv  );
-    for ( int i = 0; i < key_size; i++ )
-    {   
-        seed[i] = iv[i] ^ seedVal; 
-    }
-
-    AES_cbc_encrypt( seed, generatedKey, key_size, &key, iv, AES_ENCRYPT);
 }
 
 
