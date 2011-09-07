@@ -14,6 +14,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.impl.StringCommandCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -86,7 +87,7 @@ public class CommandRequestHardwareExecutorImpl implements
             CommandCompletionCallback<CommandRequestRoute> callback)
             throws CommandCompletionException {
 	    CommandRequestRoute commandRequest = new CommandRequestRoute();
-        commandRequest.setCommand(command);
+        commandRequest.setCommandCallback(new StringCommandCallback(command));
         commandRequest.setRouteId(getRouteId(hardware));
         List<CommandRequestRoute> commands = Collections.singletonList(commandRequest);
         template.execute(commands, callback);

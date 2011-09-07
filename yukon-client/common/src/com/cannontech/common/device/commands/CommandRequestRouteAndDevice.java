@@ -30,7 +30,7 @@ public class CommandRequestRouteAndDevice extends CommandRequestBase {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("device", getDevice());
         tsc.append("routeId", getRouteId());
-        tsc.append("command", getCommand());
+        tsc.append("command", getCommandCallback());
         return tsc.toString();
     }
 }

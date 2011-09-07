@@ -2,7 +2,6 @@ package com.cannontech.amr.deviceread.service;
 
 import java.util.List;
 
-import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 
@@ -11,12 +10,8 @@ public interface MeterReadCommandGeneratorService {
     /**
      * Get a List of CommandRequestDevice collection for a given set of Attributes.
      * A device will not appear as a key in the result Multimap if does not support an Attribute.
-     * @param devices
-     * @param attributes
-     * @param type
-     * @return
      */
-    public List<CommandRequestDevice> getCommandRequests(Iterable<PaoMultiPointIdentifier> pointsToRead, DeviceRequestType type);
+    public List<CommandRequestDevice> getCommandRequests(Iterable<PaoMultiPointIdentifier> pointsToRead);
 
     /**
      * Returns true if there is a valid command that can be used to read at least one of

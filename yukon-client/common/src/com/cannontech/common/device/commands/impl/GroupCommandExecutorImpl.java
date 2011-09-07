@@ -152,8 +152,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
         
-        final String commandStr = command + " update";
-        request.setCommand(commandStr);
+        request.setCommandCallback(new StringCommandCallback(command));
         return request;
     }
 

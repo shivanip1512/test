@@ -17,7 +17,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,7 +321,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     // EXECUTE MULTIPLE, CALLBACK, parameterDto
     public CommandRequestExecutionIdentifier executeWithParameterDto(final List<T> commands,
                                                                 final CommandCompletionCallback<? super T> callback, 
-                                                                CommandRequestExecutionParameterDto parameterDto) {
+                                                                final CommandRequestExecutionParameterDto parameterDto) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
@@ -370,10 +369,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            
 		            // build basic request
 		            Request request = new Request();
-		            String commandStr = command.getCommand();
-                    if (noqueue && !StringUtils.containsIgnoreCase(commandStr, " noqueue")) {
-                        commandStr += " noqueue";
-                    }
+		            String commandStr = command.getCommandCallback().generateCommand(parameterDto);
                     request.setCommandString(commandStr);
                     request.setGroupMessageID(groupMessageId);
                     request.setPriority(priority);

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -18,7 +19,7 @@ import com.google.common.collect.Sets;
 public class ArchiveAnalysisProfileReadResult implements Completable {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private Multimap<SimpleDevice, String> deviceCommandMap = ArrayListMultimap.create();
+    private Multimap<SimpleDevice, CommandCallback> deviceCommandMap = ArrayListMultimap.create();
     private Set<SimpleDevice> devicesWithFailure = Sets.newHashSet();
     private boolean complete = false;
     private StoredDeviceGroup successGroup;
@@ -40,7 +41,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;;
         
         for(CommandRequestDevice request : commandRequestDeviceList) {
-            deviceCommandMap.put(request.getDevice(), request.getCommand());
+            deviceCommandMap.put(request.getDevice(), request.getCommandCallback());
         }
     }
     
@@ -48,7 +49,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         SimpleDevice device = request.getDevice();
         
         //remove from list of pending requests
-        deviceCommandMap.remove(device, request.getCommand());
+        deviceCommandMap.remove(device, request.getCommandCallback());
         
         //see if we've finished all commands for that device
         if(deviceCommandMap.containsKey(device)) {
@@ -70,7 +71,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         SimpleDevice device = request.getDevice();
         
         //remove from list of pending requests
-        deviceCommandMap.remove(device, request.getCommand());
+        deviceCommandMap.remove(device, request.getCommandCallback());
         
         //see if we've finished all commands for that device
         if(deviceCommandMap.containsKey(device)) {

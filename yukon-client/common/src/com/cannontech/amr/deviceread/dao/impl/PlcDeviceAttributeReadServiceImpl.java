@@ -78,7 +78,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         
         List<PaoMultiPointIdentifier> paoPointIdentifiers = attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
         
-        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers, type);
+        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
         if (commandRequests.isEmpty()) {
             throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);
         }
@@ -105,7 +105,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
                                                                            RetryParameters retryParameters) {
 
 
-        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(pointsToRead, type);
+        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(pointsToRead);
 
         CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryParameters);
 
@@ -135,7 +135,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         Set<PaoIdentifier> unsupportedDevices = Sets.newHashSet(PaoUtils.asPaoIdentifiers(deviceCollection));
         List<PaoMultiPointIdentifier> paoPointIdentifiers = 
             attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(deviceCollection, attributes);
-        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers, type);
+        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
         for (CommandRequestDevice commandRequestDevice : commandRequests) {
             unsupportedDevices.remove(commandRequestDevice.getDevice().getPaoIdentifier());
         }

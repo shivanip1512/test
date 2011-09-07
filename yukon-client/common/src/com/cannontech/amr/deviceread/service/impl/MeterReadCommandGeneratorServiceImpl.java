@@ -2,6 +2,7 @@ package com.cannontech.amr.deviceread.service.impl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -11,8 +12,9 @@ import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.impl.StringCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -22,6 +24,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.IterableUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGeneratorService {
 
@@ -29,22 +32,25 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	
 	private Logger log = YukonLogManager.getLogger(MeterReadCommandGeneratorServiceImpl.class);
 	
-	private boolean isUpdate = true;
-	
-	public List<CommandRequestDevice> getCommandRequests(final Iterable<PaoMultiPointIdentifier> pointsToRead, DeviceRequestType type) {
+	public List<CommandRequestDevice> getCommandRequests(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
 
 	    List<CommandRequestDevice> result = Lists.newArrayListWithExpectedSize(IterableUtils.guessSize(pointsToRead));
+	    
+	    Map<String, CommandCallback> callbackCache = Maps.newHashMap();
 	    
 	    for (PaoMultiPointIdentifier pao : pointsToRead) {
 	        Set<CommandWrapper> minimalCommands = getMinimalCommandSet(pao.getPao(), pao.getPointIdentifiers());
 	        for (CommandWrapper wrapper : minimalCommands) {
 	            List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
 	            for (String commandStr : commandStringList) {
-	                commandStr += (isUpdate ? " update " : "");
-	                commandStr += (!type.isScheduled() ? " noqueue " : "");
-
+	                
+	                CommandCallback commandCallback = callbackCache.get(commandStr);
+	                if (commandCallback == null) {
+	                    commandCallback = new StringCommandCallback(commandStr);
+	                }
+	                
 	                CommandRequestDevice request = new CommandRequestDevice();
-	                request.setCommand(commandStr);
+	                request.setCommandCallback(commandCallback);
 	                request.setDevice(new SimpleDevice(pao.getPao()));
 	                result.add(request);
 	            }

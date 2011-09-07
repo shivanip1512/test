@@ -11,6 +11,7 @@ public class CommandRequestExecutionParameterDto {
     private DeviceRequestType type;
     private LiteYukonUser user;
     private boolean noqueue = false;
+    private boolean update = true;
     private int priority = 7;
     
     public CommandRequestExecutionParameterDto(CommandRequestExecutionContextId contextId, DeviceRequestType type, LiteYukonUser user) {
@@ -19,10 +20,18 @@ public class CommandRequestExecutionParameterDto {
         this.user = user;
     }
     
-    public CommandRequestExecutionParameterDto withNoqueue(Boolean noqueue) {
+    public CommandRequestExecutionParameterDto withNoqueue(boolean noqueue) {
         
         CommandRequestExecutionParameterDto newDto = this.clone();
         newDto.noqueue = noqueue;
+
+        return newDto;
+    }
+    
+    public CommandRequestExecutionParameterDto withUpdage(boolean update) {
+        
+        CommandRequestExecutionParameterDto newDto = this.clone();
+        newDto.update = update;
 
         return newDto;
     }
@@ -39,6 +48,7 @@ public class CommandRequestExecutionParameterDto {
         
         CommandRequestExecutionParameterDto newDto = new CommandRequestExecutionParameterDto(this.contextId, this.type, this.user);
         newDto.noqueue = this.noqueue;
+        newDto.update = this.update;
         newDto.priority = this.priority;
         
         return newDto;
@@ -56,6 +66,9 @@ public class CommandRequestExecutionParameterDto {
     public boolean isNoqueue() {
         return noqueue;
     }
+    public boolean isUpdate() {
+        return update;
+    }
     public int getPriority() {
         return priority;
     };
@@ -68,6 +81,7 @@ public class CommandRequestExecutionParameterDto {
         tsc.append("type", type.name());
         tsc.append("user", user.getUsername());
         tsc.append("noqueue", noqueue);
+        tsc.append("update", update);
         tsc.append("priority", priority);
         return tsc.toString();
     }

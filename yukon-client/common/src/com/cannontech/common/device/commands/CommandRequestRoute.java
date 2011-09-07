@@ -21,7 +21,7 @@ public class CommandRequestRoute extends CommandRequestBase {
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("routeId", getRouteId());
-        tsc.append("command", getCommand());
+        tsc.append("command", getCommandCallback());
         return tsc.toString();
     }
 }

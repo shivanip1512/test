@@ -22,7 +22,7 @@ public class CommandRequestDevice extends CommandRequestBase {
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("device", getDevice());
-        tsc.append("command", getCommand());
+        tsc.append("command", getCommandCallback());
         return tsc.toString();
     }
 }

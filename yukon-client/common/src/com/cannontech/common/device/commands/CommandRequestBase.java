@@ -5,13 +5,12 @@ package com.cannontech.common.device.commands;
  * Abstract base class for command requests
  */
 public abstract class CommandRequestBase {
-    private String command;
+    private CommandCallback commandCallback;
 
-    public String getCommand() {
-        return command;
+    public CommandCallback getCommandCallback() {
+        return commandCallback;
     }
-
-    public void setCommand(String command) {
-        this.command = command;
+    public void setCommandCallback(CommandCallback commandCallback) {
+        this.commandCallback = commandCallback;
     }
 }

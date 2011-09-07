@@ -16,6 +16,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
+import com.cannontech.common.device.commands.impl.StringCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -80,7 +81,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                     // cmd
                     CommandRequestRouteAndDevice cmdReq = new CommandRequestRouteAndDevice();
-                    cmdReq.setCommand("ping");
+                    cmdReq.setCommandCallback(new StringCommandCallback("ping"));
                     cmdReq.setDevice(new SimpleDevice(device.getPaoIdentifier()));
                     cmdReq.setRouteId(state.getRouteIds().get(state.getRouteIdx()));
 
