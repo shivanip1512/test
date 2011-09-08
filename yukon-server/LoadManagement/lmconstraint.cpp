@@ -521,13 +521,32 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
 
-    // We want the seconds at the beginning of the day in which the program is to start
-    CtiTime startTime(proposed_start_from_1901);
-    CtiDate startDate(startTime);
-    startTime = CtiTime(startDate);
+    CtiDate startDate( CtiTime::CtiTime(proposed_start_from_1901) );
 
-    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(proposed_start_from_1901 - startTime.seconds());
-    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(proposed_stop_from_1901 - startTime.seconds());
+    CtiLMProgramControlWindow *start_ctrl_window = 0,
+                              *stop_ctrl_window  = 0;
+
+    for each ( CtiLMProgramControlWindow * window in lm_base.getLMProgramControlWindows() )
+    {
+        ULONG windowStartFromEpoch = window->getAvailableStartTime(startDate).seconds(),
+              windowStopFromEpoch  = window->getAvailableStopTime(startDate).seconds();
+
+        if ( start_ctrl_window == 0 )
+        {
+            if ( ( windowStartFromEpoch <= proposed_start_from_1901 ) && ( proposed_start_from_1901 <= windowStopFromEpoch ) )
+            {
+                start_ctrl_window = window;
+            }
+        }
+
+        if ( stop_ctrl_window == 0 )
+        {
+            if ( ( windowStartFromEpoch <= proposed_stop_from_1901 ) && ( proposed_stop_from_1901 <= windowStopFromEpoch ) )
+            {
+                stop_ctrl_window = window;
+            }
+        }
+    }
 
     if( start_ctrl_window != 0 && stop_ctrl_window != 0 )
     {
@@ -1334,3 +1353,9 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
     return ret_val;
 
 }
+
+const std::vector<std::string>& CtiLMProgramConstraintChecker::getResults() const
+{
+    return _results;
+}
+
