@@ -1,13 +1,8 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/16/2011 9:59:22 AM                         */
+/* Created on:     9/8/2011 3:47:05 PM                          */
 /*==============================================================*/
-
-
-set define off;
-
-
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -9168,6 +9163,7 @@ INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/can
 INSERT INTO YukonServices VALUES (15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml', 'ServiceManager'); 
 INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
+INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */

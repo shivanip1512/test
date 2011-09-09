@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/16/2011 9:57:42 AM                         */
+/* Created on:     9/9/2011 8:47:07 AM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9661,6 +9661,7 @@ INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/can
 INSERT INTO YukonServices VALUES (15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml', 'ServiceManager'); 
 INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
+INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -9900,7 +9901,6 @@ go
 /*==============================================================*/
 /* View: CBCConfiguration2_View                                 */
 /*==============================================================*/
-go
 create view CBCConfiguration2_View as
 SELECT YP.PAOName AS CBCName, D.* 
 FROM DynamicCCTwoWayCBC D, YukonPAObject YP
@@ -9910,7 +9910,6 @@ go
 /*==============================================================*/
 /* View: CBCConfiguration_View                                  */
 /*==============================================================*/
-go
 create view CBCConfiguration_View as
 SELECT YP.PAOName AS CBCName, YP.PAObjectId AS CBCId, P.PointName AS PointName, P.PointId AS PointId, 
        PD.Value AS PointValue, PD.Timestamp, UOM.UOMName AS UnitOfMeasure
@@ -9924,7 +9923,6 @@ go
 /*==============================================================*/
 /* View: CCCBCCVMSState_View                                    */
 /*==============================================================*/
-go
 create view CCCBCCVMSState_View as
 SELECT YP5.PAOName AS Region, YP4.PAOName AS Substation, CB.MapLocationId AS OpCenter, 
        YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
@@ -9962,7 +9960,6 @@ go
 /*==============================================================*/
 /* View: CCCBCInventory_View                                    */
 /*==============================================================*/
-go
 create view CCCBCInventory_View (CBCNAME, IPADDRESS, SLAVEADDRESS, CONTROLLERTYPE, OPCENTER, REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, CAPBANKNAME, BANKSIZE, OPERATIONMETHOD, LAT, LON, DRIVEDIRECTION, CAPBANKADDRESS, TA, CAPBANKCONFIG, COMMMEDIUM, COMMSTRENGTH, EXTERNALANTENNA, OPERATIONSCOUNTERRESETDATE, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
 SELECT YP.PAOName AS CBCName, DPI.Value AS IPAddress, DA.SlaveAddress, CB.ControllerType, 
        CB.MapLocationId AS OpCenter, YP5.PAOName AS Region, YP4.PAOName AS SubstationName, 
@@ -10000,7 +9997,6 @@ go
 /*==============================================================*/
 /* View: CCCapInventory_View                                    */
 /*==============================================================*/
-go
 create view CCCapInventory_View as
 SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
        YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
@@ -10030,7 +10026,6 @@ go
 /*==============================================================*/
 /* View: CCInventory_View                                       */
 /*==============================================================*/
-go
 create view CCInventory_View (REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, AREAID, SUBID, SUBBUSID, FDRID, CBCNAME, CBCID, CAPBANKNAME, BANKID, CAPBANKSIZE, DISPLAYORDER, CONTROLSTATUS, CONTROLSTATUSNAME, SWMFGR, SWTYPE, OPERATIONMETHOD, CONTROLLERTYPE, IPADDRESS, SLAVEADDRESS, LAT, LON, DRIVEDIRECTION, OPCENTER, TA, CLOSESEQUENCE, OPENSEQUENCE, LASTOPERATIONTIME, LASTINSPECTIONDATE, LASTMAINTENANCEDATE, MAINTENANCEREQPEND, CAPDISABLED, POTENTIALTRANSFORMER, OTHERCOMMENTS, OPTEAMCOMMENTS, POLENUMBER, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
 SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubBusName, 
        YP2.PAOName AS FeederName, YP4.PAObjectId AS AreaId, YP5.PAObjectId AS SubId, 
@@ -10077,7 +10072,6 @@ go
 /*==============================================================*/
 /* View: CCOperationsASent_View                                 */
 /*==============================================================*/
-go
 create view CCOperationsASent_View as
 SELECT LogId, PointId, ActionId, DateTime, Text, FeederId, SubId, AdditionalInfo
 FROM CCEventLog
@@ -10088,7 +10082,6 @@ go
 /*==============================================================*/
 /* View: CCOperationsBConfirmed_View                            */
 /*==============================================================*/
-go
 create view CCOperationsBConfirmed_View as
 SELECT LogId, PointId, ActionId, DateTime, Text, KvarBefore, KvarAfter, KvarChange, CapBankStateInfo
 FROM CCEventLog
@@ -10099,7 +10092,6 @@ go
 /*==============================================================*/
 /* View: CCOperationsCOrphanedConf_View                         */
 /*==============================================================*/
-go
 create view CCOperationsCOrphanedConf_View as
 SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
 FROM CCOperationsASent_View EL 
@@ -10115,7 +10107,6 @@ go
 /*==============================================================*/
 /* View: CCOperationsDSentAndValid_View                         */
 /*==============================================================*/
-go
 create view CCOperationsDSentAndValid_View as
 SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
 FROM CCOperationsASent_View EL 
@@ -10131,7 +10122,6 @@ go
 /*==============================================================*/
 /* View: CCOperationsESentAndAll_View                           */
 /*==============================================================*/
-go
 create view CCOperationsESentAndAll_View as
 SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
 FROM CCOperationsASent_View OP
@@ -10148,7 +10138,6 @@ WHERE OpId NOT IN (SELECT OperationLogId
 /*==============================================================*/
 /* View: CCOperations_View                                      */
 /*==============================================================*/
-go
 create view CCOperations_View as
 SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName, 
        CCOAS.PointId, CCOAS.LogId AS OpLogId, CCOAS.ActionId, CCOAS.DateTime AS OpTime, CCOAS.Text AS Operation, 
@@ -10184,7 +10173,6 @@ go
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
-go
 create view DISPLAY2WAYDATA_VIEW as
 SELECT P.POINTID AS PointID, P.POINTNAME AS PointName, P.POINTTYPE AS PointType, 
        P.SERVICEFLAG AS PointState, PAO.PAOName AS DeviceName, PAO.Type AS DeviceType, 
@@ -10201,7 +10189,6 @@ go
 /*==============================================================*/
 /* View: ExpressComAddress_View                                 */
 /*==============================================================*/
-go
 create view ExpressComAddress_View as
 SELECT X.LMGroupId, X.RouteId, X.SerialNumber, S.Address AS ServiceAddress, G.Address AS GeoAddress, 
        B.Address AS SubstationAddress, F.Address AS FeederAddress, Z.Address AS ZipCodeAddress, 
@@ -10231,7 +10218,6 @@ go
 /*==============================================================*/
 /* View: FeederAddress_View                                     */
 /*==============================================================*/
-go
 create view FeederAddress_View as
 select x.LMGroupID, a.Address as FeederAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10241,7 +10227,6 @@ go
 /*==============================================================*/
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
-go
 create view FullEventLog_View (EVENTID, POINTID, EVENTTIMESTAMP, EVENTSEQUENCE, EVENTTYPE, EVENTALARMID, DEVICENAME, POINTNAME, EVENTDESCRIPTION, ADDITIONALINFO, EVENTUSERNAME) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from YukonPAObject y, POINT p, SYSTEMLOG s
@@ -10251,7 +10236,6 @@ go
 /*==============================================================*/
 /* View: FullPointHistory_View                                  */
 /*==============================================================*/
-go
 create view FullPointHistory_View (POINTID, DEVICENAME, POINTNAME, DATAVALUE, DATATIMESTAMP, DATAQUALITY) as
 select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from YukonPAObject y, POINT p, RAWPOINTHISTORY r
@@ -10261,7 +10245,6 @@ go
 /*==============================================================*/
 /* View: GeoAddress_View                                        */
 /*==============================================================*/
-go
 create view GeoAddress_View as
 select x.LMGroupID, a.Address as GeoAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10271,7 +10254,6 @@ go
 /*==============================================================*/
 /* View: LMCurtailCustomerActivity_View                         */
 /*==============================================================*/
-go
 create view LMCurtailCustomerActivity_View as
 select cust.CustomerID, prog.CurtailmentStartTime, prog.CurtailReferenceID, prog.CurtailmentStopTime, cust.AcknowledgeStatus, cust.AckDateTime, cust.NameOfAckPerson, cust.AckLateFlag
 from LMCurtailProgramActivity prog, LMCurtailCustomerActivity cust
@@ -10281,7 +10263,6 @@ go
 /*==============================================================*/
 /* View: LMProgram_View                                         */
 /*==============================================================*/
-go
 create view LMProgram_View as
 select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u
@@ -10291,7 +10272,6 @@ go
 /*==============================================================*/
 /* View: Peakpointhistory_View                                  */
 /*==============================================================*/
-go
 create view Peakpointhistory_View as
 select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
 from RAWPOINTHISTORY rph1
@@ -10302,7 +10282,6 @@ go
 /*==============================================================*/
 /* View: PointEventLog_View                                     */
 /*==============================================================*/
-go
 create view PointEventLog_View (EVENTID, POINTID, EVENTTIMESTAMP, EVENTSEQUENCE, EVENTTYPE, EVENTALARMID, POINTNAME, EVENTDESCRIPTION, ADDITIONALINFO, EVENTUSERNAME) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from POINT p, SYSTEMLOG s
@@ -10312,7 +10291,6 @@ go
 /*==============================================================*/
 /* View: PointHistory_View                                      */
 /*==============================================================*/
-go
 create view PointHistory_View (POINTID, POINTNAME, DATAVALUE, DATATIMESTAMP, DATAQUALITY) as
 select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from POINT p, RAWPOINTHISTORY r
@@ -10322,7 +10300,6 @@ go
 /*==============================================================*/
 /* View: ProgramAddress_View                                    */
 /*==============================================================*/
-go
 create view ProgramAddress_View as
 select x.LMGroupID, a.Address as ProgramAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10332,7 +10309,6 @@ go
 /*==============================================================*/
 /* View: ServiceAddress_View                                    */
 /*==============================================================*/
-go
 create view ServiceAddress_View as
 select x.LMGroupID, a.Address as ServiceAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10342,7 +10318,6 @@ go
 /*==============================================================*/
 /* View: SubstationAddress_View                                 */
 /*==============================================================*/
-go
 create view SubstationAddress_View as
 select x.LMGroupID, a.Address as SubstationAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10352,7 +10327,6 @@ go
 /*==============================================================*/
 /* View: TempMovedCapBanks_View                                 */
 /*==============================================================*/
-go
 create view TempMovedCapBanks_View as
 SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
        YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
