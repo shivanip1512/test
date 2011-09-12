@@ -10134,6 +10134,7 @@ SELECT OpId, ConfId
 FROM CCOperationsDSentAndValid_view
 WHERE OpId NOT IN (SELECT OperationLogId 
                    FROM CCOperationLogCache);
+go
 
 /*==============================================================*/
 /* View: CCOperations_View                                      */
