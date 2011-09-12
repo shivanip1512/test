@@ -81,6 +81,45 @@
             openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}",
                     null, null, 'get');
         }
+        
+        Event.observe(window, 'load', function() {
+            var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, 4000);
+        });
+        
+        function updateRecentEvents() {
+            var params = {
+                'zoneId': ${zoneId},
+                'subBusId': ${subBusId},
+                'mostRecent': $('mostRecentDateTime').innerHTML
+            };
+            new Ajax.Request('getRecentEvents', { 
+                'method': 'GET', 
+                'parameters': params,
+                onSuccess: function(transport) {
+                    var dummyHolder = document.createElement('div');
+                    dummyHolder.innerHTML = transport.responseText;
+                    var rows = $(dummyHolder).select('tr');
+                    if (typeof(rows[0]) != 'undefined') {
+                    	// assign our hidden td field to mostRecentDateTime for use in future calls
+                        $('mostRecentDateTime').innerHTML = rows[0].select('td')[3].innerHTML;
+                    }
+                    for (var i = rows.length-1; i >= 0 ; i--) {
+                        var topRow = $('recentEventsHeaderRow').next();
+                        if (topRow.hasClassName('tableCell')) {
+                            rows[i].addClassName('altTableCell');
+                        } else {
+                            rows[i].addClassName('tableCell');
+                        }
+                        $('recentEventsHeaderRow').insert({'after': rows[i]});
+                        $('recentEventsHeaderRow').siblings().last().remove();
+                        flashYellow(rows[i]);
+                    }
+                },
+                onComplete: function() {
+                    recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, 4000);
+                }
+            });
+        }
     </script>
 
     
@@ -254,6 +293,7 @@
             </tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
+                <div id="mostRecentDateTime" class="dn">${mostRecentDateTime}</div>
 				<tags:alternateRowReset/>
 				<c:choose>
 					<c:when test="${empty events}">
@@ -262,7 +302,7 @@
 					<c:otherwise>
 						<div class="historyContainer">
 							<table class="compactResultsTable ">
-								<tr>
+								<tr id="recentEventsHeaderRow">
 									<th><i:inline key=".ivvcEvents.deviceName"/></th>
                                     <th><i:inline key=".ivvcEvents.description"/></th>
 									<th><i:inline key=".attributes.timestamp"/></th>
@@ -278,7 +318,6 @@
 						</div>	
 					</c:otherwise>
 				</c:choose>
-				
 			</tags:boxContainer2>
 			<br>
             <c:choose>

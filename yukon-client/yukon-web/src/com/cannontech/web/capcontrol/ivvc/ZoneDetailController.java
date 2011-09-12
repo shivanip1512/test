@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -176,10 +178,26 @@ public class ZoneDetailController {
         model.addAttribute("disableRemoteCommandHolder",CommandHolder.LTC_REMOTE_DISABLE);
     }
     
-    private void setupIvvcEvents(ModelMap model,int zoneId,int subBusId) {
+    private void setupIvvcEvents(ModelMap model, int zoneId, int subBusId) {
         final int rowLimit = 20;
-        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit);
+        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, null, null);
         model.addAttribute("events", events);
+        Instant mostRecentDateTime;
+        if (events != null && !events.isEmpty()) {
+            mostRecentDateTime = events.get(0).getDateTime();
+        } else {
+            mostRecentDateTime = new Instant();
+        }
+        model.addAttribute("mostRecentDateTime", mostRecentDateTime);
+    }
+    
+    @RequestMapping
+    public String getRecentEvents(ModelMap model, YukonUserContext userContext, int zoneId, int subBusId, String mostRecent) {
+        DateTime dt = new DateTime(mostRecent).toDateTime(userContext.getJodaTimeZone());
+        final int rowLimit = 20;
+        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, dt.toInstant(), null);
+        model.addAttribute("events", events);
+        return "ivvc/recentEvents.jsp";
     }
     
     private void setupCapBanks(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {

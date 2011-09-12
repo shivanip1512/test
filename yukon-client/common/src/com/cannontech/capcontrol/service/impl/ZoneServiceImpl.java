@@ -3,6 +3,7 @@ package com.cannontech.capcontrol.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -234,8 +235,8 @@ public class ZoneServiceImpl implements ZoneService {
     }
     
     @Override
-    public List<CcEvent> getLatestEvents(int zoneId,int subBusId, int rowLimit) {
-        return zoneDao.getLatestEvents(zoneId, subBusId, rowLimit);
+    public List<CcEvent> getLatestEvents(int zoneId,int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to) {
+        return zoneDao.getLatestEvents(zoneId, subBusId, rowLimit, from, to);
     }
     
     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {

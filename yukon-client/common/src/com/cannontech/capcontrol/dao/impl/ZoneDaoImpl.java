@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,8 +17,8 @@ import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.CcEventType;
-import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.AdvancedFieldMapper;
@@ -128,7 +129,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
             CcEvent ccEvent = new CcEvent();
             
             ccEvent.setText(rs.getString("Text"));
-            ccEvent.setDateTime(rs.getDate("DateTime"));
+            ccEvent.setDateTime(rs.getInstant("DateTime"));
             ccEvent.setDeviceName(rs.getString("PaoName"));
             return ccEvent;
         }
@@ -439,7 +440,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
-    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit) {       
+    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to) {       
         final List<CcEventType> bankEventTypes = Lists.newArrayList( new CcEventType[] {CcEventType.BankStateUpdate, 
                                                       CcEventType.CommandSent, 
                                                       CcEventType.ManualCommand});
@@ -479,6 +480,12 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sql.append("  ) EVU on EVU.LogId = EV.LogId");
         sql.append(") numberedRows");
         sql.append("WHERE numberedRows.rn").lte(rowLimit);
+        if (from != null) {
+            sql.append("AND numberedRows.DateTime").gt(from);
+        }
+        if (to != null) {
+            sql.append("AND numberedRows.DateTime").lte(to);
+        }
         sql.append("ORDER BY numberedRows.DateTime desc");
 
         return yukonJdbcTemplate.query(sql,ccEventRowMapper);

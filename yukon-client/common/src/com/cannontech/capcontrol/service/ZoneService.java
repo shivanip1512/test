@@ -3,12 +3,14 @@ package com.cannontech.capcontrol.service;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.ReadableInstant;
+
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.enums.Phase;
 
@@ -130,7 +132,9 @@ public interface ZoneService {
      * @param zoneId
      * @param subBusId
      * @param rowLimit
+     * @param from - gets events greater than (>) this
+     * @param to - gets events less than or equal to (<=) this
      * @return
      */
-    List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit);
+    List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
 }

@@ -3,6 +3,8 @@ package com.cannontech.capcontrol.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.ReadableInstant;
+
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
@@ -179,7 +181,9 @@ public interface ZoneDao {
      * @param zoneId
      * @param subBusId
      * @param rowLimit
+     * @param from - queries for events greater than (>) this
+     * @param to - queries for events less than or equal to (<=) this
      * @return
      */
-    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit);
+    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
 }

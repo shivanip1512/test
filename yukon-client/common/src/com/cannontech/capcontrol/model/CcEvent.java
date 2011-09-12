@@ -1,10 +1,10 @@
 package com.cannontech.capcontrol.model;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 public class CcEvent {
     
-    private Date dateTime;
+    private Instant dateTime;
     private String text;
     private String deviceName;
     
@@ -12,11 +12,11 @@ public class CcEvent {
         
     }
 
-    public Date getDateTime() {
+    public Instant getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(Instant dateTime) {
         this.dateTime = dateTime;
     }
 
