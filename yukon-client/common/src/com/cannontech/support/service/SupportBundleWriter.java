@@ -4,15 +4,14 @@ import org.joda.time.ReadableInstant;
 
 import com.cannontech.tools.zip.ZipWriter;
 
-public interface SupportBundleSource {
-
+public interface SupportBundleWriter {
     public void addToZip(ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop);
 
     public boolean isOptional();
 
     /**
-     * Return an i18n key representing the name of this bundle for the user.
+     * This name uniquely identifies this writer and is used as part of the i18n key for displaying
+     * to the user.
      */
-    public String getSourceName();
-
+    public String getName();
 }

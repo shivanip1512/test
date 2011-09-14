@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 import org.joda.time.ReadableInstant;
@@ -15,15 +16,15 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
 
-public class SupportBundleFileSystemToCsvSource extends AbstractSupportBundleSource {
+public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWriter {
+    private static final Logger log =
+        YukonLogManager.getLogger(SupportBundleFileSystemToCsvWriter.class);
+
     private String zipDirectory;
     private String zipFilename;
-    private static final Logger log = YukonLogManager
-        .getLogger(SupportBundleFileSystemToCsvSource.class);
 
     @Override
     public void addToZip(ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
-
         Writer pw = zipWriter.getBufferedWriter(zipDirectory, zipFilename);
 
         CSVWriter csvWriter = new CSVWriter(pw);
@@ -32,7 +33,7 @@ public class SupportBundleFileSystemToCsvSource extends AbstractSupportBundleSou
         csvWriter.writeNext(firstLine);
 
         File directory = new File(CtiUtilities.getYukonBase());
-        writeDirToCSV(directory, "", csvWriter);
+        writeDirToCsv(directory, "", csvWriter);
 
         try {
             pw.flush();
@@ -42,44 +43,54 @@ public class SupportBundleFileSystemToCsvSource extends AbstractSupportBundleSou
 
     }
 
-    private void writeDirToCSV(File directory, String path, CSVWriter csvWriter) {
-
+    private void writeDirToCsv(File directory, String path, CSVWriter csvWriter) {
         File[] filesAndDirs = directory.listFiles();
 
         for (File file : filesAndDirs) {
             if (file.isDirectory())
-                writeDirToCSV(file, path + file.getName() + "/", csvWriter);
+                writeDirToCsv(file, path + file.getName() + "/", csvWriter);
             else {
                 String[] nextLine =
-                    { path + file.getName(), CtiUtilities.formatFileSize(file.length()),
-                            getMD5(file) };
+                    { path + file.getName(), String.valueOf(file.length()), getMD5(file) };
                 csvWriter.writeNext(nextLine);
-
             }
         }
     }
 
     private String getMD5(File file) {
+        java.security.MessageDigest md5Hasher;
         try {
+            md5Hasher = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+            throw new RuntimeException(noSuchAlgorithmException);
+        }
 
-            InputStream inputStream = new FileInputStream(file);
-            java.security.MessageDigest md5Hasher = MessageDigest.getInstance("MD5");
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
             byte[] buffer = new byte[4096];
             int read;
             while ((read = inputStream.read(buffer)) != -1) {
                 md5Hasher.update(buffer, 0, read);
             }
-            inputStream.close();
-            byte[] digest = md5Hasher.digest();
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < digest.length; i++) {
-                sb.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
+        } catch (IOException ioException) {
+            throw new RuntimeException(ioException);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                }
             }
-            return sb.toString();
-        } catch (Exception e) {
-            return null;
         }
+
+        byte[] digest = md5Hasher.digest();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < digest.length; i++) {
+            sb.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
     }
 
     public void setZipDirectory(String zipDirectory) {
@@ -89,5 +100,4 @@ public class SupportBundleFileSystemToCsvSource extends AbstractSupportBundleSou
     public void setZipFilename(String zipFilename) {
         this.zipFilename = zipFilename;
     }
-
 }

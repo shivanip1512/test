@@ -7,24 +7,6 @@
 
 
 <cti:standardPage module="support" page="supportBundle">
-    <script type="text/javascript">
-    Event.observe(window, 'load', function() {
-        
-        Event.observe('startBtn', 'click', function() {
-            Yukon.ui.blockPage();
-            $("uploadBundle").submit();
-        });
-
-        Event.observe('cancelBtn', 'click', function() {
-            window.location = "view";
-        });
-        
-        Event.observe('okBtn', 'click', function() {
-            window.location = "view";
-        });
-        
-    });
-</script>
     <c:if test="${ftpStatus != 'SUCCESS'}">
         <c:set var="msgStyle" value="errorMessage" />
     </c:if>
@@ -41,7 +23,7 @@
                     <c:out value="${fileDate}"></c:out> 
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".send.fileSizeLbl">
-                    <c:out value="${fileSize}"></c:out>
+                    <cti:msg2 key="${fileSize}"/>
                 </tags:nameValue2>
                 
                 <c:if test="${doUpload}">
@@ -71,15 +53,13 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2><br>
         </c:if>
+        <cti:url var="viewUrl" value="view"/>
         <c:if test="${ftpStatus != 'SUCCESS'}">
-            <cti:button nameKey="startUploadImg" id="startBtn" type="submit"/>
-            <cti:button nameKey="cancelImg" id="cancelBtn"/>
-            <input type="hidden" id="okBtn"/>
+            <cti:button nameKey="startUpload" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="cancel" href="${viewUrl}"/>
         </c:if>
         <c:if test="${ftpStatus == 'SUCCESS'}">
-            <cti:button nameKey="okImg" id="okBtn"/>
-            <input type="hidden" id="cancelBtn"/>
-            <input type="hidden" id="startBtn"/>
+            <cti:button nameKey="ok" id="okBtn" href="${viewUrl}"/>
         </c:if>
     </form:form>
 </cti:standardPage>

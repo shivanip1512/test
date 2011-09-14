@@ -101,7 +101,7 @@
                     </div>
 				</tags:nameValue>
 				<tags:nameValue name="${fileSizeLabel}">
-					${fileSize}
+					<cti:msg2 key="${fileSize}"/>
 				</tags:nameValue>
 			</tags:nameValueContainer>
 			

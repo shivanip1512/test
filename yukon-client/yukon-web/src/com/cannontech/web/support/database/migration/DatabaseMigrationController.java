@@ -34,6 +34,7 @@ import com.cannontech.common.databaseMigration.model.DisplayableExportType;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -298,7 +299,7 @@ public class DatabaseMigrationController {
 		
 		map.addAttribute("status", status);
 		map.addAttribute("filePath", resource.getPath());
-		map.addAttribute("fileSize", CtiUtilities.formatFileSize(resource.getFile().length()));
+		map.addAttribute("fileSize", BinaryPrefix.getCompactRepresentation(resource.getFile().length()));
 		map.addAttribute("orgDbUrl", orgEnvironment);
 		map.addAttribute("orgDbUsername", orgSchemaUser);
 		map.addAttribute("exportType", status.getExportType());

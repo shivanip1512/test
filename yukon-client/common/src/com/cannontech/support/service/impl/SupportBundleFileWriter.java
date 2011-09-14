@@ -8,7 +8,7 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tools.zip.ZipWriter;
 
-public class SupportBundleFileSource extends AbstractSupportBundleSource {
+public class SupportBundleFileWriter extends AbstractSupportBundleWriter {
     private String zipDirectory;
     private String fileOrDirName;
 
@@ -21,7 +21,7 @@ public class SupportBundleFileSource extends AbstractSupportBundleSource {
         } else if (fileOrDir.isFile()) {
             zipWriter.writeFile(fileOrDir, zipDirectory);
         } else {
-            Log.info("Not a file or directory - Could not be added to Support Bundle: '"
+            Log.info("Not a valid file or directory - Could not be added to Support Bundle: '"
                      + fileOrDirName + "'");
         }
     }
@@ -33,5 +33,4 @@ public class SupportBundleFileSource extends AbstractSupportBundleSource {
     public void setFileOrDirName(String fileOrDirName) {
         this.fileOrDirName = fileOrDirName;
     }
-
 }

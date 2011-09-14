@@ -9,17 +9,14 @@ import java.util.Set;
 import org.joda.time.ReadableInstant;
 
 public interface SupportBundleService {
-
-    public void bundle(ReadableInstant start, ReadableInstant end, String comments, String custName,
-                       Set<String> optionalSourcesToInclude) throws IOException;
-
-    public File getBundleDir();
+    public void bundle(ReadableInstant start, ReadableInstant end, String custName,
+                       String comments, Set<String> optionalWritersToInclude) throws IOException;
 
     public List<File> getBundles();
 
+    public File getMostRecentBundle();
+
     public boolean isInProgress();
 
-    public Map<String, Boolean> getSourcesDone();
-
-    public File getMostRecentBundle();
+    public Map<String, Boolean> getWritersDone();
 }

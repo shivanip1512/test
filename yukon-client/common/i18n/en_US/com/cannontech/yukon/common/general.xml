@@ -30,4 +30,13 @@
 <entry key="yukon.common.thermostat.mode.EMERGENCY_HEAT">Emergency Heat</entry>
 <entry key="yukon.common.thermostat.mode.OFF">Off</entry>
 <entry key="yukon.common.thermostat.mode.DEFAULT">Default</entry>
+
+<entry key="yukon.common.prefixedByteValue.noPrefix">{0,number,#,##0} bytes</entry>
+<entry key="yukon.common.prefixedByteValue.kibi">{0,number,#,##0.0} kB</entry>
+<entry key="yukon.common.prefixedByteValue.mebi">{0,number,#,##0.0} MB</entry>
+<entry key="yukon.common.prefixedByteValue.gibi">{0,number,#,##0.0} GB</entry>
+<entry key="yukon.common.prefixedByteValue.tebi">{0,number,#,##0.0} TB</entry>
+<entry key="yukon.common.prefixedByteValue.pebi">{0,number,#,##0.0} PB</entry>
+<entry key="yukon.common.prefixedByteValue.exbi">{0,number,#,##0.0} EB</entry>
+
 </properties>

@@ -12,34 +12,25 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
 
-public class SupportBundleEventLogDateRangeSource extends AbstractSupportBundleSource {
-
+public abstract class SupportBundleSqlWriter extends AbstractSupportBundleWriter {
+    private static final Logger log = YukonLogManager.getLogger(SupportBundleSqlWriter.class);
     private final static String databaseZipDir = "Database";
-    private String zipFilename;
+
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private static final Logger log = YukonLogManager.getLogger(SupportBundleSqlSource.class);
 
     @Override
     public void addToZip(final ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM EventLog");
-        sql.append("WHERE EventTime").gte(start);
-        sql.append("  AND EventTime").lte(stop);
-
+        SqlFragmentSource sqlStatement = getSqlFragmentSource();
         ResultSetExtractor<?> resultSetExtractor = new ResultSetExtractor<Object>() {
-
             @Override
             public Object extractData(ResultSet resultSet) throws SQLException,
                         DataAccessException {
-
-                Writer pw = zipWriter.getBufferedWriter(databaseZipDir, zipFilename);
+                Writer pw = zipWriter.getBufferedWriter(databaseZipDir, getZipFilename());
 
                 CSVWriter csvWriter = new CSVWriter(pw);
 
@@ -48,22 +39,22 @@ public class SupportBundleEventLogDateRangeSource extends AbstractSupportBundleS
                     pw.flush();
                 } catch (IOException e) {
                     log.error("Error while trying to write a resultSet to the zip file", e);
+                    throw new RuntimeException(e);
                 }
 
                 return null;
             }
         };
 
-        yukonJdbcTemplate.query(sql, resultSetExtractor);
+        yukonJdbcTemplate.query(sqlStatement, resultSetExtractor);
     }
 
-    public void setZipFilename(String zipFilename) {
-        this.zipFilename = zipFilename;
-    }
+    protected abstract SqlFragmentSource getSqlFragmentSource();
+
+    protected abstract String getZipFilename();
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
-
 }

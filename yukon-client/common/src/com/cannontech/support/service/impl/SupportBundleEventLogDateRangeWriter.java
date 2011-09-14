@@ -12,27 +12,34 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
 
-public abstract class SupportBundleSqlSource extends AbstractSupportBundleSource {
-
+public class SupportBundleEventLogDateRangeWriter extends AbstractSupportBundleWriter {
     private final static String databaseZipDir = "Database";
+    private static final Logger log = YukonLogManager.getLogger(SupportBundleSqlWriter.class);
+
+    private String zipFilename;
+
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private static final Logger log = YukonLogManager.getLogger(SupportBundleSqlSource.class);
 
     @Override
     public void addToZip(final ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
-        SqlFragmentSource sqlStatement = getSqlFragmentSource();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM EventLog");
+        sql.append("WHERE EventTime").gte(start);
+        sql.append("  AND EventTime").lte(stop);
+
         ResultSetExtractor<?> resultSetExtractor = new ResultSetExtractor<Object>() {
 
             @Override
             public Object extractData(ResultSet resultSet) throws SQLException,
                         DataAccessException {
 
-                Writer pw = zipWriter.getBufferedWriter(databaseZipDir, getZipFilename());
+                Writer pw = zipWriter.getBufferedWriter(databaseZipDir, zipFilename);
 
                 CSVWriter csvWriter = new CSVWriter(pw);
 
@@ -47,16 +54,15 @@ public abstract class SupportBundleSqlSource extends AbstractSupportBundleSource
             }
         };
 
-        yukonJdbcTemplate.query(sqlStatement, resultSetExtractor);
+        yukonJdbcTemplate.query(sql, resultSetExtractor);
     }
 
-    protected abstract SqlFragmentSource getSqlFragmentSource();
-
-    protected abstract String getZipFilename();
+    public void setZipFilename(String zipFilename) {
+        this.zipFilename = zipFilename;
+    }
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
-
 }

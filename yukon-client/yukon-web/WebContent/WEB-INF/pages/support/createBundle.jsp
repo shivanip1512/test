@@ -6,10 +6,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="support" page="supportBundle">
-    <script type="text/javascript"">
-        Event.observe(window, 'load', function(){
-            new Ajax.PeriodicalUpdater("mainDiv", "createBundle/getStatus", {
-                frequency : 1
+    <script type="text/javascript">
+        Event.observe(window, 'load', function() {
+            new Ajax.PeriodicalUpdater('mainDiv', 'getBundleProgress', {
+                'frequency' : 1
             });
         });
     </script>

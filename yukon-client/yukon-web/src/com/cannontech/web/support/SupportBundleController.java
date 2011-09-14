@@ -2,7 +2,6 @@ package com.cannontech.web.support;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,23 +23,22 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.support.model.SupportBundle;
 import com.cannontech.support.service.SupportBundleService;
-import com.cannontech.support.service.SupportBundleSource;
-import com.cannontech.support.service.impl.BundleRangeSelection;
+import com.cannontech.support.service.SupportBundleWriter;
 import com.cannontech.tools.sftp.SftpStatus;
 import com.cannontech.tools.sftp.SftpWriter;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -50,7 +48,7 @@ public class SupportBundleController {
 
     private SupportBundleService supportBundleService;
     private DateFormattingService dateFormattingService;
-    private List<SupportBundleSource> sourceList;
+    private List<SupportBundleWriter> writerList;
     private static final String FTP_USER = "yukwrite"; 
     private static final String FTP_PASS = "P4ssw0rd"; 
     private static final String FTP_HOST = "sftp.cooperpowereas.net"; 
@@ -63,7 +61,7 @@ public class SupportBundleController {
                 YukonValidationUtils.checkExceedsMaxLength(errors,  "customerName",
                                                            supportBundle.getCustomerName(), 40);
 
-                Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9_\\-\\(\\)&%.#]{0,}$");
+                Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9_\\-\\(\\)&%.# ]*$");
                 YukonValidationUtils.regexCheck(errors,
                                                 "customerName",
                                                 supportBundle.getCustomerName(),
@@ -72,41 +70,37 @@ public class SupportBundleController {
             }
         };
 
-    @RequestMapping("view")
-    public String supportBundle(HttpServletRequest request, ModelMap model,
+    @RequestMapping
+    public String view(HttpServletRequest request, ModelMap model,
                                 YukonUserContext userContext) {
 
-        return supportBundle(request, model, new SupportBundle(sourceList), userContext);
+        return supportBundle(request, model, new SupportBundle(writerList), userContext);
     }
 
     private String supportBundle(HttpServletRequest request, ModelMap model,
-                                 SupportBundle supportBundle,
-                                 YukonUserContext userContext) {
+                                 SupportBundle supportBundle, YukonUserContext userContext) {
 
         List<File> previousBundles = supportBundleService.getBundles();
         model.addAttribute("supportBundle", supportBundle);
         model.addAttribute("bundleRangeSelection", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
-        model.addAttribute("sourceList", sourceList);
+        model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", supportBundleService.isInProgress());
 
         return "supportBundle.jsp";
     }
 
-    @RequestMapping("viewProgress")
-    public String createBundleView(HttpServletRequest request, ModelMap model,
-                                   YukonUserContext userContext)
-            throws Exception {
-
+    @RequestMapping
+    public String viewProgress(HttpServletRequest request, ModelMap model,
+                               YukonUserContext userContext) throws Exception {
         return "createBundle.jsp";
     }
 
-    @RequestMapping("createBundle")
-    public String createBundle(HttpServletRequest request, ModelMap model,
-                                SupportBundle supportBundle, BindingResult bindingResult,
-                                YukonUserContext userContext, FlashScope flashScope)
+    @RequestMapping
+    public String create(HttpServletRequest request, ModelMap model, SupportBundle supportBundle,
+                         BindingResult bindingResult, YukonUserContext userContext,
+                         FlashScope flashScope)
             throws Exception {
-
         detailsValidator.validate(supportBundle, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -116,45 +110,43 @@ public class SupportBundleController {
             return supportBundle(request, model, supportBundle, userContext);
         }
 
-        model.addAttribute("sourceList", sourceList);
+        model.addAttribute("writerList", writerList);
 
-        Set<String> OptionalSourcesToInclude = Sets.newHashSet();
-        OptionalSourcesToInclude.addAll(Arrays.asList(supportBundle.getOptionalSourcesToInclude()));
+        Set<String> optionalWritersToInclude = Sets.newHashSet();
+        optionalWritersToInclude.addAll(supportBundle.getOptionalWritersToInclude());
 
         LocalDate stop = new LocalDate(DateTimeZone.getDefault());
-        LocalDate start = stop.minus(supportBundle.getBundleRangeSelection().getDuration());
+        LocalDate start = stop.minus(supportBundle.getBundleRangeSelection().getPeriod());
 
         if (!supportBundleService.isInProgress()) {
             supportBundleService
                 .bundle(TimeUtil.toMidnightAtBeginningOfDay(start, DateTimeZone.getDefault()),
                         TimeUtil.toMidnightAtEndOfDay(stop, DateTimeZone.getDefault()),
-                        supportBundle.getInfo(),
                         supportBundle.getCustomerName(),
-                        OptionalSourcesToInclude);
+                        supportBundle.getComments(),
+                        optionalWritersToInclude);
 
         }
-        return "createBundle.jsp";
 
+        return "redirect:viewProgress";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "createBundle/getStatus")
-    public String getBundleCreationStatus(HttpServletRequest request, ModelMap model)
-            throws Exception {
+    @RequestMapping
+    public String getBundleProgress(HttpServletRequest request, ModelMap model) throws Exception {
 
-        Map<String, Boolean> thingsDoneMap = supportBundleService.getSourcesDone();
+        Map<String, Boolean> thingsDoneMap = supportBundleService.getWritersDone();
         model.addAttribute("thingsDoneMap", thingsDoneMap);
         model.addAttribute("inProgress", supportBundleService.isInProgress());
-        model.addAttribute("sourceList", sourceList);
+        model.addAttribute("writerList", writerList);
         model.addAttribute("mostRecentBundle", supportBundleService.getMostRecentBundle());
 
         return "bundleBuildStatus.jsp";
     }
 
-    @RequestMapping("upload")
-    public String upload(HttpServletRequest request, ModelMap model,
-                         YukonUserContext yukonUserContext, int fileNum, SftpStatus ftpStatus, String username, String password, String host)
-            throws Exception {
-
+    @RequestMapping
+    public String upload(HttpServletRequest request, ModelMap model, int fileNum,
+                         SftpStatus ftpStatus, String username, String password, String host,
+                         YukonUserContext userContext) throws Exception {
         List<File> bundleFileList = supportBundleService.getBundles();
 
         if (bundleFileList.size() > fileNum) {
@@ -172,9 +164,9 @@ public class SupportBundleController {
 
             String fileDate =
                 dateFormattingService.format(new Date(bundleToSend.lastModified()),
-                                             DateFormatEnum.DATE, yukonUserContext);
+                                             DateFormatEnum.DATE, userContext);
             
-            model.addAttribute("fileSize", CtiUtilities.formatFileSize(bundleToSend.length()));
+            model.addAttribute("fileSize", BinaryPrefix.getCompactRepresentation(bundleToSend.length()));
             model.addAttribute("fileDate", fileDate);
             model.addAttribute("filename", bundleToSend.getName());
             model.addAttribute("fileNum", fileNum);
@@ -187,7 +179,7 @@ public class SupportBundleController {
         return "redirect:view";
     }
 
-    @RequestMapping("send")
+    @RequestMapping
     public String send(HttpServletRequest request, ModelMap model,
                        YukonUserContext yukonUserContext, int fileNum)
             throws Exception {
@@ -202,7 +194,7 @@ public class SupportBundleController {
                                              DateFormatEnum.DATE,
                                              yukonUserContext);
 
-            model.addAttribute("fileSize", CtiUtilities.formatFileSize(bundleToSend.length()));
+            model.addAttribute("fileSize", BinaryPrefix.getCompactRepresentation(bundleToSend.length()));
             model.addAttribute("fileDate", fileDate);
             model.addAttribute("filename", bundleToSend.getName());
             model.addAttribute("fileNum", fileNum);
@@ -215,7 +207,7 @@ public class SupportBundleController {
         return "redirect:view";
     }
 
-    @RequestMapping(value = "download", method = RequestMethod.GET)
+    @RequestMapping
     public String download(HttpServletRequest request, HttpServletResponse response, int fileNum)
             throws Exception {
         response.setContentType("application/zip");
@@ -226,7 +218,7 @@ public class SupportBundleController {
             File bundleToDownload = bundleFileList.get(fileNum);
             // set response header to the filename
             response.setHeader("Content-Disposition",
-                               "attachment; filename=" + bundleToDownload.getName());
+                               "attachment; filename=" + ServletUtil.urlEncode(bundleToDownload.getName()));
             response.setHeader("Content-Length", Long.toString(bundleToDownload.length()));
 
             // Download the file through the response object
@@ -247,8 +239,7 @@ public class SupportBundleController {
     }
 
     @Autowired
-    public void setSourceList(List<SupportBundleSource> sourceList) {
-        this.sourceList = sourceList;
+    public void setWriterList(List<SupportBundleWriter> writerList) {
+        this.writerList = writerList;
     }
-
 }

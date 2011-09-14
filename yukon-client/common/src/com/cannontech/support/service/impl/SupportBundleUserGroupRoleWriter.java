@@ -20,20 +20,19 @@ import com.cannontech.tools.zip.ZipWriter;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
-public class SupportBundleUserGroupRoleSource extends AbstractSupportBundleSource {
+public class SupportBundleUserGroupRoleWriter extends AbstractSupportBundleWriter {
+    private final static Logger log = YukonLogManager.getLogger(SupportBundleUserGroupRoleWriter.class);
+    private final static String databaseZipDir = "Database";
+
     private RolePropertyEditorDao rolePropertyEditorDao;
     private YukonGroupDao yukonGroupDao;
-    private final static String databaseZipDir = "Database";
-    private Logger log = YukonLogManager.getLogger(SupportBundleUserGroupRoleSource.class);
 
     @Override
     public void addToZip(ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
-
         Writer pw = zipWriter.getBufferedWriter(databaseZipDir, "YukonGroupRoleProperty.csv");
 
         CSVWriter csvWriter = new CSVWriter(pw);
-        String[] header =
-          { "Login Group", "Group Id", "Role Property Name", "Value" };
+        String[] header = { "Login Group", "Group Id", "Role Property Name", "Value" };
         csvWriter.writeNext(header);
         Predicate<YukonRoleProperty> predicate = Predicates.alwaysTrue();
         List<LiteYukonGroup> groups = yukonGroupDao.getAllGroups();
@@ -53,7 +52,6 @@ public class SupportBundleUserGroupRoleSource extends AbstractSupportBundleSourc
 
                     csvWriter.writeNext(nextLine);
                 }
-
             } catch (IllegalArgumentException e) {
                 String[] nextLine =
                   { group.getGroupName(), String.valueOf(group.getGroupID()),
@@ -77,5 +75,4 @@ public class SupportBundleUserGroupRoleSource extends AbstractSupportBundleSourc
     public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
         this.yukonGroupDao = yukonGroupDao;
     }
-
 }

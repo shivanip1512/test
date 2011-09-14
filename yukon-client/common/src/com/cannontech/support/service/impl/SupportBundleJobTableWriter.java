@@ -3,8 +3,7 @@ package com.cannontech.support.service.impl;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
-public class SupportBundleJobTableSource extends SupportBundleSqlSource {
-
+public class SupportBundleJobTableWriter extends SupportBundleSqlWriter {
     @Override
     protected SqlFragmentSource getSqlFragmentSource() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -17,5 +16,4 @@ public class SupportBundleJobTableSource extends SupportBundleSqlSource {
     protected String getZipFilename() {
         return "JobTable.csv";
     }
-
 }

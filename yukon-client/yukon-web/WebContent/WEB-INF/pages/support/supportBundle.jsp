@@ -9,7 +9,6 @@
 
     <script type="text/javascript">
     Event.observe(window, 'load', function() {
-
         if (${inProgress}) {
             $('supportBundleForm').disable();
             $('inProgressMessage').show();
@@ -18,8 +17,8 @@
         
         Event.observe('downloadBtn', 'click', function() {
             var selectedFile = Form.getInputs('previousBundlesForm', 'radio',
-            'previousBundles').find(function(radio) {return radio.checked;}).value;
-            
+                    'previousBundles').find(function(radio) {return radio.checked;}).value;
+
             window.location = "download?fileNum=" + selectedFile;
         });
 
@@ -29,21 +28,13 @@
                     'previousBundles').find(function(radio) {return radio.checked;}).value;
             window.location = "send?fileNum=" + selectedFile;
         });
-
-        Event.observe('viewProgressBtn', 'click', function() {
-            window.location = "viewProgress";
-        });
-
-        Event.observe('createBundleBtn', 'click', function() {
-            Yukon.ui.blockPage();
-            $("supportBundleForm").submit();
-        });
     });
-</script>
+    </script>
+
     <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
         <cti:dataGridCell>
-            <form:form id="supportBundleForm" commandName="supportBundle" action="createBundle"
-                method="POST">
+            <cti:url var="createUrl" value="create"/>
+            <form:form commandName="supportBundle" action="${createUrl}" method="POST">
                 <h1><i:inline key=".createNewHeading" /></h1><br>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".custNameLbl">
@@ -53,16 +44,16 @@
                         <form:select path="bundleRangeSelection">
                             <c:forEach var="rangeSel" items="${bundleRangeSelection}">
                                 <form:option value="${rangeSel}">
-                                    <i:inline key=".bundleRangeSelection.${rangeSel}" />
+                                    <cti:msg2 key=".bundleRangeSelection.${rangeSel}" />
                                 </form:option>
                             </c:forEach>
                         </form:select>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".includeLbl">
-                        <c:forEach var="source" items="${sourceList}">
-                            <c:if test="${source.optional}">
-                                <form:checkbox path="optionalSourcesToInclude" value="${source.sourceName}" /> 
-                                <i:inline key=".sourceName.${source.sourceName}" /><br>
+                        <c:forEach var="writer" items="${writerList}">
+                            <c:if test="${writer.optional}">
+                                <form:checkbox path="optionalWritersToInclude" value="${writer.name}" /> 
+                                <i:inline key=".writerName.${writer.name}" /><br>
                             </c:if>
                         </c:forEach>
                     </tags:nameValue2>
@@ -70,10 +61,11 @@
                         <form:textarea rows="6" cols="40" path="comments"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2><br>
-                <cti:button nameKey="createBundleBtn" id="createBundleBtn"/>
+                <cti:button nameKey="createBundleBtn" type="submit" styleClass="f_blocker"/>
                 <span id="inProgressMessage" style="display:none"> 
-                    <br><br><i:inline key='.bundleInProgressMsg' />
-                    <cti:button nameKey="viewProgressBtn" id="viewProgressBtn"/>
+                    <br><br><i:inline key=".bundleInProgressMsg"/>
+                    <cti:url var="viewProgressUrl" value="viewProgress"/>
+                    <cti:button nameKey="viewProgressBtn" id="viewProgressBtn" href="${viewProgressUrl}"/>
                 </span>
             </form:form>
         </cti:dataGridCell>

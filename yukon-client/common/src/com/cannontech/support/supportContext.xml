@@ -14,97 +14,97 @@
     
     <bean class="com.cannontech.support.service.impl.SupportBundleServiceImpl" />
     
-    <bean class="com.cannontech.support.service.impl.SupportBundlePaoTypeCountsSource"> 
-        <property name="sourceName" value="paoTypeCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundlePaoTypeCountsWriter"> 
+        <property name="name" value="paoTypeCsvSource"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleRawPointHistoryCountSource"> 
-        <property name="sourceName" value="rawPointCountCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleRawPointHistoryCountWriter"> 
+        <property name="name" value="rawPointCountCsvSource"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleEventLogAggregatedResultsSource"> 
-        <property name="sourceName" value="eventLogAggregatedCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleEventLogAggregatedResultsWriter"> 
+        <property name="name" value="eventLogAggregatedCsvSource"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleJobTableSource"> 
-        <property name="sourceName" value="jobTableCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleJobTableWriter"> 
+        <property name="name" value="jobTableCsvSource"/>
     </bean>
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleYukonUserTableSource"> 
-        <property name="sourceName" value="yukonUserTableCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleYukonUserTableWriter"> 
+        <property name="name" value="yukonUserTableCsvSource"/>
     </bean>
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleYukonUserGroupTableSource"> 
-        <property name="sourceName" value="yukonUserGroupTableCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleYukonUserGroupTableWriter"> 
+        <property name="name" value="yukonUserGroupTableCsvSource"/>
     </bean>
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleYukonGroupTableSource"> 
-        <property name="sourceName" value="yukonGroupTableCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleYukonGroupTableWriter"> 
+        <property name="name" value="yukonGroupTableCsvSource"/>
     </bean>
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="MACSscripts"/>
         <property name="fileOrDirName" value="/Server/MACSscripts/"/>
-        <property name="sourceName" value="macScriptsCsvSource"/>
+        <property name="name" value="macScriptsCsvSource"/>
     </bean>    
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Themes"/>
         <property name="fileOrDirName" value="/Server/Config/Themes/"/>
-        <property name="sourceName" value="themeDirectory"/>
+        <property name="name" value="themeDirectory"/>
     </bean> 
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/Config/master.cfg"/>
-        <property name="sourceName" value="masterConfigFileSource"/>
+        <property name="name" value="masterConfigFileSource"/>
     </bean>  
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/web/conf/server.xml"/>
-        <property name="sourceName" value="serverXmlFileSource"/>
+        <property name="name" value="serverXmlFileSource"/>
     </bean>  
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/Config/deviceDefinition.xml"/>
-        <property name="sourceName" value="deviceDefinitionXmlSource"/>
+        <property name="name" value="deviceDefinitionXmlSource"/>
     </bean>  
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/Config/paoDefinition.xml"/>
-        <property name="sourceName" value="paoDefinitionXmlSource"/>
+        <property name="name" value="paoDefinitionXmlSource"/>
     </bean>  
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
         <property name="zipDirectory" value="Logs"/>
         <property name="dirName" value="/Server/log/"/>
-        <property name="sourceName" value="logsFilesSource"/>
+        <property name="name" value="logsFilesSource"/>
     </bean>  
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
         <property name="zipDirectory" value="Logs/Comm"/>
         <property name="dirName" value="/Server/log/Comm/"/>
         <property name="optional" value="true"/>
-        <property name="sourceName" value="commFilesSource"/>
+        <property name="name" value="commFilesSource"/>
     </bean> 
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleFileSystemToCsvSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileSystemToCsvWriter"> 
         <property name="zipDirectory" value="Other"/>
         <property name="zipFilename" value="Yukon File Sructure.csv"/>
-        <property name="sourceName" value="yukonFileStructureCsvSource"/>
+        <property name="name" value="yukonFileStructureCsvSource"/>
         <property name="optional" value="true"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleUserGroupRoleSource">
-        <property name="sourceName" value="userGroupDaoSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleUserGroupRoleWriter">
+        <property name="name" value="userGroupDaoSource"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleEventLogDateRangeSource"> 
+    <bean class="com.cannontech.support.service.impl.SupportBundleEventLogDateRangeWriter"> 
         <property name="zipFilename" value="EventLogAllResultsInDateRange.csv"/>
-        <property name="sourceName" value="eventLogCsvSource"/>
+        <property name="name" value="eventLogCsvSource"/>
     </bean>
 
 </beans>

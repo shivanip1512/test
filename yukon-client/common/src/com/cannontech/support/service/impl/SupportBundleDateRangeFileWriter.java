@@ -10,13 +10,12 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tools.zip.ZipWriter;
 
-public class SupportBundleDateRangeFileSource extends AbstractSupportBundleSource {
+public class SupportBundleDateRangeFileWriter extends AbstractSupportBundleWriter {
     private String zipDirectory;
     private String dirName;
 
     @Override
     public void addToZip(ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
-
         File dir = new File(CtiUtilities.getYukonBase() + dirName);
         List<File> logFiles = listFilesByDateModified(dir, start, stop);
         for (File file : logFiles)
@@ -25,7 +24,6 @@ public class SupportBundleDateRangeFileSource extends AbstractSupportBundleSourc
 
     private List<File> listFilesByDateModified(File directory, ReadableInstant start,
                                                ReadableInstant stop) {
-
         File[] files = directory.listFiles();
         List<File> fileList = new ArrayList<File>();
 
@@ -49,5 +47,4 @@ public class SupportBundleDateRangeFileSource extends AbstractSupportBundleSourc
     public void setDirName(String dirName) {
         this.dirName = dirName;
     }
-
 }
