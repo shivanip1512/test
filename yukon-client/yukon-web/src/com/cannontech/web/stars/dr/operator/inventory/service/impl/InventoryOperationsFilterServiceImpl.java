@@ -123,7 +123,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             inventoryIdsFromDeviceStateDateRangeSql.append("FROM EventBase EB");
             inventoryIdsFromDeviceStateDateRangeSql.append("  JOIN EventInventory EI ON EI.EventId = EB.EventId");
             inventoryIdsFromDeviceStateDateRangeSql.append("WHERE EB.EventTimestamp").gte(rule.getDeviceStateDateFrom().toDateMidnight(timeZone));
-            inventoryIdsFromDeviceStateDateRangeSql.append("  AND EB.EventTimestamp").lt(rule.getDeviceStateDateTo().minusDays(1).toDateMidnight(timeZone));
+            inventoryIdsFromDeviceStateDateRangeSql.append("  AND EB.EventTimestamp").lt(rule.getDeviceStateDateTo().plusDays(1).toDateMidnight(timeZone));
             
             sql.append("IB.InventoryId").in(inventoryIdsFromDeviceStateDateRangeSql);
             break;
