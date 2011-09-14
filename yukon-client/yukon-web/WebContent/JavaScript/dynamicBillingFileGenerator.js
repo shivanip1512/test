@@ -68,9 +68,7 @@ function selectedFieldsChanged(){
 	// Enable/Disable left arrow
 	var selectedSelectedFields = $F(selectedFields);
     
-    
-    
-	if(selectedSelectedFields.length > 0) {
+	if(selectedSelectedFields && selectedSelectedFields.length > 0) {
 		$('removeButton').disabled = false;
 		
 		// Enable/Disable up arrow
