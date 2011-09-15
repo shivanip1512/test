@@ -177,7 +177,7 @@ void TcpConnectionManager::checkPendingConnectionBlock(vector<pending_map::itera
 
             connected.insert(id);
         }
-        else if( p.timeout > Now )
+        else if( p.timeout < Now )
         {
             boost::assign::ptr_map_insert(_inactive)(id, p);
 
