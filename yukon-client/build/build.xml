@@ -198,6 +198,13 @@
             <param name="filename" value="${yukon-web}" />
         </antcall>
     </target>
+	
+	 <target name="fdemulator">
+	        <antcall target="singlebuild" inheritAll="true">
+	            <param name="dotarget" value="build" />
+	            <param name="filename" value="${fdemulator}" />
+	        </antcall>
+	    </target>
 
     <target name="sensus-jms" depends="build">
         <ant dir="${yukon.base}/sensus-jms" target="build" />

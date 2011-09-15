@@ -20,6 +20,7 @@ import javax.swing.border.EtchedBorder;
 import com.cannontech.fdemulator.common.*;
 import com.cannontech.fdemulator.fileio.*;
 import java.net.InetAddress;
+import java.net.Inet4Address;
 
 /**
  * @author ASolberg
@@ -283,7 +284,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 				out.writeShort(VALMET_NULL);
 				out.writeBytes(getTimeStamp());
 				int nameLength = settings.isExtendedName() ? 32 : 16;
-                for (int i = 0; i < nameLength + 6; i++)
+                for (int i = 0; i < nameLength + 8; i++)
                 {
 					out.writeByte(0);
 				}
@@ -407,7 +408,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 				out.writeShort(401);
 				out.writeBytes(getTimeStamp());
 				int nameLength = settings.isExtendedName() ? 32 : 16;
-	            for (int i = 0; i < nameLength + 6; i++)
+	            for (int i = 0; i < nameLength + 8; i++)
 				{
 					out.writeByte(0);
 				}
@@ -553,8 +554,18 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 		// Create Socket
 		try
 		{
-		    
-			fdeSocket = new Socket(server, yukon_port, InetAddress.getLocalHost(), yukon_in_port);
+		    if (yukon_port==yukon_in_port) {
+		        fdeSocket = new Socket(server, yukon_port);
+		    } else {
+		        InetAddress fdr = InetAddress.getByName(server);
+		        InetAddress emulator = InetAddress.getLocalHost();
+		        
+		        System.out.println(getDebugTimeStamp() + "FDR:"+ fdr.getHostAddress() +"("+fdr.getHostName()+")");
+		        System.out.println(getDebugTimeStamp() + "EMULATOR:"+ emulator.getHostAddress() +"("+emulator.getHostName()+")");
+                SwingUtilities.invokeLater(new Logger(log, "FDR:"+ fdr.getHostAddress() +"("+fdr.getHostName()+")", 3));
+                SwingUtilities.invokeLater(new Logger(log, "EMULATOR:"+ emulator.getHostAddress() +"("+emulator.getHostName()+")", 3));
+	            fdeSocket = new Socket(server.equalsIgnoreCase("127.0.0.1")?InetAddress.getLocalHost():fdr, yukon_port, InetAddress.getLocalHost(), yukon_in_port);
+		    }
 
 			SwingUtilities.invokeLater(new Logger(log, "Connected to server socket", 0));
 		} catch (Exception e)
@@ -1068,7 +1079,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 							SwingUtilities.invokeLater(new Logger(log, "SENT: heartbeat", 1));
 						}
 						num = in.read(time, 0, 18);
-						in.read(pointName, 0, nameLength + 6);
+						in.read(pointName, 0, nameLength + 8);
 						FileWriter traffic = new FileWriter(trafficFile, true);
 						traffic.write(getDebugTimeStamp() + "RECV              " + "Heartbeat messsage" + "\n");
 						traffic.close();
@@ -1076,7 +1087,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 						out.writeShort(VALMET_NULL);
 						out.writeBytes(getTimeStamp());
 						
-                        for (int i = 0; i < nameLength + 6; i++)
+                        for (int i = 0; i < nameLength + 8; i++)
 						{
 							out.writeByte(0);
 						}
@@ -1568,12 +1579,8 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
         {
             out.writeShort(VALMET_CONTROL);
             out.writeBytes(getTimeStamp());
-            out.writeBytes(nextpoint.getPointName());
-            int nameLength = settings.isExtendedName() ? 32 : 16;
-            for (int j = 0; j < (nameLength - nextpoint.getPointName().length()); j++)
-            {
-                out.writeByte(0);
-            }
+            writeName(out, nextpoint);
+            
             if (nextpoint.getPointType().equalsIgnoreCase("Analog Output")) 
             {
                 out.writeFloat(value);
@@ -1613,12 +1620,8 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	        
     	    out.writeShort(VALMET_VALUE);
             out.writeBytes(getTimeStamp());
-            out.writeBytes(nextpoint.getPointName());
-            int nameLength = settings.isExtendedName() ? 32 : 16;
-            for (int j = 0; j < (nameLength - nextpoint.getPointName().length()); j++)
-            {
-                out.writeByte(0);
-            }
+            writeName(out, nextpoint);
+            
     
             if ("RANDOM".equalsIgnoreCase(nextpoint.getPointFunction()))
             {
@@ -1742,12 +1745,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
         {
             out.writeShort(VALMET_STATUS);
             out.writeBytes(getTimeStamp());
-            out.writeBytes(nextpoint.getPointName());
-            int nameLength = settings.isExtendedName() ? 32 : 16;
-            for (int j = 0; j < (nameLength - nextpoint.getPointName().length()); j++)
-            {
-                out.writeByte(0);
-            }
+            writeName(out, nextpoint);
             out.writeShort(flipFlopValue);
             out.writeShort(0);
             out.writeShort(0);
@@ -1771,4 +1769,26 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
         }
 	}
 
+	
+	public void writeName(DataOutputStream out, ValmetPoint nextpoint) {
+	    try {
+	        int nameLength = settings.isExtendedName() ? 32 : 16;
+           
+	        if (nextpoint.getPointName().length() > nameLength) {
+	            out.writeBytes(nextpoint.getPointName().substring(0,nameLength-1));
+	        } else {
+    	        out.writeBytes(nextpoint.getPointName());
+                
+    	        for (int j = 0; j < (nameLength - nextpoint.getPointName().length()); j++)
+                {
+                    out.writeByte(0);
+                }
+	        }
+	    } catch (Exception e)
+        {
+            System.out.println(getDebugTimeStamp() + "Error writing PointName to traffic stream ");
+        }
+            
+	}
+	    
 }
