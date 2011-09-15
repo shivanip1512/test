@@ -16,20 +16,10 @@
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
-        concurrency="3" 
+        concurrency="2" 
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest"/>
-        <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveProcessingRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveProcessingRequest"/>
-    </jms:listener-container>
-
-    <jms:listener-container 
-        connection-factory="connectionFactory" 
-        destination-type="queue"
-        concurrency="1"
-        container-type="simple"
-        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-        <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest.create" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest_create"/>
     </jms:listener-container>
 
 </beans>

@@ -1,18 +1,16 @@
 package com.cannontech.amr.rfn.endpoint;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,7 +21,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
-import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveProcessingRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveResponse;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveStartupNotification;
@@ -50,8 +47,8 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 
@@ -77,22 +74,124 @@ public class MeterReadingArchiveRequestListener {
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnMeterIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
+    private List<Worker> workers;
 
     private AtomicInteger meterLookupAttempt = new AtomicInteger();
-    private AtomicInteger meterLookupCacheMiss = new AtomicInteger();
-    private AtomicInteger meterLookupError = new AtomicInteger();
     private AtomicInteger newMeterCreated = new AtomicInteger();
-    private AtomicInteger meterFoundOnCreate = new AtomicInteger();
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     private AtomicInteger archivedReadings = new AtomicInteger();
+    
+    private class Worker extends Thread {
+        private ArrayBlockingQueue<RfnMeterReadingArchiveRequest> inQueue;
+        private volatile boolean shutdown = false;
+        
+        public Worker(int workerNumber, int queueSize) {
+            super("RfnProcessor-" + workerNumber);
+            inQueue = new ArrayBlockingQueue<RfnMeterReadingArchiveRequest>(queueSize);
+        }
+
+        public void queue(RfnMeterReadingArchiveRequest request) throws InterruptedException {
+            if (shutdown) {
+                throw new IllegalStateException("worker has already shutdown");
+            }
+            inQueue.put(request);
+            if (shutdown) {
+                // oops, that was awkward timing
+                drainQueue();
+            }
+        }
+        
+        private void drainQueue() {
+            // this method is called from multiple places, so it can't really do much
+            inQueue.clear();
+        }
+
+        @Override
+        public void run() {
+            
+            while (true) {
+                try {
+                    RfnMeterReadingArchiveRequest request = inQueue.take();
+                    processInitial(request);
+                } catch (InterruptedException e) {
+                    log.warn("received shutdown signal, queue size: " + inQueue.size());
+                    break;
+                } catch (Exception e) {
+                    // consider using more "named" exceptions throughout this code
+                    log.warn("Unknown exception while processing request", e);
+                }
+            }
+        }
+
+        private void processInitial(RfnMeterReadingArchiveRequest archiveRequest) {
+            RfnMeterIdentifier meterIdentifier = getMeterIdentifier(archiveRequest.getData());
+            RfnMeter rfnMeter;
+            try {
+                meterLookupAttempt.incrementAndGet();
+                rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
+            } catch (NotFoundException e1) {
+                // looks like we need to create the meter
+                rfnMeter = processCreation(archiveRequest, meterIdentifier);
+            }
+            
+            processPointDatas(rfnMeter, archiveRequest);
+        }
+
+        private RfnMeter processCreation(RfnMeterReadingArchiveRequest archiveRequest,
+                                     RfnMeterIdentifier meterIdentifier) {
+            try {
+                RfnMeter rfnMeter = createMeter(meterIdentifier);
+                newMeterCreated.incrementAndGet();
+                LogHelper.debug(log, "Created new meter: %s", rfnMeter);
+                return rfnMeter;
+            } catch (IgnoredTemplateException e) {
+                throw new RuntimeException("Unable to create meter for " + meterIdentifier + " because template is ignored", e);
+            } catch (Exception e) {
+                LogHelper.debug(log, "Creation failed for %s: %s", meterIdentifier, e);
+                throw new RuntimeException("Creation failed for " + meterIdentifier, e);
+            }
+        }
+        
+        public void processPointDatas(RfnMeter rfnMeter, RfnMeterReadingArchiveRequest archiveRequest) {
+            RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(rfnMeter, archiveRequest.getData());
+            List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
+            rfnMeterReadService.processMeterReadingDataMessage(meterPlusReadingData, messagesToSend);
+
+            dynamicDataSource.putValues(messagesToSend);
+            archivedReadings.addAndGet(messagesToSend.size());
+
+            sendAcknowledgement(archiveRequest);
+            processedArchiveRequest.incrementAndGet();
+            LogHelper.debug(log, "%d PointDatas generated for RfnMeterReadingArchiveRequest", messagesToSend.size());
+        }
+
+        public void shutdown() {
+            // shutdown mechanism assumes that 
+            shutdown  = true;
+            this.interrupt();
+            drainQueue();
+        }
+    }
     
     @PostConstruct
     public void startup() {
         RfnMeterReadingArchiveStartupNotification response = new RfnMeterReadingArchiveStartupNotification();
+        // setup as many workers as requested
+        int workerCount = configurationSource.getInteger("RFN_METER_DATA_WORKER_COUNT", 5);
+        int queueSize = configurationSource.getInteger("RFN_METER_DATA_WORKER_QUEUE_SIZE", 500);
+        ImmutableList.Builder<Worker> workerBuilder = ImmutableList.builder();
+        for (int i = 0; i < workerCount; ++i) {
+            Worker worker = new Worker(i, queueSize);
+            workerBuilder.add(worker);
+            worker.start();
+        }
+        workers = workerBuilder.build();
+        
+        
         jmsTemplate.convertAndSend("yukon.notif.obj.amr.rfn.MeterReadingArchiveStartupNotification", response);
         meterTemplatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
         
-        Builder<String> ignoredTemplateBuilder = ImmutableSet.builder();
+        ImmutableSet.Builder<String> ignoredTemplateBuilder = ImmutableSet.builder();
         String templatesToIgnoreConfigStr = configurationSource.getString("RFN_METER_TEMPLATES_TO_IGNORE", "");
         String[] ignoredTemplates = StringUtils.splitByWholeSeparator(templatesToIgnoreConfigStr, ",");
         for (String template : ignoredTemplates) {
@@ -116,125 +215,28 @@ public class MeterReadingArchiveRequestListener {
         });
     }
     
-    public void handleArchiveRequestMessage(Message message) {
-        if (message instanceof ObjectMessage) {
-            ObjectMessage objMessage = (ObjectMessage) message;
-            try {
-                Serializable object = objMessage.getObject();
-                if (object instanceof RfnMeterReadingArchiveRequest) {
-                    RfnMeterReadingArchiveRequest archiveRequest = (RfnMeterReadingArchiveRequest) object;
-                    handleArchiveRequest(archiveRequest);
-                    message.acknowledge();
-                }
-            } catch (JMSException e) {
-                log.warn("Unable to extract object from message", e);
-            }
+    @PreDestroy
+    public void shutdown() {
+        // should handle listener container here as well
+        
+        for (Worker worker : workers) {
+            worker.shutdown();
         }
     }
-
-    /**
-     * Process archive requests from Network Manager. This step only involves determining
-     * what if any device is associated with the archive request. If a device is found,
-     * the device and the original request are forwarded to the 
-     * yukon.rr.obj.amr.rfn.MeterReadingArchiveProcessingRequest queue.
-     * If the device is not found, the request is forwarded to the 
-     * yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest.create queue.
-     * 
-     * This may run on multiple threads and on multiple JVMs.
-     */
+    
     public void handleArchiveRequest(RfnMeterReadingArchiveRequest archiveRequest) {
+        // determine which worker will handle the request by hashing the serial number
+        int hashCode = archiveRequest.getData().getSensorSerialNumber().hashCode();
+        int workerIndex = hashCode % workers.size();
+        Worker worker = workers.get(workerIndex);
         try {
-            LogHelper.debug(log, "Received RfnMeterReadingArchiveRequest: %s", archiveRequest);
-
-            RfnMeterIdentifier meterIdentifier = getMeterIdentifier(archiveRequest.getData());
-
-            try {
-                meterLookupAttempt.incrementAndGet();
-                RfnMeter rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
-                queueForArchiveProcessing(rfnMeter, archiveRequest);
-            } catch (NotFoundException e) {
-                meterLookupError.incrementAndGet();
-                LogHelper.debug(log, "unable to find existing meter, send to create queue: %s", meterIdentifier.toString());
-                
-                jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest.create", archiveRequest);
-            }
-            
-
-        } catch (Exception e) {
-            if (log.isDebugEnabled()) {
-                log.debug("caught exception in handleArchiveRequest", e);
-            } else {
-                log.warn("caught exception in handleArchiveRequest: " + e.toString());
-            }
+            worker.queue(archiveRequest);
+        } catch (InterruptedException e) {
+            log.warn("interrupted while queuing archive request", e);
+            Thread.currentThread().interrupt();
         }
     }
 
-    private void queueForArchiveProcessing(RfnMeter rfnMeter,
-            RfnMeterReadingArchiveRequest archiveRequest) {
-        RfnMeterReadingArchiveProcessingRequest processingRequest = new RfnMeterReadingArchiveProcessingRequest();
-        processingRequest.setOriginalRequest(archiveRequest);
-        processingRequest.setMeter(rfnMeter);
-        
-        jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveProcessingRequest", processingRequest);
-    }
-    
-    /**
-     * Process archive requests that have already been determined to be for a 
-     * device that did not exist at the moment it was put on this queue.
-     * 
-     * This queue should be processed by a single thread in the entire system.
-     */
-    public void handleArchiveRequest_create(RfnMeterReadingArchiveRequest archiveRequest) {
-        LogHelper.debug(log, "Received RfnMeterReadingArchiveRequest on create queue: %s", archiveRequest);
-        
-        RfnMeterIdentifier meterIdentifier = getMeterIdentifier(archiveRequest.getData());
-        
-        RfnMeter rfnMeter;
-        try {
-            try {
-                rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
-                meterFoundOnCreate.incrementAndGet();
-                LogHelper.debug(log, "Found matching meter on new meter lookup: %s", rfnMeter);
-                queueForArchiveProcessing(rfnMeter, archiveRequest);
-                return;
-            } catch (NotFoundException e) {
-                // fall through
-            }
-            rfnMeter = createMeter(meterIdentifier);
-            newMeterCreated.incrementAndGet();
-            LogHelper.debug(log, "Created new meter: %s", rfnMeter);
-            queueForArchiveProcessing(rfnMeter, archiveRequest);
-            return;
-
-        } catch (IgnoredTemplateException e) {
-            LogHelper.debug(log, "Unable to create meter for %s because template is ignored", meterIdentifier);
-        } catch (Exception e) {
-            LogHelper.debug(log, "Creation failed for %s: %s", meterIdentifier, e);
-            if (log.isTraceEnabled()) {
-                log.trace("stack dump of creation failure", e);
-            }
-        }
-    }
-
-    /**
-     * Processes archive requests once an actual device (PaoIdentifier) has been determined.
-     * See RfnMeterReadService for a description of this process.
-     * 
-     * This may run on multiple threads and on multiple JVMs.
-     */
-    public void handleArchiveProcessingRequest(RfnMeterReadingArchiveProcessingRequest processingRequest) {
-        RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(processingRequest.getMeter(), processingRequest.getOriginalRequest().getData());
-        List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
-        rfnMeterReadService.processMeterReadingDataMessage(meterPlusReadingData, messagesToSend);
-
-        dynamicDataSource.putValues(messagesToSend);
-        archivedReadings.addAndGet(messagesToSend.size());
-
-        sendAcknowledgement(processingRequest.getOriginalRequest());
-        processedArchiveRequest.incrementAndGet();
-        LogHelper.debug(log, "%d PointDatas generated for RfnMeterReadingArchiveRequest", messagesToSend.size());
-    }
-    
     private RfnMeter createMeter(final RfnMeterIdentifier meterIdentifier) {
         RfnMeter result = TransactionTemplateHelper.execute(transactionTemplate, new Callable<RfnMeter>() {
 
@@ -366,23 +368,8 @@ public class MeterReadingArchiveRequestListener {
     }
     
     @ManagedAttribute
-    public int getMeterLookupCacheMiss() {
-        return meterLookupCacheMiss.get();
-    }
-    
-    @ManagedAttribute
-    public int getMeterLookupError() {
-        return meterLookupError.get();
-    }
-    
-    @ManagedAttribute
     public int getNewMeterCreated() {
         return newMeterCreated.get();
-    }
-    
-    @ManagedAttribute
-    public int getMeterFoundOnCreate() {
-        return meterFoundOnCreate.get();
     }
     
     @ManagedAttribute
