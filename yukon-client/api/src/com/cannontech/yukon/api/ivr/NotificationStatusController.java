@@ -57,7 +57,7 @@ public class NotificationStatusController {
     
     @RequestMapping(method = RequestMethod.POST)
     public void callDisconnect(String yukonCallToken, Writer response) throws IOException {
-        log.debug("received callComplete for " + yukonCallToken);
+        log.debug("received callDisconnect for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
         notifClientConnection.sendCallEvent(yukonCallToken, NotifCallEvent.DISCONNECT);
         response.write("exitEvent\n");
@@ -65,7 +65,7 @@ public class NotificationStatusController {
     
     @RequestMapping(method = RequestMethod.POST)
     public void callFailed(String yukonCallToken, Writer response) throws IOException {
-        log.debug("received callComplete for " + yukonCallToken);
+        log.debug("received callFailed for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
         notifClientConnection.sendCallEvent(yukonCallToken, NotifCallEvent.FAILURE);
         response.write("exitEvent\n");

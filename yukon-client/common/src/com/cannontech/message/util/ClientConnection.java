@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.Iterables;
@@ -506,6 +507,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
      */
     @Override
     public void write(Message o) {
+        LogHelper.debug(logger, "writing msg: %s", o);
         Message msg = o;
         if (!isValid()) {
             throw new ConnectionException("Unable to write message (" + msg +

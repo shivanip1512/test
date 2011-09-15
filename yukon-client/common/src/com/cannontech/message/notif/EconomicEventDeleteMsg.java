@@ -7,4 +7,13 @@ public class EconomicEventDeleteMsg extends Message {
     public boolean deleteStart = true;
     public boolean deleteStop = true;
 
+    @Override
+    public String toString() {
+        return String
+            .format("EconomicEventDeleteMsg [economicEventId=%s, deleteStart=%s, deleteStop=%s, parent=%s]",
+                    economicEventId,
+                    deleteStart,
+                    deleteStop,
+                    super.toString());
+    }
 }

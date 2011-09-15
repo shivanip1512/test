@@ -117,4 +117,16 @@ public void setToken(int newToken) {
 public void setUserName(java.lang.String newUserName) {
 	userName = newUserName;
 }
+
+@Override
+public String toString() {
+    return String
+        .format("Message [timeStamp=%s, priority=%s, SOE_Tag=%s, userName=%s, token=%s, source=%s]",
+                timeStamp,
+                priority,
+                SOE_Tag,
+                userName,
+                token,
+                source);
+}
 }

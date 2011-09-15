@@ -24,9 +24,6 @@ public class NotifEmailMsg extends Message
 
 	private Vector attachments = null; //contains NotifEmailAttchMsg instances 
 
-	/**
-	 * NotifEmailMsg constructor comment.
-	 */
 	public NotifEmailMsg() {
 		super();
 	}
@@ -52,108 +49,76 @@ public class NotifEmailMsg extends Message
 		return (NotifEmailAttchMsg)attachments.get(i);
 	}
 
-	/**
-	 * @return
-	 */
 	public String getBody()
 	{
 		return body;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getSubject()
 	{
 		return subject;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getTo()
 	{
 		return to;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getTo_BCC()
 	{
 		return to_BCC;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getTo_CC()
 	{
 		return to_CC;
 	}
 
-	/**
-	 * @param vector
-	 */
 	public void setAttachments(Vector vector)
 	{
 		attachments = vector;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setBody(String string)
 	{
 		body = string;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setSubject(String string)
 	{
 		subject = string;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setTo(String string)
 	{
 		to = string;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setTo_BCC(String string)
 	{
 		to_BCC = string;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setTo_CC(String string)
 	{
 		to_CC = string;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getNotifGroupID()
 	{
 		return notifGroupID;
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setNotifGroupID(int i)
 	{
 		notifGroupID = i;
 	}
 
+    @Override
+    public String toString() {
+        return String.format("NotifEmailMsg [notifGroupID=%s, subject=%s, parent=%s]",
+                             notifGroupID,
+                             subject,
+                             super.toString());
+    }
 }

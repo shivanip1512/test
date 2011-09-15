@@ -1,5 +1,6 @@
 package com.cannontech.message.notif;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import com.cannontech.message.util.Message;
@@ -18,4 +19,17 @@ public class ProgramActionMsg extends Message {
         super();
     }
 
+    @Override
+    public String toString() {
+        return String
+            .format("ProgramActionMsg [programId=%s, eventDisplayName=%s, action=%s, startTime=%s, stopTime=%s, notificationTime=%s, customerIds=%s, parent=%s]",
+                    programId,
+                    eventDisplayName,
+                    action,
+                    startTime,
+                    stopTime,
+                    notificationTime,
+                    Arrays.toString(customerIds),
+                    super.toString());
+    }
 }
