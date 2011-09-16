@@ -38,6 +38,7 @@ public enum DeviceRequestType {
     VEE_RE_READ("Validation Engine Automatic Read", "Command sent to meter to validate previous readings", false),
     
     ARCHIVE_DATA_ANALYSIS_LP_READ("Archive Data Analysis Load Profile Read", "Command sent to MCT to read load profile data that was previously missed", false),
+    MULTISPEAK_METER_READ_EVENT("MultiSpeak Meter Read Event", "Command sent to meters due to a MultiSpeak request.",false),
     ;
     
     private String shortName;

@@ -478,7 +478,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
         };
-        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, UserUtils.getYukonUser());
+        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
         
         return mspObjectDao.toErrorObject(errorObjects);
     }
