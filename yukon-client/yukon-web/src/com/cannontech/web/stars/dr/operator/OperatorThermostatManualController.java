@@ -22,7 +22,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
@@ -87,7 +86,6 @@ public class OperatorThermostatManualController {
         SearchResult<ThermostatEvent> result = new SearchResult<ThermostatEvent>().pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         modelMap.addAttribute("searchResult", result);
         modelMap.addAttribute("eventHistoryList", result.getResultList());
-        modelMap.addAttribute("scheduleableThermostatType", SchedulableThermostatType.getByHardwareType(thermostat.getType()));
         
         if(thermostatIdsList.size() > 1){
             modelMap.addAttribute("displayName", new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatManual.multipleLabel"));

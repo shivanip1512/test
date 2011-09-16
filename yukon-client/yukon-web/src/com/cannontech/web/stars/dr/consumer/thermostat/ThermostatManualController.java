@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.temperature.Temperature;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
@@ -36,6 +37,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.hardware.validator.ThermostatValidator;
 
 /**
  * Controller for Consumer-side Manual thermostat operations
@@ -54,7 +56,9 @@ public class ThermostatManualController extends AbstractThermostatController {
     
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            LiteYukonUser user, ModelMap map) throws Exception {
+                       LiteYukonUser user, 
+                       ModelMap map,
+                       HttpServletRequest request) throws Exception {
         
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
@@ -62,7 +66,6 @@ public class ThermostatManualController extends AbstractThermostatController {
         // Get the first (or only) thermostat and add to model
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         map.addAttribute("thermostat", thermostat);
-        map.addAttribute("scheduleableThermostatType", SchedulableThermostatType.getByHardwareType(thermostat.getType()));
 
         ThermostatManualEvent event;
         if (thermostatIds.size() == 1) {
@@ -94,31 +97,30 @@ public class ThermostatManualController extends AbstractThermostatController {
     }
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
-    public String saveLabel(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String displayLabel, LiteYukonUser user, ModelMap map) throws Exception {
-
-        if (thermostatIds.size() != 1) {
-            throw new IllegalArgumentException("You can only change the label of 1 thermostat at a time.");
-        }
+    public String saveLabel(ModelMap map,
+                            @ModelAttribute("thermostat") Thermostat thermostat,
+                            BindingResult bindingResult,
+                            String displayLabel, 
+                            FlashScope flashScope,
+                            LiteYukonUser user) throws Exception {
         
-        int thermostatId = thermostatIds.get(0);
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-
         accountEventLogService.thermostatLabelChangeAttemptedByConsumer(user,
                                                                         thermostat.getSerialNumber(),
                                                                         thermostat.getDeviceLabel(),
                                                                         displayLabel);
         
-        accountCheckerService.checkInventory(user, 
-                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(user, thermostat.getId());
         
+        ThermostatValidator validator = new ThermostatValidator();
+        validator.validate(thermostat, bindingResult);
+        if(bindingResult.hasErrors()){
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }else{
+            inventoryDao.updateLabel(thermostat);
+        }
 
-
-        thermostat.setDeviceLabel(displayLabel);
-
-        inventoryDao.save(thermostat);
-
-        map.addAttribute("thermostatIds", thermostatId);
+        map.addAttribute("thermostatIds", thermostat.getId());
 
         return "redirect:/spring/stars/consumer/thermostat/view";
     }

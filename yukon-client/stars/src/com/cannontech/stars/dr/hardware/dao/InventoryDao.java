@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.hardware.dao;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -62,10 +63,10 @@ public interface InventoryDao {
     public Thermostat getThermostatById(int thermostatId);
     
     /**
-     * Method to save a thermostat
+     * Method to update the label of a thermostat
      * @param thermostat - Thermostat to save
      */
-    public void save(Thermostat thermostat);
+    public void updateLabel(Thermostat thermostat) throws SQLException;
 
     public List<Integer> getInventoryIdsByAccount(int accountId);
     

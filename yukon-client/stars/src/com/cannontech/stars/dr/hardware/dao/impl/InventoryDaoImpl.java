@@ -270,7 +270,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     @Transactional
-    public void save(Thermostat thermostat) {
+    public void updateLabel(Thermostat thermostat) throws SQLException {
 
         StringBuilder sql = new StringBuilder("UPDATE InventoryBase");
         sql.append(" SET DeviceLabel = ?");

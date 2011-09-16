@@ -22,12 +22,12 @@
             Yukon.ThermostatManualEditor.init({
                 thermostat: {
                     heat: {
-                        upper: new Temperature({degrees: parseFloat(${scheduleableThermostatType.upperLimitHeat.value}), unit:'F'}),
-                        lower: new Temperature({degrees: parseFloat(${scheduleableThermostatType.lowerLimitHeat.value}), unit:'F'})
+                        upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitHeat.value}), unit:'F'}),
+                        lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'})
                     },
                     cool: {
-                        upper: new Temperature({degrees: parseFloat(${scheduleableThermostatType.upperLimitCool.value}), unit:'F'}),
-                        lower: new Temperature({degrees: parseFloat(${scheduleableThermostatType.lowerLimitCool.value}), unit:'F'})
+                        upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitCool.value}), unit:'F'}),
+                        lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'})
                     },
                     temperature: new Temperature({degrees: parseFloat(${event.previousTemperature.value}), unit: 'F'}),
                     mode: '${event.mode}',
@@ -64,14 +64,13 @@
         
         <!-- Thermostat settings table -->
         <div class="fl oh">
-            <tags:thermostatManualEditor actionPath="/spring/stars/consumer/thermostat/manual" 
-                                             temperatureUnit="${temperatureUnit}"
-                                             event="${event}"
-                                             thermostatIds="${thermostatIds}"
-                                             scheduleableThermostatType="${scheduleableThermostatType}"
-                                             accountId="${accountId}"
-                                             thermostatLabel="${label}"
-                                             canEditLabel="true"/>
+            <tags:thermostatManualEditor thermostat="${thermostat}"
+                                         actionPath="/spring/stars/consumer/thermostat/manual" 
+                                         temperatureUnit="${temperatureUnit}"
+                                         event="${event}"
+                                         thermostatIds="${thermostatIds}"
+                                         accountId="${accountId}"
+                                         canEditLabel="true"/>
         </div>
                 
         <div class="plainText oh">

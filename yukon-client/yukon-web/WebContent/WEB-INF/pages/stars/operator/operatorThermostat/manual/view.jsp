@@ -23,12 +23,12 @@ Event.observe(window, 'load', function(){
     Yukon.ThermostatManualEditor.init({
         thermostat: {
             heat: {
-                upper: new Temperature({degrees: parseFloat(${scheduleableThermostatType.upperLimitHeat.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${scheduleableThermostatType.lowerLimitHeat.value}), unit:'F'})
+                upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitHeat.value}), unit:'F'}),
+                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'})
             },
             cool: {
-                upper: new Temperature({degrees: parseFloat(${scheduleableThermostatType.upperLimitCool.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${scheduleableThermostatType.lowerLimitCool.value}), unit:'F'})
+                upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitCool.value}), unit:'F'}),
+                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'})
             },
             temperature: new Temperature({degrees: parseFloat(${event.previousTemperature.value}), unit: 'F'}),
             mode: '${event.mode}',
@@ -73,12 +73,11 @@ Event.observe(window, 'load', function(){
 							    	</c:otherwise>
 							    </c:choose>
                                 
-                                <tags:thermostatManualEditor actionPath="/spring/stars/operator/thermostatManual/save" 
+                                <tags:thermostatManualEditor thermostat="${thermostat}"
+                                                             actionPath="/spring/stars/operator/thermostatManual/save" 
                                                              temperatureUnit="${temperatureUnit}"
                                                              event="${event}"
                                                              thermostatIds="${thermostatIds}"
-                                                             thermostatLabel="${thermostatNames[0]}"
-                                                             scheduleableThermostatType="${scheduleableThermostatType}"
                                                              accountId="${accountId}" />
 				            </div>
 				            <div style="padding-left:20px;font-size:11px;" class="oh">

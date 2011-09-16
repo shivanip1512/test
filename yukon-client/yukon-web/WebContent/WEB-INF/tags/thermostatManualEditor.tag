@@ -1,6 +1,5 @@
+<%@ attribute name="thermostat" required="true" type="com.cannontech.stars.dr.hardware.model.Thermostat" %>
 <%@ attribute name="event" required="true" type="com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent"%>
-<%@ attribute name="scheduleableThermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
-<%@ attribute name="thermostatLabel" required="true" type="java.lang.String" description="The label of this thermostat"%>
 <%@ attribute name="canEditLabel" required="false" type="java.lang.Boolean" description="Allow editing of the Thermostat label?  (defaults to false)"%>
 <%@ attribute name="thermostatIds" required="true" type="java.lang.String" description="id(s) of the thermostat(s) we are sending manual commands to."%>
 <%@ attribute name="accountId" required="true" type="java.lang.String" description="ID of the account we are operating on." %>
@@ -13,28 +12,43 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="boxContainer manualThermostat box fl">
     <div class="boxContainer_titleBar">
         <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
         <c:choose>
             <c:when test="${not multipleThermostatsSelected and canEditLabel}">
-                <form action="/spring/stars/consumer/thermostat/saveLabel" method="post">
+                <form:form action="/spring/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
                     <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
+                    <form:hidden path="id"/>
+                    <form:hidden path="serialNumber"/>
+                    <form:hidden path="type"/>
+                    <form:hidden path="category"/>
+                    <form:hidden path="routeId"/>
+                    <form:hidden path="status"/>
+                    
                     <span id="editName" style="display: none;">
-                        <input id="thermostatLabel" name="displayLabel" type="text" value="${thermostatLabel}" />
+                        <form:input path="deviceLabel" maxlength="60" />
                         <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
                         <cti:button nameKey="cancel" styleClass="cancelLabelEdit"/>
                     </span> 
                     <span id="thermostatName">
-                        ${thermostatLabel}
+                        <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
                         <a href="javascript:void(0)" class="editLabel"><i:inline key=".edit" /></a>
                     </span>
-                </form>
+                </form:form>
             </c:when>
             <c:otherwise>
                 <span id="thermostatName">
-                    ${thermostatLabel}
+                    <c:choose>
+                        <c:when test="${multipleThermostatsSelected}">
+                            <i:inline key="yukon.web.modules.operator.thermostatManual.multipleLabel"/>
+                        </c:when>
+                        <c:otherwise>
+                            <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
+                        </c:otherwise>
+                    </c:choose>
                 </span>
             </c:otherwise>
         </c:choose>
@@ -72,7 +86,7 @@
                 <h2><i:inline key="yukon.web.modules.operator.thermostatManual.mode" /></h2>
                 
                 <ul class="box">
-                <c:forEach var="thermostatMode" items="${scheduleableThermostatType.supportedModes}">
+                <c:forEach var="thermostatMode" items="${thermostat.schedulableThermostatType.supportedModes}">
                     <li class="mode ${(event.runProgram)? '' : (event.mode eq thermostatMode? 'selected' : '' )}" mode="${thermostatMode}">
                         <i:inline key="yukon.web.modules.operator.thermostatManual.mode.${thermostatMode}" />
                     </li>
@@ -86,7 +100,7 @@
                 <h2><i:inline key="yukon.web.modules.operator.thermostatManual.fan" /></h2>
                 
                 <ul class="box">
-                <c:forEach var="fanState" items="${scheduleableThermostatType.supportedFanStates}">
+                <c:forEach var="fanState" items="${thermostat.schedulableThermostatType.supportedFanStates}">
                     <li class="state fan ${(event.runProgram)? '' : (event.fanStateString eq fanState? 'selected' : '' )}" state="${fanState}">
                         <i:inline key=".fan.${fanState}" />
                     </li>
