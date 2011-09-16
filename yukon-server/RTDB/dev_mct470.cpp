@@ -1900,12 +1900,7 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
 {
     bool found = false;
     INT  nRet  = NoError;
-    string tester;
 
-    INT            function;
-    unsigned short stub;
-
-    // The following switch fills in the BSTRUCT's Function, Length, and IO parameters.
     switch(parse.getiValue("scantype"))
     {
         case ScanRateIntegrity:
@@ -1919,26 +1914,16 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
 
-            DeviceConfigSPtr deviceConfig = getDeviceConfig();
-            //MCTSystemOptionsSPtr options;
-
             CtiString originalString = pReq->CommandString();
             boost::regex re_scan ("scan integrity");
-
-           /* if( deviceConfig )
-            {
-                options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
-            }
-             */
 
             if( getType() == TYPEMCT470 )
             {
                 //  Since this is an MCT-470, read the channel config to optimize the next scan
                 if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
                 {
-                    function = EmetconProtocol::GetConfig_ChannelSetup;
-                    found = getOperation(function, OutMessage->Buffer.BSt);
-                    if( found )
+                    const unsigned function = EmetconProtocol::GetConfig_ChannelSetup;
+                    if( getOperation(function, OutMessage->Buffer.BSt) )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
                         CtiString createdString = originalString;
@@ -1953,48 +1938,41 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
                     }
                 }
 
-                /*
-            if( !options || (options && ( ciStringEqual(options->getValueFromKey(DemandMetersToScan), "all")
-                          || ciStringEqual(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
-            {*/
-                if( hasPulseInputs() )
+                //  if the meter has pulse inputs OR doesn't have any IED inputs configured
+                if( hasPulseInputs() || !hasIedInputs() )
                 {
-                //Read the pulse demand
-                    function = EmetconProtocol::GetValue_Demand;
-                found = getOperation(function, OutMessage->Buffer.BSt);
+                    //Read the pulse demand
+                    const unsigned function = EmetconProtocol::GetValue_Demand;
+                    if( getOperation(function, OutMessage->Buffer.BSt) )
+                    {
+                        OutMessage->Sequence  = function;     // Helps us figure it out later!
 
-                if( found )
-                {
-                    OutMessage->Sequence  = function;     // Helps us figure it out later!
+                        CtiString createdString = originalString;
+                        CtiString replaceString = "getvalue demand";
 
-                    CtiString createdString = originalString;
-                    CtiString replaceString = "getvalue demand";
+                        createdString.toLower();
+                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
-                    createdString.toLower();
-                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
-                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
 
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-                }
-                else
-                {
-                    nRet = NoMethod;
-                }
+                        found = true;
+                    }
+                    else
+                    {
+                        nRet = NoMethod;
+                    }
                 }
             }
 
-            /*if( !options || (options && ( ciStringEqual(options->getValueFromKey(DemandMetersToScan), "all")
-                          || ciStringEqual(options->getValueFromKey(DemandMetersToScan), "ied"))) )
-            {*/
             if( hasIedInputs() )
             {
                 if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
                 {
                     //If we need to read out the time, do so.
-                    function = EmetconProtocol::GetConfig_IEDTime;
-                    found = getOperation(function, OutMessage->Buffer.BSt);
-                    if( found )
+                    const unsigned function = EmetconProtocol::GetConfig_IEDTime;
+                    if( getOperation(function, OutMessage->Buffer.BSt) )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
                         CtiString createdString = originalString;
@@ -2009,15 +1987,15 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
                     }
                     else
                     {
+                        //  IED scans on meters with this version of firmware are invalid without current IED time.
+                        //  We should let any pulse scan continue, but yell about the IED scan.
                         nRet = NoMethod;
                     }
                 }
 
                 //Read the IED demand
-                function = EmetconProtocol::GetValue_IEDDemand;
-                found = getOperation(function, OutMessage->Buffer.BSt);
-
-                if( found )
+                const unsigned function = EmetconProtocol::GetValue_IEDDemand;
+                if( getOperation(function, OutMessage->Buffer.BSt) )
                 {
                     OutMessage->Sequence  = function;     // Helps us figure it out later!
                     CtiString createdString = originalString;
@@ -2029,16 +2007,14 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
 
                     outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
                     incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+
+                    found = true;
                 }
                 else
                 {
                     nRet = NoMethod;
                 }
             }
-            /*else
-            {
-                nRet = NoConfigData;
-            }*/
 
             if( OutMessage )
             {
@@ -2050,9 +2026,7 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
         }
         default:
         {
-            found = true; //This is an odd setting, but it flows right, and we did find the right execute scan to run
-            nRet = Inherited::executeScan(pReq, parse, OutMessage, vgList, retList, outList);
-            break;
+            return Inherited::executeScan(pReq, parse, OutMessage, vgList, retList, outList);
         }
     }
 
@@ -2063,6 +2037,7 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
 
     return nRet;
 }
+
 
 INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
                                    CtiCommandParser &parse,

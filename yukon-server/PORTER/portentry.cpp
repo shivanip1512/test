@@ -789,11 +789,26 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
 
             pReq->setMessagePriority(OutMessage->Priority);
 
-            /*
-             *  We will execute based upon the data in the request....
-             */
+            try
+            {
+                /*
+                 *  We will execute based upon the data in the request....
+                 */
 
-            status = Dev->beginExecuteRequestFromTemplate(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);
+                status = Dev->beginExecuteRequestFromTemplate(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);
+            }
+            catch(...)
+            {
+                status = ErrorInvalidRequest;
+
+                {
+                    CtiTime NowTime;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
+                    dout << NowTime << "   Command: " << pReq->CommandString() << endl;
+                }
+            }
 
             if(status != NORMAL)
             {
