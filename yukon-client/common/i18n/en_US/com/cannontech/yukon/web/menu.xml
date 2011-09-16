@@ -219,6 +219,7 @@
 
 <entry key="yukon.web.menu.config.support.development">Development</entry>
 <entry key="yukon.web.menu.config.support.development.pointInjection">Point Injection</entry>
+<entry key="yukon.web.menu.config.support.development.bulkPointInjection">Bulk Point Injection</entry>
 <entry key="yukon.web.menu.config.support.development.pickerTest">Picker Test</entry>
 <entry key="yukon.web.menu.config.support.development.i18nDemo">I18N Demo</entry>
 <entry key="yukon.web.menu.config.support.development.uiToolkitDemo">UI Toolkit Demo</entry>

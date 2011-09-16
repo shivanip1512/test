@@ -1031,6 +1031,9 @@
             <option name="pointInjection">
               <link>/spring/support/development/pointInjection/main</link>
             </option>
+            <option name="bulkPointInjection">
+              <link>/spring/support/development/bulkPointInjection/main</link>
+            </option>
             <option name="pickerTest">
               <link>/spring/support/development/pickerTest/main</link>
             </option>
@@ -1095,6 +1098,10 @@
                 <page name="pointInjection" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
                     <menu>development|pointInjection</menu>
+                </page>
+                <page name="bulkPointInjection" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                    <menu>development|bulkPointInjection</menu>
                 </page>
                 <page name="pickerTest" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />

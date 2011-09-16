@@ -220,31 +220,56 @@ public class DatePropertyEditorFactory {
         return new DateWithTimePropertyEditor(dateFormat, userContext);
     }
 
+    /**
+     * Return a PropertyEditor which knows how to parse a string into a local time value.  This
+     * property editor handles time only (no date value).  The returned Property Editor builds
+     * instances of LocalTime.
+     */
     public PropertyEditor getLocalTimePropertyEditor(DateFormatEnum dateFormat,
             YukonUserContext userContext) {
         return new LocalTimePropertyEditor(dateFormat, userContext, BlankMode.ERROR);
     }
 
+    /**
+     * Return a PropertyEditor which knows how to parse a string into a local time value.  This
+     * property editor handles time only (no date value).  The returned Property Editor builds
+     * instances of LocalTime.
+     */
     public PropertyEditor getLocalTimePropertyEditor(DateFormatEnum dateFormat,
             YukonUserContext userContext, BlankMode blankMode) {
         return new LocalTimePropertyEditor(dateFormat, userContext, blankMode);
     }
-    
+
+    /**
+     * Return a PropertyEditor which knows how to parse a string into a local date value.  This
+     * property editor handles date only (no time value).  The returned Property Editor builds
+     * instances of LocalDate.
+     */
     public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
                                                       YukonUserContext userContext) {
         return new LocalDatePropertyEditor(dateFormat, userContext, BlankMode.NULL);
     }
 
-    public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
-                                                   BlankMode blankMode) {
-      return new InstantPropertyEditor(dateFormat, userContext, blankMode);
-   }
-    
+    /**
+     * Return a PropertyEditor which knows how to parse a string into a local date value.  This
+     * property editor handles date only (no time value).  The returned Property Editor builds
+     * instances of LocalDate.
+     */
     public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext, 
                                                      BlankMode blankMode) {
         return new LocalDatePropertyEditor(dateFormat, userContext, blankMode);
     }
-    
+
+    /**
+     * Return a PropertyEditor which knows how to parse a string into an Instance value.  This
+     * property editor handles date and time.  The returned Property Editor builds
+     * instances of Instant.
+     */
+    public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                                   BlankMode blankMode) {
+      return new InstantPropertyEditor(dateFormat, userContext, blankMode);
+   }
+
     public void setupLocalDatePropertyEditor(DataBinder dataBinder, YukonUserContext userContext, 
                                              BlankMode blankMode) {
         PropertyEditor propertyEditor = getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, blankMode);

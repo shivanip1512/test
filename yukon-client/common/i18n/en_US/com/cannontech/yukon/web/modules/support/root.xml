@@ -18,6 +18,22 @@
     
     <entry key="yukon.web.modules.support.pointInjection.pageName">Point Injection</entry>
     
+    <entry key="yukon.web.modules.support.bulkPointInjection.pageName">Bulk Point Injection</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.stopTime">Stop Time</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.period">Period</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.noPeriod">Period cannot be zero or blank.</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.periodWindow">Period Window</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.quality">Quality</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.noQuality">Quality must have at least one value selected.</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.distributionAlg">Distribution Algorithm</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.incremental">Incremental</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.valueRangeLow">Value Range Low</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.valueRangeHigh">Value Range High</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.archive">Archive</entry>
+    
     <entry key="yukon.web.modules.support.setup.pageName">Setup</entry>
     <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">Login Group Role Updated</entry>
     
