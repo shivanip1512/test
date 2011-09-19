@@ -5533,11 +5533,6 @@ INT Mct470Device::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &TimeNow
 {
     INT status = NORMAL;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
-
-    string descriptor;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -5546,33 +5541,34 @@ INT Mct470Device::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &TimeNow
 
         CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-        point_info  pi, pi_time;
+        point_info  pi;
         pi = getData(DSt.Message, 2, ValueType_IED);
-        //current reported back from mct in mA.
-        //converting to Amps.
-        pi.value /= 1000;
+        //  current is reported back from MCT in tens of mA.
+        //  converting to Amps.
+        pi.value /= 100;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
                               ReturnMsg, pi, "Neutral Current");
+
         pi = getData(DSt.Message + 2, 2, ValueType_IED);
-        //current reported back from mct in mA.
-        //converting to Amps.
-        pi.value /= 1000;
+        //  current is reported back from MCT in tens of mA.
+        //  converting to Amps.
+        pi.value /= 100;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
                               ReturnMsg, pi, "Phase A Current");
+
         pi = getData(DSt.Message + 4, 2, ValueType_IED);
-        //current reported back from mct in mA.
-        //converting to Amps.
-        pi.value /= 1000;
+        //  current is reported back from MCT in tens of mA.
+        //  converting to Amps.
+        pi.value /= 100;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
                               ReturnMsg, pi, "Phase B Current");
+
         pi = getData(DSt.Message + 6, 2, ValueType_IED);
-        //current reported back from mct in mA.
-        //converting to Amps.
-        pi.value /= 1000;
+        //  current is reported back from MCT in tens of mA.
+        //  converting to Amps.
+        pi.value /= 100;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
                               ReturnMsg, pi, "Phase C Current");
-
-
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
