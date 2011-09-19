@@ -32,37 +32,42 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendMeterArchiveRequest")
-    public String send(String serial, String manufacturer, String model, double value) {
+    public String send(int serialFrom, int serialTo, String manufacturer, String model, double value, boolean random) {
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);
         jmsTemplate.setDeliveryPersistent(false);
         jmsTemplate.setPubSubDomain(false);
         
-        RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
-        
-        RfnMeterReadingData data = new RfnMeterReadingData();
-        data.setTimeStamp(new Instant().getMillis());
-        data.setSensorSerialNumber(serial);
-        data.setSensorManufacturer(manufacturer);
-        data.setSensorModel(model);
-        
-        List<ChannelData> dataList = Lists.newArrayList();
-        ChannelData channelData = new ChannelData();
-        channelData.setChannelNumber(0);
-        channelData.setStatus(ChannelDataStatus.OK);
-        channelData.setUnitOfMeasure("Wh");
-        channelData.setUnitOfMeasureModifiers(ImmutableSet.of("Quadrant 1", "Quadrant 2"));
-        channelData.setValue(value);
-        dataList.add(channelData);
-        
-        data.setChannelDataList(dataList);
-        
-        message.setData(data);
-        message.setDataPointId(1);
-        message.setReadingType(RfnMeterReadingType.CURRENT);
-        
-        jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest", message);
+        for (int i = serialFrom; i < serialTo; i++) {
+            RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
+            
+            RfnMeterReadingData data = new RfnMeterReadingData();
+            data.setTimeStamp(new Instant().getMillis());
+            data.setSensorSerialNumber(Integer.toString(i));
+            data.setSensorManufacturer(manufacturer);
+            data.setSensorModel(model);
+            
+            List<ChannelData> dataList = Lists.newArrayList();
+            ChannelData channelData = new ChannelData();
+            channelData.setChannelNumber(0);
+            channelData.setStatus(ChannelDataStatus.OK);
+            channelData.setUnitOfMeasure("Wh");
+            channelData.setUnitOfMeasureModifiers(ImmutableSet.of("Quadrant 1", "Quadrant 4"));
+            if (random) {
+                value = Math.random() * 1000;
+            }
+            channelData.setValue(value);
+            dataList.add(channelData);
+            
+            data.setChannelDataList(dataList);
+            
+            message.setData(data);
+            message.setDataPointId(1);
+            message.setReadingType(RfnMeterReadingType.CURRENT);
+            
+            jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest", message);
+        }
         
         return "redirect:view";
     }

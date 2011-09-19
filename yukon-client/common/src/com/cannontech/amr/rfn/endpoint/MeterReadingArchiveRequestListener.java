@@ -113,6 +113,7 @@ public class MeterReadingArchiveRequestListener {
                 try {
                     RfnMeterReadingArchiveRequest request = inQueue.take();
                     processInitial(request);
+                    log.debug("Proccessed Archive Request on " + this.getName() + ", queue size is: " + inQueue.size());
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
                     break;
