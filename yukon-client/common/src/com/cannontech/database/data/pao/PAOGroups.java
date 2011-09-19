@@ -998,6 +998,8 @@ public static final boolean isTcpPortEligible(PaoType type) {
         case CBC_7022:
         case CBC_7023:
         case CBC_7024:
+        case CBC_8020:
+        case CBC_8024:
         case CBC_DNP:
         case RTU_DNP:
         case FAULT_CI:
