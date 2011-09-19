@@ -1,6 +1,7 @@
 package com.cannontech.web.support;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -91,6 +92,9 @@ public class SupportBundle {
 
     public void setOptionalWritersToInclude(List<String> optionalWritersToInclude) {
         this.optionalWritersToInclude = optionalWritersToInclude;
+        if (optionalWritersToInclude == null) {
+            this.optionalWritersToInclude = Collections.emptyList();
+        }
     }
 
     public void setOptionalWritersToInclude(String[] optionalWritersToInclude) {

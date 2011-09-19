@@ -19,10 +19,10 @@
                     </td>
                     <td>
                         <c:if test="${thingsDoneMap[writer.name]}">
-                            <span class="successMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.doneMsg'/></span>
+                            <span class="successMessage"><i:inline key='.bundleCreationStatus.doneMsg'/></span>
                         </c:if>
                         <c:if test="${not thingsDoneMap[writer.name]}">
-                            <span class="errorMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.pendingMsg'/></span>
+                            <span class="errorMessage"><i:inline key='.bundleCreationStatus.pendingMsg'/></span>
                         </c:if>
                     </td>
                 </c:if>
@@ -34,7 +34,7 @@
         <c:if test="${inProgress}">
             <cti:button nameKey="downloadBtn" disabled="true"/>
             <cti:button nameKey="ftpUploadBtn" disabled="true"/>
-            <span class="errorMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.inProgressMsg'/> </span>
+            <span class="errorMessage"><i:inline key='.bundleCreationStatus.inProgressMsg'/> </span>
         </c:if>
         <c:if test="${not inProgress}">
             <cti:url var="transferUrl" value="transfer"/>
@@ -42,7 +42,7 @@
                 <input type="hidden" name="fileNum" value="0">
                 <cti:button nameKey="downloadBtn" name="download" type="submit"/>
                 <cti:button nameKey="ftpUploadBtn" name="upload" type="submit" styleClass="f_blocker"/>
-                <span class="successMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.finishedMsg'/></span>
+                <span class="successMessage"><i:inline key='.bundleCreationStatus.finishedMsg'/></span>
             </form>
         </c:if>
     </div>
