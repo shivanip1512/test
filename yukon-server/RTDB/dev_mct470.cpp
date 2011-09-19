@@ -2016,7 +2016,8 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
                 }
             }
 
-            if( OutMessage )
+            //  If we had an error, we need to leave the outmessage around for the error message
+            if( found && nRet == NoError )
             {
                 delete OutMessage;
                 OutMessage = NULL;
