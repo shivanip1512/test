@@ -15,6 +15,12 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 public class SftpWriter {
+    public static enum Status {
+        INVALID_CREDENTIALS,
+        SEND_ERROR, 
+        SUCCESS;
+    }
+
     private String username;
     private String password;
     private String host;
@@ -26,11 +32,13 @@ public class SftpWriter {
         this.host = host;
     }
 
-    public SftpStatus sendFile(File file) throws Exception {
-        SftpStatus sendStatus = SftpStatus.SUCCESS;
+    public Status sendFile(File file) {
+        Status sendStatus = Status.SUCCESS;
 
         JSch jsch = new JSch();
         Session session = null;
+        Channel channel = null;
+        ChannelSftp sftpChannel = null;
         try {
             session = jsch.getSession(username, host, 22);
 
@@ -38,30 +46,36 @@ public class SftpWriter {
             session.setPassword(password);
             session.connect();
 
-            Channel channel = session.openChannel("sftp");
+            channel = session.openChannel("sftp");
             channel.connect();
 
-            ChannelSftp sftpChannel = (ChannelSftp) channel;
+            sftpChannel = (ChannelSftp) channel;
 
             try {
                 sftpChannel.put(new FileInputStream(file), file.getName());
-            } catch (FileNotFoundException e) {
-                log.error("Problem trying to send file to SFTP server, file might have been removed before the send process started.",
-                          e);
-                sendStatus = SftpStatus.SEND_ERROR;
+            } catch (FileNotFoundException fnfe) {
+                log.error("Problem trying to send file to SFTP server, file might have been " +
+                		"removed before the send process started.", fnfe);
+                sendStatus = Status.SEND_ERROR;
             }
-
-            sftpChannel.exit();
-            session.disconnect();
-        } catch (JSchException e) {
+        }
+        catch (JSchException e) {
             log.warn("Bad username or password", e);
-            sendStatus = SftpStatus.BAD_USER_PASS;
-        } catch (SftpException e) {
+            sendStatus = Status.INVALID_CREDENTIALS;
+        } 
+        catch (SftpException e) {
             log.error("Problem trying to send file to SFTP server", e);
-            sendStatus = SftpStatus.SEND_ERROR;
+            sendStatus = Status.SEND_ERROR;
+        }
+        finally {
+            if (sftpChannel != null) {
+                sftpChannel.exit();
+            }
+            if (session != null) {
+                session.disconnect();
+            }
         }
 
         return sendStatus;
-
     }
 }

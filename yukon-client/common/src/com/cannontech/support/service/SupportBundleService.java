@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.joda.time.ReadableInstant;
 
+import com.cannontech.tools.sftp.SftpWriter.Status;
+
 public interface SupportBundleService {
     public void bundle(ReadableInstant start, ReadableInstant end, String custName,
                        String comments, Set<String> optionalWritersToInclude) throws IOException;
@@ -19,4 +21,6 @@ public interface SupportBundleService {
     public boolean isInProgress();
 
     public Map<String, Boolean> getWritersDone();
+
+    public Status uploadViaSftp(File file);
 }

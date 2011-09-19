@@ -7,7 +7,7 @@ public class SupportBundlePaoTypeCountsWriter extends SupportBundleSqlWriter {
     @Override
     protected SqlFragmentSource getSqlFragmentSource() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*), Type");
+        sql.append("SELECT Type, COUNT(*)");
         sql.append("FROM YukonPaobject");
         sql.append("GROUP BY Type");
         sql.append("ORDER BY Type");

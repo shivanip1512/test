@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -15,6 +16,7 @@ import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.YukonTagSupport;
@@ -22,6 +24,8 @@ import com.google.common.collect.Maps;
 
 @Configurable("msg2TagPrototype")
 public class Msg2Tag extends YukonTagSupport {
+    private final static Logger log = YukonLogManager.getLogger(Msg2Tag.class);
+
     private ObjectFormattingService objectFormattingService;
 
     private Object arguments;
@@ -56,6 +60,10 @@ public class Msg2Tag extends YukonTagSupport {
             } else if (fallback) {
                 message = resolvable.toString();
             } else {
+                if (key instanceof String) {
+                    log.error("unable to resolve message for key [" + key + "] using scope " +
+                              MessageScopeHelper.forRequest(getRequest()));
+                }
                 throw e;
             }
         }

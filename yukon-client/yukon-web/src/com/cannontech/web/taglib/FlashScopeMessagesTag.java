@@ -9,15 +9,19 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.util.HtmlUtils;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class FlashScopeMessagesTag extends YukonTagSupport {
+    private final static Logger log = YukonLogManager.getLogger(FlashScopeMessagesTag.class);
     private final static String REQUEST_ATTR_NAME = "com.cannontech.web.taglib.FlashScopeMessagesTag.flashScopeMessages";
 
 	private boolean htmlEscape = true;
@@ -71,9 +75,14 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
     }
 	
 	private String resolveMessage(MessageSourceResolvable messageSourceResolvable) {
-		
-		String resolvedMessage = getMessageSource().getMessage(messageSourceResolvable);
-		return htmlEscape ? HtmlUtils.htmlEscape(resolvedMessage) : resolvedMessage;
+		try {
+		    String resolvedMessage = getMessageSource().getMessage(messageSourceResolvable);
+		    return htmlEscape ? HtmlUtils.htmlEscape(resolvedMessage) : resolvedMessage;
+		}
+		catch (NoSuchMessageException nsme) {
+		    log.error("error resolving flash scope message", nsme);
+		    throw nsme;
+		}
 	}
 	
 	public void setHtmlEscape(boolean htmlEscape) throws JspException {

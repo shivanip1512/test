@@ -2,7 +2,6 @@ package com.cannontech.web.support;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -28,12 +28,10 @@ import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
-import com.cannontech.tools.sftp.SftpStatus;
-import com.cannontech.tools.sftp.SftpWriter;
+import com.cannontech.tools.sftp.SftpWriter.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -47,11 +45,7 @@ public class SupportBundleController {
     private final static String baseKey = "yukon.web.modules.support.supportBundle";
 
     private SupportBundleService supportBundleService;
-    private DateFormattingService dateFormattingService;
     private List<SupportBundleWriter> writerList;
-    private static final String FTP_USER = "yukwrite"; 
-    private static final String FTP_PASS = "P4ssw0rd"; 
-    private static final String FTP_HOST = "sftp.cooperpowereas.net"; 
 
     private Validator detailsValidator =
         new SimpleValidator<SupportBundle>(SupportBundle.class) {
@@ -73,7 +67,6 @@ public class SupportBundleController {
     @RequestMapping
     public String view(HttpServletRequest request, ModelMap model,
                                 YukonUserContext userContext) {
-
         return supportBundle(request, model, new SupportBundle(writerList), userContext);
     }
 
@@ -87,13 +80,7 @@ public class SupportBundleController {
         model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", supportBundleService.isInProgress());
 
-        return "supportBundle.jsp";
-    }
-
-    @RequestMapping
-    public String viewProgress(HttpServletRequest request, ModelMap model,
-                               YukonUserContext userContext) throws Exception {
-        return "createBundle.jsp";
+        return "supportBundle/view.jsp";
     }
 
     @RequestMapping
@@ -132,105 +119,64 @@ public class SupportBundleController {
     }
 
     @RequestMapping
-    public String getBundleProgress(HttpServletRequest request, ModelMap model) throws Exception {
+    public String viewProgress(HttpServletRequest request, ModelMap model,
+                               YukonUserContext userContext) throws Exception {
+        return "supportBundle/viewProgress.jsp";
+    }
 
+    @RequestMapping
+    public String getBundleProgress(HttpServletRequest request, ModelMap model) throws Exception {
         Map<String, Boolean> thingsDoneMap = supportBundleService.getWritersDone();
         model.addAttribute("thingsDoneMap", thingsDoneMap);
         model.addAttribute("inProgress", supportBundleService.isInProgress());
         model.addAttribute("writerList", writerList);
         model.addAttribute("mostRecentBundle", supportBundleService.getMostRecentBundle());
 
-        return "bundleBuildStatus.jsp";
+        return "supportBundle/buildStatus.jsp";
+    }
+
+    @RequestMapping(value="transfer", params="upload")
+    public String confirmUpload(ModelMap model, int fileNum) {
+        List<File> bundleFileList = supportBundleService.getBundles();
+        File bundleToSend = bundleFileList.get(fileNum);
+        model.addAttribute("fileSize", BinaryPrefix.getCompactRepresentation(bundleToSend.length()));
+        model.addAttribute("fileDate", new Instant(bundleToSend.lastModified()));
+        model.addAttribute("filename", bundleToSend.getName());
+        model.addAttribute("fileNum", fileNum);
+        return "supportBundle/confirmUpload.jsp";
     }
 
     @RequestMapping
-    public String upload(HttpServletRequest request, ModelMap model, int fileNum,
-                         SftpStatus ftpStatus, String username, String password, String host,
-                         YukonUserContext userContext) throws Exception {
+    public String upload(int fileNum, FlashScope flash) throws Exception {
         List<File> bundleFileList = supportBundleService.getBundles();
-
-        if (bundleFileList.size() > fileNum) {
-            File bundleToSend = bundleFileList.get(fileNum);
-
-            SftpWriter ftp = null;
-            
-            if (ftpStatus != SftpStatus.SENDING) {
-                ftp = new SftpWriter(username, password, host);
-            } else {
-                ftp = new SftpWriter(FTP_USER, FTP_PASS, FTP_HOST);
-            }
-            
-            ftpStatus = ftp.sendFile(bundleToSend);
-
-            String fileDate =
-                dateFormattingService.format(new Date(bundleToSend.lastModified()),
-                                             DateFormatEnum.DATE, userContext);
-            
-            model.addAttribute("fileSize", BinaryPrefix.getCompactRepresentation(bundleToSend.length()));
-            model.addAttribute("fileDate", fileDate);
-            model.addAttribute("filename", bundleToSend.getName());
-            model.addAttribute("fileNum", fileNum);
-            model.addAttribute("ftpStatus", ftpStatus);
-            model.addAttribute("doUpload", true);
-
-            return "send.jsp";
+        File bundleToSend = bundleFileList.get(fileNum);
+        Status ftpStatus = supportBundleService.uploadViaSftp(bundleToSend);
+        if (ftpStatus == Status.SUCCESS) {
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey +
+                ".ftpUpload.succeeded", bundleToSend.getName()));
+        } else {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".ftpUpload.failed." +
+                ftpStatus, bundleToSend.getName()));
         }
 
         return "redirect:view";
     }
 
-    @RequestMapping
-    public String send(HttpServletRequest request, ModelMap model,
-                       YukonUserContext yukonUserContext, int fileNum)
-            throws Exception {
-
-        List<File> bundleFileList = supportBundleService.getBundles();
-
-        if (bundleFileList.size() > fileNum) {
-            File bundleToSend = bundleFileList.get(fileNum);
-
-            String fileDate =
-                dateFormattingService.format(new Date(bundleToSend.lastModified()),
-                                             DateFormatEnum.DATE,
-                                             yukonUserContext);
-
-            model.addAttribute("fileSize", BinaryPrefix.getCompactRepresentation(bundleToSend.length()));
-            model.addAttribute("fileDate", fileDate);
-            model.addAttribute("filename", bundleToSend.getName());
-            model.addAttribute("fileNum", fileNum);
-            model.addAttribute("ftpStatus", SftpStatus.SENDING);
-            model.addAttribute("doUpload", false);
-            
-            return "send.jsp";
-        }
-
-        return "redirect:view";
-    }
-
-    @RequestMapping
-    public String download(HttpServletRequest request, HttpServletResponse response, int fileNum)
+    @RequestMapping(value="transfer", params="download")
+    public void download(HttpServletRequest request, HttpServletResponse response, int fileNum)
             throws Exception {
         response.setContentType("application/zip");
 
         List<File> bundleFileList = supportBundleService.getBundles();
 
-        if (bundleFileList.size() > fileNum) {
-            File bundleToDownload = bundleFileList.get(fileNum);
-            // set response header to the filename
-            response.setHeader("Content-Disposition",
-                               "attachment; filename=" + ServletUtil.urlEncode(bundleToDownload.getName()));
-            response.setHeader("Content-Length", Long.toString(bundleToDownload.length()));
+        File bundleToDownload = bundleFileList.get(fileNum);
+        // set response header to the filename
+        response.setHeader("Content-Disposition",
+                           "attachment; filename=" + ServletUtil.urlEncode(bundleToDownload.getName()));
+        response.setHeader("Content-Length", Long.toString(bundleToDownload.length()));
 
-            // Download the file through the response object
-            FileCopyUtils.copy(new FileInputStream(bundleToDownload), response.getOutputStream());
-        }
-
-        return null;
-    }
-
-    @Autowired
-    public void setDateFormatingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
+        // Download the file through the response object
+        FileCopyUtils.copy(new FileInputStream(bundleToDownload), response.getOutputStream());
     }
 
     @Autowired

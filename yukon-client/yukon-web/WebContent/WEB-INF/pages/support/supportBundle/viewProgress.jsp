@@ -8,9 +8,10 @@
 <cti:standardPage module="support" page="supportBundle">
     <script type="text/javascript">
         Event.observe(window, 'load', function() {
-            new Ajax.PeriodicalUpdater('mainDiv', 'getBundleProgress', {
-                'frequency' : 1
-            });
+            window.supportBundleProgressUpdater =
+                new Ajax.PeriodicalUpdater('mainDiv', 'getBundleProgress', {
+                    'frequency' : 1
+                });
         });
     </script>
     <div id="mainDiv"></div>

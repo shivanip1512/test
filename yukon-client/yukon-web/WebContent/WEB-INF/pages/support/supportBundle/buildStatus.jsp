@@ -2,8 +2,14 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
+<c:if test="${!inProgress}">
+    <script type="text/javascript">
+        window.supportBundleProgressUpdater.stop();
+    </script>
+</c:if>
+
 <cti:msgScope paths="modules.support.supportBundle">
-    <table border='0'>
+    <table>
         <c:forEach var="writer" items="${writerList}">
             <tr>
                 <!-- Optional writers which are not being included will not show up in this list-->
@@ -23,21 +29,21 @@
             </tr>
         </c:forEach>
     </table>
-    <br>
-    <c:if test="${inProgress}">
-        <cti:button nameKey="downloadBtn" disabled="true"/>
-        <cti:button nameKey="ftpUploadBtn" disabled="true"/>
-        <span class="errorMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.inProgressMsg'/> </span>
-    </c:if>
-    <c:if test="${not inProgress}">
-        <cti:url var="downloadUrl" value="download">
-            <cti:param name="fileNum" value="0"/>
-        </cti:url>
-        <cti:button nameKey="downloadBtn" href="${downloadUrl}"/>
-        <cti:url var="uploadUrl" value="send">
-            <cti:param name="fileNum" value="0"/>
-        </cti:url>
-        <cti:button nameKey="ftpUploadBtn" href="${uploadUrl}"/>
-        <span class="successMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.finishedMsg'/></span>
-    </c:if>
+
+    <div class="pageActionArea">
+        <c:if test="${inProgress}">
+            <cti:button nameKey="downloadBtn" disabled="true"/>
+            <cti:button nameKey="ftpUploadBtn" disabled="true"/>
+            <span class="errorMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.inProgressMsg'/> </span>
+        </c:if>
+        <c:if test="${not inProgress}">
+            <cti:url var="transferUrl" value="transfer"/>
+            <form method="POST" action="${transferUrl}">
+                <input type="hidden" name="fileNum" value="0">
+                <cti:button nameKey="downloadBtn" name="download" type="submit"/>
+                <cti:button nameKey="ftpUploadBtn" name="upload" type="submit" styleClass="f_blocker"/>
+                <span class="successMessage">&nbsp&nbsp <i:inline key='.bundleCreationStatus.finishedMsg'/></span>
+            </form>
+        </c:if>
+    </div>
 </cti:msgScope>

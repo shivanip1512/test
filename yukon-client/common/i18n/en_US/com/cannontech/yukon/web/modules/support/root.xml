@@ -37,27 +37,25 @@
     <entry key="yukon.web.modules.support.setup.pageName">Setup</entry>
     <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">Login Group Role Updated</entry>
     
-    <entry key="yukon.web.modules.support.supportBundle.title">Support Bundle</entry>
     <entry key="yukon.web.modules.support.supportBundle.pageName">Support Bundle</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftp.status">Transfer Status</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftp.status.SEND_ERROR">The file upload failed.</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftp.status.BAD_USER_PASS">The username or password is incorrect</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftp.status.SUCCESS">The file was successfully uploaded.</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftp.status.SENDING">The file is being uploaded. Please wait...</entry>
-    
+
+    <entry key="yukon.web.modules.support.supportBundle.title">Support Bundle</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.SEND_ERROR">The file upload failed.  Please try again.  Contact support if this happens again.</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.INVALID_CREDENTIALS">Please contact technical support (invalid credentials).</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUpload.succeeded">The file {0} was successfully uploaded.</entry>
+
     <entry key="yukon.web.modules.support.supportBundle.ftp.username">Username</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.password">Password</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.host">Host</entry>    
-    
+
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.ONE_WEEK">Last week</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.TWO_WEEKS">Last two weeks</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.ONE_MONTH">Last month</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.EVERYTHING">Everything</entry>
-    
-    
+
     <entry key="yukon.web.modules.support.supportBundle.errorMsg.invalidCharacters">Can only contain alphanumeric and "_-%.#" characters</entry>
     <entry key="yukon.web.modules.support.supportBundle.errorMsg.empty">Cannot be empty</entry>
-    
+
     <entry key="yukon.web.modules.support.supportBundle.custNameLbl">Customer Name</entry>
     <entry key="yukon.web.modules.support.supportBundle.dateRangeSelect">Range</entry>
     <entry key="yukon.web.modules.support.supportBundle.includeLbl">Include</entry>
@@ -67,14 +65,12 @@
     <entry key="yukon.web.modules.support.supportBundle.previousHeading">Previous Bundles</entry>
     <entry key="yukon.web.modules.support.supportBundle.noPreviousBundlesLbl">No Previous Support Bundles Found</entry>
     <entry key="yukon.web.modules.support.supportBundle.downloadBtn.label">Download</entry>
+    <entry key="yukon.web.modules.support.supportBundle.downloadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.label">Upload Via FTP</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleInProgressMsg">There is already a bundle in progress.</entry>
     <entry key="yukon.web.modules.support.supportBundle.viewProgressBtn.label">View Progress</entry>
     <entry key="yukon.web.modules.support.supportBundle.includeLbl">Include</entry>
-    <entry key="yukon.web.modules.support.supportBundle.downloadImg.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
-    <entry key="yukon.web.modules.support.supportBundle.downloadImg.label">Download</entry>
-    <entry key="yukon.web.modules.support.supportBundle.uploadImg.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
-    <entry key="yukon.web.modules.support.supportBundle.uploadImg.label">Upload Via FTP</entry>
     <entry key="yukon.web.modules.support.supportBundle.startUpload.label">Start Upload</entry>
     <entry key="yukon.web.modules.support.supportBundle.okImg.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.okImg.label">Ok</entry>
@@ -91,8 +87,7 @@
     <entry key="yukon.web.modules.support.supportBundle.send.ftpSettingsHeading">FTP Settings</entry>
     <entry key="yukon.web.modules.support.supportBundle.send.ftpDirLbl">FTP Directory:</entry>
     <entry key="yukon.web.modules.support.supportBundle.send.uploadBtn">Upload</entry>
-    <entry key="yukon.web.modules.support.supportBundle.send.badDefaultSettings">The default settings may be incorrect. Enter the following information and try again</entry>
-    
+
     <entry key="yukon.web.modules.support.supportBundle.writerName.paoTypeCsvSource">PAO Type Counts</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.rawPointCountCsvSource">Raw Point History Count</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogAggregatedCsvSource">Event Log</entry>

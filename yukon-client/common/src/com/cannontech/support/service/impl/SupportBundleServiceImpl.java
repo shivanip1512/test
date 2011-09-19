@@ -6,7 +6,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,25 +20,33 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
+import com.cannontech.tools.sftp.SftpWriter;
+import com.cannontech.tools.sftp.SftpWriter.Status;
 import com.cannontech.tools.zip.ZipWriter;
 
 public class SupportBundleServiceImpl implements SupportBundleService {
     private Logger log = YukonLogManager.getLogger(SupportBundleServiceImpl.class);
+
     private static final int PAST_BUNDLES_TO_KEEP = 5; // -1 to never delete old bundles
+    private static final String DEFAULT_FTP_USER = "yukwrite"; 
+    private static final String DEFAULT_FTP_PASSWORD = "P4ssw0rd"; 
+    private static final String DEFAULT_FTP_HOST = "sftp.cooperpowereas.net"; 
 
+    private ConfigurationSource configurationSource;
     private Executor executor;
-
     private List<SupportBundleWriter> writerList;
-    private Map<String, Boolean> writersDoneMap;
 
+    private Map<String, Boolean> writersDoneMap;
     private AtomicBoolean inProgress;
 
     public SupportBundleServiceImpl() {
@@ -52,89 +59,61 @@ public class SupportBundleServiceImpl implements SupportBundleService {
                        final String custName, final String comments,
                        final Set<String> optionalWritersToInclude) throws IOException {
         boolean ready = inProgress.compareAndSet(false, true);
-        if (ready) {
-            removeOldFiles();
-            executor.execute(
-                new Runnable() {
-                    public void run() {
-                        try {
-                            writersDoneMap.clear();
-                            
-                            DateTime dt = new DateTime(DateTimeZone.getDefault());
-                            
-                            // Support bundle filename format 
-                            // '<customer name>-yyyy-MM-dd-HHmmss.zip'
-                            String f = "%02d";
-                            String zipFilename = custName + "-"
-                                                 + dt.getYear() + "-"
-                                                 + String.format(f, dt.getMonthOfYear()) + "-"
-                                                 + String.format(f, dt.getDayOfMonth()) + "-"
-                                                 + String.format(f, dt.getHourOfDay())
-                                                 + String.format(f, dt.getMinuteOfHour())
-                                                 + String.format(f, dt.getSecondOfMinute())
-                                                 + ".zip";
-
-                            for (SupportBundleWriter writer : writerList) {
-                                if (!writer.isOptional()
-                                    || optionalWritersToInclude.contains(writer.getName())) {
-                                    writersDoneMap.put(writer.getName(), false);
-                                }
-                            }
-
-                            if (!getBundleDir().isDirectory()) {
-                                getBundleDir().mkdir();
-                            }
-
-                            final File tempDir = new File(getBundleDir(), "temp/");
-
-                            if (!tempDir.isDirectory()) {
-                                tempDir.mkdir();
-                            }
-                            ZipWriter zipWriter = new ZipWriter(new File(tempDir, zipFilename));
-
-                            String bundleMetaData = buildMetaData(start, stop, custName, comments,
-                                                                  optionalWritersToInclude);
-                            InputStream infoFileStream =
-                                new ByteArrayInputStream(bundleMetaData.getBytes("UTF-8"));
-                            zipWriter.writeRawInputStream(infoFileStream, "Info.txt");
-
-                            final int halfHourMillis = 1000 * 60 * 30;
-
-                            for (SupportBundleWriter writer : writerList) {
-                                if (!writer.isOptional()
-                                    || optionalWritersToInclude.contains(writer.getName())) {
-                                    writer.addToZip(zipWriter, start,
-                                                    stop.toInstant().plus(halfHourMillis));
-                                    writersDoneMap.put(writer.getName(), true);
-                                    log.info("Support Bundle - Added Writer: '"
-                                             + writer.getName() + "'");
-                                }
-                            }
-                            zipWriter.close();
-
-                            zipWriter.getFile().renameTo(new File(getBundleDir(), zipFilename));
-                            
-                            for (File temp: tempDir.listFiles()) {
-                                if(temp.isFile()) {
-                                    temp.delete();
-                                } else {
-                                    log.warn("Unable to delete temp directory. This may happen " +
-                                        "if it contains a sub directory.");
-                                }
-                            }
-                            
-                            tempDir.delete();
-                        } catch (UnsupportedEncodingException e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            inProgress.set(false);
-                        }
-                    }
-                });
-        } else {
+        if (!ready) {
             log.warn("Cannot create bundle until previous bundle has completed");
         }
 
+        removeOldFiles();
+        executor.execute(new Runnable() {
+            public void run() {
+                try {
+                    writersDoneMap.clear();
+
+                    DateTime now = new DateTime(DateTimeZone.getDefault());
+
+                    for (SupportBundleWriter writer : writerList) {
+                        if (!writer.isOptional()
+                                || optionalWritersToInclude.contains(writer.getName())) {
+                            writersDoneMap.put(writer.getName(), false);
+                        }
+                    }
+
+                    if (!getBundleDir().isDirectory()) {
+                        getBundleDir().mkdir();
+                    }
+
+                    File tempFile = File.createTempFile("support_bundle", "zip");
+                    ZipWriter zipWriter = new ZipWriter(tempFile);
+
+                    String bundleMetaData = buildMetaData(start, stop, custName, comments,
+                                                          optionalWritersToInclude);
+                    InputStream infoFileStream =
+                        new ByteArrayInputStream(bundleMetaData.getBytes("UTF-8"));
+                    zipWriter.writeRawInputStream(infoFileStream, "Info.txt");
+
+                    Duration halfHour = Duration.standardMinutes(30);
+
+                    for (SupportBundleWriter writer : writerList) {
+                        if (!writer.isOptional()
+                                    || optionalWritersToInclude.contains(writer.getName())) {
+                            writer.addToZip(zipWriter, start, stop.toInstant().plus(halfHour));
+                            writersDoneMap.put(writer.getName(), true);
+                            log.info("Support Bundle - Added Writer: '" + writer.getName() + "'");
+                        }
+                    }
+                    zipWriter.close();
+
+                    String zipFilename = custName + "-" + now.toString("yyyy-MM-dd-HHmmss") + ".zip";
+                    tempFile.renameTo(new File(getBundleDir(), zipFilename));
+                } catch (UnsupportedEncodingException uee) {
+                    throw new RuntimeException(uee);
+                } catch (IOException ioe) {
+                    throw new RuntimeException(ioe);
+                } finally {
+                    inProgress.set(false);
+                }
+            }
+        });
     }
 
     @Override
@@ -149,8 +128,9 @@ public class SupportBundleServiceImpl implements SupportBundleService {
         });
 
         if (allFiles == null) {
-            return new ArrayList<File>();
+            return Collections.emptyList();
         }
+
         // sorting by date modified
         Arrays.sort(allFiles, new Comparator<File>() {
             public int compare(File f1, File f2) {
@@ -227,13 +207,31 @@ public class SupportBundleServiceImpl implements SupportBundleService {
         return sb.toString();
     }
 
+    @Override
+    public Status uploadViaSftp(File file) {
+        String ftpUser = configurationSource.getString("SUPPORT_BUNDLE_FTP_UPLOAD_USER",
+                                                       DEFAULT_FTP_USER);
+        String ftpPassword = configurationSource.getString("SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD",
+                                                           DEFAULT_FTP_PASSWORD);
+        String ftpHost = configurationSource.getString("SUPPORT_BUNDLE_FTP_UPLOAD_HOST",
+                                                       DEFAULT_FTP_HOST);
+        SftpWriter ftp = new SftpWriter(ftpUser, ftpPassword, ftpHost);
+        Status ftpStatus = ftp.sendFile(file);
+        return ftpStatus;
+    }
+
     @Autowired
-    public void setWriterList(List<SupportBundleWriter> writerList) {
-        this.writerList = writerList;
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 
     @Autowired
     public void setExecutor(@Qualifier("main") Executor executor) {
         this.executor = executor;
+    }
+
+    @Autowired
+    public void setWriterList(List<SupportBundleWriter> writerList) {
+        this.writerList = writerList;
     }
 }
