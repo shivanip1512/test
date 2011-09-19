@@ -521,19 +521,22 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
 
-    CtiDate startDate( CtiTime::CtiTime(proposed_start_from_1901) );
+    CtiTime proposedStartTime(proposed_start_from_1901),
+            proposedStopTime(proposed_stop_from_1901);
+
+    CtiDate proposedDate(proposedStartTime);
 
     CtiLMProgramControlWindow *start_ctrl_window = 0,
                               *stop_ctrl_window  = 0;
 
     for each ( CtiLMProgramControlWindow * window in lm_base.getLMProgramControlWindows() )
     {
-        ULONG windowStartFromEpoch = window->getAvailableStartTime(startDate).seconds(),
-              windowStopFromEpoch  = window->getAvailableStopTime(startDate).seconds();
+        CtiTime windowStart = window->getAvailableStartTime(proposedDate),
+                windowStop  = window->getAvailableStopTime(proposedDate);
 
         if ( start_ctrl_window == 0 )
         {
-            if ( ( windowStartFromEpoch <= proposed_start_from_1901 ) && ( proposed_start_from_1901 <= windowStopFromEpoch ) )
+            if ( ( windowStart <= proposedStartTime ) && ( proposedStartTime <= windowStop ) )
             {
                 start_ctrl_window = window;
             }
@@ -541,7 +544,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 
         if ( stop_ctrl_window == 0 )
         {
-            if ( ( windowStartFromEpoch <= proposed_stop_from_1901 ) && ( proposed_stop_from_1901 <= windowStopFromEpoch ) )
+            if ( ( windowStart <= proposedStopTime ) && ( proposedStopTime <= windowStop ) )
             {
                 stop_ctrl_window = window;
             }
@@ -577,12 +580,11 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 
     if( start_ctrl_window != 0 && stop_ctrl_window == 0 )
     {
-        CtiTime proposed  = CtiTime(proposed_stop_from_1901);
         CtiTime startTime = start_ctrl_window->getAvailableStartTime();
         CtiTime stopTime  = start_ctrl_window->getAvailableStopTime();
 
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += proposed.asString();
+        result += proposedStopTime.asString();
         result += " is outside the control window that runs from ";
         result += startTime.asString();
         result += " to ";
@@ -590,7 +592,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_TTT_StopTimeOutsideControlWindow,
-                                                            proposed,
+                                                            proposedStopTime,
                                                             startTime,
                                                             stopTime));
 
@@ -599,12 +601,11 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 
     if( start_ctrl_window == 0 && stop_ctrl_window != 0 )
     {
-        CtiTime proposed  = CtiTime(proposed_start_from_1901);
         CtiTime startTime = stop_ctrl_window->getAvailableStartTime();
         CtiTime stopTime  = stop_ctrl_window->getAvailableStopTime();
 
         string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
-        result += proposed.asString();
+        result += proposedStartTime.asString();
         result += " is outside the control window that runs from ";
         result += startTime.asString();
         result += " to ";
@@ -612,7 +613,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_TTT_StartTimeOutsideControlWindow,
-                                                            proposed,
+                                                            proposedStartTime,
                                                             startTime,
                                                             stopTime));
 

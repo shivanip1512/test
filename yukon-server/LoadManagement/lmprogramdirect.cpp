@@ -5015,7 +5015,8 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
             string additional = "";
             for each ( const std::string & violationMsg in con_checker.getResults() )
             {
-                additional += ( violationMsg + "\n" );
+                additional += violationMsg;
+                additional += "\n";
             }
             CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
             signal->setSOE(2);
