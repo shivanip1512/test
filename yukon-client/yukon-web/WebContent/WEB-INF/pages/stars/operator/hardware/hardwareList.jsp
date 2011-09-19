@@ -19,6 +19,7 @@
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="thermostatHistoryUrl" value="/spring/stars/operator/thermostat/history/view?accountId=${accountId}&amp;thermostatIds="/>
 
 <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
     <input type="hidden" name="accountId" value="${accountId}">
@@ -495,6 +496,7 @@
                                         <cti:img nameKey="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
+                                <cti:img nameKey="history" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
                                     
                             </td>
                         </tr>

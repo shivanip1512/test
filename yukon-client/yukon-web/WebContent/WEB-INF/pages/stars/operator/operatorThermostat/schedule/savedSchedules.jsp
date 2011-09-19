@@ -75,6 +75,12 @@ Event.observe(window, 'load', function(){
                     <br>
                     <cti:button nameKey="help" styleClass="help fl"/>
                     <cti:button nameKey="create" styleClass="create fl"/>
+                    <br>
+                    <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                        <cti:param name="accountId" value="${accountId}" />
+                        <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                    </cti:url>
+                    <cti:button nameKey="history" href="${historyUrl}" />
                 </c:when>
                 <c:otherwise>
                     <div class="schedules fl">
@@ -96,6 +102,11 @@ Event.observe(window, 'load', function(){
                             <div class="fr">
                                 <cti:button nameKey="create" styleClass="create fl"/>
                                 <cti:button nameKey="help" styleClass="help fl"/>
+                                <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                                    <cti:param name="accountId" value="${accountId}" />
+                                    <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                                </cti:url>
+                                <cti:button nameKey="history" href="${historyUrl}" />
                             </div>
                             <div class="tempControls fl">
                                 <form method="post" action="/spring/stars/operator/thermostatSchedule/updateTemperaturePreference">
