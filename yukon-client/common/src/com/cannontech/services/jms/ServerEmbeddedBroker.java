@@ -46,6 +46,8 @@ public class ServerEmbeddedBroker {
             broker.setBrokerName(name);
             broker.addConnector(listenerString);
             broker.setUseJmx(true);
+            
+            //@todo remove this line, no longer needed as of AMQ 5.4.2
             broker.setSchedulerSupport(false); // https://issues.apache.org/activemq/browse/AMQ-2935
             broker.start();
         } catch (Exception e) {

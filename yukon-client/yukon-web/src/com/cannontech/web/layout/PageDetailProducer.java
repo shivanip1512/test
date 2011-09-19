@@ -210,6 +210,7 @@ public class PageDetailProducer {
         return result;
     }
     
+    // use standard.xml to figure out the relevant page labels
     private void fillInPageLabels(PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
         Builder<String, String> resultBuilder = ImmutableMap.builder();
         

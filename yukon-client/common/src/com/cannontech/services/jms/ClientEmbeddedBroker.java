@@ -46,10 +46,16 @@ public class ClientEmbeddedBroker {
             BrokerService broker = new BrokerService();
             broker.setBrokerName(name);
             String discoveryAddress = "static:(" + connectionString + ")";
+            
+            //connect to the service manager broker
             NetworkConnector networkConnector = broker.addNetworkConnector(discoveryAddress);
             networkConnector.setDuplex(true);
+            
+            //our largest hop is 3 eg. network manager -> service manager -> web
             networkConnector.setNetworkTTL(3);
             broker.setUseJmx(true);
+            
+          //@todo remove this line, no longer needed as of AMQ 5.4.2
             broker.setSchedulerSupport(false);// https://issues.apache.org/activemq/browse/AMQ-2935
             broker.start();
         } catch (Exception e) {

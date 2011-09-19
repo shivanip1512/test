@@ -59,6 +59,9 @@ public class StandardPageTag extends BodyTagSupport {
         pageContext.setAttribute(STANDARD_PAGE_INSTANCE_ATTR, this, PageContext.REQUEST_SCOPE);
         
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+        
+        // push the scope of paths (list - page name split on the period)
+        // 
         MessageScope messageScope = MessageScopeHelper.forRequest(request);
         
         if (StringUtils.isNotBlank(model.getPageName())) {
@@ -106,6 +109,8 @@ public class StandardPageTag extends BodyTagSupport {
                 // pageContext.include() here because that flushes the output which makes error
                 // handling very difficult.
                 RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher("/spring/layout/");
+                
+                //forward the contents to the LayoutController
                 requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());
                 return EVAL_PAGE;
             } catch (Exception e) {
@@ -116,6 +121,7 @@ public class StandardPageTag extends BodyTagSupport {
         }
     }
     
+    //reference to the instance of this standard page tag
     public static StandardPageTag find(JspContext context) {
         Object attribute = context.getAttribute(STANDARD_PAGE_INSTANCE_ATTR, PageContext.REQUEST_SCOPE);
         return (StandardPageTag) attribute;

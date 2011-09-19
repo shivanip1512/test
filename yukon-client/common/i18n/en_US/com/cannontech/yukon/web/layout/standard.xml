@@ -9,10 +9,12 @@
 <entry key="yukon.web.layout.standard.energyCompany">{0}</entry>
 <entry key="yukon.web.layout.standard.username">{0}</entry>
 
+<!-- No page description for this guy -->
 <entry key="yukon.web.layout.standard.pageType.BASIC.pagePart.pageTitle">{moduleName}: {pageName}</entry>
 <entry key="yukon.web.layout.standard.pageType.BASIC.pagePart.pageHeading">{pageName}</entry>
 <entry key="yukon.web.layout.standard.pageType.BASIC.pagePart.crumbTitle">{contextualPageName}</entry>
 
+<!-- most pages are of type detail/detail_child -->
 <entry key="yukon.web.layout.standard.pageType.DETAIL.pagePart.pageTitle">{moduleName}: {pageName} ({pageDescription})</entry>
 <entry key="yukon.web.layout.standard.pageType.DETAIL.pagePart.pageHeading">{pageDescription}</entry>
 <entry key="yukon.web.layout.standard.pageType.DETAIL.pagePart.crumbTitle">{pageDescription}</entry>
@@ -23,6 +25,7 @@
 <entry key="yukon.web.layout.standard.pageType.DETAIL_CHILD.pagePart.crumbTitle">{contextualPageName}</entry>
 <entry key="yukon.web.layout.standard.pageType.DETAIL_CHILD.pagePart.navigationTitle">{pageName}</entry>
 
+<!-- left-side menus, no heading used -->
 <entry key="yukon.web.layout.standard.pageType.DETAIL_WITH_INFO.pagePart.pageTitle">{moduleName}: {pageName} ({pageDescription})</entry>
 <entry key="yukon.web.layout.standard.pageType.DETAIL_WITH_INFO.pagePart.pageHeading"></entry>
 <entry key="yukon.web.layout.standard.pageType.DETAIL_WITH_INFO.pagePart.crumbTitle">{pageDescription}</entry>
@@ -33,6 +36,7 @@
 <entry key="yukon.web.layout.standard.pageType.DETAIL_CHILD_WITH_INFO.pagePart.crumbTitle">{contextualPageName}</entry>
 <entry key="yukon.web.layout.standard.pageType.DETAIL_CHILD_WITH_INFO.pagePart.navigationTitle">{pageName}</entry>
 
+<!-- useful if you want a plain page title -->
 <entry key="yukon.web.layout.standard.pageType.LANDING.pagePart.pageTitle">{moduleName}</entry>
 <entry key="yukon.web.layout.standard.pageType.LANDING.pagePart.pageHeading">{moduleName}</entry>
 <entry key="yukon.web.layout.standard.pageType.LANDING.pagePart.crumbTitle">{moduleName}</entry>

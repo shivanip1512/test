@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import com.cannontech.user.checker.UserChecker;
 import com.google.common.collect.Lists;
 
+// corresponds with a <page> in module_config.xml
 public class PageInfo implements Comparable<PageInfo> {
     private String name;
     private String moduleName;
@@ -16,13 +17,13 @@ public class PageInfo implements Comparable<PageInfo> {
     private PageInfo parent;
     private PageTypeEnum pageType;
     private boolean renderMenu;
-    private String menuSelection;
+    private String menuSelection;   // <menu> exclusively used (do not use <cti:standardPageMenu> in the jsp) 
     private List<PageInfo> childPages = Collections.emptyList();
     private String detailInfoIncludePath;
     private UserChecker userChecker;
-    private boolean navigationMenuRoot;
+    private boolean navigationMenuRoot; //some node needs to have this set to true in order to have a left-hand menu
     private boolean contributeToMenu;
-    private boolean hideSearch;
+    private boolean hideSearch; //used on search results pages
     
     public String getName() {
         return name;

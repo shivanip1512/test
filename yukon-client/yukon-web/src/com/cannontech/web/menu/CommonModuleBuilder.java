@@ -229,6 +229,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         return options;
     }
 
+    // Get a menu option for a particular bean with its i18n name
     private MenuOptionProducer processDynamicOptionsElement(Element element, String prefix) {
         String beanName = element.getAttributeValue("bean");
         DynamicMenuOptionProducer menuOptionProducer = menuOptionProducerFactory.createMenuOptions(beanName);
@@ -318,6 +319,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         return moduleBase;
     }
 
+    // Refresh the modules for development mode
     private void refreshModules() {
         boolean devMode = configurationSource.getBoolean("DEVELOPMENT_MODE", false);
         if(devMode) {

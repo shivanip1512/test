@@ -86,11 +86,14 @@ public class LayoutController {
         layoutScriptFiles = builder.build();
     }
     
+    // StandardPageTag forwards to here!
     @RequestMapping("/")
     public String display(HttpServletRequest request, HttpServletResponse response, ModelMap map, Locale locale) throws JspException {
 
-        // get data passed over in attributes
+        // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
+        
+        //create a callback for writing out the body (as opposed to just putting a string of the body in the model)
         map.addAttribute("bodyContent", new Writable() {
             public void write(Writer out) throws IOException {
                 bodyContent.writeOut(out);
@@ -103,9 +106,11 @@ public class LayoutController {
         final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
+        //used for determining page title etc...
         ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
         map.addAttribute("module", moduleBase);
         
+        //parse the module_config.xml and figure out our hierarchy for menus etc...
         PageInfo pageInfo = moduleBase.getPageInfo(tagInfo.getPageName());
 
         PageDetail pageDetailTemp;
@@ -113,6 +118,7 @@ public class LayoutController {
             pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
         } else {
             // create dummy page detail for pre-2010 pages
+            //@TODO  consider delegating this functionality to the PageInfo object itself: new PageDetail(tagInfo)
             pageDetailTemp = new PageDetail();
             pageDetailTemp.setBreadCrumbText("");
             if (StringUtils.isNotBlank(tagInfo.getTitle())) {

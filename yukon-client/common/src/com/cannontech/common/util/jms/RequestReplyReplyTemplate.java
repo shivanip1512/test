@@ -32,7 +32,7 @@ public class RequestReplyReplyTemplate {
     private String configurationName;
     
     private String requestQueueName;
-    private boolean pubSubDomain = false;
+    private boolean pubSubDomain = false;   // Queue (not a Topic)
 
 
 
