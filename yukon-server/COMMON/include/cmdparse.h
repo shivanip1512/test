@@ -109,6 +109,9 @@ public:
 
    const std::list< std::string >& getActionItems() const;
 
+   //Expects a list of floats, must match str_floatnum_list defined in cmdparse.cpp.
+   static std::vector<float> parseListOfFloats(const std::string &floatList);
+
    void parse();
 
    std::string asString();

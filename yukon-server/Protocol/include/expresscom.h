@@ -111,6 +111,7 @@ public:
         cfgThermostatConfig               = 0x24,
         cfgColdLoad                       = 0x30,
         cfgTargetLoadAmps                 = 0x4D,
+        cfgPreferredChannels              = 0x5B,
         cfgDisplayMessages                = 0x5D,
         cfgUtilityInformation             = 0x5F
 
@@ -262,6 +263,7 @@ private:
     INT configureEmetconGoldAddress(CtiCommandParser &parse);
     INT configureEmetconSilverAddress(CtiCommandParser &parse);
     INT configureTargetLoadAmps(CtiCommandParser &parse);
+    INT configurePreferredChannels(CtiCommandParser &parse);
     INT priority(BYTE priority);
 
     bool validateAddress(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);

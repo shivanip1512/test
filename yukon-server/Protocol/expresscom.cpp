@@ -1624,6 +1624,10 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     {
         status = configureTargetLoadAmps(parse);
     }
+    else if(parse.isKeyValid("preferredchannellist"))
+    {
+        status = configurePreferredChannels(parse);
+    }
     else if(parse.isKeyValid("xcpricetier"))
     {
         status = configurePriceTierCommand(parse.getiValue("xcpricetier", 0));
@@ -2329,6 +2333,29 @@ INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse
                                 &config );
     }
     return status;
+}
+
+INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
+{
+    std::vector<float> channels = parse.parseListOfFloats(parse.getsValue("preferredchannellist"));
+
+    std::vector<BYTE> config;
+
+    for each(const float &channel in channels)
+    {
+        int hundrethsOfMhz = ((channel * 100)+.5); // Positive only rounding, works for my use.
+        config.push_back(hundrethsOfMhz>>8);
+        config.push_back(hundrethsOfMhz);
+    }
+
+    if(config.size() > 0) // &*config.begin() is not safe if this is not true.
+    {
+        return configuration( cfgPreferredChannels, config.size(), &*config.begin());
+    }
+    else
+    {
+        return BADPARAM;
+    }
 }
 
 INT CtiProtocolExpresscom::configureTargetLoadAmps(CtiCommandParser &parse)

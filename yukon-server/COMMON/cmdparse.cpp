@@ -19,6 +19,8 @@ static const CtiString str_num     ("([0-9]+)");
 static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
 static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
 
+static const CtiString str_floatnum_list(str_floatnum + CtiString("( ") + str_floatnum + CtiString(")*"));
+
 // str_hexnum must come before str_num: if str_num is first it will only match the 0 of an input value in hex.
 static const CtiString str_anynum  ( CtiString("(") + str_hexnum + CtiString("|") + str_num + CtiString(")") );
 
@@ -5728,6 +5730,13 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xctargetloadamps"] = CtiParseValue(atof(tla_tok().c_str()));
         }
     }
+    else if(CmdStr.contains(" preferredchannels"))
+    {
+        if(!(token = CmdStr.match(CtiString("preferredchannels ") + str_floatnum_list)).empty())
+        {
+            _cmd["preferredchannellist"] = CtiParseValue(CmdStr.match(str_floatnum_list));
+        }
+    }
 }
 
 void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
@@ -6849,4 +6858,23 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
 }
 
 
+std::vector<float> CtiCommandParser::parseListOfFloats(const std::string &floatList)
+{
+    CtiString token;
+    CtiString ctistr_list = floatList;
 
+    std::vector<float> retVal;
+
+    if(!(token = ctistr_list.match(str_floatnum_list)).empty())
+    {
+        CtiTokenizer tok( token );
+
+        std::string value;
+        while(!(value = tok()).empty())
+        {
+            retVal.push_back(atof(value.c_str()));
+        }
+    }
+
+    return retVal;
+}
