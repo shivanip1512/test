@@ -8,6 +8,7 @@
 #include "VoltageRegulatorLoader.h"
 #include "GangOperatedVoltageRegulator.h"
 #include "PhaseOperatedVoltageRegulator.h"
+#include "resolvers.h"
 
 #include <string>
 
@@ -104,7 +105,7 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
 
 void VoltageRegulatorDBLoader::loadPoints(const long Id, VoltageRegulatorManager::VoltageRegulatorMap &voltageRegulators)
 {
-    static const std::string sql = "SELECT P.PAObjectID, P.pointid, P.pointoffset"
+    static const std::string sql = "SELECT P.PAObjectID, P.pointid, P.pointoffset, P.pointtype "
                                    " FROM Point P, YukonPAObject Y "
                                    " WHERE Y.PAObjectID = P.PAObjectID AND Y.Type IN";
 
@@ -151,20 +152,24 @@ void VoltageRegulatorDBLoader::loadPoints(const long Id, VoltageRegulatorManager
 
         if ( !rdr["pointid"].isNull() )
         {
-            long    pointId,
-                    pointOffset;
+            long        pointId,
+                        pointOffset;
+            std::string pointType;
 
             rdr["pointid"]     >> pointId;
             rdr["pointoffset"] >> pointOffset;
+            rdr["pointtype"]   >> pointType;
 
-            if ( pointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+            if ( resolvePointType(pointType) == StatusPointType &&
+                 pointOffset == Cti::CapControl::Offset_PaoIsDisabled )
             {
                 regulator->setDisabledStatePointId( pointId );
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Undefined Voltage Regulator point offset: " << pointOffset << std::endl;
+                dout << CtiTime() << " - Undefined Voltage Regulator point offset: " << pointOffset
+                                  << " of type: " << pointType << std::endl;
             }
         }
     }

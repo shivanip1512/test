@@ -4626,7 +4626,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
 
-                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                    if ( resolvePointType(tempPointType) == StatusPointType &&
+                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
                         currentStation->setDisabledStatePointId(tempPointId);
                         pointid_station_map->insert(make_pair(tempPointId,currentStation));
@@ -5005,7 +5006,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
 
-                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                    if ( resolvePointType(tempPointType) == StatusPointType &&
+                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
                         currentArea->setDisabledStatePointId(tempPointId);
                         pointid_area_map->insert(make_pair(tempPointId,currentArea));
@@ -5321,7 +5323,8 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
 
-                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                    if ( resolvePointType(tempPointType) == StatusPointType &&
+                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
                         currentSpArea->setDisabledStatePointId(tempPointId);
                         pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
@@ -6024,13 +6027,15 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
 
-                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                    if ( resolvePointType(tempPointType) == StatusPointType &&
+                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
                         currentCCSubstationBus->setDisabledStatePointId(tempPointId);
                         pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                         currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                     }
-                    else if ( tempPointOffset == Cti::CapControl::Offset_CommsState )
+                    else if ( resolvePointType(tempPointType) == StatusPointType &&
+                              tempPointOffset == Cti::CapControl::Offset_CommsState )
                     {
                         currentCCSubstationBus->setCommsStatePointId(tempPointId);
                         pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
@@ -6675,7 +6680,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                         rdr["pointoffset"] >> tempPointOffset;
                         rdr["pointtype"] >> tempPointType;
 
-                        if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                        if ( resolvePointType(tempPointType) == StatusPointType &&
+                             tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                         {
                             currentCCFeeder->setDisabledStatePointId(tempPointId);
                             pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
@@ -7081,31 +7087,26 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         rdr["pointoffset"] >> tempPointOffset;
                         rdr["pointtype"] >> tempPointType;
 
-                        if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                        if ( resolvePointType(tempPointType) == StatusPointType &&
+                             tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                         {
                             currentCCCapBank->setDisabledStatePointId(tempPointId);
                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                             currentCCCapBank->getPointIds()->push_back(tempPointId);
                         }
-                        else if ( tempPointOffset == Cti::CapControl::Offset_CapbankControlOrOperation )
+                        else if ( resolvePointType(tempPointType) == StatusPointType &&
+                                  tempPointOffset == Cti::CapControl::Offset_CapbankControlStatus )
                         {
-                            if ( resolvePointType(tempPointType) == StatusPointType )
-                            {
-                                currentCCCapBank->setStatusPointId(tempPointId);
-                                pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                currentCCCapBank->getPointIds()->push_back(tempPointId);
-                            }
-                            else if ( resolvePointType(tempPointType) == AnalogPointType )
-                            {
-                                currentCCCapBank->setOperationAnalogPointId(tempPointId);
-                                pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                currentCCCapBank->getPointIds()->push_back(tempPointId);
-                            }
-                            else
-                            {//undefined cap bank point
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            currentCCCapBank->setStatusPointId(tempPointId);
+                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
+                            currentCCCapBank->getPointIds()->push_back(tempPointId);
+                        }
+                        else if ( resolvePointType(tempPointType) == AnalogPointType &&
+                                  tempPointOffset == Cti::CapControl::Offset_CapbankOperationAnalog )
+                        {
+                            currentCCCapBank->setOperationAnalogPointId(tempPointId);
+                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
+                            currentCCCapBank->getPointIds()->push_back(tempPointId);
                         }
                         else if ( resolvePointType(tempPointType) == AnalogPointType &&
                                   tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&

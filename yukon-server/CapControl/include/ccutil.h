@@ -25,7 +25,8 @@ enum CapControlType
 enum ReservedPointOffsets
 {
     Offset_EstimatedVarLoad                     = 1,
-    Offset_CapbankControlOrOperation            = 1,
+    Offset_CapbankControlStatus                 = 1,
+    Offset_CapbankOperationAnalog               = 1,
     Offset_DailyOperations                      = 2,
     Offset_PowerFactor                          = 3,
     Offset_EstimatedPowerFactor                 = 4,
