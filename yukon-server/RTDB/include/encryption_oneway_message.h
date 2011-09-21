@@ -15,6 +15,7 @@ struct IM_EX_DEVDB OneWayMsgEncryption
     std::size_t encryptMessage( const CtiTime       & timeNow,
                                 char                * inMessage,
                                 const std::size_t     msgLength,
-                                char                * outMessage );
+                                char                * outMessage,
+                                const bool            asciiConvert = true );
 };
 

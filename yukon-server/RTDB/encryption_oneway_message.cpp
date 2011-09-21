@@ -37,7 +37,8 @@ void GetNextSequenceValues( const CtiTime & timeNow, CtiTime * seqTime, unsigned
 std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
                                                  char               * inMessage,
                                                  const std::size_t    msgLength,
-                                                 char               * outMessage )
+                                                 char               * outMessage,
+                                                 const bool           asciiConvert )
 {
     // update timestamp components
     CtiTime  lastXmitTime;
@@ -88,9 +89,30 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
     unsigned long counter = gConfigParms.getValueAsULong("ONE_WAY_ENCRYPT_KEY_ROLL");   // defaults to zero
 
     OneWayEncryption    oneWay( counter, parentKey );                
+    unsigned char       messageBuffer[300];
+    std::size_t         encryptedLength = passwordStart + 10;
+    
+    oneWay.encrypt( lastXmitTime, utcCounter, cuc_inMessage, passwordStart, messageBuffer );
 
-    oneWay.encrypt( lastXmitTime, utcCounter, cuc_inMessage, passwordStart, uc_outMessage );
+    if ( asciiConvert )
+    {
+        static const char convert[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    return passwordStart + 10;
+        for ( std::size_t i = 0; i < encryptedLength; ++i )
+        {
+            unsigned char high4bits = ( messageBuffer[i] >> 4 ) & 0x0f;
+            unsigned char low4bits  =   messageBuffer[i]        & 0x0f;
+
+            *uc_outMessage++ = convert[ high4bits ];
+            *uc_outMessage++ = convert[ low4bits  ];
+        }
+        encryptedLength *= 2;
+    }
+    else
+    {
+        std::copy( messageBuffer, messageBuffer + encryptedLength, uc_outMessage );
+    }
+
+    return encryptedLength;
 }
 

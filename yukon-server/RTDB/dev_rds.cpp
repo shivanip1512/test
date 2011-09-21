@@ -47,7 +47,8 @@ int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
             _outMessage.Buffer.TAPSt.Length = encryptMessage( CtiTime::now(),
                                                               OutMessage->Buffer.TAPSt.Message,
                                                               OutMessage->Buffer.TAPSt.Length,
-                                                              _outMessage.Buffer.TAPSt.Message );
+                                                              _outMessage.Buffer.TAPSt.Message,
+                                                              false );
             _outMessage.OutLength = _outMessage.Buffer.TAPSt.Length;
         }
 
