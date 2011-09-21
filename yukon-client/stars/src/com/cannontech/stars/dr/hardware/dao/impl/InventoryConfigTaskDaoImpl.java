@@ -236,6 +236,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
+        sql.append("FROM InventoryBase I");
         sql.append(  "JOIN InventoryConfigTaskItem ICTI on ICTI.InventoryId = I.InventoryId");
         sql.append(  "LEFT JOIN LmHardwareBase H ON H.InventoryId = I.InventoryId");
         sql.append(  "LEFT JOIN MeterHardwareBase M ON M.InventoryId = I.InventoryId");
