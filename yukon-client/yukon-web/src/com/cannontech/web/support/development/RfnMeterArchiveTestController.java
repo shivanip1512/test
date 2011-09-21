@@ -32,14 +32,18 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendMeterArchiveRequest")
-    public String send(int serialFrom, int serialTo, String manufacturer, String model, double value, boolean random) {
+    public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, boolean random, String uom, 
+                       boolean quad1,
+                       boolean quad2,
+                       boolean quad3,
+                       boolean quad4) {
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);
         jmsTemplate.setDeliveryPersistent(false);
         jmsTemplate.setPubSubDomain(false);
         
-        for (int i = serialFrom; i < serialTo; i++) {
+        for (int i = serialFrom; i <= serialTo; i++) {
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             
             RfnMeterReadingData data = new RfnMeterReadingData();
@@ -52,8 +56,15 @@ public class RfnMeterArchiveTestController {
             ChannelData channelData = new ChannelData();
             channelData.setChannelNumber(0);
             channelData.setStatus(ChannelDataStatus.OK);
-            channelData.setUnitOfMeasure("Wh");
-            channelData.setUnitOfMeasureModifiers(ImmutableSet.of("Quadrant 1", "Quadrant 4"));
+            
+            channelData.setUnitOfMeasure(uom);
+            ImmutableSet<String> modifiers = ImmutableSet.of();
+            if (quad1) modifiers.add("Quadrant 1");
+            if (quad2) modifiers.add("Quadrant 2");
+            if (quad3) modifiers.add("Quadrant 3");
+            if (quad4) modifiers.add("Quadrant 4");
+            channelData.setUnitOfMeasureModifiers(modifiers);
+            
             if (random) {
                 value = Math.random() * 1000;
             }

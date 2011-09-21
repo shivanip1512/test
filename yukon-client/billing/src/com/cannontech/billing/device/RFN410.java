@@ -54,7 +54,7 @@ public class RFN410 extends BillingDeviceBase {
      
     @Override
     public boolean isDemand(PointIdentifier pointIdentifier) {
-        if (pointIdentifier.getPointType() == PointType.Analog && pointIdentifier.getOffset() == 11) {
+        if (pointIdentifier.getPointType() == PointType.Analog && pointIdentifier.getOffset() == 105) {
             return true;
         }
         return false;

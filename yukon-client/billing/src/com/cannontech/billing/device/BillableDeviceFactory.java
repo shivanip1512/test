@@ -75,6 +75,7 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFN410FD:
         case DeviceTypes.RFN430A3:
         case DeviceTypes.RFN430KV:
+        case DeviceTypes.RFWMETER:
             device = new RFN410();
             break;
 

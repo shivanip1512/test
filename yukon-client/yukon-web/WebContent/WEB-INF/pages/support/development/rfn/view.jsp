@@ -19,10 +19,63 @@ function useRandom() {
     <tags:sectionContainer title="RFN Meter Archive Request Test">
         <form action="sendMeterArchiveRequest" method="post">
             <tags:nameValueContainer>
+                
                 <tags:nameValue name="Serial Number"><input name="serialFrom" type="text" value="1000"> to <input name="serialTo" type="text" value="1000"></tags:nameValue>
-                <tags:nameValue name="Manufacturer"><input name="manufacturer" type="text" value="LGYR"></tags:nameValue>
-                <tags:nameValue name="Model"><input name="model" type="text" value="FocuskWh"></tags:nameValue>
-                <tags:nameValue name="Wh Value"><input id="static" name="value" type="text" value="34543.4">  <input type="checkbox" id="random" onclick="useRandom()">  <label for="random">Random</label></tags:nameValue>
+                
+                <tags:nameValue name="Manufacturer">
+                    <select name="manufacturer">
+                        <option value="Eka">Eka</option>
+                        <option value="LGYR">LGYR</option>
+                        <option value="EE">EE</option>
+                        <option value="GE">GE</option>
+                    </select>
+                </tags:nameValue>
+                
+                <tags:nameValue name="Model">
+                    <select name="model">
+                        <option value="water_sensor">water_sensor</option>
+                        <option value="water_sensor">water_node</option>
+                        <option value="FocuskWh">FocuskWh</option>
+                        <option value="A3R">A3R</option>
+                        <option value="Centron">Centron</option>
+                        <option value="kV2">kV2</option>
+                        <option value="FocusAXD">FocusAXD</option>
+                        <option value="FocusAXR">FocusAXR</option>
+                    </select>
+                </tags:nameValue>
+                
+                <tags:nameValue name="UoM">
+                    <select name="uom">
+                        <option value="gal">gal</option>
+                        <option value="-">-</option>
+                        <option value="ft^3">ft^3</option>
+                        <option value="m^3">m^3</option>
+                        <option value="Wh">Wh</option>
+                        <option value="W">W</option>
+                        <option value="Restore Blink Count">Restore Blink Count</option>
+                        <option value="Restore Count">Restore Count</option>
+                        <option value="Outage Blink Count">Outage Blink Count</option>
+                        <option value="Outage Count">Outage Count</option>
+                        <option value="V">V</option>
+                        <option value="V degree">V degree</option>
+                        <option value="A">A</option>
+                        <option value="Var">Var</option>
+                        <option value="Varh">Varh</option>
+                        <option value="Pulse">Pulse</option>
+                    </select>
+                </tags:nameValue>
+                
+                <tags:nameValue name="Modifiers">
+                    <input type="checkbox" id="quad1" name="quad1"> <label for="quad1">Quadrant 1</label><br>
+                    <input type="checkbox" id="quad2" name="quad2"> <label for="quad2">Quadrant 2</label><br>
+                    <input type="checkbox" id="quad3" name="quad3"> <label for="quad3">Quadrant 3</label><br>
+                    <input type="checkbox" id="quad4" name="quad4"> <label for="quad4">Quadrant 4</label><br>
+                </tags:nameValue>
+                
+                <tags:nameValue name="Value">
+                    <input id="static" name="value" type="text" value="34543.4">  <input type="checkbox" id="random" onclick="useRandom()">  <label for="random">Random</label>
+                </tags:nameValue>
+                
             </tags:nameValueContainer>
             <div clas="actionArea"><cti:button nameKey="send" type="submit"/></div>
         </form>
