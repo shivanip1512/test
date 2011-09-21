@@ -150,9 +150,14 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         
         for (YukonRoleProperty yukonRoleProperty : properties) {
             RolePropertyValue rolePropertyValue = new RolePropertyValue(yukonRoleProperty);
-            Object actualValue = actualValueLookup.get(yukonRoleProperty);
-            rolePropertyValue.setValue(actualValue);
             
+            //only set the value if it was found in the lookup, otherwise use the default from YukonRoleProperty table
+            if(actualValueLookup.containsKey(yukonRoleProperty)){
+                Object actualValue = actualValueLookup.get(yukonRoleProperty);
+                rolePropertyValue.setValue(actualValue);
+            }else{
+                rolePropertyValue.setValue(descriptiveRoleProperties.get(yukonRoleProperty).getDefaultValue());
+            }
             rolePropertyValues.add(rolePropertyValue);
         }
         
