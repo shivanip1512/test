@@ -18,7 +18,6 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -33,9 +32,6 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -51,7 +47,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
     private DeviceDao deviceDao = null;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     
     private final String CONTROL_CONNECT_COMMAND = "control connect";
     private final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
@@ -166,35 +161,27 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     
     public ModelAndView connect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext); 
+    	
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
-        if(result.isComplete() && !(result.isAnyErrorOrException()))
-        {
-            mav.addObject("successMsg", messageSourceAccessor.getMessage("yukon.web.widgets.disconnectMeterWidget.connectSuccess"));
-        }
+        
         return mav;
     }
     
     public ModelAndView disconnect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+    	
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
-        if(result.isComplete() && !(result.isAnyErrorOrException()))
-        {
-            mav.addObject("successMsg", messageSourceAccessor.getMessage("yukon.web.widgets.disconnectMeterWidget.disconnectSuccess"));
-        }
+        
         return mav;
     }
     
@@ -345,11 +332,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
 }
 
