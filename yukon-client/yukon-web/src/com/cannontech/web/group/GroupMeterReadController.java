@@ -77,6 +77,7 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 		mav.addObject("deviceCollection", deviceCollection);
+		mav.addAllObjects(deviceCollection.getCollectionParameters());
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
 		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
@@ -140,6 +141,8 @@ public class GroupMeterReadController extends MultiActionController {
 		if (selectedAttributes.size() == 0) {
 			
 			addErrorStateToMav(errorMav, "No Attribute Selected", groupName, null);
+			errorMav.addObject("deviceCollection", deviceCollection);
+			errorMav.addAllObjects(deviceCollection.getCollectionParameters());
 			return errorMav;
 		}
 		
@@ -194,12 +197,13 @@ public class GroupMeterReadController extends MultiActionController {
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {
-
-        	addErrorStateToMav(errorMav, e.getMessage(), groupName, makeSelectedAttributeStrsParameter(selectedAttributes));
+            String error = "Could not initiate read of attribute(s): " + e.getMessage();
+        	addErrorStateToMav(errorMav, error, groupName, makeSelectedAttributeStrsParameter(selectedAttributes));
+        	errorMav.addObject("deviceCollection", deviceCollection);
+            errorMav.addAllObjects(deviceCollection.getCollectionParameters());
 			return errorMav;
         }
 		
-        
 		return mav;
 	}
 	
