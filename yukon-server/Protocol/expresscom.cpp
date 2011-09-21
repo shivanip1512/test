@@ -2343,6 +2343,10 @@ INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
 
     for each(const float &channel in channels)
     {
+        if(channel >= 108.05 || channel <= 63.95) // 64-108 are known possible in hardware. Compensting for floating point errors.
+        {
+            return BADPARAM;
+        }
         int hundrethsOfMhz = ((channel * 100)+.5); // Positive only rounding, works for my use.
         config.push_back(hundrethsOfMhz>>8);
         config.push_back(hundrethsOfMhz);
@@ -2350,7 +2354,7 @@ INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
 
     if(config.size() > 0) // &*config.begin() is not safe if this is not true.
     {
-        return configuration( cfgPreferredChannels, config.size(), &*config.begin());
+        return configuration( cfgPreferredChannels, config.size(), &config.front());
     }
     else
     {
