@@ -1,6 +1,7 @@
 package com.cannontech.thirdparty.digi.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +189,11 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     
     @Override
     public List<ZigbeeDeviceAssignment> getZigbeeDevicesForAccount(int accountId, List<Integer> hardwareTypeIds) {
+        // Let's not error out even if there are no Zigbee device types set up yet.
+        if (hardwareTypeIds == null || hardwareTypeIds.size() == 0) {
+            return Collections.emptyList();
+        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT ib.DeviceId, zb.GatewayId");

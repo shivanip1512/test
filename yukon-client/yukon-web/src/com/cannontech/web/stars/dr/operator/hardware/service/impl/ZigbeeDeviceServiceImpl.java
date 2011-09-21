@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.HardwareType;
@@ -26,8 +27,6 @@ import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
 import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
@@ -61,20 +60,20 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
         final YukonEnergyCompany yukonEc = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
         
         Set<HardwareType> zigbeeEndpointTypes = HardwareType.getZigbeeEndpointTypes();
-        
-        Iterable<Integer> deviceTypeIds = Iterables.transform(zigbeeEndpointTypes, new Function<HardwareType, Integer> () {
-            @Override
-            public Integer apply(HardwareType from) {
-                int definitionId = from.getDefinitionId();
+
+        List<Integer> deviceTypeIds = Lists.newArrayList();
+        for (HardwareType hardwareType : zigbeeEndpointTypes) {
+            int definitionId = hardwareType.getDefinitionId();
+            try {
                 YukonListEntry zigbeeDeviceTypeListEntry = yukonListDao.getYukonListEntry(definitionId, yukonEc);
-                return zigbeeDeviceTypeListEntry.getEntryID();
+                deviceTypeIds.add(zigbeeDeviceTypeListEntry.getEntryID());
+            } catch (EmptyResultDataAccessException erdae) {
+                // This just means this energy company isn't using this device type.
             }
-        });
-        
-        
-        
-        List<ZigbeeDeviceAssignment> assignments = gatewayDeviceDao.getZigbeeDevicesForAccount(accountId, Lists.newArrayList(deviceTypeIds));
-        
+        }
+
+        List<ZigbeeDeviceAssignment> assignments = gatewayDeviceDao.getZigbeeDevicesForAccount(accountId, deviceTypeIds);
+
         List<Pair<InventoryIdentifier, ZigbeeDeviceDto>> deviceList = Lists.newArrayList();
         
         for (ZigbeeDeviceAssignment assignment : assignments) {
