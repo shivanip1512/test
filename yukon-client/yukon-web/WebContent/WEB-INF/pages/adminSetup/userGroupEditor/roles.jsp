@@ -12,22 +12,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="adminSetup" page="roles">
-<cti:includeScript link="/JavaScript/cooper/ui/general.js"/>
+<cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
     
 <script type="text/javascript">
-function showPointingPopup(event) {
-    
-    var target = Event.element(event);
-    var offsets = target.cumulativeOffset();
-    var popupLeft = offsets.left + target.getDimensions().width + 2;
-    var left = popupLeft + 'px';
-    var top = (offsets.top -20) + 'px';
-    
-    $('descriptionPopup').setStyle({left:left, top:top});
-    $('descriptionPopup_content').innerHTML = target.up().next('span.focusedFieldDescription').innerHTML;
-    $('descriptionPopup').show();
-    
-}
+
 </script>
 
     <form:form action="/spring/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
@@ -58,12 +46,4 @@ function showPointingPopup(event) {
           <cti:button nameKey="cancel" name="cancel" type="submit"/>
 <%--        </tags:csrfTokenRequest> --%>
     </form:form>
-    
-    <div class="pointingPopup_container" id="descriptionPopup" style="display:none;">
-        <div class="pointingPopup_chevron ov pr">
-        </div>
-        <div class="pointingPopup_content" id="descriptionPopup_content">
-        </div>
-    </div>
-    
 </cti:standardPage>

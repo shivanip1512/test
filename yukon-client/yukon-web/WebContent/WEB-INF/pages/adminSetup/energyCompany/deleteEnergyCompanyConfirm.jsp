@@ -9,7 +9,6 @@
 <cti:standardPage module="adminSetup" page="deleteEnergyCompanyConfirm">
 
     <cti:url value="delete" var="deleteEnergyCompanyUrl"/>
-	<cti:includeScript link="/JavaScript/cooper/ui/general.js"/>
 
     <div class="listContainer">
         <div>

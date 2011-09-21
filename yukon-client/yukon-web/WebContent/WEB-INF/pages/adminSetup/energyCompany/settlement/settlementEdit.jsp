@@ -9,9 +9,9 @@
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 
 <cti:standardPage module="adminSetup" page="settlements.${mode}">
+<cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
 
     <tags:setFormEditMode mode="${mode}"/>
-    <cti:includeScript link="/JavaScript/cooper/ui/general.js"/>
     
 <script>
     function toggleAvailableRatesInputs(availableRatesCheckBox) {

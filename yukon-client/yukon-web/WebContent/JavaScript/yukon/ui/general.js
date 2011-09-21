@@ -161,6 +161,22 @@ Yukon.ui = {
             input.removeClassName('error');
         }
     },
+    
+    /**
+     * args: {  selector:   String css selector for use by $$
+     *          classes:    Array or string of class names to toggle on targeted elements }
+     */
+    toggleClass: function(args){
+        var classNames = args.classes;
+        
+        if(typeof(args.classes) == "string"){
+            classNames = classNames.split(",");
+        }
+        
+        for(var i=0; i<classNames.length; i++){
+            $$(args.selector).invoke('toggleClassName', classNames);
+        }
+    },
 
     toggleInputs: function(input){
         //find matching inputs
@@ -460,39 +476,41 @@ Yukon.uiUtils = {
                 });
             }
         },
-        showTab: function(tab){
-            if(!tab.hasClassName("active")){
-                var tabIndex = 0;
-                var tabbed = null;
+        showTab: function(target){
+            if(!target.hasClassName("active")){
+                var tabIndex = -1;
+                var tabbedContent = null;
                 var tabControls = null;
                 
-                tab.parentNode.childElements().each(function(elem, idx){ //no native support for indexing an element in prototype!
-                    if (elem === tab) {
-                        tabIndex = idx;
-                    }
-                });
-                
-                
-                if(tab.hasClassName("f_tab")){
-                    tabbed = tab.parentNode;
+                //Show the tab via the tab itself
+                if(target.hasClassName("f_tab")){
+                    tabIndex = target.previousSiblings().grep(new Selector('.f_tab')).size();
+                    tabbedContent = target.up(".f_tabbed");
                     // IE doesn't extend the parentNode for some reason in Prototype 1.7
-                    tabControls = $(tab.parentNode.parentNode).select(".f_tabs")[0];
+                    tabControls = $(target.parentNode.parentNode).down(".f_tabs");
+                //show the tab via the tab controls
                 }else{
-                    tabControls = tab.parentNode;
+                    tabIndex = target.previousSiblings().grep(new Selector('li')).size();
+                    tabControls = target.up(".f_tabs");
                  // IE doesn't extend the parentNode for some reason in Prototype 1.7
-                    tabbed = $(tab.parentNode.parentNode).select(".f_tabbed")[0];
+                    tabbedContent = $(target.parentNode.parentNode).down(".f_tabbed");
                 }
                 
-                tabbed.childElements().each(function(elem){
-                    elem.removeClassName("active");
-                });
+                tabbedContent.childElements().invoke('removeClassName', 'active');
+                tabControls.childElements().invoke('removeClassName', 'active');
+
+                //there can be other content in the .f_tabbed container but we are only interested
+                //in the f_tab elements
+                var tabs = tabbedContent.childElements().grep(new Selector('.f_tab'));
+                //make sure we are in-bounds
+                if(tabs.length > tabIndex){
+                    tabs[tabIndex].addClassName("active");
+                }
                 
-                tabControls.childElements().each(function(elem){
-                    elem.removeClassName("active");
-                });
-                
-                tabbed.select(".f_tab")[tabIndex].addClassName("active");
-                tabControls.select("li")[tabIndex].addClassName("active");
+                //make sure we are in-bounds
+                if(tabControls.childElements().length > tabIndex){
+                    tabControls.childElements()[tabIndex].addClassName("active");
+                }
                 return true;
             }
             return false;
@@ -526,53 +544,4 @@ Element.prototype.trigger = function(eventName)
 //initialize the lib
 document.observe("dom:loaded", function() {
     Yukon.ui.init();
-});
-
-
-Event.observe(window, 'load', function() {
-    $$('.focusableFieldHolder input').each(function(inputField) {
-        var blurAndInitial = function() {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
-                inputField.removeClassName('usingNonDefaultValue');
-                inputField.value = $F(defaultField);
-            } else {
-                inputField.addClassName('usingNonDefaultValue');
-            }
-            $('descriptionPopup').hide();
-        };
-        Event.observe(inputField, "focus", function(event) {
-            showPointingPopup(event);
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField)) {
-                inputField.value = "";
-            }
-            inputField.removeClassName('usingNonDefaultValue');
-        });
-        Event.observe(inputField, "blur", blurAndInitial);
-        blurAndInitial();
-    });
-
-    // handling select elements is similar, but requires slightly different code 
-    $$('.focusableFieldHolder select').each(function(inputField) {
-        var blurAndInitial = function() {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField)) {
-                inputField.removeClassName('usingNonDefaultValue');
-            } else {
-                inputField.addClassName('usingNonDefaultValue');
-            }
-            $('descriptionPopup').hide();
-        };
-        Event.observe(inputField, "change", blurAndInitial);
-        Event.observe(inputField, "focus", function(event) {
-            showPointingPopup(event);
-            inputField.removeClassName('usingNonDefaultValue');
-        });
-        Event.observe(inputField, "blur", function(event) {
-            blurAndInitial();
-        });
-        blurAndInitial();
-    });
-
 });
