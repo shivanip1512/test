@@ -39,6 +39,7 @@ public:
 private:
 
     void loadCore(const long Id, VoltageRegulatorManager::VoltageRegulatorMap &voltageRegulators);
+    void loadPoints(const long Id, VoltageRegulatorManager::VoltageRegulatorMap &voltageRegulators);
 
 };
 

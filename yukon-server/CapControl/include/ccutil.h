@@ -22,6 +22,22 @@ enum CapControlType
 };
 
 
+enum ReservedPointOffsets
+{
+    Offset_EstimatedVarLoad                     = 1,
+    Offset_CapbankControlOrOperation            = 1,
+    Offset_DailyOperations                      = 2,
+    Offset_PowerFactor                          = 3,
+    Offset_EstimatedPowerFactor                 = 4,
+    Offset_CommsState                           = 300,
+    Offset_PaoIsDisabled                        = 500,
+    Offset_OperationSuccessPercentRangeMin      = 10000,
+    Offset_OperationSuccessPercentRangeMax      = 10003,
+    Offset_ConfirmationSuccessPercentRangeMin   = 10010,
+    Offset_ConfirmationSuccessPercentRangeMax   = 10013
+};
+
+
 enum Phase
 {
     Phase_Unknown,

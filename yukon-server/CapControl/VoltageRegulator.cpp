@@ -130,6 +130,11 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
 {
     IDSet IDs;
 
+    if ( getDisabledStatePointId() > 0 )
+    {
+        IDs.insert( getDisabledStatePointId() );
+    }
+
     for each ( const AttributeMap::value_type & attribute in _attributes  )
     {
         IDs.insert( attribute.second.getPointId() );

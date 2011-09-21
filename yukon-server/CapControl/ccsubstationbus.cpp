@@ -134,7 +134,8 @@ CtiCCSubstationBus::CtiCCSubstationBus()
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
       _insertDynamicDataFlag(true),
-      _dirty(true)
+      _dirty(true),
+      _commsStatePointId(0)
 {
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -226,7 +227,8 @@ CtiCCSubstationBus::CtiCCSubstationBus(StrategyManager * strategyManager)
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
       _insertDynamicDataFlag(true),
-      _dirty(true)
+      _dirty(true),
+      _commsStatePointId(0)
 {
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -9394,6 +9396,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::set<long>& poi
     {
         pointAddMsg.insert(getDisableBusPointId());
     }
+    if (getCommsStatePointId() > 0)
+    {
+        pointAddMsg.insert(getCommsStatePointId());
+    }
     if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
     {
         pointAddMsg.insert(getOperationStats().getUserDefOpSuccessPercentId());
@@ -9675,6 +9681,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
 
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
         _dirty = right._dirty;
+
+        _commsStatePointId = right._commsStatePointId;
     }
     return *this;
 }
@@ -9728,6 +9736,7 @@ void CtiCCSubstationBus::restore(Cti::RowReader& rdr)
     _dailyoperationsanalogpointid = 0;
     _powerfactorpointid = 0;
     _estimatedpowerfactorpointid = 0;
+    _commsStatePointId = 0;
 
     setDecimalPlaces(0);
 
@@ -10093,3 +10102,16 @@ bool CtiCCSubstationBus::checkForRateOfChange(const CtiRegression& reg, const Ct
     }
     return false;
 }
+
+
+LONG CtiCCSubstationBus::getCommsStatePointId() const
+{
+    return _commsStatePointId;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setCommsStatePointId(LONG newId)
+{
+    _commsStatePointId = newId;
+    return *this;
+}
+

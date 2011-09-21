@@ -2,11 +2,13 @@
 
 #include "CapControlPao.h"
 #include "resolvers.h"
+#include "capcontroller.h"
 
 using std::string;
 
 CapControlPao::CapControlPao() :
     _paoId(0),
+    _disabledStatePointId(0),
     _disableFlag(false)
 {
 
@@ -31,6 +33,8 @@ void CapControlPao::restore(Cti::RowReader& rdr)
 
     std::transform(tempString.begin(), tempString.end(), tempString.begin(), tolower);
     _disableFlag = (tempString=="y"?true:false);
+
+    _disabledStatePointId = 0;
 }
 
 int CapControlPao::getPaoId() const
@@ -100,7 +104,16 @@ bool CapControlPao::getDisableFlag() const
 
 void CapControlPao::setDisableFlag(bool disableFlag)
 {
-    _disableFlag = disableFlag;
+    if ( _disableFlag != disableFlag )
+    {
+        _disableFlag = disableFlag;
+        
+        if ( _disabledStatePointId != 0 )
+        {
+            CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue( 
+                new CtiPointDataMsg( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+        }
+    }
 }
 
 const std::string& CapControlPao::getPaoStatistics() const
@@ -135,6 +148,7 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
         _paoType = right._paoType;
         _paoDescription = right._paoDescription;
         _disableFlag = right._disableFlag;
+        _disabledStatePointId = right._disabledStatePointId;
     }
     return *this;
 }
@@ -147,5 +161,17 @@ bool CapControlPao::operator == (const CapControlPao& right) const
 bool CapControlPao::operator != (const CapControlPao& right) const
 {
     return _paoId != right._paoId;
+}
+
+
+void CapControlPao::setDisabledStatePointId( const long newId )
+{
+    _disabledStatePointId = newId;
+}
+
+
+long CapControlPao::getDisabledStatePointId() const
+{
+    return _disabledStatePointId;
 }
 

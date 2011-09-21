@@ -152,6 +152,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getPhaseCValueBeforeControl() const;
     const CtiTime& getLastWattPointTime() const;
     const CtiTime& getLastVoltPointTime() const;
+    LONG getCommsStatePointId() const;
 
     const CtiRegression& getRegression();
     const CtiRegression& getRegressionA();
@@ -248,6 +249,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPhaseCValueBeforeControl(DOUBLE value);
     CtiCCSubstationBus& setLastWattPointTime(const CtiTime& lastpointupdate);
     CtiCCSubstationBus& setLastVoltPointTime(const CtiTime& lastpointupdate);
+    CtiCCSubstationBus& setCommsStatePointId(LONG newId);
 
     void reOrderFeederDisplayOrders();
     void figureAndSetTargetVarValue();
@@ -479,6 +481,7 @@ private:
 
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
+    LONG    _commsStatePointId;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;

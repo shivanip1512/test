@@ -4625,18 +4625,27 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     rdr["pointid"] >> tempPointId;
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
-                    if ( resolvePointType(tempPointType) == AnalogPointType )
+
+                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
-                        {//op stats point ids.
+                        currentStation->setDisabledStatePointId(tempPointId);
+                        pointid_station_map->insert(make_pair(tempPointId,currentStation));
+                        currentStation->getPointIds()->push_back(tempPointId);
+                    }
+                    else if ( resolvePointType(tempPointType) == AnalogPointType )
+                    {
+                        if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                             tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+                        {
                             if (currentStation->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_station_map->insert(make_pair(tempPointId,currentStation));
                                 currentStation->getPointIds()->push_back(tempPointId);
                             }
                         }
-                        else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
-                        {//op stats point ids.
+                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+                        {
                             if (currentStation->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_station_map->insert(make_pair(tempPointId,currentStation));
@@ -4995,18 +5004,27 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                     rdr["pointid"] >> tempPointId;
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
-                    if ( resolvePointType(tempPointType) == AnalogPointType )
+
+                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
-                        {//op stats point ids.
+                        currentArea->setDisabledStatePointId(tempPointId);
+                        pointid_area_map->insert(make_pair(tempPointId,currentArea));
+                        currentArea->getPointIds()->push_back(tempPointId);
+                    }
+                    else if ( resolvePointType(tempPointType) == AnalogPointType )
+                    {
+                        if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                             tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+                        {
                             if (currentArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_area_map->insert(make_pair(tempPointId,currentArea));
                                 currentArea->getPointIds()->push_back(tempPointId);
                             }
                         }
-                        else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
-                        {//op stats point ids.
+                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+                        {
                             if (currentArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_area_map->insert(make_pair(tempPointId,currentArea));
@@ -5302,18 +5320,27 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                     rdr["pointid"] >> tempPointId;
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
-                    if ( resolvePointType(tempPointType) == AnalogPointType )
+
+                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
-                        {//op stats point ids.
+                        currentSpArea->setDisabledStatePointId(tempPointId);
+                        pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
+                        currentSpArea->getPointIds()->push_back(tempPointId);
+                    }
+                    else if ( resolvePointType(tempPointType) == AnalogPointType )
+                    {
+                        if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                             tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+                        {
                             if (currentSpArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
                                 currentSpArea->getPointIds()->push_back(tempPointId);
                             }
                         }
-                        else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
-                        {//op stats point ids.
+                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+                        {
                             if (currentSpArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
@@ -5996,42 +6023,57 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     rdr["pointid"] >> tempPointId;
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
-                    if ( resolvePointType(tempPointType) == AnalogPointType )
+
+                    if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        if ( tempPointOffset==1 )
-                        {//estimated vars point
+                        currentCCSubstationBus->setDisabledStatePointId(tempPointId);
+                        pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
+                        currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                    }
+                    else if ( tempPointOffset == Cti::CapControl::Offset_CommsState )
+                    {
+                        currentCCSubstationBus->setCommsStatePointId(tempPointId);
+                        pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
+                        currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                    }
+                    else if ( resolvePointType(tempPointType) == AnalogPointType )
+                    {
+                        if ( tempPointOffset == Cti::CapControl::Offset_EstimatedVarLoad )
+                        {
                             currentCCSubstationBus->setEstimatedVarLoadPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                             currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                         }
-                        else if ( tempPointOffset==2 )
-                        {//daily operations point
+                        else if ( tempPointOffset == Cti::CapControl::Offset_DailyOperations )
+                        {
                             currentCCSubstationBus->setDailyOperationsAnalogPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                             currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                         }
-                        else if ( tempPointOffset==3 )
-                        {//power factor point
+                        else if ( tempPointOffset == Cti::CapControl::Offset_PowerFactor )
+                        {
                             currentCCSubstationBus->setPowerFactorPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                             currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                         }
-                        else if ( tempPointOffset==4 )
-                        {//estimated power factor point
+                        else if ( tempPointOffset == Cti::CapControl::Offset_EstimatedPowerFactor )
+                        {
                             currentCCSubstationBus->setEstimatedPowerFactorPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                             currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                         }
-                        else if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
-                        {//op stats point ids.
+                        else if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+                        {
                             if (currentCCSubstationBus->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                                 currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                             }
                         }
-                        else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
-                        {//op stats point ids.
+                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+                        {
                             if (currentCCSubstationBus->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
@@ -6632,42 +6674,51 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                         rdr["pointid"] >> tempPointId;
                         rdr["pointoffset"] >> tempPointOffset;
                         rdr["pointtype"] >> tempPointType;
-                        if ( resolvePointType(tempPointType) == AnalogPointType )
+
+                        if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                         {
-                            if ( tempPointOffset==1 )
-                            {//estimated vars point
+                            currentCCFeeder->setDisabledStatePointId(tempPointId);
+                            pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
+                            currentCCFeeder->getPointIds()->push_back(tempPointId);
+                        }
+                        else if ( resolvePointType(tempPointType) == AnalogPointType )
+                        {
+                            if ( tempPointOffset == Cti::CapControl::Offset_EstimatedVarLoad )
+                            {
                                 currentCCFeeder->setEstimatedVarLoadPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                 currentCCFeeder->getPointIds()->push_back(tempPointId);
                             }
-                            else if ( tempPointOffset==2 )
-                            {//daily operations point
+                            else if ( tempPointOffset == Cti::CapControl::Offset_DailyOperations )
+                            {
                                 currentCCFeeder->setDailyOperationsAnalogPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                 currentCCFeeder->getPointIds()->push_back(tempPointId);
                             }
-                            else if ( tempPointOffset==3 )
-                            {//power factor point
+                            else if ( tempPointOffset == Cti::CapControl::Offset_PowerFactor )
+                            {
                                 currentCCFeeder->setPowerFactorPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                 currentCCFeeder->getPointIds()->push_back(tempPointId);
                             }
-                            else if ( tempPointOffset==4 )
-                            {//estimated power factor point
+                            else if ( tempPointOffset == Cti::CapControl::Offset_EstimatedPowerFactor )
+                            {
                                 currentCCFeeder->setEstimatedPowerFactorPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                 currentCCFeeder->getPointIds()->push_back(tempPointId);
                             }
-                            else if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
-                            {//op stats point ids.
+                            else if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                                      tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+                            {
                                 if (currentCCFeeder->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                 {
                                     pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                     currentCCFeeder->getPointIds()->push_back(tempPointId);
                                 }
                             }
-                            else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
-                            {//op stats point ids.
+                            else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                                      tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+                            {
                                 if (currentCCFeeder->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                 {
                                     pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
@@ -7029,23 +7080,26 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         rdr["pointid"] >> tempPointId;
                         rdr["pointoffset"] >> tempPointOffset;
                         rdr["pointtype"] >> tempPointType;
-                        if ( tempPointOffset == 1 )
+
+                        if ( tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+                        {
+                            currentCCCapBank->setDisabledStatePointId(tempPointId);
+                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
+                            currentCCCapBank->getPointIds()->push_back(tempPointId);
+                        }
+                        else if ( tempPointOffset == Cti::CapControl::Offset_CapbankControlOrOperation )
                         {
                             if ( resolvePointType(tempPointType) == StatusPointType )
-                            {//control status point
+                            {
                                 currentCCCapBank->setStatusPointId(tempPointId);
                                 pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                                 currentCCCapBank->getPointIds()->push_back(tempPointId);
                             }
                             else if ( resolvePointType(tempPointType) == AnalogPointType )
-                            {//daily operations point
-
-                                if (tempPointOffset == 1)
-                                {
-                                    currentCCCapBank->setOperationAnalogPointId(tempPointId);
-                                    pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                    currentCCCapBank->getPointIds()->push_back(tempPointId);
-                                }
+                            {
+                                currentCCCapBank->setOperationAnalogPointId(tempPointId);
+                                pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
+                                currentCCCapBank->getPointIds()->push_back(tempPointId);
                             }
                             else
                             {//undefined cap bank point
@@ -7054,16 +7108,18 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             }
                         }
                         else if ( resolvePointType(tempPointType) == AnalogPointType &&
-                                  tempPointOffset >= 10000  && tempPointOffset <=10003)
-                        {//op stats point ids.
+                                  tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+                        {
                             if (currentCCCapBank->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 currentCCCapBank->getPointIds()->push_back(tempPointId);
                                 pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                             }
                         }
-                        else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
-                        {//op stats point ids.
+                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+                        {
                             if (currentCCCapBank->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 currentCCCapBank->getPointIds()->push_back(tempPointId);

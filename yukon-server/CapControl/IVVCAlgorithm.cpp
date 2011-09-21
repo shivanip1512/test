@@ -256,6 +256,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         state->setCommsLost(true);
 
+                        dispatchConnection->WriteConnQue( 
+                            new CtiPointDataMsg( subbus->getCommsStatePointId(), 1.0 ) ); // NormalQuality, StatusPointType
+
                         handleCommsLost( state, subbus );
 
                         if ( hasAutoModeRegulator )
@@ -290,6 +293,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if ( state->isCommsLost() )
                 {
                     state->setCommsLost(false);     // Write to the event log...
+
+                    dispatchConnection->WriteConnQue( 
+                        new CtiPointDataMsg( subbus->getCommsStatePointId(), 0.0 ) ); // NormalQuality, StatusPointType
 
                     LONG stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);

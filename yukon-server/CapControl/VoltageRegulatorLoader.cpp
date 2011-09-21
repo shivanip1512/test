@@ -22,6 +22,7 @@ VoltageRegulatorManager::VoltageRegulatorMap VoltageRegulatorDBLoader::load(cons
     VoltageRegulatorManager::VoltageRegulatorMap loaded;
 
     loadCore(Id, loaded);
+    loadPoints(Id, loaded);
 
     return loaded;
 }
@@ -95,6 +96,75 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
             if ( regulator && rdr.isValid() )            // reader is ~still~ valid
             {
                 voltageRegulators[ regulator->getPaoId() ] = regulator;      // insert/update...
+            }
+        }
+    }
+}
+
+
+void VoltageRegulatorDBLoader::loadPoints(const long Id, VoltageRegulatorManager::VoltageRegulatorMap &voltageRegulators)
+{
+    static const std::string sql = "SELECT P.PAObjectID, P.pointid, P.pointoffset"
+                                   " FROM Point P, YukonPAObject Y "
+                                   " WHERE Y.PAObjectID = P.PAObjectID AND Y.Type IN";
+
+    static const std::string and_clause = " AND Y.PAObjectID = ?";
+
+    const std::string inClause = " ('"  + VoltageRegulator::LoadTapChanger +
+                                 "', '" + VoltageRegulator::GangOperatedVoltageRegulator +
+                                 "', '" + VoltageRegulator::PhaseOperatedVoltageRegulator +
+                                 "')";
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection);
+
+    std::string query = sql + inClause;
+
+    if( Id >= 0 )
+    {
+        rdr.setCommandText(query + and_clause);
+        rdr << Id;
+    }
+    else
+    {
+        rdr.setCommandText(query);
+    }
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        std::string loggedSQLstring = rdr.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << loggedSQLstring << std::endl;
+        }
+    }
+
+    while ( rdr() )
+    {
+        long regulatorId;
+
+        rdr["PAObjectID"] >> regulatorId;
+
+        VoltageRegulatorManager::SharedPtr regulator = voltageRegulators[ regulatorId ];
+
+        if ( !rdr["pointid"].isNull() )
+        {
+            long    pointId,
+                    pointOffset;
+
+            rdr["pointid"]     >> pointId;
+            rdr["pointoffset"] >> pointOffset;
+
+            if ( pointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+            {
+                regulator->setDisabledStatePointId( pointId );
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Undefined Voltage Regulator point offset: " << pointOffset << std::endl;
             }
         }
     }

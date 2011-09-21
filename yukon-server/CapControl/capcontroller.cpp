@@ -1708,6 +1708,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     registrationIds.insert(currentArea->getVoltReductionControlPointId());
                     regMsg->insert(currentArea->getVoltReductionControlPointId());
                 }
+                if( currentArea->getDisabledStatePointId() > 0 )
+                {
+                    registrationIds.insert(currentArea->getDisabledStatePointId());
+                    regMsg->insert(currentArea->getDisabledStatePointId());
+                }
                 if (currentArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
                     registrationIds.insert(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
@@ -1737,6 +1742,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 {
                     registrationIds.insert(currentSpArea->getVoltReductionControlPointId());
                     regMsg->insert(currentSpArea->getVoltReductionControlPointId());
+                }
+                if( currentSpArea->getDisabledStatePointId() > 0 )
+                {
+                    registrationIds.insert(currentSpArea->getDisabledStatePointId());
+                    regMsg->insert(currentSpArea->getDisabledStatePointId());
                 }
                 if (currentSpArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
@@ -1769,6 +1779,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 {
                     registrationIds.insert(currentStation->getVoltReductionControlId());
                     regMsg->insert(currentStation->getVoltReductionControlId());
+                }
+                if( currentStation->getDisabledStatePointId() > 0 )
+                {
+                    registrationIds.insert(currentStation->getDisabledStatePointId());
+                    regMsg->insert(currentStation->getDisabledStatePointId());
                 }
                 if ( currentStation->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
@@ -1857,6 +1872,16 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     registrationIds.insert(currentSubstationBus->getDisableBusPointId());
                     regMsg->insert(currentSubstationBus->getDisableBusPointId());
                 }
+                if (currentSubstationBus->getCommsStatePointId() > 0 )
+                {
+                    registrationIds.insert(currentSubstationBus->getCommsStatePointId());
+                    regMsg->insert(currentSubstationBus->getCommsStatePointId());
+                }
+                if( currentSubstationBus->getDisabledStatePointId() > 0 )
+                {
+                    registrationIds.insert(currentSubstationBus->getDisabledStatePointId());
+                    regMsg->insert(currentSubstationBus->getDisabledStatePointId());
+                }
                 if ( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
                     registrationIds.insert(currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
@@ -1931,6 +1956,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                         registrationIds.insert(currentFeeder->getPhaseCId());
                         regMsg->insert(currentFeeder->getPhaseCId());
                     }
+                    if( currentFeeder->getDisabledStatePointId() > 0 )
+                    {
+                        registrationIds.insert(currentFeeder->getDisabledStatePointId());
+                        regMsg->insert(currentFeeder->getDisabledStatePointId());
+                    }
                     if ( currentFeeder->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                     {
                         registrationIds.insert(currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
@@ -1967,6 +1997,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                         {
                             registrationIds.insert(currentCapBank->getOperationAnalogPointId());
                             regMsg->insert(currentCapBank->getOperationAnalogPointId());
+                        }
+                        if( currentCapBank->getDisabledStatePointId() > 0 )
+                        {
+                            registrationIds.insert(currentCapBank->getDisabledStatePointId());
+                            regMsg->insert(currentCapBank->getDisabledStatePointId());
                         }
                         if ( currentCapBank->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                         {
