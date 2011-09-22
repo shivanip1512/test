@@ -179,7 +179,11 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isZigbee() {
         return zigbeeTypes.contains(this);
     }
-    
+
+    public boolean isZigbeeEndpoint() {
+        return zigbeeEndpointTypes.contains(this);
+    }
+
     /**
      * Returns true if this hardware type is a meter/mct.
      * @return boolean
@@ -258,5 +262,4 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public static ImmutableSet<HardwareType> getZigbeeEndpointTypes() {
         return zigbeeEndpointTypes;
     }
-    
 }
