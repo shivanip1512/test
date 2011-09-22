@@ -1020,18 +1020,12 @@ public class OperatorHardwareController {
         /* Add device types for dropdown menus */
         ListMultimap<String, DeviceTypeOption> deviceTypeMap = ArrayListMultimap.create();
         List<YukonListEntry> deviceTypeList = liteEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
-        boolean hasEndpointTypes = false;
         for (YukonListEntry deviceTypeEntry : deviceTypeList) {
             HardwareType type = HardwareType.valueOf(deviceTypeEntry.getYukonDefID());
-            hasEndpointTypes |= type.isZigbeeEndpoint();
             DeviceTypeOption option = new DeviceTypeOption();
             option.setDisplayName(deviceTypeEntry.getEntryText());
             option.setHardwareTypeEntryId(deviceTypeEntry.getEntryID());
             deviceTypeMap.put(type.getHardwareClass().name(), option);
-        }
-        // Without endpoints, gateways are not useful.
-        if (!hasEndpointTypes) {
-            deviceTypeMap.removeAll(HardwareClass.GATEWAY.name());
         }
         model.addAttribute("deviceTypeMap", deviceTypeMap.asMap());
         
