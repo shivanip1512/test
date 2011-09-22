@@ -360,8 +360,8 @@
     <entry key="yukon.web.components.button.history.imageUrl">/WebConfig/yukon/Icons/time.gif</entry>
     <entry key="yukon.web.components.button.history.hoverUrl">/WebConfig/yukon/Icons/time_over.gif</entry>
     <entry key="yukon.web.components.button.history.disabled">/WebConfig/yukon/Icons/time_disabled.gif</entry>
-    <entry key="yukon.web.components.button.history.hoverText">View the command history for the selected thermostat(s).</entry>
-    <entry key="yukon.web.components.button.history.label">Command History</entry>
+    <entry key="yukon.web.components.button.history.hoverText">View the history for the selected thermostat(s).</entry>
+    <entry key="yukon.web.components.button.history.label">View History</entry>
     
     <entry key="yukon.web.components.button.recommendedSettings.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
     <entry key="yukon.web.components.button.recommendedSettings.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>

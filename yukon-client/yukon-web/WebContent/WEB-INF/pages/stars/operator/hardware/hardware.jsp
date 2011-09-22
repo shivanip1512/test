@@ -483,6 +483,16 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             </li>
                         </c:if>
                         
+                        <c:if test="${showThermostatHistoryAction}">
+                            <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                                <cti:param name="accountId" value="${accountId}" />
+                                <cti:param name="thermostatIds" value="${inventoryId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button nameKey="history" href="${historyUrl}" renderMode="labeledImage" />
+                            </li>
+                        </c:if>
+                        
                         <%-- METER ACTIONS --%>
                         <c:if test="${showMeterConfigAction}">
                             <cti:url var="configUrl" value="/spring/stars/operator/hardware/config/meterConfig">

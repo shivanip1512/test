@@ -75,7 +75,6 @@ Event.observe(window, 'load', function(){
                     <br>
                     <cti:button nameKey="help" styleClass="help fl"/>
                     <cti:button nameKey="create" styleClass="create fl"/>
-                    <br>
                     <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
                         <cti:param name="accountId" value="${accountId}" />
                         <cti:param name="thermostatIds" value="${thermostatIds}"/>

@@ -946,6 +946,7 @@ public class OperatorHardwareController {
                 if (type.isSupportsManualAdjustment()) {
                     model.addAttribute("showManualAction", true);
                 }
+                model.addAttribute("showThermostatHistoryAction", true);
             }
             break;
             
