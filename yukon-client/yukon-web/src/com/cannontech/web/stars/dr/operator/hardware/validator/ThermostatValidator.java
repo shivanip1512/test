@@ -15,9 +15,7 @@ public class ThermostatValidator extends SimpleValidator<Thermostat> {
     public void doValidation(Thermostat thermostat, Errors errors) {
         
         /* Serial Number */
-        SerialNumberValidator serialNumberValidator = new SerialNumberValidator();
-        serialNumberValidator.validate(thermostat, errors);
-        
+
         /* Device Label */
         YukonValidationUtils.checkExceedsMaxLength(errors, "deviceLabel", thermostat.getDeviceLabel(), 60);
         
