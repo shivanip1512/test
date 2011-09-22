@@ -98,18 +98,18 @@ public class ThermostatManualController extends AbstractThermostatController {
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
     public String saveLabel(ModelMap map,
-                            @ModelAttribute("thermostat") Thermostat thermostat,
+                            @ModelAttribute Thermostat thermostat,
                             BindingResult bindingResult,
                             String displayLabel, 
                             FlashScope flashScope,
-                            LiteYukonUser user) throws Exception {
+                            YukonUserContext yukonUserContext)  {
         
-        accountEventLogService.thermostatLabelChangeAttemptedByConsumer(user,
+        accountEventLogService.thermostatLabelChangeAttemptedByConsumer(yukonUserContext.getYukonUser(),
                                                                         thermostat.getSerialNumber(),
                                                                         thermostat.getDeviceLabel(),
                                                                         displayLabel);
         
-        accountCheckerService.checkInventory(user, thermostat.getId());
+        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostat.getId());
         
         ThermostatValidator validator = new ThermostatValidator();
         validator.validate(thermostat, bindingResult);

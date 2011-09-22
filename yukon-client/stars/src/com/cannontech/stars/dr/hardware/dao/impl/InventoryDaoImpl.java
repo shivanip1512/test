@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -269,8 +268,7 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    @Transactional
-    public void updateLabel(Thermostat thermostat) throws SQLException {
+    public void updateLabel(Thermostat thermostat) {
 
         StringBuilder sql = new StringBuilder("UPDATE InventoryBase");
         sql.append(" SET DeviceLabel = ?");

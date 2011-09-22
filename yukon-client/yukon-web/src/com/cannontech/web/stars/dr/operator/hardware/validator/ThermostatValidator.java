@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.hardware.validator;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
@@ -16,10 +15,8 @@ public class ThermostatValidator extends SimpleValidator<Thermostat> {
     public void doValidation(Thermostat thermostat, Errors errors) {
         
         /* Serial Number */
-        if (StringUtils.isBlank(thermostat.getSerialNumber())) {
-            errors.rejectValue("serialNumber", "yukon.web.error.required");
-        }
-        YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", thermostat.getSerialNumber(), 30);
+        SerialNumberValidator serialNumberValidator = new SerialNumberValidator();
+        serialNumberValidator.validate(thermostat, errors);
         
         /* Device Label */
         YukonValidationUtils.checkExceedsMaxLength(errors, "deviceLabel", thermostat.getDeviceLabel(), 60);
