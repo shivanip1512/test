@@ -239,7 +239,6 @@ div.listContainer {
 .pointingPopup_content {
     float: right;
     width:274px;
-/*     height: 100px; */
     min-height: 2em;
     border: 3px solid #ccc;
     background: white;
