@@ -21,6 +21,7 @@ YEvent.observeSelectorClick('#refresh, button[name=commissionSubmit], button[nam
         url += 'refresh';
     } else if (button.name == 'commissionSubmit') {
         url += 'commission';
+        $('confirmCommissionPopup').hide();
     } else if (button.name == 'decommissionSubmit') {
         url += 'decommission';
     }
@@ -148,6 +149,24 @@ function changeOut(oldId, isMeter) {
     var form = $('changeOutForm');
     form.submit();
     return true;
+}
+
+function getCommissionConfirmationCallback() {
+    return function(data) {
+        var commissionedValue = data.get('value');
+        
+        if(${!hardwareDto.hardwareType.gateway}) {
+            if(commissionedValue == 'Decommissioned') {
+                //decommissioned
+                $('decommissionedConfirmMsg').show();
+                $('commissionedConfirmMsg').hide();
+            } else {
+                //commissioned - either connected or disconnected
+                $('decommissionedConfirmMsg').hide();
+                $('commissionedConfirmMsg').show();
+            }
+        }
+    };
 }
 
 Event.observe(window, 'load', updateServiceCompanyInfo);
@@ -583,13 +602,29 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                         <cti:button id="refresh" nameKey="refresh"/>
                                     </c:otherwise>
                                 </c:choose>
+                                
                                 <c:if test="${showCommissionActions}">
                                     <cti:button nameKey="commission" id="commission"/>
                                     <cti:button nameKey="decommission" id="decommission"/>
-                                    <tags:confirmDialog submitName="commissionSubmit"
-                                        nameKey=".commissionConfirmation"
-                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#commission"
-                                        endAction="hide" />
+                                    
+                                    <cti:msgScope paths=".commissionConfirmation,">
+                                        <i:simplePopup id="confirmCommissionPopup" styleClass="commissionConfirmationMsg smallSimplePopup" titleKey=".title" on="#commission">
+                                            <p>
+                                                <div id="decommissionedConfirmMsg">
+                                                    <i:inline key=".message"/>
+                                                </div>
+                                                <div id="commissionedConfirmMsg" class="errorMessage" style="display:none">
+                                                    <i:inline key=".warnMessage"/>
+                                                </div>
+                                            <p>
+                                            <div class="actionArea">
+                                                <cti:button nameKey="ok" name="commissionSubmit" type="submit" />
+                                                <cti:button nameKey="cancel" onclick="$('confirmCommissionPopup').hide()" />
+                                            </div>
+                                        </i:simplePopup>
+                                    </cti:msgScope>
+                                    <cti:dataUpdaterCallback function="getCommissionConfirmationCallback()" initialize="true" value="POINT/${hardwareDto.commissionedId}/VALUE"/>
+
                                     <tags:confirmDialog submitName="decommissionSubmit"
                                         nameKey=".decommissionConfirmation"
                                         styleClass="commissionConfirmationMsg smallSimplePopup" on="#decommission"
