@@ -497,7 +497,8 @@ int CtiDeviceSnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
             _outMessage.Buffer.TAPSt.Length = encryptMessage( CtiTime::now(),
                                                               OutMessage->Buffer.TAPSt.Message,
                                                               OutMessage->Buffer.TAPSt.Length,
-                                                              _outMessage.Buffer.TAPSt.Message );
+                                                              _outMessage.Buffer.TAPSt.Message,
+                                                              OneWayMsgEncryption::Ascii );
             _outMessage.OutLength = _outMessage.Buffer.TAPSt.Length;
         }
 

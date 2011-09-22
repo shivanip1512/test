@@ -48,7 +48,7 @@ int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
                                                               OutMessage->Buffer.TAPSt.Message,
                                                               OutMessage->Buffer.TAPSt.Length,
                                                               _outMessage.Buffer.TAPSt.Message,
-                                                              false );
+                                                              OneWayMsgEncryption::Binary );
             _outMessage.OutLength = _outMessage.Buffer.TAPSt.Length;
         }
 

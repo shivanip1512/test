@@ -12,10 +12,16 @@ IM_EX_DEVDB void GetNextSequenceValues( const CtiTime & timeNow, CtiTime * seqTi
 
 struct IM_EX_DEVDB OneWayMsgEncryption
 {
+    enum OutputFormat
+    {
+        Binary,
+        Ascii
+    };
+
     std::size_t encryptMessage( const CtiTime       & timeNow,
                                 char                * inMessage,
                                 const std::size_t     msgLength,
                                 char                * outMessage,
-                                const bool            asciiConvert = true );
+                                const OutputFormat    format );
 };
 

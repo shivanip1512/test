@@ -141,7 +141,8 @@ INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
             _outMessage->Buffer.TAPSt.Length = encryptMessage( CtiTime::now(),
                                                                oMess->Buffer.TAPSt.Message,
                                                                oMess->Buffer.TAPSt.Length,
-                                                               _outMessage->Buffer.TAPSt.Message );
+                                                               _outMessage->Buffer.TAPSt.Message,
+                                                               OneWayMsgEncryption::Ascii );
             _outMessage->OutLength = _outMessage->Buffer.TAPSt.Length;
         }
     }

@@ -38,7 +38,7 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
                                                  char               * inMessage,
                                                  const std::size_t    msgLength,
                                                  char               * outMessage,
-                                                 const bool           asciiConvert )
+                                                 const OutputFormat   format )
 {
     // update timestamp components
     CtiTime  lastXmitTime;
@@ -94,7 +94,7 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
     
     oneWay.encrypt( lastXmitTime, utcCounter, cuc_inMessage, passwordStart, messageBuffer );
 
-    if ( asciiConvert )
+    if ( format == Ascii )
     {
         static const char convert[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -108,7 +108,7 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
         }
         encryptedLength *= 2;
     }
-    else
+    else    // format == Binary
     {
         std::copy( messageBuffer, messageBuffer + encryptedLength, uc_outMessage );
     }
