@@ -22,7 +22,7 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
-import com.cannontech.common.device.commands.impl.StringCommandCallback;
+import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -81,7 +81,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 for (SimpleDevice device : devices) {
                     
                     CommandRequestDevice cmdReq = new CommandRequestDevice();
-                    cmdReq.setCommandCallback(new StringCommandCallback(getCommand()));
+                    cmdReq.setCommandCallback(new PorterCommandCallback(getCommand()));
                     cmdReq.setDevice(device);
                     
                     commandRequests.add(cmdReq);

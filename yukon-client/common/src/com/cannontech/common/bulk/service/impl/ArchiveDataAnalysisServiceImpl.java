@@ -42,7 +42,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
-import com.cannontech.common.device.commands.impl.StringCommandCallback;
+import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -215,7 +215,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                 
                 CommandRequestDevice command = new CommandRequestDevice();
                 command.setDevice(new SimpleDevice(data.getId()));
-                command.setCommandCallback(new StringCommandCallback(commandString));
+                command.setCommandCallback(new PorterCommandCallback(commandString));
                 commands.add(command);
             }
         }

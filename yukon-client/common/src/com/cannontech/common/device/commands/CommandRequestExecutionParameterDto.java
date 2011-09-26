@@ -28,7 +28,7 @@ public class CommandRequestExecutionParameterDto {
         return newDto;
     }
     
-    public CommandRequestExecutionParameterDto withUpdage(boolean update) {
+    public CommandRequestExecutionParameterDto withUpdate(boolean update) {
         
         CommandRequestExecutionParameterDto newDto = this.clone();
         newDto.update = update;

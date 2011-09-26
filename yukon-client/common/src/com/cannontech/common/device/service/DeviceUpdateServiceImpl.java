@@ -15,7 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.impl.StringCommandCallback;
+import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -131,7 +131,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
                         CommandRequestDevice configCmd = new CommandRequestDevice();
                         configCmd.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-                        configCmd.setCommandCallback(new StringCommandCallback("putconfig emetcon intervals"));
+                        configCmd.setCommandCallback(new PorterCommandCallback("putconfig emetcon intervals"));
 
                         CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
                         };

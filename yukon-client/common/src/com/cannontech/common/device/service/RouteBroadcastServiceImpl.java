@@ -9,7 +9,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl;
-import com.cannontech.common.device.commands.impl.StringCommandCallback;
+import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.pao.PaoType;
@@ -65,7 +65,7 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
         request.setDevice(new SimpleDevice(0, PaoType.SYSTEM));
         request.setRouteId(route.getId());
         
-        request.setCommandCallback(new StringCommandCallback(command));
+        request.setCommandCallback(new PorterCommandCallback(command));
         return request;
     }
     

@@ -46,7 +46,7 @@ public class CommandRequestDeviceExecutorImpl extends
         CommandRequestDevice cmdRequest = new CommandRequestDevice();
         cmdRequest.setDevice(new SimpleDevice(device.getPaoIdentifier()));
 
-        cmdRequest.setCommandCallback(new StringCommandCallback(command));
+        cmdRequest.setCommandCallback(new PorterCommandCallback(command));
         return execute(cmdRequest, type, user);
     }
 

@@ -23,7 +23,7 @@ import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
-import com.cannontech.common.device.commands.impl.StringCommandCallback;
+import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -220,8 +220,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
         
-        final String commandStr = command + " update";
-        request.setCommandCallback(new StringCommandCallback(commandStr));
+        request.setCommandCallback(new PorterCommandCallback(command));
         return request;
     }
     

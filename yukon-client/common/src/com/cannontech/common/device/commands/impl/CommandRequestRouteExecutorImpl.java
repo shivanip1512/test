@@ -46,7 +46,7 @@ public class CommandRequestRouteExecutorImpl extends
 	public CommandResultHolder execute(int routeId, String command, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
-        commandRequest.setCommandCallback(new StringCommandCallback(command));
+        commandRequest.setCommandCallback(new PorterCommandCallback(command));
         commandRequest.setRouteId(routeId);
 		
         return execute(commandRequest, type, user);
@@ -58,7 +58,7 @@ public class CommandRequestRouteExecutorImpl extends
 			DeviceRequestType type, LiteYukonUser user) {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
-        commandRequest.setCommandCallback(new StringCommandCallback(command));
+        commandRequest.setCommandCallback(new PorterCommandCallback(command));
         commandRequest.setRouteId(routeId);
         
         return execute(Collections.singletonList(commandRequest), callback, type, user);

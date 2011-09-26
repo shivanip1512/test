@@ -14,7 +14,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.impl.StringCommandCallback;
+import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -46,7 +46,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	                
 	                CommandCallback commandCallback = callbackCache.get(commandStr);
 	                if (commandCallback == null) {
-	                    commandCallback = new StringCommandCallback(commandStr);
+	                    commandCallback = new PorterCommandCallback(commandStr);
 	                }
 	                
 	                CommandRequestDevice request = new CommandRequestDevice();

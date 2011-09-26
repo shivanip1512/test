@@ -5,11 +5,11 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionParameterDto;
 
-public class StringCommandCallback implements CommandCallback {
+public class PorterCommandCallback implements CommandCallback {
 
     private final String commandString;
 
-    public StringCommandCallback(String commandString){
+    public PorterCommandCallback(String commandString){
         this.commandString = commandString;
     }
     
