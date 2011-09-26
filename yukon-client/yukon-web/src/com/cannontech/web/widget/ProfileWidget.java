@@ -375,40 +375,15 @@ public class ProfileWidget extends WidgetControllerBase {
             msgData.put("reportCsvUrl", reportCsvUrl);
             msgData.put("reportPdfUrl", reportPdfUrl);
             // completion callbacks
-            LoadProfileService.CompletionCallback  callback  = null;
-            if (StringUtils.isEmpty(email)) {
-                callback =
-                    new  LoadProfileService.CompletionCallback  () {
-
-                        @Override
-                        public void onSuccess(String successInfo) {
-                        }
-
-                        @Override
-                        public void onFailure(int returnStatus, String resultString) {
-                        }
-
-                        @Override
-                        public void onCancel(LiteYukonUser cancelUser) {
-                        }
-                        
-                        @Override
-                        public String toString() {
-                            return "";
-                        }
-
-                    };
-
-            } else {
-                LoadProfileServiceEmailCompletionCallbackImpl emailCompletionCallback =
-                    new LoadProfileServiceEmailCompletionCallbackImpl(emailService,
+            LoadProfileServiceEmailCompletionCallbackImpl callback = null;
+            if (!StringUtils.isEmpty(email)) {
+                callback = new LoadProfileServiceEmailCompletionCallbackImpl(emailService,
                                                                       dateFormattingService,
                                                                       templateProcessorFactory,
                                                                       deviceErrorTranslatorDao);
-                emailCompletionCallback.setEmail(email);
-                emailCompletionCallback.setMessageData(msgData);
-                emailCompletionCallback.setUserContext(userContext);
-                callback = emailCompletionCallback;
+                callback.setEmail(email);
+                callback.setMessageData(msgData);
+                callback.setUserContext(userContext);
             }
 
             // will throw InitiateLoadProfileRequestException if connection problem

@@ -103,9 +103,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         }
         DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
         formatString.append(cmdFormatter.format(stop));
-        if (runner == null) {
-            formatString.append(" background");
-        }
+
         
         // setup reuqest
         req.setCommandString(formatString.toString());
@@ -237,11 +235,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 currentDeviceRequests.remove(deviceId);
                 expectedReturnCount.remove(info.requestId);
                 receivedReturnsCount.remove(info.requestId);
-                executor.execute(new Runnable() {
-                    public void run() {
-                        info.runner.onFailure(-1, "Load Profile command has not responded, request has been abandoned.");
-                    }
-                });
+                if(info.runner != null){
+                    executor.execute(new Runnable() {
+                        public void run() {
+                            info.runner.onFailure(-1, "Load Profile command has not responded, request has been abandoned.");
+                        }
+                    });
+                }
                 
                 // see if we have a pending command to send
                 queueNextPendingRequest(deviceId);
@@ -317,20 +317,23 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 
                 log.debug("received last return for request id " + requestId + ", status was " + returnStatus + ", response was " + returnMsg.getResultString());
                 // get runner and execute it on the global thread pool
-                executor.execute(new Runnable() {
-                    public void run() {
+                if (runnable != null) {
+                    executor.execute(new Runnable() {
+                        public void run() {
 
-                        // success
-                        if(returnStatus == 0){
-                            runnable.onSuccess("");
-                        }
+                            // success
+                            if (returnStatus == 0) {
+                                runnable.onSuccess("");
+                            }
 
-                        // failure - onFailure will take status and resultString and come up with a message for the email
-                        else{
-                            runnable.onFailure(returnStatus, resultString);
+                            // failure - onFailure will take status and resultString and come up
+                            // with a message for the email
+                            else {
+                                runnable.onFailure(returnStatus, resultString);
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 // if finished and ok see if we have a pending command to send, otherwise let cancel handle it
                 if(returnStatus == 0){
@@ -376,11 +379,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 receivedReturnsCount.remove(requestId);
                 // get runner and execute it on the global thread pool
                 final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
-                executor.execute(new Runnable() {
-                    public void run() {
-                        runnable.onCancel(cancelUser);
-                    }
-                });
+                if (runnable != null) {
+                    executor.execute(new Runnable() {
+                        public void run() {
+                            runnable.onCancel(cancelUser);
+                        }
+                    });
+                }
                 
                 // send command to porter
                 sendCancelCommand(requestId, deviceId);
@@ -403,11 +408,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                     receivedReturnsCount.remove(requestId);
                     // get runner and execute it on the global thread pool
                     final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
-                    executor.execute(new Runnable() {
-                        public void run() {
-                            runnable.onCancel(cancelUser);
-                        }
-                    });
+                    if (runnable != null) {
+                        executor.execute(new Runnable() {
+                            public void run() {
+                                runnable.onCancel(cancelUser);
+                            }
+                        });
+                    }
                     
                     removed = true;
                     break;
