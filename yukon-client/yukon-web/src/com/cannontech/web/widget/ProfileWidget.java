@@ -57,6 +57,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -373,15 +374,42 @@ public class ProfileWidget extends WidgetControllerBase {
             msgData.put("reportHtmlUrl", reportHtmlUrl);
             msgData.put("reportCsvUrl", reportCsvUrl);
             msgData.put("reportPdfUrl", reportPdfUrl);
-
             // completion callbacks
-            LoadProfileServiceEmailCompletionCallbackImpl callback =
-                new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService,
-                                                                  templateProcessorFactory, deviceErrorTranslatorDao);
+            LoadProfileService.CompletionCallback  callback  = null;
+            if (StringUtils.isEmpty(email)) {
+                callback =
+                    new  LoadProfileService.CompletionCallback  () {
 
-            callback.setUserContext(userContext);
-            callback.setEmail(email);
-            callback.setMessageData(msgData);
+                        @Override
+                        public void onSuccess(String successInfo) {
+                        }
+
+                        @Override
+                        public void onFailure(int returnStatus, String resultString) {
+                        }
+
+                        @Override
+                        public void onCancel(LiteYukonUser cancelUser) {
+                        }
+                        
+                        @Override
+                        public String toString() {
+                            return "";
+                        }
+
+                    };
+
+            } else {
+                LoadProfileServiceEmailCompletionCallbackImpl emailCompletionCallback =
+                    new LoadProfileServiceEmailCompletionCallbackImpl(emailService,
+                                                                      dateFormattingService,
+                                                                      templateProcessorFactory,
+                                                                      deviceErrorTranslatorDao);
+                emailCompletionCallback.setEmail(email);
+                emailCompletionCallback.setMessageData(msgData);
+                emailCompletionCallback.setUserContext(userContext);
+                callback = emailCompletionCallback;
+            }
 
             // will throw InitiateLoadProfileRequestException if connection problem
             loadProfileService.initiateLoadProfile(device, channel, startInstant.toDate(), 
