@@ -69,8 +69,9 @@
                                             </li>
                                             <c:forEach items="${devDbSetupTask.devCapControl.cbcTypes}" var="cbcType">
                                                 <li>
-                                                    <input type="radio" name="devCapControl.cbcType" value="${cbcType.paoType}" <c:if test="${devDbSetupTask.devCapControl.cbcType.paoType == cbcType.paoType}">checked="checked"</c:if>/>
-                                                    <label for="devCapControl.cbcType">${cbcType.paoType}</label>
+                                                    <input type="radio" name="devCapControl.cbcType" id="cbcType_${cbcType.paoType}" value="${cbcType.paoType}"
+                                                        <c:if test="${devDbSetupTask.devCapControl.cbcType.paoType == cbcType.paoType}">checked="checked"</c:if>/>
+                                                    <label for="cbcType_${cbcType.paoType}">${cbcType.paoType}</label>
                                                 </li>
                                             </c:forEach>
                                         </ul>
