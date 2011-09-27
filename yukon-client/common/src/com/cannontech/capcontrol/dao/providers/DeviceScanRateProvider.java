@@ -2,15 +2,17 @@ package com.cannontech.capcontrol.dao.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFields>{
 
-	private CapbankControllerDao capbankControllerDao;
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTableEnum getSupportedTable() {
@@ -24,21 +26,45 @@ public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFie
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
-		capbankControllerDao.insertScanRateData(paoIdentifier, fields);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = sql.insertInto("DeviceScanRate");
+		params.addValue("DeviceId", paoIdentifier.getPaoId());
+		params.addValue("ScanType", fields.getScanType());
+		params.addValue("IntervalRate", fields.getIntervalRate());
+		params.addValue("ScanGroup", fields.getScanGroup());
+		params.addValue("AlternateRate", fields.getAlternateRate());
+		
+		yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
-		capbankControllerDao.updateScanRateData(paoIdentifier, fields);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = sql.update("DeviceScanRate");
+		params.addValue("ScanType", fields.getScanType());
+		params.addValue("IntervalRate", fields.getIntervalRate());
+		params.addValue("ScanGroup", fields.getScanGroup());
+		params.addValue("AlternateRate", fields.getAlternateRate());
+		
+		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+		
+		yukonJdbcTemplate.update(sql);
 	}
 
 	@Override
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
-		capbankControllerDao.deleteControllerData(PaoProviderTableEnum.DEVICESCANRATE, paoIdentifier);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		sql.append("DELETE FROM " + getSupportedTable().name());
+		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+		
+		yukonJdbcTemplate.update(sql);
 	}
-	
+
 	@Autowired
-	public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
-		this.capbankControllerDao = capbankControllerDao;
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
 }

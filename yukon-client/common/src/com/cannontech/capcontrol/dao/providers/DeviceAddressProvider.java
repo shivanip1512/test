@@ -2,15 +2,17 @@ package com.cannontech.capcontrol.dao.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceAddressFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class DeviceAddressProvider implements PaoTypeProvider<DeviceAddressFields> {
 
-	private CapbankControllerDao capbankControllerDao;
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTableEnum getSupportedTable() {
@@ -24,21 +26,43 @@ public class DeviceAddressProvider implements PaoTypeProvider<DeviceAddressField
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
-		capbankControllerDao.insertDeviceAddressData(paoIdentifier, fields);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = sql.insertInto("DeviceAddress");
+		params.addValue("DeviceId", paoIdentifier.getPaoId());
+		params.addValue("MasterAddress", fields.getMasterAddress());
+		params.addValue("SlaveAddress", fields.getSlaveAddress());
+		params.addValue("PostCommWait", fields.getPostCommWait());
+		
+		yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
-		capbankControllerDao.updateDeviceAddressData(paoIdentifier, fields);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		SqlParameterSink params = sql.update("DeviceAddress");
+		params.addValue("MasterAddress", fields.getMasterAddress());
+		params.addValue("SlaveAddress", fields.getSlaveAddress());
+		params.addValue("PostCommWait", fields.getPostCommWait());
+		
+		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+		
+		yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
-		capbankControllerDao.deleteControllerData(PaoProviderTableEnum.DEVICEADDRESS, paoIdentifier);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		sql.append("DELETE FROM " + getSupportedTable().name());
+		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+		
+		yukonJdbcTemplate.update(sql);
 	}
 
 	@Autowired
-	public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
-		this.capbankControllerDao = capbankControllerDao;
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
 }

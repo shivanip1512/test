@@ -32,7 +32,7 @@ public class PaoCreationHelper {
     public void addDefaultPointsToPao(YukonPao pao) {
         List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(pao);
         
-        applyPoints(pao.getPaoIdentifier().getPaoId(),pointsToCreate);
+        applyPoints(pao, pointsToCreate);
     }
 
     public void deletePointsForPao(int paObjectId) throws SQLException {
@@ -50,13 +50,7 @@ public class PaoCreationHelper {
     public void addAllPointsToPao(YukonPao pao) {
         List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(pao);
         
-        applyPoints(pao.getPaoIdentifier().getPaoId(),pointsToCreate);
-    }
-    
-    public void copyPointsToPao(int templatePaoId, int newPaoId) {
-    	List<PointBase> pointsToCopy = pointDao.getPointBasesForPao(templatePaoId);
-    	
-    	applyPoints(newPaoId, pointsToCopy);
+        applyPoints(pao, pointsToCreate);
     }
     
     public void processDbChange(YukonPao pao, DbChangeType changeType) {
@@ -70,9 +64,9 @@ public class PaoCreationHelper {
         
         dbPersistentDao.processDBChange(msg);
     }
-    
+
     public void applyPoints(int paoId, List<PointBase> pointsToCreate) {
-        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
+    	MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
 
         for (PointBase point : pointsToCreate) {
@@ -86,6 +80,10 @@ public class PaoCreationHelper {
         
         // Insert into DB
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
+    }
+    
+    public void applyPoints(YukonPao pao, List<PointBase> pointsToCreate) {
+        applyPoints(pao.getPaoIdentifier().getPaoId(), pointsToCreate);
     }
     
     @Autowired

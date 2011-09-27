@@ -6,21 +6,31 @@ import com.cannontech.common.pao.PaoType;
 public class CapbankController {
 	
 	private PaoIdentifier paoIdentifier;
+	
 	private String name;
+	private String description;
+	private String statistics;
+	private String windowType;
+	private String scanType;
+	
+	private Integer winOpen;
+	private Integer winClose;
+	private Integer alternateOpen;
+	private Integer alternateClose;
+	private int masterAddress;
+	private int slaveAddress;
 	private int serialNumber;
 	private int routeId;
 	private int portId;
-	
-	private int masterAddress;
-	private int slaveAddress;
-	private int postCommWait;
-	
-	private boolean scanEnabled;
-	private String scanType;
 	private int intervalRate;
+	private int postCommWait;	
 	private int scanGroup;
 	private int alternateRate;
+	
+	private boolean scanEnabled;
     private boolean disabled;
+    private boolean alarmInhibit;
+    private boolean controlInhibit;
 	
 	public CapbankController(PaoIdentifier paoIdentifier) {
 		this.paoIdentifier = paoIdentifier;
@@ -251,5 +261,77 @@ public class CapbankController {
 		if (slaveAddress != other.slaveAddress)
 			return false;
 		return true;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getStatistics() {
+		return statistics;
+	}
+
+	public void setStatistics(String statistics) {
+		this.statistics = statistics;
+	}
+
+	public String getWindowType() {
+		return windowType;
+	}
+
+	public void setWindowType(String windowType) {
+		this.windowType = windowType;
+	}
+
+	public Integer getWinOpen() {
+		return winOpen;
+	}
+
+	public void setWinOpen(Integer winOpen) {
+		this.winOpen = winOpen;
+	}
+
+	public Integer getWinClose() {
+		return winClose;
+	}
+
+	public void setWinClose(Integer winClose) {
+		this.winClose = winClose;
+	}
+
+	public Integer getAlternateOpen() {
+		return alternateOpen;
+	}
+
+	public void setAlternateOpen(Integer alternateOpen) {
+		this.alternateOpen = alternateOpen;
+	}
+
+	public Integer getAlternateClose() {
+		return alternateClose;
+	}
+
+	public void setAlternateClose(Integer alternateClose) {
+		this.alternateClose = alternateClose;
+	}
+
+	public boolean isAlarmInhibit() {
+		return alarmInhibit;
+	}
+
+	public void setAlarmInhibit(boolean alarmInhibit) {
+		this.alarmInhibit = alarmInhibit;
+	}
+
+	public boolean isControlInhibit() {
+		return controlInhibit;
+	}
+
+	public void setControlInhibit(boolean controlInhibit) {
+		this.controlInhibit = controlInhibit;
 	}
 }

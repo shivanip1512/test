@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
+import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -107,6 +108,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         //Build Template and call Pao Creation Service
         ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
         paoFields.put(ZigbeeEndpointFields.class, tStatFields);
+        paoFields.put(DeviceFields.class, new DeviceFields());
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
         PaoTemplate paoTemplate = new PaoTemplate(PaoType.ZIGBEE_ENDPOINT, paoFields);

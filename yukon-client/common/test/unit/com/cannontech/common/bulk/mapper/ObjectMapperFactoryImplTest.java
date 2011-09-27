@@ -222,8 +222,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        @SuppressWarnings("unchecked")
-        public List getAllCapControlSubBuses() {
+        public List<LiteYukonPAObject> getAllCapControlSubBuses() {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -360,13 +359,17 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
 		@Override
-		public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
-				PaoType paoType) {
-            throw new UnsupportedOperationException("Method not implemented");
+		public YukonPaObjectFields getYukonPaObjectData(PaoIdentifier paoIdentifier, String name) {
+			throw new UnsupportedOperationException("Method not implemented");
 		}
 
 		@Override
-		public YukonPaObjectFields getYukonPaObjectData(PaoIdentifier paoIdentifier, String name) {
+		public YukonPao findYukonPao(String paoName, PaoType paoType) {
+			throw new UnsupportedOperationException("Method not implemented");
+		}
+
+		@Override
+		public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
 			throw new UnsupportedOperationException("Method not implemented");
 		}
     }
@@ -382,16 +385,14 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         	throw new UnsupportedOperationException("Method not implemented");
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-        public List getDevicesByDeviceAddress(Integer masterAddress,
+        public List<Integer> getDevicesByDeviceAddress(Integer masterAddress,
                 Integer slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public List getDevicesByPort(int portId) {
+        public List<Integer> getDevicesByPort(int portId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

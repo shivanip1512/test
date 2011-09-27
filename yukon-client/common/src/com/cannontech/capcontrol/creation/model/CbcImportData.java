@@ -10,11 +10,11 @@ public class CbcImportData {
 	private String capBankName;
 	private String commChannel;
 	private String scanEnabled;
-	private Integer cbcSerialNumber;
-	private Integer masterAddress;
-	private Integer slaveAddress;
-	private Integer scanInterval;
-	private Integer altInterval;
+	private int cbcSerialNumber;
+	private int masterAddress;
+	private int slaveAddress;
+	private int scanInterval;
+	private int altInterval;
 	private ImportActionsEnum importAction;
 	
 	public String getCbcName() {

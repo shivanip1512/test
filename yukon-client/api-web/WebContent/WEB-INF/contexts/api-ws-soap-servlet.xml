@@ -82,6 +82,25 @@
         <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 
+	<bean id="capcontrol"
+		class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+	
+		<property name="schemaCollection">
+			<bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
+				<property name="xsds">
+					<list>
+						<value>classpath:com/cannontech/yukon/api/capcontrol/schemas/AllCapControl.xsd</value>
+					</list>
+				</property>
+				<property name="inline" value="true" />
+			</bean>
+		</property>
+		<property name="serviceName" value="capcontrolService" />
+        <property name="portTypeName" value="capcontrolPort" />
+        <property name="locationUri" value="/soap/capcontrol" />
+        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />  
+	</bean>
+
     <bean id="amr" class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">

@@ -31,7 +31,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -98,11 +98,9 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     public void removeDevice(YukonDevice device) {
-
         LiteYukonPAObject liteDevice = this.getLiteDevice(device.getPaoIdentifier().getPaoId());
         DBPersistent persistent = dbPersistantDao.retrieveDBPersistent(liteDevice);
-        dbPersistantDao.performDBChange(persistent, Transaction.DELETE);
-
+        dbPersistantDao.performDBChange(persistent, TransactionType.DELETE);
     }
 
     /* (non-Javadoc)
@@ -142,6 +140,19 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         sql.append(  "AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
         
         SimpleDevice device = yukonJdbcTemplate.queryForObject(sql, this.yukonDeviceRowMapper);
+        return device;
+    }
+    
+    public SimpleDevice getYukonDeviceObjectByNameAndClass(String name, PaoClass paoClass) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAO.PAObjectId, PAO.Type");
+        sql.append("FROM YukonPAObject PAO");
+        sql.append("WHERE PAO.Category").eq(PaoCategory.DEVICE);
+        sql.append(  "AND PAO.PAOClass").eq(paoClass);
+        sql.append(  "AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
+        
+        SimpleDevice device = yukonJdbcTemplate.queryForObject(sql, this.yukonDeviceRowMapper);
+        
         return device;
     }
 
@@ -217,15 +228,14 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByMeterNumber(java.lang.String)
      */
-    public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber)
-    {
-
-        StringBuilder sqlBuilder = new StringBuilder(litePaoSql);
+    public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
         sqlBuilder.append("LEFT OUTER JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId ");
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?)");
 
-        List<LiteYukonPAObject> paos = 
-            yukonJdbcTemplate.query(sqlBuilder.toString(), new LitePaoRowMapper(), meterNumber);
+        List<LiteYukonPAObject> paos = yukonJdbcTemplate.query(sqlBuilder.toString(), 
+        													   new LitePaoRowMapper(), 
+        													   meterNumber);
 
         return paos;
     }
@@ -295,7 +305,6 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         return devicesByAddress;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<SimpleDevice> getDevicesForRouteId(int routeId){
         String sql = "SELECT yp.PAObjectId, yp.Type FROM YukonPAObject yp "
@@ -432,7 +441,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
         DBChangeMsg msg = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
                                           DBChangeMsg.CHANGE_PAO_DB,
-                                          PAOGroups.STRING_CAT_DEVICE,
+                                          PaoCategory.DEVICE.getDbString(),
                                           device.getPaoIdentifier().getPaoType().getDbString(),
                                           DbChangeType.UPDATE );
 

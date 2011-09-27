@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
+import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -83,6 +84,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
         paoFields.put(DigiGatewayFields.class, digiGatewayFields);
         paoFields.put(ZigbeeGatewayFields.class, zigbeeGatewayFields);
+        paoFields.put(DeviceFields.class, new DeviceFields());
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
         PaoTemplate paoTemplate = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);

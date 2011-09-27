@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.creation.service.impl;
 
 import java.util.List;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
@@ -30,16 +31,17 @@ import com.cannontech.capcontrol.dao.providers.fields.FeederFields;
 import com.cannontech.capcontrol.dao.providers.fields.SpecialAreaFields;
 import com.cannontech.capcontrol.dao.providers.fields.SubstationBusFields;
 import com.cannontech.capcontrol.dao.providers.fields.SubstationFields;
+import com.cannontech.capcontrol.exception.CapControlImportException;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
@@ -47,7 +49,6 @@ import com.google.common.collect.MutableClassToInstanceMap;
 public class CapControlImportServiceImpl implements CapControlImportService {
 	
 	private PaoCreationService paoCreationService;
-	private PaoDefinitionService paoDefinitionService;
 	private PaoDao paoDao;
 	private SubstationDao substationDao;
 	private SubstationBusDao substationBusDao;
@@ -90,14 +91,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 				DeviceWindowFields deviceWindowFields = new DeviceWindowFields();
 				paoFields.put(DeviceWindowFields.class, deviceWindowFields);
 				
-				int portId = getPaoIdByName(cbcImportData.getCommChannel());
-				if (portId == -1) {
+				YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(), 
+														   PaoCategory.PORT, PaoClass.PORT);
+				if (commChannel == null) {
 					// Can't create this guy without a valid comm channel.
 					results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.INVALID_COMM_CHANNEL));
 					return null;
+				} else {
+					DeviceDirectCommSettingsFields commSettingsFields = 
+						new DeviceDirectCommSettingsFields(commChannel.getPaoIdentifier().getPaoId());
+					paoFields.put(DeviceDirectCommSettingsFields.class, commSettingsFields);
 				}
-				DeviceDirectCommSettingsFields commSettingsFields = new DeviceDirectCommSettingsFields(portId);
-				paoFields.put(DeviceDirectCommSettingsFields.class, commSettingsFields);
 				
 				if (paoType != PaoType.DNP_CBC_6510) {
 					DeviceCbcFields cbcFields = new DeviceCbcFields();
@@ -197,15 +201,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 		
 		paoFields.put(YukonPaObjectFields.class, paoDao.getYukonPaObjectData(paoIdentifier, cbcImportData.getCbcName()));
 		
-		// Nothing in DeviceDirectCommSettings comes from the template device. Validate comm channel though.
-		int portId = getPaoIdByName(cbcImportData.getCommChannel());
-		if (portId == -1) {
+		YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(), 
+				   								   PaoCategory.PORT, PaoClass.PORT);
+		if (commChannel == null) {
 			// Can't create this guy without a valid comm channel.
 			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.INVALID_COMM_CHANNEL));
 			return null;
+		} else {
+			DeviceDirectCommSettingsFields commSettingsFields = 
+				new DeviceDirectCommSettingsFields(commChannel.getPaoIdentifier().getPaoId());
+			paoFields.put(DeviceDirectCommSettingsFields.class, commSettingsFields);
 		}
-		DeviceDirectCommSettingsFields commSettingsFields = new DeviceDirectCommSettingsFields(portId);
-		paoFields.put(DeviceDirectCommSettingsFields.class, commSettingsFields);
 		
 		DeviceAddressFields addressFields = capbankControllerDao.getDeviceAddressData(paoIdentifier);
 		addressFields.setMasterAddress(cbcImportData.getMasterAddress());
@@ -238,7 +244,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 	
 	@Override
 	public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
-		LiteYukonPAObject pao = getCbcPao(cbcImportData);
+		YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
 		if (pao != null) {
 			// We were told to add a device that already exists. This is an error!
 			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.DEVICE_EXISTS));
@@ -251,25 +257,34 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 			return;
 		}
 		
-        PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
+		Integer parentId = null;
+		try {
+			parentId = getCbcParentId(cbcImportData);
+		} catch (CapControlImportException e) {
+			Log.debug(e);
+			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.INVALID_PARENT));
+		}
+		
+        PaoIdentifier newPao = paoCreationService.createPao(paoTemplate);
         
-        paoDefinitionService.createAllPointsForPao(paoIdentifier);
-        
-        createCbcParentLink(cbcImportData.getCapBankName(), paoIdentifier.getPaoId());
+        // parentId would still be null if no parent was specified.
+        if (parentId != null) {
+        	capbankControllerDao.assignController(parentId, newPao.getPaoId());
+        }
         
         results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.SUCCESS));
     }
 	
 	@Override
 	public void createCbcFromTemplate(CbcImportData cbcImportData, List<CbcImportResult> results) {
-		LiteYukonPAObject templatePao = getTemplateCbcPao(cbcImportData);
+		YukonPao templatePao = retrieveCbcPao(cbcImportData.getTemplateName());
 		if (templatePao == null) {
 			// The template didn't exist.
 			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.NO_SUCH_OBJECT));
 			return;
 		}
 		
-		LiteYukonPAObject pao = getCbcPao(cbcImportData);
+		YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
 		if (pao != null) {
 			// The object we're trying to make already exists.
 			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.DEVICE_EXISTS));
@@ -284,17 +299,27 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 		// Get a copy of the points from the template to copy to the new CBC.
 		int templatePaoId = templatePao.getPaoIdentifier().getPaoId();
 		List<PointBase> copyPoints = capbankControllerDao.getPointsForPao(templatePaoId);
+		
+		Integer parentId = null;
+		try {
+			parentId = getCbcParentId(cbcImportData);
+		} catch (CapControlImportException e) {
+			Log.debug(e);
+			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.INVALID_PARENT));
+		}
 
 		PaoIdentifier paoIdentifier = paoCreationService.createTemplatePao(newCbcTemplate, copyPoints);
 		
-		createCbcParentLink(cbcImportData.getCapBankName(), paoIdentifier.getPaoId());
+		if (parentId != null) {
+			capbankControllerDao.assignController(parentId, paoIdentifier.getPaoId());
+		}
 		
 		results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.SUCCESS));
 	}
 	
 	@Override
 	public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
-		LiteYukonPAObject pao = getCbcPao(cbcImportData);
+		YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
 		if (pao == null) {
 			// We were told to update a device that doesn't exist. This is an error!
 			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.NO_SUCH_OBJECT));
@@ -308,16 +333,26 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 			return;
 		}
 		
+		Integer parentId = null;
+		try {
+			parentId = getCbcParentId(cbcImportData);
+		} catch (CapControlImportException e) {
+			Log.debug(e);
+			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.INVALID_PARENT));
+		}
+		
 		paoCreationService.updatePao(pao.getPaoIdentifier().getPaoId(), paoTemplate);
 		
-		createCbcParentLink(cbcImportData.getCapBankName(), pao.getPaoIdentifier().getPaoId());
-        
+		if (parentId != null) {
+			capbankControllerDao.assignController(parentId, pao.getPaoIdentifier().getPaoId());
+		}
+		
         results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.SUCCESS));
 	}
 	
 	@Override
 	public void removeCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
-		LiteYukonPAObject pao = getCbcPao(cbcImportData);
+		YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
 		if (pao == null) {
 			// We were told to remove a device that doesn't exist. This is an error!
 			results.add(new CbcImportResult(cbcImportData, CbcImportResultTypesEnum.NO_SUCH_OBJECT));
@@ -336,7 +371,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
 	@Override
 	public void createHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results) {
-		LiteYukonPAObject pao = getHierarchyPao(hierarchyImportData);
+		YukonPao pao = getHierarchyPao(hierarchyImportData);
 		if (pao != null) {
 			// We were told to add an object that already exists. This is an error!
 			results.add(new HierarchyImportResult(hierarchyImportData, HierarchyImportResultTypesEnum.OBJECT_EXISTS));
@@ -359,7 +394,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 	
 	@Override
 	public void updateHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results) {
-		LiteYukonPAObject pao = getHierarchyPao(hierarchyImportData);
+		YukonPao pao = getHierarchyPao(hierarchyImportData);
 		if (pao == null) {
 			// We were told to remove an object that doesn't exist. This is an error!
 			results.add(new HierarchyImportResult(hierarchyImportData, HierarchyImportResultTypesEnum.NO_SUCH_OBJECT));
@@ -383,7 +418,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 	
 	@Override
 	public void removeHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results) {
-		LiteYukonPAObject pao = getHierarchyPao(hierarchyImportData);
+		YukonPao pao = getHierarchyPao(hierarchyImportData);
 		if (pao == null) {
 			// We were told to remove a device that doesn't exist. This is an error!
 			results.add(new HierarchyImportResult(hierarchyImportData, HierarchyImportResultTypesEnum.NO_SUCH_OBJECT));
@@ -399,68 +434,39 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 	
 	private Integer getParentId(HierarchyImportData hierarchyImportData, PaoType childType) {
 		String parentName = hierarchyImportData.getParent();
+		
 		Integer parentId = null;
-		PaoType parentType = null;
-		if (!parentName.isEmpty()) {
-			parentType = getHierarchyParentType(childType);
-			parentId = paoDao.getLiteYukonPAObject(parentName, parentType).getPaoIdentifier().getPaoId();
+		if (parentName != null && !parentName.isEmpty()) {
+			YukonPao parentPao = paoDao.findYukonPao(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
+			if (parentPao != null) {
+				parentId = parentPao.getPaoIdentifier().getPaoId();
+			}
 		}
 		
 		return parentId;
 	}
 
-	private LiteYukonPAObject getHierarchyPao(HierarchyImportData data) {
+	private YukonPao getHierarchyPao(HierarchyImportData data) {
 		String hierarchyName = data.getName();
 		PaoType paoType = data.getPaoType();
 		
-		try {
-			if (paoType == null) {
-				// Delete doesn't require a type.
-				List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(hierarchyName, false);
-				if (paos == null || paos.isEmpty()) {
-					return null;
-				} else {
-					return paos.get(0);
-				}
-			}
-			LiteYukonPAObject pao = paoDao.getLiteYukonPAObject(hierarchyName, paoType);
-			return pao;
-		} catch (NotFoundException e) {
-			return null;
-		}
-	}
-	
-	private LiteYukonPAObject getTemplateCbcPao(CbcImportData data) {
-		String templateName = data.getTemplateName();
-		PaoType paoType = data.getCbcType();
+		YukonPao pao = null;
 		
-		return retrieveCbcPao(templateName, paoType);
-	}
-	
-	private LiteYukonPAObject getCbcPao(CbcImportData data) {
-		String cbcName = data.getCbcName();
-		PaoType paoType = data.getCbcType();
-		
-		return retrieveCbcPao(cbcName, paoType);
-	}
-	
-	private LiteYukonPAObject retrieveCbcPao(String name, PaoType paoType) {
-		try {
-			if (paoType == null) {
-				// Not necessary for a delete, so just grab by name.
-				List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(name, false);
-				if (paos == null || paos.isEmpty()) {
-					return null;
-				} else {
-					return paos.get(0);
-				}
-			} else {
-				LiteYukonPAObject pao = paoDao.getLiteYukonPAObject(name, paoType);
-				return pao;
-			}
-		} catch (NotFoundException e) {
-			return null;
+		if (paoType == null) {
+			/* Delete doesn't require a type, so none may be here. We know, however, 
+			 * that category and class of a hierarchy pao are both guaranteed to be 
+			 * "CAPCONTROL" */
+			pao = paoDao.findYukonPao(hierarchyName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
+		} else {
+			pao = paoDao.findYukonPao(hierarchyName, paoType);
 		}
+		
+		return pao;
+	}
+	
+	private YukonPao retrieveCbcPao(String name) {
+		// We know all CBCs have a Category of Device and a PAOClass of Capcontrol.
+		return paoDao.findYukonPao(name, PaoCategory.DEVICE, PaoClass.CAPCONTROL);
 	}
 	
 	private void createHierarchyParentLink(HierarchyImportData hierarchyImportData, int parentId, int childId, 
@@ -494,52 +500,20 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 		}
 	}
 	
-	private void createCbcParentLink(String parentName, int childId) {
-        if (parentName != null) {
-        	LiteYukonPAObject parent = paoDao.getLiteYukonPAObject(parentName, PaoType.CAPBANK);
-        	if (parent != null) {
-        		capbankControllerDao.assignController(parent.getPaoIdentifier().getPaoId(), childId);
-        	}
-        }
-	}
-	
-	private PaoType getHierarchyParentType(PaoType childType) {
-		switch (childType) {
-		case CAP_CONTROL_AREA:
-		case CAP_CONTROL_SPECIAL_AREA:
-			return null;
-		case CAP_CONTROL_SUBSTATION:
-			return PaoType.CAP_CONTROL_AREA;
-		case CAP_CONTROL_SUBBUS:
-			return PaoType.CAP_CONTROL_SUBSTATION;
-		case CAP_CONTROL_FEEDER:
-			return PaoType.CAP_CONTROL_SUBBUS;
-		case CAPBANK:
-			return PaoType.CAP_CONTROL_FEEDER;
-		default:
-			return null;
-		}
-	}
-	
-	private LiteYukonPAObject getPaoByName(String paoName) {
-		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(paoName, false);
+	private Integer getCbcParentId(CbcImportData data) {
+		Integer parentId = null;
 		
-		if (paos.size() != 1) {
-			return null;
-		}
-		LiteYukonPAObject litePao = paos.get(0);
-		
-		return litePao;
-	}
-	
-	private int getPaoIdByName(String paoName) {
-		LiteYukonPAObject litePao = getPaoByName(paoName);
-		
-		if (litePao == null) {
-			return -1;
+		String parentName = data.getCapBankName();
+		if (parentName != null && !parentName.isEmpty()) {
+			YukonPao parent = paoDao.findYukonPao(parentName, PaoType.CAPBANK);
+			if (parent != null) {
+				parentId = parent.getPaoIdentifier().getPaoId();
+			} else {
+				throw new CapControlImportException("Cap bank named " + parentName + " doesn't exist!");
+			}
 		}
 		
-		return litePao.getYukonID();
+		return parentId;
 	}
 	
 	@Autowired
@@ -575,10 +549,5 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 	@Autowired
 	public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
 		this.capbankControllerDao = capbankControllerDao;
-	}
-	
-	@Autowired
-	public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-		this.paoDefinitionService = paoDefinitionService;
 	}
 }

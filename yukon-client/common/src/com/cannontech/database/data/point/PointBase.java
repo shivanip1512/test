@@ -11,10 +11,8 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CapBank;
@@ -26,8 +24,6 @@ import com.cannontech.database.db.point.DynamicAccumulator;
 import com.cannontech.database.db.point.DynamicPointDispatch;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.db.point.PointAnalog;
-import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -36,6 +32,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
+@SuppressWarnings("serial")
 public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel {
     private Point point = null;
     private Vector<FDRTranslation> pointFDR = null;
@@ -98,40 +95,6 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
             getPoint().delete();
         }
     
-    }
-    
-    public void delete2() throws SQLException {
-    	int pointId = getPoint().getPointID();
-    	
-    	PointPropertyValueDao dao = YukonSpringHook.getBean("pointPropertyValueDao",PointPropertyValueDao.class);
-        dao.removeByPointId(pointId);
-        
-        deletePoint(FDRTranslation.TABLE_NAME, "PointID", pointId);       
-        deletePoint(DynamicPointDispatch.TABLE_NAME, "PointID", pointId); 
-        deletePoint(DynamicAccumulator.TABLE_NAME, "PointID", pointId);   
-        deletePoint(GraphDataSeries.tableName, "PointID", pointId);       
-        deletePoint("DynamicPointAlarming", "PointID", pointId);          
-        deletePoint(CalcComponent.TABLENAME, "ComponentPointID", pointId);
-        deletePoint("TagLog", "PointID", pointId);                        
-        deletePoint("DynamicTags", "PointID", pointId);
-        deletePoint(PointAnalog.TABLE_NAME, "PointID", pointId);
-        deletePoint(PointUnit.TABLE_NAME, PointUnit.CONSTRAINT_COLUMNS[0], pointId);
-        
-        deletePoint("Display2WayData", "PointID", getPoint().getPointID());
-        if (!isPartialDelete) {
-        	deletePoint(PointAlarming.TABLE_NAME, PointAlarming.CONSTRAINT_COLUMNS[0], getPointAlarming().getPointID());
-        	deletePoint(Point.TABLE_NAME, Point.CONSTRAINT_COLUMNS[0], getPoint().getPointID());
-        }
-    }
-    
-    private void deletePoint(String table, String column, int pointId) {
-    	YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("DELETE FROM " + table);
-    	sql.append("WHERE " + column).eq(pointId);
-    	
-    	yukonJdbcTemplate.update(sql);
     }
     
     public void deletePartial() throws SQLException {

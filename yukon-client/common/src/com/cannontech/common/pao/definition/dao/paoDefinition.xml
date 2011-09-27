@@ -5429,7 +5429,6 @@
             </attribute>
         </attributes>
         <tags>
-            <tag name="TWO_WAY_CBC"/>
         	<tag name="PAO_CREATION_SERVICE">
         		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
         	</tag>

@@ -7,6 +7,7 @@ import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
@@ -40,8 +41,9 @@ public class CapControlImportRequestEndpoint {
 	
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
+    @Transactional
 	@PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="capControlImportRequest")
-	public Element invoke(Element capControlImportRequest, LiteYukonUser user) throws Exception  {
+	public Element invoke(Element capControlImportRequest, LiteYukonUser user) {
 		XmlVersionUtils.verifyYukonMessageVersion(capControlImportRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 		Element response = new Element("capControlImportResponse", ns);
 		
@@ -202,10 +204,6 @@ public class CapControlImportRequestEndpoint {
 					case REMOVE:
 						capControlImportService.removeCbc(data, cbcResults);
 						break;
-						
-					default:
-						cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_IMPORT_ACTION));
-						break;
 				}
 			}
 		}
@@ -252,10 +250,6 @@ public class CapControlImportRequestEndpoint {
 							
 						case REMOVE:
 							capControlImportService.removeHierarchyObject(data, hierarchyResults);
-							break;
-						
-						default:
-							hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultTypesEnum.INVALID_IMPORT_ACTION));
 							break;
 					}
 				} catch (NotFoundException e) {

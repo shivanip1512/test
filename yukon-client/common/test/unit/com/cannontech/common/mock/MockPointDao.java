@@ -17,7 +17,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointTypes;
 
@@ -138,7 +138,7 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
-    public List getCapBankMonitorPoints(CapBank capBank) {
+    public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
         return null;
     }
 
@@ -151,7 +151,6 @@ public class MockPointDao implements PointDao {
     }
 
 	public List<LitePoint> searchByName(String name, String paoClass) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -198,10 +197,4 @@ public class MockPointDao implements PointDao {
     public LitePoint findPointByName(YukonPao pao, String pointName) {
         return null;
     }
-
-	@Override
-	public List<PointBase> getPointBasesForPao(int paoId) {
-		return null;
-	}
-
 }

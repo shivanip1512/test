@@ -9,7 +9,7 @@ public class HierarchyImportData {
 	private String parent;
 	private String description;
 	private String mapLocationId;
-	private Boolean disabled;
+	private boolean disabled;
 	private ImportActionsEnum importAction;
 	
 	public PaoType getPaoType() {

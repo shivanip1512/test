@@ -18,6 +18,27 @@ public interface PaoDao {
     public YukonPao getYukonPao(int paoId);
     
     /**
+     * Checks for existence of a unique pao with the given name and type.
+     * @param paoName the name of the pao
+     * @param paoType the type of the pao
+     * @return A PaoIdentifier representing the PaoId and 
+     * PaoType of the unique Pao if it exists or <code>null</code> if the object 
+     * doesn't exist.
+     */
+    public YukonPao findYukonPao(String paoName, PaoType paoType);
+    
+    /**
+     * Checks for existence of a unique pao with the given name, category, and class.
+     * @param paoName the name of the pao
+     * @param paoClass the class of the pao
+     * @param paoCategory the category of the pao
+     * @return A PaoIdentifier representing the PaoId and 
+     * PaoType of the unique Pao if it exists or <code>null</code> if the object 
+     * doesn't exist.
+     */
+    public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass);
+    
+    /**
      * Retrieves the YukonPao object along with related data
      * like port, address and route info
      * @param paoID
@@ -42,8 +63,6 @@ public interface PaoDao {
     public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
             int category, int paoClass, int type);
 
-    
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType);
     /**
      * Helper method to return a paobject that exist for the paoName, category, paoClass.
      * These are the three fields that make up Unique Index Indx_PAO

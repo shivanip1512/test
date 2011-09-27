@@ -10,53 +10,62 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 
-public final class SimpleDevice implements YukonDevice, YukonPao {
-    private PaoIdentifier paoIdentifier;
+public final class SimpleDevice implements YukonDevice {
+    private int deviceId;
+	private PaoType type;
 
 	public SimpleDevice(int deviceId, int type) {
         this(deviceId, PaoType.getForId(type));
     }
-	
-	public SimpleDevice(PaoIdentifier paoIdentifier) {
-		this.paoIdentifier = paoIdentifier;
-	}
 
-    public SimpleDevice(int deviceId, PaoType paoType) {
-		this(new PaoIdentifier(deviceId, paoType));
+    public SimpleDevice(int deviceId, PaoType type) {
+		this.deviceId = deviceId;
+		this.type = type;
     }
     
     public SimpleDevice(YukonPao pao) {
     	PaoUtils.validateDeviceType(pao);
-    	this.paoIdentifier = pao.getPaoIdentifier();
+    	this.deviceId = pao.getPaoIdentifier().getPaoId();
+    	this.type = pao.getPaoIdentifier().getPaoType();
+    }
+
+    public SimpleDevice() {
     }
 
     public int getDeviceId() {
-        return paoIdentifier.getPaoId();
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+		this.deviceId = deviceId;
     }
     
     public PaoType getDeviceType() {
-        return paoIdentifier.getPaoType();
+        return type;
+    }
+    
+    public void setDeviceType(PaoType deviceType) {
+		type = deviceType;
     }
     
     public int getType() {
-    	return paoIdentifier.getPaoType().getDeviceTypeId();
+    	return type.getDeviceTypeId();
     }
     
     public void setType(int type) {
-    	PaoType paoType = PaoType.getForId(type);
-    	paoIdentifier = new PaoIdentifier(paoIdentifier.getPaoId(), paoType);
+    	this.type = PaoType.getForId(type);
     }
     
     @Override
     public PaoIdentifier getPaoIdentifier() {
-    	return paoIdentifier;
+    	return new PaoIdentifier(deviceId, type);
     }
 
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("deviceId", getDeviceId());
-        tsc.append("type", paoIdentifier.getPaoType());
+        tsc.append("type", type);
         return tsc.toString();
     }
     

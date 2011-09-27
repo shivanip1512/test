@@ -50,14 +50,15 @@ import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -82,7 +83,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.PAOFactory;
@@ -161,6 +161,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private CapbankControllerDao capbankControllerDao;
     private CapControlCache capControlCache;
     private StrategyDao strategyDao;
+    private PaoScheduleDao scheduleDao;
     private CapbankDao capbankDao;
     private FeederDao feederDao;
     private SubstationBusDao substationBusDao;
@@ -984,7 +985,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
         final int type = wizard.getSelectedType();
         final boolean disabled = wizard.getDisabled();
-        PaoType paoType = PaoType.getForId(type);
+        final PaoType paoType = PaoType.getForId(type);
         final boolean isController = CBCUtils.checkControllerByType(paoType);
         final int portId = wizard.getPortID();
         final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested());
@@ -1000,16 +1001,24 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         boolean cbcDisabled = cbcWizard.getDisabled();
                         String cbcName = cbcWizard.getName();
                         int cbcPortId = cbcWizard.getPortID();
-                        int controllerId = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId);
-                        int tempItemId = capControlCreationService.create(type, name, disabled);
+                        PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId);
+                        PaoIdentifier tempItem = capControlCreationService.createCapControlObject(paoType, name);
+                        int controllerId = controller.getPaoId();
+                        int tempItemId = tempItem.getPaoId();
                         capbankControllerDao.assignController(tempItemId, controllerId);
                         itemId = tempItemId;
                     } else {
                     	if (isController) {
                     		PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
-                    		itemId = capControlCreationService.createCbc(cbcType, name, disabled, portId);
+                    		PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId);
+                    		itemId = item.getPaoId();
+                    	} else if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
+                    		itemId = scheduleDao.add(name, disabled);
+                    	} else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
+                    		itemId = strategyDao.add(name);
                     	} else {
-                    		itemId = capControlCreationService.create(type, name, disabled);
+                    		PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name);
+                    		itemId = item.getPaoId();
                     	}
                     }
                 }
@@ -2130,6 +2139,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public void setStrategyDao (StrategyDao strategyDao) {
         this.strategyDao = strategyDao;
+    }
+    
+    public void setScheduleDao(PaoScheduleDao scheduleDao) {
+    	this.scheduleDao = scheduleDao;
     }
     
     public void setCapControlCache(CapControlCache capControlCache) {

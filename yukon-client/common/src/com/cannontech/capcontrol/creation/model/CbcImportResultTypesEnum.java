@@ -14,6 +14,7 @@ public enum CbcImportResultTypesEnum implements DatabaseRepresentationSource {
 	INVALID_COMM_CHANNEL("Invalid Comm Channel"),
 	INVALID_IMPORT_ACTION("Invalid Import Action"),
 	INVALID_TYPE("Invalid Type"),
+	INVALID_PARENT("Invalid Parent"),
 	DEVICE_EXISTS("Device Already Exists"),
 	NO_SUCH_OBJECT("Object Doesn't Exist"),
 	;

@@ -92,9 +92,9 @@ public interface DeviceDao {
     public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
             String category, String paoClass, String type);
 
-    public List getDevicesByPort(int portId);
+    public List<Integer> getDevicesByPort(int portId);
 
-    public List getDevicesByDeviceAddress(Integer masterAddress,
+    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress,
             Integer slaveAddress);
 
     /**

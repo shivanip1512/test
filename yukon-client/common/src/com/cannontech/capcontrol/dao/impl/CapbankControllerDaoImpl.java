@@ -27,14 +27,16 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
+import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -49,6 +51,7 @@ import com.cannontech.database.db.DBPersistent;
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	
 	private YukonJdbcTemplate yukonJdbcTemplate;
+	private DBPersistentDao dbPersistentDao;
 	private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
 	private PointDao pointDao;
@@ -74,245 +77,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         };
         return rowMapper;
     }
-    
-    @Override
-    public void add(CapbankController capbankController) {		
-    	throw new UnsupportedOperationException("CBC creation should be handled by the PaoCreationService!");
-    }
-    
-	@Override
-	public void add(CapbankController capbankController, boolean addPoints) {
-		throw new UnsupportedOperationException("CBC creation should be handled by the PaoCreationService!");
-	}
-
-	@Override
-	public boolean remove(CapbankController capbankController) {
-    	throw new UnsupportedOperationException("CBC deletion should be handled by the PaoCreationService!");
-	}
-
-	@Override
-	public boolean update(CapbankController capbankController) {
-		throw new UnsupportedOperationException("CBC updates should be handled by the PaoCreationService!");
-	}
-	
-	@Override
-	public void insertDeviceData(PaoIdentifier paoIdentifier, DeviceFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("Device");
-		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("AlarmInhibit", fields.getAlarmInhibit());
-		params.addValue("ControlInhibit", fields.getControlInhibit());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateDeviceData(PaoIdentifier paoIdentifier, DeviceFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("Device");
-		params.addValue("AlarmInhibit", fields.getAlarmInhibit());
-		params.addValue("ControlInhibit", fields.getControlInhibit());
-		
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void insertScanRateData(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("DeviceScanRate");
-		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("ScanType", fields.getScanType());
-		params.addValue("IntervalRate", fields.getIntervalRate());
-		params.addValue("ScanGroup", fields.getScanGroup());
-		params.addValue("AlternateRate", fields.getAlternateRate());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateScanRateData(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("DeviceScanRate");
-		params.addValue("ScanType", fields.getScanType());
-		params.addValue("IntervalRate", fields.getIntervalRate());
-		params.addValue("ScanGroup", fields.getScanGroup());
-		params.addValue("AlternateRate", fields.getAlternateRate());
-		
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void insertDeviceWindowData(PaoIdentifier paoIdentifier, DeviceWindowFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("DeviceWindow");
-		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("Type", fields.getType());
-		params.addValue("WinOpen", fields.getWindowOpen());
-		params.addValue("WinClose", fields.getWindowClose());
-		params.addValue("AlternateOpen", fields.getAlternateOpen());
-		params.addValue("AlternateClose", fields.getAlternateClose());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateDeviceWindowData(PaoIdentifier paoIdentifier, DeviceWindowFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("DeviceWindow");
-		params.addValue("Type", fields.getType());
-		params.addValue("WinOpen", fields.getWindowOpen());
-		params.addValue("WinClose", fields.getWindowClose());
-		params.addValue("AlternateOpen", fields.getAlternateOpen());
-		params.addValue("AlternateClose", fields.getAlternateClose());
-		
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void insertCommSettingsData(PaoIdentifier paoIdentifier, DeviceDirectCommSettingsFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("DeviceDirectCommSettings");
-		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("PortId", fields.getPortId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateCommSettingsData(PaoIdentifier paoIdentifier, DeviceDirectCommSettingsFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("DeviceDirectCommSettings");
-		params.addValue("PortId", fields.getPortId());
-		
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void insertDeviceCbcData(PaoIdentifier paoIdentifier, DeviceCbcFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("DeviceCBC");
-		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("SerialNumber", fields.getSerialNumber());
-		params.addValue("RouteId", fields.getRouteId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateDeviceCbcData(PaoIdentifier paoIdentifier, DeviceCbcFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("DeviceCBC");
-		params.addValue("SerialNumber", fields.getSerialNumber());
-		params.addValue("RouteId", fields.getRouteId());
-		
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void insertDeviceAddressData(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("DeviceAddress");
-		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("MasterAddress", fields.getMasterAddress());
-		params.addValue("SlaveAddress", fields.getSlaveAddress());
-		params.addValue("PostCommWait", fields.getPostCommWait());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateDeviceAddressData(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("DeviceAddress");
-		params.addValue("MasterAddress", fields.getMasterAddress());
-		params.addValue("SlaveAddress", fields.getSlaveAddress());
-		params.addValue("PostCommWait", fields.getPostCommWait());
-		
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void deleteControllerData(PaoProviderTableEnum table, PaoIdentifier paoIdentifier) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("DELETE FROM " + table.name());
-		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	/**
-	 * This function will copy an existing controller and it's points. 
-	 * Then set the values stored in CapbankController into the newly created controller
-	 */
-	@Override
-	public boolean createControllerFromTemplate(String templateName, CapbankController controller) {
-		
-		return true;
-		/*
-		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(templateName, false);
-		if (paos.size() != 1) {
-			CTILogger.error("Template not found to copy.");
-			throw new UnsupportedOperationException("Template not found to copy. " + templateName);
-		}
-		
-		LiteYukonPAObject pao = paos.get(0);
-		PaoType deviceType = pao.getPaoType();
-		
-		int templateDeviceId = pao.getLiteID();
-		DeviceBase base = DeviceFactory.createDevice(deviceType);
-		base.setDeviceID(templateDeviceId);
-
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, base).execute();
-		} catch (TransactionException e) {
-			throw new UnsupportedOperationException("Error Retrieving Template from the database. " + templateName);
-		}
-		
-		int newId = paoDao.getNextPaoId();
-		//TODO jg fix!
-		//controller.setId(newId);
-		base.setDeviceID(newId);
-		base.setPAOName(controller.getName());
-		setTypeSpecificCbcFields(deviceType, base, controller);
-		
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, base).execute();
-		} catch (TransactionException e) {
-			throw new UnsupportedOperationException("Error inserting copy of template into the database. " + controller.getName());
-		}
-		
-		//Copy points and add them to the DB
-        List<PointBase> points = getPointsForPao(templateDeviceId);
-        this.applyPoints(newId, points);
-		
-		return true;
-		*/
-	}
 	
 	@Override
 	public boolean assignController(Capbank capbank, CapbankController controller) {
@@ -381,7 +145,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		sql.append("FROM YukonPAObject");
 		sql.append("WHERE Category").eq(PaoCategory.DEVICE);
 		sql.append(   "AND PAOClass").eq(PaoClass.CAPCONTROL);
-		sql.append(   "AND Type like 'CBC%' AND PAObject NOT IN");
+		sql.append(   "AND Type like 'CBC%' AND PAObjectId NOT IN");
 		sql.append(      "(SELECT ControlDeviceID");
 		sql.append(      " FROM CAPBANK)");
 		sql.append("ORDER BY PAOName");
@@ -432,105 +196,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
         return searchResult;
 	}
-	
-	/**
-	 * Handles the special cases each type of CBC needs.
-	 * 
-	 * @param type
-	 * @param device
-	 * @param controller
-	 *
-	private void setTypeSpecificCbcFields(PaoType type, DeviceBase device, CapbankController controller ) {
-		
-		switch(type) {
-			case CBC_7022:
-			case CBC_7024:
-			case CBC_7023:
-			case CBC_7020:
-			case CBC_8020:
-			case CBC_8024: {
-				CapBankController702x cbc = (CapBankController702x)device;
-				cbc.setCommID(controller.getPortId());
-				
-				DeviceAddress devAddress = cbc.getDeviceAddress();
-				DeviceCBC devCbc = cbc.getDeviceCBC();
-				
-				devAddress.setMasterAddress(controller.getMasterAddress());
-				devAddress.setSlaveAddress(controller.getSlaveAddress());
-				devAddress.setPostCommWait(controller.getPostCommWait());
-				devCbc.setSerialNumber(controller.getSerialNumber());
-				devCbc.setRouteID(controller.getRouteId());
-				
-				DeviceScanRate scanRate = new DeviceScanRate();
-				scanRate.setDeviceID(controller.getId());
-				
-				scanRate.setScanType(controller.getScanType());
-				scanRate.setScanGroup(controller.getScanGroup());
-				scanRate.setIntervalRate(controller.getIntervalRate());
-				scanRate.setAlternateRate(controller.getAlternateRate());
-				
-				cbc.getDeviceScanRateMap().clear();
-				cbc.getDeviceScanRateMap().put(scanRate.getScanType(),scanRate);
-				
-				break;	
-			}
-			case CBC_DNP: {
-				CapBankControllerDNP cbc = (CapBankControllerDNP)device;
-				cbc.setCommID(controller.getPortId());
-				
-				DeviceAddress devAddress = cbc.getDeviceAddress();
-				DeviceCBC devCbc = cbc.getDeviceCBC();
-				
-				devAddress.setMasterAddress(controller.getMasterAddress());
-				devAddress.setSlaveAddress(controller.getSlaveAddress());
-				devAddress.setPostCommWait(controller.getPostCommWait());
-				devCbc.setSerialNumber(controller.getSerialNumber());
-				devCbc.setRouteID(controller.getRouteId());
-				
-				DeviceScanRate scanRate = new DeviceScanRate();
-				scanRate.setDeviceID(controller.getId());
-				
-				scanRate.setScanType(controller.getScanType());
-				scanRate.setScanGroup(controller.getScanGroup());
-				scanRate.setIntervalRate(controller.getIntervalRate());
-				scanRate.setAlternateRate(controller.getAlternateRate());
-				
-				cbc.getDeviceScanRateMap().clear();
-				cbc.getDeviceScanRateMap().put(scanRate.getScanType(), scanRate);
-				
-				break;
-			}
-			case DNP_CBC_6510: {
-				CapBankController6510 cbc = (CapBankController6510)device;
-				cbc.setCommID(controller.getPortId());
-				
-				DeviceAddress devAddress = cbc.getDeviceAddress();
-				
-				devAddress.setMasterAddress(controller.getMasterAddress());
-				devAddress.setSlaveAddress(controller.getSlaveAddress());
-				devAddress.setPostCommWait(controller.getPostCommWait());
-				break;
-			}
-			case CBC_FP_2800:
-			case CAPBANKCONTROLLER:
-			case CBC_EXPRESSCOM:
-			case CBC_7012:
-			case CBC_7011:
-			case CBC_7010: {
-				CapBankController cbc = (CapBankController)device;
-				
-				DeviceCBC devCbc = cbc.getDeviceCBC();
-				
-				devCbc.setSerialNumber(controller.getSerialNumber());
-				devCbc.setRouteID(controller.getRouteId());
-				break;
-			}
-			default: {
-				throw new UnsupportedOperationException("Device Type not supported: " + type.getPaoTypeName());
-			}
-		}
-	}
-	*/
+    
 	@Override
     public void applyPoints(int deviceId, List<PointBase> points) {
         
@@ -566,32 +232,42 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
             PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
             
             try {
-                Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase).execute();
+            	dbPersistentDao.performDBChange(pointBase, TransactionType.RETRIEVE);
                 points.add(pointBase);
             }
-            catch (TransactionException e) {
+            catch (PersistenceException e) {
                 throw new DeviceCreationException("Could not retrieve points for new device.", e);
             }
         }
 
         return points;
     }
+    
+    @Override
+    public PaoTemplate getCbcPaoTemplate(PaoIdentifier paoIdentifier) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT Y.PAOName, Y.Description, Y.DisableFlag, Y.PAOStatistics,");
+    	sql.append("   D.AlarmInhibit, D.ControlInhibit, A.MasterAddress, A.SlaveAddress,");
+    	sql.append("   W.Type, W.WinOpen, W.WinClose, W.AlternateOpen, W.AlternateClose,");
+    	sql.append("   C.SerialNumber, C.RouteID, S.PortID, R.ScanType, R.IntervalRate,");
+    	sql.append("   R.ScanGroup, R.AlternateRate");
+    	sql.append("FROM YukonPAObject Y");
+    	sql.append("   LEFT JOIN Device D ON D.DeviceID = Y.PAObjectID");
+    	sql.append("   LEFT JOIN DeviceAddress A ON A.DeviceID = Y.PAObjectID");
+    	sql.append("   LEFT JOIN DeviceWindow W ON W.DeviceID = Y.PAObjectID");
+    	sql.append("   LEFT JOIN DeviceCbc C ON C.DeviceID = Y.PAObjectID");
+    	sql.append("   LEFT JOIN DeviceDirectCommSettings S ON S.DeviceID = Y.PAObjectID");
+    	sql.append("   LEFT JOIN DeviceScanRate R ON R.DeviceID = Y.PAObjectID");
+    	sql.append("WHERE Y.PAObjectID").eq(paoIdentifier.getPaoId());
+    	
+    	return null;
+    };
 	
 	@Override
 	public void changeSerialNumber(SimpleDevice device, int newSerialNumber) {
 		String sql = "UPDATE DeviceCBC SET SERIALNUMBER = ? WHERE DEVICEID = ?";
 		
 		yukonJdbcTemplate.update(sql,newSerialNumber,device.getDeviceId());
-	}
-	
-	@Autowired
-	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    @Autowired
-	public void setPointDao(PointDao pointDao) {
-		this.pointDao = pointDao;
 	}
 
 	@Override
@@ -747,5 +423,20 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		DeviceAddressFields addressFields = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
 		
 		return addressFields;
+	}
+	
+	@Autowired
+	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+		this.dbPersistentDao = dbPersistentDao;
+	}
+	
+	@Autowired
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
+    
+    @Autowired
+	public void setPointDao(PointDao pointDao) {
+		this.pointDao = pointDao;
 	}
 }

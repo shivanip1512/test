@@ -31,6 +31,11 @@
         </managed-property>
         
         <managed-property>
+        	<property-name>scheduleDao</property-name>
+        	<value>#{scheduleDao}</value>
+        </managed-property>
+        
+        <managed-property>
             <property-name>capbankControllerDao</property-name>
             <value>#{capbankControllerDao}</value>
         </managed-property>

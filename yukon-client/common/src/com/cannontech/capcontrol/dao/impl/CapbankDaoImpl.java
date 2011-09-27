@@ -318,7 +318,7 @@ public class CapbankDaoImpl implements CapbankDao {
 	public boolean assignCapbank(int feederId, int capbankId) {
 		SqlStatementBuilder tripSql = new SqlStatementBuilder();
 		
-		tripSql.update("CCFeederBankList");
+		tripSql.append("UPDATE CCFeederBankList");
 		tripSql.append("SET TripOrder = TripOrder + 1");
 		tripSql.append("WHERE FeederId").eq(feederId);
 		

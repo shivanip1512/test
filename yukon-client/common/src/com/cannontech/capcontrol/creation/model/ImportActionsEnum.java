@@ -26,7 +26,7 @@ public enum ImportActionsEnum implements DatabaseRepresentationSource {
             }
 			lookupByDbString = dbBuilder.build();
         } catch (IllegalArgumentException e) {
-            log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
+            log.error("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
             throw e;
         }
 	}

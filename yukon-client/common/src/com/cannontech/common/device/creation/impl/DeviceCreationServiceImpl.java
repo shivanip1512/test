@@ -71,7 +71,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         // COPY POINTS
         if (copyPoints) {
             List<PointBase> points = this.getPointsForPao(templateDeviceId);
-            paoCreationHelper.applyPoints(newYukonDevice.getPaoIdentifier().getPaoId(), points);
+            paoCreationHelper.applyPoints(newYukonDevice, points);
         }
         
         // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
