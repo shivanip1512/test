@@ -13,8 +13,8 @@
     <cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/thermostat.css"/>
     
-    <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius" />
-    <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit" />
+    <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius" htmlEscape="false" />
+    <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit" htmlEscape="false" />
     <cti:msg2 var="holdConfirmOn" key="yukon.web.modules.operator.thermostatManual.hold.on" javaScriptEscape="true"/>
     <cti:msg2 var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off" javaScriptEscape="true"/>
 
@@ -96,9 +96,9 @@ Event.observe(window, 'load', function(){
                                             <td>
                                                 <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                     <!-- Temperature and Degree Units -->
-                                                    <i:inline key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualTemp.value}'></span>"/>
-                                                    <span class="C_label unit_label"><i:inline key="yukon.web.modules.operator.thermostatManual.degreesCelsius" /></span>
-                                                    <span class="F_label unit_label"><i:inline key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit" /></span>,
+                                                    <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualTemp.value}'></span>"  htmlEscape="false"/>
+                                                    <span class="C_label unit_label">${degreesCelsius}</span>
+                                                    <span class="F_label unit_label">${degreesFahrenheit}</span>,
                                                     
                                                     <!-- Heat/Cool Mode -->
                                                     <i:inline key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
