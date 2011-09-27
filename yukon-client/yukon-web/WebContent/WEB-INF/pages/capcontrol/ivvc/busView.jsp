@@ -109,6 +109,9 @@
 						</tr>
 					</c:forEach>
 				</table>
+                <div class="actionArea">
+                    <cti:button nameKey="edit" href="/editor/cbcBase.jsf?type=5&amp;itemid=${strategyId}"/>
+                </div>
 			</tags:boxContainer2>
 			
 			<br>

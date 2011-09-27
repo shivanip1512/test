@@ -523,19 +523,29 @@
 		                    	<c:if test="${capBank.notAssignedToZone}">
                                     <span class="strongWarningMessage">*</span>
                                 </c:if>
-		                    	<spring:escapeBody htmlEscape="true">
-                                    ${capBank.controlDevice.paoName}
-                                </spring:escapeBody>
+                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${capBank.controlDevice.liteID}">
+    		                    	<spring:escapeBody htmlEscape="true">
+                                        ${capBank.controlDevice.paoName}
+                                    </spring:escapeBody>
+                                </a>
 		                    </td>
-		                    <td><spring:escapeBody htmlEscape="true">
-                                ${capBank.capBankDevice.ccName}
-                            </spring:escapeBody></td>
 		                    <td>
-		                    	<cti:capBankStateColor paoId="${capBank.capBankDevice.ccId}" 
-                                    type="CAPBANK" format="CB_STATUS_COLOR">
-    					       		<cti:capControlValue paoId="${capBank.capBankDevice.ccId}" 
-                                        type="CAPBANK" format="CB_STATUS"/>
-                        		</cti:capBankStateColor>
+                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${capBank.capBankDevice.ccId}">
+                                    <spring:escapeBody htmlEscape="true">
+                                        ${capBank.capBankDevice.ccName}
+                                    </spring:escapeBody>
+                                </a>
+                            </td>
+		                    <td>
+                                <capTags:capBankWarningImg paoId="${capBank.capBankDevice.ccId}" type="CAPBANK"/>
+		                    	<cti:capBankStateColor paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS_COLOR">
+                                    <a id="capbank_status_${thisCapBankId}"
+                                        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+                                            href="javascript:void(0);" onclick ="getCapBankSystemMenu('${capBank.capBankDevice.ccId}', event);"
+                                        </cti:checkRolesAndProperties>>
+                                        <cti:capControlValue paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS"/>
+                                    </a>
+                                </cti:capBankStateColor>
                         	</td>
 		                    <td>
 								<c:choose>

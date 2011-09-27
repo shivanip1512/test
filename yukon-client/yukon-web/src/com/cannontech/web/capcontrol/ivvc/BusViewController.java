@@ -85,6 +85,7 @@ public class BusViewController {
         int strategyId = cache.getSubBus(subBusId).getStrategyId();
         CapControlStrategy strategy = strategyDao.getForId(strategyId);
 
+        model.addAttribute("strategyId",strategy.getStrategyID());
         model.addAttribute("strategyName",strategy.getStrategyName());
         model.addAttribute("strategySettings",strategy.getTargetSettings());
     }
