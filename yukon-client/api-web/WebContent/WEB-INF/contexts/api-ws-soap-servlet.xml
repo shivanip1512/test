@@ -82,4 +82,20 @@
         <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 
+    <bean id="amr" class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+        <property name="schemaCollection">
+            <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
+                <property name="xsds">
+                    <list>
+                        <value>classpath:com/cannontech/yukon/api/amr/schemas/AllAmr.xsd</value>
+                    </list>
+                </property>
+                <property name="inline" value="true" />
+            </bean>
+        </property>
+        <property name="serviceName" value="amrService" />
+        <property name="portTypeName" value="amrPort" />
+        <property name="locationUri" value="/soap/amr" />
+        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
+    </bean>
 </beans>
