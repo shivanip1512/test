@@ -132,6 +132,8 @@ public class ZoneDetailController {
         model.addAttribute("nameKeys", nameKeys);
 
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
+        int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, userContext.getYukonUser()));
+        model.addAttribute("updaterDelay", updaterDelay);
     }
 
     private void setupZoneDetails(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {

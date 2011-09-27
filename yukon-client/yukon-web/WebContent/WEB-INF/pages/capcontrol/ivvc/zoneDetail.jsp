@@ -83,14 +83,14 @@
         }
         
         Event.observe(window, 'load', function() {
-            var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, 4000);
+            var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
         });
         
         function updateRecentEvents() {
             var params = {
                 'zoneId': ${zoneId},
                 'subBusId': ${subBusId},
-                'mostRecent': $('mostRecentDateTime').innerHTML
+                'mostRecent': $('mostRecentDateTime').value
             };
             new Ajax.Request('getRecentEvents', { 
                 'method': 'GET', 
@@ -101,7 +101,7 @@
                     var rows = $(dummyHolder).select('tr');
                     if (typeof(rows[0]) != 'undefined') {
                     	// assign our hidden td field to mostRecentDateTime for use in future calls
-                        $('mostRecentDateTime').innerHTML = rows[0].select('td')[3].innerHTML;
+                        $('mostRecentDateTime').value = rows[0].select('td input[type="hidden"]')[0].value;
                     }
                     for (var i = rows.length-1; i >= 0 ; i--) {
                         var topRow = $('recentEventsHeaderRow').next();
@@ -111,12 +111,15 @@
                             rows[i].addClassName('tableCell');
                         }
                         $('recentEventsHeaderRow').insert({'after': rows[i]});
-                        $('recentEventsHeaderRow').siblings().last().remove();
                         flashYellow(rows[i]);
                     }
+                    // Keep table size <= 20 rows
+                    $$('#recentEventsTable tr:gt(21)').each(function(tr){
+                        tr.remove();
+                    });
                 },
                 onComplete: function() {
-                    recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, 4000);
+                    recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
                 }
             });
         }
@@ -293,7 +296,7 @@
             </tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
-                <div id="mostRecentDateTime" class="dn">${mostRecentDateTime}</div>
+                <input type="hidden" value="${mostRecentDateTime}" id="mostRecentDateTime">
 				<tags:alternateRowReset/>
 				<c:choose>
 					<c:when test="${empty events}">
@@ -301,7 +304,7 @@
 					</c:when>
 					<c:otherwise>
 						<div class="historyContainer">
-							<table class="compactResultsTable ">
+							<table id="recentEventsTable" class="compactResultsTable">
 								<tr id="recentEventsHeaderRow">
 									<th><i:inline key=".ivvcEvents.deviceName"/></th>
                                     <th><i:inline key=".ivvcEvents.description"/></th>
