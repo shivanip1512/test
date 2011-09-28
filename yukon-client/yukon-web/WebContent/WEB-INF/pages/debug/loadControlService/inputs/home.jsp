@@ -1,11 +1,11 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage title="Load Control Service Inputs Test Page" module="debug">
-    <cti:standardMenu menuSelection="loadControlService|inputs" />
-    
+<cti:standardPage page="webServices.loadControl" module="support">
+
     <style type="text/css">
       table.resultsTable th.functionality {width:200px;}
       table.resultsTable td.functionality {vertical-align: top;text-align:center;}
@@ -30,10 +30,7 @@
             }
         }
     </script>
-    
-    <h2>Load Control Service Inputs Test Page</h2>
-    <br>
-    
+
     <%-- RESULT AREA --%>
     <c:if test="${not empty results}">
         <ul>
@@ -47,13 +44,13 @@
     <table class="resultsTable">
     
         <tr>
-            <th class="functionality">Functionality</th>
-            <th>Input Test</th>
+            <th class="functionality"><i:inline key=".functionality"/></th>
+            <th><i:inline key=".inputTest"/></th>
         </tr>
         
         <%-- PROGRAM STATUS BY PROGRAM NAME --%>
         <tr>
-            <td class="functionality">Program Status By Program Name</td>
+            <td class="functionality"><i:inline key=".programStatusByName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/getProgramStatusByProgramName" method="post">
                     <tags:nameValueContainer>
@@ -72,7 +69,7 @@
         
         <%-- CURRENTLY ACTIVE PROGRAMS --%>
         <tr>
-            <td class="functionality">All Currently Active Programs</td>
+            <td class="functionality"><i:inline key=".programStatusAllActive"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/getAllCurrentlyActivePrograms" method="post">
                     <tags:nameValueContainer>
@@ -87,7 +84,7 @@
         
         <%-- START CONTROL BY SCENARIO NAME.--%>
         <tr>
-            <td class="functionality">Start By Scenario Name</td>
+            <td class="functionality"><i:inline key=".startByScenarioName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/startControlByScenarioName" method="post">
                     <tags:nameValueContainer>
@@ -123,7 +120,7 @@
         
         <%-- START CONTROL BY PROGRAM NAME. --%>
         <tr>
-            <td class="functionality">Start By Program Name</td>
+            <td class="functionality"><i:inline key=".startByProgramName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/startControlByProgramName" method="post">
                     <tags:nameValueContainer>
@@ -163,7 +160,7 @@
         
         <%-- STOP CONTROL BY SCENARIO NAME.--%>
         <tr>
-            <td class="functionality">Stop By Scenario Name</td>
+            <td class="functionality"><i:inline key=".stopByScenarioName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/stopControlByScenarioName" method="post">
                     <tags:nameValueContainer>
@@ -194,7 +191,7 @@
         
         <%-- STOP CONTROL BY PROGRAM NAME.--%>
         <tr>
-            <td class="functionality">Stop By Program Name</td>
+            <td class="functionality"><i:inline key=".stopByProgramName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/stopControlByProgramName" method="post">
                     <tags:nameValueContainer>
@@ -225,7 +222,7 @@
         
         <%-- SCENARIOS LIST OF PROGRAMS --%>
         <tr>
-            <td class="functionality">Scenario List O' Programs (Starting Gears)</td>
+            <td class="functionality"><i:inline key=".scenarioProgramList"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/getScenarioProgramStartGears" method="post">
                     <tags:nameValueContainer>
@@ -243,7 +240,7 @@
         
         <%-- ENROLLING A DEVICE IN A PROGRAM.--%>
         <tr>
-            <td class="functionality">Enrolling a device in a program</td>
+            <td class="functionality"><i:inline key=".enrollingInAProgram"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/enrollingADeviceInAProgram" method="post">
                     <tags:nameValueContainer>
@@ -284,7 +281,7 @@
     
         <%-- UNENROLLING A DEVICE IN A PROGRAM.--%>
         <tr>
-            <td class="functionality">Unenrolling a device in a program</td>
+            <td class="functionality"><i:inline key=".unenrollingInAProgram"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/unenrollingADeviceInAProgram" method="post">
                     <tags:nameValueContainer>
@@ -321,7 +318,7 @@
 
         <%-- ADD A DEVICE TO AN ACCOUNT--%>
         <tr>
-            <td class="functionality">Add a device to an account</td>
+            <td class="functionality"><i:inline key=".addDevice"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/addDeviceToAccount" method="post">
                     <tags:nameValueContainer>
@@ -355,7 +352,7 @@
         
         <%-- UPDATE A DEVICE ON AN ACCOUNT--%>
         <tr>
-            <td class="functionality">Update a device on an account</td>
+            <td class="functionality"><i:inline key=".updateDevice"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/updateDeviceOnAccount" method="post">
                     <tags:nameValueContainer>
@@ -389,7 +386,7 @@
         
         <%-- REMOVE A DEVICE FROM AN ACCOUNT--%>
         <tr>
-            <td class="functionality">Remove a device from an account</td>
+            <td class="functionality"><i:inline key=".removeDevice"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/removeDeviceFromAccount" method="post">
                     <tags:nameValueContainer>

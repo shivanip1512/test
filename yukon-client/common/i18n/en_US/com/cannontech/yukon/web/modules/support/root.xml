@@ -188,5 +188,44 @@
     <entry key="yukon.web.modules.support.i18nDemo.testMessage">Test "i18nDemo"</entry>
     <entry key="yukon.web.modules.support.i18nDemo.nested.testMessage">Test "i18nDemo.nested"</entry>
     <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>
-
+    
+    <!-- Load Control Web Service Page -->
+    <entry key="yukon.web.modules.support.webServices.loadControl.pageName">Load Control Services Test</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.pageDescription">Load Control Services</entry>
+    
+    <entry key="yukon.web.modules.support.webServices.loadControl.functionality">Functionality</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.inputTest">Input Test</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.programStatusByName">Program Status By Program Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.programStatusAllActive">All Currently Active Programs</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.startByScenarioName">Start By Scenario Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.startByProgramName">Start By Program Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.stopByScenarioName">Stop By Scenario Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.stopByProgramName">Stop By Program Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.scenarioProgramList">Scenario List O' Programs (Starting Gears)</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.enrollingInAProgram">Enrolling a device in a program</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.unenrollingInAProgram">Unenrolling a device in a program</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.addDevice">Add a device to an account</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.updateDevice">Update a device on an account</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.removeDevice">Remove a device on an account</entry>
+    
+    <entry key="yukon.web.modules.support.webServices.account.pageName">Account Service Test</entry>
+    <entry key="yukon.web.modules.support.webServices.account.pageDescription">Account Services</entry>
+    
+    <entry key="yukon.web.modules.support.webServices.account.functionality">Functionality</entry>
+    <entry key="yukon.web.modules.support.webServices.account.bgeIntegrationReqDocRef">BGE Integration Requirements Doc Ref</entry>
+    <entry key="yukon.web.modules.support.webServices.account.inputTest">Input Test</entry>
+    <entry key="yukon.web.modules.support.webServices.account.deleteAccount">Delete Account</entry>
+    <entry key="yukon.web.modules.support.webServices.account.addAccount">Add Account</entry>
+    <entry key="yukon.web.modules.support.webServices.account.updateAccount">Update Account</entry>
+    <entry key="yukon.web.modules.support.webServices.account.section3">Section 3, #3</entry>
+    
+    <entry key="yukon.web.modules.support.webServices.webservice.pageName">Web Service XML Test</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.pageDescription">Web Service</entry>
+    
+    <entry key="yukon.web.modules.support.webServices.webservice.requestType">Request Type:</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.choose">Choose...</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.uri">URI:</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.username">Username:</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.response">RESPONSE</entry>
+    
 </properties>

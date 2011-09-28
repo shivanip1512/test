@@ -1,10 +1,10 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage title="Web Service XML Test Page" module="debug">
-    <cti:standardMenu menuSelection="webservice|xml" />
+<cti:standardPage page="webServices.webservice" module="support">
     
     <style type="text/css">
       textarea.xml {
@@ -55,9 +55,6 @@
 		
 	</script>
     
-    <h2>Web Service XML Test Page</h2>
-    <br>
-    
     <form id="executeRequestForm" action="/spring/debug/webservice/xml/executeRequest" method="post">
     <table cellspacing="10">
     
@@ -68,11 +65,11 @@
     		
     			<table>
     				<tr>
-    					<td><B>Request Type:</B></td>
+    					<td><B><i:inline key=".requestType"/></B></td>
     					<td>
     						<input type="hidden" id="selectedTemplateIndex" name="selectedTemplateIndex" value="${selectedTemplateIndex}">
 			    			<select id="xmlTemplate" name="xmlTemplate" onchange="xmlTemplateChange()">
-			    				<option value="">Choose...</option>
+			    				<option value=""><i:inline key=".choose"/></option>
 			    				<c:forEach var="fileName" items="${exampleFileNames}" varStatus="status">
 			    					<c:choose>
 				    					<c:when test="${status.count == selectedTemplateIndex}">
@@ -87,7 +84,7 @@
     					</td>
     				</tr>
     				<tr>
-    					<td><B>Username:</B></td>
+    					<td><B><i:inline key=".username"/></B></td>
     					<td>
     						<input type="text" id="userName" name="userName" value="${userName}">
     						<input type="button" onclick="resetUserName()" value="Reset Username">
@@ -104,7 +101,7 @@
     			<table>
     				<tr>
     					<td>
-    						<B>URI:</B>
+    						<B><i:inline key=".uri"/></B>
     					</td>
     					<td>
     						<select id="uriSelect" name="uriSelect" onchange="uriChange()">
@@ -146,7 +143,7 @@
     	</tr>
     
     	<%-- RESPONSE AREA --%>
-    	<tr><td><B>RESPONSE</B></td></tr>
+    	<tr><td><B><i:inline key=".response"/></B></td></tr>
     	<tr>
     		<td colspan="2">
 	    		<textarea id="xmlResponse" name="xmlResponse" class="xml">${xmlResponse}</textarea>

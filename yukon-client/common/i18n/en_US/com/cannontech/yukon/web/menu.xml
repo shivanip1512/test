@@ -175,16 +175,6 @@
 <entry key="yukon.web.menu.config.reporting.reports.cni">C&amp;I</entry>
 <entry key="yukon.web.menu.config.reporting.reports.settlement">Settlement</entry>
 
-<!-- Debug Module -->
-<entry key="yukon.web.menu.config.debug.loadControlService">Load Control Service</entry>
-<entry key="yukon.web.menu.config.debug.loadControlService.inputs">Inputs</entry>
-
-<entry key="yukon.web.menu.config.debug.accountService">Account Service</entry>
-<entry key="yukon.web.menu.config.debug.accountService.inputs">Inputs</entry>
-
-<entry key="yukon.web.menu.config.debug.webservice">Web Services Test</entry>
-<entry key="yukon.web.menu.config.debug.webservice.xml">XML</entry>
-
 <!-- Support Module -->
 <entry key="yukon.web.menu.config.support.information">Information</entry>
 <entry key="yukon.web.menu.config.support.information.system">System</entry>
@@ -204,15 +194,6 @@
 <entry key="yukon.web.menu.config.support.scheduler.status">Status</entry>
 <entry key="yukon.web.menu.config.support.scheduler.jobs">All</entry>
 
-<entry key="yukon.web.menu.config.support.loadControlService">Load Control Service</entry>
-<entry key="yukon.web.menu.config.support.loadControlService.inputs">Inputs</entry>
-
-<entry key="yukon.web.menu.config.support.accountService">Account Service</entry>
-<entry key="yukon.web.menu.config.support.accountService.inputs">Inputs</entry>
-
-<entry key="yukon.web.menu.config.support.webservice">Web Services Test</entry>
-<entry key="yukon.web.menu.config.support.webservice.xml">XML</entry>
-
 <entry key="yukon.web.menu.config.support.events">Events</entry>
 <entry key="yukon.web.menu.config.support.events.byCategory">Category</entry>
 <entry key="yukon.web.menu.config.support.events.byType">Type</entry>
@@ -226,6 +207,11 @@
 <entry key="yukon.web.menu.config.support.development.setupDatabase">Setup Database</entry>
 <entry key="yukon.web.menu.config.support.development.miscellaneousMethods">Miscellaneous Methods</entry>
 <entry key="yukon.web.menu.config.support.development.rfn">RFN Test</entry>
+
+<entry key="yukon.web.menu.config.support.webServices">Web Services</entry>
+<entry key="yukon.web.menu.config.support.webServices.loadControl">Load Control Service</entry>
+<entry key="yukon.web.menu.config.support.webServices.account">Account Service</entry>
+<entry key="yukon.web.menu.config.support.webServices.webservice">Web Services</entry>
 
 <entry key="yukon.web.menu.config.support.other">Other</entry>
 <entry key="yukon.web.menu.config.support.other.threadDump">Thread Dump</entry>

@@ -1,10 +1,10 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage title="Account Service Test Page" module="debug">
-    <cti:standardMenu menuSelection="accountService|inputs"/>
+<cti:standardPage page="webServices.account" module="support">
     
     <style type="text/css">
       table.resultsTable th.functionality {width:200px;}
@@ -20,10 +20,6 @@
             padding: 2px;
         }
     </style>
-    
-    
-    <h2>Account Service Test Page</h2>
-    <br>
     
     <%-- RESULT AREA --%>
     <c:if test="${not empty results || not empty errorReasons}">
@@ -50,15 +46,15 @@
     <table class="resultsTable">
     
         <tr>
-            <th class="functionality">Functionality</th>
-            <th class="doc">BGE Integration<br>Requirements Doc Ref</th>
-            <th>Input Test</th>
+            <th class="functionality"><i:inline key=".functionality"/></th>
+            <th class="doc"><i:inline key=".bgeIntegrationReqDocRef"/></th>
+            <th><i:inline key=".inputTest"/></th>
         </tr>
         
         <%-- DELETE ACCOUNT --%>
         <tr>
-            <td class="functionality">Delete Account</td>
-            <td class="doc">Section 3, #3</td>
+            <td class="functionality"><i:inline key=".deleteAccount"/></td>
+            <td class="doc"><i:inline key=".section3"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/accountService/inputs/deleteAccount" method="post">
                     <tags:nameValueContainer>
@@ -80,7 +76,7 @@
         
         <%-- ADD ACCOUNT --%>
         <tr>
-            <td class="functionality">Add Account</td>
+            <td class="functionality"><i:inline key=".addAccount"/></td>
             <td class="doc"></td>
             <td class="inputTest">
                 <form action="/spring/debug/accountService/inputs/addAccount" method="post">
@@ -192,7 +188,7 @@
         
         <%-- UPDATE ACCOUNT --%>
         <tr>
-            <td class="functionality">Update Account</td>
+            <td class="functionality"><i:inline key=".updateAccount"/></td>
             <td class="doc"></td>
             <td class="inputTest">
                 <form action="/spring/debug/accountService/inputs/updateAccount" method="post">
