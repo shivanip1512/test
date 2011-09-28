@@ -213,7 +213,7 @@ public class CBCDisplay {
                     disStateString += "-V";
                 }
 
-                disStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+                disStateString += (showIgnoreReason ? " " + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
                 return disStateString;
             } 
 
@@ -231,7 +231,7 @@ public class CBCDisplay {
             if (capBank.getOvUVDisabled()){
                 enStateString += "-V";
             }
-            enStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+            enStateString += (showIgnoreReason ? " " + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
             return enStateString;
         }
 
