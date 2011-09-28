@@ -30,6 +30,7 @@
     <entry key="yukon.web.modules.support.bulkPointInjection.noQuality">Quality must have at least one value selected.</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.distributionAlg">Distribution Algorithm</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.incremental">Incremental</entry>
+    <entry key="yukon.web.modules.support.bulkPointInjection.decimalPlaces">Decimal Places</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.valueRangeLow">Value Range Low</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.valueRangeHigh">Value Range High</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.archive">Archive</entry>

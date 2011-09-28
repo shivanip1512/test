@@ -24,6 +24,7 @@ public class BulkFakePointInjectionDto {
     private boolean incremental;
     private double valueLow;
     private double valueHigh;
+    private int decimalPlaces;
 
     public String getGroupName() {
         return groupName;
@@ -96,6 +97,12 @@ public class BulkFakePointInjectionDto {
     }
     public void setValueHigh(double valueHigh) {
         this.valueHigh = valueHigh;
+    }
+    public int getDecimalPlaces() {
+        return decimalPlaces;
+    }
+    public void setDecimalPlaces(int decimalPlaces) {
+        this.decimalPlaces = decimalPlaces;
     }
     public double getMean() {
         return (this.valueHigh + this.valueLow)/2;

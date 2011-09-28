@@ -55,6 +55,7 @@ YEvent.observeSelectorClick('.bulkInject', function(event) {
         </tags:nameValue2>
         <tags:inputNameValue nameKey=".valueRangeLow" path="valueLow" />
         <tags:inputNameValue nameKey=".valueRangeHigh" path="valueHigh" />
+        <tags:inputNameValue nameKey=".decimalPlaces" path="decimalPlaces" />
         <tags:nameValue2 nameKey=".archive">
             <form:checkbox path="archive" />
         </tags:nameValue2>

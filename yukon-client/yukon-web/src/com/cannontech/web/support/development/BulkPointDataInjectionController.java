@@ -135,7 +135,9 @@ public class BulkPointDataInjectionController {
                 } else {
                     value = getRandomWithinRange(bulkInjection.getValueLow(), bulkInjection.getValueHigh());
                 }
-                pointData.setValue((int) Math.round(value));
+                
+                double roundedVal = getRoundedValue(value, bulkInjection.getDecimalPlaces());
+                pointData.setValue(roundedVal);
                 pointData.setTagsPointMustArchive(bulkInjection.isArchive());
                 pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
                 dynamicDataSource.putValue(pointData);
@@ -150,6 +152,12 @@ public class BulkPointDataInjectionController {
             .createDefaultWithoutCode("Injection of " + injectionCount
                                                         + " points successful."));
         return "redirect:main";
+    }
+    
+    private double getRoundedValue(double value, int decimalPlaces) {
+        double scaler = Math.pow(10, decimalPlaces);
+        double roundedValue = (double)Math.round(value * scaler) / scaler;
+        return roundedValue;
     }
 
     private List<LitePoint> getLitePointListOfDevicesInGroupWithAttribute(BulkFakePointInjectionDto bulkInjection) {
