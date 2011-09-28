@@ -1,6 +1,7 @@
 package com.cannontech.web.support.development;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.jms.ConnectionFactory;
 
@@ -18,6 +19,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.web.security.annotation.CheckDevelopmentMode;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Controller("/development/rfn/*")
 @CheckDevelopmentMode
@@ -58,12 +60,11 @@ public class RfnMeterArchiveTestController {
             channelData.setStatus(ChannelDataStatus.OK);
             
             channelData.setUnitOfMeasure(uom);
-            ImmutableSet<String> modifiers = ImmutableSet.of();
+            Set<String> modifiers = Sets.newHashSet();
             if (quad1) modifiers.add("Quadrant 1");
             if (quad2) modifiers.add("Quadrant 2");
             if (quad3) modifiers.add("Quadrant 3");
             if (quad4) modifiers.add("Quadrant 4");
-            channelData.setUnitOfMeasureModifiers(modifiers);
             
             if (random) {
                 value = Math.random() * 1000;
@@ -75,7 +76,14 @@ public class RfnMeterArchiveTestController {
             
             message.setData(data);
             message.setDataPointId(1);
-            message.setReadingType(RfnMeterReadingType.CURRENT);
+            
+            if (model.contains("water")) {
+                message.setReadingType(RfnMeterReadingType.INTERVAL);
+                modifiers.add("Kilo");
+            } else {
+                message.setReadingType(RfnMeterReadingType.CURRENT);
+            }
+            channelData.setUnitOfMeasureModifiers(modifiers);
             
             jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest", message);
         }

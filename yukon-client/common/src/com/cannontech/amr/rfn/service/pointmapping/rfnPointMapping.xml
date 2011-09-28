@@ -230,23 +230,23 @@
         <paoType value="RFWMETER"/>
         <point name="Water Usage"> 
             <uom>-</uom>
-            <multiplier value="1"/> <!-- Don't believe this is needed or does anything in this case  -->
             <modifiers match="equal"/>
+            <parseSiPrefix/>
         </point>
         <point name="Water Usage"> 
             <uom>gal</uom>
-            <multiplier value="1"/> <!-- Don't believe this is needed or does anything in this case  -->
             <modifiers match="equal"/>
+            <parseSiPrefix/>
         </point>
         <point name="Water Usage"> 
             <uom>ft^3</uom>
-            <multiplier value="1"/> <!-- Don't believe this is needed or does anything in this case  -->
             <modifiers match="equal"/>
+            <parseSiPrefix/>
         </point>
         <point name="Water Usage"> 
             <uom>m^3</uom>
-            <multiplier value="1"/> <!-- Don't believe this is needed or does anything in this case  -->
             <modifiers match="equal"/>
+            <parseSiPrefix/>
         </point>
       </pointGroup>
 </pointMappings>
