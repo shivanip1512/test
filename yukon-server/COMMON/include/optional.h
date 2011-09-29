@@ -22,6 +22,14 @@ public:
 
     const T &operator*()  const  {  return  value;  }
     const T *operator->() const  {  return &value;  }
+
+    static Optional<T> make_empty()  {  return Optional<T>() = 0;  }
 };
+
+template<typename T>
+Optional<T> make_optional(T param)
+{
+    return Optional<T>() = param;
+}
 
 }

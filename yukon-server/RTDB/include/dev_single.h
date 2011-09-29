@@ -111,7 +111,7 @@ private:
     BOOL isAlternateRateActive(bool &bScanIsScheduled, CtiTime &aNow=CtiTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
 
-    std::string eWordReport(const ESTRUCT &ESt) const;
+    std::string eWordReport(const ESTRUCT &ESt, Cti::Optional<repeater_info> repeater_details) const;
 
     struct channelWithID  //  This is used for tracking return messages to commander based on channel and id
     {

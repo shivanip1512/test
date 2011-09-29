@@ -709,34 +709,54 @@ void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &wor
 void CtiDeviceSingle::getQueuedResults(vector<queued_result_t> &results)                    { }
 
 
-std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt) const
+std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt, Cti::Optional<repeater_info> repeater_details) const
 {
     ostringstream report;
 
-    report << "alarm = "                    << ESt.alarm << "\n";
-    report << "incoming_bch_error = "       << ESt.diagnostics.incoming_bch_error << "\n";
-    report << "incoming_no_response = "     << ESt.diagnostics.incoming_no_response << "\n";
-    report << "listen_ahead_bch_error = "   << ESt.diagnostics.listen_ahead_bch_error << "\n";
-    report << "listen_ahead_no_response = " << ESt.diagnostics.listen_ahead_no_response << "\n";
-    report << "repeater_code_mismatch = "   << ESt.diagnostics.repeater_code_mismatch << "\n";
-    report << "weak_signal = "              << ESt.diagnostics.weak_signal << "\n";
-    report << "echo_address = "             << ESt.echo_address << "\n";
-    report << "power_fail = "               << ESt.power_fail << "\n";
-    report << "repeater_variable = "        << ESt.repeater_variable << "\n";
-
-    if( ESt.repeater_details )
+    if( repeater_details )
     {
-        report << "-- repeater details --\n";
+        report << "Route: "
+            << repeater_details->route_name << ", "
+            << "id " << repeater_details->route_id << endl;
 
-        report << "pao_id = "           << ESt.repeater_details->pao_id << "\n";
-        report << "route_position = "   << ESt.repeater_details->route_position << "\n";
-        report << "total_stages = "     << ESt.repeater_details->total_stages << "\n";
-        report << "route_id = "         << ESt.repeater_details->route_id << "\n";
+        report << "Repeater: "
+            << repeater_details->repeater_name << ", "
+            << "id " << repeater_details->repeater_id << endl;
 
-        if( CtiRouteSPtr route = getRoute(ESt.repeater_details->route_id) )
-        {
-            report << "route_name = " << route->getName() << "\n";
-        }
+        report << "Repeater position: "
+            << repeater_details->route_position << " / "
+            << repeater_details->total_stages << " stages" << endl;
+    }
+    else
+    {
+        report << "-- Couldn't determine repeater route information --" << endl;
+    }
+
+    report << "E word variable bits: " << ESt.repeater_variable << endl;
+    report << "E word echo address: " << ESt.echo_address << endl;
+
+    if( ESt.alarm )       report << "E word alarm bit set" << endl;
+    if( ESt.power_fail )  report << "E word power fail bit set" << endl;
+
+    vector<std::string> diagnostics;
+
+    if( ESt.diagnostics.incoming_bch_error )        diagnostics.push_back("incoming BCH error");
+    if( ESt.diagnostics.incoming_no_response )      diagnostics.push_back("incoming no response");
+    if( ESt.diagnostics.listen_ahead_bch_error )    diagnostics.push_back("listen-ahead BCH error");
+    if( ESt.diagnostics.listen_ahead_no_response )  diagnostics.push_back("listen-ahead no response");
+    if( ESt.diagnostics.repeater_code_mismatch )    diagnostics.push_back("repeater code mismatch");
+    if( ESt.diagnostics.weak_signal )               diagnostics.push_back("weak signal");
+
+    if( ! diagnostics.empty() )
+    {
+        report << "E word diagnostics: ";
+
+        std::copy(
+            diagnostics.begin(),
+            diagnostics.end(),
+            csv_output_iterator<string, ostringstream>(report));
+
+        report << endl;
     }
 
     return report.str();
@@ -784,10 +804,10 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
 
-                if( nRet == EWORDRCV )
+                if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
                 {
                     msg += "\n";
-                    msg += eWordReport(InMessage->Buffer.ESt);
+                    msg += eWordReport(*(InMessage->Buffer.RepeaterError.ESt), InMessage->Buffer.RepeaterError.Details);
                 }
 
                 Ret->setResultString( msg );
@@ -849,12 +869,12 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
-            if( nRet == EWORDRCV )
+            if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
             {
                 string msg = Ret->ResultString();
 
                 msg += "\n";
-                msg += eWordReport(InMessage->Buffer.ESt);
+                msg += eWordReport(*(InMessage->Buffer.RepeaterError.ESt), InMessage->Buffer.RepeaterError.Details);
 
                 Ret->setResultString( msg );
             }

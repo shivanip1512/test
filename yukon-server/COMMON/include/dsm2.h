@@ -497,6 +497,18 @@ namespace std // eventually this needs to be removed, but for now we'll keep thi
 };
 
 
+//  InMessage.Buffer is 4kB, so this is no sweat
+struct repeater_info
+{
+    long repeater_id;
+    char repeater_name[120];
+    long route_id;
+    char route_name[120];
+    unsigned route_position;
+    unsigned total_stages;
+};
+
+
 class INMESS
 {
 public:
@@ -529,7 +541,12 @@ public:
    {
       BYTE            InMessage[4096];    /* two variables !!!!!! */
       DSTRUCT         DSt;
-      ESTRUCT         ESt;
+      struct
+      {
+         Cti::Optional<ESTRUCT>       ESt;
+         Cti::Optional<repeater_info> Details;
+
+      } RepeaterError;
       struct
       {
          DSTRUCT      DSt;              // This looks odd, but it lies on top of the one above.. Don't pull it out!

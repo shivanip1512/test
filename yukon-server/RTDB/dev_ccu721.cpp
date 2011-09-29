@@ -798,19 +798,31 @@ int Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
         //  inbound command - decode the D words
         int dword_status = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct, &tmp_e_struct);
 
-        if( !dword_status )
+        switch( dword_status )
         {
-            im->Buffer.DSt = tmp_d_struct;
+            case NORMAL:
+            {
+                im->Buffer.DSt = tmp_d_struct;
+                im->Buffer.DSt.Time    = im->Time;
+                im->Buffer.DSt.DSTFlag = im->MilliTime & DSTACTIVE;
 
-            im->InLength = im->Buffer.DSt.Length = (im->InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
-        }
-        else
-        {
-            im->InLength = 0;
-        }
+                im->InLength = im->Buffer.DSt.Length = (im->InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
 
-        im->Buffer.DSt.Time    = im->Time;
-        im->Buffer.DSt.DSTFlag = im->MilliTime & DSTACTIVE;
+                break;
+            }
+            case EWORDRCV:
+            {
+                im->Buffer.RepeaterError.ESt = tmp_e_struct;
+                im->Buffer.RepeaterError.Details = 0;  //  no details yet, may be filled in by portfield.cpp/CommunicateDevice()
+                //  fall through
+            }
+            default:
+            {
+                im->InLength = 0;
+
+                break;
+            }
+        }
 
         return dword_status;
     }
@@ -879,14 +891,16 @@ int Ccu721Device::decodeEWord(const unsigned char *input, const unsigned input_l
     {
         if( ESt->diagnostics.incoming_bch_error )        return BADBCH;
 
-        //  these all indicate no response
-        if( ESt->diagnostics.incoming_no_response )      return NACKPAD1;
-        if( ESt->diagnostics.listen_ahead_bch_error )    return NACKPAD1;
-        if( ESt->diagnostics.listen_ahead_no_response )  return NACKPAD1;
-        if( ESt->diagnostics.repeater_code_mismatch )    return NACKPAD1;
-
         //  this means the signal dropped out
         if( ESt->diagnostics.weak_signal )               return NACK1;
+
+        //  these all indicate no response
+        //if( ESt->diagnostics.incoming_no_response )
+        //if( ESt->diagnostics.listen_ahead_bch_error )
+        //if( ESt->diagnostics.listen_ahead_no_response )
+        //if( ESt->diagnostics.repeater_code_mismatch )
+
+        return NACKPAD1;
     }
 
     return EWORDRCV;

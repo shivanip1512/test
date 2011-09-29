@@ -1022,7 +1022,12 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                                 ResultMessage.Buffer.DSt.TSync = 0;
 
                             if(InMessage->Buffer.InMessage[Offset] & 0x0040)
+                            {
                                 ResultMessage.EventCode = EWORDRCV;
+                                //  The CCU doesn't pass along the E word, so make sure the optional repeater info fields are cleared out
+                                ResultMessage.Buffer.RepeaterError.ESt = 0;
+                                ResultMessage.Buffer.RepeaterError.Details = 0;
+                            }
 
                             if(InMessage->Buffer.InMessage[Offset++] & 0x0080)
                                 ResultMessage.EventCode = DLCTIMEOUT;

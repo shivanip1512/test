@@ -112,19 +112,6 @@ struct ESTRUCT
         bool repeater_code_mismatch;
 
     } diagnostics;
-
-    struct repeater_info
-    {
-        bool valid;  //  We can't use boost::optional<> here because the ESTRUCT is used in a union - boost::optional<> has a copy constructor.
-
-        long pao_id;
-        long route_id;
-        unsigned route_position;
-        unsigned total_stages;
-
-    };
-
-    Cti::Optional<repeater_info> repeater_details;
 };
 
 

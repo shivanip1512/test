@@ -1305,13 +1305,13 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                 if( om && im )
                                 {
-                                    if( im->EventCode == EWORDRCV )
+                                    if( im->EventCode == EWORDRCV && im->Buffer.RepeaterError.ESt )
                                     {
-                                        im->Buffer.ESt.repeater_details =
+                                        im->Buffer.RepeaterError.Details =
                                             findRepeaterInRouteByAddress(
                                                 om->Request.RouteID,
                                                 om->Request.MacroOffset,
-                                                im->Buffer.ESt.echo_address);
+                                                im->Buffer.RepeaterError.ESt->echo_address);
                                     }
 
                                     addCommResult(im->TargetID, im->EventCode & 0x3fff, false);
@@ -2897,6 +2897,16 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             }
                         }
                     }
+
+                    if( InMessage->EventCode == EWORDRCV )
+                    {
+                        InMessage->Buffer.RepeaterError.Details =
+                            findRepeaterInRouteByAddress(
+                                OutMessage->Request.RouteID,
+                                OutMessage->Request.MacroOffset,
+                                InMessage->Buffer.RepeaterError.ESt->echo_address);
+
+                    }
                 }
 
                 if( InMessage->TargetID != InMessage->DeviceID ) // The CCU itself is account for elsewhere
@@ -3000,13 +3010,12 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
                             if( status == EWORDRCV )
                             {
-                                ESt.repeater_details =
+                                InMessage->Buffer.RepeaterError.ESt = ESt;
+                                InMessage->Buffer.RepeaterError.Details =
                                     findRepeaterInRouteByAddress(
                                         OutMessage->Request.RouteID,
                                         OutMessage->Request.MacroOffset,
                                         ESt.echo_address);
-
-                                InMessage->Buffer.ESt = ESt;
                             }
                             else
                             {
@@ -3244,12 +3253,8 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 }
 
 
-Cti::Optional<ESTRUCT::repeater_info> findRepeaterInRouteByAddress( const int routeId, const int macroOffset, const unsigned echo_address )
+Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, const int macroOffset, const unsigned echo_address )
 {
-    Cti::Optional<ESTRUCT::repeater_info> result;
-
-    result = 0;
-
     CtiRouteSPtr route = RouteManager.getEqual(routeId);
 
     if( macroOffset > 0 )
@@ -3281,20 +3286,22 @@ Cti::Optional<ESTRUCT::repeater_info> findRepeaterInRouteByAddress( const int ro
             {
                 if( (repeater->getAddress() & 0x1fff) == echo_address )
                 {
-                    ESTRUCT::repeater_info details;
+                    repeater_info details;
 
                     details.route_id = ccuRoute->getRouteID();
-                    details.pao_id = repeater->getID();
+                    strcpy_s(details.route_name, sizeof(details.route_name), ccuRoute->getName().c_str());
+                    details.repeater_id = repeater->getID();
+                    strcpy_s(details.repeater_name, sizeof(details.repeater_name), repeater->getName().c_str());
                     details.route_position = i + 1;
                     details.total_stages = repeaterList.entries();
 
-                    result = details;
+                    return make_optional(details);
                 }
             }
         }
     }
 
-    return result;
+    return Cti::Optional<repeater_info>::make_empty();
 }
 
 
