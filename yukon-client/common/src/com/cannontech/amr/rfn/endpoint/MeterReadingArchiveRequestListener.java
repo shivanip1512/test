@@ -228,7 +228,7 @@ public class MeterReadingArchiveRequestListener {
     public void handleArchiveRequest(RfnMeterReadingArchiveRequest archiveRequest) {
         // determine which worker will handle the request by hashing the serial number
         int hashCode = archiveRequest.getData().getSensorSerialNumber().hashCode();
-        int workerIndex = hashCode % workers.size();
+        int workerIndex = Math.abs(hashCode) % workers.size();
         Worker worker = workers.get(workerIndex);
         try {
             worker.queue(archiveRequest);
