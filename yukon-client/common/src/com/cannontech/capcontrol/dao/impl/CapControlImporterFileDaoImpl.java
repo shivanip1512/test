@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.cannontech.capcontrol.creation.CapControlCbcImporterEnum;
 import com.cannontech.capcontrol.creation.CapControlHierarchyImporterEnum;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
@@ -23,14 +26,15 @@ import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterExcept
 import com.cannontech.capcontrol.exception.CapControlImportException;
 import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao {
+	private static final Logger log = YukonLogManager.getLogger(CapControlImporterFileDaoImpl.class);
 	
 	private Map<CapControlCbcImporterEnum, Integer> getCbcHeaderRowMap(final String[] headerRow) {
 		Map<CapControlCbcImporterEnum, Integer> headerColumnMap = Maps.newHashMap();
@@ -59,21 +63,21 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		Set<CapControlCbcImporterEnum> requiredFields = CapControlCbcImporterEnum.getRequiredFields();
 		Set<CapControlCbcImporterEnum> fileColumns = headerColumnMap.keySet();
 		
-		SetView<CapControlCbcImporterEnum> missing = Sets.difference(fileColumns, requiredFields);
-		
-		if (missing.size() > 0) {
-			throw new CapControlCbcFileImportException("Cbc Import File is missing required columns: ", missing);
+		if (!fileColumns.containsAll(requiredFields)) {
+	        fileColumns.removeAll(CapControlCbcImporterEnum.getNonRequiredFields());
+	        Set<CapControlCbcImporterEnum> missing = Sets.difference(fileColumns, requiredFields);
+            throw new CapControlCbcFileImportException("Cbc Import File is missing required columns: ", missing);
 		}
 	}
 	
 	private void validateHierarchyImportFileColumns(Map<CapControlHierarchyImporterEnum, Integer> headerColumnMap) {
 		// Make sure we have all required columns in the file!
 		Set<CapControlHierarchyImporterEnum> requiredFields = CapControlHierarchyImporterEnum.getRequiredFields();
-		
 		Set<CapControlHierarchyImporterEnum> fileColumns = headerColumnMap.keySet();
-		SetView<CapControlHierarchyImporterEnum> missingColumns = Sets.difference(fileColumns, requiredFields);
 		
-		if (missingColumns.size() > 0) {
+		if (!fileColumns.containsAll(requiredFields)) {
+		    fileColumns.removeAll(CapControlHierarchyImporterEnum.getNonRequiredFields());
+	        Set<CapControlHierarchyImporterEnum> missingColumns = Sets.difference(fileColumns, requiredFields);
 			throw new CapControlHierarchyFileImporterException("Hierarchy import file is missing required columns: ", missingColumns);
 		}
 	}
@@ -107,22 +111,22 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				cbcData.setCommChannel(line[headerColumnMap.get(CapControlCbcImporterEnum.COMM_CHANNEL)]);
 				
 				Integer capBankColumn = headerColumnMap.get(CapControlCbcImporterEnum.CAPBANK_NAME);
-				if (capBankColumn != null && !line[capBankColumn].isEmpty()) {
+				if (capBankColumn != null && !StringUtils.isBlank(line[capBankColumn])) {
 					cbcData.setCapBankName(line[capBankColumn]);
 				}
 				
 				Integer scanColumn = headerColumnMap.get(CapControlCbcImporterEnum.SCAN_INTERVAL);
-				if (scanColumn != null && !line[scanColumn].isEmpty()) {
+				if (scanColumn != null && !StringUtils.isBlank(line[scanColumn])) {
 					cbcData.setScanInterval(Integer.decode(line[scanColumn]));
 				}
 				
 				Integer altColumn = headerColumnMap.get(CapControlCbcImporterEnum.ALT_INTERVAL);
-				if (altColumn != null && !line[altColumn].isEmpty()) {
+				if (altColumn != null && !StringUtils.isBlank(line[altColumn])) {
 					cbcData.setAltInterval(Integer.decode(line[altColumn]));
 				}
 				
 				Integer scanEnabledColumn = headerColumnMap.get(CapControlCbcImporterEnum.SCAN_ENABLED);
-				if (scanEnabledColumn != null && !line[scanEnabledColumn].isEmpty()) {
+				if (scanEnabledColumn != null && !StringUtils.isBlank(line[scanEnabledColumn])) {
 					cbcData.setScanEnabled(line[scanEnabledColumn]);
 				}
 			}
@@ -146,42 +150,36 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			throw new CapControlImportException("Import of " + data.getName() + " failed. Unknown Type: " + ccType);
 		}
 		
-		Set<CapControlHierarchyImporterEnum> columns = Sets.newHashSet(headerColumnMap.keySet());
-		
-		// Remove the requireds from the list, we only need to check the non-requireds.
-		columns.removeAll(CapControlHierarchyImporterEnum.getRequiredFields());
-		
 		// There are required fields we KNOW are here. Set them, then try the non-requireds.
 		String action = line[headerColumnMap.get(CapControlHierarchyImporterEnum.IMPORT_ACTION)];
 		data.setImportAction(ImportActionsEnum.getForDbString(action));
 		
-		for (CapControlHierarchyImporterEnum column : columns) {
-			int columnId = headerColumnMap.get(column);
-			
-			switch(column) {
-			case DESCRIPTION:
-				data.setDescription(line[columnId]);
-				break;
-			case DISABLED:
-				String disabled = line[columnId];
-				if (disabled != null) {
-					if (disabled.equalsIgnoreCase("Y")) {
-						data.setDisabled(true);
-					} else if (disabled.equalsIgnoreCase("N")) {
-						data.setDisabled(false);
-					} else {
-						throw new CapControlImportException("Disabled field contained invalid data. Please " +
-															"change to 'Y' or 'N'");
-					}
-				}
-				break;
-			case MAP_LOCATION_ID:
-				data.setMapLocationId(line[columnId]);
-				break;
-			case PARENT:
-				data.setParent(line[columnId]);
-				break;
+		Integer descColumn = headerColumnMap.get(CapControlHierarchyImporterEnum.DESCRIPTION);
+		if (descColumn != null && !StringUtils.isBlank(line[descColumn])) {
+			data.setDescription(line[descColumn]);
+		}
+		
+		Integer disabledColumn = headerColumnMap.get(CapControlHierarchyImporterEnum.DISABLED);
+		if (disabledColumn != null && !StringUtils.isBlank(line[disabledColumn])) {
+			String disabled = line[disabledColumn];
+			if (disabled.equalsIgnoreCase("Y")) {
+				data.setDisabled(true);
+			} else if (disabled.equalsIgnoreCase("N")) {
+				data.setDisabled(false);
+			} else {
+				throw new CapControlImportException("Disabled field contained invalid data. Please " +
+													"change to 'Y' or 'N'");
 			}
+		}
+		
+		Integer mapColumn = headerColumnMap.get(CapControlHierarchyImporterEnum.MAP_LOCATION_ID);
+		if (mapColumn != null && !StringUtils.isBlank(line[mapColumn])) {
+			data.setMapLocationId(line[mapColumn]);
+		}
+		
+		Integer parentColumn = headerColumnMap.get(CapControlHierarchyImporterEnum.PARENT);
+		if (parentColumn != null && !StringUtils.isBlank(line[parentColumn])) {
+			data.setMapLocationId(line[parentColumn]);
 		}
 		
 		return data;
@@ -223,7 +221,8 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		        
 		    csvReader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.debug(e);
+			throw new CapControlImportException("Cap Control Importer encountered an error while reading the input file!");
 		}
 
         return cbcImportData;

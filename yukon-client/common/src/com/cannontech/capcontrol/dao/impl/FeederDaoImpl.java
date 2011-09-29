@@ -8,21 +8,26 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
 public class FeederDaoImpl implements FeederDao {
@@ -30,6 +35,8 @@ public class FeederDaoImpl implements FeederDao {
     
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
+    private PaoDao paoDao;
+    private DBPersistentDao dbPersistentDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
@@ -75,16 +82,9 @@ public class FeederDaoImpl implements FeederDao {
     	params.addValue("PhaseC", feeder.getPhasec());
     	params.addValue("ControlFlag", feeder.getControlFlag());
     	
-		int rowsAffected = yukonJdbcTemplate.update(sql);
-		
-        boolean result = (rowsAffected == 1);
-        
-		if (result == false) {
-			log.debug("Insert of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
-		}
+		yukonJdbcTemplate.update(sql);
     }
     
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Feeder getById(int id) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -95,6 +95,7 @@ public class FeederDaoImpl implements FeederDao {
     	sql.append("WHERE FeederID = YP.PAObjectID AND FeederID").eq(id);
     	
     	Feeder f = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+    	
         return f;
     }
     
@@ -108,7 +109,7 @@ public class FeederDaoImpl implements FeederDao {
         int rowsAffected = yukonJdbcTemplate.update(sql);
         
         boolean result = (rowsAffected == 1);
-		
+        
         return result;
     }
     
@@ -134,7 +135,7 @@ public class FeederDaoImpl implements FeederDao {
         boolean result = (rowsAffected == 1);
         
 		if (result == false) {
-			log.debug("Insert of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
+			log.debug("Update of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
 		}
 		
         return result;
@@ -153,15 +154,8 @@ public class FeederDaoImpl implements FeederDao {
     	sql.append(   "(SELECT FeederID");
     	sql.append(    "FROM CCFeederSubAssignment)");
     	sql.append("ORDER BY FeederID");
-
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("FeederID") );
-                return i;
-            }
-        };
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return listmap;
     }
 
@@ -205,9 +199,10 @@ public class FeederDaoImpl implements FeederDao {
     }
     
 	@Override
-	public boolean assignFeeder(SubstationBus substationBus,Feeder feeder) {
-		return assignFeeder(substationBus.getId(),feeder.getPaoId());
-	}
+	public boolean assignFeeder(int feederId, String subBusName) {
+	    YukonPao pao = paoDao.findYukonPao(subBusName, PaoType.CAP_CONTROL_SUBBUS);
+        return (pao == null) ? false : assignFeeder(pao.getPaoIdentifier().getPaoId(), feederId);
+	};
 
 	@Override
 	public boolean assignFeeder(int substationBusId, int feederId) {
@@ -233,8 +228,21 @@ public class FeederDaoImpl implements FeederDao {
 		int rowsAffected = yukonJdbcTemplate.update(assignSql);
 		
 		boolean result = (rowsAffected == 1);
+		
+		if (result) {
+		    sendDbChange(feederId, CapControlType.FEEDER, DbChangeType.UPDATE);
+		    sendDbChange(substationBusId, CapControlType.SUBBUS, DbChangeType.UPDATE);
+		}
+		
 		return result;
 	}
+	
+    private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
+        DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
+                                          PaoCategory.CAPCONTROL.getDbString(),
+                                          ccType.getDbValue(), type);
+        dbPersistentDao.processDBChange(msg);
+    }
 
 	@Override
 	public boolean unassignFeeder(Feeder feeder) {
@@ -267,6 +275,16 @@ public class FeederDaoImpl implements FeederDao {
 		return id;
 	}
     
+	@Autowired
+	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+	
+	@Autowired
+	public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+	
     @Autowired
     public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;

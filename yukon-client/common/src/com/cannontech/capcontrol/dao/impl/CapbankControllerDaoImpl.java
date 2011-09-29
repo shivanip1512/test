@@ -16,7 +16,6 @@ import com.cannontech.capcontrol.dao.providers.fields.DeviceDirectCommSettingsFi
 import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
-import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
@@ -27,10 +26,13 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -43,14 +45,18 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	
 	private YukonJdbcTemplate yukonJdbcTemplate;
+	private PaoDao paoDao;
 	private DBPersistentDao dbPersistentDao;
 	private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
@@ -79,8 +85,9 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
 	
 	@Override
-	public boolean assignController(Capbank capbank, CapbankController controller) {
-		return assignController(capbank.getPaoId(),controller.getId());
+	public boolean assignController(int controllerId, String capbankName) {
+		YukonPao pao = paoDao.findYukonPao(capbankName, PaoType.CAPBANK);
+		return (pao == null) ? false : assignController(pao.getPaoIdentifier().getPaoId(), controllerId);
 	}
 
 	@Override
@@ -112,9 +119,27 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		boolean result = (rowsAffected == 1);
 		
+		if (result) {
+		    PaoType controllerType = paoDao.getYukonPao(controllerId).getPaoIdentifier().getPaoType();
+		    sendDeviceDBChangeMessage(controllerId,DbChangeType.UPDATE, controllerType.getDbString());
+            sendCapcontrolDBChangeMessage(capbankId, DbChangeType.UPDATE,CapControlType.CAPBANK.getDbValue());
+		}
+		
 		return result;
 	}
 
+	private void sendDeviceDBChangeMessage(int paoId, DbChangeType dbChangeType, String type) {
+        DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB,
+                                          PaoCategory.DEVICE.getDbString(), type, dbChangeType); 
+        dbPersistentDao.processDBChange(msg);
+    }
+
+    private void sendCapcontrolDBChangeMessage(int paoId, DbChangeType dbChangeType, String type) {
+        DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB, 
+                                          PaoCategory.CAPCONTROL.getDbString(), type, dbChangeType);    
+        dbPersistentDao.processDBChange(msg);
+    }
+    
 	@Override
 	public boolean unassignController(CapbankController controller) {
 		return unassignController(controller.getId());
@@ -424,6 +449,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		return addressFields;
 	}
+	
+	@Autowired
+	public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
 	
 	@Autowired
 	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {

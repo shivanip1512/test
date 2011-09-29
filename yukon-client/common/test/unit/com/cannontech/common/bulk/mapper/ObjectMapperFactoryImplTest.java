@@ -372,6 +372,16 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 		public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
 			throw new UnsupportedOperationException("Method not implemented");
 		}
+		
+		@Override
+		public YukonPao getYukonPao(String paoName, PaoType paoType) {
+		    throw new UnsupportedOperationException("Method not implemented");
+		}
+		
+		@Override
+		public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
+		    throw new UnsupportedOperationException("Method not implemented");
+		}
     }
 
     /**

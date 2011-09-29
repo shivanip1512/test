@@ -8,7 +8,6 @@ import com.cannontech.capcontrol.dao.providers.fields.DeviceDirectCommSettingsFi
 import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
-import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -19,7 +18,7 @@ import com.cannontech.database.data.point.PointBase;
 
 public interface CapbankControllerDao {
 	
-    public boolean assignController(Capbank capbank, CapbankController controller);
+    public boolean assignController(int controllerId, String capbankName);
     public boolean assignController(int capbankId, int controllerId);
 
     public boolean unassignController(CapbankController controller);
@@ -42,5 +41,4 @@ public interface CapbankControllerDao {
 	
 	public List<Integer> getUnassignedControllerIds();
 	public SearchResult<LiteCapControlObject> getOrphans(final int start,final int count);
-	
 }

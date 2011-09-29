@@ -65,9 +65,9 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.label">New Schedule Assignment </entry>
     
     <entry key="yukon.web.modules.capcontrol.import.missingRequiredColumn">File is missing a required column (or data for a required column): {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.import.processedWithErrors">File was processed successfully, but import errors occurred. See details below.</entry>
     <entry key="yukon.web.modules.capcontrol.import.invalidColumns">File contains invalid columns: {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.import.importCbcFileSuccess">Cap Control CBC file import completed successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.import.importHierarchyFileSuccess">Cap Control hierarchy file import completed successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.import.databaseImportSuccess">Cap Control database import completed successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.importCbcFileSuccess">CBC file import completed successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.importHierarchyFileSuccess">Hierarchy file import completed successfully.</entry>
     
 </properties>

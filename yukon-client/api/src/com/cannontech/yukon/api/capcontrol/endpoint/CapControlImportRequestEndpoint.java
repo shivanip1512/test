@@ -188,23 +188,28 @@ public class CapControlImportRequestEndpoint {
 			}
 			
 			if (data != null) {
-				switch(data.getImportAction()) {
-					case ADD:
-						if (data.isTemplate()) {
-							capControlImportService.createCbcFromTemplate(data, cbcResults);
-						} else {
-							capControlImportService.createCbc(data, cbcResults);
-						}
-						break;
-						
-					case UPDATE:
-						capControlImportService.updateCbc(data, cbcResults);
-						break;
-						
-					case REMOVE:
-						capControlImportService.removeCbc(data, cbcResults);
-						break;
-				}
+			    try {
+    				switch(data.getImportAction()) {
+    					case ADD:
+    						if (data.isTemplate()) {
+    							capControlImportService.createCbcFromTemplate(data, cbcResults);
+    						} else {
+    							capControlImportService.createCbc(data, cbcResults);
+    						}
+    						break;
+    						
+    					case UPDATE:
+    						capControlImportService.updateCbc(data, cbcResults);
+    						break;
+    						
+    					case REMOVE:
+    						capControlImportService.removeCbc(data, cbcResults);
+    						break;
+    				}
+			    } catch (NotFoundException e) {
+	                log.debug(e);
+	                cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_PARENT));
+	            }
 			}
 		}
 	}

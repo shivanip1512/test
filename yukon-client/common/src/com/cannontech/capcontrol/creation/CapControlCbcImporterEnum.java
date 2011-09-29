@@ -26,19 +26,24 @@ public enum CapControlCbcImporterEnum {
 	private final static ImmutableMap<String, CapControlCbcImporterEnum> lookupByString;
 	
 	private final static ImmutableSet<CapControlCbcImporterEnum> requiredFields;
+	private final static ImmutableSet<CapControlCbcImporterEnum> nonRequiredFields;
 	
 	static {
         try {
             ImmutableMap.Builder<String, CapControlCbcImporterEnum> stringBuilder = ImmutableMap.builder();
             ImmutableSet.Builder<CapControlCbcImporterEnum> requiredFieldsBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<CapControlCbcImporterEnum> nonRequiredFieldsBuilder = ImmutableSet.builder();
             for (CapControlCbcImporterEnum column : values()) {
                 stringBuilder.put(column.getColumnName(), column);
                 if(column.isRequired()) {
                 	requiredFieldsBuilder.add(column);
+                } else {
+                    nonRequiredFieldsBuilder.add(column);
                 }
             }
             lookupByString = stringBuilder.build();
             requiredFields = requiredFieldsBuilder.build();
+            nonRequiredFields = nonRequiredFieldsBuilder.build();
         } catch (IllegalArgumentException e) {
             throw e;
         }
@@ -57,6 +62,10 @@ public enum CapControlCbcImporterEnum {
 	
 	public static ImmutableSet<CapControlCbcImporterEnum> getRequiredFields() {
 		return requiredFields;
+	}
+	
+	public static ImmutableSet<CapControlCbcImporterEnum> getNonRequiredFields() {
+	    return nonRequiredFields;
 	}
 	
 	public String getColumnName() {

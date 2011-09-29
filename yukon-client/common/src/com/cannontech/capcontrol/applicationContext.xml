@@ -35,7 +35,7 @@
 	<bean class="com.cannontech.capcontrol.dao.providers.SpecialAreaProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.SubstationProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.SubstationBusProvider"/>
-	
+        
 	<bean class="com.cannontech.capcontrol.creation.service.impl.PaoTableParserServiceImpl"/>
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
 </beans>

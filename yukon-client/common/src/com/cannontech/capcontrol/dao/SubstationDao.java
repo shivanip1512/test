@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.capcontrol.model.Area;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.search.SearchResult;
@@ -17,11 +16,9 @@ public interface SubstationDao {
     
     public boolean update( Substation substation );
     
-    public Substation getSubstationById( int id );
-    
     public int getParentId(Substation station);
     
-    public boolean assignSubstation(Area area, Substation substation);
+    public boolean assignSubstation(int substationId, String areaName);
     
     public boolean assignSubstation(int areaId, int substationId);
     
@@ -37,5 +34,5 @@ public interface SubstationDao {
 
     public List<Integer> getAllSubstationIds();
     
-    public Integer getSubstationIdByName( String name )  throws EmptyResultDataAccessException;
+    public int getSubstationIdByName( String name )  throws EmptyResultDataAccessException;
 }

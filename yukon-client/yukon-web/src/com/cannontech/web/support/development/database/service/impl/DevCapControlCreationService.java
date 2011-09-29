@@ -4,8 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.dao.CapbankControllerDao;
+import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
-import com.cannontech.cbc.service.CapControlAssignmentService;
+import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoScheduleDao;
@@ -18,7 +22,11 @@ import com.cannontech.web.support.development.database.objects.DevPaoType;
 
 public class DevCapControlCreationService extends DevObjectCreationBase {
     private CapControlCreationService capControlCreationService;
-    private CapControlAssignmentService capControlAssignmentService;
+    private SubstationDao substationDao;
+    private CapbankDao capbankDao;
+    private FeederDao feederDao;
+    private SubstationBusDao substationBusDao;
+    private CapbankControllerDao capbankControllerDao;
     private PaoScheduleDao paoScheduleDao;
     private StrategyDao strategyDao;
     
@@ -95,7 +103,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         String cbcName = cbcType.getPaoType().getPaoTypeName() + " " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
         createCapControlCBC(devCapControl, cbcType.getPaoType(), cbcName, false, DevCommChannel.SIM);
         int cbcPaoId = getPaoIdByName(cbcName);
-        capControlAssignmentService.assignController(cbcPaoId, cbcType.getPaoType(), capBankName);
+        capbankControllerDao.assignController(cbcPaoId, capBankName);
         logCapControlAssignment(cbcName, capBankName);
     }
 
@@ -104,7 +112,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         String capBankName = "CapBank " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
         createCapControlObject(devCapControl, PaoType.CAPBANK, capBankName, false, 0);
         int capBankPaoId = getPaoIdByName(capBankName);
-        capControlAssignmentService.assignCapbank(capBankPaoId, feederName);
+        capbankDao.assignCapbank(capBankPaoId, feederName);
         logCapControlAssignment(capBankName, feederName);
         return capBankName;
     }
@@ -113,7 +121,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         String feederName = "Feeder " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_FEEDER, feederName, false, 0);
         int feederPaoId = getPaoIdByName(feederName);
-        capControlAssignmentService.assignFeeder(feederPaoId, subBusName);
+        feederDao.assignFeeder(feederPaoId, subBusName);
         logCapControlAssignment(feederName, subBusName);
         return feederName;
     }
@@ -122,7 +130,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         String subBusName = "Substation Bus " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBBUS, subBusName, false, 0);
         int subBusPaoId = getPaoIdByName(subBusName);
-        capControlAssignmentService.assignSubstationBus(subBusPaoId, subName);
+        substationBusDao.assignSubstationBus(subBusPaoId, subName);
         logCapControlAssignment(subBusName, subName);
         return subBusName;
     }
@@ -131,7 +139,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         String subName = "Substation " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBSTATION, subName, false, 0);
         int subPaoId = getPaoIdByName(subName);
-        capControlAssignmentService.assignSubstation(subPaoId, areaName);
+        substationDao.assignSubstation(subPaoId, areaName);
         logCapControlAssignment(subName, areaName);
         return subName;
     }
@@ -177,6 +185,31 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     }
     
     @Autowired
+    public void setCapbankDao(CapbankDao capbankDao) {
+        this.capbankDao = capbankDao;
+    }
+    
+    @Autowired
+    public void setSubstationDao(SubstationDao substationDao) {
+        this.substationDao = substationDao;
+    }
+    
+    @Autowired
+    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
+        this.substationBusDao = substationBusDao;
+    }
+    
+    @Autowired
+    public void setFeederDao(FeederDao feederDao) {
+        this.feederDao = feederDao;
+    }
+    
+    @Autowired
+    public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
+        this.capbankControllerDao = capbankControllerDao;
+    }
+    
+    @Autowired
     public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
     	this.paoScheduleDao = paoScheduleDao;
     };
@@ -185,11 +218,6 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     public void setCapControlCreationService(CapControlCreationService capControlCreationService) {
         this.capControlCreationService = capControlCreationService;
     }
-    
-    @Autowired
-    public void setCapControlAssignmentService(CapControlAssignmentService capControlAssignmentService) {
-		this.capControlAssignmentService = capControlAssignmentService;
-	}
     
     @Autowired
     public void setStrategyDao(StrategyDao strategyDao) {

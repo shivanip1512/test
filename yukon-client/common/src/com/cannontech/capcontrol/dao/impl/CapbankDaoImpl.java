@@ -13,18 +13,24 @@ import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankAdditional;
-import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankDaoImpl implements CapbankDao {
     private static final Logger log = YukonLogManager.getLogger(CapbankDaoImpl.class);
@@ -32,6 +38,8 @@ public class CapbankDaoImpl implements CapbankDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private DBPersistentDao dbPersistentDao;
+    private PaoDao paoDao;
     
     static {        
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
@@ -309,10 +317,11 @@ public class CapbankDaoImpl implements CapbankDao {
 		return id;
     }
     
-	@Override
-	public boolean assignCapbank(Feeder feeder, Capbank capbank) {
-		return assignCapbank(feeder.getPaoId(),capbank.getPaoId());
-	}
+    @Override
+    public boolean assignCapbank(int capbankId, String feederName) {
+        YukonPao pao = paoDao.findYukonPao(feederName, PaoType.CAP_CONTROL_FEEDER);
+        return (pao == null) ? false : assignCapbank(pao.getPaoIdentifier().getPaoId(), capbankId);
+    };
 
 	@Override
 	public boolean assignCapbank(int feederId, int capbankId) {
@@ -365,9 +374,23 @@ public class CapbankDaoImpl implements CapbankDao {
     		//This is the first assignment. Insert with defaults
     		rowsAffected = yukonJdbcTemplate.update(insertSql);
     	}
+    	
 		boolean result = (rowsAffected == 1);
+		
+		if (result) {
+		    sendDbChange(capbankId, CapControlType.CAPBANK, DbChangeType.UPDATE);
+		    sendDbChange(feederId, CapControlType.FEEDER, DbChangeType.UPDATE);
+		}
+		
 		return result;
 	}
+	
+	private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
+        DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
+                                          PaoCategory.CAPCONTROL.getDbString(),
+                                          ccType.getDbValue(), type);
+        dbPersistentDao.processDBChange(msg);
+    }
 
 	@Override
 	public boolean unassignCapbank(Capbank capbank) {
@@ -418,4 +441,14 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		return capbankAdditional;
 	}
+	
+	@Autowired
+	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+	
+	@Autowired
+	public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
 }

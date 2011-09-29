@@ -8,22 +8,26 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
@@ -31,6 +35,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
+    private DBPersistentDao dbPersistentDao;
+    private PaoDao paoDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
@@ -89,13 +95,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     	params.addValue("VoltReductionPointId", bus.getVoltReductionPointId());
     	params.addValue("DisableBusPointId", bus.getDisabledPointId());
 
-    	int rowsAffected = yukonJdbcTemplate.update(sql);
-    	
-        boolean result = (rowsAffected == 1);
-        
-		if (result == false) {
-			log.debug("Insert of Subbus, " + bus.getName() + ", in CAPCONTROLSUBSTATIONBUS table failed.");
-		}
+    	yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -144,7 +144,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         return result;
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SubstationBus getById(int id){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -160,14 +159,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         return sub;
     }
     
-    public List<Integer> getAllUnassignedBuses () {
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("substationBusID") );
-                return i;
-            }
-        };
-        
+    public List<Integer> getAllUnassignedBuses () {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT SubstationBusID");
@@ -177,7 +169,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append(   " FROM CCSubstationSubBusList)");
         sql.append("ORDER BY SubstationBusID");
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return listmap;
     }
@@ -216,8 +208,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 	}
 	
     @Override
-    public boolean assignSubstationBus(Substation substation, SubstationBus substationBus) {
-    	return assignSubstationBus(substation.getId(),substationBus.getId());
+    public boolean assignSubstationBus(int subBusId, String substationName) {
+    	YukonPao pao = paoDao.findYukonPao(substationName, PaoType.CAP_CONTROL_SUBSTATION);
+    	return (pao == null) ? false : assignSubstationBus(pao.getPaoIdentifier().getPaoId(), subBusId);
     }
     
     @Override
@@ -244,7 +237,19 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		
 		boolean result = (rowsAffected == 1);
 		
+		if (result) {
+		    sendDbChange(substationBusId, CapControlType.SUBBUS, DbChangeType.UPDATE);
+		    sendDbChange(substationId, CapControlType.SUBSTATION, DbChangeType.UPDATE);
+		}
+		
 		return result;
+    }
+    
+    private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
+        DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
+                                          PaoCategory.CAPCONTROL.getDbString(),
+                                          ccType.getDbValue(), type);
+        dbPersistentDao.processDBChange(msg);
     }
 
     @Override
@@ -296,6 +301,16 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         List<Integer> statusPointIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return statusPointIds;
+    }
+	
+	@Autowired
+	public void setDbPersistantDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+	
+	@Autowired
+	public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 	    
     @Autowired

@@ -103,23 +103,40 @@ public final class PaoDaoImpl implements PaoDao {
     
     @Override
     public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
-    	YukonPao pao = null;
-    	
-    	try {
-    		SqlStatementBuilder sql = new SqlStatementBuilder();
-    		sql.append("SELECT PAObjectID, Type");
-    		sql.append("FROM YukonPAObject");
-    		sql.append("WHERE PAOName").eq(paoName);
-    		sql.append("   AND Category").eq(paoCategory.getDbString());
-    		sql.append("   AND PAOClass").eq(paoClass.getDbString());
-    		
-    		pao = yukonJdbcTemplate.queryForObject(sql, yukonPaoRowMapper);
+    	try {    		
+    		return queryForPao(paoName, paoCategory, paoClass);
     	} catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }
-    	
-    	return pao;
     };
+    
+    @Override
+    public YukonPao getYukonPao(String paoName, PaoType paoType) throws NotFoundException {
+        return getYukonPao(paoName, paoType.getPaoCategory(), paoType.getPaoClass());
+    };
+    
+    @Override
+    public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) 
+            throws NotFoundException {
+        try {
+            return queryForPao(paoName, paoCategory, paoClass);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A PAObject named " + paoName + " cannot be found.");
+        }
+    };
+    
+    private YukonPao queryForPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAObjectID, Type");
+        sql.append("FROM YukonPAObject");
+        sql.append("WHERE PAOName").eq(paoName);
+        sql.append("   AND Category").eq(paoCategory);
+        sql.append("   AND PAOClass").eq(paoClass);
+        
+        YukonPao pao = yukonJdbcTemplate.queryForObject(sql, yukonPaoRowMapper);
+        
+        return pao;
+    }
     
     public LiteYukonPAObject getLiteYukonPAO(int paoID) {
         try {

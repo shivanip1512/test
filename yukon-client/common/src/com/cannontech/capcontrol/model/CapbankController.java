@@ -2,8 +2,9 @@ package com.cannontech.capcontrol.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 
-public class CapbankController {
+public class CapbankController implements YukonPao {
 	
 	private PaoIdentifier paoIdentifier;
 	

@@ -1,7 +1,5 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,23 +8,32 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
-import com.cannontech.capcontrol.model.Area;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class SubstationDaoImpl implements SubstationDao {
 	private static final Logger log = YukonLogManager.getLogger(SubstationDaoImpl.class);
 	
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
+    private DBPersistentDao dbPersistentDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private PaoDao paoDao;
     
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
@@ -83,15 +90,11 @@ public class SubstationDaoImpl implements SubstationDao {
 		return result;
     }
     
-    @Override
-    public Substation getSubstationById (int id) {
-    	throw new UnsupportedOperationException();
-    }
-    
-	@Override
-	public boolean assignSubstation(Area area, Substation substation) {
-		return assignSubstation(area.getId(), substation.getId());
-	}
+    @Override 
+    public boolean assignSubstation(int substationId, String areaName) {
+        YukonPao pao = paoDao.findYukonPao(areaName, PaoType.CAP_CONTROL_AREA);
+        return (pao == null) ? false : assignSubstation(pao.getPaoIdentifier().getPaoId(), substationId);
+    };
 
 	@Override
 	public boolean assignSubstation(int areaId, int substationId) {
@@ -117,7 +120,19 @@ public class SubstationDaoImpl implements SubstationDao {
 		
 		boolean result = (rowsAffected == 1);
 		
+		if (result) {
+		    sendDbChange(substationId, CapControlType.SUBSTATION, DbChangeType.UPDATE);
+		    sendDbChange(areaId, CapControlType.AREA, DbChangeType.UPDATE);
+		}
+		
 		return result;
+	}
+	
+	private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
+	    DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
+	                                      PaoCategory.CAPCONTROL.getDbString(),
+	                                      ccType.getDbValue(), type);
+	    dbPersistentDao.processDBChange(msg);
 	}
 	
 	@Override
@@ -140,14 +155,6 @@ public class SubstationDaoImpl implements SubstationDao {
 	}
     
     public List<Integer> getAllUnassignedSubstationIds() {
-
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("paobjectid") );
-                return i;
-            }
-        };
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT PAObjectID");
@@ -158,7 +165,7 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append(      " FROM CCSubAreaAssignment)");
         sql.append("ORDER BY PAObjectID");
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return listmap;
     }
@@ -197,13 +204,6 @@ public class SubstationDaoImpl implements SubstationDao {
 	}
     
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId) {
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("PAObjectID") );
-                return i;
-            }
-        };
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT PAObjectID");
@@ -215,38 +215,32 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append(      " WHERE AreaID").eq(areaId);
         sql.append(      ")");
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return listmap;
     }
 
+    @Override
     public List<Integer> getAllSubstationIds() {
-        //does not appear to be used
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("SubstationID") );
-                return i;
-            }
-        };
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT SubstationID");
         sql.append("FROM CapControlSubstation");
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return listmap;
     }
     
-    public Integer getSubstationIdByName(String name) throws EmptyResultDataAccessException{
+    @Override
+    public int getSubstationIdByName(String name) throws EmptyResultDataAccessException{
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
     	sql.append("SELECT SubstationID");
     	sql.append("FROM CapControlSubstation, YukonPAObject");
     	sql.append("WHERE SubstationID = PAObjectID AND PAOName LIKE '" + name + "'");
 
-        Integer i = yukonJdbcTemplate.queryForInt(sql);
+        int i = yukonJdbcTemplate.queryForInt(sql);
         
         return i;
     }
@@ -263,4 +257,14 @@ public class SubstationDaoImpl implements SubstationDao {
 		
 		return id;
 	}
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
 }

@@ -6,7 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.search.SearchResult;
 
 public interface FeederDao {
@@ -36,7 +35,7 @@ public interface FeederDao {
      */
     public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException;
     
-    public boolean assignFeeder(SubstationBus substationBus, Feeder feeder);
+    public boolean assignFeeder(int feederId, String subBusName);
     
     public boolean assignFeeder(int substationBusId, int feederId);
 

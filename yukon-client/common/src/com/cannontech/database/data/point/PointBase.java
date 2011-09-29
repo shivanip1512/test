@@ -32,7 +32,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
-@SuppressWarnings("serial")
 public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel {
     private Point point = null;
     private Vector<FDRTranslation> pointFDR = null;

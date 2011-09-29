@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.creation.service.PaoCreationTableParserService;
 import com.cannontech.clientutils.CTILogger;
@@ -112,6 +113,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     }
     
     @Override
+    @Transactional
     public void deletePao(PaoIdentifier paoIdentifier) {
         List<PaoTypeProvider<PaoTemplatePart>> providers = Lists.newArrayList(paoTypeProviders.get(paoIdentifier.getPaoType()));
         

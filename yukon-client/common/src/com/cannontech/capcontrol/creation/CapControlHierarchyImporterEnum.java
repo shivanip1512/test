@@ -20,19 +20,24 @@ public enum CapControlHierarchyImporterEnum {
 	
 	private final static ImmutableMap<String, CapControlHierarchyImporterEnum> lookupByString;
 	private final static ImmutableSet<CapControlHierarchyImporterEnum> requiredFields;
+	private final static ImmutableSet<CapControlHierarchyImporterEnum> nonRequiredFields;
 	
 	static {
         try {
         	ImmutableMap.Builder<String, CapControlHierarchyImporterEnum> stringBuilder = ImmutableMap.builder();
             ImmutableSet.Builder<CapControlHierarchyImporterEnum> requiredFieldsBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<CapControlHierarchyImporterEnum> nonRequiredFieldsBuilder = ImmutableSet.builder();
         	for (CapControlHierarchyImporterEnum column : values()) {
             	stringBuilder.put(column.getColumnName(), column);
             	if (column.isRequired()) {
             		requiredFieldsBuilder.add(column);
+            	} else {
+            	    nonRequiredFieldsBuilder.add(column);
             	}
             }
             lookupByString = stringBuilder.build();
             requiredFields = requiredFieldsBuilder.build();
+            nonRequiredFields = nonRequiredFieldsBuilder.build();
         } catch (IllegalArgumentException e) {
             throw e;
         }
@@ -51,6 +56,10 @@ public enum CapControlHierarchyImporterEnum {
 	
 	public static ImmutableSet<CapControlHierarchyImporterEnum> getRequiredFields() {
 		return requiredFields;
+	}
+	
+	public static ImmutableSet<CapControlHierarchyImporterEnum> getNonRequiredFields() {
+	    return nonRequiredFields;
 	}
 	
 	public String getColumnName() {

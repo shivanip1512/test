@@ -1,6 +1,5 @@
 package com.cannontech.common.pao.service.impl;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
@@ -10,18 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
 
 public class PaoCreationHelper {
 
@@ -35,15 +32,19 @@ public class PaoCreationHelper {
         applyPoints(pao, pointsToCreate);
     }
 
+    /**
+     * Deletes all points for the Pao with the given PAObjectID. This is currently done using 
+     * DBPersistent points, and in the future should be done using some sort of Dao as we try
+     * to get away from using DBPersistents.
+     * @param paObjectId the ID 
+     * @throws SQLException
+     */
     public void deletePointsForPao(int paObjectId) throws SQLException {
-    	List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paObjectId);
+    	List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paObjectId);
         for (LitePoint point : points) {
-            com.cannontech.database.data.point.PointBase chubbyPt = com.cannontech.database.data.point.PointFactory.createPoint( point.getPointType() );
+            PointBase chubbyPt = PointFactory.createPoint( point.getPointType() );
             chubbyPt.setPointID(point.getPointID());
-            Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            chubbyPt.setDbConnection( conn );
-
-            chubbyPt.delete();
+            dbPersistentDao.performDBChange(chubbyPt, TransactionType.DELETE);
         }	
     }
     

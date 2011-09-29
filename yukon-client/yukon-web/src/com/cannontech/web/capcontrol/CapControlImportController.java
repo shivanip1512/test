@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +31,7 @@ import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
+import com.cannontech.capcontrol.exception.CapControlImportException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -39,7 +40,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.MapMaker;
 
 @Controller
 @RequestMapping("/*")
@@ -50,17 +51,20 @@ public class CapControlImportController {
 	private CapControlImportService capControlImportService;
 	private CapControlImporterFileDao capControlFileImporterDao;
 	
-	private Map<String, List<String>> resultsLookup = Maps.newHashMap();
+	private ConcurrentMap<String, List<String>> resultsLookup = new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public String importer(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+	public String importer(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) {
 		List<String> results = Lists.newArrayList();
 		
-		String hierarchyKey = ServletRequestUtils.getStringParameter(request, "hierarchyKey", null);
-		String cbcKey = ServletRequestUtils.getStringParameter(request, "cbcKey", null);
-		
-		List<String> hierarchyResults = resultsLookup.get(hierarchyKey);
-		List<String> cbcResults = resultsLookup.get(cbcKey);
+		List<String> hierarchyResults = null;
+		if (hierarchyKey != null) {
+		    hierarchyResults = resultsLookup.get(hierarchyKey);
+		}
+		List<String> cbcResults = null;
+		if (cbcKey != null) {
+		    cbcResults = resultsLookup.get(cbcKey);
+		}
 		
 		if (hierarchyResults != null) {
 			results.addAll(hierarchyResults);
@@ -77,27 +81,32 @@ public class CapControlImportController {
 	
 	private void processCbcImport(List<CbcImportData> cbcImportData, List<CbcImportResult> cbcResults) {
 		for (CbcImportData data : cbcImportData) {
-			switch(data.getImportAction()) {
-				case ADD:
-					if (data.isTemplate()) {
-						capControlImportService.createCbcFromTemplate(data, cbcResults);
-					} else {
-						capControlImportService.createCbc(data, cbcResults);
-					}
-					break;
-					
-				case UPDATE:
-					capControlImportService.updateCbc(data, cbcResults);
-					break;
-					
-				case REMOVE:
-					capControlImportService.removeCbc(data, cbcResults);
-					break;
-					
-				default:
-					cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_IMPORT_ACTION));
-					break;
-			}
+		    try{
+    			switch(data.getImportAction()) {
+    				case ADD:
+    					if (data.isTemplate()) {
+    						capControlImportService.createCbcFromTemplate(data, cbcResults);
+    					} else {
+    						capControlImportService.createCbc(data, cbcResults);
+    					}
+    					break;
+    					
+    				case UPDATE:
+    					capControlImportService.updateCbc(data, cbcResults);
+    					break;
+    					
+    				case REMOVE:
+    					capControlImportService.removeCbc(data, cbcResults);
+    					break;
+    					
+    				default:
+    					cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_IMPORT_ACTION));
+    					break;
+    			}
+		    } catch (NotFoundException e) {
+		        log.debug(e);
+	            cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_PARENT));
+		    }
 		}
 	}
 	
@@ -150,6 +159,8 @@ public class CapControlImportController {
         		log.error(e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", e.getColumns()));
         		return "tools/capcontrolImport.jsp";
+        	} catch (CapControlImportException e) { 
+        		log.error(e.getMessage());
         	} catch (IllegalArgumentException e) {
         		log.error("Invalid column name found in import file: " + e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getMessage()));
@@ -165,6 +176,13 @@ public class CapControlImportController {
         resultsLookup.put(randomUUID.toString(), cbcResults);
         
         model.addAttribute("cbcKey", randomUUID.toString());
+        
+        for (CbcImportResult result : results) {
+            if (!result.getResultType().isSuccess()) {
+                flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.processedWithErrors"));
+                return "redirect:importer";
+            }
+        }
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.importCbcFileSuccess"));
         
@@ -205,10 +223,17 @@ public class CapControlImportController {
         resultsLookup.put(randomUUID.toString(), hierarchyResults);
         
 		model.addAttribute("hierarchyKey", randomUUID.toString());
-		
-		flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.importHierarchyFileSuccess"));
-		
-		return "redirect:importer";
+
+        
+		for (HierarchyImportResult result : results) {
+		    if (!result.getResultType().isSuccess()) {
+		        flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.processedWithErrors"));
+		        return "redirect:importer";
+		    }
+		}
+
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.importHierarchyFileSuccess"));
+        return "redirect:importer";
 	}
 	
 	private List<String> getHierarchyResultStrings(List<HierarchyImportResult> results) {

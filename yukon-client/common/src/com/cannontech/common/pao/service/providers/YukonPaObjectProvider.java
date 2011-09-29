@@ -13,7 +13,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 
 public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectFields> {
     
-    YukonJdbcTemplate yukonJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
 	@Override
 	public PaoProviderTableEnum getSupportedTable() {
@@ -30,15 +30,9 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
         //This would normally call a Dao, but it is a simple one line insert in a very base class..
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        SqlParameterSink p = sql.insertInto("YukonPaObject");
-        p.addValue("PAObjectId",paoIdentifier.getPaoId());
-        p.addValue("Category", paoIdentifier.getPaoType().getPaoCategory());
-        p.addValue("PaoClass", paoIdentifier.getPaoType().getPaoClass());
-        p.addValue("Type", paoIdentifier.getPaoType());
-        p.addValue("PaoName", paoFields.getName());
-        p.addValue("Description", paoFields.getDescription());
-        p.addValue("DisableFlag", YNBoolean.valueOf(paoFields.isDisabled()));
-        p.addValue("PaoStatistics", paoFields.getStatistics());
+        SqlParameterSink params = sql.insertInto("YukonPaObject");
+        params.addValue("PAObjectId",paoIdentifier.getPaoId());
+        setupParameterSink(params, paoIdentifier, paoFields);
         
         yukonJdbcTemplate.update(sql);
     }
@@ -48,17 +42,21 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
     	SqlParameterSink params = sql.update("YukonPAObject");
-    	params.addValue("Category", paoIdentifier.getPaoType().getPaoCategory());
-        params.addValue("PaoClass", paoIdentifier.getPaoType().getPaoClass());
-        params.addValue("Type", paoIdentifier.getPaoType());
-        params.addValue("PaoName", paoFields.getName());
-        params.addValue("Description", paoFields.getDescription());
-        params.addValue("DisableFlag", YNBoolean.valueOf(paoFields.isDisabled()));
-        params.addValue("PaoStatistics", paoFields.getStatistics());
+    	setupParameterSink(params, paoIdentifier, paoFields);
         
         sql.append("WHERE PAObjectID").eq(paoIdentifier.getPaoId());
         
         yukonJdbcTemplate.update(sql);
+    }
+    
+    private void setupParameterSink(SqlParameterSink params, PaoIdentifier paoIdentifier, YukonPaObjectFields fields) {
+    	params.addValue("Category", paoIdentifier.getPaoType().getPaoCategory());
+        params.addValue("PaoClass", paoIdentifier.getPaoType().getPaoClass());
+        params.addValue("Type", paoIdentifier.getPaoType());
+        params.addValue("PaoName", fields.getName());
+        params.addValue("Description", fields.getDescription());
+        params.addValue("DisableFlag", YNBoolean.valueOf(fields.isDisabled()));
+        params.addValue("PaoStatistics", fields.getStatistics());
     }
     
     @Override

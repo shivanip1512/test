@@ -39,6 +39,27 @@ public interface PaoDao {
     public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass);
     
     /**
+     * Queries the database to return a PaoIdentifier for a unique pao that is assumed
+     * to exist.
+     * @param paoName The name of the Pao.
+     * @param paoType The type of the Pao.
+     * @return A PaoIdentifier representing the PaoId and PaoType of the pao specified.
+     * @throws NotFoundException if no Pao with the specified information exists in the database.
+     */
+    public YukonPao getYukonPao(String paoName, PaoType paoType) throws NotFoundException;
+    
+    /**
+     * Queries the database to return a PaoIdentifier for a unique pao that is assumed
+     * to exist.
+     * @param paoName The name of the Pao.
+     * @param paoCategory The category of the Pao.
+     * @param paoClass The class of the Pao.
+     * @return A PaoIdentifier representing the PaoId and PaoType of the pao specified.
+     * @throws NotFoundException if no Pao with the specified information exists in the database.
+     */
+    public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) throws NotFoundException;
+    
+    /**
      * Retrieves the YukonPao object along with related data
      * like port, address and route info
      * @param paoID

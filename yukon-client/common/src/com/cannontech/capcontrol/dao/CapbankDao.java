@@ -6,7 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankAdditional;
-import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.search.SearchResult;
 
@@ -45,7 +44,7 @@ public interface CapbankDao {
     
     public boolean isSwitchedBank( Integer paoID );
     
-    public boolean assignCapbank(Feeder feeder, Capbank capbank);
+    public boolean assignCapbank(int capbankId, String feederName);
     
     public boolean assignCapbank(int feederId, int capbankId);
 

@@ -50,8 +50,6 @@
 	<bean id="capControlCreationService"
 	    class="com.cannontech.cbc.service.impl.CapControlCreationServiceImpl">
 	</bean>
-	
-	<bean class="com.cannontech.cbc.service.impl.CapControlAssignmentServiceImpl"/>
 
     <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl">
     </bean>
