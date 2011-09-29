@@ -375,7 +375,7 @@ struct beginExecuteRequest_helper
 };
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
-
+//{  For Jeremy.  <3
     BOOST_AUTO_TEST_CASE(test_getconfig_centron_parameters)
     {
         CtiCommandParser parse("getconfig centron parameters");
@@ -419,7 +419,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
     }
-
+//}  For Jeremy.  <3
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -466,7 +466,7 @@ struct getOperation_helper
 };
 
 BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
-
+//{  For Jeremy.  <3
     BOOST_AUTO_TEST_CASE(test_getOperation_01)
     {
         BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Command_Loop, BSt));
@@ -1032,5 +1032,5 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0xf3);
         BOOST_CHECK_EQUAL(BSt.Length,   2);
     }
-
+//}  For Jeremy.  <3
 BOOST_AUTO_TEST_SUITE_END()
