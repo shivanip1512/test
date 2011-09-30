@@ -639,13 +639,13 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
 bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow)
 {
-    return checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO,          CbcRequestType)
-        || checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO,      RegulatorRequestType)
-        || checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType);
+    return checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO,          CbcRequestType,       "CBC")
+        || checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO,      RegulatorRequestType, "Regulator")
+        || checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType,     "Other");
 }
 
 
-bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType)
+bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
 {
     double ratio = request->ratioComplete(pointRequestType);
     if (ratio < desiredRatio)
@@ -653,7 +653,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: Incomplete data. Received " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << std::endl;
+            dout << CtiTime() << " - IVVC Algorithm: Incomplete data. Received " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << requestTypeString << std::endl;
         }
         return true;
     }
@@ -662,7 +662,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: Enough data received for Request Type: " << pointRequestType << std::endl;
+            dout << CtiTime() << " - IVVC Algorithm: Enough data received for Request Type: " << requestTypeString << std::endl;
         }
 
         PointValueMap valueMap = request->getPointValues(pointRequestType);
@@ -688,7 +688,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: Stale data. Received updates for " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << std::endl;
+                dout << CtiTime() << " - IVVC Algorithm: Stale data. Received updates for " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << requestTypeString << std::endl;
             }
             return true;
         }
@@ -697,7 +697,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: Data Current for Request Type: " << pointRequestType << std::endl;
+                dout << CtiTime() << " - IVVC Algorithm: Data Current for Request Type: " << requestTypeString << std::endl;
             }
 
             //Removing stale points from the request.
