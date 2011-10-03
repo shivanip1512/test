@@ -20,7 +20,7 @@ CtiANSIDatalink::CtiANSIDatalink() :
     _sequence(0),
     _multiPacketPart(false),
     _multiPacketFirst(false),
-    _toggle(false),
+    _toggleByte(0),
     _identityByte(0)
 {
 }
@@ -43,7 +43,7 @@ void CtiANSIDatalink::init( void )
        _currentPacket = NULL;
    }
    _currentPacket = CTIDBG_new BYTE[512];
-   _toggle = false;
+   _toggleByte = 0x00;
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
 
@@ -61,7 +61,7 @@ void CtiANSIDatalink::reinitialize( void )
    setSequence( 0 );
    _currentPos = Ack;
    _previousPos = Ack;
-   _toggle = false;
+   _toggleByte = 0x00;
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
 
@@ -110,16 +110,8 @@ void CtiANSIDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT byt
 
 
    //control field
-   if( _toggle == true )
-   {
-      _toggle = false;
-      packetPtr[2] = 0x20;
-   }
-   else
-   {
-      _toggle = true;
-      packetPtr[2] = 0x00;
-   }
+   _toggleByte =  (_toggleByte & 0x20) == 0x00 ? 0x20 : 0x00;
+   packetPtr[2] = _toggleByte;
 
    //sequence number
    packetPtr[3] = seq;
@@ -652,7 +644,7 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    data[3] = dataCount.ch[1];
    data[4] = dataCount.ch[0];
 
-   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl ||
+   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl || 
        aTableID == Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest)
    {
        //BYTEULONG lid;
@@ -951,9 +943,9 @@ int CtiANSIDatalink::getPacketBytesReceived( void )
    return _packetBytesReceived;
 }
 
-bool CtiANSIDatalink::getToggle( void )
+BYTE CtiANSIDatalink::getToggleByte( void )
 {
-    return _toggle;
+    return _toggleByte;
 }
 
 //=========================================================================================================================================
@@ -1037,10 +1029,7 @@ unsigned short CtiANSIDatalink::crc( int size, unsigned char *packet )
 
 void CtiANSIDatalink::toggleToggle( void )
 {
-    if (_toggle == true)
-        _toggle = false;
-    else
-        _toggle = true;
+    _toggleByte = (_toggleByte & 0x20) == 0x00 ? 0x20 : 0x00;
     return;
 }
 
@@ -1056,15 +1045,12 @@ BYTE CtiANSIDatalink::getIdentityByte( void )
 }
 
 
-bool CtiANSIDatalink::compareToggleBits()
+bool CtiANSIDatalink::compareToggleByte()
 {
-    bool retVal = false;
-    BYTE compareValue = (getCurrentPacket()[2] & 0x20);
-    if ((getToggle() && compareValue == 0x00) ||
-        !getToggle() && compareValue == 0x20)
+    if (_toggleByte == (getCurrentPacket()[2] & 0x20)) 
     {
-       retVal = true;
+       return true;
     }
-    return retVal;
+    return false;
 }
 

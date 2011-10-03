@@ -553,12 +553,8 @@ bool CtiANSIApplication::analyzePacket()
              }
              case request:
              {
-                 if ( getAnsiDeviceType() == sentinel && !getDatalinkLayer().compareToggleBits() )
+                 if ( getAnsiDeviceType() == sentinel && !getDatalinkLayer().compareToggleByte() )
                  {
-                     if (getRetries() > 0)
-                     {
-                         getDatalinkLayer().toggleToggle();
-                     }
                      retFlag = false;
                      break;
                  }
