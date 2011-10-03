@@ -175,10 +175,12 @@ public class HardwareConfigService {
                         CronExpression startTimeCron = new CronExpression(schedule.getStartTimeCronString());
                         ReadablePeriod runPeriod = schedule.getRunPeriod();
                         Date earliestPossibleStartTime = now.minus(runPeriod).toDate();
-                        Instant scheduleStart =
-                            new Instant(startTimeCron.getNextValidTimeAfter(earliestPossibleStartTime).getTime());
-                        if (scheduleStart.isBefore(now)) {
-                            activeSchedules.add(schedule);
+                        Date nextValidTime = startTimeCron.getNextValidTimeAfter(earliestPossibleStartTime);
+                        if (nextValidTime != null) {
+                            Instant scheduleStart = new Instant((nextValidTime).getTime());
+                            if (scheduleStart.isBefore(now)) {
+                                activeSchedules.add(schedule);
+                            }
                         }
                     } catch (ParseException parseException) {
                         log.error("error parsing cron string [" + schedule.getStartTimeCronString() +
