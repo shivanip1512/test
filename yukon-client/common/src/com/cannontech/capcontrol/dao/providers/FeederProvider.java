@@ -2,32 +2,17 @@ package com.cannontech.capcontrol.dao.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.providers.fields.FeederFields;
-import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class FeederProvider implements PaoTypeProvider<FeederFields> {
 	
-	private FeederDao feederDao;
-
-	private Feeder createFeeder(PaoIdentifier paoIdentifier, FeederFields fields) {
-		Feeder feeder = new Feeder(paoIdentifier);
-		
-		feeder.setCurrentVarLoadPointId(fields.getCurrentVarLoadPointId());
-		feeder.setCurrentWattLoadPointId(fields.getCurrentWattLoadPointId());
-		feeder.setCurrentVoltLoadPointId(fields.getCurrentVoltPointLoadId());
-		feeder.setMapLocationId(fields.getMapLocationId());
-		feeder.setMultiMonitorControl(fields.getMultiMonitorControl());
-		feeder.setUsePhaseData(fields.getUsePhaseData());
-		feeder.setPhaseb(fields.getPhaseB());
-		feeder.setPhasec(fields.getPhaseC());
-		feeder.setControlFlag(fields.getControlFlag());
-		
-		return feeder;
-	}
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTableEnum getSupportedTable() {
@@ -41,27 +26,55 @@ public class FeederProvider implements PaoTypeProvider<FeederFields> {
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, FeederFields fields) {
-		Feeder feeder = createFeeder(paoIdentifier, fields);
-		
-		feederDao.add(feeder);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.insertInto(getSupportedTable().name());
+        params.addValue("FeederID", paoIdentifier.getPaoId());
+        params.addValue("CurrentVarLoadPointID", fields.getCurrentVarLoadPointId());
+        params.addValue("CurrentWattLoadPointID", fields.getCurrentWattLoadPointId());
+        params.addValue("MapLocationID", fields.getMapLocationId());
+        params.addValue("CurrentVoltLoadPointID", fields.getcurrentVoltLoadPointId());
+        params.addValue("MultiMonitorControl", fields.getMultiMonitorControl());
+        params.addValue("UsePhaseData", fields.getUsePhaseData());
+        params.addValue("PhaseB", fields.getPhaseB());
+        params.addValue("PhaseC", fields.getPhaseC());
+        params.addValue("ControlFlag", fields.getControlFlag());
+        
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleUpdate(PaoIdentifier paoIdentifier, FeederFields fields) {
-		Feeder feeder = createFeeder(paoIdentifier, fields);
-		
-		feederDao.update(feeder);
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update(getSupportedTable().name());
+        params.addValue("CurrentVarLoadPointID", fields.getCurrentVarLoadPointId());
+        params.addValue("CurrentWattLoadPointID", fields.getCurrentWattLoadPointId());
+        params.addValue("MapLocationID", fields.getMapLocationId());
+        params.addValue("CurrentVoltLoadPointID", fields.getcurrentVoltLoadPointId());
+        params.addValue("MultiMonitorControl", fields.getMultiMonitorControl());
+        params.addValue("UsePhaseData", fields.getUsePhaseData());
+        params.addValue("PhaseB", fields.getPhaseB());
+        params.addValue("PhaseC", fields.getPhaseC());
+        params.addValue("ControlFlag", fields.getControlFlag());
+        
+        sql.append("WHERE FeederId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
-	public void handleDeletion(PaoIdentifier paoIdentifier) {
-		Feeder feeder = new Feeder(paoIdentifier);
-		
-		feederDao.remove(feeder);
+	public void handleDeletion(PaoIdentifier paoIdentifier) {		
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("WHERE FeederId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Autowired
-	public void setFeederDao(FeederDao feederDao) {
-		this.feederDao = feederDao;
-	}
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

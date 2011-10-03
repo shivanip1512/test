@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -14,31 +13,25 @@ import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-public class CapbankDaoImpl implements CapbankDao {
-    private static final Logger log = YukonLogManager.getLogger(CapbankDaoImpl.class);
-    
+public class CapbankDaoImpl implements CapbankDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private DBPersistentDao dbPersistentDao;
+    private PaoCreationHelper paoCreationHelper;
     private PaoDao paoDao;
     
     static {        
@@ -73,82 +66,7 @@ public class CapbankDaoImpl implements CapbankDao {
 			return capbankAdditional;
 		}
 	};
-    
-    @Autowired
-    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Override
-    public void add(Capbank bank) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("CapBank");
-		params.addValue("DeviceId", bank.getPaoId());
-		params.addValue("OperationalState", bank.getOperationalState().name());
-		params.addValue("ControllerType", bank.getControllerType());
-		params.addValue("ControlDeviceId", bank.getControlDeviceId());
-		params.addValue("ControlPointId", bank.getControlPointId());
-		params.addValue("BankSize", bank.getBankSize());
-		params.addValue("TypeOfSwitch", bank.getTypeOfSwitch());
-		params.addValue("SwitchManufacture", bank.getSwitchManufacturer());
-		params.addValue("MapLocationId", bank.getMapLocationId());
-		params.addValue("RecloseDelay", bank.getRecloseDelay());
-		params.addValue("MaxDailyOps", bank.getMaxDailyOps());
-		params.addValue("MaxOpDisable", bank.getMaxOpDisable());
-		
-		int rowsAffected = yukonJdbcTemplate.update(sql);
-		
-		boolean result = (rowsAffected == 1);
-        
-		if (result == false) {
-			log.error("Update of bank information in CapBank table failed for bank with name: " + bank.getName());
-		}
-    }
 	
-    @Override
-    public boolean remove(Capbank bank) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("DELETE FROM CapBank");
-    	sql.append("WHERE DeviceID").eq(bank.getPaoId());
-    	
-    	int rowsAffected = yukonJdbcTemplate.update(sql);
-    	
-		boolean result = (rowsAffected == 1);
-		return result;
-    }
-    
-    @Override
-    public boolean update(Capbank bank) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	SqlParameterSink params = sql.update("CapBank");
-    	params.addValue("OperationalState", bank.getOperationalState());
-    	params.addValue("ControllerType", bank.getControllerType());
-    	params.addValue("ControlDeviceID", bank.getControlDeviceId());
-    	params.addValue("ControlPointID", bank.getControlPointId());
-    	params.addValue("BankSize", bank.getBankSize());
-    	params.addValue("TypeOfSwitch", bank.getTypeOfSwitch());
-    	params.addValue("SwitchManufacture", bank.getSwitchManufacturer());
-    	params.addValue("MapLocationID", bank.getMapLocationId());
-    	params.addValue("RecloseDelay", bank.getRecloseDelay());
-    	params.addValue("MaxDailyOps", bank.getMaxDailyOps());
-    	params.addValue("MaxOpDisable", bank.getMaxOpDisable());
-    	
-    	sql.append("WHERE DeviceID").eq(bank.getPaoId());
-    	
-    	int rowsAffected = yukonJdbcTemplate.update(sql);
-        
-    	boolean result = (rowsAffected == 1);
-        
-		if (result == false) {
-			log.debug("Update of bank in CapBank table failed for bank name: " + bank.getName());
-		}
-        
-        return result;
-    }
-    
     /**
      * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.
@@ -175,7 +93,7 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     
     @Override
-	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+	public SearchResult<LiteCapControlObject> getOrphans(int start, int count) {
 	    /* Get the unordered total count */
     	SqlStatementBuilder orphanSql = new SqlStatementBuilder();
     	
@@ -208,74 +126,6 @@ public class CapbankDaoImpl implements CapbankDao {
         
         return searchResult;
 	}
-    
-	@Override
-	public void addCapbankAdditional(CapbankAdditional capbankAdditional) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("CapBankAdditional");
-		params.addValue("DeviceID", capbankAdditional.getPaoId());
-		params.addValue("MaintenanceAreaID", capbankAdditional.getMaintenanceAreaId());
-		params.addValue("PoleNumber", capbankAdditional.getPoleNumber());
-		params.addValue("DriveDirections", capbankAdditional.getDriveDirections());
-		params.addValue("Latitude", capbankAdditional.getLatitude());
-		params.addValue("Longitude", capbankAdditional.getLongitude());
-		params.addValue("CapBankConfig", capbankAdditional.getCapbankConfig());
-		params.addValue("CommMedium", capbankAdditional.getCommMedium());
-		params.addValue("CommStrength", capbankAdditional.getCommStrength());
-		params.addValue("ExtAntenna", capbankAdditional.getExtAntenna());
-		params.addValue("AntennaType", capbankAdditional.getAntennaType());
-		params.addValue("LastMaintVisit", capbankAdditional.getLastMaintenanceVisit());
-		params.addValue("LastInspVisit", capbankAdditional.getLastInspection());
-		params.addValue("OpCountResetDate", capbankAdditional.getOpCountResetDate());
-		params.addValue("PotentialTransformer", capbankAdditional.getPotentialTransformer());
-		params.addValue("MaintenanceReqPend", capbankAdditional.getMaintenanceRequired());
-		params.addValue("OtherComments", capbankAdditional.getOtherComments());
-		params.addValue("OpTeamComments", capbankAdditional.getOpTeamComments());
-		params.addValue("CBCBattInstallDate", capbankAdditional.getCbcInstallDate());
-		
-		yukonJdbcTemplate.update(sql);
-	}
-	
-	@Override
-	public void updateCapbankAdditional(CapbankAdditional capbankAdditional) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("CapBankAdditional");
-		params.addValue("MaintenanceAreaID", capbankAdditional.getMaintenanceAreaId());
-		params.addValue("PoleNumber", capbankAdditional.getPoleNumber());
-		params.addValue("DriveDirections", capbankAdditional.getDriveDirections());
-		params.addValue("Latitude", capbankAdditional.getLatitude());
-		params.addValue("Longitude", capbankAdditional.getLongitude());
-		params.addValue("CapBankConfig", capbankAdditional.getCapbankConfig());
-		params.addValue("CommMedium", capbankAdditional.getCommMedium());
-		params.addValue("CommStrength", capbankAdditional.getCommStrength());
-		params.addValue("ExtAntenna", capbankAdditional.getExtAntenna());
-		params.addValue("AntennaType", capbankAdditional.getAntennaType());
-		params.addValue("LastMaintVisit", capbankAdditional.getLastMaintenanceVisit());
-		params.addValue("LastInspVisit", capbankAdditional.getLastInspection());
-		params.addValue("OpCountResetDate", capbankAdditional.getOpCountResetDate());
-		params.addValue("PotentialTransformer", capbankAdditional.getPotentialTransformer());
-		params.addValue("MaintenanceReqPend", capbankAdditional.getMaintenanceRequired());
-		params.addValue("OtherComments", capbankAdditional.getOtherComments());
-		params.addValue("OpTeamComments", capbankAdditional.getOpTeamComments());
-		params.addValue("CBCBattInstallDate", capbankAdditional.getCbcInstallDate());
-		
-		sql.append("WHERE DeviceID").eq(capbankAdditional.getPaoId());
-		
-		yukonJdbcTemplate.update(sql);			
-	}
-	
-	@Override
-	public void removeCapbankAdditional(int paoId) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("DELETE FROM CapBankAdditional");
-		sql.append("WHERE DeviceID").eq(paoId);
-		
-		yukonJdbcTemplate.update(sql);    
-	}
-	
 	
     /**
      * This method returns the Feeder ID that owns the given cap bank ID.
@@ -378,25 +228,15 @@ public class CapbankDaoImpl implements CapbankDao {
 		boolean result = (rowsAffected == 1);
 		
 		if (result) {
-		    sendDbChange(capbankId, CapControlType.CAPBANK, DbChangeType.UPDATE);
-		    sendDbChange(feederId, CapControlType.FEEDER, DbChangeType.UPDATE);
+		    YukonPao capBank = paoDao.getYukonPao(capbankId);
+		    YukonPao feeder = paoDao.getYukonPao(feederId);
+		    paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
+		    paoCreationHelper.processDbChange(feeder, DbChangeType.UPDATE);
 		}
 		
 		return result;
 	}
 	
-	private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
-        DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
-                                          PaoCategory.CAPCONTROL.getDbString(),
-                                          ccType.getDbValue(), type);
-        dbPersistentDao.processDBChange(msg);
-    }
-
-	@Override
-	public boolean unassignCapbank(Capbank capbank) {
-		return unassignCapbank(capbank.getPaoId());
-	}
-
 	@Override
 	public boolean unassignCapbank(int capbankId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -441,10 +281,15 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		return capbankAdditional;
 	}
+    
+    @Autowired
+    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }    
 	
 	@Autowired
-	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
+	public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
     }
 	
 	@Autowired

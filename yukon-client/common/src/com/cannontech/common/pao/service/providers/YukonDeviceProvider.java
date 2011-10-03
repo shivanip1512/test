@@ -28,7 +28,7 @@ public class YukonDeviceProvider implements PaoTypeProvider<DeviceFields> {
     public void handleCreation(PaoIdentifier paoIdentifier, DeviceFields fields) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.insertInto("Device");
+		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
 		params.addValue("DeviceId", paoIdentifier.getPaoId());
 		params.addValue("AlarmInhibit", fields.getAlarmInhibit());
 		params.addValue("ControlInhibit", fields.getControlInhibit());
@@ -40,7 +40,7 @@ public class YukonDeviceProvider implements PaoTypeProvider<DeviceFields> {
     public void handleUpdate(PaoIdentifier paoIdentifier, DeviceFields fields) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.update("Device");
+		SqlParameterSink params = sql.update(getSupportedTable().name());
 		params.addValue("AlarmInhibit", fields.getAlarmInhibit());
 		params.addValue("ControlInhibit", fields.getControlInhibit());
 		

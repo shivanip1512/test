@@ -2,7 +2,6 @@ package com.cannontech.capcontrol.exception;
 
 import com.cannontech.capcontrol.creation.model.CbcImportResultTypesEnum;
 
-@SuppressWarnings("serial")
 public class CbcImporterWebServiceException extends CapControlImportException {
 
 	private CbcImportResultTypesEnum resultType;

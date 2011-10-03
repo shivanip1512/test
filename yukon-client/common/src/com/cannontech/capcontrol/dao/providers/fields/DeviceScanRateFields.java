@@ -1,13 +1,13 @@
 package com.cannontech.capcontrol.dao.providers.fields;
 
-import com.cannontech.common.device.DeviceScanTypesEnum;
+import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 
 public class DeviceScanRateFields implements PaoTemplatePart {
 	private int intervalRate = 300;
 	private int scanGroup = 0;
 	private int alternateRate = 300;
-	private DeviceScanTypesEnum scanType = DeviceScanTypesEnum.GENERAL;
+	private DeviceScanType scanType = DeviceScanType.GENERAL;
 	
 	public int getIntervalRate() {
 		return intervalRate;
@@ -33,11 +33,11 @@ public class DeviceScanRateFields implements PaoTemplatePart {
 		this.alternateRate = alternateRate;
 	}
 	
-	public DeviceScanTypesEnum getScanType() {
+	public DeviceScanType getScanType() {
 		return scanType;
 	}
 
-	public void setScanType(DeviceScanTypesEnum scanType) {
+	public void setScanType(DeviceScanType scanType) {
 		this.scanType = scanType;
 	}
 }

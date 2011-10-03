@@ -20,6 +20,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.service.PaoCreationService;
+import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -55,7 +57,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     private DigiResponseHandler digiResponseHandler;
     private ConfigurationSource configurationSource;
     private ZigbeeServiceHelper zigbeeServiceHelper;
-
+    private PaoCreationService paoCreationService;
+    
     private JmsTemplate jmsTemplate;
     
     private static String digiBaseUrl;
@@ -75,6 +78,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         
+        PaoTemplate paoTemplate = digiResponseHandler.getDigiGatewayTemplate(digiGateway);
+        
         try{
             Integer digiId = commissionNewConnectPort(digiGateway.getMacAddress());
             
@@ -85,8 +90,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
-            gatewayDeviceDao.updateDigiGateway(digiGateway);
-            gatewayDeviceDao.updateZigbeeGateway(digiGateway);
+            paoCreationService.updatePao(digiGateway.getPaoId(), paoTemplate);
             log.debug("Install Gateway End");
         } catch (RuntimeException e) {
             log.error("Install Gateway End With Exceptions");
@@ -452,5 +456,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(false);
+    }
+    
+    @Autowired
+    public void setPaoCreationService(PaoCreationService paoCreationService) {
+        this.paoCreationService = paoCreationService;
     }
 }

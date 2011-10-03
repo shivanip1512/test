@@ -23,16 +23,20 @@ public class DeviceAddressProvider implements PaoTypeProvider<DeviceAddressField
 	public Class<DeviceAddressFields> getRequiredFields() {
 		return DeviceAddressFields.class;
 	}
+	
+	private void setupParameters(SqlParameterSink params, DeviceAddressFields fields) {
+	    params.addValue("MasterAddress", fields.getMasterAddress());
+        params.addValue("SlaveAddress", fields.getSlaveAddress());
+        params.addValue("PostCommWait", fields.getPostCommWait());
+	}
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.insertInto("DeviceAddress");
+		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
 		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("MasterAddress", fields.getMasterAddress());
-		params.addValue("SlaveAddress", fields.getSlaveAddress());
-		params.addValue("PostCommWait", fields.getPostCommWait());
+		setupParameters(params, fields);
 		
 		yukonJdbcTemplate.update(sql);
 	}
@@ -41,10 +45,8 @@ public class DeviceAddressProvider implements PaoTypeProvider<DeviceAddressField
 	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.update("DeviceAddress");
-		params.addValue("MasterAddress", fields.getMasterAddress());
-		params.addValue("SlaveAddress", fields.getSlaveAddress());
-		params.addValue("PostCommWait", fields.getPostCommWait());
+		SqlParameterSink params = sql.update(getSupportedTable().name());
+		setupParameters(params, fields);
 		
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		

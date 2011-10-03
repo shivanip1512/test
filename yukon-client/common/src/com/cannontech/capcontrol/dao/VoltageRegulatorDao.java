@@ -6,24 +6,6 @@ import com.cannontech.common.search.SearchResult;
 public interface VoltageRegulatorDao {
 
     /**
-     * Adds a Regulator to the database.
-     * 
-     * @param paoId
-     * @param keepAliveTimer
-     * @param keepAliveConfig
-     */
-    public void add(int paoId, int keepAliveTimer, int keepAliveConfig);
-    
-    /**
-     * Updates a Regulator.
-     * 
-     * @param paoId
-     * @param keepAliveTimer
-     * @param keepAliveConfig
-     */
-    public void update(int paoId, int keepAliveTimer, int keepAliveConfig);    
-
-    /**
      * Gets the KeepAliveTimer value from the Regulator table.
      * @param regulatorId
      */
@@ -34,14 +16,6 @@ public interface VoltageRegulatorDao {
      * @param regulatorId
      */
     public int getKeepAliveConfigForRegulator(int regulatorId);
-
-    /**
-     * Deletes a Regulator from the database.
-     * Returns true if the delete was successful.
-     * @param VoltageRegulator
-     * @return boolean
-     */
-    public boolean delete(int id);
 
     /**
      * Returns a list of all un-assigned Regulators as Search Results.

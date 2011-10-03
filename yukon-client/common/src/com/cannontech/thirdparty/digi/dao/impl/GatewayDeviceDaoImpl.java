@@ -12,7 +12,6 @@ import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -111,65 +110,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
         
         return sql;
-    }
-    
-    @Override
-    public void createDigiGateway(DigiGateway digiGateway) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        SqlParameterSink params = sql.insertInto("DigiGateway");
-        params.addValue("DeviceId", digiGateway.getPaoIdentifier().getPaoId());
-        params.addValue("DigiId", digiGateway.getDigiId());
-        
-        yukonJdbcTemplate.update(sql);
-    }
-    
-    @Override
-    public void createZigbeeGateway(DigiGateway digiGateway) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        PaoIdentifier paoIdentifier = digiGateway.getPaoIdentifier();
-        
-        SqlParameterSink params = sql.insertInto("ZBGateway");
-        params.addValue("DeviceId", paoIdentifier.getPaoId());
-        params.addValue("FirmwareVersion", digiGateway.getFirmwareVersion());
-        params.addValue("MacAddress", digiGateway.getMacAddress().toUpperCase());
-        
-        yukonJdbcTemplate.update(sql);
-    }
-    
-    @Override
-    public void deleteDigiGateway(int deviceId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("DELETE FROM ZBGateway");
-        sql.append("WHERE DeviceId").eq(deviceId);
-        
-        yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
-    public void updateDigiGateway(DigiGateway digiGateway) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        SqlParameterSink param = sql.update("DigiGateway");
-        param.addValue("DigiId", digiGateway.getDigiId());
-
-        sql.append("WHERE DeviceId").eq(digiGateway.getPaoIdentifier().getPaoId());
-        
-        yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
-    public void updateZigbeeGateway(DigiGateway digiGateway) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	SqlParameterSink params = sql.update("ZBGateway");
-    	params.addValue("FirmwareVersion",digiGateway.getFirmwareVersion());
-    	params.addValue("MacAddress",digiGateway.getMacAddress().toUpperCase());
-
-        sql.append("WHERE DeviceId").eq(digiGateway.getPaoIdentifier().getPaoId());
-        
-        yukonJdbcTemplate.update(sql);
     }
     
     @Override

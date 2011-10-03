@@ -23,17 +23,21 @@ public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFie
 	public Class<DeviceScanRateFields> getRequiredFields() {
 		return DeviceScanRateFields.class;
 	}
+	
+	private void setupParameters(SqlParameterSink params, DeviceScanRateFields fields) {
+	    params.addValue("ScanType", fields.getScanType());
+        params.addValue("IntervalRate", fields.getIntervalRate());
+        params.addValue("ScanGroup", fields.getScanGroup());
+        params.addValue("AlternateRate", fields.getAlternateRate());
+	}
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.insertInto("DeviceScanRate");
+		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
 		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("ScanType", fields.getScanType());
-		params.addValue("IntervalRate", fields.getIntervalRate());
-		params.addValue("ScanGroup", fields.getScanGroup());
-		params.addValue("AlternateRate", fields.getAlternateRate());
+		setupParameters(params, fields);
 		
 		yukonJdbcTemplate.update(sql);
 	}
@@ -42,11 +46,8 @@ public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFie
 	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.update("DeviceScanRate");
-		params.addValue("ScanType", fields.getScanType());
-		params.addValue("IntervalRate", fields.getIntervalRate());
-		params.addValue("ScanGroup", fields.getScanGroup());
-		params.addValue("AlternateRate", fields.getAlternateRate());
+		SqlParameterSink params = sql.update(getSupportedTable().name());
+		setupParameters(params, fields);
 		
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		

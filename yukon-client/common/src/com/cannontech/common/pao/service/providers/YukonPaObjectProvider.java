@@ -30,9 +30,9 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
         //This would normally call a Dao, but it is a simple one line insert in a very base class..
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        SqlParameterSink params = sql.insertInto("YukonPaObject");
+        SqlParameterSink params = sql.insertInto(getSupportedTable().name());
         params.addValue("PAObjectId",paoIdentifier.getPaoId());
-        setupParameterSink(params, paoIdentifier, paoFields);
+        setupParameters(params, paoIdentifier, paoFields);
         
         yukonJdbcTemplate.update(sql);
     }
@@ -41,15 +41,15 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
     public void handleUpdate(PaoIdentifier paoIdentifier, YukonPaObjectFields paoFields) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
-    	SqlParameterSink params = sql.update("YukonPAObject");
-    	setupParameterSink(params, paoIdentifier, paoFields);
+    	SqlParameterSink params = sql.update(getSupportedTable().name());
+    	setupParameters(params, paoIdentifier, paoFields);
         
         sql.append("WHERE PAObjectID").eq(paoIdentifier.getPaoId());
         
         yukonJdbcTemplate.update(sql);
     }
     
-    private void setupParameterSink(SqlParameterSink params, PaoIdentifier paoIdentifier, YukonPaObjectFields fields) {
+    private void setupParameters(SqlParameterSink params, PaoIdentifier paoIdentifier, YukonPaObjectFields fields) {
     	params.addValue("Category", paoIdentifier.getPaoType().getPaoCategory());
         params.addValue("PaoClass", paoIdentifier.getPaoType().getPaoClass());
         params.addValue("Type", paoIdentifier.getPaoType());
@@ -63,7 +63,7 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
     public void handleDeletion(PaoIdentifier paoIdentifier) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
-    	sql.append("DELETE FROM YukonPaObject");
+    	sql.append("DELETE FROM " + getSupportedTable().name());
     	sql.append("WHERE PAObjectId").eq(paoIdentifier.getPaoId());
     	
     	yukonJdbcTemplate.update(sql);

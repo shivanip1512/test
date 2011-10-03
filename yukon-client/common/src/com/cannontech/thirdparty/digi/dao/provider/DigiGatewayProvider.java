@@ -5,22 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
-import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.thirdparty.digi.dao.provider.fields.DigiGatewayFields;
-import com.cannontech.thirdparty.digi.model.DigiGateway;
 
 public class DigiGatewayProvider implements PaoTypeProvider<DigiGatewayFields> {
 
-    private GatewayDeviceDao gatewayDeviceDao;
-    
-    private DigiGateway createGateway(PaoIdentifier paoIdentifier, DigiGatewayFields fields) {
-    	DigiGateway digiGateway = new DigiGateway();
-        
-        digiGateway.setPaoIdentifier(paoIdentifier);
-        digiGateway.setDigiId(fields.getDigiId());
-        
-        return digiGateway;
-    }
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
     public PaoProviderTableEnum getSupportedTable() {
@@ -34,25 +26,39 @@ public class DigiGatewayProvider implements PaoTypeProvider<DigiGatewayFields> {
 
     @Override
     public void handleCreation(PaoIdentifier paoIdentifier, DigiGatewayFields fields) {
-        DigiGateway digiGateway = createGateway(paoIdentifier, fields);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        gatewayDeviceDao.createDigiGateway(digiGateway);
+        SqlParameterSink params = sql.insertInto(getSupportedTable().name());
+        params.addValue("DeviceId", paoIdentifier.getPaoId());
+        params.addValue("DigiId", fields.getDigiId());
+        
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
     public void handleUpdate(PaoIdentifier paoIdentifier, DigiGatewayFields fields) {
-    	DigiGateway digiGateway = createGateway(paoIdentifier, fields);
-    	
-    	gatewayDeviceDao.updateDigiGateway(digiGateway);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink param = sql.update(getSupportedTable().name());
+        param.addValue("DigiId", fields.getDigiId());
+
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
     public void handleDeletion(PaoIdentifier paoIdentifier) {
-    	gatewayDeviceDao.deleteDigiGateway(paoIdentifier.getPaoId());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
     }
 
     @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

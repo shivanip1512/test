@@ -5,25 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
-import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndpointFields;
-import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 
 public class ZigbeeEndpointProvider implements PaoTypeProvider<ZigbeeEndpointFields> {
 
-    private ZigbeeDeviceDao zigbeeDeviceDao;
-
-    private ZigbeeEndpoint createZigbeeEndpoint(PaoIdentifier paoIdentifier, ZigbeeEndpointFields fields) {
-    	ZigbeeEndpoint endpoint = new ZigbeeEndpoint();
-        
-        endpoint.setPaoIdentifier(paoIdentifier);
-        endpoint.setMacAddress(fields.getMacAddress());
-        endpoint.setInstallCode(fields.getInstallCode());
-        endpoint.setDestinationEndPointId(fields.getEndPointId());
-        endpoint.setNodeId(fields.getNodeId());
-        
-        return endpoint;
-    }
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     @Override
     public Class<ZigbeeEndpointFields> getRequiredFields() {
@@ -34,28 +23,49 @@ public class ZigbeeEndpointProvider implements PaoTypeProvider<ZigbeeEndpointFie
 	public PaoProviderTableEnum getSupportedTable() {
 		return PaoProviderTableEnum.ZBENDPOINT;
 	}
+	
+	private void setupParameters(SqlParameterSink params, ZigbeeEndpointFields fields) {
+	    params.addValue("InstallCode", fields.getInstallCode().toUpperCase());
+        params.addValue("MacAddress", fields.getMacAddress().toUpperCase());
+        params.addValue("NodeId", fields.getNodeId());
+        params.addValue("DestinationEndPointId", fields.getEndPointId());
+	}
     
     @Override
     public void handleCreation(PaoIdentifier paoIdentifier, ZigbeeEndpointFields fields) {
-        ZigbeeEndpoint endpoint = createZigbeeEndpoint(paoIdentifier, fields);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        zigbeeDeviceDao.createZigbeeEndPoint(endpoint);
+        SqlParameterSink params = sql.insertInto(getSupportedTable().name());
+        params.addValue("DeviceId", paoIdentifier.getPaoId());
+        setupParameters(params, fields);
+        
+        yukonJdbcTemplate.update(sql);
     }
 
 	@Override
 	public void handleUpdate(PaoIdentifier paoIdentifier, ZigbeeEndpointFields fields) {
-		ZigbeeEndpoint endpoint = createZigbeeEndpoint(paoIdentifier, fields);
-		
-		zigbeeDeviceDao.updateZigbeeEndPoint(endpoint);
-	}
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update("ZBEndPoint");
+        setupParameters(params, fields);
+
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
+    }
 
 	@Override
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
-		zigbeeDeviceDao.deleteZigbeeEndPoint(paoIdentifier.getPaoId());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
 	}
 
     @Autowired
-    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
-        this.zigbeeDeviceDao = zigbeeDeviceDao;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

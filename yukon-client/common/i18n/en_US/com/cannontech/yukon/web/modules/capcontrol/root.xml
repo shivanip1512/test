@@ -68,6 +68,8 @@
     <entry key="yukon.web.modules.capcontrol.import.processedWithErrors">File was processed successfully, but import errors occurred. See details below.</entry>
     <entry key="yukon.web.modules.capcontrol.import.invalidColumns">File contains invalid columns: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.import.importCbcFileSuccess">CBC file import completed successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcFileEmpty">CBC Import File is empty.</entry>
     <entry key="yukon.web.modules.capcontrol.import.importHierarchyFileSuccess">Hierarchy file import completed successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyFileEmpty">Hierarchy Import File is empty.</entry>
     
 </properties>

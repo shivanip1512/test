@@ -22,12 +22,6 @@ public interface ZigbeeDeviceDao {
     
     public List<Integer> getDeviceIdsForMACAddresses(List<String> macAddresses);
     
-    public void createZigbeeEndPoint(ZigbeeEndpoint zigbeeEndPoint);
-    
-    public void updateZigbeeEndPoint(ZigbeeEndpoint zigbeeEndPoint);
-    
-    public void deleteZigbeeEndPoint(int deviceId);
-    
     public Integer findGatewayIdForInventory(int inventoryId);
     
 }

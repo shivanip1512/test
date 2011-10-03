@@ -9,12 +9,6 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.search.SearchResult;
 
 public interface SubstationDao {
-	
-    public void add( Substation substation );
-    
-    public boolean remove( Substation substation );
-    
-    public boolean update( Substation substation );
     
     public int getParentId(Substation station);
     
@@ -28,7 +22,7 @@ public interface SubstationDao {
     
     public List<Integer> getAllUnassignedSubstationIds();
     
-    public SearchResult<LiteCapControlObject> getOrphans(final int startIndex, final int itemsPerPage);
+    public SearchResult<LiteCapControlObject> getOrphans(int startIndex, int itemsPerPage);
     
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds( Integer areaId );
 

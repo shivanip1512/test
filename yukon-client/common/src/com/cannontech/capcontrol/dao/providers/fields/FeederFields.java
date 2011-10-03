@@ -5,7 +5,7 @@ import com.cannontech.common.pao.service.PaoTemplatePart;
 public class FeederFields implements PaoTemplatePart {
 	private int currentVarLoadPointId = 0;
 	private int currentWattLoadPointId = 0;
-	private int currentVoltPointLoadId = 0;
+	private int currentVoltLoadPointId = 0;
 	private int phaseB = 0;
 	private int phaseC = 0;
 	private String mapLocationId = "0";
@@ -29,12 +29,12 @@ public class FeederFields implements PaoTemplatePart {
 		this.currentWattLoadPointId = currentWattLoadPointId;
 	}
 	
-	public int getCurrentVoltPointLoadId() {
-		return currentVoltPointLoadId;
+	public int getcurrentVoltLoadPointId() {
+		return currentVoltLoadPointId;
 	}
 	
-	public void setCurrentVoltPointLoadId(int currentVoltPointLoadId) {
-		this.currentVoltPointLoadId = currentVoltPointLoadId;
+	public void setcurrentVoltLoadPointId(int currentVoltLoadPointId) {
+		this.currentVoltLoadPointId = currentVoltLoadPointId;
 	}
 	
 	public int getPhaseB() {

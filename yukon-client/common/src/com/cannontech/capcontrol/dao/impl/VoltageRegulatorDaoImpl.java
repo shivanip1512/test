@@ -15,37 +15,12 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
-import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Lists;
 
 public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
-    
-    @Override
-    public void add(int paoId, int keepAliveTimer, int keepAliveConfig) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        SqlParameterSink p = sql.insertInto("Regulator");
-        p.addValue("RegulatorId", paoId);
-        p.addValue("KeepAliveTimer", keepAliveTimer);
-        p.addValue("KeepAliveConfig", keepAliveConfig);
-        
-        yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
-    public void update(int paoId, int keepAliveTimer, int keepAliveConfig) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        SqlParameterSink p = sql.update("Regulator");
-        p.addValue("KeepAliveTimer", keepAliveTimer);
-        p.addValue("KeepAliveConfig", keepAliveConfig);
-        sql.append("WHERE RegulatorId").eq(paoId);
-        
-        yukonJdbcTemplate.update(sql);
-    }
     
     @Override
     public int getKeepAliveTimerForRegulator(int regulatorId) {
@@ -69,11 +44,6 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         
         int result = yukonJdbcTemplate.queryForInt(sql);
         return result;
-    }
-
-    @Override
-    public boolean delete(int id) {
-        return false;
     }
     
     @Override

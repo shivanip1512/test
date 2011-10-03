@@ -17,15 +17,11 @@ public enum CapBankOperationalState implements DatabaseRepresentationSource{
     private final static ImmutableMap<String, CapBankOperationalState> lookupByString;
 	
 	static {
-        try {
-            ImmutableMap.Builder<String, CapBankOperationalState> stringBuilder = ImmutableMap.builder();
-            for (CapBankOperationalState state : values()) {
-                stringBuilder.put(state.getDbString(), state);
-            }
-            lookupByString = stringBuilder.build();
-        } catch (IllegalArgumentException e) {
-            throw e;
+        ImmutableMap.Builder<String, CapBankOperationalState> stringBuilder = ImmutableMap.builder();
+        for (CapBankOperationalState state : values()) {
+            stringBuilder.put(state.getDbString(), state);
         }
+        lookupByString = stringBuilder.build();
     }
 	
 	public static CapBankOperationalState getStateByName(String name) {

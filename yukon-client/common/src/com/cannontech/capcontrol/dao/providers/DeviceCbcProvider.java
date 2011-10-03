@@ -28,7 +28,7 @@ public class DeviceCbcProvider implements PaoTypeProvider<DeviceCbcFields> {
 	public void handleCreation(PaoIdentifier paoIdentifier,DeviceCbcFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.insertInto("DeviceCBC");
+		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
 		params.addValue("DeviceId", paoIdentifier.getPaoId());
 		params.addValue("SerialNumber", fields.getSerialNumber());
 		params.addValue("RouteId", fields.getRouteId());
@@ -40,7 +40,7 @@ public class DeviceCbcProvider implements PaoTypeProvider<DeviceCbcFields> {
 	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceCbcFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.update("DeviceCBC");
+		SqlParameterSink params = sql.update(getSupportedTable().name());
 		params.addValue("SerialNumber", fields.getSerialNumber());
 		params.addValue("RouteId", fields.getRouteId());
 		

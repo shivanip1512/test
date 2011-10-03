@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -79,6 +80,7 @@ public class CapControlImportController {
 		return "tools/capcontrolImport.jsp";
 	}
 	
+	@Transactional
 	private void processCbcImport(List<CbcImportData> cbcImportData, List<CbcImportResult> cbcResults) {
 		for (CbcImportData data : cbcImportData) {
 		    try{
@@ -110,6 +112,7 @@ public class CapControlImportController {
 		}
 	}
 	
+	@Transactional
 	private void processHierarchyImport(List<HierarchyImportData> hierarchyImportData, 
 										List<HierarchyImportResult> hierarchyResults) {
 		for (HierarchyImportData data : hierarchyImportData) {
@@ -148,8 +151,9 @@ public class CapControlImportController {
         InputStream inputStream = dataFile.getInputStream();
         
         if (inputStream.available() <= 0) {
-        	// What do we do here? Log?
-        	log.error("Cap Control CBC Import File is empty.");
+            log.error("Cap Control CBC Import File is empty.");
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.cbcFileEmpty"));
+        	return "redirect:importer";
         } else {
         	try {
 	        	List<CbcImportData> cbcImportData = capControlFileImporterDao.getCbcImportData(inputStream, results);
@@ -199,6 +203,8 @@ public class CapControlImportController {
         
         if (inputStream.available() <= 0) {
         	log.error("Cap Control Hierarchy Import File is empty.");
+        	flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.hierarchyFileEmpty"));
+        	return "redirect:importer";
         } else {
         	try {
         		List<HierarchyImportData> hierarchyImportData = capControlFileImporterDao.getHierarchyImportData(inputStream, results);

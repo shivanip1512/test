@@ -111,7 +111,6 @@
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl"/>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />
-  <bean id="rolePropertyDao" class="com.cannontech.core.roleproperties.dao.impl.RolePropertyDaoImpl"/>
 
   <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" />
    <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >

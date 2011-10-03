@@ -53,13 +53,6 @@ import com.google.common.collect.Maps;
  */
 public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
-    private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " + 
-        "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " + 
-        "FROM yukonpaobject y left outer join devicedirectcommsettings d " + 
-        "on y.paobjectid = d.deviceid " + 
-        "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " + 
-        "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
-
     private YukonDeviceRowMapper yukonDeviceRowMapper = null;
 
     private JdbcOperations jdbcOps;
@@ -229,13 +222,17 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
      * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByMeterNumber(java.lang.String)
      */
     public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber) {
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
-        sqlBuilder.append("LEFT OUTER JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId ");
-        sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?)");
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT Y.PAObjectID, Y.Category, Y.PAOName, Y.Type, Y.PAOClass,");
+        sqlBuilder.append("   Y.Description, Y.DisableFlag, D.PORTID, DCS.ADDRESS, DR.routeid");
+        sqlBuilder.append("FROM YukonPaObject Y");
+        sqlBuilder.append("   LEFT OUTER JOIN DeviceDirectCommSettings D ON Y.PaObjectId = D.DeviceId");
+        sqlBuilder.append("   LEFT OUTER JOIN DeviceCarrierSettings DCS ON Y.PaObjectId = DCS.DeviceId");
+        sqlBuilder.append("   LEFT OUTER JOIN DeviceRoutes DR ON Y.PaObjectId = DR.DeviceId");
+        sqlBuilder.append("   LEFT OUTER JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId");
+        sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(").appendArgument(meterNumber).append(")");
 
-        List<LiteYukonPAObject> paos = yukonJdbcTemplate.query(sqlBuilder.toString(), 
-        													   new LitePaoRowMapper(), 
-        													   meterNumber);
+        List<LiteYukonPAObject> paos = yukonJdbcTemplate.query(sqlBuilder, new LitePaoRowMapper());
 
         return paos;
     }

@@ -5,14 +5,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.SubstationBus;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -31,8 +29,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
-	private static final Logger log = YukonLogManager.getLogger(SubstationBusDaoImpl.class);
-
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private DBPersistentDao dbPersistentDao;
@@ -73,76 +69,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
             return bus;
         }
     };
-        
-    @Override
-    public void add(SubstationBus bus) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	SqlParameterSink params = sql.insertInto("CapControlSubstationBus");
-    	params.addValue("SubstationBusID", bus.getId());
-    	params.addValue("CurrentVarLoadPointID", bus.getCurrentVarLoadPointId());
-    	params.addValue("CurrentWattLoadPointID", bus.getCurrentWattLoadPointId());
-    	params.addValue("MapLocationID", bus.getMapLocationId());
-    	params.addValue("CurrentVoltLoadPointID", bus.getCurrentVoltLoadPointId());
-    	params.addValue("AltSubID", bus.getAltSubId());
-    	params.addValue("SwitchPointID", bus.getSwitchPointId());
-    	params.addValue("DualBusEnabled", bus.getDualBusEnabled());
-    	params.addValue("MultiMonitorControl", bus.getMultiMonitorControl());
-    	params.addValue("UsePhaseData", bus.getUsephasedata());
-    	params.addValue("PhaseB", bus.getPhaseb());
-    	params.addValue("PhaseC", bus.getPhasec());
-    	params.addValue("ControlFlag", bus.getControlFlag());
-    	params.addValue("VoltReductionPointId", bus.getVoltReductionPointId());
-    	params.addValue("DisableBusPointId", bus.getDisabledPointId());
-
-    	yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
-    public boolean remove(SubstationBus bus) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("DELETE FROM CAPCONTROLSUBSTATIONBUS");
-    	sql.append("WHERE SubstationBusId").eq(bus.getId());
-    	
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        boolean result = (rowsAffected == 1);
-		
-        return result;
-    }
-    
-    @Override
-    public boolean update(SubstationBus bus) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	SqlParameterSink params = sql.update("CapControlSubstationBus");
-    	params.addValue("CurrentVarLoadPointID", bus.getCurrentVarLoadPointId());
-    	params.addValue("CurrentWattLoadPointID", bus.getCurrentWattLoadPointId());
-    	params.addValue("MapLocationID", bus.getMapLocationId());
-    	params.addValue("CurrentVoltLoadPointID", bus.getCurrentVoltLoadPointId());
-    	params.addValue("AltSubID", bus.getAltSubId());
-    	params.addValue("SwitchPointID", bus.getSwitchPointId());
-    	params.addValue("DualBusEnabled", bus.getDualBusEnabled());
-    	params.addValue("MultiMonitorControl", bus.getMultiMonitorControl());
-    	params.addValue("UsePhaseData", bus.getUsephasedata());
-    	params.addValue("PhaseB", bus.getPhaseb());
-    	params.addValue("PhaseC", bus.getPhasec());
-    	params.addValue("ControlFlag", bus.getControlFlag());
-    	params.addValue("VoltReductionPointId", bus.getVoltReductionPointId());
-    	params.addValue("DisableBusPointId", bus.getDisabledPointId());
-    	
-    	sql.append("WHERE SubstationBusID").eq(bus.getId());
-
-    	int rowsAffected = yukonJdbcTemplate.update(sql);
-    	
-        boolean result = (rowsAffected == 1);
-        
-		if (result == false) {
-			log.debug("Update of Subbus, " + bus.getName() + ", in CAPCONTROLSUBSTATIONBUS table failed.");
-		}
-        
-        return result;
-    }
 
     public SubstationBus getById(int id){
         SqlStatementBuilder sql = new SqlStatementBuilder();

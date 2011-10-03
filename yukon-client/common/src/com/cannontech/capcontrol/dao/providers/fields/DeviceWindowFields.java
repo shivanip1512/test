@@ -1,20 +1,20 @@
 package com.cannontech.capcontrol.dao.providers.fields;
 
-import com.cannontech.common.device.DeviceWindowTypesEnum;
+import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 
 public class DeviceWindowFields implements PaoTemplatePart {
-	private DeviceWindowTypesEnum type = DeviceWindowTypesEnum.SCAN;
+	private DeviceWindowType type = DeviceWindowType.SCAN;
 	private int windowOpen = 0;
 	private int windowClose = 0;
 	private int alternateOpen = 0;
 	private int alternateClose = 0;
 	
-	public DeviceWindowTypesEnum getType() {
+	public DeviceWindowType getType() {
 		return type;
 	}
 	
-	public void setType(DeviceWindowTypesEnum type) {
+	public void setType(DeviceWindowType type) {
 		this.type = type;
 	}
 

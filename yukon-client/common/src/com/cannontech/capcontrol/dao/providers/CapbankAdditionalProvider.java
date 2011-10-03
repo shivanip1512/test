@@ -2,41 +2,17 @@ package com.cannontech.capcontrol.dao.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.providers.fields.CapbankAdditionalFields;
-import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class CapbankAdditionalProvider implements PaoTypeProvider<CapbankAdditionalFields> {
 
-	private CapbankDao capbankDao;
-	
-	private CapbankAdditional createCapBankAdditional(PaoIdentifier paoIdentifier, CapbankAdditionalFields fields) {
-		CapbankAdditional capbankAdditional = new CapbankAdditional(paoIdentifier);
-		
-		capbankAdditional.setMaintenanceAreaId(fields.getMaintenanceAreaId());
-		capbankAdditional.setPoleNumber(fields.getPoleNumber());
-		capbankAdditional.setDriveDirections(fields.getDriveDirections());
-		capbankAdditional.setLatitude(fields.getLatitude());
-		capbankAdditional.setLongitude(fields.getLongitude());
-		capbankAdditional.setCapbankConfig(fields.getCapbankConfig());
-		capbankAdditional.setCommMedium(fields.getCommMedium());
-		capbankAdditional.setCommStrength(fields.getCommStrength());
-		capbankAdditional.setExtAntenna(fields.getExtAntenna());
-		capbankAdditional.setAntennaType(fields.getAntennaType());
-		capbankAdditional.setLastMaintenanceVisit(fields.getLastMaintenanceVisit());
-		capbankAdditional.setLastInspection(fields.getLastInspection());
-		capbankAdditional.setOpCountResetDate(fields.getOpCountResetDate());
-		capbankAdditional.setPotentialTransformer(fields.getPotentialTransformer());
-		capbankAdditional.setMaintenanceRequired(fields.getMaintenanceRequired());
-		capbankAdditional.setOtherComments(fields.getOtherComments());
-		capbankAdditional.setOpTeamComments(fields.getOpTeamComments());
-		capbankAdditional.setCbcInstallDate(fields.getCbcInstallDate());
-		
-		return capbankAdditional;
-	}
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTableEnum getSupportedTable() {
@@ -47,28 +23,63 @@ public class CapbankAdditionalProvider implements PaoTypeProvider<CapbankAdditio
 	public Class<CapbankAdditionalFields> getRequiredFields() {
 		return CapbankAdditionalFields.class;
 	}
+	
+	private void setupParameters(SqlParameterSink params, CapbankAdditionalFields fields) {
+	    params.addValue("MaintenanceAreaID", fields.getMaintenanceAreaId());
+        params.addValue("PoleNumber", fields.getPoleNumber());
+        params.addValue("DriveDirections", fields.getDriveDirections());
+        params.addValue("Latitude", fields.getLatitude());
+        params.addValue("Longitude", fields.getLongitude());
+        params.addValue("CapBankConfig", fields.getCapbankConfig());
+        params.addValue("CommMedium", fields.getCommMedium());
+        params.addValue("CommStrength", fields.getCommStrength());
+        params.addValue("ExtAntenna", fields.getExtAntenna());
+        params.addValue("AntennaType", fields.getAntennaType());
+        params.addValue("LastMaintVisit", fields.getLastMaintenanceVisit());
+        params.addValue("LastInspVisit", fields.getLastInspection());
+        params.addValue("OpCountResetDate", fields.getOpCountResetDate());
+        params.addValue("PotentialTransformer", fields.getPotentialTransformer());
+        params.addValue("MaintenanceReqPend", fields.getMaintenanceRequired());
+        params.addValue("OtherComments", fields.getOtherComments());
+        params.addValue("OpTeamComments", fields.getOpTeamComments());
+        params.addValue("CBCBattInstallDate", fields.getCbcInstallDate());
+	}
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, CapbankAdditionalFields fields) {
-		CapbankAdditional capbankAdditional = createCapBankAdditional(paoIdentifier, fields);
-		
-		capbankDao.addCapbankAdditional(capbankAdditional);
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.insertInto(getSupportedTable().name());
+        params.addValue("DeviceID", paoIdentifier.getPaoId());
+        setupParameters(params, fields);
+        
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleUpdate(PaoIdentifier paoIdentifier, CapbankAdditionalFields fields) {
-		CapbankAdditional capbankAdditional = createCapBankAdditional(paoIdentifier, fields);
-		
-		capbankDao.updateCapbankAdditional(capbankAdditional);
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update(getSupportedTable().name());
+        setupParameters(params, fields);
+        
+        sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
-		capbankDao.removeCapbankAdditional(paoIdentifier.getPaoId());
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);   
 	}
 	
 	@Autowired
-	public void setCapbankDao(CapbankDao capbankDao) {
-		this.capbankDao = capbankDao;
-	}
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

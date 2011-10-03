@@ -2,7 +2,6 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -10,7 +9,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -26,9 +24,7 @@ import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-public class SubstationDaoImpl implements SubstationDao {
-	private static final Logger log = YukonLogManager.getLogger(SubstationDaoImpl.class);
-	
+public class SubstationDaoImpl implements SubstationDao {	
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private DBPersistentDao dbPersistentDao;
@@ -42,52 +38,6 @@ public class SubstationDaoImpl implements SubstationDao {
     @Autowired
     public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-	@Override
-    public void add(Substation substation) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.insertInto("CapControlSubstation");
-		params.addValue("SubstationID", substation.getId());
-		params.addValue("VoltReductionPointID", substation.getVoltReductionPointId());
-		params.addValue("MapLocationID", substation.getMapLocationId());
-		
-		yukonJdbcTemplate.update(sql);
-    }
-    
-    @Override
-    public boolean remove (Substation substation) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("DELETE FROM CAPCONTROLSUBSTATION");
-    	sql.append("WHERE SubstationId").eq(substation.getId());
-    	
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        boolean result = (rowsAffected == 1);
-        
-        return result;
-    }
-    
-    @Override
-    public boolean update (Substation substation) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		SqlParameterSink params = sql.update("CapControlSubstation");
-		params.addValue("VoltReductionPointID", substation.getVoltReductionPointId());
-		params.addValue("MapLocationID", substation.getMapLocationId());
-		
-		sql.append("WHERE SubstationID").eq(substation.getId());
-		
-		int rowsAffected = yukonJdbcTemplate.update(sql);
-		
-		boolean result = (rowsAffected == 1);
-		
-		if (result == false) {
-			log.debug("Update of Substation, " + substation.getName() + ", in CAPCONTROLSUBSTATION table failed.");
-		}
-		
-		return result;
     }
     
     @Override 

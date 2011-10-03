@@ -16,16 +16,6 @@ public interface GatewayDeviceDao {
     public DigiGateway getDigiGateway(int deviceId);
     public DigiGateway getDigiGateway(String macAddress);
     
-    public void createDigiGateway(DigiGateway digiGateway);
-    
-    public void updateDigiGateway(DigiGateway digiGateway);
-    
-    public void deleteDigiGateway(int deviceId);
-    
-    public void createZigbeeGateway(DigiGateway digiGateway);
-    
-    public void updateZigbeeGateway(DigiGateway digiGateway);
-    
     /**
      * Updates the device to gateway assignment. If gatewayId is null, any device to gateway mapping
      * for this device will be removed. 

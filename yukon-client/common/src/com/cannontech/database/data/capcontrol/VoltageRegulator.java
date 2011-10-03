@@ -4,14 +4,21 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.service.PaoCreationService;
+import com.cannontech.common.pao.service.PaoTemplate;
+import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
@@ -19,12 +26,16 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MutableClassToInstanceMap;
 
 public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDevice{
     private List<VoltageRegulatorPointMapping> pointMappings;
     private int keepAliveTimer;
     private int keepAliveConfig;
+    
+    private PaoCreationService paoCreationService;
 
     public VoltageRegulator() {
         super();
@@ -72,9 +83,13 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     public void update() throws java.sql.SQLException {
         super.update();
         
-        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
         Integer paoId = getCapControlPAOID();
-        voltageRegulatorDao.update(paoId, keepAliveTimer, keepAliveConfig);
+        
+        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
+        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(getPAOName()));
+        paoFields.put(VoltageRegulatorFields.class, new VoltageRegulatorFields(keepAliveTimer, keepAliveConfig));
+        
+        paoCreationService.updatePao(paoId, new PaoTemplate(getPaoIdentifier().getPaoType(), paoFields));
         
         //Point Mappings
         ExtraPaoPointAssignmentDao eppad = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
@@ -149,6 +164,11 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         return paoType == PaoType.LOAD_TAP_CHANGER;
     }
 
+    @Autowired
+    public void setPaoCreationService(PaoCreationService paoCreationService) {
+        this.paoCreationService = paoCreationService;
+    }
+    
     @Override
     public PaoIdentifier getPaoIdentifier() {
         return new PaoIdentifier(getPAObjectID(),PaoType.getForDbString(getPAOType()));

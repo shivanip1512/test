@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -20,7 +19,6 @@ import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
@@ -41,7 +39,6 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     private GatewayDeviceDao gatewayDeviceDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private AttributeService attributeService;
-    private DeviceDao deviceDao;
     private PaoCreationService paoCreationService;
     private ZigbeeWebService zigbeeWebService;
     
@@ -105,9 +102,8 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     @Transactional
-    public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {       
-        gatewayDeviceDao.deleteDigiGateway(pao.getPaoIdentifier().getPaoId());
-        deviceDao.removeDevice(new SimpleDevice(pao));
+    public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {   
+        paoCreationService.deletePao(pao.getPaoIdentifier());
     }
 
     @Override
@@ -136,10 +132,15 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = buildDigiGateway(hardwareDto);
+        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
+        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardwareDto.getSerialNumber()));
+        paoFields.put(DeviceFields.class, new DeviceFields());
+        paoFields.put(DigiGatewayFields.class, buildDigiGatewayFields(hardwareDto));
+        paoFields.put(ZigbeeGatewayFields.class, buildZigbeeGatewayFields(hardwareDto));
         
-        gatewayDeviceDao.updateDigiGateway(digiGateway);
-        gatewayDeviceDao.updateZigbeeGateway(digiGateway);
+        PaoTemplate template = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);
+        
+        paoCreationService.updatePao(hardwareDto.getDeviceId(), template);
         
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
     }
@@ -189,11 +190,6 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
     }
     
     @Autowired

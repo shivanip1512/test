@@ -2,37 +2,17 @@ package com.cannontech.capcontrol.dao.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.providers.fields.SubstationBusFields;
-import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTableEnum;
 import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class SubstationBusProvider implements PaoTypeProvider<SubstationBusFields> {
 
-	private SubstationBusDao substationBusDao;
-	
-	private SubstationBus createSubstationBus(PaoIdentifier paoIdentifier, SubstationBusFields fields) {
-		SubstationBus substationBus = new SubstationBus(paoIdentifier);
-		
-		substationBus.setCurrentVarLoadPointId(fields.getCurrentVarLoadPointId());
-		substationBus.setCurrentVoltLoadPointId(fields.getCurrentVoltLoadPointId());
-		substationBus.setCurrentWattLoadPointId(fields.getCurrentWattLoadPointId());
-		substationBus.setMapLocationId(fields.getMapLocationId());
-		substationBus.setAltSubId(fields.getAltSubId());
-		substationBus.setSwitchPointId(fields.getSwitchPointId());
-		substationBus.setDualBusEnabled(fields.getDualBusEnabled());
-		substationBus.setMultiMonitorControl(fields.getMultiMonitorControl());
-		substationBus.setUsephasedata(fields.getUsePhaseData());
-		substationBus.setPhaseb(fields.getPhaseB());
-		substationBus.setPhasec(fields.getPhaseC());
-		substationBus.setControlFlag(fields.getControlFlag());
-		substationBus.setVoltReductionPointId(fields.getVoltReductionPointId());
-		substationBus.setDisabledPointId(fields.getDisableBusPointId());
-	
-		return substationBus;
-	}
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTableEnum getSupportedTable() {
@@ -44,29 +24,58 @@ public class SubstationBusProvider implements PaoTypeProvider<SubstationBusField
 		return SubstationBusFields.class;
 	}
 
+	private void setupParameters(SqlParameterSink params, SubstationBusFields fields) {
+	    params.addValue("CurrentVarLoadPointID", fields.getCurrentVarLoadPointId());
+        params.addValue("CurrentWattLoadPointID", fields.getCurrentWattLoadPointId());
+        params.addValue("MapLocationID", fields.getMapLocationId());
+        params.addValue("CurrentVoltLoadPointID", fields.getCurrentVoltLoadPointId());
+        params.addValue("AltSubID", fields.getAltSubId());
+        params.addValue("SwitchPointID", fields.getSwitchPointId());
+        params.addValue("DualBusEnabled", fields.getDualBusEnabled());
+        params.addValue("MultiMonitorControl", fields.getMultiMonitorControl());
+        params.addValue("UsePhaseData", fields.getUsePhaseData());
+        params.addValue("PhaseB", fields.getPhaseB());
+        params.addValue("PhaseC", fields.getPhaseC());
+        params.addValue("ControlFlag", fields.getControlFlag());
+        params.addValue("VoltReductionPointId", fields.getVoltReductionPointId());
+        params.addValue("DisableBusPointId", fields.getDisableBusPointId());
+	}
+	
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, SubstationBusFields fields) {
-		SubstationBus substationBus = createSubstationBus(paoIdentifier, fields);
-		
-		substationBusDao.add(substationBus);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.insertInto(getSupportedTable().name());
+        params.addValue("SubstationBusID", paoIdentifier.getPaoId());
+        setupParameters(params, fields);
+
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleUpdate(PaoIdentifier paoIdentifier, SubstationBusFields fields) {
-		SubstationBus substationBus = createSubstationBus(paoIdentifier, fields);
-		
-		substationBusDao.update(substationBus);
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update(getSupportedTable().name());
+        setupParameters(params, fields);
+        
+        sql.append("WHERE SubstationBusID").eq(paoIdentifier.getPaoId());
+
+        yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
-		SubstationBus substationBus = new SubstationBus(paoIdentifier);
-		
-		substationBusDao.remove(substationBus);
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("WHERE SubstationBusId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
 	}
 
 	@Autowired
-	public void setSubstationBusDao(SubstationBusDao substationBusDao) {
-		this.substationBusDao = substationBusDao;
-	}
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

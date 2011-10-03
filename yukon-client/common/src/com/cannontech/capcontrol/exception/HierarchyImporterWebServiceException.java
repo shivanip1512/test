@@ -2,7 +2,6 @@ package com.cannontech.capcontrol.exception;
 
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultTypesEnum;
 
-@SuppressWarnings("serial")
 public class HierarchyImporterWebServiceException extends CapControlImportException{
 
 	private HierarchyImportResultTypesEnum resultType;

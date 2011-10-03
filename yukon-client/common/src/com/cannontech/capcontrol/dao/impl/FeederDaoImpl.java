@@ -100,11 +100,11 @@ public class FeederDaoImpl implements FeederDao {
     }
     
     @Override
-    public boolean remove(Feeder feeder) {
+    public boolean remove(PaoIdentifier feederId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
     	sql.append("DELETE FROM CapControlFeeder");
-    	sql.append("WHERE FeederId").eq(feeder.getPaoId());
+    	sql.append("WHERE FeederId").eq(feederId.getPaoId());
     	
         int rowsAffected = yukonJdbcTemplate.update(sql);
         

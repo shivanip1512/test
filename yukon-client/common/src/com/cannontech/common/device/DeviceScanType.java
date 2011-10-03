@@ -8,7 +8,7 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum DeviceScanTypesEnum implements DatabaseRepresentationSource {
+public enum DeviceScanType implements DatabaseRepresentationSource {
 	GENERAL("General"),
 	STATUS("Status"),
 	EXCEPTION("Exception"),
@@ -16,14 +16,14 @@ public enum DeviceScanTypesEnum implements DatabaseRepresentationSource {
 	INTEGRITY("Integrity"),
 	;
 	
-	private final static ImmutableMap<String, DeviceScanTypesEnum> lookupByDbString;
+	private final static ImmutableMap<String, DeviceScanType> lookupByDbString;
 
-	private final static Logger log = YukonLogManager.getLogger(DeviceScanTypesEnum.class);
+	private final static Logger log = YukonLogManager.getLogger(DeviceScanType.class);
 
 	static {
         try {
-            Builder<String, DeviceScanTypesEnum> dbBuilder = ImmutableMap.builder();
-            for (DeviceScanTypesEnum scanType : values()) {
+            Builder<String, DeviceScanType> dbBuilder = ImmutableMap.builder();
+            for (DeviceScanType scanType : values()) {
                 dbBuilder.put(scanType.dbString, scanType);
             }
             lookupByDbString = dbBuilder.build();
@@ -35,13 +35,13 @@ public enum DeviceScanTypesEnum implements DatabaseRepresentationSource {
 	
 	private String dbString;
 	
-	private DeviceScanTypesEnum(String dbString) {
+	private DeviceScanType(String dbString) {
 		this.dbString = dbString;
 	}
 	
-	public static DeviceScanTypesEnum getForDbString(String dbString) {
-		DeviceScanTypesEnum deviceType = lookupByDbString.get(dbString);
-        Validate.notNull(deviceType, dbString);
+	public static DeviceScanType getForDbString(String dbString) {
+		DeviceScanType deviceType = lookupByDbString.get(dbString);
+        Validate.notNull(deviceType, "No DeviceScanType found for " + dbString);
         return deviceType;
 	}
 

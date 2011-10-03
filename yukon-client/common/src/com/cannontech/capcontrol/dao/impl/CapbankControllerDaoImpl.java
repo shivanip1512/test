@@ -19,8 +19,8 @@ import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
 import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.DeviceScanTypesEnum;
-import com.cannontech.common.device.DeviceWindowTypesEnum;
+import com.cannontech.common.device.DeviceScanType;
+import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
@@ -29,6 +29,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.PaoTemplate;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -45,12 +46,10 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
@@ -58,6 +57,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	private PaoDao paoDao;
 	private DBPersistentDao dbPersistentDao;
+	private PaoCreationHelper paoCreationHelper;
 	private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
 	private PointDao pointDao;
@@ -120,25 +120,14 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		boolean result = (rowsAffected == 1);
 		
 		if (result) {
-		    PaoType controllerType = paoDao.getYukonPao(controllerId).getPaoIdentifier().getPaoType();
-		    sendDeviceDBChangeMessage(controllerId,DbChangeType.UPDATE, controllerType.getDbString());
-            sendCapcontrolDBChangeMessage(capbankId, DbChangeType.UPDATE,CapControlType.CAPBANK.getDbValue());
+		    YukonPao controller = paoDao.getYukonPao(controllerId);
+		    YukonPao capBank = paoDao.getYukonPao(capbankId);
+		    paoCreationHelper.processDbChange(controller, DbChangeType.UPDATE);
+		    paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
 		}
 		
 		return result;
 	}
-
-	private void sendDeviceDBChangeMessage(int paoId, DbChangeType dbChangeType, String type) {
-        DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB,
-                                          PaoCategory.DEVICE.getDbString(), type, dbChangeType); 
-        dbPersistentDao.processDBChange(msg);
-    }
-
-    private void sendCapcontrolDBChangeMessage(int paoId, DbChangeType dbChangeType, String type) {
-        DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB, 
-                                          PaoCategory.CAPCONTROL.getDbString(), type, dbChangeType);    
-        dbPersistentDao.processDBChange(msg);
-    }
     
 	@Override
 	public boolean unassignController(CapbankController controller) {
@@ -334,7 +323,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 				scanRateFields.setAlternateRate(rs.getInt("AlternateRate"));
 				scanRateFields.setIntervalRate(rs.getInt("IntervalRate"));
 				scanRateFields.setScanGroup(rs.getInt("ScanGroup"));
-				scanRateFields.setScanType(DeviceScanTypesEnum.getForDbString(rs.getString("ScanType")));
+				scanRateFields.setScanType(DeviceScanType.getForDbString(rs.getString("ScanType")));
 				
 				return scanRateFields;
 			}
@@ -360,7 +349,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 				
 				windowFields.setAlternateClose(rs.getInt("AlternateClose"));
 				windowFields.setAlternateOpen(rs.getInt("AlternateOpen"));
-				windowFields.setType(DeviceWindowTypesEnum.getForDbString(rs.getString("Type")));
+				windowFields.setType(DeviceWindowType.getForDbString(rs.getString("Type")));
 				windowFields.setWindowClose(rs.getInt("WinClose"));
 				windowFields.setWindowOpen(rs.getInt("WinOpen"));
 				
@@ -449,6 +438,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		return addressFields;
 	}
+	
+	@Autowired
+	public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
+    }
 	
 	@Autowired
 	public void setPaoDao(PaoDao paoDao) {

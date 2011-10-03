@@ -7,13 +7,7 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.search.SearchResult;
 
-public interface SubstationBusDao {
-    public void add( SubstationBus substationBus );
-    
-    public boolean remove( SubstationBus substationBus );
-    
-    public boolean update( SubstationBus substationBus );
-    
+public interface SubstationBusDao {    
     public SubstationBus getById( int id );
     
     public int getParentId(SubstationBus subtationBus);

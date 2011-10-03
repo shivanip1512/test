@@ -6,13 +6,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 
 public interface FeederDao {
 
     public void add( Feeder feeder );
     
-    public boolean remove( Feeder feeder );
+    public boolean remove(PaoIdentifier feederId);
     
     public boolean update( Feeder feeder );
     
@@ -26,7 +27,7 @@ public interface FeederDao {
      */
     public List<Integer> getUnassignedFeederIds();
     
-    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
+    public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
     
     /**
      * This method returns the SubBus ID that owns the given feeder ID.

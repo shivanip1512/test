@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -18,7 +17,6 @@ import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
@@ -39,7 +37,6 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     private PaoCreationService paoCreationService;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private DeviceDao deviceDao;
     private AttributeService attributeService;
     private ZigbeeWebService zigbeeWebService;
     private GatewayDeviceDao gatewayDeviceDao;
@@ -122,17 +119,22 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(HardwareDto hardwareDto) {
-        ZigbeeEndpoint endpoint = new ZigbeeEndpoint();
+        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
+        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardwareDto.getSerialNumber()));
+        paoFields.put(DeviceFields.class, new DeviceFields());
         
-        endpoint.setInstallCode(hardwareDto.getInstallCode());
-        endpoint.setMacAddress(hardwareDto.getMacAddress());
-        endpoint.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEE_ENDPOINT));
-        endpoint.setName(hardwareDto.getSerialNumber());
-        endpoint.setGatewayId(hardwareDto.getGatewayId());
-        endpoint.setNodeId(hardwareDto.getNodeId());
-        endpoint.setDestinationEndPointId(hardwareDto.getDestinationEndPointId());
+        ZigbeeEndpointFields zbFields = new ZigbeeEndpointFields(hardwareDto.getInstallCode(), 
+                                                                 hardwareDto.getMacAddress(), 
+                                                                 hardwareDto.getDestinationEndPointId(), 
+                                                                 hardwareDto.getNodeId());
         
-        zigbeeDeviceDao.updateZigbeeEndPoint(endpoint);
+        paoFields.put(ZigbeeEndpointFields.class, zbFields);
+        
+        PaoTemplate template = new PaoTemplate(PaoType.ZIGBEE_ENDPOINT, paoFields);
+        
+        paoCreationService.updatePao(hardwareDto.getDeviceId(), template);
+        
+        gatewayDeviceDao.updateDeviceToGatewayAssignment(hardwareDto.getDeviceId(), hardwareDto.getGatewayId());
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
         
         return;
@@ -147,8 +149,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     @Override
     @Transactional
     public void deleteDevice(YukonPao pao, InventoryIdentifier id) {
-        zigbeeDeviceDao.deleteZigbeeEndPoint(pao.getPaoIdentifier().getPaoId());
-        deviceDao.removeDevice(new SimpleDevice(pao));
+        paoCreationService.deletePao(pao.getPaoIdentifier());
     }
 
     @Override
@@ -191,11 +192,6 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     @Autowired
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
-    }
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
     }
     
     @Autowired

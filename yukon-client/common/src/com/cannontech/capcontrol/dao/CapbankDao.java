@@ -10,11 +10,6 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.search.SearchResult;
 
 public interface CapbankDao {
-    public void add( Capbank bank );
-    
-    public boolean remove( Capbank bank );
-    
-    public boolean update( Capbank bank );
     
     public int getParentId(Capbank capbank);
     
@@ -22,19 +17,13 @@ public interface CapbankDao {
     
     public CapbankAdditional getCapbankAdditional(int paoId);
     
-    public void addCapbankAdditional(CapbankAdditional capbankAdditional);
-    
-    public void updateCapbankAdditional(CapbankAdditional capbankAdditional);
-    
-    public void removeCapbankAdditional(int paoId);
-    
     /**
      * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.
      */
     public List<Integer> getUnassignedCapBankIds();
     
-    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
+    public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
     
     /**
      * This method returns the Feeder ID that owns the given cap bank ID.
@@ -47,8 +36,6 @@ public interface CapbankDao {
     public boolean assignCapbank(int capbankId, String feederName);
     
     public boolean assignCapbank(int feederId, int capbankId);
-
-    public boolean unassignCapbank(Capbank capbank);
     
     public boolean unassignCapbank(int capbankId);
 }

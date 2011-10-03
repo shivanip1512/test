@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.cannontech.capcontrol.creation.CapControlCbcImporterEnum;
 import com.cannontech.capcontrol.creation.CapControlHierarchyImporterEnum;
@@ -26,7 +25,6 @@ import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterExcept
 import com.cannontech.capcontrol.exception.CapControlImportException;
 import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
@@ -34,7 +32,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao {
-	private static final Logger log = YukonLogManager.getLogger(CapControlImporterFileDaoImpl.class);
 	
 	private Map<CapControlCbcImporterEnum, Integer> getCbcHeaderRowMap(final String[] headerRow) {
 		Map<CapControlCbcImporterEnum, Integer> headerColumnMap = Maps.newHashMap();
@@ -221,7 +218,6 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		        
 		    csvReader.close();
 		} catch (IOException e) {
-			log.debug(e);
 			throw new CapControlImportException("Cap Control Importer encountered an error while reading the input file!");
 		}
 

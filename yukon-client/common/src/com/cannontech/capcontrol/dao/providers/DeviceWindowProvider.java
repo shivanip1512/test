@@ -23,18 +23,22 @@ public class DeviceWindowProvider implements PaoTypeProvider<DeviceWindowFields>
 	public Class<DeviceWindowFields> getRequiredFields() {
 		return DeviceWindowFields.class;
 	}
+	
+	private void setupParameters(SqlParameterSink params, DeviceWindowFields fields) {
+	    params.addValue("Type", fields.getType());
+        params.addValue("WinOpen", fields.getWindowOpen());
+        params.addValue("WinClose", fields.getWindowClose());
+        params.addValue("AlternateOpen", fields.getAlternateOpen());
+        params.addValue("AlternateClose", fields.getAlternateClose());
+	}
 
 	@Override
 	public void handleCreation(PaoIdentifier paoIdentifier, DeviceWindowFields fields) {		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.insertInto("DeviceWindow");
+		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
 		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("Type", fields.getType());
-		params.addValue("WinOpen", fields.getWindowOpen());
-		params.addValue("WinClose", fields.getWindowClose());
-		params.addValue("AlternateOpen", fields.getAlternateOpen());
-		params.addValue("AlternateClose", fields.getAlternateClose());
+		setupParameters(params, fields);
 		
 		yukonJdbcTemplate.update(sql);
 	}
@@ -43,12 +47,8 @@ public class DeviceWindowProvider implements PaoTypeProvider<DeviceWindowFields>
 	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceWindowFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		SqlParameterSink params = sql.update("DeviceWindow");
-		params.addValue("Type", fields.getType());
-		params.addValue("WinOpen", fields.getWindowOpen());
-		params.addValue("WinClose", fields.getWindowClose());
-		params.addValue("AlternateOpen", fields.getAlternateOpen());
-		params.addValue("AlternateClose", fields.getAlternateClose());
+		SqlParameterSink params = sql.update(getSupportedTable().name());
+		setupParameters(params, fields);
 		
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		
