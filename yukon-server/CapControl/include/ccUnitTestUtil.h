@@ -10,8 +10,7 @@ class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
 {
     public:
 
-        virtual bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus){return true;};
-        virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank){return true;};
+        virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag){pao->setDisableFlag(disableFlag); return true;};
 
         void insertAreaToPaoMap(CtiCCAreaPtr area){addAreaToPaoMap(area);};
         void insertSubstationToPaoMap(CtiCCSubstationPtr station){addSubstationToPaoMap(station);};

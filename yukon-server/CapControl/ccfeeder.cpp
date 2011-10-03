@@ -1589,8 +1589,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                 // We should disable bank if the flag says so
                 if (currentCapBank->getMaxOpsDisableFlag())
                 {
-                    currentCapBank->setDisableFlag(TRUE);
-                    CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
+                    CtiCCSubstationBusStore::getInstance()->UpdatePaoDisableFlagInDB(currentCapBank, true);
 
                     text = string("CapBank Disabled");
                     additional = string("CapBank: ");
@@ -6762,7 +6761,6 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
 
         if (endOfDayOverride == false)
         {
-            setDisableFlag(TRUE);
             string text = string("Feeder Disabled");
             string additional = string("Feeder: ");
             additional += getPaoName();
@@ -6781,9 +6779,7 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
                 pSig->setCondition(CtiTablePointAlarming::highReasonability);
                 pointChanges.push_back(pSig);
             }
-            CtiCCSubstationBusStore::getInstance()->UpdateFeederDisableFlagInDB(this);
-
-
+            CtiCCSubstationBusStore::getInstance()->UpdatePaoDisableFlagInDB(this, true);
             retVal = FALSE;
         }
     }

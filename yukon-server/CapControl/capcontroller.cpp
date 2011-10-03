@@ -2801,13 +2801,22 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     }
     return;
 }
+void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, double value, long commandId)
+{
+    if (pao->getDisabledStatePointId() == pointID)
+    {
+        bool disable = value == 0.0 ? false : true;
+        if (pao->getDisableFlag() != disable)
+        {   
+            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(commandId, pao->getPaoId()))->execute();
+        }
+    }
+}
 
 void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-
 
     CtiCCAreaPtr currentArea = NULL;
     PointIdToAreaMultiMap::iterator areaIter, end;
@@ -2842,6 +2851,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                         }
                     }
                 }
+                checkDisablePaoPoint(currentArea, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_AREA : CtiCCCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -2891,6 +2901,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                         }
                     }
                 }
+                checkDisablePaoPoint(currentSpArea, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_AREA : CtiCCCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -2954,6 +2965,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                         }
                     }
                 }
+                checkDisablePaoPoint(currentStation, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_AREA : CtiCCCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -3278,6 +3290,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
                     }
                 }
+                checkDisablePaoPoint(currentSubstationBus, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_SUBSTATION_BUS : CtiCCCommand::DISABLE_SUBSTATION_BUS);
             }
         }
         catch(...)
@@ -3507,6 +3520,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
                     }
+                    checkDisablePaoPoint(currentFeeder, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_FEEDER : CtiCCCommand::DISABLE_FEEDER);
                 }
             }
         }
@@ -3848,6 +3862,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
                         }
                     }
+                    checkDisablePaoPoint(currentCapBank, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_CAPBANK : CtiCCCommand::DISABLE_CAPBANK);
                 }
             }
         }

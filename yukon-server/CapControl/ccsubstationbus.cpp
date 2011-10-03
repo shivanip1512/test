@@ -2451,9 +2451,8 @@ void CtiCCSubstationBus::checkForMaxDailyOpsHit()
 
 BOOL CtiCCSubstationBus::maxOperationsHitDisableBus()
 {
-   setDisableFlag(TRUE);
+   CtiCCSubstationBusStore::getInstance()->UpdatePaoDisableFlagInDB(this, true);
    setBusUpdatedFlag(TRUE);
-   CtiCCSubstationBusStore::getInstance()->UpdateBusDisableFlagInDB(this);
    setSolution("  Sub Disabled. Automatic Control Inhibited.");
    string text = string("Substation Bus Disabled");
    string additional = string("Bus: ");

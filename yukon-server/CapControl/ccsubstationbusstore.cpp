@@ -232,7 +232,6 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
         if (!_isvalid)
         {
             reset();
-            setReregisterForPoints(false);
             clearDBReloadList();
         }
     }
@@ -2194,8 +2193,7 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
                             std::transform(enableddisabled.begin(),enableddisabled.end(),enableddisabled.begin(), ::toupper);
                           if( (bool)currentCapBank->getDisableFlag() != (ciStringEqual(enableddisabled,m3iAMFMDisabledString)) )
                             {
-                                currentCapBank->setDisableFlag(ciStringEqual(enableddisabled,m3iAMFMDisabledString));
-                                UpdateCapBankDisableFlagInDB(currentCapBank);
+                                UpdatePaoDisableFlagInDB(currentCapBank, ciStringEqual(enableddisabled,m3iAMFMDisabledString));
                                 currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2259,8 +2257,7 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, string& f
 
                         if( (bool)currentFeeder->getDisableFlag() != (ciStringEqual(enableddisabled,m3iAMFMDisabledString)) )
                         {
-                            currentFeeder->setDisableFlag(ciStringEqual(enableddisabled,m3iAMFMDisabledString));
-                            UpdateFeederDisableFlagInDB(currentFeeder);
+                            UpdatePaoDisableFlagInDB(currentFeeder, ciStringEqual(enableddisabled,m3iAMFMDisabledString));
                             currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3223,131 +3220,26 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
 }
 
 
-
 /*---------------------------------------------------------------------------
-    UpdateBusDisableFlagInDB
-
-    Updates a disable flag in the yukonpaobject table in the database for
-    the substation bus.
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdateAreaDisableFlagInDB(CtiCCArea* area)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-
-    bool updateSuccessful = updateDisableFlag(area->getPaoId(), area->getDisableFlag());
-
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPaoId(), ChangePAODb,
-                                                  area->getPaoCategory(), area->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-    return updateSuccessful;
-}
-
-/*---------------------------------------------------------------------------
-    UpdateBusDisableFlagInDB
-
-    Updates a disable flag in the yukonpaobject table in the database for
-    the substation bus.
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-
-    bool updateSuccessful = updateDisableFlag(area->getPaoId(), area->getDisableFlag());
-
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPaoId(), ChangePAODb,
-                                                  area->getPaoCategory(), area->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE2);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-    return updateSuccessful;
-}
-
-/*---------------------------------------------------------------------------
-    UpdateBusDisableFlagInDB
-
-    Updates a disable flag in the yukonpaobject table in the database for
-    the substation bus.
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdateSubstationDisableFlagInDB(CtiCCSubstation* station)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-
-    bool updateSuccessful = updateDisableFlag(station->getPaoId(), station->getDisableFlag());
-
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(station->getPaoId(), ChangePAODb,
-                                                  station->getPaoCategory(), station->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-    return updateSuccessful;
-}
-
-
-/*---------------------------------------------------------------------------
-    UpdateBusDisableFlagInDB
-
-    Updates a disable flag in the yukonpaobject table in the database for
-    the substation bus.
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-
-    bool updateSuccessful = updateDisableFlag(bus->getPaoId(), bus->getDisableFlag());
-
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
-                                                  bus->getPaoCategory(), bus->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-    return updateSuccessful;
-}
-
-/*---------------------------------------------------------------------------
-    UpdateFeederDisableFlagInDB
-
-    Updates a disable flag in the yukonpaobject table in the database for
-    the feeder.
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-
-    bool updateSuccessful = updateDisableFlag(feeder->getPaoId(), feeder->getDisableFlag());
-
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPaoId(), ChangePAODb,
-                                                  feeder->getPaoCategory(), feeder->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-    return updateSuccessful;
-}
-
-/*---------------------------------------------------------------------------
-    UpdateCapBankDisableFlagInDB
+    UpdatePaoDisableFlagInDB
 
     Updates a disable flag in the yukonpaobject table in the database for
     the cap bank.
 ---------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank)
+bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
-    bool updateSuccessful = updateDisableFlag(capbank->getPaoId(), capbank->getDisableFlag());
+    bool updateSuccessful = updateDisableFlag(pao->getPaoId(), disableFlag);
 
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
-                                                  capbank->getPaoCategory(),
-                                                  capbank->getPaoType(),
+    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(pao->getPaoId(), ChangePAODb,
+                                                  pao->getPaoCategory(),
+                                                  pao->getPaoType(),
                                                   ChangeTypeUpdate);
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
     CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+    pao->setDisableFlag(disableFlag);
 
     return updateSuccessful;
 }

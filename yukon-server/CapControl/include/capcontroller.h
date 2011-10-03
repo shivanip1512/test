@@ -103,6 +103,7 @@ class CtiCapController : public MessageListener
         void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
         void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString);
         void signalMsg(long pointID, unsigned tags, const string& text, const string& additional);
+        void checkDisablePaoPoint(CapControlPao* pao, long pointID, double value, long commandId);
 
         bool isCbcDbChange(const CtiDBChangeMsg* dbChange);
 

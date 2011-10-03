@@ -534,10 +534,9 @@ void CtiCCCommandExecutor::EnableSubstationBus()
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPaoId() )
         {
-            currentSubstationBus->setDisableFlag(FALSE);
             currentSubstationBus->setReEnableBusFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
-            store->UpdateBusDisableFlagInDB(currentSubstationBus);
+            store->UpdatePaoDisableFlagInDB(currentSubstationBus, false);
             string text = string("Substation Bus Enabled");
             string additional = string("Bus: ");
             additional += currentSubstationBus->getPaoName();
@@ -581,10 +580,9 @@ void CtiCCCommandExecutor::DisableSubstationBus()
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPaoId() )
         {
-            currentSubstationBus->setDisableFlag(TRUE);
             currentSubstationBus->setReEnableBusFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
-            store->UpdateBusDisableFlagInDB(currentSubstationBus);
+            store->UpdatePaoDisableFlagInDB(currentSubstationBus, true);
             string text = string("Substation Bus Disabled");
             string additional = string("Bus: ");
             additional += currentSubstationBus->getPaoName();
@@ -636,9 +634,8 @@ void CtiCCCommandExecutor::EnableFeeder()
             {
                 if (!currentSubstationBus->getVerificationFlag())
                 {
-                    currentFeeder->setDisableFlag(FALSE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    store->UpdateFeederDisableFlagInDB(currentFeeder);
+                    store->UpdatePaoDisableFlagInDB(currentFeeder, false);
                     string text("Feeder Enabled");
                     string additional("Feeder: ");
                     additional += currentFeeder->getPaoName();
@@ -696,9 +693,8 @@ void CtiCCCommandExecutor::DisableFeeder()
             {
                 if (!currentSubstationBus->getVerificationFlag())
                 {
-                    currentFeeder->setDisableFlag(TRUE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    store->UpdateFeederDisableFlagInDB(currentFeeder);
+                    store->UpdatePaoDisableFlagInDB(currentFeeder, true);
                     string text("Feeder Disabled");
                     string additional("Feeder: ");
                     additional += currentFeeder->getPaoName();
@@ -759,9 +755,8 @@ void CtiCCCommandExecutor::EnableCapBank()
                 {
                     if (!currentSubstationBus->getVerificationFlag())
                     {
-                        currentCapBank->setDisableFlag(FALSE);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        store->UpdateCapBankDisableFlagInDB(currentCapBank);
+                        store->UpdatePaoDisableFlagInDB(currentCapBank, false);
                         string text("Cap Bank Enabled");
                         string additional("Cap Bank: ");
                         additional += currentCapBank->getPaoName();
@@ -839,9 +834,8 @@ void CtiCCCommandExecutor::DisableCapBank()
                 {
                     if (!currentSubstationBus->getVerificationFlag())
                     {
-                        currentCapBank->setDisableFlag(TRUE);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        store->UpdateCapBankDisableFlagInDB(currentCapBank);
+                        store->UpdatePaoDisableFlagInDB(currentCapBank, true);
                         string text("Cap Bank Disabled");
                         string additional("Cap Bank: ");
                         additional += currentCapBank->getPaoName();
@@ -3452,29 +3446,7 @@ void CtiCCCommandExecutor::EnableArea()
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, currentArea->getPaoId(), 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-        currentArea->setDisableFlag(FALSE);
-        store->UpdateAreaDisableFlagInDB(currentArea);
-
-
-        if (eventMulti->getCount() > 0)
-        {
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-        }
-        else
-        {
-            delete eventMulti;
-        }
-
-        if (multi->getCount() > 0)
-        {
-            CtiCapController::getInstance()->sendMessageToDispatch(multi);
-        }
-        else
-        {
-            delete multi;
-        }
-
-        CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+        store->UpdatePaoDisableFlagInDB(currentArea, false);
     }
     else
     {
@@ -3501,9 +3473,6 @@ void CtiCCCommandExecutor::EnableArea()
                         {
                             refusalText +=  "  Special Area: " + enabledSpArea->getPaoName() + " with Sub: " + currentSubstation->getPaoName() + " is already ENABLED";
                         }
-
-
-
                     }
                 }
             }
@@ -3513,6 +3482,13 @@ void CtiCCCommandExecutor::EnableArea()
                 CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, refusalText);
                 msg->setUser(_command->getUser());
                 CtiCCExecutorFactory::createExecutor(msg)->execute();
+                if (currentSpArea->getDisabledStatePointId() != 0); 
+                {
+                    //enable area refused.  disable flag = true.  This will sync the disable point.
+                     CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue( 
+                         new CtiPointDataMsg( currentSpArea->getDisabledStatePointId(), currentSpArea->getDisableFlag() ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+                }
+                
             }
             else
             {
@@ -3524,8 +3500,7 @@ void CtiCCCommandExecutor::EnableArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                currentSpArea->setDisableFlag(FALSE);
-                store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
+                store->UpdatePaoDisableFlagInDB(currentSpArea, false);
 
                 PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
 
@@ -3543,25 +3518,6 @@ void CtiCCCommandExecutor::EnableArea()
                         }
                     }
                 }
-
-                if (eventMulti->getCount() > 0)
-                {
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-                }
-                else
-                {
-                    delete eventMulti;
-                }
-                if (multi->getCount() > 0)
-                {
-                    CtiCapController::getInstance()->sendMessageToDispatch(multi);
-                }
-                else
-                {
-                    delete multi;
-                }
-
-                CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
             }
         }
         else
@@ -3576,32 +3532,29 @@ void CtiCCCommandExecutor::EnableArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                station->setDisableFlag(FALSE);
-                store->UpdateSubstationDisableFlagInDB(station);
-
-
-                if (eventMulti->getCount() > 0)
-                {
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-                }
-                else
-                {
-                    delete eventMulti;
-                }
-
-                if (multi->getCount() > 0)
-                {
-                    CtiCapController::getInstance()->sendMessageToDispatch(multi);
-                }
-                else
-                {
-                    delete multi;
-                }
-
-                CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
+                store->UpdatePaoDisableFlagInDB(station, false);
             }
         }
     }
+    if (eventMulti->getCount() > 0)
+    {
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    }
+    else
+    {
+        delete eventMulti;
+    }
+    if (multi->getCount() > 0)
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
+    else
+    {
+        delete multi;
+    }
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -3634,28 +3587,8 @@ void CtiCCCommandExecutor::DisableArea()
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL,0, currentArea->getPaoId(), 0,  0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-        currentArea->setDisableFlag(TRUE);
-        store->UpdateAreaDisableFlagInDB(currentArea);
+        store->UpdatePaoDisableFlagInDB(currentArea, true);
         currentArea->checkForAndStopVerificationOnChildSubBuses(capMessages);
-
-
-        if (eventMulti->getCount() > 0)
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-        else
-            delete eventMulti;
-        if (multi->getCount() > 0)
-            CtiCapController::getInstance()->sendMessageToDispatch(multi);
-        else
-            delete multi;
-
-
-        CtiMultiMsg_vec& temp = multiCapMsg->getData( );
-        for(int i=0;i<temp.size( );i++)
-        {
-            CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
-        }
-
-        CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
     }
     else
     {
@@ -3671,8 +3604,7 @@ void CtiCCCommandExecutor::DisableArea()
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
             ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-            currentSpArea->setDisableFlag(TRUE);
-            store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
+            store->UpdatePaoDisableFlagInDB(currentSpArea, true);
 
             PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
 
@@ -3690,26 +3622,6 @@ void CtiCCCommandExecutor::DisableArea()
                     }
                 }
             }
-
-            if (eventMulti->getCount() > 0)
-            {
-                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-            }
-            else
-            {
-                delete eventMulti;
-            }
-
-            if (multi->getCount() > 0)
-            {
-                CtiCapController::getInstance()->sendMessageToDispatch(multi);
-            }
-            else
-            {
-                delete multi;
-            }
-
-            CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
         }
         else
         {
@@ -3723,31 +3635,37 @@ void CtiCCCommandExecutor::DisableArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0,0, station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                station->setDisableFlag(TRUE);
-                store->UpdateSubstationDisableFlagInDB(station);
+                store->UpdatePaoDisableFlagInDB(station, true);
                 station->checkForAndStopVerificationOnChildSubBuses(capMessages);
-
-                if (eventMulti->getCount() > 0)
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-                else
-                    delete eventMulti;
-                if (multi->getCount() > 0)
-                    CtiCapController::getInstance()->sendMessageToDispatch(multi);
-                else
-                    delete multi;
-
-
-                CtiMultiMsg_vec& temp = multiCapMsg->getData( );
-                for(int i=0;i<temp.size( );i++)
-                {
-                    CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
-                }
-
-                CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
             }
         }
     }
 
+    if (eventMulti->getCount() > 0)
+    {
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    }
+    else
+    {
+        delete eventMulti;
+    }
+
+    if (multi->getCount() > 0)
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
+    else
+    {
+        delete multi;
+    }
+    CtiMultiMsg_vec& temp = multiCapMsg->getData( );
+    for(int i=0;i<temp.size( );i++)
+    {
+        CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
+    }
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
 }
 
 
@@ -4533,8 +4451,7 @@ void CtiCCCommandExecutor::EnableSystem()
         {
             if (currentArea->getReEnableAreaFlag())
             {
-                currentArea->setDisableFlag(FALSE);
-                store->UpdateAreaDisableFlagInDB(currentArea);
+                store->UpdatePaoDisableFlagInDB(currentArea, false);
             }
         }
     }
@@ -4596,8 +4513,7 @@ void CtiCCCommandExecutor::DisableSystem()
             if (!currentArea->getDisableFlag())
             {
                 currentArea->setReEnableAreaFlag(TRUE);
-                currentArea->setDisableFlag(TRUE);
-                store->UpdateAreaDisableFlagInDB(currentArea);
+                store->UpdatePaoDisableFlagInDB(currentArea, true);
             }
         }
     }

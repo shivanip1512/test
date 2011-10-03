@@ -156,13 +156,8 @@ public:
     void resetDailyOperations();
     void calculateParentPowerFactor(LONG subBusId);
 
-    bool UpdateAreaDisableFlagInDB(CtiCCArea* bus);
-    bool UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area);
-    virtual bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
-    bool UpdateSubstationDisableFlagInDB(CtiCCSubstation* station);
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
-    bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
-    virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);
+    virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag);
     bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
