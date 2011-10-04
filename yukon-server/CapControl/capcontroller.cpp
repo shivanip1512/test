@@ -476,7 +476,7 @@ void CtiCapController::controlLoop()
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
-        LONG lastDailyReset = 0;
+        CtiTime lastDailyReset;     // == CtiTime::now()
         BOOL waitToBroadCastEverything = FALSE;
         BOOL startUpSendStats = TRUE;
 
@@ -495,7 +495,6 @@ void CtiCapController::controlLoop()
             {
 
                 currentDateTime = CtiTime();
-                LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
 
 
@@ -523,11 +522,12 @@ void CtiCapController::controlLoop()
                         fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
                         store->verifySubBusAndFeedersStates();
                     }
-                    if( secondsFromBeginningOfDay <= 60 && secondsFrom1901 >= lastDailyReset+61 )
+
+                    if ( currentDateTime.date() != lastDailyReset.date() )
                     {
                         store->resetDailyOperations();
 
-                        lastDailyReset = secondsFrom1901;
+                        lastDailyReset = currentDateTime;
                     }
                 }
                 catch(...)
