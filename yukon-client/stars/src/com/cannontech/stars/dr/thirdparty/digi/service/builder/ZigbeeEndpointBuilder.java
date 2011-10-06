@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
+import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
