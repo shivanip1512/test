@@ -3,9 +3,7 @@ package com.cannontech.common.device.commands;
 public interface CommandCallback {
 
     /**
-     * 
-     * @param parameterDto
-     * @return
+     * This method creates a command using the parameterDto that that can be used by porter.
      */
     public String generateCommand(CommandRequestExecutionParameterDto parameterDto);
     

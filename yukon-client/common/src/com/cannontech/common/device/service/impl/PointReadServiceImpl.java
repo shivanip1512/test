@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.impl.PorterCommandCallback;
+import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.PointReadService;
@@ -48,7 +48,7 @@ public class PointReadServiceImpl implements PointReadService {
             CommandRequestDevice request = new CommandRequestDevice();
             request.setDevice(new SimpleDevice(paoPointIdentifier.getPaoIdentifier()));
 
-            request.setCommandCallback(new PorterCommandCallback(commandStr));
+            request.setCommandCallback(new CommandCallbackBase(commandStr));
             commandRequests.add(request);
         }
         CommandCompletionCallbackAdapter<Object> dummyCallback = new CommandCompletionCallbackAdapter<Object>();

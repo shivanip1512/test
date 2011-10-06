@@ -23,6 +23,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
@@ -42,7 +43,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
-import com.cannontech.common.device.commands.impl.PorterCommandCallback;
+import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -57,10 +58,9 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisService {
     private Logger log = YukonLogManager.getLogger(ArchiveDataAnalysisService.class);
@@ -215,7 +215,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                 
                 CommandRequestDevice command = new CommandRequestDevice();
                 command.setDevice(new SimpleDevice(data.getId()));
-                command.setCommandCallback(new PorterCommandCallback(commandString));
+                command.setCommandCallback(new CommandCallbackBase(commandString));
                 commands.add(command);
             }
         }

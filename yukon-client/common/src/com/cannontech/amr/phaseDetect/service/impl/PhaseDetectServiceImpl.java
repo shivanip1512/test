@@ -26,7 +26,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.device.commands.impl.PorterCommandCallback;
+import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -161,7 +161,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 CommandRequestDevice request = new CommandRequestDevice();
                 request.setDevice(new SimpleDevice(from.getPaoIdentifier()));
-                request.setCommandCallback(new PorterCommandCallback(command));
+                request.setCommandCallback(new CommandCallbackBase(command));
                 return request;
             }
         };
