@@ -164,7 +164,17 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         if (hardwareType.isZigbee()) {
                             //Determine Gateway and Device Id.
                             int deviceId = liteHw.getDeviceID();
-                            int lmGroupId = gatewayDeviceDao.getLMGroupIdByDeviceId(deviceId);
+                            
+                            List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByDeviceId(deviceId);
+                            
+                            if (lmGroupIds.isEmpty()) {
+                                throw new InvalidParameterException("Device is not Enrolled in any program.");
+                            }
+                            
+                            //Grabbing only the first GroupId the device is assigned to.
+                            //All group this device is assigned to should have the same Utility Enrollment Group Id. 
+                            //If they do not it is considered a misconfiguration and will have un expected behavior
+                            int lmGroupId = lmGroupIds.get(0);
                             
                             //Build Attributes to send
                             Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();

@@ -143,7 +143,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
                 } else if (error.contains("already exists")){
                     resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed.exists", error);
                 } else {
-                    resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed", error);
+                    resolvable = YukonMessageSourceResolvable.createDefaultWithArguments("yukon.web.modules.operator.hardware.commandFailed", error, error);
                 }
                 log.debug(error);
                 log.error("Failed to Provision device with MAC Address: " + macAddress);
@@ -255,7 +255,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         String xml = digiXMLBuilder.buildWriteLMAddressing(gateway, endPoint, attributes);
         
         try{
-            restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+            log.debug(xml);
+            String response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+            log.debug(response);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
@@ -392,7 +394,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         log.debug(xmlSEPMessage);
         
         try {
-            log.debug(xmlSEPMessage);
             restTemplate.postForObject(digiBaseUrl + "ws/sci", xmlSEPMessage, String.class);
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);

@@ -187,6 +187,9 @@ public class DigiXMLBuilder {
         + "                 <heating_temperature_offset>"
         +                       controlMessage.getHeatTempOffset()
         + "                 </heating_temperature_offset>"
+        + "                 <average_load_adjustment_percentage >"
+        +                        controlMessage.getAverageCyclePercent()
+        + "                 </average_load_adjustment_percentage >"
         + "                 <duty_cycle>"
         +                        controlMessage.getStandardCyclePercent()
         + "                 </duty_cycle>"

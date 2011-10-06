@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,6 +151,8 @@ public class ZigBeeHardwareController {
     private void commissionNode(ModelMap model, MessageSourceAccessor accessor, int deviceId, int inventoryId) {
         boolean messageFailed = false;
         String errorMessage = null;
+        MessageSourceResolvable errorResolvable = null;
+        
         try {
             // This gatewayId is expected to be not null since this action wouldn't have been available.
             int gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
@@ -164,10 +165,18 @@ public class ZigBeeHardwareController {
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
+        } catch (ZigbeeCommissionException e2) {
+            messageFailed = true;
+            errorResolvable = e2.getDescription();            
         }
         
         if (messageFailed) {
-            commandFailed(model, accessor, errorMessage);
+            if (errorResolvable != null) {
+                errorMessage = accessor.getMessage(errorResolvable);
+                commandFailed(model, errorMessage);
+            } else {
+                commandFailed(model, accessor, errorMessage);
+            }
         } else {
             commandSucceeded(model, accessor, "thermostatCommissioned", deviceId);
         }
@@ -212,7 +221,7 @@ public class ZigBeeHardwareController {
             errorResolvable = e.getDescription();
         } catch (DigiWebServiceException e) {
             messageFailed = true;
-            errorMessage = ExceptionUtils.getRootCauseMessage(e);
+            errorMessage = e.getMessage();
         }
         
         if (messageFailed) {

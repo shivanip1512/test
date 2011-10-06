@@ -12,7 +12,13 @@
         This file defines beans that live under the com.cannontech.thirdparty package
     </description>
 
-    <bean class="com.cannontech.thirdparty.digi.service.impl.DigiWebServiceImpl"/>
+    <bean id="digiWebService" class="com.cannontech.thirdparty.digi.service.impl.DigiWebServiceImpl" autowire-candidate="false"/>
+    
+    <bean id="yukonZigbeeWebServiceFactory" class="com.cannontech.thirdparty.digi.service.impl.YukonZigbeeWebServiceFactory">
+        <property name="zigbeeWebService" ref="digiWebService" />
+    </bean>
+    
+    <bean factory-bean="yukonZigbeeWebServiceFactory" factory-method="getZigbeeWebService"/>
     
     <bean id="digiXMLBuilder" class="com.cannontech.thirdparty.digi.service.impl.DigiXMLBuilder"/>
     <bean id="digiResponseHandler" class="com.cannontech.thirdparty.digi.service.impl.DigiResponseHandler"/>

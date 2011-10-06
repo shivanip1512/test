@@ -1,11 +1,13 @@
 package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -24,6 +26,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndpointFields;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
@@ -34,6 +37,8 @@ import com.google.common.collect.MutableClassToInstanceMap;
 
 public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
 
+    private Logger log = YukonLogManager.getLogger(ZigbeeEndpointBuilder.class);
+    
     private PaoCreationService paoCreationService;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
@@ -143,7 +148,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     @Override
     @Transactional
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
-        decommissionAndUnassignDevice(inventoryId.getInventoryId(),pao);        
+            decommissionAndUnassignDevice(inventoryId.getInventoryId(),pao);
     }
     
     @Override
@@ -154,7 +159,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
-        decommissionAndUnassignDevice(inventoryId.getInventoryId(),pao);
+            decommissionAndUnassignDevice(inventoryId.getInventoryId(),pao);
     };
     
     /**
@@ -167,7 +172,12 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);
         if (gatewayId != null) {
             //Send Decommission command.
-            zigbeeWebService.uninstallEndPoint(gatewayId, device.getPaoIdentifier().getPaoId());
+            try {
+                zigbeeWebService.uninstallEndPoint(gatewayId, device.getPaoIdentifier().getPaoId());
+            } catch (DigiWebServiceException e) {
+                //Log error and move on. This shouldn't stop us from finishing the process
+                log.error(e.getMessage());
+            }
             
             //Remove from gateway
             gatewayDeviceDao.unassignDeviceFromGateway(device.getPaoIdentifier().getPaoId());

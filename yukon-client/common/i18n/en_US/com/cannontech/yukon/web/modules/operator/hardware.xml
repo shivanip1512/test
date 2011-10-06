@@ -218,6 +218,7 @@
     <entry key="yukon.web.modules.operator.hardware.commandFailed.notAuthorized">Key not authorized, (re)commission this device.</entry>
     
     <entry key="yukon.web.modules.operator.hardware.refreshSuccessful">Refresh Successful</entry>
+    <entry key="yukon.web.modules.operator.hardware.zigbeeNotEnabled">ZigBee Web Services are not enabled.</entry>
     
     <!-- Meters -->
     <entry key="yukon.web.modules.operator.hardware.meters.title">Meters</entry>

@@ -151,6 +151,7 @@ public class DigiResponseHandler {
     public void handleDeviceNotification(String source) throws UnsupportedDataTypeException {
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
+        log.debug(source);
         
         //Figure out what this file is
         Node tester = template.evaluateAsNode("/received_report_event_status");
@@ -347,7 +348,7 @@ public class DigiResponseHandler {
         long seconds = Long.decode(temp);
         Instant statusTime = TimeUtil.convertUtc2000ToInstant(seconds);
         
-        String macAddress = template.evaluateAsString("//source_address");
+        String macAddress = template.evaluateAsString("//source_address");        
         int deviceId = zigbeeDeviceDao.getDeviceIdForMACAddress(macAddress);
 
         temp = template.evaluateAsString("//issuer_event_id");
@@ -458,7 +459,7 @@ public class DigiResponseHandler {
         
         //Error case
         if (description != null) {
-            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed", description);
+            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createDefaultWithArguments("yukon.web.modules.operator.hardware.commandFailed", description, description);
             throw new ZigbeeCommissionException(resolvable);
         }
         
@@ -466,7 +467,7 @@ public class DigiResponseHandler {
 
         //Error case
         if (desc != null) {
-            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createDefault("yukon.web.modules.operator.hardware.commandFailed", desc);
+            MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createDefaultWithArguments("yukon.web.modules.operator.hardware.commandFailed", desc, desc);
             throw new ZigbeeCommissionException(resolvable);
         }
     }

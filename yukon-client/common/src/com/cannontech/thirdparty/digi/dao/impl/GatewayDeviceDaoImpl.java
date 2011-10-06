@@ -12,6 +12,8 @@ import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -244,7 +246,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
-    public int getLMGroupIdByDeviceId(int deviceId) {
+    public List<Integer> getLMGroupIdByDeviceId(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT LMHCG.LMGroupId");
@@ -255,7 +257,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE YPO.PaObjectId").eq(deviceId);
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
-        return yukonJdbcTemplate.queryForInt(sql);
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
     }
     
     @Autowired

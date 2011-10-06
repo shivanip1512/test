@@ -3,11 +3,13 @@ package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -26,6 +28,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.DigiGatewayFields;
 import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeGatewayFields;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
@@ -36,6 +39,8 @@ import com.google.common.collect.MutableClassToInstanceMap;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
+    private Logger log = YukonLogManager.getLogger(DigiGatewayBuilder.class);
+    
     private GatewayDeviceDao gatewayDeviceDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private AttributeService attributeService;
@@ -97,7 +102,12 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Transactional
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         //Send Decommission command for devices
-        decommissionGatewayAndUnassignDevices(pao.getPaoIdentifier().getPaoId());
+        try {
+            decommissionGatewayAndUnassignDevices(pao.getPaoIdentifier().getPaoId());
+        } catch (DigiWebServiceException e) {
+            //Log error and move on. This shouldn't stop us from finishing the process
+            log.error(e.getMessage());
+        }
     }
     
     @Override
@@ -109,7 +119,12 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
         //Send Decommission command for devices
-        decommissionGatewayAndUnassignDevices(pao.getPaoIdentifier().getPaoId());
+        try {
+            decommissionGatewayAndUnassignDevices(pao.getPaoIdentifier().getPaoId());
+        } catch (DigiWebServiceException e) {
+            //Log error and move on. This shouldn't stop us from finishing the process
+            log.error(e.getMessage());
+        }
         
         //Remove devices from gateway
         gatewayDeviceDao.removeDevicesFromGateway(pao.getPaoIdentifier().getPaoId());

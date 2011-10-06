@@ -66,5 +66,5 @@ public interface GatewayDeviceDao {
      * @param deviceId
      * @return
      */
-    public int getLMGroupIdByDeviceId(int endPointId);
+    public List<Integer> getLMGroupIdByDeviceId(int endPointId);
 }
