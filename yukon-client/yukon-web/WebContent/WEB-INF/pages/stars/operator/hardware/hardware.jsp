@@ -508,7 +508,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button key="history" href="${historyUrl}" renderMode="labeledImage" />
+                                <cti:button nameKey="history" href="${historyUrl}" renderMode="labeledImage" />
                             </li>
                         </c:if>
                         
