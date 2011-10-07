@@ -28,7 +28,6 @@ initiateCannonLogUpdate("${updateUrl}" ,2);
 <span id="numTail">number of lines tailed = <input onchange="$('newLinesForm').action = 'tail?file=${file}'; submit();" id="numLines" name="numLines" value=${numLines} size=5 ></span>
 &nbsp&nbsp<button id="submitLines" onclick="$('newLinesForm').action = 'tail?file=${file}'; submit();">Change</button>
 &nbsp&nbsp<button id="pauseButton" onclick="startOrPauseUpdate();" type="button">Pause</button>
-&nbsp&nbsp<button id="viewButton" onclick="$('newLinesForm').action = 'view?file=${file}'; submit();" type="button">View</button>
 &nbsp&nbsp<button id="downloadButton" onclick="$('newLinesForm').action = 'download?file=${file}'; submit();" type="button">Download</button>
 </form>
 
