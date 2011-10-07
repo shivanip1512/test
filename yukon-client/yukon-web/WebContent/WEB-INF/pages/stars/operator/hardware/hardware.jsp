@@ -56,6 +56,7 @@ YEvent.observeSelectorClick('button[name^=assignedDevicesCommissionSubmit_], but
     if (button.name.startsWith('assignedDevicesCommissionSubmit_')) {
         url += 'commission';
         deviceId = button.name.sub('assignedDevicesCommissionSubmit_', '');
+        $('confirmCommissionPopup_' + deviceId).hide();
     } else if (button.name.startsWith('assignedDevicesDecommissionSubmit_')) {
         url += 'decommission';
         deviceId = button.name.sub('assignedDevicesDecommissionSubmit_', '');
@@ -165,6 +166,22 @@ function getCommissionConfirmationCallback() {
                 $('decommissionedConfirmMsg').hide();
                 $('commissionedConfirmMsg').show();
             }
+        }
+    };
+}
+
+function getEndpointCommissionConfirmationCallback(deviceId) {
+    return function(data) {
+        var commissionedValue = data.get('value');
+        
+        if(commissionedValue == 'Decommissioned') {
+            //decommissioned
+            $('decommissionedConfirmMsg_' + deviceId).show();
+            $('commissionedConfirmMsg_' + deviceId).hide();
+        } else {
+            //commissioned - either connected or disconnected
+            $('decommissionedConfirmMsg_' + deviceId).hide();
+            $('commissionedConfirmMsg_' + deviceId).show();
         }
     };
 }
@@ -667,10 +684,23 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                                                 <td class="nonwrapping">
                                                     <cti:button nameKey="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}"/>
                                                     <cti:button nameKey="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}"/>
-                                                    <tags:confirmDialog submitName="assignedDevicesCommissionSubmit_${device.deviceId}"
-                                                        nameKey=".commissionConfirmation"
-                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesCommission_${device.deviceId}"
-                                                        endAction="hide" />
+                                                    <cti:msgScope paths=".commissionConfirmation,">
+                                                        <i:simplePopup id="confirmCommissionPopup_${device.deviceId}" styleClass="commissionConfirmationMsg smallSimplePopup" titleKey=".title" on="#assignedDevicesCommission_${device.deviceId}">
+                                                            <p>
+                                                                <div id="decommissionedConfirmMsg_${device.deviceId}">
+                                                                    <i:inline key=".message"/>
+                                                                </div>
+                                                                <div id="commissionedConfirmMsg_${device.deviceId}" class="errorMessage" style="display:none">
+                                                                    <i:inline key=".warnMessage"/>
+                                                                </div>
+                                                            <p>
+                                                            <div class="actionArea">
+                                                                <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" />
+                                                                <cti:button nameKey="cancel" onclick="$('confirmCommissionPopup_${device.deviceId}').hide()" />
+                                                            </div>
+                                                        </i:simplePopup>
+                                                    </cti:msgScope>
+                                                    <cti:dataUpdaterCallback function="getEndpointCommissionConfirmationCallback('${device.deviceId}')" initialize="true" value="POINT/${device.commissionId}/VALUE"/>
                                                     <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
                                                         nameKey=".decommissionConfirmation" 
                                                         styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesDecommission_${device.deviceId}"
