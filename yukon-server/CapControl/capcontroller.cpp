@@ -476,7 +476,7 @@ void CtiCapController::controlLoop()
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
-        CtiTime lastDailyReset;     // == CtiTime::now()
+        CtiDate lastDailyResetDate;     // == CtiDate::now()
         BOOL waitToBroadCastEverything = FALSE;
         BOOL startUpSendStats = TRUE;
 
@@ -523,11 +523,11 @@ void CtiCapController::controlLoop()
                         store->verifySubBusAndFeedersStates();
                     }
 
-                    if ( currentDateTime.date() != lastDailyReset.date() )
+                    if ( currentDateTime.date() != lastDailyResetDate )
                     {
                         store->resetDailyOperations();
 
-                        lastDailyReset = currentDateTime;
+                        lastDailyResetDate = currentDateTime;
                     }
                 }
                 catch(...)
