@@ -6,15 +6,6 @@
 
 <cti:standardPage page="webServices.webservice" module="support">
     
-    <style type="text/css">
-      textarea.xml {
-            width: 1000px;
-            height: 300px;
-            border: 3px solid #BBBBBB;
-            padding: 2px;;
-            background-color:#FAFAFA;
-        }
-    </style>
     
     <script type="text/javascript">
 
@@ -87,7 +78,7 @@
     					<td><B><i:inline key=".username"/></B></td>
     					<td>
     						<input type="text" id="userName" name="userName" value="${userName}">
-    						<input type="button" onclick="resetUserName()" value="Reset Username">
+                            <cti:button nameKey="resetUsernameBtn" type="submit" styleClass="f_blocker" onclick="resetUserName()"/>
     					</td>
     				</tr>
     			</table>
@@ -137,7 +128,7 @@
 		        
 		        <%-- SUBMIT --%>
 		        <br>
-		    	<input type="button" value="Submit Request" onclick="executeRequestForm()"> 
+                <cti:button nameKey="submitRequestBtn" type="submit" styleClass="f_blocker" onclick="executeRequestForm()"/>
 		    </td>
 		    
     	</tr>

@@ -6,19 +6,6 @@
 
 <cti:standardPage page="webServices.loadControl" module="support">
 
-    <style type="text/css">
-      table.resultsTable th.functionality {width:200px;}
-      table.resultsTable td.functionality {vertical-align: top;text-align:center;}
-      table.resultsTable td.xmlTest {}
-      table.resultsTable td.inputTest {vertical-align: top;}
-      textarea.xml {
-            width: 600px;
-            height: 150px;
-            border: 3px solid #cccccc;
-            padding: 2px;
-        }
-    </style>
-    
     <script>
         
         function toggleObserveConstraintsAndExecute(forceEl, observeAndExecuteId) {
@@ -35,7 +22,7 @@
     <c:if test="${not empty results}">
         <ul>
         <c:forEach items="${results}" var="result">
-            <li><div style="color:#151B8D">${result}</div></li>
+            <li><div class="successMessage">${result}</div></li>
         </c:forEach>
         </ul>
     <br><br>
@@ -53,15 +40,15 @@
             <td class="functionality"><i:inline key=".programStatusByName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/getProgramStatusByProgramName" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -72,11 +59,11 @@
             <td class="functionality"><i:inline key=".programStatusAllActive"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/getAllCurrentlyActivePrograms" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="RUN" nameColumnWidth="200px">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".run" >
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -87,33 +74,33 @@
             <td class="functionality"><i:inline key=".startByScenarioName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/startControlByScenarioName" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".scenarioName" >
                             <input type="text" name="scenarioName" value="${scenarioName}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Start Time">
+                        <tags:nameValue2 nameKey=".startTime">
                             <tags:dateInputCalendar fieldName="startDate" fieldValue="${startDate}"/>
-                            <input type="text" name="startTime" value="${startTime}">(HH:MM)
-                        </tags:nameValue>
+                            <input type="text" name="startTime" value="${startTime}"><i:inline key=".hhMM"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Stop Time">
+                        <tags:nameValue2 nameKey=".stopTime">
                             <tags:dateInputCalendar fieldName="stopDate" fieldValue="${stopDate}"/>
-                            <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
-                        </tags:nameValue>
+                            <input type="text" name="stopTime" value="${stopTime}"><i:inline key=".hhMM"/>
+                        </tags:nameValue2>
 
-                        <tags:nameValue name="Force Execute">
+                        <tags:nameValue2 nameKey=".forceExecute">
                             <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute24');">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Observe Constraints And Execute">
+                        <tags:nameValue2 nameKey=".observeAndExecute">
                             <input type="checkbox" id="observeConstraintsAndExecute24" name="observeConstraintsAndExecute" checked>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -123,37 +110,37 @@
             <td class="functionality"><i:inline key=".startByProgramName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/startControlByProgramName" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Start Time">
+                        <tags:nameValue2 nameKey=".startTime">
                             <tags:dateInputCalendar fieldName="startDate" fieldValue="${startDate}"/>
-                            <input type="text" name="startTime" value="${startTime}">(HH:MM)
-                        </tags:nameValue>
+                            <input type="text" name="startTime" value="${startTime}"><i:inline key=".hhMM"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Stop Time">
+                        <tags:nameValue2 nameKey=".stopTime">
                             <tags:dateInputCalendar fieldName="stopDate" fieldValue="${stopDate}"/>
-                            <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
-                        </tags:nameValue>
+                            <input type="text" name="stopTime" value="${stopTime}"><i:inline key=".hhMM"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Gear Name">
+                        <tags:nameValue2 nameKey=".gearName">
                             <input type="text" name="gearName" value="${gearName}" size="2">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Force Execute">
+                        <tags:nameValue2 nameKey=".forceExecute">
                             <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute25');">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Observe Constraints And Execute">
+                        <tags:nameValue2 nameKey=".observeAndExecute">
                             <input type="checkbox" id="observeConstraintsAndExecute25" name="observeConstraintsAndExecute" checked>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -163,28 +150,28 @@
             <td class="functionality"><i:inline key=".stopByScenarioName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/stopControlByScenarioName" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".scenarioName" >
                             <input type="text" name="scenarioName" value="${scenarioName}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Stop Time">
+                        <tags:nameValue2 nameKey=".stopTime">
                             <tags:dateInputCalendar fieldName="stopDate" fieldValue="${stopDate}"/>
-                            <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
-                        </tags:nameValue>
+                            <input type="text" name="stopTime" value="${stopTime}"><i:inline key=".hhMM"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Force Execute">
+                        <tags:nameValue2 nameKey=".forceExecute">
                             <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute26');">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Observe Constraints And Execute">
+                        <tags:nameValue2 nameKey=".observeAndExecute">
                             <input type="checkbox" id="observeConstraintsAndExecute26" name="observeConstraintsAndExecute" checked>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -194,28 +181,28 @@
             <td class="functionality"><i:inline key=".stopByProgramName"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/stopControlByProgramName" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Stop Time">
+                        <tags:nameValue2 nameKey=".stopTime">
                             <tags:dateInputCalendar fieldName="stopDate" fieldValue="${startDate}"/>
-                            <input type="text" name="stopTime" value="${startTime}">(HH:MM)
-                        </tags:nameValue>
+                            <input type="text" name="stopTime" value="${startTime}"><i:inline key=".hhMM"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Force Execute">
+                        <tags:nameValue2 nameKey=".forceExecute">
                             <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute27');">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Observe Constraints And Execute">
+                        <tags:nameValue2 nameKey=".observeAndExecute">
                             <input type="checkbox" id="observeConstraintsAndExecute27" name="observeConstraintsAndExecute" checked>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -225,15 +212,15 @@
             <td class="functionality"><i:inline key=".scenarioProgramList"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/getScenarioProgramStartGears" method="post">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".scenarioName" >
                             <input type="text" name="scenarioName" value="${scenarioName}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -243,37 +230,37 @@
             <td class="functionality"><i:inline key=".enrollingInAProgram"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/enrollingADeviceInAProgram" method="post">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
                     
-                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                        <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="accountNumber" value="${accountNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Appliance Category Name" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".applianceCategoryName" >
                             <input type="text" name="applianceCategoryName" value="${applianceCategoryName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Load Group Name" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".loadGroupName" >
                             <input type="text" name="loadGroupName" value="${loadGroupName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="applianceKW" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".applianceKW" >
                             <input type="text" name="applianceKW" value="${applianceKW}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Relay" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".relay" >
                             <input type="text" name="relay" value="${relay}">
-                        </tags:nameValue>
-                        <tags:nameValue name="SeasonalLoad" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".seasonalLoad" >
                             <input type="checkbox" name="seasonalLoad" value="true">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -284,34 +271,34 @@
             <td class="functionality"><i:inline key=".unenrollingInAProgram"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/unenrollingADeviceInAProgram" method="post">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
                     
-                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                        <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="accountNumber" value="${accountNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Appliance Category Name" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".applianceCategoryName" >
                             <input type="text" name="applianceCategoryName" value="${applianceCategoryName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Load Group Name" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".loadGroupName" >
                             <input type="text" name="loadGroupName" value="${loadGroupName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="applianceKW" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".applianceKW" >
                             <input type="text" name="applianceKW" value="${applianceKW}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Relay" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".relay" >
                             <input type="text" name="relay" value="${relay}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -321,31 +308,31 @@
             <td class="functionality"><i:inline key=".addDevice"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/addDeviceToAccount" method="post">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
                     
-                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                        <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="accountNumber" value="${accountNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
-                        </tags:nameValue>                        
-                        <tags:nameValue name="Device Type" nameColumnWidth="200px">
+                        </tags:nameValue2>                        
+                        <tags:nameValue2 nameKey=".deviceType" >
                             <input type="text" name="deviceType" value="${deviceType}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Field Install Date">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".fieldInstallDate">
                             <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDate}"/>
-                        </tags:nameValue>                        
-                        <tags:nameValue name="Service Company Name" nameColumnWidth="200px">
+                        </tags:nameValue2>                        
+                        <tags:nameValue2 nameKey=".serviceCompanyName" >
                             <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Device Label" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".deviceLabel" >
                             <input type="text" name="deviceLabel" value="${deviceLabel}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -355,31 +342,31 @@
             <td class="functionality"><i:inline key=".updateDevice"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/updateDeviceOnAccount" method="post">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
                     
-                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                        <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="accountNumber" value="${accountNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
-                        </tags:nameValue>                        
-                        <tags:nameValue name="Device Type" nameColumnWidth="200px">
+                        </tags:nameValue2>                        
+                        <tags:nameValue2 nameKey=".deviceType" >
                             <input type="text" name="deviceType" value="${deviceType}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Field Install Date">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".fieldInstallDate">
                             <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDate}"/>
-                        </tags:nameValue>                        
-                        <tags:nameValue name="Service Company Name" nameColumnWidth="200px">
+                        </tags:nameValue2>                        
+                        <tags:nameValue2 nameKey=".serviceCompanyName" >
                             <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Device Label" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".deviceLabel" >
                             <input type="text" name="deviceLabel" value="${deviceLabel}">
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>
@@ -389,25 +376,25 @@
             <td class="functionality"><i:inline key=".removeDevice"/></td>
             <td class="inputTest">
                 <form action="/spring/debug/loadControlService/inputs/removeDeviceFromAccount" method="post">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
                     
-                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                        <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="accountNumber" value="${accountNumber}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
-                        </tags:nameValue>                        
-                        <tags:nameValue name="Device Type" nameColumnWidth="200px">
+                        </tags:nameValue2>                        
+                        <tags:nameValue2 nameKey=".deviceType" >
                             <input type="text" name="deviceType" value="${deviceType}">
-                        </tags:nameValue>
-                        <tags:nameValue name="Field Remove Date">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".fieldRemoveDate">
                             <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="${fieldRemoveDate}"/>
-                        </tags:nameValue>                        
+                        </tags:nameValue2>                        
                         
-                        <tags:nameValue name="RUN">
-                            <input type="submit" value="TEST">
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        <tags:nameValue2 nameKey=".run">
+                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </form>
             </td>
         </tr>                

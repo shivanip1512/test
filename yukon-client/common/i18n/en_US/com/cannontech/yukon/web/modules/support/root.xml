@@ -4,20 +4,20 @@
 
     <entry key="yukon.web.modules.support.pageTitle">Yukon Support Information</entry>
     <entry key="yukon.web.modules.support.moduleName">Support</entry>
-    
+
     <entry key="yukon.web.modules.support.logLanding.pageName">Logs</entry>
     <entry key="yukon.web.modules.support.logMenu.pageName">Log Explorer</entry>
     <entry key="yukon.web.modules.support.logMenu.pageDescription">{0}</entry>
-    
+
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
     <entry key="yukon.web.modules.support.logTail.pageDescription">{0}</entry>
-    
+
     <entry key="yukon.web.modules.support.logView.pageName">Log View</entry>
     <entry key="yukon.web.modules.support.logView.contextualPageName">View</entry>
     <entry key="yukon.web.modules.support.logView.pageDescription">{0}</entry>
-    
+
     <entry key="yukon.web.modules.support.pointInjection.pageName">Point Injection</entry>
-    
+
     <entry key="yukon.web.modules.support.bulkPointInjection.pageName">Bulk Point Injection</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.attribute">Attribute</entry>
@@ -34,20 +34,21 @@
     <entry key="yukon.web.modules.support.bulkPointInjection.valueRangeLow">Value Range Low</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.valueRangeHigh">Value Range High</entry>
     <entry key="yukon.web.modules.support.bulkPointInjection.archive">Archive</entry>
-    
+
     <entry key="yukon.web.modules.support.setup.pageName">Setup</entry>
     <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">Login Group Role Updated</entry>
-    
+
     <entry key="yukon.web.modules.support.supportBundle.pageName">Support Bundle</entry>
 
     <entry key="yukon.web.modules.support.supportBundle.title">Support Bundle</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.SEND_ERROR">The file upload failed.  Please try again.  Contact support if this happens again.</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.SEND_ERROR">The file upload failed. Please try again. Contact support if this happens
+        again.</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.INVALID_CREDENTIALS">Please contact technical support (invalid credentials).</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUpload.succeeded">The file {0} was successfully uploaded.</entry>
 
     <entry key="yukon.web.modules.support.supportBundle.ftp.username">Username</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftp.password">Password</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftp.host">Host</entry>    
+    <entry key="yukon.web.modules.support.supportBundle.ftp.host">Host</entry>
 
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.ONE_WEEK">Last week</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleRangeSelection.TWO_WEEKS">Last two weeks</entry>
@@ -75,12 +76,12 @@
     <entry key="yukon.web.modules.support.supportBundle.startUpload.label">Start Upload</entry>
     <entry key="yukon.web.modules.support.supportBundle.okImg.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.okImg.label">Ok</entry>
-    
+
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.doneMsg">Done</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.pendingMsg">Pending</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.inProgressMsg">In Progress...</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.finishedMsg">Finished</entry>
-    
+
     <entry key="yukon.web.modules.support.supportBundle.send.fileHeading">File Information</entry>
     <entry key="yukon.web.modules.support.supportBundle.send.filenameLbl">Filename</entry>
     <entry key="yukon.web.modules.support.supportBundle.send.fileSizeLbl">Size</entry>
@@ -107,10 +108,10 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupDaoSource">User Group Data</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogCsvSource">Event Log Data</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.themeDirectory">Theme Directory</entry>
-    
+
     <entry key="yukon.web.modules.support.pointInjection.myPicker.label">Foo</entry>
     <entry key="yukon.web.modules.support.pointInjection.addRow.label">Add Row</entry>
-    
+
     <entry key="yukon.web.modules.support.pickerTest.pageName">Picker Test</entry>
     <entry key="yukon.web.modules.support.pickerTest.linkPickers.title">Link Pickers</entry>
 
@@ -158,29 +159,37 @@
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.addressRangeMax">Address Range Max</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol">Cap Control</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.cbcTypes">CBC Types</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.regulatorTypes">Regulator Types</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.regulatorTypes">Regulator Types</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.areas"># of Areas</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.subs"># of Subs (per Area)</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.subBuses"># of SubBuses (per Sub)</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.feeders"># of Feeders (per SubBus)</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.capBanks"># of CapBanks (per Feeder)</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.subBuses"># of SubBuses (per Sub)</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.feeders"># of Feeders (per SubBus)</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.capBanks"># of CapBanks (per Feeder)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.cbcs"># of CBCs (per CapBank)</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars">Stars</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.hardwareTypes">Hardware Types</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.parentEnergyCompany">Parent Energy Company</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.parentEnergyCompany">Parent Energy Company</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numAccounts"># of Accounts</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numHardwarePerAccount"># of Hardware (per account)</entry>
+    <entry
+        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numHardwarePerAccount"># of Hardware (per account)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numExtra"># of Extra Hardware (per type)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.accountNumMin">Account # Range Start</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.accountNumMax">Account # Range End</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.serialNumMin">Serial # Range Start</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.serialNumMax">Serial # Range End</entry>
-    
+
     <entry key="yukon.web.modules.support.miscellaneousMethod.pageName">Miscellaneous Methods</entry>
     <entry key="yukon.web.modules.support.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>
-    
+
     <entry key="yukon.web.modules.support.rfnTest.pageName">RFN Test</entry>
     <entry key="yukon.web.modules.support.rfnTest.send.label">Send Archive Request</entry>
 
@@ -188,11 +197,11 @@
     <entry key="yukon.web.modules.support.i18nDemo.testMessage">Test "i18nDemo"</entry>
     <entry key="yukon.web.modules.support.i18nDemo.nested.testMessage">Test "i18nDemo.nested"</entry>
     <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>
-    
+
     <!-- Load Control Web Service Page -->
     <entry key="yukon.web.modules.support.webServices.loadControl.pageName">Load Control Services Test</entry>
     <entry key="yukon.web.modules.support.webServices.loadControl.pageDescription">Load Control Services</entry>
-    
+
     <entry key="yukon.web.modules.support.webServices.loadControl.functionality">Functionality</entry>
     <entry key="yukon.web.modules.support.webServices.loadControl.inputTest">Input Test</entry>
     <entry key="yukon.web.modules.support.webServices.loadControl.programStatusByName">Program Status By Program Name</entry>
@@ -207,10 +216,32 @@
     <entry key="yukon.web.modules.support.webServices.loadControl.addDevice">Add a device to an account</entry>
     <entry key="yukon.web.modules.support.webServices.loadControl.updateDevice">Update a device on an account</entry>
     <entry key="yukon.web.modules.support.webServices.loadControl.removeDevice">Remove a device on an account</entry>
-    
+    <entry key="yukon.web.modules.support.webServices.loadControl.programName">Program Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.run">RUN</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.scenarioName">Scenario Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.stopTime">Stop Time</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.forceExecute">Force Execute</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.observeAndExecute">Observe Constraints And Execute</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.gearName">Gear Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.applianceCategoryName">Appliance Category Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.loadGroupName">Load Group Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.applianceKW">applianceKW</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.relay">Relay</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.seasonalLoad">Seasonal Load</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.fieldInstallDate">Field Install Date</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.serviceCompanyName">Service Company Name</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.deviceLabel">Device Label</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.fieldRemoveDate">Field Remove Date</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.hhMM">(HH:MM)</entry>
+    <entry key="yukon.web.modules.support.webServices.loadControl.testBtn.label">TEST</entry>
+     
     <entry key="yukon.web.modules.support.webServices.account.pageName">Account Service Test</entry>
     <entry key="yukon.web.modules.support.webServices.account.pageDescription">Account Services</entry>
-    
+
     <entry key="yukon.web.modules.support.webServices.account.functionality">Functionality</entry>
     <entry key="yukon.web.modules.support.webServices.account.bgeIntegrationReqDocRef">BGE Integration Requirements Doc Ref</entry>
     <entry key="yukon.web.modules.support.webServices.account.inputTest">Input Test</entry>
@@ -218,14 +249,51 @@
     <entry key="yukon.web.modules.support.webServices.account.addAccount">Add Account</entry>
     <entry key="yukon.web.modules.support.webServices.account.updateAccount">Update Account</entry>
     <entry key="yukon.web.modules.support.webServices.account.section3">Section 3, #3</entry>
-    
+    <entry key="yukon.web.modules.support.webServices.account.error">Error</entry>
+    <entry key="yukon.web.modules.support.webServices.account.result">Result</entry>
+    <entry key="yukon.web.modules.support.webServices.account.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.support.webServices.account.operator">Operator (yukon user)</entry>
+    <entry key="yukon.web.modules.support.webServices.account.lastName">Last Name</entry>
+    <entry key="yukon.web.modules.support.webServices.account.firstName">First Name</entry>
+    <entry key="yukon.web.modules.support.webServices.account.homePhone">Home Phone</entry>
+    <entry key="yukon.web.modules.support.webServices.account.workPhone">Work Phone</entry>
+    <entry key="yukon.web.modules.support.webServices.account.emailAddress">Email Address</entry>
+    <entry key="yukon.web.modules.support.webServices.account.altTracking">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.support.webServices.account.map">Map #</entry>
+    <entry key="yukon.web.modules.support.webServices.account.commercial">commercial? (true-false)</entry>
+    <entry key="yukon.web.modules.support.webServices.account.companyName">Company Name (commercial only)</entry>
+    <entry key="yukon.web.modules.support.webServices.account.address1">Address 1</entry>
+    <entry key="yukon.web.modules.support.webServices.account.address2">Address 2</entry>
+    <entry key="yukon.web.modules.support.webServices.account.city">City</entry>
+    <entry key="yukon.web.modules.support.webServices.account.state">State</entry>
+    <entry key="yukon.web.modules.support.webServices.account.zip">Zip</entry>
+    <entry key="yukon.web.modules.support.webServices.account.county">County</entry>
+    <entry key="yukon.web.modules.support.webServices.account.billAddress1">Billing Address 1</entry>
+    <entry key="yukon.web.modules.support.webServices.account.billAddress2">Billing Address 2</entry>
+    <entry key="yukon.web.modules.support.webServices.account.billCity">Billing City</entry>
+    <entry key="yukon.web.modules.support.webServices.account.billState">Billing State</entry>
+    <entry key="yukon.web.modules.support.webServices.account.billZip">Billing Zip</entry>
+    <entry key="yukon.web.modules.support.webServices.account.billCounty">Billing >County</entry>
+    <entry key="yukon.web.modules.support.webServices.account.substationName">Substation Name</entry>
+    <entry key="yukon.web.modules.support.webServices.account.feeder">Feeder</entry>
+    <entry key="yukon.web.modules.support.webServices.account.pole">Pole</entry>
+    <entry key="yukon.web.modules.support.webServices.account.transformerSize">Transformer Size</entry>
+    <entry key="yukon.web.modules.support.webServices.account.serviceVoltage">Service Voltage</entry>
+    <entry key="yukon.web.modules.support.webServices.account.username">Username</entry>
+    <entry key="yukon.web.modules.support.webServices.account.password">Password</entry>
+    <entry key="yukon.web.modules.support.webServices.account.loginGroup">Login Group</entry>
+    <entry key="yukon.web.modules.support.webServices.account.run">RUN</entry>
+    <entry key="yukon.web.modules.support.webServices.account.testBtn.label">TEST</entry>
+
     <entry key="yukon.web.modules.support.webServices.webservice.pageName">Web Service XML Test</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.pageDescription">Web Service</entry>
-    
+
     <entry key="yukon.web.modules.support.webServices.webservice.requestType">Request Type:</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.choose">Choose...</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.uri">URI:</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.username">Username:</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.response">RESPONSE</entry>
-    
+    <entry key="yukon.web.modules.support.webServices.webservice.submitRequestBtn.label">Submit Request</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.resetUsernameBtn.label">Reset Username</entry>
+
 </properties>
