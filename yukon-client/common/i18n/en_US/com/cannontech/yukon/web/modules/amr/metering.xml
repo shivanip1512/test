@@ -129,8 +129,8 @@
     <entry key="yukon.web.widgets.touWidget.rateD">D</entry>
     <entry key="yukon.web.widgets.touWidget.read.label">Read Now</entry>
     <entry key="yukon.web.widgets.touWidget.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.touWidget.errorReading">Error reading the meter:</entry>
-    <entry key="yukon.web.widgets.touWidget.successReading">Successfully read the meter.</entry>
+    <entry key="yukon.web.widgets.touWidget.errorReading">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.touWidget.successReading">Successful Read</entry>
     <entry key="yukon.web.widgets.touWidget.dailyReadings">Daily readings (before {0})</entry>
     <entry key="yukon.web.widgets.touWidget.recentReadings">Recent Readings (since {0})</entry>
     <entry key="yukon.web.widgets.touWidget.currentReading">{0} Reading</entry>
@@ -142,4 +142,6 @@
     <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.label">Download TOU Schedule</entry>
     <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.labelBusy">Downloading TOU Schedule</entry>
     <entry key="yukon.web.widgets.touScheduleWidget.noSchedules">No Schedules</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.errorReading">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.successReading">Successful Download</entry>
 </properties>

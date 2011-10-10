@@ -25,21 +25,14 @@
 		var confirmed = true;
 		if (confirmText != null && confirmText.strip() != '') {
 			var confirmed = confirm(confirmText);
-			if (!confirmed) {
-				$('linkImg_${uniqueId}').show();
-			}
 		}
 
 		if (confirmed) {
-		    $('linkImg_${uniqueId}').hide();
-			${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', 'n/a', '${uniqueId}');
+			${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${uniqueId}');
 		}
 	}
 </script>
 
 <span id="${thisId}">
     <cti:button nameKey="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();"/>
-    <span class="widgetAction_waiting" style="display:none">
-        <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>">
-    </span>
 </span>

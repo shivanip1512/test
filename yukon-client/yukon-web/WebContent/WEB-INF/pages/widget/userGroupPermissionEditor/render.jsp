@@ -11,7 +11,7 @@
 
 <script type="text/javascript">
 ${pageScope.addPao} = function() {
-    ${widgetParameters.jsWidget}.doActionRefresh("addPao", "${pageScope.addPaoSpanId}", "Adding");
+    ${widgetParameters.jsWidget}.doActionRefresh("addPao", "${pageScope.addPaoSpanId}");
     return true;
 }
 </script>

@@ -38,34 +38,32 @@ JsWidgetObject.prototype = {
     new Ajax.Updater(container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
   },
   
-  doActionRefresh: function(cmd, actionButton, waitingLabel, key) {
-    $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
-    $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
-    $(this.container).getElementsBySelector('input').invoke('disable');
+  doActionRefresh: function(cmd, actionButton, key) {
+    var widgetContainer = '#' + $(actionButton).up('.widgetContainer').down('.content').id;
+    Yukon.ui.blockElement({'selector':widgetContainer});
+    
+    var that = this;
+    var localSuccess = function(transport, json) {
+        Yukon.ui.unblockElement({'selector':widgetContainer});
+        that.onSuccess(transport, json);
+    }
     
     newParams = $H(this.linkInfo.get(key));
     oldParams = this.getWidgetParameters();
     oldParams.update(newParams);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
   },
   
-  doActionUpdate: function(cmd, theContainer, actionButton, waitingLabel, key) {
-    $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
-    var buttonElem = $(actionButton).down('button');
-    var textSpan = $(buttonElem).down('span');
-    var initialLabel = textSpan.innerHTML;
-    textSpan.innerHTML = waitingLabel;
-    buttonElem.disable();
+  doActionUpdate: function(cmd, theContainer, actionButton, key) {
+    var widgetContainer = '#' + $(actionButton).up('.widgetContainer').down('.content').id;
+    Yukon.ui.blockElement({'selector':widgetContainer});
     
-    var localSuccess = function() {
-      // the following is only useful for the actionUpdate case
-      $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('hide'); 
-      textSpan.innerHTML = initialLabel;
-      buttonElem.enable();
-    
-      this.onSuccess();
+    var that = this;
+    var localSuccess = function(transport, json) {
+        Yukon.ui.unblockElement({'selector':widgetContainer});
+        that.onSuccess(transport, json);
     }
     
     newParams = $H(this.linkInfo.get(key));

@@ -52,7 +52,6 @@ public class TouScheduleWidget extends WidgetControllerBase {
         CommandResultHolder result = commandRequestExecutor.execute(meter, command, DeviceRequestType.TOU_SCHEDULE_COMMAND, user);
         
         mav.addObject("result", result);
-        mav.addObject("successMsg", "Successful Download");
         
         return mav;
     }

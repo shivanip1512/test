@@ -1,5 +1,6 @@
 <%@ attribute name="method" required="true" type="java.lang.String"%>
 <%@ attribute name="nameKey" required="true" type="java.lang.String"%>
+<%@ attribute name="arguments" required="false" type="java.lang.String"%>
 <%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
 <%@ attribute name="hide" type="java.lang.Boolean" %>
 
@@ -19,9 +20,8 @@
     </script>
     
     <span id="${thisId}">
-        <cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/>
         <c:if test="${showConfirm}">
-            <cti:msg2 var="confirmText" key=".${nameKey}.confirmText"/>
+            <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${arguments}"/>
         </c:if>
         <cti:button nameKey="${nameKey}" id="${buttonId}"/>
         <script type="text/javascript">
@@ -32,7 +32,7 @@
                     confirmed = confirm(confirmText);
                 }
                 if (confirmed) {
-                    ${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusyText}...', '${uniqueId}');
+                    ${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${uniqueId}');
                 }
             });
         </script>

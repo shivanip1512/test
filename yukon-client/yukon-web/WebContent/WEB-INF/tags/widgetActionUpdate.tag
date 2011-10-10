@@ -14,16 +14,13 @@
 	<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
 	
 	<script type="text/javascript">
-		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
+		${widgetParameters.jsWidget}.setupLink('${uniqueId}', 
+		                                        ${cti:jsonString(pageScope.linkParameters)});
 	</script>
 	
-    <%-- Prepending '.' and appending '.labelBusy' here to stay consistent with the xml key style of cti:button --%>
-	<cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/> 
-	
 	<span id="${thisId}">
-    <cti:button nameKey="${nameKey}" type="button" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusyText}...', '${uniqueId}')"/>
-	<span class="widgetAction_waiting" style="display:none">
-	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
-	</span>
+        <cti:button nameKey="${nameKey}" 
+                    onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', 
+                                                                         '${thisId}', '${uniqueId}')"/>
 	</span>
 </c:if>
