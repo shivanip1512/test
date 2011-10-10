@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.capcontrol.creation.model.CapControlImportResolvable;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultTypesEnum;
@@ -52,17 +52,18 @@ public class CapControlImportController {
 	private CapControlImportService capControlImportService;
 	private CapControlImporterFileDao capControlFileImporterDao;
 	
-	private ConcurrentMap<String, List<String>> resultsLookup = new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
+	private ConcurrentMap<String, List<CapControlImportResolvable>> resultsLookup = 
+	                                    new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public String importer(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) {
-		List<String> results = Lists.newArrayList();
+		List<CapControlImportResolvable> results = Lists.newArrayList();
 		
-		List<String> hierarchyResults = null;
+		List<CapControlImportResolvable> hierarchyResults = null;
 		if (hierarchyKey != null) {
 		    hierarchyResults = resultsLookup.get(hierarchyKey);
 		}
-		List<String> cbcResults = null;
+		List<CapControlImportResolvable> cbcResults = null;
 		if (cbcKey != null) {
 		    cbcResults = resultsLookup.get(cbcKey);
 		}
@@ -80,7 +81,6 @@ public class CapControlImportController {
 		return "tools/capcontrolImport.jsp";
 	}
 	
-	@Transactional
 	private void processCbcImport(List<CbcImportData> cbcImportData, List<CbcImportResult> cbcResults) {
 		for (CbcImportData data : cbcImportData) {
 		    try{
@@ -112,7 +112,6 @@ public class CapControlImportController {
 		}
 	}
 	
-	@Transactional
 	private void processHierarchyImport(List<HierarchyImportData> hierarchyImportData, 
 										List<HierarchyImportResult> hierarchyResults) {
 		for (HierarchyImportData data : hierarchyImportData) {
@@ -174,7 +173,7 @@ public class CapControlImportController {
         	}
         }
         
-        List<String> cbcResults = getCbcResultStrings(results);
+        List<CapControlImportResolvable> cbcResults = getCbcResultResolvables(results);
         
         UUID randomUUID = UUID.randomUUID();
         resultsLookup.put(randomUUID.toString(), cbcResults);
@@ -223,13 +222,12 @@ public class CapControlImportController {
         	}
         }
         
-        List<String> hierarchyResults = getHierarchyResultStrings(results);
+        List<CapControlImportResolvable> resolvables = getHierarchyResultResolvables(results);
 
         UUID randomUUID = UUID.randomUUID();
-        resultsLookup.put(randomUUID.toString(), hierarchyResults);
+        resultsLookup.put(randomUUID.toString(), resolvables);
         
 		model.addAttribute("hierarchyKey", randomUUID.toString());
-
         
 		for (HierarchyImportResult result : results) {
 		    if (!result.getResultType().isSuccess()) {
@@ -242,62 +240,68 @@ public class CapControlImportController {
         return "redirect:importer";
 	}
 	
-	private List<String> getHierarchyResultStrings(List<HierarchyImportResult> results) {
-		List<String> resultStrings = Lists.newArrayList();
+	private List<CapControlImportResolvable> getHierarchyResultResolvables(List<HierarchyImportResult> results) {
+		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
 		
-		for (HierarchyImportResult result : results) {
-			HierarchyImportResultTypesEnum resultType = result.getResultType();
-			String resultString = resultType.getDbString();
+		for (HierarchyImportResult result : results) {			
+		    CapControlImportResolvable resolvable = getHierarchyResultDetailResolvable(result);
 			
-			if (result.getHierarchyImportData() != null) {
-				String detail = getHierarchyResultDetail(result);
-				resultString += " - " + detail;
-			}
-			
-			resultStrings.add(resultString);
+			resolvables.add(resolvable);
 		}
 		
-		return resultStrings;
+		return resolvables;
 	}
 	
-	private String getHierarchyResultDetail(HierarchyImportResult result) {
-		ImportActionsEnum action = result.getHierarchyImportData().getImportAction();
-		String name = result.getHierarchyImportData().getName();
-		String outcome = result.getResultType().isSuccess() ? "succeeded" : "failed";
-		String actionString = (action != null) ? action.getDbString() : "Import"; 
-		
-		String resultString = actionString + " " + outcome + " for object named \"" + name + "\".";
-		
-		return resultString;
+	private CapControlImportResolvable getHierarchyResultDetailResolvable(HierarchyImportResult result) {
+	    YukonMessageSourceResolvable message = null;
+	    if (result.getHierarchyImportData() != null) {
+	        String key = "yukon.web.modules.capcontrol.import.hierarchy";
+	    
+	        key += getResultKey(result.getHierarchyImportData().getImportAction(), result.getResultType().isSuccess());
+	        message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString(),
+	                                                   result.getHierarchyImportData().getName());
+	    } else {
+	        String key = "yukon.web.modules.capcontrol.import.noDataResult";
+            message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString());
+	    }
+	    
+	    return new CapControlImportResolvable(message, result.getResultType().isSuccess());
 	}
 	
-	private List<String> getCbcResultStrings(List<CbcImportResult> results) {
-		List<String> resultStrings = Lists.newArrayList();
+	private String getResultKey(ImportActionsEnum action, boolean success) {
+	    String key = (action != null) ? action.getDbString() : "Import";
+        key += success ? "Success" : "Failure";
+        
+        return key;
+	}
+	
+	private List<CapControlImportResolvable> getCbcResultResolvables(List<CbcImportResult> results) {
+		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
 		
 		for (CbcImportResult result : results) {
-			CbcImportResultTypesEnum resultType = result.getResultType();
-			String resultString = resultType.getDbString();
+		    CapControlImportResolvable resolvable = getCbcResultDetailResolvable(result);
 			
-			if (result.getCbcImportData() != null) {
-				String detail = getCbcResultDetail(result);
-				resultString += " - " + detail;
-			}
-			
-			resultStrings.add(resultString);
+			resolvables.add(resolvable);
 		}
 		
-		return resultStrings;
+		return resolvables;
 	}
 	
-	private String getCbcResultDetail(CbcImportResult result) {
-		ImportActionsEnum action = result.getCbcImportData().getImportAction();
-		String name = result.getCbcImportData().getCbcName();
-		String outcome = result.getResultType().isSuccess() ? "succeeded" : "failed";
-		String actionString = (action != null) ? action.getDbString() : "Import"; 
-		
-		String resultString = actionString + " " + outcome + " for CBC named \"" + name + "\".";
-	
-		return resultString;
+	private CapControlImportResolvable getCbcResultDetailResolvable(CbcImportResult result) {
+	    YukonMessageSourceResolvable message = null;
+	    if (result.getCbcImportData() != null) {
+    	    String key = "yukon.web.modules.capcontrol.import.cbc";
+    	    
+    	    key += getResultKey(result.getCbcImportData().getImportAction(), result.getResultType().isSuccess());
+    	    
+    	    message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString(), 
+    	                                               result.getCbcImportData().getCbcName());
+	    } else {
+	        String key = "yukon.web.modules.capcontrol.import.noDataResult";
+            message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString());
+	    }
+	    
+	    return new CapControlImportResolvable(message, result.getResultType().isSuccess());
 	}
 	
 	@Autowired

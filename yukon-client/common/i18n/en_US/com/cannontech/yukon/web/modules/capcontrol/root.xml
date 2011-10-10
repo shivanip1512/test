@@ -64,6 +64,7 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.label">New Schedule Assignment </entry>
     
+    <entry key="yukon.web.modules.capcontrol.import.pageTitle">CapControl Importer</entry>
     <entry key="yukon.web.modules.capcontrol.import.missingRequiredColumn">File is missing a required column (or data for a required column): {0}</entry>
     <entry key="yukon.web.modules.capcontrol.import.processedWithErrors">File was processed successfully, but import errors occurred. See details below.</entry>
     <entry key="yukon.web.modules.capcontrol.import.invalidColumns">File contains invalid columns: {0}</entry>
@@ -71,5 +72,23 @@
     <entry key="yukon.web.modules.capcontrol.import.cbcFileEmpty">CBC Import File is empty.</entry>
     <entry key="yukon.web.modules.capcontrol.import.importHierarchyFileSuccess">Hierarchy file import completed successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.import.hierarchyFileEmpty">Hierarchy Import File is empty.</entry>
-    
+    <entry key="yukon.web.modules.capcontrol.import.cbcImportFile">CBC Import File:</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyImportFile">Hierarchy Import File:</entry>
+    <entry key="yukon.web.modules.capcontrol.import.noDataResult">{0} - Import failed with no valid import data.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyAddFailure">{0} - Add failed for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyAddSuccess">{0} - Add succeeded for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyUpdateFailure">{0} - Update failed for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyUpdateSuccess">{0} - Update succeeded for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyRemoveFailure">{0} - Remove failed for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyRemoveSuccess">{0} - Remove succeeded for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyImportFailure">{0} - Import failed for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.hierarchyImportSuccess">{0} - Import succeeded for object named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcAddFailure">{0} - Add failed for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcAddSuccess">{0} - Add succeeded for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcUpdateFailure">{0} - Update failed for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcUpdateSuccess">{0} - Update succeeded for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcRemoveFailure">{0} - Remove failed for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcRemoveSuccess">{0} - Remove succeeded for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcImportFailure">{0} - Import failed for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.cbcImportSuccess">{0} - Import succeeded for CBC named "{1}"</entry>
 </properties>

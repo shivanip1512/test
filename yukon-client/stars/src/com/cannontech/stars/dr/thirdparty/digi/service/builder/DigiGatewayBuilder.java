@@ -179,19 +179,6 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     	return fields;
     }
     
-    private DigiGateway buildDigiGateway(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = new DigiGateway();
-        
-        digiGateway.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.DIGIGATEWAY));
-        digiGateway.setFirmwareVersion(hardwareDto.getFirmwareVersion());
-        digiGateway.setMacAddress(hardwareDto.getMacAddress());
-        //Serial Number is unique, using that as the PaoName
-        digiGateway.setName(hardwareDto.getSerialNumber());
-        digiGateway.setDigiId(hardwareDto.getCommissionedId());
-        
-        return digiGateway;
-    }
-    
     @Autowired
     public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
         this.gatewayDeviceDao = gatewayDeviceDao;

@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -83,11 +82,6 @@ public class SubstationDaoImpl implements SubstationDao {
 	                                      PaoCategory.CAPCONTROL.getDbString(),
 	                                      ccType.getDbValue(), type);
 	    dbPersistentDao.processDBChange(msg);
-	}
-	
-	@Override
-	public boolean unassignSubstation(Substation substation) {
-		return unassignSubstation(substation.getId());
 	}
 
 	@Override
@@ -194,19 +188,6 @@ public class SubstationDaoImpl implements SubstationDao {
         
         return i;
     }
-	
-    @Override
-	public int getParentId(Substation station) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("SELECT AreaID");
-    	sql.append("FROM CCSubAreaAssignment");
-    	sql.append("WHERE SubstationBusID").eq(station.getId());
-		
-		int id = yukonJdbcTemplate.queryForInt(sql);
-		
-		return id;
-	}
     
     @Autowired
     public void setPaoDao(PaoDao paoDao) {

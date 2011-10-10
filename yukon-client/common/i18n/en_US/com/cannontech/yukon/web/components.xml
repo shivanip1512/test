@@ -168,6 +168,8 @@
     
     <entry key="yukon.web.components.button.submit.label">Submit</entry>
     
+    <entry key="yukon.web.components.button.import.label">Import</entry>
+    
     <entry key="yukon.web.components.button.disable.label">Disable</entry>
     <entry key="yukon.web.components.button.enable.label">Enable</entry>
 

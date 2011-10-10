@@ -177,11 +177,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
                                           ccType.getDbValue(), type);
         dbPersistentDao.processDBChange(msg);
     }
-
-    @Override
-    public boolean unassignSubstationBus(SubstationBus substationBus) {
-    	return unassignSubstationBus(substationBus.getId());
-    }
     
     @Override
     public boolean unassignSubstationBus(int substationBusId) {
@@ -196,18 +191,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		
 		return result;
     }
-    
-	@Override
-	public int getParentId(SubstationBus stationBus) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("SELECT SubstationID");
-		sql.append("FROM CCSubstationSubBusList");
-		sql.append("WHERE SubstationBusID").eq(stationBus.getId());
-		
-		int id = yukonJdbcTemplate.queryForInt(sql);
-		return id;
-	}
 	
 	@Override
     public Collection<Integer> getBankStatusPointIdsBySubbusId(int substationId) {

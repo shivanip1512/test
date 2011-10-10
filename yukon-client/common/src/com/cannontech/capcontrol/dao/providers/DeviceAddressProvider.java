@@ -57,7 +57,7 @@ public class DeviceAddressProvider implements PaoTypeProvider<DeviceAddressField
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		sql.append("DELETE FROM " + getSupportedTable().name());
+		sql.append("DELETE FROM").append(getSupportedTable().name());
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		
 		yukonJdbcTemplate.update(sql);

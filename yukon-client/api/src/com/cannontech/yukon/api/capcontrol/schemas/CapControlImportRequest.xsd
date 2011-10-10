@@ -7,16 +7,16 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
 
 	<xsd:complexType name="ImportBase">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element name="name" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-		</xsd:sequence>
+		</xsd:all>
 		<xsd:attribute name="action" use="required" type="yukon:ImportAction"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="CbcImportData">
 		<xsd:complexContent>
 			<xsd:extension base="yukon:ImportBase">
-				<xsd:sequence>
+				<xsd:all>
 					<xsd:element name="templateName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 					<xsd:element name="type" minOccurs="1" maxOccurs="1" type="yukon:CbcTypes"/>
 					<xsd:element name="serialNumber" minOccurs="1" maxOccurs="1" type="xsd:integer"/>
@@ -27,7 +27,7 @@
 					<xsd:element name="scanEnabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 					<xsd:element name="scanInterval" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
 					<xsd:element name="altInterval" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
-				</xsd:sequence>
+				</xsd:all>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -35,12 +35,12 @@
 	<xsd:complexType name="HierarchyImportData">
 		<xsd:complexContent>
 				<xsd:extension base="yukon:ImportBase">
-					<xsd:sequence>
+					<xsd:all>
 						<xsd:element name="parent" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 						<xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 						<xsd:element name="disabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 						<xsd:element name="mapLocationId" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					</xsd:sequence>
+					</xsd:all>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -84,9 +84,9 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="CbcList">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element name="cbc" minOccurs="0" maxOccurs="unbounded" type="yukon:CbcImportData"/>
-		</xsd:sequence>
+		</xsd:all>
 	</xsd:complexType>
 
 	<xsd:complexType name="CapControlImportRequest">

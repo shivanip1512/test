@@ -4,14 +4,11 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.search.SearchResult;
 
 public interface CapbankDao {
-    
-    public int getParentId(Capbank capbank);
     
     public int getCapBankIdByCBC(int paoId);
     

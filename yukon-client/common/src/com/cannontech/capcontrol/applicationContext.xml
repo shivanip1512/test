@@ -13,7 +13,6 @@
     <bean id="voltageRegulatorDao" class="com.cannontech.capcontrol.dao.impl.VoltageRegulatorDaoImpl"/>
     <bean id="voltageRegulatorCreationProvider" class="com.cannontech.capcontrol.dao.providers.VoltageRegulatorProvider"/>
 
-	<bean id="areaDao" class="com.cannontech.capcontrol.dao.impl.AreaDaoImpl"/>
 	<bean id="substationBusDao" class="com.cannontech.capcontrol.dao.impl.SubstationBusDaoImpl"/>
 	<bean id="ccSubstationDao" class="com.cannontech.capcontrol.dao.impl.SubstationDaoImpl"/>
 	<bean id="feederDao" class="com.cannontech.capcontrol.dao.impl.FeederDaoImpl"/> 

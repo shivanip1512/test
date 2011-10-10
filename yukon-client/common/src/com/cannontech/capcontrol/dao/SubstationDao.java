@@ -5,18 +5,13 @@ import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.search.SearchResult;
 
 public interface SubstationDao {
     
-    public int getParentId(Substation station);
-    
     public boolean assignSubstation(int substationId, String areaName);
     
     public boolean assignSubstation(int areaId, int substationId);
-    
-    public boolean unassignSubstation(Substation substation);
     
     public boolean unassignSubstation(int substationId);
     

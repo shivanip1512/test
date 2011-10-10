@@ -51,7 +51,7 @@ public class SpecialAreaProvider implements PaoTypeProvider<SpecialAreaFields> {
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("DELETE FROM").append(getSupportedTable().name());
         sql.append("WHERE AreaId").eq(paoIdentifier.getPaoId());
         
         yukonJdbcTemplate.update(sql);

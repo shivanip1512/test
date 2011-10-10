@@ -24,15 +24,15 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="HierarchyResponseList">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element name="hierarchyImportResponse" minOccurs="0" maxOccurs="unbounded" type="yukon:HierarchyImportResponse"/>
-		</xsd:sequence>
+		</xsd:all>
 	</xsd:complexType>
 	
 	<xsd:complexType name="CbcResponseList">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element name="cbcImportResponse" minOccurs="0" maxOccurs="unbounded" type="yukon:CbcImportResponse"/>
-		</xsd:sequence>
+		</xsd:all>
 	</xsd:complexType>
 	
 	<xsd:simpleType name="CbcImportResultType">

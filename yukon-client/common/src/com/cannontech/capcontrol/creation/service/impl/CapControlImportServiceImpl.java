@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
@@ -253,6 +254,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     @Override
+    @Transactional
     public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao != null) {
@@ -284,6 +286,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     @Override
+    @Transactional
     public void createCbcFromTemplate(CbcImportData cbcImportData, List<CbcImportResult> results) {
         YukonPao templatePao = retrieveCbcPao(cbcImportData.getTemplateName());
         if (templatePao == null) {
@@ -326,6 +329,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     @Override
+    @Transactional
     public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao == null) {
@@ -357,6 +361,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     @Override
+    @Transactional
     public void removeCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao == null) {
@@ -376,6 +381,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     @Override
+    @Transactional
     public void createHierarchyObject(HierarchyImportData hierarchyImportData,
                                       List<HierarchyImportResult> results) {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
@@ -402,6 +408,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     @Override
+    @Transactional
     public void updateHierarchyObject(HierarchyImportData hierarchyImportData,
                                       List<HierarchyImportResult> results) {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
@@ -430,6 +437,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     };
 
     @Override
+    @Transactional
     public void removeHierarchyObject(HierarchyImportData hierarchyImportData,
                                       List<HierarchyImportResult> results) {
         YukonPao pao = findHierarchyPao(hierarchyImportData);

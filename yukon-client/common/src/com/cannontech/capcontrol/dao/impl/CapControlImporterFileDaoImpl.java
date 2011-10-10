@@ -23,7 +23,6 @@ import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlImportException;
-import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
@@ -100,7 +99,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				throw new CapControlImportException("Import of " + cbcData.getCbcName() + " failed. Unknown Type: " + type);
 			}
 			
-			if (CapbankController.isValidCbc(cbcData.getCbcType())) {
+			if (PaoType.isValidCbc(cbcData.getCbcType())) {
 				// There are required fields we KNOW are here. Set them, then try the non-requireds.
 				cbcData.setCbcSerialNumber(Integer.decode(line[headerColumnMap.get(CapControlCbcImporterEnum.CBC_SERIAL_NUMBER)]));
 				cbcData.setMasterAddress(Integer.decode(line[headerColumnMap.get(CapControlCbcImporterEnum.MASTER_ADDRESS)]));
@@ -139,9 +138,8 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		
 		String ccType = line[headerColumnMap.get(CapControlHierarchyImporterEnum.TYPE)];	
 		
-		PaoType paoType = null;
 		try {
-			paoType = PaoType.getForDbString(ccType);
+			PaoType paoType = PaoType.getForDbString(ccType);
 			data.setPaoType(paoType);
 		} catch (IllegalArgumentException i) {
 			throw new CapControlImportException("Import of " + data.getName() + " failed. Unknown Type: " + ccType);

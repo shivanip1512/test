@@ -240,6 +240,27 @@ public enum PaoType implements DatabaseRepresentationSource {
         Validate.notNull(deviceType, dbString);
         return deviceType;
     }
+    
+    public static boolean isValidCbc(PaoType type) {
+        switch (type) {
+            case CBC_7010:
+            case CBC_7011:
+            case CBC_7012:
+            case CBC_7020:
+            case CBC_7022:
+            case CBC_7023:
+            case CBC_7024:
+            case CBC_8020:
+            case CBC_8024:
+            case CBC_DNP:
+            case CBC_EXPRESSCOM:
+            case CBC_FP_2800:
+            case CAPBANKCONTROLLER:
+                return true;
+            default: 
+                return false;
+        }
+    }
 
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,
             PaoClass paoClass) {

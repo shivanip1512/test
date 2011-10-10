@@ -4,31 +4,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceAddressFields;
-import com.cannontech.capcontrol.dao.providers.fields.DeviceCbcFields;
-import com.cannontech.capcontrol.dao.providers.fields.DeviceDirectCommSettingsFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
-import com.cannontech.capcontrol.model.CapbankController;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.device.creation.DeviceCreationException;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -38,18 +31,14 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointUtil;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
@@ -128,11 +117,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		return result;
 	}
-    
-	@Override
-	public boolean unassignController(CapbankController controller) {
-		return unassignController(controller.getId());
-	}
 
 	@Override
 	public boolean unassignController(int controllerId) {
@@ -150,31 +134,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		return result;
 	}
-	
-	@Override
-    public List<Integer> getUnassignedControllerIds() {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("SELECT PAObjectID");
-		sql.append("FROM YukonPAObject");
-		sql.append("WHERE Category").eq(PaoCategory.DEVICE);
-		sql.append(   "AND PAOClass").eq(PaoClass.CAPCONTROL);
-		sql.append(   "AND Type like 'CBC%' AND PAObjectId NOT IN");
-		sql.append(      "(SELECT ControlDeviceID");
-		sql.append(      " FROM CAPBANK)");
-		sql.append("ORDER BY PAOName");
-    
-		ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-	        public Integer mapRow(ResultSet rs, int num) throws SQLException{
-	            Integer i = new Integer ( rs.getInt("PAObjectID") );
-	            return i;
-	        }
-	    };
-	    
-	    List<Integer> cbcIds = yukonJdbcTemplate.query(sql, mapper);
-	    
-	    return cbcIds;
-    }
 	
     @Override
 	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
@@ -211,30 +170,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         return searchResult;
 	}
     
-	@Override
-    public void applyPoints(int deviceId, List<PointBase> points) {
-        
-        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
-        Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
-
-        for (PointBase point : points) {
-        
-            int nextPointId = pointDao.getNextPointId();
-            point.setPointID(nextPointId);
-            point.getPoint().setPaoID(deviceId);
-            
-            newPoints.add(point);
-        }
-        
-		try {
-			PointUtil.insertIntoDB(pointsToAdd);
-		} catch (TransactionException e) {
-			String str = "Failed on Inserting Points for CapBankController with id " + deviceId +".";
-			CTILogger.error(str);
-			throw new UnsupportedOperationException(str);
-		}
-    }
-    
     @Override
     public List<PointBase> getPointsForPao(int paoId) {
         
@@ -256,33 +191,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
         return points;
     }
-    
-    @Override
-    public PaoTemplate getCbcPaoTemplate(PaoIdentifier paoIdentifier) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT Y.PAOName, Y.Description, Y.DisableFlag, Y.PAOStatistics,");
-    	sql.append("   D.AlarmInhibit, D.ControlInhibit, A.MasterAddress, A.SlaveAddress,");
-    	sql.append("   W.Type, W.WinOpen, W.WinClose, W.AlternateOpen, W.AlternateClose,");
-    	sql.append("   C.SerialNumber, C.RouteID, S.PortID, R.ScanType, R.IntervalRate,");
-    	sql.append("   R.ScanGroup, R.AlternateRate");
-    	sql.append("FROM YukonPAObject Y");
-    	sql.append("   LEFT JOIN Device D ON D.DeviceID = Y.PAObjectID");
-    	sql.append("   LEFT JOIN DeviceAddress A ON A.DeviceID = Y.PAObjectID");
-    	sql.append("   LEFT JOIN DeviceWindow W ON W.DeviceID = Y.PAObjectID");
-    	sql.append("   LEFT JOIN DeviceCbc C ON C.DeviceID = Y.PAObjectID");
-    	sql.append("   LEFT JOIN DeviceDirectCommSettings S ON S.DeviceID = Y.PAObjectID");
-    	sql.append("   LEFT JOIN DeviceScanRate R ON R.DeviceID = Y.PAObjectID");
-    	sql.append("WHERE Y.PAObjectID").eq(paoIdentifier.getPaoId());
-    	
-    	return null;
-    };
-	
-	@Override
-	public void changeSerialNumber(SimpleDevice device, int newSerialNumber) {
-		String sql = "UPDATE DeviceCBC SET SERIALNUMBER = ? WHERE DEVICEID = ?";
-		
-		yukonJdbcTemplate.update(sql,newSerialNumber,device.getDeviceId());
-	}
 
 	@Override
 	public DeviceFields getDeviceData(PaoIdentifier paoIdentifier) {
@@ -360,57 +268,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		DeviceWindowFields windowFields = yukonJdbcTemplate.queryForObject(sql, windowFieldsRowMapper);
 		
 		return windowFields;
-	}
-
-	@Override
-	public DeviceDirectCommSettingsFields getDeviceDirectCommSettingsData(PaoIdentifier paoIdentifier) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("SELECT PortID");
-		sql.append("FROM DeviceDirectCommSettings");
-		sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
-		
-		YukonRowMapper<DeviceDirectCommSettingsFields> commSettingsRowMapper = new YukonRowMapper<DeviceDirectCommSettingsFields>() {
-			@Override
-			public DeviceDirectCommSettingsFields mapRow(YukonResultSet rs) throws SQLException {
-				int portId = rs.getInt("PortID");
-				
-				DeviceDirectCommSettingsFields commSettingsFields = new DeviceDirectCommSettingsFields(portId);
-			
-				return commSettingsFields;
-			}
-		};
-		
-		DeviceDirectCommSettingsFields commSettingsFields = yukonJdbcTemplate.queryForObject(sql, commSettingsRowMapper);
-		
-		return commSettingsFields;
-	}
-
-	@Override
-	public DeviceCbcFields getDeviceCbcData(PaoIdentifier paoIdentifier) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("SELECT SerialNumber, RouteID");
-		sql.append("FROM DeviceCBC");
-		sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
-		
-		YukonRowMapper<DeviceCbcFields> cbcRowMapper = new YukonRowMapper<DeviceCbcFields>() {
-			@Override
-			public DeviceCbcFields mapRow(YukonResultSet rs) throws SQLException {
-				int serialNumber = rs.getInt("SerialNumber");
-				
-				DeviceCbcFields cbcFields = new DeviceCbcFields();
-				cbcFields.setSerialNumber(serialNumber);
-				
-				cbcFields.setRouteId(rs.getInt("RouteID"));
-				
-				return cbcFields;
-			}
-		};
-		
-		DeviceCbcFields cbcFields = yukonJdbcTemplate.queryForObject(sql, cbcRowMapper);
-		
-		return cbcFields;
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.capcontrol.dao.CapbankDao;
-import com.cannontech.capcontrol.model.Capbank;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -153,18 +152,6 @@ public class CapbankDaoImpl implements CapbankDao {
         CapBankOperationalState state = CapBankOperationalState.getStateByName(result);
     
         return state == CapBankOperationalState.SWITCHED;
-    }
-
-    public int getParentId(Capbank capbank) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("SELECT FeederID");
-    	sql.append("FROM CCFeederSubAssignment");
-    	sql.append("WHERE DeviceID").eq(capbank.getPaoId());
-		
-		int id = yukonJdbcTemplate.queryForInt(sql);
-		
-		return id;
     }
     
     @Override
