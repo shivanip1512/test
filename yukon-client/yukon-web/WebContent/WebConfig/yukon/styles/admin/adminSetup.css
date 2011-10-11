@@ -227,31 +227,3 @@ div.listContainer {
 #operatorLoginList {
     max-height: 300px;
 }
-
-.pointingPopup_container {
-    position: absolute;
-    right:168px;
-    top:188px;
-    width:300px;
-    height: 100px;
-}
-
-.pointingPopup_content {
-    float: right;
-    width:274px;
-    min-height: 2em;
-    border: 3px solid #ccc;
-    background: white;
-    padding: 5px;
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
-}
-
-.pointingPopup_chevron {
-    float: left;
-    font-size: 0px; line-height: 0%; width: 0px;
-    border-top: 10px solid white;
-    border-bottom: 10px solid white;
-    border-left: none;
-    border-right: 10px solid #ccc;
-    margin-top: 20px;
-}

@@ -1631,3 +1631,32 @@ table.tabular th {
     color: #0000EE;
     cursor: pointer;
 }
+
+/* FIELD HELPER (fieldHelper.js) */
+.pointingPopup_container {
+    height: 100px;
+    position: absolute;
+    right: 168px;
+    top: 188px;
+    width: 300px;
+}
+.pointingPopup_content {
+    background: none repeat scroll 0 0 white;
+    border: 3px solid #CCCCCC;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+    float: right;
+    min-height: 2em;
+    padding: 5px;
+    width: 274px;
+}
+.pointingPopup_chevron {
+    border-color: white #CCCCCC white -moz-use-text-color;
+    border-style: solid solid solid none;
+    border-width: 10px 10px 10px medium;
+    float: left;
+    font-size: 0;
+    line-height: 0;
+    margin-top: 20px;
+    width: 0;
+}
+/* END FIELD HELPER */

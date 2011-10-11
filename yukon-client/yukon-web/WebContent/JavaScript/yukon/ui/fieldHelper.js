@@ -40,37 +40,45 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
          blurInput: function(event){
              var inputField = event.currentTarget;
              var defaultField = inputField.up('span').next('input');
+             $('descriptionPopup').hide();
+             if (typeof(defaultField) == 'undefined') {
+                 return;
+             }
              if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
                  inputField.removeClassName('usingNonDefaultValue');
                  inputField.value = $F(defaultField);
              } else {
                  inputField.addClassName('usingNonDefaultValue');
              }
-             $('descriptionPopup').hide();
          },
          
          blurSelect: function(event){
              var inputField = event.currentTarget;
              var defaultField = inputField.up('span').next('input');
-             
+             $('descriptionPopup').hide();
+             if (typeof(defaultField) == 'undefined') {
+                 return;
+             }
              if ($F(inputField) == $F(defaultField)) {
                  inputField.removeClassName('usingNonDefaultValue');
              } else {
                  inputField.addClassName('usingNonDefaultValue');
              }
-             $('descriptionPopup').hide();
          },
          
          focusInput: function(event){
              Yukon.FieldHelper.showPointingPopup(event);
              var inputField = event.currentTarget;
              var defaultField = inputField.up('span').next('input');
-             
-             inputField.removeClassName('usingNonDefaultValue');
-             if ($F(inputField) == $F(defaultField)) {
-                 inputField.value = "";
+             if (typeof(defaultField) == 'undefined') {
+                 return;
              }
-             inputField.removeClassName('usingNonDefaultValue');
+             if ($F(inputField) == $F(defaultField)) {
+                 inputField.removeClassName('usingNonDefaultValue');
+                 inputField.value = "";
+             } else {
+                 inputField.addClassName('usingNonDefaultValue');
+             }
          },
          
          //just show a popup and remove the class name
