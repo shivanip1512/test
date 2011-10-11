@@ -10,6 +10,7 @@ public class CapBankPointDelta {
     private String affectedPointName;
     private double preOpValue;
     private double delta;
+    private double deltaRounded; // For display purposes, since delta can get huge
     private boolean staticDelta;
     
     public CapBankPointDelta() {
@@ -79,6 +80,14 @@ public class CapBankPointDelta {
 	public void setDelta(double delta) {
 		this.delta = delta;
 	}
+
+    public double getDeltaRounded() {
+        return deltaRounded;
+    }
+
+    public void setDeltaRounded(double deltaRounded) {
+        this.deltaRounded = deltaRounded;
+    }
 
     public boolean isStaticDelta() {
         return staticDelta;

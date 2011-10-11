@@ -57,6 +57,7 @@
                 $('bankId').value = id.split('_')[0];
                 $('pointId').value = id.split('_')[1];
                 $('deltaForm').submit();
+                Yukon.ui.blockPage();
             }
         }
 
@@ -581,6 +582,7 @@
 	            <input type="hidden" name="staticDelta" id="staticDelta">
 	            <input type="hidden" name="delta" id="delta">
 	            <input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
+                <cti:msg2 var="deltaHeaderTitle" key=".deltas.deltaHeaderTitle" />
 	
 				<table id="deltaTable" class="compactResultsTable" >
 					<tr>
@@ -590,7 +592,7 @@
 						<th><i:inline key=".deltas.pointName"/></th>
 						<th><i:inline key=".deltas.preOp"/></th>
 						<th><i:inline key=".deltas.static"/></th>
-						<th><i:inline key=".deltas.delta"/></th>
+						<th title="${deltaHeaderTitle}"><i:inline key=".deltas.delta"/></th>
 					</tr>
 					
 					<c:if test="${searchResults.hitCount == 0}">
@@ -599,6 +601,7 @@
 						</tr>
 					</c:if>
 					
+                    <cti:msg2 var="deltaTitle" key=".deltas.deltaTitle" />
 					<c:forEach var="pointDelta" items="${searchResults.resultList}">
 						<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 							<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.cbcName}</spring:escapeBody></td>
@@ -617,9 +620,9 @@
 				                        </c:choose> 
 	                        		></td>
 									<td class="editable" style="width:100%">
-										<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="Click to edit."
+										<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="${deltaTitle}"
 										     onclick="editDelta('${pointDelta.bankId}_${pointDelta.pointId}')">
-											<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
+											<spring:escapeBody htmlEscape="true">${pointDelta.deltaRounded}</spring:escapeBody>
 										</div>
 										<div id="editDelta_${pointDelta.bankId}_${pointDelta.pointId}" style="display:none">
 											<input type="text" style="margin-right: 5px;width:30px;" name="editDeltaInput"
@@ -642,7 +645,7 @@
 	                        		></td>
 									<td style="width:100%">
 										<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}">
-											<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
+											<spring:escapeBody htmlEscape="true">${pointDelta.deltaRounded}</spring:escapeBody>
 										</div>
 									</td>
 								</c:otherwise>

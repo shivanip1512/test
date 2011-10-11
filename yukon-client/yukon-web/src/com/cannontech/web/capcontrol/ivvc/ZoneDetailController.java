@@ -1,5 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -29,12 +32,15 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
+import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.CommandHolder;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
@@ -63,6 +69,7 @@ public class ZoneDetailController {
     private VoltageRegulatorService voltageRegulatorService;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
     private PaoDao paoDao;
+    private PointDao pointDao;
     
     @RequestMapping
     public String detail(ModelMap model, FlashScope flash, HttpServletRequest request, 
@@ -72,12 +79,24 @@ public class ZoneDetailController {
     }
     
     @RequestMapping
-    public String deltaUpdate(ModelMap model, boolean staticDelta, int bankId, int pointId, double delta, 
-                              int zoneId, Boolean isSpecialArea, LiteYukonUser user, HttpServletRequest request) {
+    public String deltaUpdate(ModelMap model, boolean staticDelta, int bankId, int pointId, String delta, 
+                              int zoneId, Boolean isSpecialArea, LiteYukonUser user,
+                              HttpServletRequest request, FlashScope flashScope) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         CapControlCommandExecutor exec = new CapControlCommandExecutor(cache, user);
         
-        exec.executeDeltaUpdate(bankId,pointId,delta,staticDelta);
+        try {
+            double deltaAsDbl = Double.valueOf(delta);
+            exec.executeDeltaUpdate(bankId, pointId, deltaAsDbl, staticDelta);
+            MessageSourceResolvable successMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateSuccess");
+            flashScope.setConfirm(successMessage);
+        } catch (NumberFormatException e) {
+            // The user entered something invalid into the delta field
+            MessageSourceResolvable failureMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure");
+            flashScope.setError(failureMessage);
+        }
         
         if(isSpecialArea == null) {
             isSpecialArea = false;
@@ -301,6 +320,15 @@ public class ZoneDetailController {
         searchResults.setResultList(trimmedPointDeltas);
         searchResults.setBounds(startIndex, itemsPerPage, pointDeltas.size());
         
+        // Set the CapBankPointDelta.deltaRounded value to the delta value rounded down
+        // to the number of decimal places stored in the PointUnit table for that point
+        for (CapBankPointDelta pointDelta: pointDeltas) {
+            LitePointUnit pointUnit = pointDao.getPointUnit(pointDelta.getPointId());
+            BigDecimal bdDelta = new BigDecimal(pointDelta.getDelta()).setScale(pointUnit.getDecimalPlaces(),
+                                                               RoundingMode.HALF_DOWN);
+            pointDelta.setDeltaRounded(bdDelta.doubleValue());
+        }
+        
         model.addAttribute("zoneId", zoneId);
         model.addAttribute("searchResults", searchResults);
     }
@@ -366,5 +394,10 @@ public class ZoneDetailController {
     @Autowired
     public void setZoneDtoHelpers(ZoneDtoHelper zoneDtoHelpers) {
         this.zoneDtoHelper = zoneDtoHelpers;
+    }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
     }
 }
