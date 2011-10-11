@@ -294,8 +294,7 @@ public class InventoryDaoImpl implements InventoryDao {
             
             HardwareSummary hardware = new HardwareSummary(new InventoryIdentifier(inventoryId, hardwareType),
                                                      deviceLabel,
-                                                     manufacturerSerialNumber,
-                                                     hardwareType);
+                                                     manufacturerSerialNumber);
 
             return hardware;
         }

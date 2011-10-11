@@ -11,7 +11,7 @@ public class HardwareSummary {
     private String deviceLabel;
     private String serialNumber;
 
-    public HardwareSummary(InventoryIdentifier inventoryIdentifier, String deviceLabel, String serialNumber, HardwareType hardwareType) {
+    public HardwareSummary(InventoryIdentifier inventoryIdentifier, String deviceLabel, String serialNumber) {
         this.setInventoryIdentifier(inventoryIdentifier);
         this.deviceLabel = deviceLabel;
         this.serialNumber = serialNumber;
