@@ -26,6 +26,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
@@ -113,9 +114,9 @@ public class OperatorHardwareConfigController {
 
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("displayName", hardware.getDisplayName());
-
-        HardwareConfigurationDto configuration =
-            new HardwareConfigurationDto(hardware.getHardwareType().getHardwareConfigType());
+        HardwareType type = hardware.getHardwareType();
+        
+        HardwareConfigurationDto configuration = new HardwareConfigurationDto(type.getHardwareConfigType());
         configuration.setAccountId(accountInfo.getAccountId());
         configuration.setInventoryId(inventoryId);
         boolean trackHardwareAddressing =
@@ -132,8 +133,7 @@ public class OperatorHardwareConfigController {
                 StarsInventory inventory = inventories.getStarsInventory(index);
                 if (inventory.getInventoryID() == inventoryId) {
                     StarsLMConfiguration starsConfig = inventory.getLMHardware().getStarsLMConfiguration();
-                    configuration.setStarsLMConfiguration(starsConfig,
-                                                   hardware.getHardwareType()); 
+                    configuration.setStarsLMConfiguration(starsConfig,type); 
                     break;
                 }
             }
@@ -244,7 +244,8 @@ public class OperatorHardwareConfigController {
         // Manually bind the configuration so we can create the correct type
         // based on hardwareConfigType.
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
+        HardwareType type = hardware.getHardwareType();
+        HardwareConfigType hardwareConfigType = type.getHardwareConfigType();
         HardwareConfigurationDto configuration = new HardwareConfigurationDto(hardwareConfigType);
         BindingResult bindingResult = bind(model, request, configuration,
                                            "configuration", userContext);
@@ -276,7 +277,7 @@ public class OperatorHardwareConfigController {
                     new HardwareConfigurationDtoValidator();
                 validator.validate(configuration, bindingResult);
                 coldLoadPickupValidator.validate(configuration, bindingResult);
-                if (hardware.getHardwareType().isHasTamperDetect()) {
+                if (type.isHasTamperDetect()) {
                     tamperDetectValidator.validate(configuration, bindingResult);
                 }
                 if (bindingResult.hasErrors()) {
@@ -285,7 +286,7 @@ public class OperatorHardwareConfigController {
                     return prepareForEdit(false, model, configuration,
                                             bindingResult, userContext, accountInfo);
                 }
-                hardwareConfig.setStarsLMConfiguration(configuration.getStarsLMConfiguration(hardware.getHardwareType()));
+                hardwareConfig.setStarsLMConfiguration(configuration.getStarsLMConfiguration(type));
             }
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());

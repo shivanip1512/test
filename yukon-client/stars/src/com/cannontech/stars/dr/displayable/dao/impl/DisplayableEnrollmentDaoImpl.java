@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cannontech.common.inventory.HardwareConfigType;
-import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -120,15 +120,15 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         Predicate<HardwareSummary> enrollableFilter = new Predicate<HardwareSummary>() {
             @Override
             public boolean apply(HardwareSummary hardwareSummary) {
-                InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(hardwareSummary.getInventoryId());
                 
                 /* Exclude non enrollable hardware */
-                if (!inventoryIdentifier.getHardwareType().isEnrollable()) {
+                HardwareType type = hardwareSummary.getHardwareType();
+                if (!type.isEnrollable()) {
                     return false;
                 }
                 
                 /* Exclude non valid program enrollment (SEP hardware cannot be enrolled in DIRECT programs) */
-                HardwareConfigType hardwareConfigType = inventoryIdentifier.getHardwareType().getHardwareConfigType();
+                HardwareConfigType hardwareConfigType = type.getHardwareConfigType();
                 PaoTag inventoryEnrollmentTag = hardwareConfigType.getEnrollmentTag();
                 PaoType programPaoType = program.getPaoType();
                 if (programPaoType == PaoType.SYSTEM && hardwareConfigType.isSupportsVirtualEnrollment()) {
@@ -156,10 +156,9 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     private DisplayableEnrollmentInventory createDisplayableEnrollmentInventory(
     		HardwareSummary hardware, 
     		int programId, 
-    		List<ProgramEnrollment> activeEnrollments) 
-    {
+    		List<ProgramEnrollment> activeEnrollments) {
         
-    	Integer inventoryId = hardware.getInventoryId();
+    	int inventoryId = hardware.getInventoryId();
 		
 		boolean enrolled = false;
 		int loadGroupId = 0;

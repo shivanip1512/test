@@ -225,7 +225,7 @@ public class InventoryDaoImpl implements InventoryDao {
             @Override
             public Entry<Integer, HardwareSummary> mapRow(YukonResultSet rs) throws SQLException {
                 HardwareSummary hardware = hardwareSummaryRowMapper.mapRow(rs);
-                Integer inventoryId = hardware.getInventoryId();
+                int inventoryId = hardware.getInventoryId();
                 return Maps.immutableEntry(inventoryId, hardware);
             }
         };
@@ -291,8 +291,8 @@ public class InventoryDaoImpl implements InventoryDao {
             String manufacturerSerialNumber = rs.getString("ManufacturerSerialNumber");
             int hwDefinitionId = rs.getInt("hardwareDefinitionId");
             HardwareType hardwareType = HardwareType.valueOf(hwDefinitionId);
-
-            HardwareSummary hardware = new HardwareSummary(inventoryId,
+            
+            HardwareSummary hardware = new HardwareSummary(new InventoryIdentifier(inventoryId, hardwareType),
                                                      deviceLabel,
                                                      manufacturerSerialNumber,
                                                      hardwareType);

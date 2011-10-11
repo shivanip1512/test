@@ -57,7 +57,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
                 YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat.name",
                                                                                            label);
 
-                Integer inventoryId = thermSummary.getInventoryId();
+                int inventoryId = thermSummary.getInventoryId();
                 SubMenuOption option = new SubMenuOption("thermostat_" + inventoryId, resolvable, false);
                 List<MenuOptionProducer> subOptions = createSubMenu(thermSummary);
                 option.setSubOptions(subOptions);
@@ -84,15 +84,16 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         MenuOptionProducer producer;
 
         // Create saved schedules menu option
-        producer = createLink("savedSchedules", "/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + thermSummary.getInventoryId());
+        int inventoryId = thermSummary.getInventoryId();
+        producer = createLink("savedSchedules", "/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + inventoryId);
         producerList.add(producer);
         
         // Create manual menu option
-        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + thermSummary.getInventoryId());
+        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + inventoryId);
         producerList.add(producer);
         
         // Create history menu option
-        producer = createLink("history", "/spring/stars/consumer/thermostat/schedule/history?thermostatIds=" + thermSummary.getInventoryId());
+        producer = createLink("history", "/spring/stars/consumer/thermostat/schedule/history?thermostatIds=" + inventoryId);
         producerList.add(producer);
 
         return producerList;

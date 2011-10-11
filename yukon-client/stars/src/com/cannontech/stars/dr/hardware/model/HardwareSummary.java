@@ -3,24 +3,18 @@ package com.cannontech.stars.dr.hardware.model;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
 
 public class HardwareSummary {
 
-    private Integer inventoryId;
+    private InventoryIdentifier inventoryIdentifier;
     private String deviceLabel;
     private String serialNumber;
-    private HardwareType hardwareType;
 
-    public HardwareSummary(Integer inventoryId, String deviceLabel,
-            String serialNumber, HardwareType hardwareType) {
-        this.inventoryId = inventoryId;
+    public HardwareSummary(InventoryIdentifier inventoryIdentifier, String deviceLabel, String serialNumber, HardwareType hardwareType) {
+        this.setInventoryIdentifier(inventoryIdentifier);
         this.deviceLabel = deviceLabel;
         this.serialNumber = serialNumber;
-        this.hardwareType = hardwareType;
-    }
-
-    public Integer getInventoryId() {
-        return inventoryId;
     }
 
     public String getDeviceLabel() {
@@ -39,11 +33,25 @@ public class HardwareSummary {
         return deviceLabel;
     }
 
-    public HardwareType getHardwareType() {
-        return hardwareType;
-    }
 
     public int getNumRelays() {
-        return hardwareType.getNumRelays();
+        return getInventoryIdentifier().getHardwareType().getNumRelays();
     }
+
+    public void setInventoryIdentifier(InventoryIdentifier inventoryIdentifier) {
+        this.inventoryIdentifier = inventoryIdentifier;
+    }
+
+    public InventoryIdentifier getInventoryIdentifier() {
+        return inventoryIdentifier;
+    }
+    
+    public HardwareType getHardwareType() {
+        return inventoryIdentifier.getHardwareType();
+    }
+    
+    public int getInventoryId() {
+        return inventoryIdentifier.getInventoryId();
+    }
+    
 }
