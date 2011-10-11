@@ -70,14 +70,12 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
              Yukon.FieldHelper.showPointingPopup(event);
              var inputField = event.currentTarget;
              var defaultField = inputField.up('span').next('input');
+             inputField.removeClassName('usingNonDefaultValue');
              if (typeof(defaultField) == 'undefined') {
                  return;
              }
              if ($F(inputField) == $F(defaultField)) {
-                 inputField.removeClassName('usingNonDefaultValue');
                  inputField.value = "";
-             } else {
-                 inputField.addClassName('usingNonDefaultValue');
              }
          },
          
