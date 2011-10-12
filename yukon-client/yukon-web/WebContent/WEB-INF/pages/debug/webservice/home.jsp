@@ -78,7 +78,7 @@
     					<td><B><i:inline key=".username"/></B></td>
     					<td>
     						<input type="text" id="userName" name="userName" value="${userName}">
-                            <cti:button nameKey="resetUsernameBtn" type="submit" styleClass="f_blocker" onclick="resetUserName()"/>
+                            <cti:button nameKey="resetUsernameBtn" styleClass="f_blocker" onclick="resetUserName()"/>
     					</td>
     				</tr>
     			</table>
@@ -128,7 +128,7 @@
 		        
 		        <%-- SUBMIT --%>
 		        <br>
-                <cti:button nameKey="submitRequestBtn" type="submit" styleClass="f_blocker" onclick="executeRequestForm()"/>
+                <cti:button nameKey="submitRequestBtn" styleClass="f_blocker" onclick="executeRequestForm()"/>
 		    </td>
 		    
     	</tr>
