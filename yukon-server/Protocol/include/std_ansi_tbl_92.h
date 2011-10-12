@@ -1,4 +1,3 @@
-#endif // #ifndef __STD_ANSI_TBL_91_H__
 #pragma once
 
 #include "dlldefs.h"
