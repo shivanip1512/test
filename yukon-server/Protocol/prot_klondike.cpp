@@ -1144,6 +1144,10 @@ bool KlondikeProtocol::removeQueuedWork(void *handle)
 
             return true;
         }
+        else
+        {
+            ++itr;
+        }
     }
 
     return false;
