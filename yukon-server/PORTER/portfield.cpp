@@ -338,7 +338,7 @@ void PortThread(void *pid)
 
             if( int error_code = ReturnResultMessage(i, &InMessage, OutMessage) )
             {
-                RequeueReportError(error_code, OutMessage, &InMessage);
+                RequeueReportError(error_code, OutMessage);
                 continue;
             }
 
@@ -3028,6 +3028,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     else if( !status && nack1 )
                     {
                         status = NOTNORMAL;
+                        InMessage->EventCode = NOTNORMAL;
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3040,6 +3041,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read) )
                         {
                             status = NACKPAD1;
+                            InMessage->EventCode = NACKPAD1;
                         }
 
                         if( !(OutMessage->MessageFlags & (MessageFlag_AddMctDisconnectSilence |
