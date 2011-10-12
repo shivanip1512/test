@@ -113,9 +113,13 @@ public class AttributeServiceImpl implements AttributeService {
         for (YukonPao pao : devices) {
             List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
             for (Attribute attribute : attributes) {
-                PaoPointIdentifier paoPointIdentifier = 
-                    getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
-                points.add(paoPointIdentifier);
+                try {
+                    PaoPointIdentifier paoPointIdentifier =
+                        getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
+                    points.add(paoPointIdentifier);
+                } catch (IllegalUseOfAttribute e) {
+                    continue; // This device does not support the selected attribute.
+                }
             }
             if (!points.isEmpty()) {
                 devicesAndPoints.add(new PaoMultiPointIdentifier(points));
