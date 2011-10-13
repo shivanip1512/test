@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/23/2011 2:17:47 PM                         */
+/* Created on:     10/13/2011 3:37:50 PM                        */
 /*==============================================================*/
 
 
@@ -10105,20 +10105,24 @@ alter table CCEventLog
       on delete cascade;
 
 alter table CCFeederBankList
-   add constraint FK_CB_CCFeedLst foreign key (DeviceID)
-      references CAPBANK (DEVICEID);
+   add constraint FK_CCFeederBankList_CCFeeder foreign key (FeederID)
+      references CapControlFeeder (FeederID)
+      on delete cascade;
 
 alter table CCFeederBankList
-   add constraint FK_CCFeed_CCBnk foreign key (FeederID)
-      references CapControlFeeder (FeederID);
+   add constraint FK_CCFeederBankList_CapBank foreign key (DeviceID)
+      references CAPBANK (DEVICEID)
+      on delete cascade;
 
 alter table CCFeederSubAssignment
-   add constraint FK_CCFeed_CCFass foreign key (FeederID)
-      references CapControlFeeder (FeederID);
+   add constraint FK_CCFeederSubAssign_CCFeeder foreign key (FeederID)
+      references CapControlFeeder (FeederID)
+      on delete cascade;
 
 alter table CCFeederSubAssignment
-   add constraint FK_CCSub_CCFeed foreign key (SubStationBusID)
-      references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+   add constraint FK_CCFeederSubAssign_CCSubBus foreign key (SubStationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+      on delete cascade;
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
    add constraint FK_CCHSA_PAOID foreign key (PAObjectId)
@@ -10159,12 +10163,14 @@ alter table CCSEASONSTRATEGYASSIGNMENT
       references CapControlStrategy (StrategyID);
 
 alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID);
+   add constraint FK_CCSubAreaAssign_CCSubst foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+      on delete cascade;
 
 alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
-      references CAPCONTROLAREA (AreaID);
+   add constraint FK_CCSubAreaAssignment_CCArea foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID)
+      on delete cascade;
 
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
@@ -10175,12 +10181,14 @@ alter table CCSUBSPECIALAREAASSIGNMENT
       references CAPCONTROLSPECIALAREA (AreaID);
 
 alter table CCSUBSTATIONSUBBUSLIST
-   add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
-      references CAPCONTROLSUBSTATION (SubstationID);
+   add constraint FK_CCSubstSubBusList_CCSub foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+      on delete cascade;
 
 alter table CCSUBSTATIONSUBBUSLIST
-   add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR foreign key (SubStationBusID)
-      references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+   add constraint FK_CCSubstSubBusList_CCSubBus foreign key (SubStationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+      on delete cascade;
 
 alter table CCStrategyTargetSettings
    add constraint FK_CCStratTarSet_CapContStrat foreign key (StrategyId)
@@ -10614,28 +10622,33 @@ alter table DYNAMICBILLINGFORMAT
       references BillingFileFormats (FormatID);
 
 alter table DYNAMICCCAREA
-   add constraint FK_ccarea_Dynccarea foreign key (AreaID)
-      references CAPCONTROLAREA (AreaID);
+   add constraint FK_DynCCArea_CCArea foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID)
+      on delete cascade;
 
 alter table DYNAMICCCOPERATIONSTATISTICS
-   add constraint FK_DYNAMICC_REFERENCE_YUKONPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID);
+   add constraint FK_DynCCOpStats_YukonPAObject foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table DYNAMICCCSPECIALAREA
-   add constraint FK_DynCCSpecA_CapContSpecA foreign key (AreaID)
-      references CAPCONTROLSPECIALAREA (AreaID);
+   add constraint FK_DynCCSpecial_CCSpecialArea foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID)
+      on delete cascade;
 
 alter table DYNAMICCCSUBSTATION
-   add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
-      references CAPCONTROLSUBSTATION (SubstationID);
+   add constraint FK_DynCCSubst_CCSubst foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+      on delete cascade;
 
 alter table DYNAMICCCTWOWAYCBC
    add constraint FK_DYNAMICC_DEVICECB foreign key (DeviceID)
       references DeviceCBC (DEVICEID);
 
 alter table DYNAMICDEVICESCANDATA
-   add constraint SYS_C0015139 foreign key (DEVICEID)
-      references DEVICE (DEVICEID);
+   add constraint FK_DynDeviceScanData foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table DYNAMICPOINTDISPATCH
    add constraint SYS_C0013331 foreign key (POINTID)
@@ -10753,12 +10766,14 @@ alter table DigiGateway
       on delete cascade;
 
 alter table DynamicCCCapBank
-   add constraint FK_CpBnk_DynCpBnk foreign key (CapBankID)
-      references CAPBANK (DEVICEID);
+   add constraint FK_DynCCCapBank_CapBank foreign key (CapBankID)
+      references CAPBANK (DEVICEID)
+      on delete cascade;
 
 alter table DynamicCCFeeder
-   add constraint FK_CCFeed_DyFeed foreign key (FeederID)
-      references CapControlFeeder (FeederID);
+   add constraint FK_DynCCFeeder_CCFeeder foreign key (FeederID)
+      references CapControlFeeder (FeederID)
+      on delete cascade;
 
 alter table DynamicCCMonitorBankHistory
    add constraint FK_DYN_CCMONBNKHIST_BNKID foreign key (BankID)
@@ -10782,8 +10797,9 @@ alter table DynamicCCOriginalParent
       on delete cascade;
 
 alter table DynamicCCSubstationBus
-   add constraint FK_CCSubBs_DySubBs foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+   add constraint FK_DynCCSubBus_CCSubBus foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+      on delete cascade;
 
 alter table DynamicCalcHistorical
    add constraint FK_DynClc_ClcB foreign key (PointID)
