@@ -46,8 +46,4 @@
         </tr>
         <tags:dynamicTableUndoRow columnSpan="${numEntryColumns}" nameKey="undoRow"/>
     </table>
-
-    <script type="text/javascript">
-    Event.observe($('entries[${entryIndex}].definitionId'), 'change', typeChanged);
-    </script>
 </tags:standardPageFragment>

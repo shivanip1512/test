@@ -19,20 +19,19 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 <script type="text/javascript">
-function typeChanged(event) {
-    var selectElem = event.target;
+
+function typeChanged(event){
+    var selectElem = event.currentTarget;
     if (selectElem.selectedIndex != -1) {
-        var textElem = $(selectElem.id.replace('definitionId', 'text'));
-        if (!$F(textElem)) {
-            textElem.value = selectElem.options[selectElem.selectedIndex].text;
+        var textElems = jQuery("#"+ selectElem.id.replace('definitionId', 'text').replace("[", "\\[").replace("]", "\\]").replace(".", "\\."));
+        if (!textElems.val() || jQuery(selectElem).find("option:contains("+ textElems.val() +")").length) {
+            textElems.val(selectElem.options[selectElem.selectedIndex].text);
         }
     }
 }
 
-Event.observe(window, 'load', function() {
-    $$('select[name^=entries]').each(function(selectElem) {
-            Event.observe(selectElem, 'change', typeChanged);
-    });
+jQuery(document).ready(function(){
+   jQuery('select[name^=entries]').live('change', typeChanged);
 });
 </script>
 

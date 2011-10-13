@@ -18,15 +18,23 @@ package com.cannontech.web.taglib;
  *  
  */
 public enum JsLibrary {
+    EXT_ALL("/JavaScript/extjs/ext-all.js"),
+    EXT_BASE("/JavaScript/extjs/ext-base.js"),
+    
+    //if updating jquery be sure to include the noconflict call at the end of the file if prototype
+    //or ext is still being included
+    JQUERY("/JavaScript/lib/jQuery/1.6.4/jquery.min.js"),
+    JQUERY_NOCONFLICT("/JavaScript/lib/jQuery/1.6.4/jquery.noconflict.min.js"),
+    JSTREE("/JavaScript/lib/jQuery/plugins/jsTree/jquery.jstree.js"),
+    SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo-1.4.2-min.js"),
+    
+    JSON("/JavaScript/lib/JSON/2.0/json2.js"),
+    OVERLIB("/JavaScript/ol/overlib_mini.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
+    RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
     SCRIPTACULOUS("/JavaScript/lib/scriptaculous/1.8.3/scriptaculous.js"),
     SCRIPTACULOUS_EFFECTS("/JavaScript/lib/scriptaculous/1.8.3/effects.js"),
-    OVERLIB("/JavaScript/ol/overlib_mini.js"),
-    RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
-    EXT_BASE("/JavaScript/extjs/ext-base.js"),
-    EXT_ALL("/JavaScript/extjs/ext-all.js"),
     YUKON_UI("/JavaScript/yukon/ui/general.js"),
-    JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     
     // --DEPRECATED VERSIONS --//
     PROTOTYPE_150("/JavaScript/prototype150.js"),

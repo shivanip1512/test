@@ -67,7 +67,12 @@ public class LayoutController {
     @PostConstruct
     public void initialize() {
         Builder<String> builder = ImmutableList.builder();
-    	builder.add(JsLibrary.PROTOTYPE.getPath());
+        
+        //jquery MUST be included before any js library that commandeers the $ var.
+        builder.add(JsLibrary.JQUERY.getPath()); 
+
+        //add the other standard libs
+        builder.add(JsLibrary.PROTOTYPE.getPath());
     	builder.add(JsLibrary.YUKON_UI.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
