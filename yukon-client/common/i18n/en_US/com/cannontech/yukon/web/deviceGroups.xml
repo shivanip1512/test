@@ -94,7 +94,7 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle">Cannot Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel">This group contains {0} devices.</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel">Show Devices</entry>
-<entry key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText">Limted to {0} devices.</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText">Limited to {0} devices.</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText">Are you sure you want to remove all the devices from this group?</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel">Remove All Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription">Remove All Devices From This Group</entry>
