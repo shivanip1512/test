@@ -5401,13 +5401,6 @@
                 <decimalplaces value="1"/>
             </point>
             <!-- ANALOG POINTS -->
-            <point type="Analog" offset="8">
-            	<init>true</init>
-                <name>Delta Voltage</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>          
             <point type="Analog" offset="10002">
             	<init>true</init>
                 <name>UV Threshold</name>
@@ -5463,21 +5456,28 @@
             <point type="Analog" offset="5">
                 <init>true</init>
                 <name>Average Line Voltage</name>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="6">
                 <init>true</init>
                 <name>High Voltage</name>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="7">
                 <init>true</init>
                 <name>Low Voltage</name>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="8">
+                <init>true</init>
+                <name>Delta Voltage</name>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
@@ -5540,7 +5540,7 @@
             <point type="Analog" offset="19">
                 <init>true</init>
                 <name>VAR RMS Voltage</name>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
@@ -6025,6 +6025,13 @@
                 <name>Temperature</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="8">
+                <init>true</init>
+                <name>Delta Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="9">
