@@ -582,7 +582,6 @@
 	            <input type="hidden" name="staticDelta" id="staticDelta">
 	            <input type="hidden" name="delta" id="delta">
 	            <input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
-                <cti:msg2 var="deltaHeaderTitle" key=".deltas.deltaHeaderTitle" />
 	
 				<table id="deltaTable" class="compactResultsTable" >
 					<tr>
@@ -592,7 +591,7 @@
 						<th><i:inline key=".deltas.pointName"/></th>
 						<th><i:inline key=".deltas.preOp"/></th>
 						<th><i:inline key=".deltas.static"/></th>
-						<th title="${deltaHeaderTitle}"><i:inline key=".deltas.delta"/></th>
+						<th><i:inline key=".deltas.delta"/></th>
 					</tr>
 					
 					<c:if test="${searchResults.hitCount == 0}">
