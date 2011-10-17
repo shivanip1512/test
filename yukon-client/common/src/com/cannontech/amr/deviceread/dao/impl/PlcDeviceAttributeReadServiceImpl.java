@@ -40,6 +40,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
@@ -62,7 +63,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
         
         List<PaoMultiPointIdentifier> paoPointIdentifiers =
-            attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
+            attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
         
         return isReadable(paoPointIdentifiers, user);
     }
@@ -75,8 +76,12 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     @Override
     public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, DeviceRequestType type, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
-        
-        List<PaoMultiPointIdentifier> paoPointIdentifiers = attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
+        List<PaoMultiPointIdentifier> paoPointIdentifiers = null;
+        try{
+            paoPointIdentifiers = attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
+        }catch(IllegalUseOfAttribute e){
+            throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);
+        }
         
         List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
         if (commandRequests.isEmpty()) {
@@ -122,7 +127,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
                                                                            LiteYukonUser user,
                                                                            RetryParameters retryParameters) {
         List<PaoMultiPointIdentifier> attributePointIdentifiers =
-            attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(deviceCollection, attributes);
+            attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(deviceCollection, attributes);
         return backgroundReadDeviceCollection(attributePointIdentifiers, type, callback, user, retryParameters);
     }
 
@@ -134,7 +139,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
                                         LiteYukonUser user) {
         Set<PaoIdentifier> unsupportedDevices = Sets.newHashSet(PaoUtils.asPaoIdentifiers(deviceCollection));
         List<PaoMultiPointIdentifier> paoPointIdentifiers = 
-            attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(deviceCollection, attributes);
+            attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(deviceCollection, attributes);
         List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
         for (CommandRequestDevice commandRequestDevice : commandRequests) {
             unsupportedDevices.remove(commandRequestDevice.getDevice().getPaoIdentifier());

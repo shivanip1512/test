@@ -8,9 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -50,6 +53,7 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
+
 public class AttributeServiceImpl implements AttributeService {
 
     private DBPersistentDao dbPersistentDao;
@@ -58,6 +62,8 @@ public class AttributeServiceImpl implements AttributeService {
     private PointCreationService pointCreationService;
     private DeviceGroupService deviceGroupService;
     private YukonJdbcTemplate yukonJdbcTemplate;
+    
+    private Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
     
     private Set<Attribute> readableAttributes;
     {
@@ -106,26 +112,40 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices,
-                                                                                      Set<? extends Attribute> attributes) {
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+        return getPaoMultiPointIdentifiersForNonMappedAttributes(devices,attributes,false);
+    }
+    
+    @Override
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+        return  getPaoMultiPointIdentifiersForNonMappedAttributes(devices,attributes, true);
+    }
+    
+    private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices,
+                                                               Set<? extends Attribute> attributes, boolean throwException){
         List<PaoMultiPointIdentifier> devicesAndPoints = 
-            Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
-        for (YukonPao pao : devices) {
-            List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
-            for (Attribute attribute : attributes) {
-                try {
-                    PaoPointIdentifier paoPointIdentifier =
-                        getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
-                    points.add(paoPointIdentifier);
-                } catch (IllegalUseOfAttribute e) {
-                    continue; // This device does not support the selected attribute.
+                Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
+            for (YukonPao pao : devices) {
+                List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
+                for (Attribute attribute : attributes) {
+                    try {
+                        PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
+                        points.add(paoPointIdentifier);
+                    } catch (IllegalUseOfAttribute e) {
+                        LogHelper.warn(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
+                        if(throwException){
+                            throw e;
+                        }else{
+                            continue; // This device does not support the selected attribute.
+                        }
+                    }
+                }
+                if (!points.isEmpty()) {
+                    devicesAndPoints.add(new PaoMultiPointIdentifier(points));
                 }
             }
-            if (!points.isEmpty()) {
-                devicesAndPoints.add(new PaoMultiPointIdentifier(points));
-            }
-        }
-        return devicesAndPoints;
+            return devicesAndPoints;
+        
     }
     
     public Set<Attribute> getAvailableAttributes(YukonPao pao) {

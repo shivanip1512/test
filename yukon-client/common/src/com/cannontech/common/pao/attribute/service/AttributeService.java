@@ -53,20 +53,31 @@ public interface AttributeService {
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute);
     
     
     /**
-     * This method returns a PaoMultiPointIdentifier object for of the passed in PAO that has a point
+     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
      * for at least one of the specified attributes.
      * 
      * Like the above method, this is a transitional method that assumes attributes are unmapped.
      * @param devices
      * @param attributes
-     * @return
+     * @return list of PaoMultiPointIdentifiers
      */
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices,
-                                                                                           Set<? extends Attribute> attributes);
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
+    
+    /**
+     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
+     * for at least one of the specified attributes.
+     * 
+     * Like the above method, this is a transitional method that assumes attributes are unmapped.
+     * @param devices
+     * @param attributes
+     * @return list of PaoMultiPointIdentifiers
+     * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
+     */
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
     
     
     /**
