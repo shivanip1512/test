@@ -119,6 +119,9 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
             List<ProgramControlHistory> programsControlledDuringOptOut = Lists.newArrayList();
             for (ProgramEnrollment enrollment : enrollments) {
                 int programId = programIdsByAssignedProgramId.get(enrollment.getAssignedProgramId());
+                // This is going to skip putting anything in programsControlledDuringOptOut if:
+                //    a) there was no control at all
+                //    b) there was control but it was not by a program we care about
                 if (programIdsToUse == null || programIdsToUse.contains(programId)) {
                     ProgramControlHistory hist =
                         loadControlProgramDao.findHistoryForProgramAtTime(programId, result.getWhenTaken());
@@ -148,9 +151,19 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
             row.endDate = result.getStopDate().toDate();
 
             if (programsControlledDuringOptOut.isEmpty()) {
-                row.loadProgram = noControlDuringOptOut;
-                row.gear = "";
-                data.add(row);
+                // The programsControlledDuringOptOut list can be empty for two reasons:
+                //   a) There was no relevant control.
+                //   b) There was control but not for any programs we care about.  (In this case,
+                //      we filtered this out above.)
+                // So...if the programIds list is empty (i.e. we are NOT filtering based on
+                // program), we add a "No Control" row here but if we _are_ filtering on program,
+                // we need to skip the add because this was either not controlled by any program
+                // (case a above) or was controlled by a program we don't care about (case b above).
+                if (programIds.isEmpty()) {
+                    row.loadProgram = noControlDuringOptOut;
+                    row.gear = "";
+                    data.add(row);
+                }
             } else {
                 for (ProgramControlHistory hist : programsControlledDuringOptOut) {
                     ModelRow programRow = new ModelRow(row);
