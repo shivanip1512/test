@@ -182,47 +182,60 @@
     <!--  operatorThermostat/schedule/hints.jsp -->
     <entry key="yukon.web.modules.consumer.savedSchedules.hint"><![CDATA[
         The schedule page allows you to set your ongoing temperature schedule.
-        There are different time frames available depending on the schedule mode selected. 
-        Within each of these time frames, you may select your cooling and heating temperatures. 
+        There are different time intervals available depending on the schedule mode selected. 
+        Within each of these time intervals, you may select your cooling and heating temperatures. 
         Simply use the following procedures.<br><br>
         
         <ol>
-        <li>
-            Select the schedule mode: Click <b>Same schedule all days of week</b>, 
-            <b>Weekday, Saturday and Sunday schedules</b>, or <b>Weekday and Weekend schedules</b> if available.
-        </li>
-        
-        <li>
-            Each available day to edit is show as rows in each schedules.
-        </li>
-           
-        <li>
-            The utility recommended settings are displayed the first
-            time the page is accessed. If at any time you would like to redisplay
-            these settings, click the <b>Recommended Settings</b> button.
-        </li>
-           
-        <li>
-            Each of the time frames should be set to 1/2
-            hour before you would like the temperature to reach the selected
-            level. Times may be entered directly in the text boxes, increased or decreased by pressing the
-            up/down key respectively or moving the slider left/right.
-        </li>
-           
-        <li>
-            Heating and Cooling temperatures may be set at each individual time interval.  
-            Temperatures may be entered directly in the text boxes, increased or decreased by pressing the
-            up/down key respectively or moving the slider left/right.
-        </li>
-           
-       <li>
-           If you would like to temporarily change your thermostat,
-           click on the<b> Manual</b> link at left or at the link provided at
-           the top of the page. This page is also a convenient location for
-           holding a temperature for a short amount of time that is different
-           from your regular schedule. You may use this feature, for example,
-           while away on vacation or while you have visiting guests.
-       </li>
+            <li>
+                Click 'Create' and select the desired schedule mode from the list in the resulting popup.
+                <br><small><b>Note:</b> All modes may not be available.</small>
+                <ul class="sub_items">
+                    <li>
+                        <b>Same schedule every day of the week</b>: Each day of the week will have identical schedules.
+                    </li>
+                    <li>
+                        <b>Weekday, Saturday, Sunday Schedules</b>: Monday - Friday will have 
+                        identical schedules.  Saturday and Sunday can have independent schedules.
+                    </li>
+                    <li>
+                        <b>Weekday, Weekend schedules </b>: Monday - Friday will have identical 
+                        schedules.  Saturday and Sunday will have identical schedules.
+                    </li>
+                    <li>
+                        <b>Different schedule every day of the week</b>: Each day of the week will 
+                        have can have independent schedules.
+                    </li>
+                </ul>
+            </li>
+            
+            <li>
+                The utility recommended settings are loaded for new schedules. If at any time you 
+                would like to revert to these settings, click the <b>Recommended Settings</b> 
+                button.  By default we create 1 schedule for you.
+            </li>
+               
+            <li>
+                Each row represents an entire day or group of days that share the same schedule. Within each day
+                there are 2 or 4 time intervals in which to define temperature settings. Times may be 
+                entered directly in the text boxes, increased or decreased by pressing the
+                up/down key on the keyboard respectively or moving the slider left/right.
+            </li>
+               
+            <li>
+                Heating and Cooling temperatures may be set at each individual time interval.  
+                Temperatures may be entered directly in the text boxes, increased or decreased by pressing the
+                up/down key on the keyboard respectively or moving the slider left/right.
+            </li>
+               
+           <li>
+               If you would like to temporarily change your thermostat,
+               click on the<b> Manual</b> link at left or at the link provided at
+               the top of the page. This page is also a convenient location for
+               holding a temperature for a short amount of time that is different
+               from your regular schedule. You may use this feature, for example,
+               while away on vacation or while you have visiting guests.
+           </li>
        </ol>
     ]]></entry>
     
@@ -321,8 +334,8 @@
     <entry key="yukon.web.modules.consumer.thermostat.multiple.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostats receive it.</entry>
     
     <!--  schedule update events: operator page ThermostatScheduleUpdateResult enum messages (single thermostat selected) -->
-    <entry key="yukon.web.modules.operator.thermostat.single.send.UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostat.single.send.NO_SERIAL_ERROR">The serial # of thermostat cannot be empty. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.UNAVAILABLE_ERROR">The selected thermostat is currently out of service. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.single.send.NO_SERIAL_ERROR">The serial # of the selected thermostat cannot be empty. Schedule {0} is not sent.</entry>
     <entry key="yukon.web.modules.operator.thermostat.single.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostat.single.send.MULTIPLE_ERROR">There was a problem sending the schedule {0} to thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostat.single.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
@@ -330,8 +343,8 @@
     <entry key="yukon.web.modules.operator.thermostat.single.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
     
     <!--  schedule update events: operator page ThermostatScheduleUpdateResult enum messages (multiple thermostats selected) -->
-    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostat.multiple.send.NO_SERIAL_ERROR">The serial # of thermostat cannot be empty. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UNAVAILABLE_ERROR">One or more of the selected thermostats is currently out of service. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.NO_SERIAL_ERROR">The serial # of the selected thermostats cannot be empty. Schedule {0} is not sent.</entry>
     <entry key="yukon.web.modules.operator.thermostat.multiple.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostat.multiple.send.MULTIPLE_ERROR">There was a problem sending the schedule {0} to one or more of the thermostats you selected.</entry>
     <entry key="yukon.web.modules.operator.thermostat.multiple.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
