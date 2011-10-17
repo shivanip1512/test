@@ -2801,14 +2801,14 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     }
     return;
 }
-void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, double value, long commandId)
+void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand)
 {
     if (pao->getDisabledStatePointId() == pointID)
     {
-        bool disable = value == 0.0 ? false : true;
         if (pao->getDisableFlag() != disable)
         {   
-            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(commandId, pao->getPaoId()))->execute();
+            long command = disable ? disableCommand : enableCommand;
+            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(command, pao->getPaoId()))->execute();
         }
     }
 }
@@ -2851,7 +2851,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                         }
                     }
                 }
-                checkDisablePaoPoint(currentArea, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_AREA : CtiCCCommand::DISABLE_AREA);
+                checkDisablePaoPoint(currentArea, pointID, value, CtiCCCommand::ENABLE_AREA, CtiCCCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -2901,7 +2901,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                         }
                     }
                 }
-                checkDisablePaoPoint(currentSpArea, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_AREA : CtiCCCommand::DISABLE_AREA);
+                checkDisablePaoPoint(currentSpArea, pointID, value, CtiCCCommand::ENABLE_AREA, CtiCCCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -2965,7 +2965,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                         }
                     }
                 }
-                checkDisablePaoPoint(currentStation, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_AREA : CtiCCCommand::DISABLE_AREA);
+                checkDisablePaoPoint(currentStation, pointID, value, CtiCCCommand::ENABLE_AREA, CtiCCCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -3290,7 +3290,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
                     }
                 }
-                checkDisablePaoPoint(currentSubstationBus, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_SUBSTATION_BUS : CtiCCCommand::DISABLE_SUBSTATION_BUS);
+                checkDisablePaoPoint(currentSubstationBus, pointID, value, CtiCCCommand::ENABLE_SUBSTATION_BUS, CtiCCCommand::DISABLE_SUBSTATION_BUS);
             }
         }
         catch(...)
@@ -3520,7 +3520,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
                     }
-                    checkDisablePaoPoint(currentFeeder, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_FEEDER : CtiCCCommand::DISABLE_FEEDER);
+                    checkDisablePaoPoint(currentFeeder, pointID, value, CtiCCCommand::ENABLE_FEEDER, CtiCCCommand::DISABLE_FEEDER);
                 }
             }
         }
@@ -3862,7 +3862,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
                         }
                     }
-                    checkDisablePaoPoint(currentCapBank, pointID, value, value == 0.0 ? CtiCCCommand::ENABLE_CAPBANK : CtiCCCommand::DISABLE_CAPBANK);
+                    checkDisablePaoPoint(currentCapBank, pointID, value, CtiCCCommand::ENABLE_CAPBANK, CtiCCCommand::DISABLE_CAPBANK);
                 }
             }
         }

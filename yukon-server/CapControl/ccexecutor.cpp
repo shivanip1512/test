@@ -3486,7 +3486,7 @@ void CtiCCCommandExecutor::EnableArea()
                 {
                     //enable area refused.  disable flag = true.  This will sync the disable point.
                      CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue( 
-                         new CtiPointDataMsg( currentSpArea->getDisabledStatePointId(), currentSpArea->getDisableFlag() ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+                         new CtiPointDataMsg( currentSpArea->getDisabledStatePointId(), currentSpArea->getDisableFlag() ) ); // NormalQuality, StatusPointType
                 }
                 
             }
