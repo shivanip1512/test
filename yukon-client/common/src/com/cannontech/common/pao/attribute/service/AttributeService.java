@@ -53,7 +53,7 @@ public interface AttributeService {
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute);
+    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
     
     /**
@@ -77,7 +77,7 @@ public interface AttributeService {
      * @return list of PaoMultiPointIdentifiers
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      */
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
     
     
     /**
