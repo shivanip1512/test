@@ -3,8 +3,8 @@ package com.cannontech.common.pao.service.providers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
-import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.pao.service.PaoProviderTable;
+import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
@@ -16,8 +16,8 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
     private YukonJdbcTemplate yukonJdbcTemplate;
     
 	@Override
-	public PaoProviderTableEnum getSupportedTable() {
-		return PaoProviderTableEnum.YUKONPAOBJECT;
+	public PaoProviderTable getSupportedTable() {
+		return PaoProviderTable.YUKONPAOBJECT;
 	}
 
     @Override

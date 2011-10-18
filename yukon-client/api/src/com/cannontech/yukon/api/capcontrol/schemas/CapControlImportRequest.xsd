@@ -7,9 +7,9 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
 
 	<xsd:complexType name="ImportBase">
-		<xsd:all>
+		<xsd:sequence>
 			<xsd:element name="name" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-		</xsd:all>
+		</xsd:sequence>
 		<xsd:attribute name="action" use="required" type="yukon:ImportAction"/>
 	</xsd:complexType>
 
@@ -34,13 +34,13 @@
 	
 	<xsd:complexType name="HierarchyImportData">
 		<xsd:complexContent>
-				<xsd:extension base="yukon:ImportBase">
-					<xsd:all>
-						<xsd:element name="parent" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-						<xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-						<xsd:element name="disabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-						<xsd:element name="mapLocationId" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					</xsd:all>
+			<xsd:extension base="yukon:ImportBase">
+				<xsd:all>
+					<xsd:element name="parent" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+					<xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+					<xsd:element name="disabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+					<xsd:element name="mapLocationId" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+				</xsd:all>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -84,9 +84,9 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="CbcList">
-		<xsd:all>
+		<xsd:sequence>
 			<xsd:element name="cbc" minOccurs="0" maxOccurs="unbounded" type="yukon:CbcImportData"/>
-		</xsd:all>
+		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="CapControlImportRequest">

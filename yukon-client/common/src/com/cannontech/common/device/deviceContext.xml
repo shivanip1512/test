@@ -40,9 +40,9 @@
 
     <bean id="attributeService" class="com.cannontech.common.pao.attribute.service.AttributeServiceImpl" scope="singleton"/>
     
-    <bean id="devicePointService" class="com.cannontech.common.pao.service.PointServiceImpl" scope="singleton"/>
+    <bean id="devicePointService" class="com.cannontech.common.pao.service.impl.PointServiceImpl" scope="singleton"/>
     
-    <bean id="pointCreationService" class="com.cannontech.common.pao.service.PointCreationServiceImpl"/>
+    <bean id="pointCreationService" class="com.cannontech.common.pao.service.impl.PointCreationServiceImpl"/>
     
     <bean id="pointReadService" class="com.cannontech.common.device.service.impl.PointReadServiceImpl" />
     

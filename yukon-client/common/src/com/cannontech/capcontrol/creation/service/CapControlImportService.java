@@ -49,12 +49,7 @@ public interface CapControlImportService {
      * current CBC will be added.
      * @throws NotFoundException if the user specified a CapBank name as a parent that
      * does not exist in the database.
-     * @throws IllegalArgumentException if the PaoTemplate used to create the device is
-     * missing required Fields objects. This exception is an unrecoverable Yukon error
-     * (created by failing to code the creation of the object's fields map with all 
-     * required fields) and is not an exception that should be caught. There is nothing 
-     * the end user can do to fix this problem.
-	 */
+     */
 	public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results);
 	
 	/**
@@ -96,11 +91,6 @@ public interface CapControlImportService {
      * current hierarchy object will be added.
      * @throws NotFoundException if the user specified a parent name that does not exist 
      * in the database.
-     * @throws IllegalArgumentException if the PaoTemplate used to create the object is
-     * missing required Fields objects. This exception is an unrecoverable Yukon error
-     * (created by failing to code the creation of the object's fields map with all 
-     * required fields) and is not an exception that should be caught. There is nothing 
-     * the end user can do to fix this problem.
 	 */
 	public void updateHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results);
 	

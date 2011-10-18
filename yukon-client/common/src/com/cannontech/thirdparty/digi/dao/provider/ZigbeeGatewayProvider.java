@@ -3,8 +3,8 @@ package com.cannontech.thirdparty.digi.dao.provider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
-import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.pao.service.PaoProviderTable;
+import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -15,8 +15,8 @@ public class ZigbeeGatewayProvider implements PaoTypeProvider<ZigbeeGatewayField
 	private YukonJdbcTemplate yukonJdbcTemplate;
 
 	@Override
-	public PaoProviderTableEnum getSupportedTable() {
-		return PaoProviderTableEnum.ZBGATEWAY;
+	public PaoProviderTable getSupportedTable() {
+		return PaoProviderTable.ZBGATEWAY;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ZigbeeGatewayProvider implements PaoTypeProvider<ZigbeeGatewayField
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("DELETE FROM " + getSupportedTable().name());
+        sql.append("DELETE FROM").append(getSupportedTable());
         sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
         
         yukonJdbcTemplate.update(sql);

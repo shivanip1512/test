@@ -2,9 +2,9 @@ package com.cannontech.capcontrol.creation.model;
 
 public class HierarchyImportResult {
 	private HierarchyImportData hierarchyImportData;
-	private HierarchyImportResultTypesEnum resultType;
+	private HierarchyImportResultType resultType;
 	
-	public HierarchyImportResult(HierarchyImportData hierarchyImportData, HierarchyImportResultTypesEnum resultType) {
+	public HierarchyImportResult(HierarchyImportData hierarchyImportData, HierarchyImportResultType resultType) {
 		this.hierarchyImportData = hierarchyImportData;
 		this.resultType = resultType;
 	}
@@ -13,7 +13,7 @@ public class HierarchyImportResult {
 		return hierarchyImportData;
 	}
 	
-	public HierarchyImportResultTypesEnum getResultType() {
+	public HierarchyImportResultType getResultType() {
 		return resultType;
 	}
 }

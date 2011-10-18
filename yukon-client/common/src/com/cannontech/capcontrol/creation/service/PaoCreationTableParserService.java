@@ -3,7 +3,7 @@ package com.cannontech.capcontrol.creation.service;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
+import com.cannontech.common.pao.service.PaoProviderTable;
 
 public interface PaoCreationTableParserService {
 
@@ -13,5 +13,5 @@ public interface PaoCreationTableParserService {
      * @return a list of PaoProviderTableEnums representing all the tables required for
      * creating/deleting the Pao of the given type.
      */
-	public List<PaoProviderTableEnum> parseTableNames(PaoType paoType);
+	public List<PaoProviderTable> parseTableNames(PaoType paoType);
 }

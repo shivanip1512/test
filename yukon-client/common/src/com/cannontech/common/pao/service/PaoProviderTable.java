@@ -1,8 +1,6 @@
 package com.cannontech.common.pao.service;
 
-import com.cannontech.common.util.DatabaseRepresentationSource;
-
-public enum PaoProviderTableEnum implements DatabaseRepresentationSource {
+public enum PaoProviderTable {
 	YUKONPAOBJECT,
 	DEVICE,
 	DEVICECARRIERSETTINGS,
@@ -25,7 +23,8 @@ public enum PaoProviderTableEnum implements DatabaseRepresentationSource {
 	ZBENDPOINT,
 	;
 	
-	public Object getDatabaseRepresentation() {
+	@Override
+	public String toString() {
 	    return name();
-	};
+	}
 }

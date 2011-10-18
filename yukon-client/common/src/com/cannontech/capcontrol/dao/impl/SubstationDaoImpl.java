@@ -8,25 +8,22 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class SubstationDaoImpl implements SubstationDao {	
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private DBPersistentDao dbPersistentDao;
+    private PaoCreationHelper paoCreationHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoDao paoDao;
     
@@ -70,18 +67,13 @@ public class SubstationDaoImpl implements SubstationDao {
 		boolean result = (rowsAffected == 1);
 		
 		if (result) {
-		    sendDbChange(substationId, CapControlType.SUBSTATION, DbChangeType.UPDATE);
-		    sendDbChange(areaId, CapControlType.AREA, DbChangeType.UPDATE);
+		    YukonPao substation = paoDao.getYukonPao(substationId);
+		    YukonPao area = paoDao.getYukonPao(areaId);
+		    paoCreationHelper.processDbChange(substation, DbChangeType.UPDATE);
+		    paoCreationHelper.processDbChange(area, DbChangeType.UPDATE);
 		}
 		
 		return result;
-	}
-	
-	private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
-	    DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
-	                                      PaoCategory.CAPCONTROL.getDbString(),
-	                                      ccType.getDbValue(), type);
-	    dbPersistentDao.processDBChange(msg);
 	}
 
 	@Override
@@ -195,7 +187,7 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
+    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
     }
 }

@@ -8,19 +8,22 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.creation.service.PaoCreationTableParserService;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PaoCreationService;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
+import com.cannontech.common.pao.service.PaoProviderTable;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -30,13 +33,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class PaoCreationServiceImpl implements PaoCreationService {
+    private final Logger log = YukonLogManager.getLogger(PaoCreationServiceImpl.class);
 
     private PaoDao paoDao;
     private PaoCreationHelper paoCreationHelper;
     private PaoCreationTableParserService paoCreationTableParserService;
     private PaoDefinitionDao paoDefinitionDao;
     
-    private Map<PaoProviderTableEnum, PaoTypeProvider<PaoTemplatePart>> providerMap;
+    private Map<PaoProviderTable, PaoTypeProvider<PaoTemplatePart>> providerMap;
     private Map<PaoType, List<PaoTypeProvider<PaoTemplatePart>>> paoTypeProviders;
     
     @PostConstruct
@@ -46,11 +50,11 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     
     	for (PaoType paoType : creationTypes) {
     		List<PaoTypeProvider<PaoTemplatePart>> providers = Lists.newArrayList();
-    		List<PaoProviderTableEnum> tables = paoCreationTableParserService.parseTableNames(paoType);
+    		List<PaoProviderTable> tables = paoCreationTableParserService.parseTableNames(paoType);
     		
     		// For each table required by the PaoType, get the provider and add it to the 
     		// main "PaoType-to-List of Providers" map.
-    		for(PaoProviderTableEnum table : tables) {
+    		for(PaoProviderTable table : tables) {
     			providers.add(providerMap.get(table));
     		}
     		
@@ -61,18 +65,19 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     @Override
     public PaoIdentifier createPao(PaoTemplate paoTemplate) {
         PaoIdentifier paoIdentifier = handleProviders(paoTemplate);
-        
-        // Create and Add points
+
+        // Create and Add points - db change message isn't handled after default points are added.
+        // db change message happens in the processDbChange call below.
         paoCreationHelper.addDefaultPointsToPao(paoIdentifier);
         
-        // Send DB change message
+        // db change msg.  Process Device dbChange AFTER pao AND points have been inserted into DB.
         paoCreationHelper.processDbChange(paoIdentifier, DbChangeType.ADD);
         
         return paoIdentifier;
     }
     
     @Override
-    public PaoIdentifier createTemplatePao(PaoTemplate paoTemplate, List<PointBase> points) {
+    public PaoIdentifier createPaoWithCustomPoints(PaoTemplate paoTemplate, List<PointBase> points) {
     	PaoIdentifier paoIdentifier = handleProviders(paoTemplate);
     	
     	// Write the points we need to copy to the DB.
@@ -146,7 +151,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
                                                                + paoTemplate.getPaoType().getDbString());
         }
     }
-    
+
     private <T extends PaoTemplatePart> void callProviderUpdate(int paoId, PaoTemplate paoTemplate, PaoTypeProvider<T> paoTypeProvider) {
     	// loop through list, grabbing provider for each and invoking handle method
     	PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoTemplate.getPaoType());
@@ -154,8 +159,9 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     		T field = paoTemplate.getPaoFields().getInstance(paoTypeProvider.getRequiredFields());
     		paoTypeProvider.handleUpdate(paoIdentifier, field);
     	} else {
-    		throw new IllegalArgumentException("Missing required information for creating PAO with Type: " 
-                                                      		   + paoTemplate.getPaoType().getDbString());
+    		log.debug("Missing " + paoTypeProvider.getRequiredFields().getName() + 
+    		          "information for updating PAO with Type: " +
+              		  paoTemplate.getPaoType().getDbString());
     	}
 }
     
@@ -166,7 +172,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     
     @Autowired
     public void setPaoCreationTypeProviders(List<PaoTypeProvider<PaoTemplatePart>> providers) {
-    	Builder<PaoProviderTableEnum, PaoTypeProvider<PaoTemplatePart>> builder = ImmutableMap.builder();
+    	Builder<PaoProviderTable, PaoTypeProvider<PaoTemplatePart>> builder = ImmutableMap.builder();
     	for (PaoTypeProvider<PaoTemplatePart> paoCreationTypeProvider : providers) {
 			builder.put(paoCreationTypeProvider.getSupportedTable(), paoCreationTypeProvider);
 		}

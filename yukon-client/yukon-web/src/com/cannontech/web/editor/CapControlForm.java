@@ -1211,12 +1211,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 parentID = 0;
             }
         } else if (getDbPersistent() instanceof ICapBankController) {
-        	try{
-        		parentID = capbankDao.getCapBankIdByCBC(itemId);
-        	}catch( NotFoundException e ){
-                //do nothing
-                parentID = 0;
-            }
+    	    PaoIdentifier capbank = capbankDao.getCapBankIdByCBC(itemId);
+    	    parentID = (capbank != null) ? capbank.getPaoId() : 0;
         }
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {
 			return CtiUtilities.STRING_NONE;

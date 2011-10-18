@@ -11,27 +11,24 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.SubstationBus;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private DBPersistentDao dbPersistentDao;
+    private PaoCreationHelper paoCreationHelper;
     private PaoDao paoDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
@@ -164,18 +161,13 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		boolean result = (rowsAffected == 1);
 		
 		if (result) {
-		    sendDbChange(substationBusId, CapControlType.SUBBUS, DbChangeType.UPDATE);
-		    sendDbChange(substationId, CapControlType.SUBSTATION, DbChangeType.UPDATE);
+		    YukonPao subBus = paoDao.getYukonPao(substationBusId);
+		    YukonPao substation = paoDao.getYukonPao(substationId);
+		    paoCreationHelper.processDbChange(subBus, DbChangeType.UPDATE);
+		    paoCreationHelper.processDbChange(substation, DbChangeType.UPDATE);
 		}
 		
 		return result;
-    }
-    
-    private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
-        DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
-                                          PaoCategory.CAPCONTROL.getDbString(),
-                                          ccType.getDbValue(), type);
-        dbPersistentDao.processDBChange(msg);
     }
     
     @Override
@@ -213,8 +205,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 	
 	@Autowired
-	public void setDbPersistantDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
+	public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
     }
 	
 	@Autowired

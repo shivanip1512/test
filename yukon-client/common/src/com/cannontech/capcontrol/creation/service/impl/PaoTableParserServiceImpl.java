@@ -9,7 +9,7 @@ import com.cannontech.capcontrol.creation.service.PaoCreationTableParserService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
+import com.cannontech.common.pao.service.PaoProviderTable;
 import com.google.common.collect.Lists;
 
 public class PaoTableParserServiceImpl implements PaoCreationTableParserService {
@@ -17,15 +17,15 @@ public class PaoTableParserServiceImpl implements PaoCreationTableParserService 
 	private PaoDefinitionDao paoDefinitionDao;
 	
 	@Override
-	public List<PaoProviderTableEnum> parseTableNames(PaoType paoType) {
-		List<PaoProviderTableEnum> tables = Lists.newArrayList();
+	public List<PaoProviderTable> parseTableNames(PaoType paoType) {
+		List<PaoProviderTable> tables = Lists.newArrayList();
 		
 		String tableNames = paoDefinitionDao.getValueForTagString(paoType, PaoTag.PAO_CREATION_SERVICE);
 		
 		StringTokenizer stringTokenizer = new StringTokenizer(tableNames, ",");
 		
 		while (stringTokenizer.hasMoreTokens()) {
-			tables.add(PaoProviderTableEnum.valueOf(stringTokenizer.nextToken()));
+			tables.add(PaoProviderTable.valueOf(stringTokenizer.nextToken()));
 		}
 		
 		return tables;

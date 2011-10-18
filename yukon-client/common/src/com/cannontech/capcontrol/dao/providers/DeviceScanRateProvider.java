@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
-import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.pao.service.PaoProviderTable;
+import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -15,8 +15,8 @@ public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFie
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
-	public PaoProviderTableEnum getSupportedTable() {
-		return PaoProviderTableEnum.DEVICESCANRATE;
+	public PaoProviderTable getSupportedTable() {
+		return PaoProviderTable.DEVICESCANRATE;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFie
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		sql.append("DELETE FROM").append(getSupportedTable().name());
+		sql.append("DELETE FROM").append(getSupportedTable());
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		
 		yukonJdbcTemplate.update(sql);

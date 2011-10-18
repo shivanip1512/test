@@ -8,6 +8,7 @@ public enum BuiltInAttribute implements Attribute {
     AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
     CONNECTION_STATUS("Connection Status"),
+    CONTROL_POINT("Control Point"),
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),

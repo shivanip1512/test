@@ -5,7 +5,7 @@ import org.apache.commons.lang.Validate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-public enum CapControlCbcImporterEnum {
+public enum CapControlImporterCbcCsvField {
 	TEMPLATE_NAME("Template Name", false),
 	CBC_NAME("CBC Name", true),  
 	CBC_TYPE("CBC Type", true),
@@ -23,17 +23,17 @@ public enum CapControlCbcImporterEnum {
 	private final String columnName;
 	private final boolean required;
 
-	private final static ImmutableMap<String, CapControlCbcImporterEnum> lookupByString;
+	private final static ImmutableMap<String, CapControlImporterCbcCsvField> lookupByString;
 	
-	private final static ImmutableSet<CapControlCbcImporterEnum> requiredFields;
-	private final static ImmutableSet<CapControlCbcImporterEnum> nonRequiredFields;
+	private final static ImmutableSet<CapControlImporterCbcCsvField> requiredFields;
+	private final static ImmutableSet<CapControlImporterCbcCsvField> nonRequiredFields;
 	
 	static {
         try {
-            ImmutableMap.Builder<String, CapControlCbcImporterEnum> stringBuilder = ImmutableMap.builder();
-            ImmutableSet.Builder<CapControlCbcImporterEnum> requiredFieldsBuilder = ImmutableSet.builder();
-            ImmutableSet.Builder<CapControlCbcImporterEnum> nonRequiredFieldsBuilder = ImmutableSet.builder();
-            for (CapControlCbcImporterEnum column : values()) {
+            ImmutableMap.Builder<String, CapControlImporterCbcCsvField> stringBuilder = ImmutableMap.builder();
+            ImmutableSet.Builder<CapControlImporterCbcCsvField> requiredFieldsBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<CapControlImporterCbcCsvField> nonRequiredFieldsBuilder = ImmutableSet.builder();
+            for (CapControlImporterCbcCsvField column : values()) {
                 stringBuilder.put(column.getColumnName(), column);
                 if(column.isRequired()) {
                 	requiredFieldsBuilder.add(column);
@@ -49,22 +49,22 @@ public enum CapControlCbcImporterEnum {
         }
     }
 	
-	private CapControlCbcImporterEnum(String columnName, boolean required) {
+	private CapControlImporterCbcCsvField(String columnName, boolean required) {
 		this.columnName = columnName;
 		this.required = required;
 	}
 	
-	public static CapControlCbcImporterEnum getColumnByName(String columnName) throws IllegalArgumentException {
-		CapControlCbcImporterEnum column = lookupByString.get(columnName);
+	public static CapControlImporterCbcCsvField getColumnByName(String columnName) throws IllegalArgumentException {
+		CapControlImporterCbcCsvField column = lookupByString.get(columnName);
 		Validate.notNull(column, columnName);
 		return column;
 	}
 	
-	public static ImmutableSet<CapControlCbcImporterEnum> getRequiredFields() {
+	public static ImmutableSet<CapControlImporterCbcCsvField> getRequiredFields() {
 		return requiredFields;
 	}
 	
-	public static ImmutableSet<CapControlCbcImporterEnum> getNonRequiredFields() {
+	public static ImmutableSet<CapControlImporterCbcCsvField> getNonRequiredFields() {
 	    return nonRequiredFields;
 	}
 	

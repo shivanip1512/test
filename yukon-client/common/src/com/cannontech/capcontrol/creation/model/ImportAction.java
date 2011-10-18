@@ -8,20 +8,20 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum ImportActionsEnum implements DatabaseRepresentationSource {
+public enum ImportAction implements DatabaseRepresentationSource {
 	ADD("Add"),
 	UPDATE("Update"),
 	REMOVE("Remove");
 	
 	private final String dbString;
-	private final static Logger log = YukonLogManager.getLogger(ImportActionsEnum.class);
+	private final static Logger log = YukonLogManager.getLogger(ImportAction.class);
 	
-	private final static ImmutableMap<String, ImportActionsEnum> lookupByDbString;
+	private final static ImmutableMap<String, ImportAction> lookupByDbString;
 	
 	static {
 		try {
-			Builder<String, ImportActionsEnum> dbBuilder = ImmutableMap.builder();
-			for (ImportActionsEnum action : values()) {
+			Builder<String, ImportAction> dbBuilder = ImmutableMap.builder();
+			for (ImportAction action : values()) {
                 dbBuilder.put(action.dbString, action);
             }
 			lookupByDbString = dbBuilder.build();
@@ -31,12 +31,12 @@ public enum ImportActionsEnum implements DatabaseRepresentationSource {
         }
 	}
 	
-	private ImportActionsEnum(String dbString) {
+	private ImportAction(String dbString) {
 		this.dbString = dbString;
 	}
 	
-	public static ImportActionsEnum getForDbString(String dbString) {
-		ImportActionsEnum action = lookupByDbString.get(dbString);
+	public static ImportAction getForDbString(String dbString) {
+		ImportAction action = lookupByDbString.get(dbString);
 		Validate.notNull(action, dbString);
 		return action;
 	}

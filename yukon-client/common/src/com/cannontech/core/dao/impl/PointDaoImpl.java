@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -29,13 +30,17 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
@@ -44,6 +49,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
@@ -104,6 +110,7 @@ public final class PointDaoImpl implements PointDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private JdbcOperations jdbcOps;
     private NextValueHelper nextValueHelper;
+    private DBPersistentDao dbPersistentDao;
     private PaoDefinitionDao paoDefinitionDao;
 
     @Override
@@ -475,6 +482,28 @@ public final class PointDaoImpl implements PointDao {
 	        throw new NotFoundException("unable to find pointId for " + paoPointIdentifier, e);
 	    }
 	}
+    
+    @Override
+    public List<PointBase> getPointsForPao(int paoId) {
+        
+        List<LitePoint> litePoints = getLitePointsByPaObjectId(paoId);
+        List<PointBase> points = new ArrayList<PointBase>(litePoints.size());
+        
+        for (LitePoint litePoint: litePoints) {
+            
+            PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
+            
+            try {
+                dbPersistentDao.performDBChange(pointBase, TransactionType.RETRIEVE);
+                points.add(pointBase);
+            }
+            catch (PersistenceException e) {
+                throw new DeviceCreationException("Could not retrieve points for new device.", e);
+            }
+        }
+
+        return points;
+    }
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getPointIDByDeviceID_Offset_PointType(int, int, int)
@@ -513,7 +542,6 @@ public final class PointDaoImpl implements PointDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#retrievePointData(int)
      */
-	@SuppressWarnings("unchecked")
     public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate)
 	{
         try {
@@ -719,5 +747,10 @@ public final class PointDaoImpl implements PointDao {
         LiteRawPointHistory lrph =
             new LiteRawPointHistory( changeID, pointID, ts.getTime(), quality, value);
         return lrph;
+    }
+    
+    @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
 }

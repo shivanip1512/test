@@ -4,23 +4,22 @@ import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.capcontrol.creation.CapControlCbcImporterEnum;
+import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
 
-@SuppressWarnings("serial")
 public class CapControlCbcFileImportException extends CapControlFileImporterException {
 	
-	private Collection<CapControlCbcImporterEnum> columns;
+	private Collection<CapControlImporterCbcCsvField> columns;
 
 	private CapControlCbcFileImportException(String message) {
 		super(message);
 	}
 	
-	public CapControlCbcFileImportException(String message, Collection<CapControlCbcImporterEnum> columns) {
+	public CapControlCbcFileImportException(String message, Collection<CapControlImporterCbcCsvField> columns) {
 		this(message + StringUtils.join(columns, ", "));
 		this.columns = columns;
 	}
 	
-	public Collection<CapControlCbcImporterEnum> getColumns() {
+	public Collection<CapControlImporterCbcCsvField> getColumns() {
 		return columns;
 	}
 }

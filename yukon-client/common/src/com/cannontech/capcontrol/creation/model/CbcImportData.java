@@ -15,7 +15,7 @@ public class CbcImportData {
 	private int slaveAddress;
 	private int scanInterval;
 	private int altInterval;
-	private ImportActionsEnum importAction;
+	private ImportAction importAction;
 	
 	public String getCbcName() {
 		return cbcName;
@@ -49,7 +49,7 @@ public class CbcImportData {
 		this.commChannel = commChannel;
 	}
 	
-	public Integer getCbcSerialNumber() {
+	public int getCbcSerialNumber() {
 		return cbcSerialNumber;
 	}
 	
@@ -57,7 +57,7 @@ public class CbcImportData {
 		this.cbcSerialNumber = cbcSerialNumber;
 	}
 	
-	public Integer getMasterAddress() {
+	public int getMasterAddress() {
 		return masterAddress;
 	}
 	
@@ -65,7 +65,7 @@ public class CbcImportData {
 		this.masterAddress = masterAddress;
 	}
 	
-	public Integer getSlaveAddress() {
+	public int getSlaveAddress() {
 		return slaveAddress;
 	}
 	
@@ -73,7 +73,7 @@ public class CbcImportData {
 		this.slaveAddress = slaveAddress;
 	}
 	
-	public Integer getScanInterval() {
+	public int getScanInterval() {
 		return scanInterval;
 	}
 	
@@ -81,7 +81,7 @@ public class CbcImportData {
 		this.scanInterval = scanInterval;
 	}
 	
-	public Integer getAltInterval() {
+	public int getAltInterval() {
 		return altInterval;
 	}
 	
@@ -97,11 +97,11 @@ public class CbcImportData {
 		this.templateName = templateName;
 	}
 	
-	public ImportActionsEnum getImportAction() {
+	public ImportAction getImportAction() {
 		return importAction;
 	}
 	
-	public void setImportAction(ImportActionsEnum importAction) {
+	public void setImportAction(ImportAction importAction) {
 		this.importAction = importAction;
 	}
 	

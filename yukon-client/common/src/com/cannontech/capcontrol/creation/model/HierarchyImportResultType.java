@@ -8,7 +8,7 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum HierarchyImportResultTypesEnum implements DatabaseRepresentationSource {
+public enum HierarchyImportResultType implements DatabaseRepresentationSource {
 	SUCCESS("Success"),
 	INVALID_PARENT("Invalid Parent Name"),
 	INVALID_TYPE("Invalid Hierarchy Type"),
@@ -20,14 +20,14 @@ public enum HierarchyImportResultTypesEnum implements DatabaseRepresentationSour
 	;
 	
 	private final String dbString;
-	private final static Logger log = YukonLogManager.getLogger(HierarchyImportResultTypesEnum.class);
+	private final static Logger log = YukonLogManager.getLogger(HierarchyImportResultType.class);
 	
-	private final static ImmutableMap<String, HierarchyImportResultTypesEnum> lookupByDbString;
+	private final static ImmutableMap<String, HierarchyImportResultType> lookupByDbString;
 	
 	static {
 		try {
-			Builder<String, HierarchyImportResultTypesEnum> dbBuilder = ImmutableMap.builder();
-			for (HierarchyImportResultTypesEnum action : values()) {
+			Builder<String, HierarchyImportResultType> dbBuilder = ImmutableMap.builder();
+			for (HierarchyImportResultType action : values()) {
                 dbBuilder.put(action.dbString, action);
             }
 			lookupByDbString = dbBuilder.build();
@@ -37,12 +37,12 @@ public enum HierarchyImportResultTypesEnum implements DatabaseRepresentationSour
         }
 	}
 	
-	private HierarchyImportResultTypesEnum(String dbString) {
+	private HierarchyImportResultType(String dbString) {
 		this.dbString = dbString;
 	}
 	
-	public static HierarchyImportResultTypesEnum getForDbString(String dbString) {
-		HierarchyImportResultTypesEnum action = lookupByDbString.get(dbString);
+	public static HierarchyImportResultType getForDbString(String dbString) {
+		HierarchyImportResultType action = lookupByDbString.get(dbString);
 		Validate.notNull(action, dbString);
 		return action;
 	}

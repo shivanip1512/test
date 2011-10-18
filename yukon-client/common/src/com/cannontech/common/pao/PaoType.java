@@ -241,7 +241,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         return deviceType;
     }
     
-    public static boolean isValidCbc(PaoType type) {
+    public static boolean isCbc(PaoType type) {
         switch (type) {
             case CBC_7010:
             case CBC_7011:

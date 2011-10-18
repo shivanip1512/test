@@ -10,6 +10,7 @@ import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Zone;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -154,8 +155,9 @@ public class ParentStringPrinter {
                 return ORPH_STRING;
             }
         } else {
-            Integer capbankId = capbankDao.getCapBankIdByCBC(paoId);
-            if (capbankId > -1) {
+            PaoIdentifier capbankIdentifier = capbankDao.getCapBankIdByCBC(paoId);
+            if (capbankIdentifier != null) {
+                int capbankId = capbankIdentifier.getPaoId();
                 Integer feederId = CCFeederBankList.getFeederIdForCapBank(capbankId);
                 if (feederId > -1) {
                     Integer subBusId = CCFeederSubAssignment.getSubBusIdForFeeder(feederId);

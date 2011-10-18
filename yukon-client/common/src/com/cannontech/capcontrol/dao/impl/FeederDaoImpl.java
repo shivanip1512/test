@@ -13,20 +13,17 @@ import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
@@ -36,7 +33,7 @@ public class FeederDaoImpl implements FeederDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private PaoDao paoDao;
-    private DBPersistentDao dbPersistentDao;
+    private PaoCreationHelper paoCreationHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
@@ -224,25 +221,19 @@ public class FeederDaoImpl implements FeederDao {
 		params.addValue("FeederID", feederId);
 		params.addValue("DisplayOrder", ++displayOrder);
     	
-
 		int rowsAffected = yukonJdbcTemplate.update(assignSql);
 		
 		boolean result = (rowsAffected == 1);
 		
 		if (result) {
-		    sendDbChange(feederId, CapControlType.FEEDER, DbChangeType.UPDATE);
-		    sendDbChange(substationBusId, CapControlType.SUBBUS, DbChangeType.UPDATE);
+		    YukonPao feeder = paoDao.getYukonPao(feederId);
+		    YukonPao subBus = paoDao.getYukonPao(substationBusId);
+		    paoCreationHelper.processDbChange(feeder, DbChangeType.UPDATE);
+		    paoCreationHelper.processDbChange(subBus, DbChangeType.UPDATE);
 		}
 		
 		return result;
 	}
-	
-    private void sendDbChange(int id, CapControlType ccType, DbChangeType type) {
-        DBChangeMsg msg = new DBChangeMsg(id, DBChangeMsg.CHANGE_PAO_DB, 
-                                          PaoCategory.CAPCONTROL.getDbString(),
-                                          ccType.getDbValue(), type);
-        dbPersistentDao.processDBChange(msg);
-    }
 
 	@Override
 	public boolean unassignFeeder(Feeder feeder) {
@@ -274,11 +265,6 @@ public class FeederDaoImpl implements FeederDao {
 		
 		return id;
 	}
-    
-	@Autowired
-	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
 	
 	@Autowired
 	public void setPaoDao(PaoDao paoDao) {
@@ -288,5 +274,10 @@ public class FeederDaoImpl implements FeederDao {
     @Autowired
     public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
     }
 }

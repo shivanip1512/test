@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.service;
+package com.cannontech.common.pao.service.impl;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -17,6 +17,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;

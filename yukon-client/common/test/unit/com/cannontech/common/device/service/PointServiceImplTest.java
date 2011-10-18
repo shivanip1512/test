@@ -10,7 +10,7 @@ import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.pao.service.PointServiceImpl;
+import com.cannontech.common.pao.service.impl.PointServiceImpl;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 

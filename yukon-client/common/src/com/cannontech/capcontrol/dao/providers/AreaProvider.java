@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.providers.fields.AreaFields;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
-import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.pao.service.PaoProviderTable;
+import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -15,8 +15,8 @@ public class AreaProvider implements PaoTypeProvider<AreaFields> {
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
-	public PaoProviderTableEnum getSupportedTable() {
-		return PaoProviderTableEnum.CAPCONTROLAREA;
+	public PaoProviderTable getSupportedTable() {
+		return PaoProviderTable.CAPCONTROLAREA;
 	};
 
 	@Override
@@ -52,7 +52,7 @@ public class AreaProvider implements PaoTypeProvider<AreaFields> {
 	    int areaId = paoIdentifier.getPaoId();
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("DELETE FROM").append(getSupportedTable().name());
+        sql.append("DELETE FROM").append(getSupportedTable());
         sql.append("WHERE AreaId").eq(areaId);
         
         yukonJdbcTemplate.update(sql);

@@ -12,14 +12,14 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
 
-import com.cannontech.capcontrol.creation.model.CapControlXmlImportEnum;
+import com.cannontech.capcontrol.creation.model.CapControlXmlImport;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
-import com.cannontech.capcontrol.creation.model.CbcImportResultTypesEnum;
+import com.cannontech.capcontrol.creation.model.CbcImportResultType;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
-import com.cannontech.capcontrol.creation.model.HierarchyImportResultTypesEnum;
-import com.cannontech.capcontrol.creation.model.ImportActionsEnum;
+import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
+import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.exception.CapControlImportException;
 import com.cannontech.capcontrol.exception.CbcImporterWebServiceException;
@@ -71,22 +71,19 @@ public class CapControlImportRequestEndpoint {
 		for (HierarchyImportResult result : results) {
 			Element response = new Element("hierarchyImportResponse");
 			
-			HierarchyImportResultTypesEnum resultType = result.getResultType();
+			HierarchyImportResultType resultType = result.getResultType();
 			
 			if (!resultType.isSuccess()) {
 				Element resultTypeElement = new Element("hierarchyImportResultType");
 				resultTypeElement.addContent(result.getResultType().getDbString());
 				response.addContent(resultTypeElement);
-
-				// Add more detail if we can.
-				if (result.getHierarchyImportData() != null) {
-					Element detailElement = createHierarchyDetailElement(result);
-					response.addContent(detailElement);
-				}
-			} else {
-				Element detailElement = createHierarchyDetailElement(result);
-				response.addContent(detailElement);
 			}
+
+			// Add more detail if we can.
+			if (result.getHierarchyImportData() != null) {
+                Element detailElement = createHierarchyDetailElement(result);
+                response.addContent(detailElement);
+            }
 		
 			response.setAttribute(new Attribute("success", result.getResultType().isSuccess().toString()));
 			
@@ -106,22 +103,19 @@ public class CapControlImportRequestEndpoint {
 		for (CbcImportResult result : results) {
 			Element response = new Element("cbcImportResponse");
 			
-			CbcImportResultTypesEnum resultType = result.getResultType();
+			CbcImportResultType resultType = result.getResultType();
 			
 			if (!resultType.isSuccess()) {
 				Element cbcResult = new Element("cbcImportResultType");
 				cbcResult.addContent(result.getResultType().getDbString());
 				response.addContent(cbcResult);
-				
-				// Add more detail if we can.
-				if (result.getCbcImportData() != null) {
-					Element detailElement = createCbcDetailElement(result);
-					response.addContent(detailElement);
-				}
-			} else {
-				Element detailElement = createCbcDetailElement(result);
-				response.addContent(detailElement);
-			}
+			} 
+
+			// Add more detail if we can.
+            if (result.getCbcImportData() != null) {
+                Element detailElement = createCbcDetailElement(result);
+                response.addContent(detailElement);
+            }
 			
 			response.setAttribute(new Attribute("success", result.getResultType().isSuccess().toString()));
 			
@@ -132,7 +126,7 @@ public class CapControlImportRequestEndpoint {
 	}
 	
 	private Element createCbcDetailElement(CbcImportResult result) {
-		ImportActionsEnum action = result.getCbcImportData().getImportAction();
+		ImportAction action = result.getCbcImportData().getImportAction();
 		String name = result.getCbcImportData().getCbcName();
 		String outcome = result.getResultType().isSuccess() ? "succeeded" : "failed";
 		String actionString = (action != null) ? action.getDbString() : "Import"; 
@@ -146,7 +140,7 @@ public class CapControlImportRequestEndpoint {
 	}
 	
 	private Element createHierarchyDetailElement(HierarchyImportResult result) {
-		ImportActionsEnum action = result.getHierarchyImportData().getImportAction();
+		ImportAction action = result.getHierarchyImportData().getImportAction();
 		String name = result.getHierarchyImportData().getName();
 		String outcome = result.getResultType().isSuccess() ? "succeeded" : "failed";
 		String actionString = (action != null) ? action.getDbString() : "Import"; 
@@ -184,7 +178,7 @@ public class CapControlImportRequestEndpoint {
 				cbcResults.add(new CbcImportResult(null, c.getResultType()));
 			} catch (CapControlImportException e) {
 				log.debug(e);
-				cbcResults.add(new CbcImportResult(null, CbcImportResultTypesEnum.MISSING_DATA));
+				cbcResults.add(new CbcImportResult(null, CbcImportResultType.MISSING_DATA));
 			}
 			
 			if (data != null) {
@@ -208,7 +202,7 @@ public class CapControlImportRequestEndpoint {
     				}
 			    } catch (NotFoundException e) {
 	                log.debug(e);
-	                cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_PARENT));
+	                cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_PARENT));
 	            }
 			}
 		}
@@ -239,7 +233,7 @@ public class CapControlImportRequestEndpoint {
 				hierarchyResults.add(new HierarchyImportResult(null, h.getResultType()));
 			} catch (CapControlImportException e) {
 				log.debug(e);
-				hierarchyResults.add(new HierarchyImportResult(null, HierarchyImportResultTypesEnum.MISSING_DATA));
+				hierarchyResults.add(new HierarchyImportResult(null, HierarchyImportResultType.MISSING_DATA));
 			} 
 			
 			if (data != null) {
@@ -260,7 +254,7 @@ public class CapControlImportRequestEndpoint {
 				} catch (NotFoundException e) {
 					log.debug("Parent " + data.getParent() + " was not found for hierarchy object " + data.getName() +
 							  ". No import occured for this object.");
-					hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultTypesEnum.INVALID_PARENT));
+					hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_PARENT));
 				}
 			}
 		}
@@ -289,7 +283,7 @@ public class CapControlImportRequestEndpoint {
 			PaoType paoType = PaoType.getForDbString(cbcType);
 			cbcImportData.setCbcType(paoType);
 		} catch (IllegalArgumentException e) {
-			throw new CbcImporterWebServiceException(CbcImportResultTypesEnum.INVALID_TYPE);
+			throw new CbcImporterWebServiceException(CbcImportResultType.INVALID_TYPE);
 		}
 		
 		Integer serialNumber = cbcTemplate.evaluateAsInt("y:serialNumber");
@@ -322,10 +316,10 @@ public class CapControlImportRequestEndpoint {
 		}
 		
 		try {
-			ImportActionsEnum action = ImportActionsEnum.getForDbString(importAction);
+			ImportAction action = ImportAction.getForDbString(importAction);
 			cbcImportData.setImportAction(action);
 		} catch (IllegalArgumentException e) {
-			throw new CbcImporterWebServiceException(CbcImportResultTypesEnum.INVALID_IMPORT_ACTION);
+			throw new CbcImporterWebServiceException(CbcImportResultType.INVALID_IMPORT_ACTION);
 		}
 		
 		// Not required. Check for nulls.
@@ -377,9 +371,9 @@ public class CapControlImportRequestEndpoint {
 		
 		// This will throw an IllegalArgumentException if the type was invalid.
 		try {
-			data.setPaoType(CapControlXmlImportEnum.getPaoTypeForXmlString(paoType));
+			data.setPaoType(CapControlXmlImport.getPaoTypeForXmlString(paoType));
 		} catch (IllegalArgumentException e) {
-			throw new HierarchyImporterWebServiceException(HierarchyImportResultTypesEnum.INVALID_TYPE);
+			throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_TYPE);
 		}
 		
 		String importAction = hierarchyTemplate.evaluateAsString("@action");
@@ -389,9 +383,9 @@ public class CapControlImportRequestEndpoint {
 		
 		// This will throw an IllegalArgumentException as well.
 		try {
-			data.setImportAction(ImportActionsEnum.getForDbString(importAction));
+			data.setImportAction(ImportAction.getForDbString(importAction));
 		} catch (IllegalArgumentException e) {
-			throw new HierarchyImporterWebServiceException(HierarchyImportResultTypesEnum.INVALID_IMPORT_ACTION);
+			throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_IMPORT_ACTION);
 		}
 		
 		// Not required. Check for nulls.
@@ -412,7 +406,7 @@ public class CapControlImportRequestEndpoint {
 			} else if (disabled.equalsIgnoreCase("N")) {
 				data.setDisabled(false);
 			} else {
-				throw new HierarchyImporterWebServiceException(HierarchyImportResultTypesEnum.INVALID_DISABLED_VALUE);
+				throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_DISABLED_VALUE);
 			}
 		}
 		

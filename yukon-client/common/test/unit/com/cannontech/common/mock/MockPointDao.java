@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointTypes;
 
@@ -59,6 +60,11 @@ public class MockPointDao implements PointDao {
     public int getPointId(PaoPointIdentifier paoPointIdentifier) {
         return 0;
     }
+    
+    @Override
+    public java.util.List<PointBase> getPointsForPao(int paoId) {
+        return null;
+    };
 
     public int getNextPointId() {
         return 0;

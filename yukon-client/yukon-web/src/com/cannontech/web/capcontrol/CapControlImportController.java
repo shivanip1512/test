@@ -19,14 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.cannontech.capcontrol.creation.model.CapControlImportResolvable;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
-import com.cannontech.capcontrol.creation.model.CbcImportResultTypesEnum;
+import com.cannontech.capcontrol.creation.model.CbcImportResultType;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
-import com.cannontech.capcontrol.creation.model.HierarchyImportResultTypesEnum;
-import com.cannontech.capcontrol.creation.model.ImportActionsEnum;
+import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
+import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl;
@@ -54,6 +53,24 @@ public class CapControlImportController {
 	
 	private ConcurrentMap<String, List<CapControlImportResolvable>> resultsLookup = 
 	                                    new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
+	
+	public static class CapControlImportResolvable {
+	    private final YukonMessageSourceResolvable message;
+	    private final boolean success;
+	    
+	    private CapControlImportResolvable(YukonMessageSourceResolvable message, boolean success) {
+	        this.message = message;
+	        this.success = success;
+	    }
+	    
+	    public YukonMessageSourceResolvable getMessage() {
+            return message;
+        }
+	    
+	    public boolean isSuccess() {
+            return success;
+        }
+	}
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public String importer(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) {
@@ -102,12 +119,12 @@ public class CapControlImportController {
     					break;
     					
     				default:
-    					cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_IMPORT_ACTION));
+    					cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_IMPORT_ACTION));
     					break;
     			}
 		    } catch (NotFoundException e) {
 		        log.debug(e);
-	            cbcResults.add(new CbcImportResult(data, CbcImportResultTypesEnum.INVALID_PARENT));
+	            cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_PARENT));
 		    }
 		}
 	}
@@ -130,13 +147,13 @@ public class CapControlImportController {
 						break;
 					
 					default:
-						hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultTypesEnum.INVALID_IMPORT_ACTION));
+						hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_IMPORT_ACTION));
 						break;
 				}
 			} catch (NotFoundException e) {
 				log.debug("Parent " + data.getParent() + " was not found for hierarchy object " + data.getName() +
 						  ". No import occured for this object.");
-				hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultTypesEnum.INVALID_PARENT));
+				hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_PARENT));
 			}
 		}
 	}
@@ -268,7 +285,7 @@ public class CapControlImportController {
 	    return new CapControlImportResolvable(message, result.getResultType().isSuccess());
 	}
 	
-	private String getResultKey(ImportActionsEnum action, boolean success) {
+	private String getResultKey(ImportAction action, boolean success) {
 	    String key = (action != null) ? action.getDbString() : "Import";
         key += success ? "Success" : "Failure";
         

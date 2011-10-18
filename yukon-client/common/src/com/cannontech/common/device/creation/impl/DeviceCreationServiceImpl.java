@@ -1,6 +1,5 @@
 package com.cannontech.common.device.creation.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,8 +28,6 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -70,7 +67,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         // COPY POINTS
         if (copyPoints) {
-            List<PointBase> points = this.getPointsForPao(templateDeviceId);
+            List<PointBase> points = pointDao.getPointsForPao(templateDeviceId);
             paoCreationHelper.applyPoints(newYukonDevice, points);
         }
         
@@ -164,27 +161,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         for (StoredDeviceGroup templateGroup : templatesGroups) {
             deviceGroupMemberEditorDao.addDevices(templateGroup, newDevice);
         }
-    }
-
-    private List<PointBase> getPointsForPao(int id) {
-        
-        List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(id);
-        List<PointBase> points = new ArrayList<PointBase>(litePoints.size());
-        
-        for (LitePoint litePoint: litePoints) {
-            
-            PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
-            
-            try {
-                Transaction.createTransaction(TransactionType.RETRIEVE, pointBase).execute();
-                points.add(pointBase);
-            }
-            catch (TransactionException e) {
-                throw new DeviceCreationException("Could not retrieve points for new device.", e);
-            }
-        }
-
-        return points;
     }
 
     @Required

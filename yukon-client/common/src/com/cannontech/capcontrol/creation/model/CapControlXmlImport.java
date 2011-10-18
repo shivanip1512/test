@@ -8,7 +8,7 @@ import com.cannontech.common.pao.PaoType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum CapControlXmlImportEnum {
+public enum CapControlXmlImport {
 	AREA("area", PaoType.CAP_CONTROL_AREA),
 	SPECIAL_AREA("specialArea", PaoType.CAP_CONTROL_SPECIAL_AREA),
 	SUBSTATION("substation", PaoType.CAP_CONTROL_SUBSTATION),
@@ -20,14 +20,14 @@ public enum CapControlXmlImportEnum {
 	private final String xmlElementName;
 	private final PaoType paoType;
 	
-	private final static Logger log = YukonLogManager.getLogger(CapControlXmlImportEnum.class);
+	private final static Logger log = YukonLogManager.getLogger(CapControlXmlImport.class);
 	
-	private final static ImmutableMap<String, CapControlXmlImportEnum> lookupByXmlString;
+	private final static ImmutableMap<String, CapControlXmlImport> lookupByXmlString;
 	
 	static {
 		try {
-			Builder<String, CapControlXmlImportEnum> dbBuilder = ImmutableMap.builder();
-			for (CapControlXmlImportEnum value : values()) {
+			Builder<String, CapControlXmlImport> dbBuilder = ImmutableMap.builder();
+			for (CapControlXmlImport value : values()) {
                 dbBuilder.put(value.xmlElementName, value);
             }
 			lookupByXmlString = dbBuilder.build();
@@ -37,19 +37,19 @@ public enum CapControlXmlImportEnum {
         }
 	}
 	
-	private CapControlXmlImportEnum(String xmlElementName, PaoType paoType) {
+	private CapControlXmlImport(String xmlElementName, PaoType paoType) {
 		this.xmlElementName = xmlElementName;
 		this.paoType = paoType;
 	}
 	
-	public static CapControlXmlImportEnum getForXmlString(String xmlString) {
-		CapControlXmlImportEnum value = lookupByXmlString.get(xmlString);
+	public static CapControlXmlImport getForXmlString(String xmlString) {
+		CapControlXmlImport value = lookupByXmlString.get(xmlString);
 		Validate.notNull(value, xmlString);
 		return value;
 	}
 	
 	public static PaoType getPaoTypeForXmlString(String xmlString) {
-		CapControlXmlImportEnum value = getForXmlString(xmlString);
+		CapControlXmlImport value = getForXmlString(xmlString);
 		return value.paoType;
 	}
 	

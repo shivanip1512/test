@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.service.PaoProviderTableEnum;
-import com.cannontech.common.pao.service.impl.PaoTypeProvider;
+import com.cannontech.common.pao.service.PaoProviderTable;
+import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -15,8 +15,8 @@ public class YukonDeviceProvider implements PaoTypeProvider<DeviceFields> {
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
-    public PaoProviderTableEnum getSupportedTable() {
-    	return PaoProviderTableEnum.DEVICE;
+    public PaoProviderTable getSupportedTable() {
+    	return PaoProviderTable.DEVICE;
     }
     
     @Override

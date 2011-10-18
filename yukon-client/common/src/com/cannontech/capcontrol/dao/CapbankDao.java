@@ -6,11 +6,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 
 public interface CapbankDao {
     
-    public int getCapBankIdByCBC(int paoId);
+    public PaoIdentifier getCapBankIdByCBC(int paoId);
     
     public CapbankAdditional getCapbankAdditional(int paoId);
     

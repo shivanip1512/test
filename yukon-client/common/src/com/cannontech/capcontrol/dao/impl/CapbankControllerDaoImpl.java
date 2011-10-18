@@ -2,9 +2,9 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
@@ -14,38 +14,37 @@ import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.device.DeviceWindowType;
-import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
+    private final Logger log = YukonLogManager.getLogger(CapbankControllerDaoImpl.class);
 	
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	private PaoDao paoDao;
-	private DBPersistentDao dbPersistentDao;
+	private PaoDefinitionDao paoDefinitionDao;
 	private PaoCreationHelper paoCreationHelper;
 	private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
@@ -81,41 +80,41 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
 	@Override
 	public boolean assignController(int capbankId, int controllerId) {
-	    List<PointBase> cbcPoints = getPointsForPao(controllerId);
-	    PointBase controlPoint = null;
-	    for(PointBase pointBase : cbcPoints){
-	        if(pointBase.getPoint().getPointOffset() == 1 && PointType.getForString(pointBase.getPoint().getPointType()) == PointType.Status){
-	            controlPoint = pointBase;
-	            break;
-	        }
+	    YukonPao pao = paoDao.getYukonPao(capbankId);
+	    AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), 
+	                                                                                  BuiltInAttribute.CONTROL_POINT);
+	    PaoPointIdentifier identifier = attributeDefinition.getPointIdentifier(pao);
+	    
+	    Integer pointId = null;
+	    try {
+	        pointId = pointDao.getPointId(identifier);
+	    } catch (NotFoundException e) {
+	        log.debug(e);
+	        return false;
 	    }
 	    
-	    if (controlPoint == null) {
-	    	return false;
-	    }
-	    
-	    unassignController(controllerId);
-	    
-	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    
-	    SqlParameterSink params = sql.update("CapBank");
-	    params.addValue("ControlDeviceID", controllerId);
-	    params.addValue("ControlPointID", controlPoint.getPoint().getPointID());
-	    
-	    sql.append("WHERE DeviceID").eq(capbankId);
-	    
-		int rowsAffected = yukonJdbcTemplate.update(sql);
-		
-		boolean result = (rowsAffected == 1);
-		
-		if (result) {
-		    YukonPao controller = paoDao.getYukonPao(controllerId);
-		    YukonPao capBank = paoDao.getYukonPao(capbankId);
-		    paoCreationHelper.processDbChange(controller, DbChangeType.UPDATE);
-		    paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
-		}
-		
-		return result;
+        unassignController(controllerId);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update("CapBank");
+        params.addValue("ControlDeviceID", controllerId);
+        params.addValue("ControlPointID", pointId);
+        
+        sql.append("WHERE DeviceID").eq(capbankId);
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
+        
+        boolean result = (rowsAffected == 1);
+        
+        if (result) {
+            YukonPao controller = paoDao.getYukonPao(controllerId);
+            YukonPao capBank = paoDao.getYukonPao(capbankId);
+            paoCreationHelper.processDbChange(controller, DbChangeType.UPDATE);
+            paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
+        }
+        
+        return result;
 	}
 
 	@Override
@@ -170,28 +169,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         return searchResult;
 	}
     
-    @Override
-    public List<PointBase> getPointsForPao(int paoId) {
-        
-        List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(paoId);
-        List<PointBase> points = new ArrayList<PointBase>(litePoints.size());
-        
-        for (LitePoint litePoint: litePoints) {
-            
-            PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
-            
-            try {
-            	dbPersistentDao.performDBChange(pointBase, TransactionType.RETRIEVE);
-                points.add(pointBase);
-            }
-            catch (PersistenceException e) {
-                throw new DeviceCreationException("Could not retrieve points for new device.", e);
-            }
-        }
-
-        return points;
-    }
-
 	@Override
 	public DeviceFields getDeviceData(PaoIdentifier paoIdentifier) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -307,11 +284,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
 	
 	@Autowired
-	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-		this.dbPersistentDao = dbPersistentDao;
-	}
-	
-	@Autowired
 	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
 		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
@@ -320,4 +292,9 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	public void setPointDao(PointDao pointDao) {
 		this.pointDao = pointDao;
 	}
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
 }

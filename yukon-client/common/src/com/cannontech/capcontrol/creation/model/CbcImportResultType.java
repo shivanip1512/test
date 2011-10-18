@@ -8,7 +8,7 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum CbcImportResultTypesEnum implements DatabaseRepresentationSource {
+public enum CbcImportResultType implements DatabaseRepresentationSource {
 	SUCCESS("Success"),
 	MISSING_DATA("Missing Data"),
 	INVALID_COMM_CHANNEL("Invalid Comm Channel"),
@@ -20,14 +20,14 @@ public enum CbcImportResultTypesEnum implements DatabaseRepresentationSource {
 	;
 	
 	private final String dbString;
-	private final static Logger log = YukonLogManager.getLogger(CbcImportResultTypesEnum.class);
+	private final static Logger log = YukonLogManager.getLogger(CbcImportResultType.class);
 	
-	private final static ImmutableMap<String, CbcImportResultTypesEnum> lookupByDbString;
+	private final static ImmutableMap<String, CbcImportResultType> lookupByDbString;
 	
 	static {
 		try {
-			Builder<String, CbcImportResultTypesEnum> dbBuilder = ImmutableMap.builder();
-			for (CbcImportResultTypesEnum action : values()) {
+			Builder<String, CbcImportResultType> dbBuilder = ImmutableMap.builder();
+			for (CbcImportResultType action : values()) {
                 dbBuilder.put(action.dbString, action);
             }
 			lookupByDbString = dbBuilder.build();
@@ -37,12 +37,12 @@ public enum CbcImportResultTypesEnum implements DatabaseRepresentationSource {
         }
 	}
 	
-	private CbcImportResultTypesEnum(String dbString) {
+	private CbcImportResultType(String dbString) {
 		this.dbString = dbString;
 	}
 	
-	public static CbcImportResultTypesEnum getForDbString(String dbString) {
-		CbcImportResultTypesEnum action = lookupByDbString.get(dbString);
+	public static CbcImportResultType getForDbString(String dbString) {
+		CbcImportResultType action = lookupByDbString.get(dbString);
 		Validate.notNull(action, dbString);
 		return action;
 	}

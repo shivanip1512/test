@@ -10,7 +10,7 @@ public class HierarchyImportData {
 	private String description;
 	private String mapLocationId;
 	private boolean disabled;
-	private ImportActionsEnum importAction;
+	private ImportAction importAction;
 	
 	public PaoType getPaoType() {
 		return paoType;
@@ -52,7 +52,7 @@ public class HierarchyImportData {
 		this.mapLocationId = mapLocationId;
 	}
 	
-	public Boolean isDisabled() {
+	public boolean isDisabled() {
 		return disabled;
 	}
 	
@@ -60,11 +60,11 @@ public class HierarchyImportData {
 		this.disabled = disabled;
 	}
 	
-	public ImportActionsEnum getImportAction() {
+	public ImportAction getImportAction() {
 		return importAction;
 	}
 	
-	public void setImportAction(ImportActionsEnum importAction) {
+	public void setImportAction(ImportAction importAction) {
 		this.importAction = importAction;
 	}
 }

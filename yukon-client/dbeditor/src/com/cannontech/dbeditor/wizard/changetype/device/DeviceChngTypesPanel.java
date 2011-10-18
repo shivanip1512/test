@@ -26,8 +26,6 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
@@ -295,7 +293,9 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         } else {
             LitePoint point = null;
             for (PointIdentifier template : removeTemplates) {
-                point = pointService.getPointForPao(getYukonDeviceForDevice(getCurrentDevice()), template);
+                DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+                SimpleDevice device = deviceDao.getYukonDeviceForDevice(getCurrentDevice());
+                point = pointService.getPointForPao(device, template);
                 buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
             }
         }
@@ -303,14 +303,6 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         return buffer.toString();
 
-    }
-    
-    private SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
-        String typeStr = oldDevice.getPAOType();
-    	PaoType paoType = PaoType.getForDbString(typeStr);
-    	PaoIdentifier paoIdentifier = new PaoIdentifier(oldDevice.getPAObjectID(), paoType);
-        SimpleDevice device = new SimpleDevice(paoIdentifier);
-        return device;
     }
 
     /**
@@ -326,7 +318,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         StringBuffer buffer = new StringBuffer();
 
-        SimpleDevice device = getYukonDeviceForDevice(getCurrentDevice());
+        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        SimpleDevice device = deviceDao.getYukonDeviceForDevice(getCurrentDevice());
         
         for (PointTemplateTransferPair pair : transferTemplates) {
         	LitePoint litePoint = pointService.getPointForPao(device, pair.oldDefinitionTemplate);

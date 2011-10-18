@@ -1,8 +1,9 @@
-package com.cannontech.common.pao.service;
+package com.cannontech.common.pao.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.ControlType;

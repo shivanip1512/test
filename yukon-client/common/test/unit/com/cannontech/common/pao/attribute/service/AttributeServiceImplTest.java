@@ -11,7 +11,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
-import com.cannontech.common.pao.service.PointServiceImpl;
+import com.cannontech.common.pao.service.impl.PointServiceImpl;
 import com.cannontech.database.data.lite.LitePoint;
 
 public class AttributeServiceImplTest extends TestCase {

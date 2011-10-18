@@ -5307,6 +5307,66 @@
     </pao>
     
     <!-- CBCs -->
+    <pao id="CBC_BASE" abstract="true">
+        <points>
+            <point type="Status" offset="1">
+                <init>true</init>
+                <name>Capacitor Bank State</name>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="CONTROL_POINT">
+                <basicLookup point="Capacitor Bank State"/>
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="CBC_1WAY_BASE" inherits="CBC_BASE" abstract="true">
+        <changeGroup>cap1</changeGroup>
+        <tags>
+            <tag name="PAO_CREATION_SERVICE">
+                <value>YUKONPAOBJECT,DEVICE,DEVICECBC</value>
+            </tag>
+        </tags>
+    </pao>
+    
+    <pao id="CBC_2WAY_BASE" inherits="CBC_BASE" abstract="true">
+        <changeGroup>cap2</changeGroup>
+        <points>
+            <!-- PULSE ACCUMULATOR POINTS -->
+            <point type="PulseAccumulator" offset="1">
+                <init>true</init>
+                <name>Total Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <!-- ANALOG POINTS -->
+            <point type="Analog" offset="10002">
+                <init>true</init>
+                <name>UV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point = "Average Line Voltage" />            
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="PAO_CREATION_SERVICE">
+                <value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
+            </tag>
+        </tags>
+    </pao>
+        
+    <pao id="CBC_DNP_BASE" inherits="CBC_BASE" abstract="true">
+        <changeGroup>cap1</changeGroup>
+    </pao>
+    
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>
         <changeGroup>cap</changeGroup>
@@ -5332,18 +5392,13 @@
         <changeGroup>cap</changeGroup>
     </pao>
     
-    <pao id="CBC_DNP" inherits="CBC_DNP_BASE">
-        <displayName>CBC DNP</displayName>
-        <changeGroup>cap</changeGroup>
-        <tags>
-        	<tag name="PAO_CREATION_SERVICE">
-        		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
-        	</tag>
-        </tags>
-    </pao>
-    
     <pao id="CBC_EXPRESSCOM" inherits="CBC_1WAY_BASE">
         <displayName>CBC Expresscom</displayName>
+        <changeGroup>cap</changeGroup>
+    </pao>
+        
+    <pao id="CBC_FP_2800" inherits="CBC_1WAY_BASE">
+        <displayName>CBC FP-2800</displayName>
         <changeGroup>cap</changeGroup>
     </pao>
     
@@ -5355,76 +5410,15 @@
         		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICEADDRESS</value>
         	</tag>
         </tags>
-    </pao>
+    </pao>    
     
-    <pao id="CBC_FP_2800" inherits="CBC_1WAY_BASE">
-        <displayName>CBC FP-2800</displayName>
+    <pao id="CBC_DNP" inherits="CBC_DNP_BASE">
+        <displayName>CBC DNP</displayName>
         <changeGroup>cap</changeGroup>
-    </pao>
-    
-    <pao id="CBC_1WAY_BASE" abstract="true">
-        <changeGroup>cap1</changeGroup>
-        <points>
-            <point type="Status" offset="1">
-                <init>true</init>
-                <name>BANK STATUS</name>
-                <stategroup value="TwoStateStatus"/>
-            </point>
-        </points>
         <tags>
-        	<tag name="PAO_CREATION_SERVICE">
-        		<value>YUKONPAOBJECT,DEVICE,DEVICECBC</value>
-        	</tag>
-        </tags>
-    </pao>
-    
-    <pao id="CBC_DNP_BASE" abstract="true">
-        <changeGroup>cap1</changeGroup>
-        <points>
-            <point type="Status" offset="1">
-                <init>true</init>
-                <name>Capacitor Bank State</name>
-                <stategroup value="TwoStateStatus"/>
-            </point>
-        </points>
-    </pao>
-    
-    <pao id="CBC_2WAY_BASE" abstract="true">
-    	<changeGroup>cap2</changeGroup>
-    	<points>
-            <!-- PULSE ACCUMULATOR POINTS -->
-        	<point type="PulseAccumulator" offset="1">
-        		<init>true</init>
-                <name>Total Op Count</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="1"/>
-            </point>
-            <!-- ANALOG POINTS -->
-            <point type="Analog" offset="10002">
-            	<init>true</init>
-                <name>UV Threshold</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <!-- STATUS POINTS -->
-            <point type="Status" offset="1">
-                <init>true</init>
-                <name>Capacitor Bank State</name>
-                <controltype>NORMAL</controltype>
-                <stategroup value="TwoStateStatus"/>
-            </point>
-        </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point = "Average Line Voltage" />            
-            </attribute>
-        </attributes>
-        <tags>
-        	<tag name="PAO_CREATION_SERVICE">
-        		<value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
-        	</tag>
+            <tag name="PAO_CREATION_SERVICE">
+                <value>YUKONPAOBJECT,DEVICE,DEVICESCANRATE,DEVICEWINDOW,DEVICEDIRECTCOMMSETTINGS,DEVICECBC,DEVICEADDRESS</value>
+            </tag>
         </tags>
     </pao>
     
