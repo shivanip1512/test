@@ -29,6 +29,8 @@
         <webClassPathEntry>/tdc/bin</webClassPathEntry>
         <webClassPathEntry>/tdc/resource</webClassPathEntry>
         <webClassPathEntry>/third-party</webClassPathEntry>
+        <webClassPathEntry>/third-party/SchemaCompare.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/SchemaDumpToXml.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activemq-all-5.4.2.jar</webClassPathEntry>
@@ -52,7 +54,6 @@
         <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-io-1.3.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-lang-2.3.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/jsch-0.1.44.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-pool-1.4.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/dom4j-1.6.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ecs-1.4.2.jar</webClassPathEntry>
@@ -74,6 +75,7 @@
         <webClassPathEntry>/third-party/jopcbridge.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jradius-client.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jruntags.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jsch-0.1.44.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/json-lib-2.4-jdk15.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jta.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
