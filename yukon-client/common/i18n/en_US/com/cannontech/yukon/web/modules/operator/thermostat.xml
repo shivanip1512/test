@@ -343,8 +343,8 @@
     <entry key="yukon.web.modules.operator.thermostat.single.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
     
     <!--  schedule update events: operator page ThermostatScheduleUpdateResult enum messages (multiple thermostats selected) -->
-    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UNAVAILABLE_ERROR">One or more of the selected thermostats is currently out of service. Schedule {0} is not sent.</entry>
-    <entry key="yukon.web.modules.operator.thermostat.multiple.send.NO_SERIAL_ERROR">The serial # of the selected thermostats cannot be empty. Schedule {0} is not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.UNAVAILABLE_ERROR">One or more of the selected thermostats is currently out of service. Schedule {0} was not sent.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.multiple.send.NO_SERIAL_ERROR">The serial # of the selected thermostats cannot be empty. Schedule {0} was not sent.</entry>
     <entry key="yukon.web.modules.operator.thermostat.multiple.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostat.multiple.send.MULTIPLE_ERROR">There was a problem sending the schedule {0} to one or more of the thermostats you selected.</entry>
     <entry key="yukon.web.modules.operator.thermostat.multiple.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
