@@ -226,10 +226,10 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         sqlBuilder.append("SELECT Y.PAObjectID, Y.Category, Y.PAOName, Y.Type, Y.PAOClass,");
         sqlBuilder.append("   Y.Description, Y.DisableFlag, D.PORTID, DCS.ADDRESS, DR.routeid");
         sqlBuilder.append("FROM YukonPaObject Y");
-        sqlBuilder.append("   JOIN DeviceDirectCommSettings D ON Y.PaObjectId = D.DeviceId");
-        sqlBuilder.append("   JOIN DeviceCarrierSettings DCS ON Y.PaObjectId = DCS.DeviceId");
-        sqlBuilder.append("   JOIN DeviceRoutes DR ON Y.PaObjectId = DR.DeviceId");
-        sqlBuilder.append("   JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId");
+        sqlBuilder.append("   LEFT JOIN DeviceDirectCommSettings D ON Y.PaObjectId = D.DeviceId");
+        sqlBuilder.append("   LEFT JOIN DeviceCarrierSettings DCS ON Y.PaObjectId = DCS.DeviceId");
+        sqlBuilder.append("   LEFT JOIN DeviceRoutes DR ON Y.PaObjectId = DR.DeviceId");
+        sqlBuilder.append("   LEFT JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId");
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(").appendArgument(meterNumber).append(")");
 
         List<LiteYukonPAObject> paos = yukonJdbcTemplate.query(sqlBuilder, new LitePaoRowMapper());

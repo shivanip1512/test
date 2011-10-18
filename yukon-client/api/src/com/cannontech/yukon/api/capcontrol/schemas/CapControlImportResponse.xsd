@@ -37,7 +37,7 @@
 	<xsd:simpleType name="CbcImportResultType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="Missing Data"/>
-			<xsd:enumeration value="Invlid Comm Channel"/>
+			<xsd:enumeration value="Invalid Comm Channel"/>
 			<xsd:enumeration value="Invalid Import Action"/>
 			<xsd:enumeration value="Invalid Type"/>
 			<xsd:enumeration value="Device Already Exists"/>
