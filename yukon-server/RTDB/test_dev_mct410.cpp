@@ -211,7 +211,7 @@ struct command_execution_environment
 };
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
-//{  For Jeremy.  <3
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     /*
     *** TESTING: "putconfig emetcon centron...." commands and parameters
     */
@@ -439,7 +439,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1);
     }
-//}  For Jeremy.  <3
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -455,7 +455,7 @@ struct single_error_validator : command_execution_environment
 
 // These commands are errors and should only return a single error. See YUK-5059
 BOOST_FIXTURE_TEST_SUITE(test_single_error_executor, single_error_validator)
-//{  For Jeremy.  <3
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor01)
     {
         CtiCommandParser parse("getvalue lp channel 1 02/02/2010 01/01/2010");
@@ -516,7 +516,7 @@ BOOST_FIXTURE_TEST_SUITE(test_single_error_executor, single_error_validator)
         CtiCommandParser parse("getvalue daily read detail channel 8");
         mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
     }
-//}  For Jeremy.  <3
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -909,7 +909,7 @@ struct getOperation_helper
 };
 
 BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
-//{  For Jeremy.  <3
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     BOOST_AUTO_TEST_CASE(test_getOperation_01)
     {
         BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Command_Loop, BSt));
@@ -1457,5 +1457,5 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0x00);
         BOOST_CHECK_EQUAL(BSt.Length,   2);
     }
-//}  For Jeremy.  <3
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()

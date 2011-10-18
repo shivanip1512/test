@@ -22,7 +22,7 @@ struct getOperation_helper
 
 
 BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
-//{  For Jeremy.  <3
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     BOOST_AUTO_TEST_CASE(test_getOperation_01)
     {
         BOOST_REQUIRE(mct.getOperation(EmetconProtocol::Command_Loop, BSt));
@@ -363,5 +363,5 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0x48);
         BOOST_CHECK_EQUAL(BSt.Length,   0);
     }
-//}  For Jeremy.  <3
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
