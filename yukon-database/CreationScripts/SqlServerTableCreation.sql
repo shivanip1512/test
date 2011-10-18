@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/13/2011 4:07:23 PM                        */
+/* Created on:     10/18/2011 1:07:19 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -11367,7 +11367,7 @@ alter table DYNAMICCCSPECIALAREA
 go
 
 alter table DYNAMICCCSUBSTATION
-   add constraint FK_DynCCSubst_CCSubst foreign key (SubStationID)
+   add constraint FK_DynCCSub_CCSub foreign key (SubStationID)
       references CAPCONTROLSUBSTATION (SubstationID)
          on delete cascade
 go
@@ -11378,7 +11378,7 @@ alter table DYNAMICCCTWOWAYCBC
 go
 
 alter table DYNAMICDEVICESCANDATA
-   add constraint FK_DynDeviceScanData foreign key (DEVICEID)
+   add constraint FK_DynDeviceScanData_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID)
          on delete cascade
 go
