@@ -53,12 +53,14 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -99,6 +101,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private ConfigurationSource configurationSource;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private WarehouseDao warehouseDao;
 
     @Override
     @Transactional
@@ -347,6 +350,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         deleteAllSubstations(energyCompany);
         
+        deleteAllWarehouses(energyCompany);
+        
         deleteAllServiceCompanies(energyCompany);
         
         deleteAllApplianceCategories(energyCompany);
@@ -358,6 +363,14 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         deleteLoginGroupAndLogin(energyCompany, liteGroup);
         
         starsEventLogService.deleteEnergyCompany(user, energyCompanyName);
+    }
+
+    private void deleteAllWarehouses(LiteStarsEnergyCompany energyCompany) {
+        List<Warehouse> warehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        
+        for (Warehouse warehouse : warehouses) {
+            warehouseDao.delete(warehouse);
+        }
     }
 
     /**
@@ -837,5 +850,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired
     public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
         this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
+    @Autowired
+    public void setWarehouseDao(WarehouseDao warehouseDao) {
+        this.warehouseDao = warehouseDao;
     }
 }

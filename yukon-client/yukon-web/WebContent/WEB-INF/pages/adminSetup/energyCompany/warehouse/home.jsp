@@ -39,10 +39,10 @@
         </c:if>
 
         <div class="actionArea">
-            <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
-                <cti:param name="ecId" value="${ecId}"/>
-            </cti:url>
-            <cti:button nameKey="create" onclick="javascript:window.location='${createWarehouseUrl}'"/>
+            <form action="${baseUrl}/new">
+                <input type="hidden" name="ecId" value="${ecId}"/>
+                <cti:button nameKey="create" type="submit" name="create"/>
+            </form>
         </div>
     </tags:boxContainer2>
 </cti:standardPage>

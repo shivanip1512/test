@@ -71,7 +71,7 @@ Event.observe(window, "load", function() {
                                 <cti:url var="editRolesUrl" value="/spring/adminSetup/groupEditor/view">
                                     <cti:param name="groupId" value="${groupId}"/>
                                 </cti:url>
-                                <cti:button nameKey="editRoles" type="button" href="${editRolesUrl}"/>
+                                <cti:button nameKey="editRoles" name="editRoles" type="button" href="${editRolesUrl}"/>
                             </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
@@ -80,7 +80,7 @@ Event.observe(window, "load", function() {
                                 <cti:url value="delete" var="deleteUrl" >
                                     <cti:param name="ecId" value="${ecId}"/>
                                 </cti:url>
-                                <cti:button nameKey="delete" type="button" href="${deleteUrl}" />
+                                <cti:button nameKey="delete" name="deleteConfirmation" type="button" href="${deleteUrl}" />
                             </c:if>
                             <cti:button nameKey="cancel" type="submit" name="cancel"/>
                         </cti:displayForPageEditModes>
