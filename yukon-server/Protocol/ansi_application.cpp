@@ -548,12 +548,13 @@ bool CtiANSIApplication::analyzePacket()
              case identified:
              {
                  identificationData( getDatalinkLayer().getCurrentPacket()+6 );
+                 getDatalinkLayer().setToggleMatch((getDatalinkLayer().getCurrentPacket()[2] & 0x20) == getDatalinkLayer().getToggleByte());
                  _currentState = getNextState (_requestedState);
                  break;
              }
              case request:
              {
-                 if ( getAnsiDeviceType() == sentinel && !getDatalinkLayer().compareToggleByte() )
+                 if ( getAnsiDeviceType() == sentinel && !getDatalinkLayer().compareToggleByte(getDatalinkLayer().getCurrentPacket()[2]) )
                  {
                      retFlag = false;
                      break;
@@ -572,7 +573,7 @@ bool CtiANSIApplication::analyzePacket()
                                  headerOffset = 9;
                             if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                             {
-                                 getDatalinkLayer().toggleToggle();
+                                 getDatalinkLayer().alternateToggle();
                             }
                          }
                          }
@@ -589,7 +590,7 @@ bool CtiANSIApplication::analyzePacket()
                          {
                               // move the data into storage
                              if (getDatalinkLayer().getPacketBytesReceived() >= 8)
-                             {
+                             { 
                                  overHeadByteCount = 8;//header(6),crc(2)
                                  headerOffset = 6;
                              }
@@ -615,7 +616,7 @@ bool CtiANSIApplication::analyzePacket()
                      int overHeadByteCount = 0;
                      int headerOffset = 0;
 
-
+                     
                         if (getDatalinkLayer().getPacketFirst())
                         {
                             // move the data into storage
@@ -626,9 +627,9 @@ bool CtiANSIApplication::analyzePacket()
                          }
                             if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                             {
-                                 getDatalinkLayer().toggleToggle();
+                                 getDatalinkLayer().alternateToggle();
                             }
-
+                        
                         }
                         else if (getDatalinkLayer().getSequence() == 0)
                         {
@@ -643,7 +644,7 @@ bool CtiANSIApplication::analyzePacket()
                         {
                              // move the data into storage
                          if (getDatalinkLayer().getPacketBytesReceived() >= 8)
-                         {
+                         {   
                              overHeadByteCount = 8;//header(6),crc(2)
                              headerOffset = 6;
                         }
@@ -763,7 +764,7 @@ bool CtiANSIApplication::analyzePacket()
 bool CtiANSIApplication::areThereMorePackets()
 {
     bool retVal;
-
+    
     if (getDatalinkLayer().getPacketPart() )
     {
         if(getDatalinkLayer().getSequence() == 0 )
@@ -907,7 +908,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
 
          msg = isss;
          _currentState = loggedOff;
-         getDatalinkLayer().toggleToggle();
+         getDatalinkLayer().alternateToggle();
       }
       break;
    }

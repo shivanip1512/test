@@ -20,7 +20,8 @@ CtiANSIDatalink::CtiANSIDatalink() :
     _sequence(0),
     _multiPacketPart(false),
     _multiPacketFirst(false),
-    _toggleByte(0),
+    _toggleMatch(true),
+    _toggle(true),
     _identityByte(0)
 {
 }
@@ -43,7 +44,8 @@ void CtiANSIDatalink::init( void )
        _currentPacket = NULL;
    }
    _currentPacket = CTIDBG_new BYTE[512];
-   _toggleByte = 0x00;
+   _toggle = true;
+   _toggleMatch = true;
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
 
@@ -61,7 +63,8 @@ void CtiANSIDatalink::reinitialize( void )
    setSequence( 0 );
    _currentPos = Ack;
    _previousPos = Ack;
-   _toggleByte = 0x00;
+   _toggle = true;
+   _toggleMatch = true;
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
 
@@ -110,8 +113,8 @@ void CtiANSIDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT byt
 
 
    //control field
-   _toggleByte =  (_toggleByte & 0x20) == 0x00 ? 0x20 : 0x00;
-   packetPtr[2] = _toggleByte;
+   alternateToggle();
+   packetPtr[2] = getToggleByte();
 
    //sequence number
    packetPtr[3] = seq;
@@ -322,11 +325,7 @@ void CtiANSIDatalink::decodePacketHeader( )
    if( packet[0] & 0x40 )
       setPacketFirst( true );
 
-   /*if( packet[0] & 0x20 )
-      _toggle = true;
-   else
-       _toggle = false;
-   */
+
    packet++;                                          //increment past the <cntl>
 
    if( packet[0] != 0x00 )
@@ -945,7 +944,7 @@ int CtiANSIDatalink::getPacketBytesReceived( void )
 
 BYTE CtiANSIDatalink::getToggleByte( void )
 {
-    return _toggleByte;
+    return _toggle ? 0x20 : 0x00;
 }
 
 //=========================================================================================================================================
@@ -1027,9 +1026,9 @@ unsigned short CtiANSIDatalink::crc( int size, unsigned char *packet )
 }
 
 
-void CtiANSIDatalink::toggleToggle( void )
+void CtiANSIDatalink::alternateToggle( void )
 {
-    _toggleByte = (_toggleByte & 0x20) == 0x00 ? 0x20 : 0x00;
+    _toggle = !_toggle;
     return;
 }
 
@@ -1045,12 +1044,24 @@ BYTE CtiANSIDatalink::getIdentityByte( void )
 }
 
 
-bool CtiANSIDatalink::compareToggleByte()
+bool CtiANSIDatalink::compareToggleByte(BYTE toggleByte)
 {
-    if (_toggleByte == (getCurrentPacket()[2] & 0x20)) 
+    bool match = getToggleByte() == (toggleByte & 0x20);
+    if (shouldToggleMatch())
     {
-       return true;
+        return match; 
     }
-    return false;
+    else
+    {
+        return !match; 
+    }
+}
+bool CtiANSIDatalink::shouldToggleMatch()
+{
+    return _toggleMatch;
+}
+void CtiANSIDatalink::setToggleMatch(bool matchFlag)
+{
+    _toggleMatch = matchFlag;
 }
 

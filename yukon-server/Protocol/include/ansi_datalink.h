@@ -71,7 +71,7 @@ class IM_EX_PROT CtiANSIDatalink
     int getPacketBytesReceived( void );
     BYTE getToggleByte(void);
 
-    void toggleToggle(void);
+    void alternateToggle(void);
 
 
       void init( void );
@@ -102,7 +102,10 @@ class IM_EX_PROT CtiANSIDatalink
       void setIdentityByte(BYTE identityByte);
       BYTE getIdentityByte(void);
 
-      bool compareToggleByte();
+      bool compareToggleByte(BYTE toggleByte);
+      bool shouldToggleMatch();
+      void setToggleMatch(bool matchFlag);
+    
 
    protected:
 
@@ -120,7 +123,8 @@ class IM_EX_PROT CtiANSIDatalink
       int         _sequence;
       bool        _multiPacketPart;
       bool        _multiPacketFirst;
-      BYTE        _toggleByte;
+      bool        _toggle;
+      bool        _toggleMatch;
       BYTE        _identityByte;
 
  };

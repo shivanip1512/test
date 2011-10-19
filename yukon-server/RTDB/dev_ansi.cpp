@@ -725,8 +725,12 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
             gotLPValues = false;
             x++;
         }
-
-
+        getANSIProtocol().setLastLoadProfileTime(_lastLPTime);
+        if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " " << getName() <<" Last LP Time "<<CtiTime(_lastLPTime)<< endl;
+        }
     }
     catch(...)
     {
@@ -738,10 +742,10 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
 {
     CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
     CtiPointDataMsg *pData = NULL;
-
+    
     value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1);
     value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0) ;
-
+    
     _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
     pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, (int) NormalQuality, pPoint->getType());
@@ -788,7 +792,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
             lpValue = getANSIProtocol().getLPValue(y);
             lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1);
             lpValue += (ptOffset != NULL ? ptOffset : 0) ;
-
+            
             pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, (int) getANSIProtocol().getLPQuality(y), pPoint->getType());
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setTime( CtiTime(getANSIProtocol().getLPTime(y)) );
@@ -815,12 +819,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
         msgPtr = NULL;
     }
     _lastLPTime = getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
-    getANSIProtocol().setLastLoadProfileTime(_lastLPTime);
-    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " " << getName() <<" Last LP Time "<<CtiTime(_lastLPTime)<< endl;
-    }
+    
     if (pData != NULL)
     {
         delete []pData;
