@@ -1011,32 +1011,37 @@ void CtiLMControlAreaStore::reset()
 
                 while( rdr() )
                 {
-                    string controlmethod;
+                    string controlmethod, gearName;
+                    int gearId;
                     CtiLMProgramDirectGear* newDirectGear = NULL;
 
                     rdr["controlmethod"] >> controlmethod;
-                    if( rdr["settings"].isNull() )
+                    rdr["gearname"] >> gearName;
+                    rdr["gearid"] >> gearId;
+
+                    // NOTE, due to DBEditor problems, the thermostat table may exist even for non thermostat control methods.
+                    // If it does exist and is not needed, CtiLMProgramThermoStatGear loads it but never uses it. SEPCycleGear
+                    // never loads it. It is important to note that a ThermoStatGear is a Direct Gear underneath.
+                    if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
                     {
-                        if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
-                        {
-                            newDirectGear = CTIDBG_new SEPCycleGear(rdr);
-                        }
-                        else
-                        {
-                            newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
-                        }
+                        newDirectGear = CTIDBG_new SEPCycleGear(rdr);
                     }
-                    else
+                    else if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
                     {
-                        if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
+                        if( !rdr["settings"].isNull() )
                         {
                             newDirectGear = CTIDBG_new SEPTemperatureOffsetGear(rdr);
                         }
-                        else
-                        {
-                            newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
-                        }
                     }
+                    else if( rdr["settings"].isNull() )
+                    {
+                        newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
+                    }
+                    else
+                    {
+                        newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
+                    }
+
                     if( newDirectGear != NULL )
                     {
                         CtiLMProgramBaseSPtr programToPutGearIn;
@@ -1045,6 +1050,11 @@ void CtiLMControlAreaStore::reset()
                             vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(programToPutGearIn)->getLMProgramDirectGears();
                             lmProgramDirectGearList.push_back(newDirectGear);
                         }
+                    }
+                    else // Currently this is only hit if the SEPTemperatureOffset gear is misconfigured.
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << " **** EXCEPTION Checkpoint **** Gear setup is invalid for gear " << gearName << " " << gearId << endl;
                     }
                 }
             }//loading direct gears end
