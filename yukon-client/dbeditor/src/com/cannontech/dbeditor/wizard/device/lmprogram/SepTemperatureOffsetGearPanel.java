@@ -991,6 +991,9 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         } else if (heatingOffset == 0.0 && coolingOffset != 0.0) {
             getJCSpinFieldOffsetAmount().setValue(coolingOffset);
             setCoolingMode();
+        } else if (heatingOffset == 0.0 && coolingOffset == 0.0) {
+            getJCSpinFieldOffsetAmount().setValue(0.0);
+            setHeatingMode();
         } else {
             throw new RuntimeException(this.getClass().toString() + ": Illegal database values: Heating and cooling offsets cannot both be nonzero");
         }
