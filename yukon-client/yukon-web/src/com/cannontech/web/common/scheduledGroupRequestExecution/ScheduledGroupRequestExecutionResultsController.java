@@ -1,19 +1,28 @@
 package com.cannontech.web.common.scheduledGroupRequestExecution;
 
-import java.text.ParseException;
-import java.util.ArrayList;
+import java.beans.PropertyEditor;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.time.DateUtils;
+import net.sf.jsonOLD.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
@@ -22,174 +31,191 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
-import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.service.JobManager;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
+import com.cannontech.web.common.scheduledGroupRequestExecution.model.ScheduledJobsFilterBackingBean;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 
 @CheckRole(YukonRole.SCHEDULER)
+@Controller
+@RequestMapping("/scheduledGroupRequestExecution/results/*")
 public class ScheduledGroupRequestExecutionResultsController extends MultiActionController {
 	
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-	private DateFormattingService dateFormattingService;
 	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	private RolePropertyDao rolePropertyDao;
+	private DatePropertyEditorFactory datePropertyEditorFactory;
+	private JobManager jobManager;
+	private Map<String, Comparator<ScheduledGroupRequestExecutionJobWrapper>> sorters;
 	
-	// JOBS
-	public ModelAndView jobs(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/results/jobs.jsp");
-		final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		String error = null;
-		
-		int jobId = ServletRequestUtils.getIntParameter(request, "jobId", 0);
-		
-		// DEFAULT FILTERS
-		Date toDate = new Date();
-		Date fromDate = DateUtils.addMonths(toDate, -1);
-		List<DeviceRequestType> typeFilters = null;
-		
-		// FILTERS
-		
-		// from date
-		String fromDateFilterStr = ServletRequestUtils.getStringParameter(request, "fromDateFilter", null);
-		if (fromDateFilterStr != null) {
-			try {
-				fromDate = dateFormattingService.flexibleDateParser(fromDateFilterStr, DateOnlyMode.START_OF_DAY, userContext);
-			} catch (ParseException e) {
-				error = "Invalid From Date: " + fromDateFilterStr;
-			}
-		}
-		
-		// to date
-		String toDateFilterStr = ServletRequestUtils.getStringParameter(request, "toDateFilter", null);
-		if (toDateFilterStr != null) {
-			try {
-				toDate = dateFormattingService.flexibleDateParser(toDateFilterStr, DateOnlyMode.END_OF_DAY, userContext);
-			} catch (ParseException e) {
-				error = "Invalid To Date: " + toDateFilterStr;
-			}
-		}
-		
-		// status 
-		String statusFilterStr = ServletRequestUtils.getStringParameter(request, "statusFilter", ScheduleGroupRequestExecutionDaoEnabledFilter.ANY.name());
-		ScheduleGroupRequestExecutionDaoEnabledFilter statusFilter = ScheduleGroupRequestExecutionDaoEnabledFilter.valueOf(statusFilterStr);
-		
-		// include pending
-		boolean excludePendingFilterBool = ServletRequestUtils.getBooleanParameter(request, "excludePendingFilter", false);
-		ScheduleGroupRequestExecutionDaoPendingFilter excludePendingFilter;
-		if (excludePendingFilterBool) {
-			excludePendingFilter = ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY;
-		} else {
-			excludePendingFilter = ScheduleGroupRequestExecutionDaoPendingFilter.ANY;
-		}
-		
-		// exclude one-time
-		boolean includeOnetimeFilterBool = ServletRequestUtils.getBooleanParameter(request, "includeOnetimeFilter", false);
-		ScheduleGroupRequestExecutionDaoOnetimeFilter includeOnetimeFilter;
-		if (includeOnetimeFilterBool) {
-			includeOnetimeFilter = ScheduleGroupRequestExecutionDaoOnetimeFilter.INCLUDE_ONETIME;
-		} else {
-			includeOnetimeFilter = ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME;
-		}
-		
-		
-		// type
-		DeviceRequestType typeFilter = null;
-		String typeFilterStr = ServletRequestUtils.getStringParameter(request, "typeFilter", null);
-		if (typeFilterStr != null && !typeFilterStr.equals("ANY")) {
-			typeFilter = DeviceRequestType.valueOf(typeFilterStr);
-			typeFilters = Collections.singletonList(typeFilter);
-		} else {
-			typeFilters = null;
-		}
-		
-		
-		
-		// PARAMS
-		mav.addObject("jobId", jobId);
-		mav.addObject("fromDate", fromDate);
-		mav.addObject("toDate", DateUtils.addMilliseconds(toDate, -1));
-		mav.addObject("statusFilter", statusFilter);
-		mav.addObject("excludePendingFilter", excludePendingFilter);
-		mav.addObject("includeOnetimeFilter", includeOnetimeFilter);
-		mav.addObject("typeFilter", typeFilter);
-		mav.addObject("error", error);
-		
-		// TYPES
-		DeviceRequestType[] commandRequestExecutionTypes = DeviceRequestType.values();
-		List<DeviceRequestType> scheduledCommandRequestExecutionTypes = new ArrayList<DeviceRequestType>();
-		for (DeviceRequestType commandRequestExecutionType : commandRequestExecutionTypes) {
-			if (commandRequestExecutionType.isScheduled()) {
-				scheduledCommandRequestExecutionTypes.add(commandRequestExecutionType);
-			}
-		}
-		mav.addObject("scheduledCommandRequestExecutionTypes", scheduledCommandRequestExecutionTypes);
-		
-		// JOBS
-		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(jobId, fromDate, toDate, typeFilters, statusFilter, excludePendingFilter, includeOnetimeFilter, false);
-		
-		final Date startTime = fromDate;
-		final Date stopTime = toDate;
-		List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = Lists.newArrayListWithCapacity(jobs.size());
-		for (ScheduledRepeatingJob job : jobs) {
-			ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, startTime, stopTime, userContext);
-			jobWrappers.add(jobWrapper);
-		}
-		
-		Collections.sort(jobWrappers, ScheduledGroupRequestExecutionJobWrapperFactory.getNextRunComparator());
-		mav.addObject("jobWrappers", jobWrappers);
-		
-		boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
-		mav.addObject("canManage", canManage);
-		
-		return mav;
-	}
+    @PostConstruct
+    public void initialize() {
+        Builder<String, Comparator<ScheduledGroupRequestExecutionJobWrapper>> builder = ImmutableMap.builder();
+        builder.put("NAME", ScheduledGroupRequestExecutionJobWrapperFactory.getJobNameComparator());
+        builder.put("DEVICE_GROUP", ScheduledGroupRequestExecutionJobWrapperFactory.getDeviceGroupNameComparator());
+        builder.put("ATTR_OR_COMM", ScheduledGroupRequestExecutionJobWrapperFactory.getAttributeCommandComparator());
+        builder.put("SCHED_DESC", ScheduledGroupRequestExecutionJobWrapperFactory.getRunScheduleComparator());
+        builder.put("NEXT_RUN", ScheduledGroupRequestExecutionJobWrapperFactory.getNextRunComparator());
+        builder.put("ENABLED_STATUS", ScheduledGroupRequestExecutionJobWrapperFactory.getStatusComparator());
+        sorters = builder.build();
+    }
 	
-	// JOB DETAIL
-	public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/results/jobDetail.jsp");
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		
-		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
-        
-        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
-        
-        ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
-        mav.addObject("jobWrapper", jobWrapper);
-        
-        CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
-        mav.addObject("lastCre", lastCre);
-        
-        boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
-        mav.addObject("canManage", canManage);
-        
-        return mav;
-		
+    @RequestMapping
+    public String jobs(@ModelAttribute("scheduledJobsFilterBackingBean") ScheduledJobsFilterBackingBean backingBean,
+                     BindingResult bindingResult, FlashScope flashScope,
+                     YukonUserContext userContext, ModelMap model) {
+        setupCommonJobsPageAttributes(bindingResult, flashScope, userContext, model);
+        setupJobsFromFilter(backingBean, userContext, model);
+		return "scheduledGroupRequestExecution/results/jobs.jsp";
 	}
 
-	// VIEW LAST RUN
-	// Note: this url should only be hit if it is know the job has a last cre, no protection for null lastCre here
-	public ModelAndView viewLastRun(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
-		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
-		ModelAndView mav = new ModelAndView("redirect:/spring/common/commandRequestExecutionResults/detail");
-		mav.addObject("commandRequestExecutionId", lastCre.getId());
-		
-		return mav;
-	}
+    @RequestMapping
+    public String clear() {
+        return "redirect:jobs";
+    }
+    
+    @RequestMapping
+    public void toggleEnabled(HttpServletResponse response, YukonUserContext userContext, int jobId)
+            throws IOException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
+        YukonJob job = jobManager.getJob(jobId);
+        JSONObject object = new JSONObject();
+        boolean enabled = false;
+        if (job.isDisabled()) {
+            jobManager.enableJob(job);
+            enabled = true;
+        } else {
+            jobManager.disableJob(job);
+        }
+        object.put("jobEnabled", enabled);
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        out.print(object.toString());
+        out.close();
+    }
 	
+    @RequestMapping
+    public String detail(int jobId, ModelMap model, YukonUserContext userContext) {
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
+        ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
+        model.addAttribute("jobWrapper", jobWrapper);
+        
+        CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
+        model.addAttribute("lastCre", lastCre);
+        
+        boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
+        model.addAttribute("canManage", canManage);
+        return "scheduledGroupRequestExecution/results/jobDetail.jsp";
+	}
+
+	// Note: this url should only be hit if it is know the job has a last cre, no protection for null lastCre here
+    @RequestMapping
+	public String viewLastRun(int jobId, ModelMap model) {
+		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
+		model.addAttribute("commandRequestExecutionId", lastCre.getId());
+		return "redirect:/spring/common/commandRequestExecutionResults/detail";
+	}
+
+    private void setupJobsFromFilter(ScheduledJobsFilterBackingBean backingBean,
+                                     YukonUserContext userContext, ModelMap model) {
+        List<ScheduledRepeatingJob> jobs =
+              scheduledGroupRequestExecutionDao.getJobs(0,
+                                                        backingBean.getFromDate(),
+                                                        backingBean.getToDate(),
+                                                        backingBean.getTypeFilterAsList(),
+                                                        backingBean.getStatusFilter(),
+                                                        backingBean.getExcludePendingFilter(),
+                                                        backingBean.getIncludeOnetimeFilter(),
+                                                        false);
+
+        SearchResult<ScheduledGroupRequestExecutionJobWrapper> filterResult =
+              new SearchResult<ScheduledGroupRequestExecutionJobWrapper>();
+        filterResult.setBounds(backingBean.getStartIndex(),
+                               backingBean.getItemsPerPage(),
+                               jobs.size());
+
+        List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = Lists.newArrayListWithCapacity(jobs.size());
+        for (ScheduledRepeatingJob job : jobs) {
+            ScheduledGroupRequestExecutionJobWrapper jobWrapper =
+                  scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, 
+                           backingBean.getFromDate(), backingBean.getToDate(), userContext);
+            jobWrappers.add(jobWrapper);
+        }
+
+        if (backingBean.getSort() != null) {
+            if (backingBean.getDescending()) {
+                Collections.sort(jobWrappers, Collections.reverseOrder(sorters.get(backingBean.getSort())));
+            } else {
+                Collections.sort(jobWrappers, sorters.get(backingBean.getSort()));
+            }
+        } else {
+            Collections.sort(jobWrappers, ScheduledGroupRequestExecutionJobWrapperFactory.getNextRunAndNameComparator());
+        }
+
+        jobWrappers = jobWrappers.subList(backingBean.getStartIndex(),
+                                          backingBean.getStartIndex() + 
+                                          backingBean.getItemsPerPage() > jobs.size() ?
+                                          jobs.size() : backingBean.getStartIndex() +
+                                          backingBean.getItemsPerPage());
+        filterResult.setResultList(jobWrappers);
+        model.addAttribute("filterResult", filterResult);
+        model.addAttribute("backingBean", backingBean);
+    }
+
+    private void setupCommonJobsPageAttributes(BindingResult bindingResult, FlashScope flashScope,
+                                               YukonUserContext userContext, ModelMap model) {
+        boolean hasFilterErrors = false;
+        if (bindingResult.hasErrors()) {
+            hasFilterErrors = true;
+            List<MessageSourceResolvable> messages =
+                  YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
+        model.addAttribute("hasFilterErrors", hasFilterErrors);
+
+        List<DeviceRequestType> scheduledCommandRequestExecutionTypes = Lists.newArrayList();
+        for (DeviceRequestType commandRequestExecutionType : DeviceRequestType.values()) {
+            if (commandRequestExecutionType.isScheduled()) {
+                scheduledCommandRequestExecutionTypes.add(commandRequestExecutionType);
+            }
+        }
+        model.addAttribute("scheduledCommandRequestExecutionTypes",
+                             scheduledCommandRequestExecutionTypes);
+        boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES,
+                                                          userContext.getYukonUser());
+        model.addAttribute("canManage", canManage);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
+        PropertyEditor fromDateEditor = datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.START_OF_DAY, userContext);
+        PropertyEditor toDateEditor = datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
+        binder.registerCustomEditor(Date.class, "fromDate", fromDateEditor);
+        binder.registerCustomEditor(Date.class, "toDate", toDateEditor);
+        EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoEnabledFilter.class);
+        EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoPendingFilter.class);
+        EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoOnetimeFilter.class);
+        EnumPropertyEditor.register(binder, DeviceRequestType.class);
+    }
+    
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(
 			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
@@ -203,11 +229,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	}
 	
 	@Autowired
-	public void setDateFormattingService(DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-	
-	@Autowired
 	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
 		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
 	}
@@ -216,4 +237,14 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+	
+	@Autowired
+	public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
+        this.datePropertyEditorFactory = datePropertyEditorFactory;
+    }
+	
+	@Autowired
+	public void setJobManager(JobManager jobManager) {
+        this.jobManager = jobManager;
+    }
 }

@@ -134,29 +134,95 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 	}
 	
-	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getNextRunComparator() {
-		
-		Ordering<Date> dateComparer = Ordering.natural().nullsLast();
+    public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getNextRunAndNameComparator() {
+        Ordering<Date> dateComparer = Ordering.natural().nullsLast();
+        Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNextRunOrdering = dateComparer
+            .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, Date>() {
+                public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
+                    return from.getNextRun();
+                }
+            });
+        Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobNextRunOrdering.compound(getJobNameComparator());
+        return result;
+    }
+	
+	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getJobNameComparator() {
 		Ordering<String> normalStringComparer = Ordering.natural();
-
 		Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNameOrdering = normalStringComparer
 			.onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
 				public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
 					return from.getName();
 				}
 			});
-
-		Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNextRunOrdering = dateComparer
-			.onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, Date>() {
-				public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
-					return from.getNextRun();
-				}
-			});
-		
-		Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobNextRunOrdering.compound(jobNameOrdering);
-		return result;
+		return jobNameOrdering;
 	}
 	
+	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getDeviceGroupNameComparator() {
+	    Ordering<String> normalStringComparer = Ordering.natural();
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNameOrdering = normalStringComparer
+	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
+	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	            if (from.getDeviceGroupName() == null) {
+	                // So we show up at the top of the list
+	                return "a";
+	            }
+	            return from.getDeviceGroupName();
+	        }
+	    });
+	    return jobNameOrdering;
+	}
+	
+	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getAttributeCommandComparator() {
+	    Ordering<String> normalStringComparer = Ordering.natural();
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobAttributeCommandOrdering = normalStringComparer
+	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
+	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	            if (from.getAttributes() != null && !from.getAttributes().isEmpty()) {
+	                return from.getAttributeDescriptions();
+	            }
+	            return from.getCommand();
+	        }
+	    });
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobAttributeCommandOrdering.compound(getJobNameComparator());
+	    return result;
+	}
+	
+	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getRunScheduleComparator() {
+	    Ordering<String> normalStringComparer = Ordering.natural();
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobRunScheduleOrdering = normalStringComparer
+	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
+	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	            return from.getScheduleDescription();
+	        }
+	    });
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobRunScheduleOrdering.compound(getJobNameComparator());
+	    return result;
+	}
+	
+	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getNextRunComparator() {
+	    Ordering<Date> dateComparer = Ordering.natural().nullsLast();
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNextRunOrdering = dateComparer
+	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, Date>() {
+	        public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	            return from.getNextRun();
+	        }
+	    });
+	    Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobNextRunOrdering.compound(getJobNameComparator());
+	    return result;
+	}
+	
+    public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getStatusComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<ScheduledGroupRequestExecutionJobWrapper> jobStatusOrdering = normalStringComparer
+        .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
+            public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+                return from.getJobStatus().name();
+            }
+        });
+        Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobStatusOrdering.compound(getJobNameComparator());
+        return result;
+    }
+    
 	@Autowired
 	public void setExecutionStatusService(ScheduledGroupRequestExecutionStatusService executionStatusService) {
         this.executionStatusService = executionStatusService;

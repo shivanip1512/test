@@ -2,6 +2,8 @@ package com.cannontech.web.widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -22,6 +24,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
@@ -29,6 +32,8 @@ import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRe
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 @CheckRole(YukonRole.SCHEDULER)
 public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
@@ -52,17 +57,25 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		}
 		
 		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(0, null, null, types, ScheduleGroupRequestExecutionDaoEnabledFilter.ANY, ScheduleGroupRequestExecutionDaoPendingFilter.ANY, ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME, false);
-		List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new ArrayList<ScheduledGroupRequestExecutionJobWrapper>();
+		Collections.sort(jobs, getNextRunComparator());
 		
+		// Just get the top 20 jobs
+		int numJobsToShow = 20;
+		Integer numAdditionalJobs = null;
+		if (jobs.size() > numJobsToShow) {
+		    numAdditionalJobs = jobs.size() - numJobsToShow;
+		    jobs = jobs.subList(0, numJobsToShow);
+		}
+		
+		List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new ArrayList<ScheduledGroupRequestExecutionJobWrapper>();
 		for (ScheduledRepeatingJob job : jobs) {
 			jobWrappers.add(scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext));
 		}
-		Collections.sort(jobWrappers);
 		mav.addObject("jobWrappers", jobWrappers);
 		
 		boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
 		mav.addObject("canManage", canManage);
-		
+		mav.addObject("numAdditionalJobs", numAdditionalJobs);
 		return mav;
 	}
 	
@@ -83,6 +96,25 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
         
         ModelAndView mav = render(request, response);
         return mav;
+    }
+
+    private Comparator<ScheduledRepeatingJob> getNextRunComparator() {
+        Ordering<Date> dateComparer = Ordering.natural().nullsLast();
+        Ordering<ScheduledRepeatingJob> jobNextRunOrdering = dateComparer
+            .onResultOf(new Function<ScheduledRepeatingJob, Date>() {
+                public Date apply(ScheduledRepeatingJob from) {
+                    return getNextRun(from);
+                }
+            });
+        return jobNextRunOrdering;
+    }
+
+    private Date getNextRun(ScheduledRepeatingJob job) {
+        Date nextRun = null;
+        try {
+            nextRun = jobManager.getNextRuntime(job, new Date());
+        } catch (ScheduleException e) {}
+        return nextRun;
     }
 	
 	@Autowired

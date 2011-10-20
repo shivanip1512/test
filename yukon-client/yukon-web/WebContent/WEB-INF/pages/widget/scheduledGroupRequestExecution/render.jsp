@@ -5,46 +5,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<script type="text/javascript">
-	function setTrClassByJobState(jobId) {
-	  //assumes data is of type Hash
-	    return function(data) {
-	        var trEl = $('tr_' + jobId);
-	        var state = data.get('state');
-	        if (state == 'DISABLED') {
-				trEl.className = 'subtleGray';
-                $('disableSpan_' + jobId).hide();
-                $('enableSpan_' + jobId).show();
-
-                $('jobRunningSpan_' + jobId).hide();
-                $('jobNotRunningSpan_' + jobId).show();
-	        } else if (state == 'RUNNING') {
-	        	trEl.className = 'okGreen';
-                $('disableSpan_' + jobId).hide();
-                $('enableSpan_' + jobId).hide();
-
-                $('jobRunningSpan_' + jobId).show();
-                $('jobNotRunningSpan_' + jobId).hide();
-	        } else if (state == 'ENABLED') {
-				trEl.className = '';
-                $('disableSpan_' + jobId).show();
-                $('enableSpan_' + jobId).hide();
-
-                $('jobRunningSpan_' + jobId).hide();
-                $('jobNotRunningSpan_' + jobId).show();
-	        }
-	    };
-	} 
-
-    function buildTooltipText(elementId) {
-        //assumes data is of type Hash
-        return function(data) {
-            var tooltipText = data.get('tooltip');
-            setTooltipText(elementId, tooltipText);
-        };
-    }
-</script>
-
+<cti:includeScript link="/JavaScript/scheduledJobs.js"/>
 
 <%-- TABLE --%>
 <cti:url var="submitUrl" value="/spring/group/scheduledGroupRequestExecution/home"/>
@@ -141,6 +102,21 @@
 	<i:inline key=".noSchedules"/>
 </c:otherwise>
 </c:choose>
+
+<c:if test="${numAdditionalJobs != null}">
+    <div class="additionalSchedulerJobs fl">
+        <a href="/spring/group/scheduledGroupRequestExecutionResults/jobs">&hellip;
+            <c:choose>
+                <c:when test="${numAdditionalJobs > 1}">
+                    <i:inline key=".moreJobs" arguments="${numAdditionalJobs}"/>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key=".oneMoreJob"/>
+                </c:otherwise>
+            </c:choose>
+        </a>
+    </div>
+</c:if>
 
 <c:if test="${canManage}">
 	<div style="text-align:right;padding-top:5px;">

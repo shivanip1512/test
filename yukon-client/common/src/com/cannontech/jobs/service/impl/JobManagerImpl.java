@@ -426,7 +426,7 @@ public class JobManagerImpl implements JobManager {
     public synchronized YukonTask instantiateTask(YukonJob job) {
         YukonJobDefinition<? extends YukonTask> jobDefinition = job.getJobDefinition();
 
-        log.info("instantiating task for " + jobDefinition);
+        log.debug("instantiating task for " + jobDefinition);
         YukonTask task = jobDefinition.createBean();
 
         InputRoot inputRoot = jobDefinition.getInputs();

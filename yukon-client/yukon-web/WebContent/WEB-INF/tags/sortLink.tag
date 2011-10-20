@@ -34,7 +34,7 @@ attribute to true on the field which is the default sort field.
     <c:if test="${pageScope.isDefault}">
         <c:set var="currentSort" value="${fieldName}"/>
     </c:if>
-    <c:if test="${!pageScope.isDefault}">
+    <c:if test="${pageScope.isDefault == null}">
         <c:set var="currentSort" value="NAME"/>
     </c:if>
 </c:if>

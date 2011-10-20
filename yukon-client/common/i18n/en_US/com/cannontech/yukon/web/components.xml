@@ -182,6 +182,8 @@
     
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
     
+    <entry key="yukon.web.components.button.clear.label">Clear</entry>
+    
     <entry key="yukon.web.components.button.delete.label">Delete</entry>
     
     <entry key="yukon.web.components.button.next.label">Next</entry>

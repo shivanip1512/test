@@ -91,3 +91,26 @@ div.resultBar > div {
     display:inline;
     padding-right: 5px;
 }
+
+.additionalSchedulerJobs {
+    margin: 5px 0px 0px 8px;
+    font-size: 12px;
+}
+
+#jobsTable th.enabledStatus {
+    text-align: right;
+    width: 80px;
+}
+#jobsTable td.nextRunDate,
+#jobsTable td.runSchedule {
+    white-space: nowrap;
+}
+#jobsTable td.noResults {
+    text-align: center;
+    font-style: italic;
+}
+
+.additionalSchedulerJobs {
+    margin: 5px 0px 0px 8px;
+    font-size: 12px;
+}
