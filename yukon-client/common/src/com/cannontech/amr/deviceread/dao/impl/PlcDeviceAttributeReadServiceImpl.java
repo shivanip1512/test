@@ -76,12 +76,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     @Override
     public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, DeviceRequestType type, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
-        List<PaoMultiPointIdentifier> paoPointIdentifiers = null;
-        try{
-            paoPointIdentifiers = attributeService.getPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
-        }catch(IllegalUseOfAttribute e){
-            throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);
-        }
+        List<PaoMultiPointIdentifier> paoPointIdentifiers = attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(ImmutableSet.of(device), attributes);
         
         List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
         if (commandRequests.isEmpty()) {
