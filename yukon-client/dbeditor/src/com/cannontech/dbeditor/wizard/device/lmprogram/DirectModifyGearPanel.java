@@ -34,7 +34,6 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
     private SimpleThermostatSetbackGearPanel ivjSimpleThermoSetbackGearPanel1;
     private NoControlGearPanel ivjNoControlGearPanel1 = null;
-    private boolean changedToRamping = false;
     
     private PaoType programType;
 /**
@@ -421,22 +420,6 @@ public Object getValue(Object o)
 	    }	
     }
     
-    //We changed from a methods to a Thermostat method. 
-    // Make sure the table exists before the update call.
-    if (changedToRamping) {
-    	Connection conn = null;
-    	try {
-    		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-    		LMThermostatGear thermostat = (LMThermostatGear)obj;
-    		thermostat.setDbConnection(conn);
-    		thermostat.addPartial();
-    	} catch (SQLException e) {
-    		//Already in the DB. Moving on.
-    	} finally {
-    		changedToRamping = false;
-    		SqlUtils.close(null, null, conn);
-    	}
-    }
     return obj;
 }
 
@@ -468,6 +451,7 @@ private void initConnections() throws java.lang.Exception {
     getIvjRotationGearPanel1().addDataInputPanelListener(this);
     getIvjSmartGearPanel1().addDataInputPanelListener(this);
     getSepCycleGearPanel().addDataInputPanelListener(this);
+    getSepTemperatureOffsetGearPanel().addDataInputPanelListener(this);
     getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
     getIvjSimpleThermoSetbackGearPanel1().addDataInputPanelListener(this);
     getNoControlGearPanel().addDataInputPanelListener(this);
@@ -575,13 +559,6 @@ public void jComboBoxGearType_ActionPerformed(java.awt.event.ActionEvent actionE
  */
 private void setGearType(GearControlMethod method)
 {
-	//This indicates if we switched gears to a ramping gear for getValue()
-	if( gearControlMethod != null) {
-		if( gearControlMethod.isRamping() == false && method.isRamping() == true) {
-			changedToRamping = true;
-		}
-	}
-	
     gearControlMethod = method;
 
     if( getGearType() == null )

@@ -1,4 +1,7 @@
 package com.cannontech.database.db.device.lm;
+
+import java.sql.SQLException;
+
 /**
  * This type was created in VisualAge.
  */
@@ -45,7 +48,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
      * add method comment.
      */
     @Override
-    public void add() throws java.sql.SQLException 
+    public void add() throws SQLException 
     {
         super.add();
 
@@ -58,7 +61,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
     }
     
     @Override
-    public void addPartial() throws java.sql.SQLException 
+    public void addPartial() throws SQLException 
     {
         Object addValues[] = { getGearID(), getSettings().toString(), getMinValue(),
                 getMaxValue(), getValueB(), getValueD(), getValueF(),
@@ -72,7 +75,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
      * delete method comment.
      */
     @Override
-    public void delete() throws java.sql.SQLException 
+    public void delete() throws SQLException 
     {
         delete( TABLE_NAME, "GearID", getGearID() );
 
@@ -81,7 +84,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
     }
 
     @Override
-    public void deletePartial() throws java.sql.SQLException 
+    public void deletePartial() throws SQLException 
     {
         delete( TABLE_NAME, "GearID", getGearID() );
     }
@@ -107,7 +110,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
             pstmt = conn.prepareStatement(sql.toString());
             pstmt.execute();
         }
-        catch (java.sql.SQLException e)
+        catch (SQLException e)
         {
             e.printStackTrace();
         }
@@ -118,7 +121,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
                 if (pstmt != null)
                     pstmt.close();
             }
-            catch (java.sql.SQLException e2)
+            catch (SQLException e2)
             {
                 e2.printStackTrace(); //something is up
             }
@@ -263,7 +266,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
      * retrieve method comment.
      */
     @Override
-    public void retrieve() throws java.sql.SQLException 
+    public void retrieve() throws SQLException 
     {
         super.retrieve();
 
@@ -424,21 +427,27 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
 
 
     /**
-     * update method comment.
+     * Updates the base classes, then always tries to add the thermostat gear table
+     * and calls update if the insert fails.
      */
     @Override
-    public void update() throws java.sql.SQLException 
+    public void update() throws SQLException 
     {
         super.update();
+        
+        try {
+            addPartial();
+        } catch (SQLException e) {
+            // Add failed, do the update instead
+            Object setValues[] = { getSettings().toString(), getMinValue(),
+                    getMaxValue(), getValueB(), getValueD(), getValueF(),
+                    getRandom(), getValueTa(), getValueTb(), getValueTc(), 
+                    getValueTd(), getValueTe(), getValueTf(), getRampRate() };
 
-        Object setValues[] = { getSettings().toString(), getMinValue(),
-                getMaxValue(), getValueB(), getValueD(), getValueF(),
-                getRandom(), getValueTa(), getValueTb(), getValueTc(), 
-                getValueTd(), getValueTe(), getValueTf(), getRampRate() };
+            Object constraintValues[] = { getGearID() };
 
-        Object constraintValues[] = { getGearID() };
-
-        update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+            update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+        }
     }
 
 

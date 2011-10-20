@@ -3,10 +3,12 @@ package com.cannontech.database.data.device.lm;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.lm.LMThermostatGear {
-    private static final long serialVersionUID = 5579206107124081082L;
+    private static final long serialVersionUID = 0L;
 
     public static final Double MAX_FAHRENHEIT = 77.7;
     public static final Double MAX_CELSIUS = 25.4;
+    public static final Double MIN_FAHRENHEIT = .1;
+    public static final Double MIN_CELSIUS = .1;
     
     public SepTemperatureOffsetGear() {
         super();

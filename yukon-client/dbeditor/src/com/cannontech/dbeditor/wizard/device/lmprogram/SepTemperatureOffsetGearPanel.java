@@ -349,11 +349,11 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                 offsetAmountSpinField.setMaximumSize(new Dimension(50, 20));
                 offsetAmountSpinField.setMinimumSize(new Dimension(48, 20));
                 JCDoubleValidator validator =
-                    new JCDoubleValidator(null, 0.0, SepTemperatureOffsetGear.MAX_FAHRENHEIT, 0.1, "##.#", false, false, false, null, 0.0);
+                    new JCDoubleValidator(null, SepTemperatureOffsetGear.MIN_FAHRENHEIT-0.001, SepTemperatureOffsetGear.MAX_FAHRENHEIT+0.001, 0.1, "##.#", false, false, false, null, 0);
                 validator.setEditPattern("#0.0");
 
                 offsetAmountSpinField.setDataProperties(new DataProperties(validator, 
-                                                                            new MutableValueModel(java.lang.Double.class, new Double(0.0)),
+                                                                            new MutableValueModel(java.lang.Double.class, new Double(1.0)),
                                                                             new JCInvalidInfo(true, 2, 
                                                                                               new Color(0, 0, 0, 255),
                                                                                               new Color(255, 255, 255, 255))));
@@ -730,8 +730,12 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             public void valueChanging(JCValueEvent arg0) {
                 if(getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT))
                     arg0.setNewValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
+                else if(getIsFahrenheit() && (toDouble(arg0.getNewValue()) < SepTemperatureOffsetGear.MIN_FAHRENHEIT))
+                    arg0.setNewValue(SepTemperatureOffsetGear.MIN_FAHRENHEIT);
                 else if(!getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_CELSIUS))
                     arg0.setNewValue(SepTemperatureOffsetGear.MAX_CELSIUS);
+                else if(!getIsFahrenheit() && (toDouble(arg0.getNewValue()) < SepTemperatureOffsetGear.MIN_CELSIUS))
+                    arg0.setNewValue(SepTemperatureOffsetGear.MIN_CELSIUS);
             }
             @Override
             public void valueChanged(JCValueEvent arg0) { }
@@ -749,7 +753,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             }
         });
     }
-
+    
     private void initialize() {
         try {
             setName("SepTemperatureOffsetGearPanel");
