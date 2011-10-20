@@ -31,8 +31,10 @@
             <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
             <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
         </div>
-        <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></label>
-        <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
+        <label for="scheduleName">
+            <div class="box fl" style="height:2.5em"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></div>
+            <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
+        </label>
 
         <div class="days fl">
             <span class="labels">

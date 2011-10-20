@@ -2,6 +2,9 @@ package com.cannontech.stars.dr.thermostat.dao;
 
 import java.util.List;
 
+import javax.management.InvalidAttributeValueException;
+
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 
@@ -64,10 +67,19 @@ public interface AccountThermostatScheduleDao {
 	public AccountThermostatSchedule getEnergyCompanyDefaultScheduleByAccountAndType(int accountId, SchedulableThermostatType type);
 	
 	/**
+	 * Get a schedule for an account by matching an exact schedule name
+	 * @param accountId
+	 * @param scheduleName
+	 * @return AccountThermostatSchedule or null
+	 */
+	public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource fragment);
+	
+	/**
 	 * Save given AccountThermostatSchedule.<br><br>
 	 * Will either update or insert the AccountThermostatSchedule and its entries.<br>
 	 * Update: accountThermostatScheduleId >= 0.<br>
 	 * Insert: accountThermostatScheduleId < 0.
+	 * @throws InvalidAttributeValueException 
 	 */
 	public void save(AccountThermostatSchedule ats);
 	

@@ -111,6 +111,10 @@ Yukon.ThermostatScheduleEditor = {
                 form.down("button.delete").show();
             }
             
+            //clear error messages
+            form.select(".error").invoke('removeClassName', 'error');
+            form.select(".errorMessage").invoke('remove');
+            
             //change title
             form.down('.titleBar .title').innerHTML = form.down('input[name=editTitle]').value;
         });
@@ -152,8 +156,21 @@ Yukon.ThermostatScheduleEditor = {
                 form = e.target.up('.popUpDiv').down('form');
             }
             Yukon.ThermostatScheduleEditor.prepForm(form);
-            form.submit();
-            return true;
+            
+            form.request({
+                onFailure: function(data) {
+                    var errors = data.responseJSON.errors
+                    for(error in errors){
+                        form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
+                    }
+                    Yukon.ui.unblockPage();
+                },
+                onSuccess: function(data) {
+                    window.location = window.location;
+                }
+            });
+            
+            return false;
         });
         
         $$(".page_0 input:radio").invoke('observe', 'click', function(e){
@@ -162,6 +179,8 @@ Yukon.ThermostatScheduleEditor = {
         
         YEvent.observeSelectorClick(".create", function(e){
             //show type picker
+            $("createSchedule_body").select('.error').invoke('removeClassName', 'error');
+            $("createSchedule_body").select('.errorMessage').invoke('remove');
             Yukon.ui.wizard.reset($("createSchedule_body"));
             return false;
         });

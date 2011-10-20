@@ -275,7 +275,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	}
 	
 	// ALL SCHEDULES FOR ACCOUNT BY TYPE
-    private List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByType(int accountId, List<SchedulableThermostatType> types) {
+    private List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
         
         //combine all of the allowable modes
         
@@ -297,11 +297,53 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         return schedules;
     }
     
+    // ALL SCHEDULES FOR ACCOUNT
+    public List<AccountThermostatSchedule> getAllSchedulesForAccount(int accountId){
+        //  combine all of the allowable modes
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ATS.*");
+        sql.append("FROM AcctThermostatSchedule ATS");
+        sql.append("WHERE ATS.AccountId").eq(accountId);
+        sql.append("ORDER BY ATS.ScheduleName");
+        
+        List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
+        for(AccountThermostatSchedule schedule : schedules) {
+            List<AccountThermostatScheduleEntry> atsEntries = accountThermostatScheduleEntryDao.getAllEntriesForSchduleId(schedule.getAccountThermostatScheduleId());
+            schedule.setScheduleEntries(atsEntries);
+        }
+        
+        return schedules;
+    }
+    
+    // FIND SCHEDULE FOR ACCOUNT BY NAME
+    public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource fragment){
+        //  combine all of the allowable modes
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ATS.*");
+        sql.append("FROM AcctThermostatSchedule ATS");
+        sql.append("WHERE ATS.AccountId").eq(accountId);
+        sql.append("AND ATS.ScheduleName").eq(scheduleName);
+        if(fragment != null){
+            sql.appendFragment(fragment);
+        }
+        
+        List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
+        for(AccountThermostatSchedule schedule : schedules) {
+            List<AccountThermostatScheduleEntry> atsEntries = accountThermostatScheduleEntryDao.getAllEntriesForSchduleId(schedule.getAccountThermostatScheduleId());
+            schedule.setScheduleEntries(atsEntries);
+        }
+        
+        return schedules;
+    }
+    
+    
     // ALL SCHEDULES FOR ACCOUNT BY TYPE and remove schedules which are not allowed for the specified user
     @Override
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
         
-        List<AccountThermostatSchedule> schedules = getAllSchedulesAndEntriesForAccountByType(accountId, types);
+        List<AccountThermostatSchedule> schedules = getAllSchedulesAndEntriesForAccountByTypes(accountId, types);
         List<AccountThermostatSchedule> disallowedSchedules = Lists.newArrayList();
         Set<ThermostatScheduleMode> allowedModes = thermostatService.getAllowedThermostatScheduleModesByAccountId(accountId);
         

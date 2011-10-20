@@ -16,18 +16,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -46,6 +51,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
+import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleValidator;
 
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
@@ -59,55 +65,86 @@ public class OperatorThermostatScheduleController {
 	private OperatorThermostatHelper operatorThermostatHelper;
 	private AccountCheckerService accountCheckerService;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
+	@Autowired
+    private AccountThermostatScheduleValidator accountThermostatScheduleValidator;
+    @Autowired 
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
-	// SAVE
-	@RequestMapping
-    public String save(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
+	// SAVE - ajaxy
+	//Try to save the schedule
+    //@returns JSONObject containing success or error messages
+    @RequestMapping(value = "save", 
+                    method = {RequestMethod.POST, RequestMethod.HEAD},
+                    headers = "x-requested-with=XMLHttpRequest")
+    public void save(HttpServletResponse response,
+                       @RequestParam(value="thermostatIds", required=true) String thermostatIds,
                        @RequestParam(value="schedules", required=true) String scheduleString,
                        YukonUserContext yukonUserContext,  
 					   ModelMap model, 
 					   FlashScope flash, 
-					   AccountInfoFragment fragment) {
+					   AccountInfoFragment fragment) throws IOException {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
         List<Integer> thermostatIdList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
         CustomerAccount account = customerAccountDao.getById(fragment.getAccountId());
         
+        JSONObject returnJSON = new JSONObject();
         JSONObject scheduleJSON = JSONObject.fromObject(scheduleString);
         
         AccountThermostatSchedule ats = operatorThermostatHelper.JSONtoAccountThermostatSchedule(scheduleJSON);
         ats.setAccountId(account.getAccountId());
         
-        String oldScheduleName = "";
-        if(ats.getAccountThermostatScheduleId() >= 0) {
-            AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(ats.getAccountThermostatScheduleId());
-            oldScheduleName = oldAts.getScheduleName();
+        //validate the schedule as posted
+        DataBinder binder = new DataBinder(ats);
+        binder.setValidator(accountThermostatScheduleValidator);
+        binder.validate();
+        BindingResult bindingResult = binder.getBindingResult();
+        
+        if(bindingResult.hasErrors()){
+            JSONObject errorJSON = new JSONObject();
+            for (Object object : bindingResult.getAllErrors()) {
+                if(object instanceof FieldError) {
+                    FieldError fieldError = (FieldError) object;
+                    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode()));
+                }
+            }
+            
+            returnJSON.put("errors", errorJSON);
+            response.setStatus(HttpServletResponse.SC_CONFLICT);    //what is a 409 you ask? -> http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+        }else{
+            String oldScheduleName = "";
+            if(ats.getAccountThermostatScheduleId() >= 0) {
+                AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(ats.getAccountThermostatScheduleId());
+                oldScheduleName = oldAts.getScheduleName();
+            }
+            
+            // Log thermostat schedule save attempt
+            for (int thermostatId : thermostatIdList) {
+                Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+                accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName);
+            }
+            
+            //ensure this user can work with this schedule and thermostat
+            accountCheckerService.checkThermostatSchedule(user, ats.getAccountThermostatScheduleId());
+            accountCheckerService.checkInventory(user, thermostatIdList);
+            
+            // Save the Schedule
+            accountThermostatScheduleDao.save(ats);
+            ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
+            
+            // Log schedule name change
+            if (!oldScheduleName.equals(ats.getScheduleName())) {
+                accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
+            }
+            
+            //flash messages
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.single.send." + message, ats.getScheduleName()));
         }
         
-        // Log thermostat schedule save attempt
-        for (int thermostatId : thermostatIdList) {
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-            accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName);
-        }
-
-        //ensure this user can work with this schedule and thermostat
-        accountCheckerService.checkThermostatSchedule(user, ats.getAccountThermostatScheduleId());
-        accountCheckerService.checkInventory(user, thermostatIdList);
-        
-        // Save the Schedule
-        accountThermostatScheduleDao.save(ats);
-        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
-
-        // Log schedule name change
-        if (!oldScheduleName.equals(ats.getScheduleName())) {
-            accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
-        }
-
-        //flash messages
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.single.send." + message, ats.getScheduleName()));
-
-        model.addAttribute("thermostatId", thermostatIds);
-        return "redirect:savedSchedules";
+        response.setContentType("application/json");
+        PrintWriter writer = response.getWriter();
+        writer.write(returnJSON.toString());
     }
 	
 	
