@@ -5468,6 +5468,8 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
+            <!-- Only difference between this Analog offset 8 entry and the
+            CBC_802X_BASE Analog offset 8 entry is the multiplier -->
             <point type="Analog" offset="8">
                 <init>true</init>
                 <name>Delta Voltage</name>
@@ -6021,6 +6023,8 @@
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
+            <!-- Only difference between this Analog offset 8 entry and the
+            CBC_702X_BASE Analog offset 8 entry is the multiplier -->
             <point type="Analog" offset="8">
                 <init>true</init>
                 <name>Delta Voltage</name>
