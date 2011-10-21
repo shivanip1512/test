@@ -56,8 +56,9 @@ CTIPROGS=\
 pointtest.exe \
 routetest.exe \
 memtest.exe \
-# key_password_encryptor.exe \
 conntest.exe
+# key_password_encryptor.exe
+
 
 
 ALL:            $(CTIPROGS)
