@@ -299,7 +299,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     
     // FIND SCHEDULE FOR ACCOUNT BY NAME
     @Override
-    public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource fragment){
+    public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource conditions){
         //  combine all of the allowable modes
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -307,7 +307,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         sql.append("FROM AcctThermostatSchedule ATS");
         sql.append("WHERE ATS.AccountId").eq(accountId);
         sql.append("AND ATS.ScheduleName").eq(scheduleName);
-        sql.appendFragment(fragment);
+        sql.appendFragment(conditions);
         
         List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
         for(AccountThermostatSchedule schedule : schedules) {
