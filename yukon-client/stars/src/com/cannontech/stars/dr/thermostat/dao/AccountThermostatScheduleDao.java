@@ -70,9 +70,15 @@ public interface AccountThermostatScheduleDao {
 	 * Get a schedule for an account by matching an exact schedule name
 	 * @param accountId
 	 * @param scheduleName
+	 * @param fragment - pass in any conditions you like eg. say you wanted to check for name uniqueness
+	 *                   among other schedules, pass in something like:
+	 *                   
+	 *                   SqlStatementBuilder sql = new SqlStatementBuilder();
+	 *                   sql.append("AND AcctThermostatScheduleId").neq(schedule.getAccountThermostatScheduleId());
+	 *                   
 	 * @return AccountThermostatSchedule or null
 	 */
-	public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource fragment);
+	public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource conditions);
 	
 	/**
 	 * Save given AccountThermostatSchedule.<br><br>

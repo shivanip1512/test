@@ -297,26 +297,8 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         return schedules;
     }
     
-    // ALL SCHEDULES FOR ACCOUNT
-    public List<AccountThermostatSchedule> getAllSchedulesForAccount(int accountId){
-        //  combine all of the allowable modes
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ATS.*");
-        sql.append("FROM AcctThermostatSchedule ATS");
-        sql.append("WHERE ATS.AccountId").eq(accountId);
-        sql.append("ORDER BY ATS.ScheduleName");
-        
-        List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
-        for(AccountThermostatSchedule schedule : schedules) {
-            List<AccountThermostatScheduleEntry> atsEntries = accountThermostatScheduleEntryDao.getAllEntriesForSchduleId(schedule.getAccountThermostatScheduleId());
-            schedule.setScheduleEntries(atsEntries);
-        }
-        
-        return schedules;
-    }
-    
     // FIND SCHEDULE FOR ACCOUNT BY NAME
+    @Override
     public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource fragment){
         //  combine all of the allowable modes
         
@@ -325,9 +307,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         sql.append("FROM AcctThermostatSchedule ATS");
         sql.append("WHERE ATS.AccountId").eq(accountId);
         sql.append("AND ATS.ScheduleName").eq(scheduleName);
-        if(fragment != null){
-            sql.appendFragment(fragment);
-        }
+        sql.appendFragment(fragment);
         
         List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
         for(AccountThermostatSchedule schedule : schedules) {

@@ -382,7 +382,7 @@
     <entry key="yukon.web.components.button.recommendedSettings.label">Recommended Settings</entry>
 
     <!-- validation errors -->    
-    <entry key="yukon.web.components.thermostat.schedule.error.duplicateName">Please provide a different schedule name.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.duplicateName">Name already in use, please provide a different schedule name.</entry>
 
     <!-- Time of week -->
     <entry key="yukon.web.components.thermostat.schedule.EVERYDAY">Everyday</entry>

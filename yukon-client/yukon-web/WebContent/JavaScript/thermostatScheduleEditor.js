@@ -112,8 +112,7 @@ Yukon.ThermostatScheduleEditor = {
             }
             
             //clear error messages
-            form.select(".error").invoke('removeClassName', 'error');
-            form.select(".errorMessage").invoke('remove');
+            Yukon.ThermostatScheduleEditor.clearErrors(form);
             
             //change title
             form.down('.titleBar .title').innerHTML = form.down('input[name=editTitle]').value;
@@ -159,7 +158,8 @@ Yukon.ThermostatScheduleEditor = {
             
             form.request({
                 onFailure: function(data) {
-                    var errors = data.responseJSON.errors
+                    Yukon.ThermostatScheduleEditor.clearErrors(form);
+                    var errors = data.responseJSON.errors;
                     for(error in errors){
                         form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
                     }
@@ -179,8 +179,7 @@ Yukon.ThermostatScheduleEditor = {
         
         YEvent.observeSelectorClick(".create", function(e){
             //show type picker
-            $("createSchedule_body").select('.error').invoke('removeClassName', 'error');
-            $("createSchedule_body").select('.errorMessage').invoke('remove');
+            Yukon.ThermostatScheduleEditor.clearErrors($("createSchedule_body"));
             Yukon.ui.wizard.reset($("createSchedule_body"));
             return false;
         });
@@ -266,6 +265,11 @@ Yukon.ThermostatScheduleEditor = {
             Yukon.ThermostatScheduleEditor.renderTime();
             Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.temperature.unit]();
         }
+    },
+    
+    clearErrors: function(element){
+        element.select('.error').invoke('removeClassName', 'error');
+        element.select('.errorMessage').invoke('remove');
     },
     
     prepForm: function(form) {
