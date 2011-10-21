@@ -1011,13 +1011,10 @@ void CtiLMControlAreaStore::reset()
 
                 while( rdr() )
                 {
-                    string controlmethod, gearName;
-                    int gearId;
+                    string controlmethod;
                     CtiLMProgramDirectGear* newDirectGear = NULL;
 
                     rdr["controlmethod"] >> controlmethod;
-                    rdr["gearname"] >> gearName;
-                    rdr["gearid"] >> gearId;
 
                     // NOTE, due to DBEditor problems, the thermostat table may exist even for non thermostat control methods.
                     // If it does exist and is not needed, CtiLMProgramThermoStatGear loads it but never uses it. 
@@ -1054,8 +1051,15 @@ void CtiLMControlAreaStore::reset()
                     }
                     else // Currently this is only hit if the SEPTemperatureOffset gear is misconfigured.
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << " **** EXCEPTION Checkpoint **** Gear setup is invalid for gear " << gearName << " " << gearId << endl;
+                        string gearName;
+                        int gearId;
+                        rdr["gearname"] >> gearName;
+                        rdr["gearid"] >> gearId;
+
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << " **** EXCEPTION Checkpoint **** Gear setup is invalid for gear " << gearName << " " << gearId << endl;
+                        }
                     }
                 }
             }//loading direct gears end
