@@ -1020,8 +1020,9 @@ void CtiLMControlAreaStore::reset()
                     rdr["gearid"] >> gearId;
 
                     // NOTE, due to DBEditor problems, the thermostat table may exist even for non thermostat control methods.
-                    // If it does exist and is not needed, CtiLMProgramThermoStatGear loads it but never uses it. SEPCycleGear
-                    // never loads it. It is important to note that a ThermoStatGear is a Direct Gear underneath.
+                    // If it does exist and is not needed, CtiLMProgramThermoStatGear loads it but never uses it. 
+                    // SEPCycleGear never loads it. There are two independent loading concepts here, the SEP way (distinct classes
+                    // per gear) and the original way (one class for many gears).
                     if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new SEPCycleGear(rdr);
