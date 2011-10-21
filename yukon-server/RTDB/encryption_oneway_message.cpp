@@ -106,6 +106,7 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
             *uc_outMessage++ = convert[ high4bits ];
             *uc_outMessage++ = convert[ low4bits  ];
         }
+        *uc_outMessage++ = 0; // NULL Terminate
         encryptedLength *= 2;
     }
     else    // format == Binary
