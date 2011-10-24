@@ -360,6 +360,17 @@
   </troubleshooting>
   </error>
 
+<error code="54">
+  <category>Yukon System</category>
+  <porter>Device ID not found</porter>
+  <description>The device ID requested does not exist or is not loaded yet.</description>
+  <troubleshooting>The devices may still be in process of being loaded by the servers, wait a few minutes and attempt the command again.
+  	<ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
+
 <error code="57">
 	<category>Powerline Carrier</category> 
 	<porter>E-Word Received in Returned Message</porter>
