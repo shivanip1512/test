@@ -144,7 +144,11 @@
     <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByOperator">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByConsumer">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByOperator">The user {1} is attempting to change the thermostat label from {4} to {5} through the operator pages for the device {3} which is on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByOperator.4">Old Thermostat Label</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByOperator.5">New Thermostat Label</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByConsumer">The user {1} is attempting to change the thermostat label from {4} to {5} through the consumer pages for the device {3} which is on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByConsumer.3">Old Thermostat Label</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByConsumer.4">New Thermostat Label</entry>
     
     <!-- Thermostat Schedule Service Level -->
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSaved">The schedule {2} has been saved on the account {1}.</entry>
