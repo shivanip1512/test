@@ -1,7 +1,7 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:choose>
     <c:when test="pointNotConfigured">
@@ -12,36 +12,21 @@
             <tags:nameValue2 nameKey=".disconnectStatus"><cti:pointValue pointId="${pointId}"/></tags:nameValue2>
         </tags:nameValueContainer2>
         <br>
-        <c:if test="${not empty responseStatus}">
-            <c:choose>
-                <c:when test="${responseStatus eq 'SUCCESS'}">
-                    <div class="successMessage">
-                        <i:inline key=".sendCommand.success" arguments="${command}"/>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <div class="errorMessage">
-                        <i:inline key=".sendCommand.error" arguments="${command}"/>
-                        <span>${responseStatus}</span>
-                    </div>
-                    <c:if test="${not responseStatus eq 'FAILURE'}">
-                        <br><br>
-                        <i:inline key=".sendCommand.error.lessSevere" arguments="${command}"/>
-                    </c:if>
-                </c:otherwise>
-            </c:choose>
-        </c:if>
+        
+        <div id="${widgetParameters.widgetId}_results"></div>
         <br>
         <div style="text-align: right">
             <c:choose>
                 <c:when test="${useArming}">
-                    <tags:widgetActionRefresh method="connect" nameKey="arm" showConfirm="true"/>
+                    <c:set var="connectOrArm" value="arm"/>
                 </c:when>
                 <c:otherwise>
-                    <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true"/>
+                    <c:set var="connectOrArm" value="connect"/>
                 </c:otherwise>
             </c:choose>
-            <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true"/>
+            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="connect" nameKey="${connectOrArm}"/>
+
+            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="disconnect" nameKey="disconnect"/>
         </div>
     </c:otherwise>
 </c:choose>

@@ -14,7 +14,7 @@
     
 </script>
 
-<div id="currentGroups">
+<div id="currentGroups scrollingContainer">
     <jsp:include page="/WEB-INF/pages/widget/deviceGroupWidget/currentGroups.jsp" />
 </div>
 

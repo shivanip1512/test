@@ -98,6 +98,11 @@
             <tag name="MCT_300_SERIES"/>
         </tags>
     </pao>
+    <pao id="SUPPORTS_THREE_PHASE_VOLTAGE"  abstract="true">
+        <tags>
+            <tag name="SUPPORTS_THREE_PHASE_VOLTAGE"/>
+        </tags>
+    </pao>
 
     <pao id="SUPPORTS_MCT_DISCONNECT" abstract="true">  <!--  Ability to disconnect through collar device -->
         <points>
@@ -4536,35 +4541,7 @@
         </tags>
     </pao>
 	
-	<pao id="RFN_BASIC_VOLTAGE" abstract="true">
-        <points>
-            <point type="Analog" offset="5">
-                <init>true</init>
-                <name>Voltage Primary</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="6">
-                <init>false</init>
-                <name>Voltage Secondary</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-        </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage Primary" />
-            </attribute>
-        </attributes>
-    </pao>
-    
-    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_BASIC_VOLTAGE">
-        <displayName>RFN-410fL</displayName>
-    </pao>
-    
-    <pao id="RFN_EXTENDED_ELECTRIC_BASE" inherits="RFN_ELECTRIC_BASE" abstract="true">
+    <pao id="RFN_EXTENDED" inherits="RFN_ELECTRIC_BASE" abstract="true">
         <points>
             <point type="Analog" offset="14">
                 <init>true</init>
@@ -4579,90 +4556,6 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="30">
-                <init>true</init>
-                <name>Delivered Pulse</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="40">
-                <init>true</init>
-                <name>Delivered kVAr</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="50">
-                <init>true</init>
-                <name>Delivered kVArh</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kVArh"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="70">
-                <init>true</init>
-                <name>Volts Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="1"/>
-            </point>
-            <point type="Analog" offset="71">
-                <init>true</init>
-                <name>Volts Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="1"/>
-            </point>
-            <point type="Analog" offset="72">
-                <init>true</init>
-                <name>Volts Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="1"/>
-            </point>
-            <point type="Analog" offset="73">
-                <init>true</init>
-                <name>Amps Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="74">
-                <init>true</init>
-                <name>Amps Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="75">
-                <init>true</init>
-                <name>Amps Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="76">
-                <init>true</init>
-                <name>Volt Degrees Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Degrees"/>
-                <decimalplaces value="1"/>
-            </point>
-            <point type="Analog" offset="77">
-                <init>true</init>
-                <name>Volt Degrees Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Degrees"/>
-                <decimalplaces value="1"/>
-            </point>
-            <point type="Analog" offset="78">
-                <init>true</init>
-                <name>Volt Degrees Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Degrees"/>
-                <decimalplaces value="1"/>
-            </point>
             <point type="Analog" offset="101">
                 <init>true</init>
                 <name>Delivered kW</name>
@@ -4673,20 +4566,6 @@
             <point type="Analog" offset="102">
                 <init>false</init>
                 <name>Received kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="103">
-                <init>false</init>
-                <name>Sum kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="104">
-                <init>false</init>
-                <name>Net kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
@@ -4715,12 +4594,217 @@
         </attributes>
     </pao>
     
-    <pao id="RFN410FX" inherits="RFN_EXTENDED_ELECTRIC_BASE">
-        <displayName>RFN-410fX</displayName>
+    <pao id="RFN_ADVANCED" abstract="true">
+        <points>
+            <point type="Analog" offset="30">
+                <init>true</init>
+                <name>Delivered Pulse</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="40">
+                <init>true</init>
+                <name>Delivered kVAr</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="50">
+                <init>true</init>
+                <name>Delivered kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="73">
+                <init>true</init>
+                <name>Amps Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="74">
+                <init>true</init>
+                <name>Amps Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="75">
+                <init>true</init>
+                <name>Amps Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="103">
+                <init>false</init>
+                <name>Sum kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="104">
+                <init>false</init>
+                <name>Net kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
     </pao>
     
-    <pao id="RFN410FD" inherits="RFN410FX">
-        <displayName>RFN-410fD</displayName>
+    <!-- Only one of the following three voltage definitions should be used by any one device definition. -->
+    <pao id="RFN_BASIC_VOLTAGE" abstract="true">
+        <points>
+            <point type="Analog" offset="70">
+                <init>true</init>
+                <name>Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage"/>
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="RFN_TWO_POINT_VOLTAGE" abstract="true">
+        <points>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Voltage Primary</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="6">
+                <init>false</init>
+                <name>Voltage Secondary</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage Primary" />
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="RFN_THREE_PHASE_VOLTAGE" abstract="true" inherits="SUPPORTS_THREE_PHASE_VOLTAGE">
+        <points>
+            <point type="Analog" offset="70">
+                <init>true</init>
+                <name>Volts Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Volts Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="72">
+                <init>true</init>
+                <name>Volts Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="76">
+                <init>true</init>
+                <name>Volt Degrees Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="77">
+                <init>true</init>
+                <name>Volt Degrees Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="78">
+                <init>true</init>
+                <name>Volt Degrees Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Volts Phase A" />
+            </attribute>
+        </attributes>
+    </pao>
+     
+    <pao id="RFN_TOU" abstract="true">
+        <points>
+            <point type="Analog" offset="24">
+                <init>true</init>
+                <name>Peak kW (Rate A kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="25">
+                <init>true</init>
+                <name>Rate A kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="26">
+                <name>Peak kW (Rate B kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="27">
+                <name>Rate B kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="28">
+                <name>Peak kW (Rate C kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="29">
+                <name>Rate C kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="30">
+                <name>Peak kW (Rate D kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="31">
+                <name>Rate D kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+        </points>
+    </pao>
+    
+    <pao id="RFN_DISCONNECT" abstract="true">
         <points>
             <point type="Status" offset="1">
                 <init>true</init>
@@ -4730,19 +4814,48 @@
         </points>
         <attributes>
             <attribute name="DISCONNECT_STATUS">
-                <basicLookup point="Disconnect Status" />
+                <basicLookup point="Disconnect Status"/>
             </attribute>
         </attributes>
         <tags>
             <tag name="DISCONNECT_RFN"/>
         </tags>
     </pao>
+    
+    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE">
+        <displayName>RFN-410fL</displayName>
+    </pao>
+    
+    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE">
+        <displayName>RFN-410fX</displayName>
+    </pao>
+    
+    <pao id="RFN410FD" inherits="RFN410FX, RFN_DISCONNECT">
+        <displayName>RFN-410fD</displayName>
+    </pao>
+    
+    <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE">
+        <displayName>RFN-420fL</displayName>
+    </pao>
+    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU">
+        <displayName>RFN-420fX</displayName>
+    </pao>
+    <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT">
+        <displayName>RFN-420fD</displayName>
+    </pao>
+    
+    <pao id="RFN420CL" inherits="RFN_EXTENDED, RFN_BASIC_VOLTAGE, RFN_TOU">
+        <displayName>RFN-420cL</displayName>
+    </pao>
+    <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT">
+        <displayName>RFN-420cD</displayName>
+    </pao>
 	
-    <pao id="RFN430A3" inherits="RFN_EXTENDED_ELECTRIC_BASE">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE">
         <displayName>RFN-430A3</displayName>
     </pao>
     
-    <pao id="RFN430KV" inherits="RFN_EXTENDED_ELECTRIC_BASE">
+    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE">
         <displayName>RFN-430KV</displayName>
     </pao>
 
@@ -4761,7 +4874,7 @@
         </points>
         <attributes>
             <attribute name="USAGE_WATER">
-                <basicLookup point="Water Usage" />
+                <basicLookup point="Water Usage"/>
             </attribute>
         </attributes>
         <tags>

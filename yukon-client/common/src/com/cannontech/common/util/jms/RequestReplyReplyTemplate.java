@@ -45,7 +45,7 @@ public class RequestReplyReplyTemplate {
                 try {
                     JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 
-                    jmsTemplate.execute(new SessionCallback() {
+                    jmsTemplate.execute(new SessionCallback<Object>() {
 
                         @Override
                         public Object doInJms(Session session) throws JMSException {

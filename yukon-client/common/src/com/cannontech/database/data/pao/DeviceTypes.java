@@ -168,6 +168,12 @@ public interface DeviceTypes extends TypeBase
     
     public final static int CBC_8020 = DEVICE_OFFSET + 130;
     public final static int CBC_8024 = DEVICE_OFFSET + 131;
+    
+    public final static int RFN420FL = DEVICE_OFFSET + 132;
+    public final static int RFN420FX = DEVICE_OFFSET + 133;
+    public final static int RFN420FD = DEVICE_OFFSET + 134;
+    public final static int RFN420CL = DEVICE_OFFSET + 135;
+    public final static int RFN420CD = DEVICE_OFFSET + 136;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -288,9 +294,6 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_CBC_DNP  = {"CBC DNP"};
     public static final String[] STRING_NEUTRAL_MONITOR = { "Capacitor Bank Neutral Monitor" };
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
-    public static final String[] STRING_RFN_AX = {"RFN-AX"};
-    public static final String[] STRING_RFN_AL = {"RFN-AL"};
-    public static final String[] STRING_RFN_AXSD = {"RFN-AXSD"};
     public static final String[] STRING_MCT_420FL = {"MCT-420FL"};
     public static final String[] STRING_MCT_420FLD = {"MCT-420FLD"};
     public static final String[] STRING_MCT_420CL = {"MCT-420CL"};

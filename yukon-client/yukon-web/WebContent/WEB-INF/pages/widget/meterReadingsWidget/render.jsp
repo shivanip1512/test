@@ -20,9 +20,18 @@
 	    		</ct:nameValue2>
     		</c:when>
             <c:otherwise>
-            	<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
-                    <ct:attributeValue device="${device}" attribute="${attribute}" />
-				</ct:nameValue2>
+                <c:choose>
+                    <c:when test="${attribute == voltageAttribute && threePhaseVoltage}">
+                        <ct:nameValue2 nameKey="yukon.web.widgetClasses.MeterReadingsWidget.threePhaseVoltage">
+                            <ct:attributeValue device="${device}" attribute="${attribute}" />
+                        </ct:nameValue2>
+                    </c:when>
+                    <c:otherwise>
+                    	<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
+                            <ct:attributeValue device="${device}" attribute="${attribute}" />
+        				</ct:nameValue2>
+                    </c:otherwise>
+                </c:choose>
                 <c:if test="${attribute == previousReadingsAttribute}">
                     <ct:nameValue2 nameKey=".previousUsage">
                         <select onChange="${widgetParameters.widgetId}_usageSelection()"

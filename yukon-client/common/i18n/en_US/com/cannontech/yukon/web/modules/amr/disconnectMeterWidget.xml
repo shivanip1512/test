@@ -21,7 +21,7 @@
     <entry key="yukon.web.widgets.disconnectMeterWidget.title.labelBusy">Disconnect</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.infoLink">Disconnect Information</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.notConfigured">Disconnect Status Point is not configured.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectStatus">Disconnect Status:</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectStatus">Disconnect Status</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.statusMessages">Status Messages</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.stateGroupHeader">{0}</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.mct410Devices">MCT-410 Devices</entry>

@@ -73,6 +73,11 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFN410FL:
         case DeviceTypes.RFN410FX:
         case DeviceTypes.RFN410FD:
+        case DeviceTypes.RFN420FL:
+        case DeviceTypes.RFN420FX:
+        case DeviceTypes.RFN420FD:
+        case DeviceTypes.RFN420CL:
+        case DeviceTypes.RFN420CD:
         case DeviceTypes.RFN430A3:
         case DeviceTypes.RFN430KV:
         case DeviceTypes.RFWMETER:

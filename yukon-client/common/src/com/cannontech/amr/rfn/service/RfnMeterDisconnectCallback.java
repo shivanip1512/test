@@ -1,32 +1,32 @@
 package com.cannontech.amr.rfn.service;
 
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
+import org.springframework.context.MessageSourceResolvable;
 
-public interface RfnMeterDisconnectCallback extends RfnMeterCallback{
+public interface RfnMeterDisconnectCallback {
     
     /**
-     * Handles the initial response for a disconnect request.
-     * @param replyType
+     * Method to keep track of processing exceptions that occur.
+     * @param message
      */
-    public void receivedInitialReply(RfnMeterDisconnectInitialReplyType replyType);
+    public void processingExceptionOccured(MessageSourceResolvable message);
     
     /**
-     * Handles the errors for the initial response of a disconnect request.
-     * @param replyType
+     * Method to signal the that the disconnect has completed.
+     * Should be called once regardless of success or failure.
      */
-    public void receivedInitialError(RfnMeterDisconnectInitialReplyType replyType);
+    public void complete();
     
     /**
-     * Handles the confirmation response for a disconnect request.
+     * Handles the successful response for a disconnect request.
      * @param replyType
      */
-    public void receivedConfirmationReply(RfnMeterDisconnectConfirmationReplyType replyType);
+    public void receivedSuccess();
     
     /**
-     * Handles the errors for the confirmation response of a disconnect request.
+     * Handles the errors for the response of a disconnect request.
      * @param replyType
      */
-    public void receivedConfirmationError(RfnMeterDisconnectConfirmationReplyType replyType);
+    public void receivedError(MessageSourceResolvable message);
+    
 
 }

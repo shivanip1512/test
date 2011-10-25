@@ -4,17 +4,17 @@ import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class RfnMeterDisconnectService {
     
@@ -64,18 +64,21 @@ public class RfnMeterDisconnectService {
 
             @Override
             public void handleException(Exception e) {
-                callback.processingExceptionOccured(e.getMessage());
+                MessageSourceResolvable message = 
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", e.toString());
+                callback.processingExceptionOccured(message);
             }
 
             @Override
             public boolean handleReply1(RfnMeterDisconnectInitialReply initialReply) {
                 if (!initialReply.isSuccess()) {
                     /* Request failed */
-                    callback.receivedInitialError(initialReply.getReplyType());
+                    MessageSourceResolvable message = 
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", initialReply);
+                    callback.receivedError(message);
                     return false;
                 } else {
-                    /* Request successful */
-                    callback.receivedInitialReply(initialReply.getReplyType());
+                    /* Request successful, wait for reply 2 */
                     return true;
                 }
             }
@@ -83,22 +86,28 @@ public class RfnMeterDisconnectService {
             @Override
             public void handleReply2(RfnMeterDisconnectConfirmationReply confirmationReplyMessage) {
                 if (!confirmationReplyMessage.isSuccess()) {
-                    /* Confirmation response failed */
-                    callback.receivedConfirmationError(confirmationReplyMessage.getReplyType());
+                    /* Request failed */
+                    MessageSourceResolvable message = 
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", confirmationReplyMessage);
+                    callback.receivedError(message);
                 } else {
                     /* Confirmation response successful, process point data */
-                    callback.receivedConfirmationReply(confirmationReplyMessage.getReplyType());
+                    callback.receivedSuccess();
                 }
            }
 
             @Override
             public void handleTimeout1() {
-                callback.receivedInitialError(RfnMeterDisconnectInitialReplyType.TIMEOUT);
+                MessageSourceResolvable createSingleCodeWithArguments = 
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", "T1");
+                callback.receivedError(createSingleCodeWithArguments);
             }
 
             @Override
             public void handleTimeout2() {
-                callback.receivedConfirmationError(RfnMeterDisconnectConfirmationReplyType.TIMEOUT);
+                MessageSourceResolvable createSingleCodeWithArguments = 
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", "T2");
+                callback.receivedError(createSingleCodeWithArguments);
             }
         };
         

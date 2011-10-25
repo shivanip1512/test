@@ -21,8 +21,8 @@
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnect.labelBusy">Disconnecting</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.disconnect.confirmText">Are you sure you want to disconnect this meter?</entry>
 
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error">There was an error sending the {0} command:</entry>
-<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error.lessSevere">The meter may already be in the {0}ed state.</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error">There was an error sending the command: {0}</entry>
+<entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError">The was an error confirming the command, meter may be in an unknown state: ({0})</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.success">The {0} command was sent successfully</entry>
 
 </properties>

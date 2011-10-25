@@ -871,6 +871,11 @@ public final static boolean isMeter(int deviceType)
 		case RFN410FL:
 		case RFN410FX:
         case RFN410FD:
+        case RFN420FL:
+        case RFN420FX:
+        case RFN420FD:
+        case RFN420CL:
+        case RFN420CD:
         case RFN430A3:
         case RFN430KV:
 			return true;

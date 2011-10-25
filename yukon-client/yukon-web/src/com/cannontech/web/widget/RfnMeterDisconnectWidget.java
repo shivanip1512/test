@@ -7,16 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.amr.rfn.service.WaitableRfnMeterDisconnectCallback;
 import com.cannontech.clientutils.YukonLogManager;
@@ -51,11 +49,12 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         
         private DisconnectState(int rawState, RfnMeterDisconnectStatusType type) {
             this.rawState = rawState;
+            this.type = type;
         }
         
         public static DisconnectState getForType(RfnMeterDisconnectStatusType type) {
-            for(DisconnectState state : values()) {
-                if(state.type == type) {
+            for (DisconnectState state : values()) {
+                if (state.type == type) {
                     return state;
                 }
             }
@@ -65,6 +64,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         public int getRawState() {
             return rawState;
         }
+        
     };
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectWidget.class);
     
@@ -87,7 +87,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         setupRenderModel(model, request);
         setupSendCommandModel(request, model, action);
         
-        return "rfnMeterDisconnectWidget/render.jsp";
+        return "rfnMeterDisconnectWidget/result.jsp";
     }
     
     @RequestMapping
@@ -96,7 +96,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         setupRenderModel(model, request);
         setupSendCommandModel(request, model, RfnMeterDisconnectStatusType.TERMINATE);
         
-        return "rfnMeterDisconnectWidget/render.jsp";
+        return "rfnMeterDisconnectWidget/result.jsp";
     }
     
     private void setupRenderModel(ModelMap model, HttpServletRequest request) throws Exception {
@@ -123,39 +123,26 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         final RfnMeter meter = rfnMeterDao.getForId(deviceId);
         model.addAttribute("deviceId", deviceId);
         
-        WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback(new RfnMeterDisconnectCallback() {
-
-            @Override
-            public void receivedInitialReply(RfnMeterDisconnectInitialReplyType replyType) {/* Ignore */}
+        WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback() {
             
             @Override
-            public void receivedInitialError(RfnMeterDisconnectInitialReplyType replyType) {
-                model.addAttribute("responseStatus", replyType.name());
-            }
-            
-            @Override
-            public void receivedConfirmationReply(RfnMeterDisconnectConfirmationReplyType replyType) {
-                model.addAttribute("responseStatus", replyType.name());
-                if (replyType.equals(RfnMeterDisconnectConfirmationReplyType.SUCCESS)) {
-                    publishPointData(action, meter);
-                }
+            public void processingExceptionOccured(MessageSourceResolvable message) {
+                model.addAttribute("responseStatus", message);
+                model.addAttribute("responseSuccess", false);
             }
 
             @Override
-            public void receivedConfirmationError(RfnMeterDisconnectConfirmationReplyType replyType) {
-                model.addAttribute("responseStatus", replyType.name());
+            public void receivedSuccess() {
+                model.addAttribute("responseSuccess", true);
+                publishPointData(action, meter);
             }
-            
+
             @Override
-            public void processingExceptionOccured(String message) {
-                log.error("Processing exception occurred for meter: " + meter.getName() + " with id: " 
-                          + deviceId + " during meter disconnect command: " + message);
+            public void receivedError(MessageSourceResolvable message) {
+                model.addAttribute("responseStatus", message);
+                model.addAttribute("responseSuccess", false);
             }
-            
-            @Override
-            public void complete() {/* Ignore */}
-            
-        });
+        };
         
         rfnMeterDisconnectService.send(meter.getMeterIdentifier(), action, waitableCallback);
         
