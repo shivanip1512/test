@@ -210,11 +210,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/google-collect-1.0.jar" sourcepath="/third-party/linked-sources/google-collect-1.0-src.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/org.springframework.integration-1.0.3.RELEASE.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -367,5 +362,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/guava-r09.jar" sourcepath="/third-party/linked-sources/guava-src-r09.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
