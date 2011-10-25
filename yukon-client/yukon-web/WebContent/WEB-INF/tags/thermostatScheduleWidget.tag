@@ -37,6 +37,17 @@
                     <label class="label fl"></label>
                     <c:forEach var="period" items="${pageScope.thermostatType.periodStyle.realPeriods}">
                         <div class="period">
+                            <div class="period">
+                                <div class="info time">
+                                    <i:inline key="yukon.web.components.thermostat.period.${period}" />
+                                </div>
+                                <div class="temp heat">
+                                    <i:inline key="yukon.common.thermostat.mode.HEAT"/>
+                                </div>
+                                <div class="temp cool">
+                                    <i:inline key="yukon.common.thermostat.mode.COOL"/>
+                                </div>
+                            </div>
                         </div>
                     </c:forEach>
                 </span>
