@@ -24,9 +24,9 @@
                     <c:set var="connectOrArm" value="connect"/>
                 </c:otherwise>
             </c:choose>
-            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="connect" nameKey="${connectOrArm}"/>
+            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="connect" nameKey="${connectOrArm}" showConfirm="true"/>
 
-            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="disconnect" nameKey="disconnect"/>
+            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="disconnect" nameKey="disconnect" showConfirm="true"/>
         </div>
     </c:otherwise>
 </c:choose>

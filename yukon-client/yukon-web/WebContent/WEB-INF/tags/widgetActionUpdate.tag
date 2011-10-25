@@ -1,6 +1,7 @@
 <%@ attribute name="method" required="true"%>
 <%@ attribute name="container" required="true"%>
 <%@ attribute name="nameKey" required="true"%>
+<%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
 <%@ attribute name="hide" type="java.lang.Boolean" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -12,15 +13,28 @@
 <c:if test="${!pageScope.hide}">
 	<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
 	<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
+    <cti:uniqueIdentifier var="buttonId" prefix="widgetRefreshButton_"/>
 	
 	<script type="text/javascript">
-		${widgetParameters.jsWidget}.setupLink('${uniqueId}', 
-		                                        ${cti:jsonString(pageScope.linkParameters)});
+		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 	</script>
 	
 	<span id="${thisId}">
-        <cti:button nameKey="${nameKey}" 
-                    onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', 
-                                                                         '${thisId}', '${uniqueId}')"/>
+        <c:if test="${showConfirm}">
+            <cti:msg2 var="confirmText" key=".${nameKey}.confirmText"/>
+        </c:if>
+        <cti:button key="${nameKey}" id="${buttonId}"/>
+        <script type="text/javascript">
+            $("${buttonId}").observe("click", function() {
+                var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
+                var confirmed = true;
+                if (confirmText != null && confirmText.strip() != '') {
+                    confirmed = confirm(confirmText);
+                }
+                if (confirmed) {
+                    ${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${uniqueId}')
+                }
+            });
+        </script>
 	</span>
 </c:if>
