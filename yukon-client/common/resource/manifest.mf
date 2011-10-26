@@ -39,7 +39,7 @@ Class-Path: ./
  antlr-2.7.6rc1.jar 
  lucene-core-2.3.2.jar 
  log4j-1.2.14.jar 
- google-collect-1.0.jar 
+ guava-r09.jar 
  castor-xml.jar 
  rwav.jar 
  SqlServer.jar 

@@ -42,7 +42,7 @@
 		<include name="commons-pool-1.4.jar"/>
 		<include name="dom4j-1.6.1.jar"/>
 		<include name="ecs-1.4.2.jar"/>
-		<include name="google-collect-1.0.jar"/>
+		<include name="guava-r09.jar"/>
 		<include name="i18n-en_US.jar"/>
 		<include name="jaxen-1.1.1.jar"/>
 		<include name="jaxm-api.jar"/>
