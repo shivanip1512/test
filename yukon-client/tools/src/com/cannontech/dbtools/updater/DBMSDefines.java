@@ -28,7 +28,8 @@ public interface DBMSDefines
 		"ignore-remaining",  //ignore all remaining errors in the file
         
 		"ignore-begin", //ignore all errors up to the ignore-end tag
-        "ignore-end" //matching tag for ignore-begin
+        "ignore-end", //matching tag for ignore-begin
+		"warn-once" //Stop execution but mark as valid in valids file.
 	};
 
 

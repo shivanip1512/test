@@ -197,5 +197,14 @@ public class UpdateLine
         else
             return false;
     }
+    
+    public boolean isWarnOnce()
+    {
+        Object o = getMetaProps().get( DBMSDefines.META_ERROR );
+        if( o != null )
+            return DBMSDefines.OPTIONS_ERROR[6].equalsIgnoreCase(o.toString());
+        else
+            return false;
+    }
 
 }
