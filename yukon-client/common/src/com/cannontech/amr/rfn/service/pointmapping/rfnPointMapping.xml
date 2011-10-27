@@ -11,12 +11,11 @@
             <parseSiPrefix/>
             <modifiers match="all">
                 <modifier>TOU Rate A</modifier>
-            </modifiers>
-            <modifiers match="all">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate B</modifier>
                 <modifier>TOU Rate C</modifier>
                 <modifier>TOU Rate D</modifier>
@@ -31,12 +30,11 @@
             <parseSiPrefix/>
             <modifiers match="all">
                 <modifier>TOU Rate B</modifier>
-            </modifiers>
-            <modifiers match="all">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate A</modifier>
                 <modifier>TOU Rate C</modifier>
                 <modifier>TOU Rate D</modifier>
@@ -51,12 +49,11 @@
             <parseSiPrefix/>
             <modifiers match="all">
                 <modifier>TOU Rate C</modifier>
-            </modifiers>
-            <modifiers match="all">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate A</modifier>
                 <modifier>TOU Rate B</modifier>
                 <modifier>TOU Rate D</modifier>
@@ -71,12 +68,11 @@
             <parseSiPrefix/>
             <modifiers match="all">
                 <modifier>TOU Rate D</modifier>
-            </modifiers>
-            <modifiers match="all">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate A</modifier>
                 <modifier>TOU Rate B</modifier>
                 <modifier>TOU Rate C</modifier>
@@ -91,12 +87,11 @@
             <parseSiPrefix/>
             <modifiers match="all">
                 <modifier>TOU Rate E</modifier>
-            </modifiers>
-            <modifiers match="all">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate A</modifier>
                 <modifier>TOU Rate B</modifier>
                 <modifier>TOU Rate C</modifier>
@@ -149,37 +144,37 @@
         <point name="Volts Phase A">
             <uom>V</uom>
             <parseSiPrefix/>
-            <modifiers match="all">
+            <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Volts Phase B"> 
+        <point name="Volts Phase B">
             <uom>V</uom>
             <parseSiPrefix/>
-            <modifiers match="all">
+            <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Volts Phase C"> 
+        <point name="Volts Phase C">
             <uom>V</uom>
             <parseSiPrefix/>
-            <modifiers match="all">
+            <modifiers match="equal">
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Volt Degrees Phase A"> 
+        <point name="Volt Degrees Phase A">
             <uom>V degree</uom>
             <modifiers match="all">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Volt Degrees Phase B"> 
+        <point name="Volt Degrees Phase B">
             <uom>V degree</uom>
             <modifiers match="all">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Volt Degrees Phase C"> 
+        <point name="Volt Degrees Phase C">
             <uom>V degree</uom>
             <modifiers match="all">
                 <modifier>Phase C</modifier>
@@ -199,6 +194,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
@@ -217,6 +213,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
@@ -235,6 +232,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
@@ -253,6 +251,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
@@ -271,6 +270,7 @@
                 <modifier>TOU Rate E</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
@@ -303,10 +303,9 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-            </modifiers>
-            <modifiers match="none">
                 <modifier>TOU Rate A</modifier>
                 <modifier>TOU Rate B</modifier>
                 <modifier>TOU Rate C</modifier>
@@ -323,10 +322,9 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
             <modifiers match="none">
+                <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
-             </modifiers>
-            <modifiers match="none">
                 <modifier>TOU Rate A</modifier>
                 <modifier>TOU Rate B</modifier>
                 <modifier>TOU Rate C</modifier>
@@ -431,6 +429,7 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="all">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
@@ -439,6 +438,7 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="all">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
@@ -447,6 +447,7 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="all">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
@@ -455,6 +456,7 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="all">
+                <modifier>Max</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
