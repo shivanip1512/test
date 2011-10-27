@@ -23,7 +23,7 @@
         <c:if test="${showConfirm}">
             <cti:msg2 var="confirmText" key=".${nameKey}.confirmText"/>
         </c:if>
-        <cti:button key="${nameKey}" id="${buttonId}"/>
+        <cti:button nameKey="${nameKey}" id="${buttonId}"/>
         <script type="text/javascript">
             $("${buttonId}").observe("click", function() {
                 var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
