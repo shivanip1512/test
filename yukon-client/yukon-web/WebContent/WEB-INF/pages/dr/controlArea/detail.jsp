@@ -223,11 +223,13 @@
 
                             <%-- Actions shown when the Control Area is fully active and enabled --%>
                             <tags:dynamicChooseOption optionId="fullyActiveEnabled">
-                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.fullyActive"/>
-                                <span class="disabledAction" title="${disabledMessage}">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
-                                </span>
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${startControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>

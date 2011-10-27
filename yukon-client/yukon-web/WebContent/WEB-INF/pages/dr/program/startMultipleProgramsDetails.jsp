@@ -100,21 +100,6 @@ gearChanged = function() {
     }
     updateSubmitButtons();
 }
-
-updateProgramState = function(index) {
-  //assumes data is of type Hash
-    return function(data) {
-        if (data.get('state').startsWith('running')) {
-            $('startProgramCheckbox' + index).disable();
-            $('startProgramCheckbox' + index).checked = false;
-            $('programGear' + index).disable();
-        } else {
-            $('startProgramCheckbox' + index).enable();
-            $('programGear' + index).enable();
-        }
-        updateAllProgramsChecked();
-    }
-}
 </script>
 
 <cti:flashScopeMessages/>
@@ -205,8 +190,7 @@ updateProgramState = function(index) {
                         <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
                     </c:forEach>
                 </form:select></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
-                <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
                 <c:if test="${!empty scenarioPrograms}">
                     <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
                     <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
