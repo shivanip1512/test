@@ -122,6 +122,39 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("  AND Inventory.PointId = RPH1.PointId");
         sql.append("  AND RPH1.Value").neq_k(Commissioned.CONNECTED.getRawState());
         
+        sql.append("UNION");
+        sql.append("(SELECT Inventory.EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, ");
+        sql.append("Inventory.ManufacturerSerialNumber, Inventory.LMHardwareTypeID, Inventory.DeviceLabel, ");
+        sql.append("Inventory.POINTID, 0 as TIMESTAMP, Inventory.POINTTYPE, ").append(Commissioned.DISCONNECTED.getRawState()).append(" as Value");
+        sql.append("FROM");
+        sql.append("   (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");
+        sql.append("      JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
+        sql.append("      JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
+        sql.append("      JOIN Point P on P.PAObjectID = YPO.PAObjectID");
+        sql.append("      JOIN ECToAccountMapping ECTA on ECTA.AccountID = IB.AccountID");
+        sql.append("    WHERE IB.AccountID > 0");
+        sql.append("     AND P.PointOffset").eq_k(pointOffset);
+        sql.append("     AND P.PointType").eq_k(pointType);
+        sql.append("     AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
+        sql.append("   ) Inventory");
+        sql.append("WHERE Inventory.POINTID not in (SELECT POINTID from RAWPOINTHISTORY))");
+        
+        sql.append("UNION");
+        sql.append("(SELECT 0 as EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, ");
+        sql.append("  Inventory.ManufacturerSerialNumber, Inventory.LMHardwareTypeID, 'In Warehouse' as DeviceLabel,");
+        sql.append("  Inventory.POINTID, 0 as TIMESTAMP, Inventory.POINTTYPE, 2 as Value");
+        sql.append("FROM");
+        sql.append("   (SELECT 0 as EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");
+        sql.append("      JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
+        sql.append("      JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
+        sql.append("      JOIN Point P on P.PAObjectID = YPO.PAObjectID");
+        sql.append("    WHERE IB.AccountID = 0");
+        sql.append("      AND P.PointOffset").eq_k(pointOffset);
+        sql.append("      AND P.PointType").eq_k(pointType);
+        sql.append("      AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
+        sql.append("   ) Inventory");
+        sql.append("WHERE Inventory.POINTID not in (SELECT POINTID from RAWPOINTHISTORY))");
+        
         return yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<LiteLmHardware, SimplePointValue>>() {
             @Override
             public Pair<LiteLmHardware, SimplePointValue> mapRow(YukonResultSet rs) throws SQLException {

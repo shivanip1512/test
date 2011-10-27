@@ -27,6 +27,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.tools.csv.CSVWriter;
@@ -44,6 +45,7 @@ public class ZbProblemDevicesController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private InventoryDao inventoryDao;
     private StateDao stateDao;
+    private CustomerAccountDao customerAccountDao;
     private PointFormattingService pointFormattingService;
     
     @RequestMapping
@@ -51,6 +53,16 @@ public class ZbProblemDevicesController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(accessor);
         model.addAttribute("devices", devices);
+        List<Integer> inventoryIds = Lists.newArrayList();
+        for (Pair<LiteLmHardware, SimplePointValue> device : devices) {
+            inventoryIds.add(device.first.getInventoryIdentifier().getInventoryId());
+        }
+        Map<Integer, Integer> inventoryIdsToAccountIds = 
+                customerAccountDao.getAccountIdsByInventoryIds(inventoryIds);
+        Map<Integer, String> accountIdsToAccountNumbers = 
+                customerAccountDao.getAccountNumbersByAccountIds(inventoryIdsToAccountIds.values());
+        model.addAttribute("accountIdsToAccountNumbers", accountIdsToAccountNumbers);
+        
         LiteStateGroup states = stateDao.getLiteStateGroup(StateGroupUtils.STATEGROUP_COMMISSIONED_STATE);
         Map<Double, String> stateColorMap = Maps.newHashMap();
         for (LiteState state : states.getStatesList()) {
@@ -133,6 +145,11 @@ public class ZbProblemDevicesController {
     @Autowired
     public void setPointFormattingService(PointFormattingService pointFormattingService) {
         this.pointFormattingService = pointFormattingService;
+    }
+    
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
     }
     
 }

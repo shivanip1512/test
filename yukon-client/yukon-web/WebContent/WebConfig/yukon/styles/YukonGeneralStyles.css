@@ -1309,6 +1309,11 @@ div.accountInfoFragment {
 	font-size:11px;
 }
 
+div.exportLink {
+    text-align: right;
+    padding-bottom: 12px;    
+}
+
 span.radioLabel,
 span.checkBoxLabel,
 span.textFieldLabel {

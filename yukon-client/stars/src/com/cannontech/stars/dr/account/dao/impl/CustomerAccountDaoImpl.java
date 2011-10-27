@@ -31,6 +31,8 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -257,6 +259,63 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         
         return account;
+    }
+    
+    @Override
+    public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        Function<Integer, Integer> identityFunction = Functions.identity();
+        
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+              SqlStatementBuilder sql = new SqlStatementBuilder();
+              sql.append("SELECT ib.InventoryId, ca.AccountId");
+              sql.append("FROM CustomerAccount ca, InventoryBase ib");
+              sql.append("WHERE ca.AccountId = ib.AccountId"); 
+              sql.append("AND ib.InventoryId").in(subList);
+              return sql;
+            }
+        };
+        
+        YukonRowMapper<Map.Entry<Integer, Integer>> rowMapper = new YukonRowMapper<Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                Integer inventoryId = rs.getInt("InventoryId");
+                Integer accountId = rs.getInt("AccountId");
+                return Maps.immutableEntry(inventoryId, accountId);
+            }
+        };
+        return template.mappedQuery(sqlFragmentGenerator, inventoryIds, rowMapper, identityFunction);
+    }
+    
+    @Override
+    public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        
+        Function<Integer, Integer> identityFunction = Functions.identity();
+        
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ca.AccountId, ca.AccountNumber");
+                sql.append("FROM CustomerAccount ca");
+                sql.append("WHERE ca.AccountId").in(subList);
+                return sql;
+            }
+        };
+        
+        YukonRowMapper<Map.Entry<Integer, String>> rowMapper = new YukonRowMapper<Map.Entry<Integer, String>>() {
+            @Override
+            public Entry<Integer, String> mapRow(YukonResultSet rs) throws SQLException {
+                Integer accountId = rs.getInt("AccountId");
+                String accountNumber = rs.getString("AccountNumber");
+                return Maps.immutableEntry(accountId, accountNumber);
+            }
+        };
+        return template.mappedQuery(sqlFragmentGenerator, accountIds, rowMapper, identityFunction);
     }
             
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,

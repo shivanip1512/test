@@ -29,14 +29,33 @@
                     <cti:param name="accountId" value="${device.first.accountId}"/>
                     <cti:param name="energyCompanyId" value="${device.first.energyCompanyId}"/>
                 </cti:url>
-                <td><a href="${hardwareUrl}"><spring:escapeBody htmlEscape="true">${device.first.serialNumber}</spring:escapeBody></a></td>
+                <cti:url value="/operator/Hardware/InventoryDetail.jsp" var="invDetailUrl">
+                    <cti:param name="src" value="Inventory"/>
+                    <cti:param name="InvId" value="${device.first.identifier.inventoryId}"/>
+                </cti:url>
+                <cti:url value="/spring/stars/operator/account/view" var="accountUrl">
+                    <cti:param name="accountId" value="${device.first.accountId}"/>
+                </cti:url>
+                
+                <c:if test="${device.first.accountId == 0}">
+                    <td><a href="${invDetailUrl}">${fn:escapeXml(device.first.serialNumber)}</a></td>
+                    <td><i:inline key=".noAccountNumber"/></td>
+                </c:if>
+                <c:if test="${device.first.accountId != 0}">
+                    <td><a href="${hardwareUrl}">${fn:escapeXml(device.first.serialNumber)}</a></td>
+                    <td><a href="${accountUrl}">${fn:escapeXml(accountIdsToAccountNumbers[device.first.accountId])}</a></td>
+                </c:if>
                 <td><i:inline key="${device.first.identifier.hardwareType}"/></td>
-                <td><spring:escapeBody htmlEscape="true">${device.first.label}</spring:escapeBody></td>
+                <td>${fn:escapeXml(device.first.label)}</td>
                 <td class="fwb" style="color:${stateColorMap[device.second.value]};"><cti:pointValueFormatter value="${device.second}" format="VALUE"/></td>
-                <td><cti:pointValueFormatter value="${device.second}" format="DATE"/></td>
+                <c:set var="uninitializedTime" value="1900-01-01 00:00:00.0"/>
+                <c:if test="${device.second.pointDataTimeStamp == uninitializedTime}">
+                    <td><i:inline key=".uninitialized"/></td>
+                </c:if>
+                <c:if test="${device.second.pointDataTimeStamp != uninitializedTime}">
+                    <td><cti:pointValueFormatter value="${device.second}" format="DATE"/></td>
+                </c:if>
             </tr>
         </c:forEach>
-        
     </table>
-
 </cti:standardPage>

@@ -46,6 +46,10 @@ public interface CustomerAccountDao {
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId);
     
     public CustomerAccount getAccountByInventoryId(int inventoryId);
+    
+    public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds);
+    
+    public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds);
 
     public CustomerAccount getAccountByContactId(int contactId);
     

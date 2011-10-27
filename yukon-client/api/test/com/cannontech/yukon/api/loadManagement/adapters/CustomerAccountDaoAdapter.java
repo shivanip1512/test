@@ -118,4 +118,14 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
 }
