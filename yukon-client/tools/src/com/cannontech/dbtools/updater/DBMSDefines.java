@@ -29,7 +29,7 @@ public interface DBMSDefines
         
 		"ignore-begin", //ignore all errors up to the ignore-end tag
         "ignore-end", //matching tag for ignore-begin
-		"warn-once" //Stop execution but mark as valid in valids file.
+        "warn-once" //Stop execution but mark as valid in valids file.
 	};
 
 

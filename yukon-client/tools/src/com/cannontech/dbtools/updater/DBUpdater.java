@@ -313,29 +313,27 @@ public class DBUpdater extends MessageFrameAdaptor
 
             getIMessageFrame().addOutput( "EXECUTING: " + cmd ); 
 
-            if( line_.isWarnOnce()){
-                try
-                {
-                    stat.execute( cmd );
-                    line_.setSuccess( true );
-                    getIMessageFrame().addOutput( "   SUCCESS : " + cmd );              
-                }
-                catch( SQLException ex ) //SQLException ex )
-                {
-                    //since we are ignoring errors, do not let the SQL error force use to exit
-                    line_.setSuccess( true );
-                    getIMessageFrame().addOutput( "" );
-                    getIMessageFrame().addOutput( "" );
-                    getIMessageFrame().addOutput( " ************************************************************************** " );
-                    getIMessageFrame().addOutput( "   Warning Message:");
-                    getIMessageFrame().addOutput( "   After you understand and act on the below warning, press Start again to continue execution." );
-                    getIMessageFrame().addOutput( "" );
-                    getIMessageFrame().addOutput( "   " + ex.getMessage() );
-                    getIMessageFrame().addOutput( " ************************************************************************** " );
-                    getIMessageFrame().addOutput( "" );
-                    getIMessageFrame().addOutput( "" );
-                    getIMessageFrame().finish( "Please see output for important information. Press start again when you have understood this information." );
-                    throw ex;
+            if (line_.isWarnOnce()) {
+                try {
+                    stat.execute(cmd);
+                    line_.setSuccess(true);
+                    getIMessageFrame().addOutput("   SUCCESS : " + cmd);
+                } catch (SQLException ex) {
+                    // We want this error to interrupt execution, but it will be marked as success in the valids file.
+                    // This allows users to not have to edit the valids file after being prompted for certain errors.
+                    line_.setSuccess(true);
+                    getIMessageFrame().addOutput("");
+                    getIMessageFrame().addOutput("");
+                    getIMessageFrame().addOutput(" ************************************************************************** ");
+                    getIMessageFrame().addOutput("   Warning Message:");
+                    getIMessageFrame().addOutput("   After you understand and act on the below warning, press Start again to continue execution.");
+                    getIMessageFrame().addOutput("");
+                    getIMessageFrame().addOutput("   " + ex.getMessage());
+                    getIMessageFrame().addOutput(" ************************************************************************** ");
+                    getIMessageFrame().addOutput("");
+                    getIMessageFrame().addOutput("");
+                    getIMessageFrame().finish("Please see Output Messages to review an error that has been raised. Once resolution has been implemented, you may click Start to resume processing.");
+                    throw ex; // Re-Throw to interrupt execution.
                 }
             }
             else if( line_.isIgnoreError() 
