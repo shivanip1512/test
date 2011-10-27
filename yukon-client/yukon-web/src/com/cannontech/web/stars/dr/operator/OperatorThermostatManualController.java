@@ -65,11 +65,15 @@ public class OperatorThermostatManualController {
         
         // single thermostat
         if (thermostatIdsList.size() == 1) {
+            Integer inventoryId = thermostatIdsList.get(0);
+            event = customerEventDao.getLastManualEvent(inventoryId);
         	modelMap.addAttribute("thermostat", thermostat);
-            event = customerEventDao.getLastManualEvent(thermostatIdsList.get(0));
+        	modelMap.addAttribute("inventoryId", inventoryId);
+            modelMap.addAttribute("pageNameSuffix", "single");
         // multiple thermostats
         } else {
             event = new ThermostatManualEvent();
+            modelMap.addAttribute("pageNameSuffix", "multiple");
         }
         
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());

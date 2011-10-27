@@ -1717,11 +1717,11 @@
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatManual" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="thermostatManual.single" type="DETAIL_CHILD_WITH_INFO">
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatHistory" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="thermostatHistory.single" type="DETAIL_CHILD_WITH_INFO">
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
@@ -1759,6 +1759,14 @@
                                         <labelArgument>${accountNumber}</labelArgument>
                                         <pages>
                                             <page name="thermostat.schedules.multiple" type="BASIC">
+                                                <menu>account|accounts</menu>
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostatHistory.multiple" type="DETAIL_CHILD_WITH_INFO">
+                                                <menu>account|accounts</menu>
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostatManual.multiple" type="DETAIL_CHILD_WITH_INFO">
                                                 <menu>account|accounts</menu>
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>

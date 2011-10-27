@@ -5,7 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="thermostatManual">
+<cti:standardPage module="operator" page="thermostatManual.${pageNameSuffix}">
 
     <cti:includeScript link="/JavaScript/temperature.js"/>
     <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>

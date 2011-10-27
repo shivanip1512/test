@@ -24,8 +24,10 @@
 	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.selectedThermostatsHeaderMultiple.title">Selected Thermostats</entry>
 	
     <!--  operatorThermostat/manual/view.jsp -->
-    <entry key="yukon.web.modules.operator.thermostatManual.pageName">Thermostat Manual</entry>
-	<entry key="yukon.web.modules.operator.thermostatManual.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.single.pageName">Thermostat Manual</entry>
+	<entry key="yukon.web.modules.operator.thermostatManual.single.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.multiple.pageName">Thermostat Manual</entry>
+	<entry key="yukon.web.modules.operator.thermostatManual.multiple.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.operator.thermostatManual.thermostatNamesHeader">Thermostats</entry>
 	<entry key="yukon.web.modules.operator.thermostatManual.manualUiContainerHeader.title">Thermostat Manual</entry>
 	
@@ -74,7 +76,8 @@
 	    3. Click <b>Send</b>.
     ]]></entry>
     
-    <entry key="yukon.web.modules.operator.thermostatHistory.pageName">History</entry>
+    <entry key="yukon.web.modules.operator.thermostatHistory.single.pageName">History</entry>
+    <entry key="yukon.web.modules.operator.thermostatHistory.multiple.pageName">History</entry>
     <entry key="yukon.web.modules.operator.thermostatHistory.historyTableTitle">Command History</entry>
     
     

@@ -378,10 +378,6 @@ a.default {
     padding: 15px;
 }
 
-.help {
-    font-size: 12px;
-}
-
 .help ol {
     list-style: decimal;
     padding-left: 20px;
