@@ -26,6 +26,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionService;
@@ -222,6 +223,12 @@ public class ArchivedValuesRequestEndpoint {
             for (PaoIdentifier paoIdentifier : paoIdentifiers) {
                 LogHelper.debug(log, "    pao %s", paoIdentifier);
                 PointInfo pointInfo = pointInfoById == null ? null : pointInfoById.get(paoIdentifier);
+                if (pointInfo == null) {
+                    // This can happen if an invalid attribute was requested.  An error is already
+                    // generated in AttributeHistorySelector.getPointInfo.  In this case, however,
+                    // we don't want to create a point element since there's nothing to put in it.
+                    continue;
+                }
                 Element paoElement = responseData.getPaoElement(paoIdentifier);
                 Element pointElement = null;
                 if (!responseData.isFlatten()) {
@@ -484,7 +491,13 @@ public class ArchivedValuesRequestEndpoint {
             Attribute attribute = attributeService.resolveAttributeName(pointSelector.getName());
             List<PaoPointIdentifier> paoPointIdentifiers = Lists.newArrayList();
             for (PaoIdentifier pao : paos) {
-                paoPointIdentifiers.add(attributeService.getPaoPointIdentifierForAttribute(pao, attribute));
+                try {
+                    PaoPointIdentifier paoPointIdentifierForAttribute =
+                            attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
+                    paoPointIdentifiers.add(paoPointIdentifierForAttribute);
+                } catch (IllegalUseOfAttribute isoa) {
+                    log.error("attribute " + attribute + " is not valid for pao " + pao);
+                }
             }
             Map<PaoIdentifier, PointInfo> retVal = Maps.newHashMap();
             Map<PaoPointIdentifier, PointInfo> pointInfoById =
