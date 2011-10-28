@@ -8169,10 +8169,9 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 
     try
     {
-        std::list<int> deleteFeederList = subToDelete->getCCFeederIds();
-        for( std::list<int>::iterator itr = deleteFeederList.begin(); itr != deleteFeederList.end(); itr++ )
+        for each(int feederId in subToDelete->getCCFeederIds())
         {
-            deleteFeeder(*itr);
+            deleteFeeder(feederId);
         }
 
         try
@@ -8300,10 +8299,9 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
         return;
     try
     {
-        std::list<int> capbankDeleteList = feederToDelete->getAllCapBankIds();
-        for( std::list<int>::iterator itr = capbankDeleteList.begin(); itr != capbankDeleteList.end(); itr++ )
+        for each(int capBankId in feederToDelete->getAllCapBankIds())
         {
-            deleteCapBank(*itr);
+            deleteCapBank(capBankId);
         }
 
         PointIdList *pointIds  = feederToDelete->getPointIds();
