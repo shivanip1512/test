@@ -249,24 +249,32 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
             row.enrolledProgram = programNames;
             
             Duration actualControlDuration = 
-                enrollmentControlDuration.minus(getOptOutControlDuration(enrolledControlHistory, overrideHistory));
+                getActualControlDuration(enrolledControlHistory, overrideHistory, enrollmentControlDuration);
             row.totalActualControlHoursForPeriod = actualControlDuration.getMillis()/oneHour;
 
             data.add(row);
     }
     
-    private Duration getOptOutControlDuration(OpenInterval enrolledControlHistory,
-                                              OverrideHistory overrideHistory) {
+    private Duration getActualControlDuration(OpenInterval enrolledControlHistory,
+                                              OverrideHistory overrideHistory, 
+                                              Duration enrollmentControlDuration) {
         OpenInterval overlappingInterval = enrolledControlHistory.overlap(overrideHistory.getOpenInterval());
         
         if (overlappingInterval == null) {
             return Duration.ZERO;
         }
         
+        Duration optOutControlDuration;
         if (overlappingInterval.isOpenEnd()) {
-            return overlappingInterval.withCurrentEnd().toClosedInterval().toDuration();
+            optOutControlDuration = overlappingInterval.withCurrentEnd().toClosedInterval().toDuration();
+        } else if (enrolledControlHistory.isOpenEnd()) {
+            OpenInterval optOutControlDurationOpenInterval = 
+                enrolledControlHistory.withCurrentEnd().overlap(overrideHistory.getOpenInterval());
+            optOutControlDuration = optOutControlDurationOpenInterval.toClosedInterval().toDuration();
         } else {
-            return overlappingInterval.toClosedInterval().toDuration();
-        }        
+            optOutControlDuration = overlappingInterval.toClosedInterval().toDuration();
+        }
+        
+        return enrollmentControlDuration.minus(optOutControlDuration);
     }
 }
