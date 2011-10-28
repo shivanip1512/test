@@ -150,6 +150,10 @@ INSERT INTO DeviceTypeCommand VALUES (-973, -169, 'MCT-420FL', 34, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-974, -170, 'MCT-420FL', 35, 'Y', -1);
 /*  End YUK-10287  */
 
+/* Start YUK-10333 */
+DELETE FROM YukonListEntry WHERE ListId = 1005 AND EntryId IN (1060, 1061, 1063);
+/*  End  YUK-10333 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
