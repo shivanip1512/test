@@ -62,10 +62,13 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     private JmsTemplate jmsTemplate;
     
     private static String digiBaseUrl;
+    private static String digiEndPointReadUrl;
     
     @PostConstruct
     public void initialize() {
         digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://developer.idigi.com/");
+
+        digiEndPointReadUrl = digiBaseUrl + "ws/XbeeCore";
     }
     
     public static String getDigiBaseUrl() {
@@ -223,8 +226,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
     }
     
+    /* This is commented temporarily until the feature is implemented in 5.4
+     * This used to be used to "refresh" the device, but that is now done in a similar fashion to the gateway refresh.
+     *
     @Override
-    public ZigbeePingResponse updateEndPointStatus(ZigbeeDevice endPoint) {
+    public void readLoadGroupAddressing(ZigbeeDevice endPoint) {
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());
         Validate.notNull(gatewayId, "Device not assigned to a gateway, cannot send addressing configs.");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
@@ -240,10 +246,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
             throw new DigiWebServiceException(e);
         }
 
-        ZigbeePingResponse pingResponse = digiResponseHandler.handlePingResponse(response,endPoint,gateway);
-        
-        return pingResponse;
+        digiResponseHandler.handleLoadGroupAddressingRead(response,endPoint,gateway);
     }
+*/
     
     @Override
     public void sendLoadGroupAddressing(int deviceId, Map<DRLCClusterAttribute,Integer> attributes) {
@@ -278,7 +283,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         try {
             pingResponses = refreshDeviceCore(url,expected);
         } catch (DigiEmptyDeviceCoreResultException e) {
-            String errorMsg = "Gateway not found on iDigi Account. Possibly need to re-commission.";
+            String errorMsg = "Gateway not found on iDigi Account. This usually means the device is not commissioned properly.";
             log.error(errorMsg);
             throw new DigiWebServiceException(errorMsg);
         }
@@ -330,6 +335,67 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         
         return updated;
     }
+
+    public Map<PaoIdentifier,ZigbeePingResponse> updateAllEndPointStatuses() {
+        log.debug("Refresh ALL End Point start");
+
+        List<ZigbeeDevice> allEndPoints = zigbeeDeviceDao.getAllEndPoints();
+
+        Map<PaoIdentifier,ZigbeePingResponse> pingResponses = Maps.newHashMap();
+
+        try {
+            //NodeType of 1 is router. All Upros are routers. This might pull in other things that are not YUKON related.
+            //4171 is Cooper. This might limit us too much if we want to talk with other companies devices. 
+            pingResponses = refreshEndPoints(digiEndPointReadUrl + "?condition=xpNodeType=1 and xpMfgId = 4171",allEndPoints);
+        } catch (DigiEmptyDeviceCoreResultException e) {
+            //eat the Error.. It could be the case there is no endpoints.
+        }
+        
+        log.debug("Refresh ALL End Point end");
+        return pingResponses;
+    }
+
+    @Override
+    public ZigbeePingResponse updateEndPointStatus(ZigbeeDevice endPoint) {
+        List<ZigbeeDevice> expected = Lists.newArrayList();
+        expected.add(endPoint);
+        
+        Map<PaoIdentifier,ZigbeePingResponse> pingResponses = Maps.newHashMap();
+        
+        try {
+            pingResponses = refreshEndPoints(digiEndPointReadUrl + "/" + endPoint.getZigbeeMacAddress(),expected);
+        } catch (DigiEmptyDeviceCoreResultException e) {
+            String errorMsg = "Device not found on iDigi Account. This usually means the device is not commissioned properly.";
+            log.error(errorMsg);
+            throw new DigiWebServiceException(errorMsg);
+        }
+        
+        if (pingResponses.size() > 1) {
+            throw new DigiWebServiceException("Ping returned more than one result.");
+        }
+        
+        return pingResponses.get(endPoint.getPaoIdentifier());
+    }
+    
+    private Map<PaoIdentifier,ZigbeePingResponse> refreshEndPoints(String url, List<ZigbeeDevice> expected) {
+        String xml;
+        
+        try {
+            xml = restTemplate.getForObject(url,String.class);
+        } catch (RestClientException e) {
+            throw new DigiWebServiceException(e);
+        }
+        
+        Map<PaoIdentifier,ZigbeePingResponse> updated = digiResponseHandler.handleXbeeCoreResponse(xml,expected);
+        
+        //If there were no results, toss an exception to alert this.
+        if (updated.isEmpty()) {
+            throw new DigiEmptyDeviceCoreResultException("0 results from XbeeCore query.");
+        }
+        
+        return updated;
+    }
+
     
     @Override
     public void sendManualAdjustment(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {

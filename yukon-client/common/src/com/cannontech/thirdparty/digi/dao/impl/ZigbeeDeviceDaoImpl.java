@@ -44,15 +44,28 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     
     @Override
     public ZigbeeDevice getZigbeeDevice(int deviceId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type,YPO.PaoName");
-        sql.append("FROM ZBEndPoint ZE");
-        sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
+        SqlStatementBuilder sql = buildBasicEndPointSql();
         sql.append("WHERE DeviceId").eq(deviceId);
         
         ZigbeeDevice zigbeeDevice = yukonJdbcTemplate.queryForObject(sql, GatewayDeviceDaoImpl.zigbeeDeviceRowMapper);
         
         return zigbeeDevice;
+    }
+    
+    public List<ZigbeeDevice> getAllEndPoints() {
+        SqlStatementBuilder sql = buildBasicEndPointSql();
+        
+        return yukonJdbcTemplate.query(sql, GatewayDeviceDaoImpl.zigbeeDeviceRowMapper);
+    }
+    
+    private SqlStatementBuilder buildBasicEndPointSql() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type,YPO.PaoName");
+        sql.append("FROM ZBEndPoint ZE");
+        sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
+        
+        return sql;
     }
     
     @Override

@@ -1,10 +1,8 @@
 package com.cannontech.cbc.cyme.impl;
 
-import java.io.StringReader;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.jdom.Namespace;

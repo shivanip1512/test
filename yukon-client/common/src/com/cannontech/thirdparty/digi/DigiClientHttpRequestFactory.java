@@ -20,11 +20,11 @@ public class DigiClientHttpRequestFactory extends CommonsClientHttpRequestFactor
 	public HttpClient getHttpClient() {
 		HttpClient client = super.getHttpClient();
 		
-		/*if (this.user != null) {
+		if (this.user != null) {
 			client.getState().setCredentials(AuthScope.ANY, 
 						new UsernamePasswordCredentials(this.user,this.password));
 			client.getParams().setAuthenticationPreemptive(true);
-		}*/
+		}
 		
 		return client;
 	}

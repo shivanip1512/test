@@ -12,6 +12,8 @@ public interface ZigbeeDeviceDao {
     
     public List<ZigbeeDevice> getZigbeeDevicesForGroupId(int groupId);
     
+    public List<ZigbeeDevice> getAllEndPoints();
+    
     public ZigbeeEndpoint getZigbeeEndPointByInventoryId(int inventoryId);
     
     public ZigbeeEndpoint getZigbeeEndPoint(int deviceId);

@@ -8,11 +8,13 @@ import java.util.regex.Pattern;
 
 import javax.activation.UnsupportedDataTypeException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.jdom.Namespace;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
@@ -43,6 +45,8 @@ import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndpointFields;
 import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeGatewayFields;
 import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.digi.model.FileData;
+import com.cannontech.thirdparty.digi.model.XbeeCore;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
@@ -80,14 +84,25 @@ public class DigiResponseHandler {
         existProperties.put(existNamespace.getPrefix(), existNamespace.getURI());
     }
     
-    private static ObjectMapper<Node, String> digiFileListingNodeMapper = new ObjectMapper<Node,String>() {
+    private static ObjectMapper<Node, FileData> digiFileListingNodeMapper = new ObjectMapper<Node,FileData>() {
 
         @Override
-        public String map(Node node) throws DOMException {                            
-            String fileName = node.getAttributes().getNamedItem("name").getNodeValue();
-            String folderName = node.getParentNode().getAttributes().getNamedItem("name").getNodeValue();
+        public FileData map(Node node) throws DOMException {                            
+            SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
+
+            String fdType = template.evaluateAsString("fdType");
+            String fdData = template.evaluateAsString("fdData");
+            String fdName = template.evaluateAsString("id/fdName");
+            String fdPath = template.evaluateAsString("id/fdPath");
+
+            FileData data = new FileData();
+
+            data.setFdData(fdData);
+            data.setFdName(fdName);
+            data.setFdPath(fdPath);
+            data.setFdType(fdType);
             
-            return folderName + "/" + fileName;
+            return data;
         }
     };
     
@@ -120,13 +135,33 @@ public class DigiResponseHandler {
         }
     };
 
+    private static ObjectMapper<Node, XbeeCore> digiXbeeCoreNodeMapper = new ObjectMapper<Node,XbeeCore>() {
+
+        @Override
+        public XbeeCore map(Node node) throws DOMException {
+            SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
+
+            String macAddress = template.evaluateAsString("xpExtAddr");
+            String devConnectwareId = template.evaluateAsString("devConntectwareId");
+            int xpNetAddr = template.evaluateAsInt("xpNetAddr");
+            int xpNodeType = template.evaluateAsInt("xpNodeType");
+            int xpDiscoveryIndex = template.evaluateAsInt("xpDiscoveryIndex");
+            boolean xpStatus = (template.evaluateAsInt("xpStatus") == 1)?true:false;
+            
+            String updateTime = template.evaluateAsString("xpUpdateTime");
+            Instant xpUpdateTime = new Instant(updateTime);
+            
+            return new XbeeCore(macAddress,devConnectwareId,xpNetAddr,xpNodeType,xpDiscoveryIndex,xpStatus,xpUpdateTime);
+        }
+    };
+    
     /**
      * Returns a list of paths to DeviceNotifications that are stored on the gateway. 
      * 
      * @return
      */
-    public List<String> handleFolderListingResponse(String source) {
-        List<String> fileNames = Lists.newArrayList();
+    public List<FileData> handleFolderListingResponse(String source) {
+        List<FileData> fileNodes = Lists.newArrayList();
         
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
@@ -136,10 +171,9 @@ public class DigiResponseHandler {
            String hint = template.evaluateAsString("/wsError/error/hint");
            log.error("Error Polling Gateway: " + code + " " + hint + ". " + message);
         } else { 
-            template.setNamespaces(existProperties);
-            fileNames.addAll(template.evaluate("//exist:resource", digiFileListingNodeMapper));
+            fileNodes.addAll(template.evaluate("/result/FileData",digiFileListingNodeMapper));
         }
-        return fileNames;
+        return fileNodes;
     }
     
     /**
@@ -148,33 +182,59 @@ public class DigiResponseHandler {
      * @param source
      * @throws UnsupportedDataTypeException 
      */
-    public void handleDeviceNotification(String source) throws UnsupportedDataTypeException {
-        SimpleXPathTemplate template = new SimpleXPathTemplate();
-        template.setContext(source);
-        log.debug(source);
-        
-        //Figure out what this file is
-        Node tester = template.evaluateAsNode("/received_report_event_status");
-        if (tester != null) {
-            log.info("Processing XML file of type: 'received_report_event_status message'.");
-            processReportEventStatus(template);
-            return;
-        }
+    public void handleDeviceNotification(FileData fileData) throws UnsupportedDataTypeException {
 
-        tester = template.evaluateAsNode("/message");
-        if (tester != null) {
-            log.info("Processing XML file of type: 'message'.");
-            
-            Long seconds = template.evaluateAsLong("//@timestamp");
-            Instant time = new Instant(seconds*1000);
-            
-            String description = template.evaluateAsString("//description");
-            log.info("RECV at "+ time + " from iDigi: " + description);
-            parseMessageForAction(time,description);
+        if(!"file".equals(fileData.getFdType())) {
+            log.debug("Skipping listing of type: " + fileData.getFdType());
             return;
         }
         
-        log.error(source);
+        String fileName = fileData.getFdName(); 
+        log.debug("Processing device notification file: " + fileName);
+        
+        byte [] newData = Base64.decodeBase64(fileData.getFdData().getBytes()); 
+        String data = new String(newData);
+        
+        log.debug(data);
+        
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(data);
+
+        //Figure out what this file is and process it.
+        try {
+            Node tester = template.evaluateAsNode("/write_attributes_response");
+            if (tester != null) {
+                //We don't need to do anything, this is just an acknowledge.
+                log.debug("\"write attribute response\" received.");
+                return;
+            }
+            
+            tester = template.evaluateAsNode("/received_report_event_status");
+            if (tester != null) {
+                log.debug("Processing XML file of type: 'received_report_event_status message'.");
+                processReportEventStatus(data);
+                return;
+            }
+    
+            tester = template.evaluateAsNode("/message");
+            if (tester != null) {
+                log.debug("Processing XML file of type: 'message'.");
+                
+                Long seconds = template.evaluateAsLong("//@timestamp");
+                Instant time = new Instant(seconds*1000);
+                
+                String description = template.evaluateAsString("//description");
+                log.debug("RECV at "+ time + " from iDigi: " + description);
+                
+                parseMessageForAction(time,description);
+                return;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Unknown EndPoint during Device Notification processing.");
+            //Normally I would "debug" log the Cause of the error here, but it was printed above: log.debug(data);
+            return;
+        }
+        
         throw new UnsupportedDataTypeException("Unsupported XML file type returned from iDigi.");
     }
     
@@ -200,7 +260,7 @@ public class DigiResponseHandler {
     /**
      * Parse for the connection status of the gateway contained in source.
      * 
-     * returns a list of PaoIds that were update.
+     * returns a list of PaoIds that were updated.
      * 
      * @param source
      */
@@ -237,7 +297,7 @@ public class DigiResponseHandler {
         
         //Set Decommissioned to anything we did not get a response from.
         MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(successKey);
-        ZigbeePingResponse response = new ZigbeePingResponse(false,
+        ZigbeePingResponse decommissionedResponse = new ZigbeePingResponse(true,
                                                              Commissioned.DECOMMISSIONED,
                                                              resolvable);
 
@@ -245,11 +305,60 @@ public class DigiResponseHandler {
             if (pingResponses.keySet().contains(gateway.getPaoIdentifier())) {
                 continue;
             }
-            pingResponses.put(gateway.getPaoIdentifier(),response);
+            pingResponses.put(gateway.getPaoIdentifier(),decommissionedResponse);
             decommissionGateway(gateway);
         }
         
         return pingResponses;
+    }
+    
+    public Map<PaoIdentifier,ZigbeePingResponse> handleXbeeCoreResponse(String source, List<ZigbeeDevice> expected) {        
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(source);
+        String successKey = "yukon.web.modules.operator.hardware.refreshSuccessful";
+        List<XbeeCore> cores = template.evaluate("/result/XbeeCore", digiXbeeCoreNodeMapper);
+        
+        Map<PaoIdentifier,ZigbeePingResponse> xbeeCoreResponses = Maps.newHashMap();
+        for (XbeeCore core : cores) {
+            ZigbeeEndpoint endPoint;
+            try {
+                endPoint = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(core.getMacAddress());
+                
+                Commissioned state = Commissioned.DISCONNECTED;
+                if (core.isConnected()) {
+                    state = Commissioned.CONNECTED;
+                }
+
+                zigbeeServiceHelper.sendPointStatusUpdate(endPoint,
+                                                          BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                          state);
+
+                MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(successKey);
+                ZigbeePingResponse response = new ZigbeePingResponse(true, state, resolvable);
+                xbeeCoreResponses.put(endPoint.getPaoIdentifier(), response);
+            } catch (EmptyResultDataAccessException e) {
+                //This is either not a end point or not tracked by yukon.
+                log.debug("Unknown EndPoint during XbeeCore refresh: " + core.getMacAddress());
+            }
+        }
+        
+        ZigbeePingResponse decommissionedResponse = new ZigbeePingResponse(true,
+                                                             Commissioned.DECOMMISSIONED,
+                                                             YukonMessageSourceResolvable.createSingleCode(successKey));
+        
+        //Look for devices we expected to get something for but did not. Set them to decommissioned since
+        // that is the only way for this to happen.
+        for (ZigbeeDevice endPoint : expected) {
+            if (xbeeCoreResponses.keySet().contains(endPoint.getPaoIdentifier())) {
+                continue;
+            }
+            xbeeCoreResponses.put(endPoint.getPaoIdentifier(),decommissionedResponse);
+            zigbeeServiceHelper.sendPointStatusUpdate(endPoint,
+                                                      BuiltInAttribute.ZIGBEE_LINK_STATUS,
+                                                      Commissioned.DECOMMISSIONED);
+        }
+        
+        return xbeeCoreResponses;
     }
     
     /**
@@ -269,7 +378,9 @@ public class DigiResponseHandler {
        
         if (m.find()) {
             String macAddress = m.group();
+            //This will throw EmptyResultSetException is there is no MAC, to be handled by caller, not here.
             ZigbeeEndpoint utilPro = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(macAddress);
+            
             //We found a MAC, so lets do something..
             if (message.contains(commissionStr)) {
                 // Registered with the gateway
@@ -343,14 +454,18 @@ public class DigiResponseHandler {
         return template;
     }
     
-    private void processReportEventStatus(SimpleXPathTemplate template) {        
+    private void processReportEventStatus(String xmlData) {
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(xmlData);
+        
         String temp = template.evaluateAsString("//event_status_time");
         long seconds = Long.decode(temp);
         Instant statusTime = TimeUtil.convertUtc2000ToInstant(seconds);
         
         String macAddress = template.evaluateAsString("//source_address");        
+        
         int deviceId = zigbeeDeviceDao.getDeviceIdForMACAddress(macAddress);
-
+        
         temp = template.evaluateAsString("//issuer_event_id");
         int eventId = Integer.decode(temp);
         
@@ -389,11 +504,13 @@ public class DigiResponseHandler {
     }
 
     /**
-     * Determines the success of the ping.
+     * Processes back the LoadGroupAddressing Read.
      * 
      * @param source
      */
-    public ZigbeePingResponse handlePingResponse(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
+    /* Commented Because this used to be used to "refresh" a device, but this code will be used in 5.4 for its intended purpose to read attributes.
+     * 
+    public ZigbeePingResponse handleLoadGroupAddressingRead(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
         Commissioned endPointState;
         boolean success;
         String key;
@@ -445,6 +562,7 @@ public class DigiResponseHandler {
         
         return response;
     }
+    */
     
     /**
      * Determines the success of the add device call.

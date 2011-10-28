@@ -15,6 +15,12 @@ public interface ZigbeeStateUpdaterService {
     public Map<PaoIdentifier, ZigbeePingResponse> updateAllGatewayStatuses();
     
     /**
+     * Determines the status of all EndPoints and updates their connection state.
+     * @return
+     */
+    
+    public Map<PaoIdentifier,ZigbeePingResponse> updateAllEndPointStatuses();
+    /**
      * Determines the status of the Gateway specified and updates the connection state.
      *  
      * @param endPoint

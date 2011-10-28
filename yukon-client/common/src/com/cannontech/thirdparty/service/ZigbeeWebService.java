@@ -51,6 +51,15 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	public void sendLoadGroupAddressing(int deviceId, Map<DRLCClusterAttribute,Integer> attributes);
 	
 	/**
+	 * Reads the device level addressing configuration from the device.
+	 * 
+	 * @param endPoint
+	 */
+	/* Intentionally commented
+	public void readLoadGroupAddressing(ZigbeeDevice endPoint);
+	*/
+	
+	/**
 	 * Sends a text message to the gateway. 
      *  
 	 * @param gateway

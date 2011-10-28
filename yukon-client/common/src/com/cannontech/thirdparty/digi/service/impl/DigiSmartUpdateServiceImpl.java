@@ -79,11 +79,7 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
                         return false;
                 } else if (!device.equals(other.device))
                     return false;
-                if (pollStopTime == null) {
-                    if (other.pollStopTime != null)
-                        return false;
-                } else if (!pollStopTime.equals(other.pollStopTime))
-                    return false;
+                //NOT comparing time to prevent duplicate scans from going in with differant stop times.
                 return true;
             }
 
@@ -153,7 +149,14 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
             }
             
             Instant expireTime = new Instant().plus(timeToPoll);
-            skipListSet.add(new DeviceToPoll(device,expireTime));
+            DeviceToPoll deviceToPoll = new DeviceToPoll(device,expireTime);
+            
+            //If add returns false, we are already polling this device.
+            if (!skipListSet.add(deviceToPoll)) {
+                //Remove and re add the device to extend the time we poll.
+                skipListSet.remove(deviceToPoll);
+                skipListSet.add(deviceToPoll);
+            }
         }
     }
     

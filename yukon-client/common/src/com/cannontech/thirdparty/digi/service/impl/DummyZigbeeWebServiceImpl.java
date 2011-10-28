@@ -27,6 +27,11 @@ public class DummyZigbeeWebServiceImpl implements ZigbeeWebService, ZigbeeStateU
     }
 
     @Override
+    public Map<PaoIdentifier, ZigbeePingResponse> updateAllEndPointStatuses() {
+        return null;
+    }
+    
+    @Override
     public ZigbeePingResponse updateGatewayStatus(ZigbeeDevice Gateway) {
         String notConfigured = "yukon.web.modules.operator.hardware.zigbeeNotEnabled";
         MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(notConfigured);

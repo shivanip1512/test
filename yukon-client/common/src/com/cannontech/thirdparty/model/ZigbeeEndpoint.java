@@ -1,9 +1,8 @@
 package com.cannontech.thirdparty.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonDevice;
 
-public class ZigbeeEndpoint implements YukonDevice {
+public class ZigbeeEndpoint implements ZigbeeDevice {
 
     private PaoIdentifier paoIdentifier;
     private String installCode;
@@ -67,6 +66,16 @@ public class ZigbeeEndpoint implements YukonDevice {
 
     public void setDestinationEndPointId(int destinationEndPointId) {
         this.destinationEndPointId = destinationEndPointId;
+    }
+
+    @Override
+    public int getZigbeeDeviceId() {
+        return paoIdentifier.getPaoId();
+    }
+
+    @Override
+    public String getZigbeeMacAddress() {
+        return macAddress;
     }
     
 }
