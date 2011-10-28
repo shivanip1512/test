@@ -164,7 +164,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const CtiRegression& getRegressionC();
 
     CtiCCCapBank_SVector& getCCCapBanks();
-    std::list<int> :getAllCapBankIds();
+    std::list<int> getAllCapBankIds();
     std::vector<CtiCCCapBankPtr> getAllCapBanks();    
 	std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
     void deleteCCCapBank(long capBankId);
