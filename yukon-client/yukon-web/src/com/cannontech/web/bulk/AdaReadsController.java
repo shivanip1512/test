@@ -45,7 +45,7 @@ public class AdaReadsController {
         model.addAttribute("deviceCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
         
-        long deviceCount = collection.getDeviceCount();
+        int deviceCount = result.getTotalCount();
         model.addAttribute("deviceCount", deviceCount);
         
         return "archiveDataAnalysis/readResults.jsp";

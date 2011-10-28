@@ -28,6 +28,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
     private int devicesCompletedCount = 0;
     private int devicesSucceeded = 0;
     private int devicesFailed = 0;
+    private int totalNumberOfDevicesToRead;
     
     public ArchiveAnalysisProfileReadResult(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao,
                                             DeviceGroupCollectionHelper deviceGroupCollectionHelper,
@@ -43,6 +44,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         for(CommandRequestDevice request : commandRequestDeviceList) {
             deviceCommandMap.put(request.getDevice(), request.getCommandCallback());
         }
+        totalNumberOfDevicesToRead = deviceCommandMap.keySet().size();
     }
     
     public void commandSucceeded(CommandRequestDevice request) {
@@ -144,5 +146,16 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
     
     public int getFailedCount() {
         return devicesFailed;
+    }
+
+    /**
+     * Returns the total number of devices that need to be read.
+     * This may differ from the total number of read commands that need to be sent out (as one
+     * device may require multiple reads).
+     * This may also differ from the total number of devices in the analysis (as some devices may
+     * not require any reads).
+     */
+    public int getTotalCount() {
+        return totalNumberOfDevicesToRead;
     }
 }

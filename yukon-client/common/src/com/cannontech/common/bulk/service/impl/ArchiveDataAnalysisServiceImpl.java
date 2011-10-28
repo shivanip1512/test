@@ -182,6 +182,8 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         creTemplate.execute(requests, callback);
         archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.READING, resultId);
         
+        log.info("Starting ADA profile read for analysis with ID " + analysis.getAnalysisId() + ". "
+                 + requests.size() + " requests queued for " + result.getTotalCount() + " devices.");
         return resultId;
     }
     
@@ -235,10 +237,12 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         
         //get date ranges that need reads
         Deque<Interval> intervals = new ArrayDeque<Interval>();
+        int intervalSkipCount = 0;
         for(ArchiveData archiveData : data.getArchiveData()) {
             Interval thisInterval = archiveData.getArchiveRange();
             if(thisInterval.isBefore(earliestLpDateAllowed)) {
                 //if the entire interval is before the earliest date allowed, skip it
+                intervalSkipCount++;
                 continue;
             }
             
@@ -264,6 +268,9 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                     }
                 }
             }
+        }
+        if(intervalSkipCount > 0) {
+            log.debug("Archive Data Analysis skipped " + intervalSkipCount + "intervals older than " + earliestLpDateAllowed.toDateTime().toString());
         }
         return intervals;
     }
