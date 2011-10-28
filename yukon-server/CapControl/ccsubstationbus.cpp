@@ -1141,6 +1141,16 @@ CtiFeeder_vec& CtiCCSubstationBus::getCCFeeders()
 
     Returns the list of feeders in the substation
 ---------------------------------------------------------------------------*/
+std::list<int> CtiCCSubstationBus::getCCFeederIds()
+{
+    std::list<int> ids;
+    for each (const CtiCCFeederPtr f in _ccfeeders)
+    {
+        ids.push_back(f->getPaoId());
+    }
+    return ids;
+}
+
 const CtiRegression& CtiCCSubstationBus::getRegression()
 {
     return regression;

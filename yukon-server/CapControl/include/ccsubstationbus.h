@@ -160,6 +160,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const CtiRegression& getRegressionC();
 
     CtiFeeder_vec& getCCFeeders();
+    std::list<int> getCCFeederIds();
     void deleteCCFeeder(long feederId);
 
     CtiCCSubstationBus& setParentId(LONG parentId);

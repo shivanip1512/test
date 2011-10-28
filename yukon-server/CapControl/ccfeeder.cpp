@@ -811,6 +811,15 @@ CtiCCCapBank_SVector& CtiCCFeeder::getCCCapBanks()
     return _cccapbanks;
 }
 
+std::list<int> CtiCCFeeder::getAllCapBankIds()
+{
+    std::list<int> ids;
+    for each (const CtiCCCapBankPtr c in _cccapbanks)
+    {
+        ids.push_back(c->getPaoId());
+    }
+    return ids;
+}
 
 std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllSwitchedCapBanks( )
 {

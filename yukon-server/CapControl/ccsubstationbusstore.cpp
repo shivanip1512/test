@@ -8169,14 +8169,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 
     try
     {
-        CtiFeeder_vec& ccFeeders = subToDelete->getCCFeeders();
-        std::list<int> deleteFeederList;
-        long feedCount = ccFeeders.size();
-        for(LONG i=0;i<feedCount;i++)
-        {
-            CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
-            deleteFeederList.push_back(feederToDelete->getPaoId());
-        }
+        std::list<int> deleteFeederList = subToDelete->getCCFeederIds();
         for( std::list<int>::iterator itr = deleteFeederList.begin(); itr != deleteFeederList.end(); itr++ )
         {
             deleteFeeder(*itr);
@@ -8307,14 +8300,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
         return;
     try
     {
-        CtiCCCapBank_SVector &ccCapBanks = feederToDelete->getCCCapBanks();
-        std::list<int> capbankDeleteList;
-        long capCount = ccCapBanks.size();
-        for (LONG j = 0; j < capCount; j++)
-        {
-            CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
-            capbankDeleteList.push_back(capBankToDelete->getPaoId());
-        }
+        std::list<int> capbankDeleteList = feederToDelete->getAllCapBankIds();
         for( std::list<int>::iterator itr = capbankDeleteList.begin(); itr != capbankDeleteList.end(); itr++ )
         {
             deleteCapBank(*itr);
@@ -8641,14 +8627,6 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
                      msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                      msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                  }
-                 else
-                 {
-                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                     {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " Sub not found "<< endl;
-                     }
-                 }
              }
              else
              {
@@ -8682,14 +8660,6 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
                  msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                  msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
 
-             }
-             else
-             {
-                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                 {
-                      CtiLockGuard<CtiLogger> logger_guard(dout);
-                      dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" NOT modified "<< endl;
-                 }
              }
          }
          else
