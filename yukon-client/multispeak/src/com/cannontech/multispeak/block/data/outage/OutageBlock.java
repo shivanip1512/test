@@ -1,28 +1,20 @@
 package com.cannontech.multispeak.block.data.outage;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dynamic.RichPointData;
-import com.cannontech.multispeak.block.BlockBase;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
-import com.cannontech.tools.csv.CSVReader;
 
-public class OutageBlock extends BlockBase{
+public class OutageBlock implements Block {
 
     public String meterNumber;
     public Double blinkCount;
     public Date blinkCountDateTime;
     
-    private static int FIELD_COUNT = 3;
+    public boolean hasData = false;
     
     public OutageBlock() {
         super();
@@ -56,77 +48,32 @@ public class OutageBlock extends BlockBase{
         return "";
     }
 
-    @Override
-    public void populate(Meter meter, RichPointData richPointData) {
-        
-    	meterNumber = meter.getMeterNumber();
-        loadPointValue(meter, richPointData);
-    }
-
-    /**
-     * Load the richPointData data into OutageBlock
-     * @param meter
-     * @param richPointData
-     */
-	private void loadPointValue(Meter meter, RichPointData richPointData) {
-
-		if (!hasValidPointValue(richPointData)) {
-			//get out before doing any more work.
-			return;
-		}
-
-		populateByPointValue(meter, richPointData, BuiltInAttribute.BLINK_COUNT);
-
-	}
-
 	@Override
-	public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
-		
-		if (!hasValidPointValue(richPointData)) {
-			return;
-		}
-		if (attribute.equals(BuiltInAttribute.BLINK_COUNT)) {
-			setBlinkCount(meter, richPointData);
-		} else {
-			throw new IllegalUseOfAttribute("Illegal use of attribute (in OutageBlock): " + attribute.getDescription());
-		}
-		hasData = true;
+	public boolean hasData() {
+	    return hasData;
 	}
 	
     @Override
-    public void populate(String string, char separator){
-    	
-    	StringReader stringReader = new StringReader(string);
-    	CSVReader reader = new CSVReader(stringReader, separator);
-    	try {
-	    	String [] values = reader.readNext();
-	    	if (values.length == FIELD_COUNT){
-	    		meterNumber = values[0];
-	    		blinkCount = StringUtils.isBlank(values[1]) ? null : Double.valueOf(values[1]);
-
-	    		blinkCountDateTime = StringUtils.isBlank(values[2]) ? null : Iso8601DateUtil.parseIso8601Date(values[2]);
-	    	}else {
-	    		CTILogger.error("OutageBlock could not be parsed (" + stringReader.toString() + ").  Incorrect number of expected fields.");
-	    	}
-    	} catch (IOException e) {
-    		CTILogger.warn(e);
-    	} catch (IllegalArgumentException e) {
-    		CTILogger.warn(e);
-    	}
-    }
-
-	/**
-     * Helper method to set the blinkCount fields
-     * @param meter
-     * @param richPointData
-     */
-	private void setBlinkCount(Meter meter, RichPointData richPointData) {
-        blinkCount = richPointData.getPointValue().getValue();
-        blinkCountDateTime = richPointData.getPointValue().getPointDataTimeStamp();
-	}
-
-    @Override
     public String getObjectId() {
     	return meterNumber;
+    }
+    
+    /**
+     * Sets the blinkCount value and timestamp fields
+     * Sets hasData flag
+     * @param value
+     */
+    public void setBlinkCount(PointValueHolder value) {
+        this.blinkCount = value.getValue();
+        this.blinkCountDateTime = value.getPointDataTimeStamp();
+        this.hasData = true;
+    }
+
+    /**
+     * Sets meterNumber field
+     * @param meterNumber
+     */
+    public void setMeterNumber(String meterNumber) {
+        this.meterNumber = meterNumber;
     }
 }

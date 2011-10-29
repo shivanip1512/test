@@ -11,29 +11,35 @@ import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
+import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspMeterDao;
-import com.cannontech.multispeak.dao.MspMeterReadDao;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
-import com.cannontech.multispeak.data.MeterReadFactory;
-import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.CustomersAffectedByOutage;
 import com.cannontech.multispeak.deploy.service.DomainMember;
@@ -50,11 +56,13 @@ import com.cannontech.multispeak.deploy.service.MeterConnectivity;
 import com.cannontech.multispeak.deploy.service.MeterExchange;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.MspObject;
 import com.cannontech.multispeak.deploy.service.PhaseCd;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.collect.Iterables;
 
 public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
@@ -64,9 +72,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     private MspRawPointHistoryDao mspRawPointHistoryDao;
     private BasicServerConnection porterConnection;
     private MspValidationService mspValidationService;
-    public Map<String, FormattedBlockService<Block>> readingTypesMap;
-    public MspMeterReadDao mspMeterReadDao;
+    public Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
     public MeterDao meterDao;
+    public AttributeService attributeService;
+    public MeterReadProcessingService meterReadProcessingService;
+    public DynamicDataSource dynamicDataSource;
 
     private void init() throws RemoteException {
         multispeakFuncs.init();
@@ -139,15 +149,17 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             //Not an error, it could happen that there are no more entries.
         }
         
+        updateObjectsRemaining(meterList.size(), vendor.getMaxReturnRecords());
+        try {
+            Meter lastObject = Iterables.getLast(meterList);
+            updateLastSent(lastObject);
+        } catch (NoSuchElementException e) {
+            // skip...we don't have any to report.
+        }
+
         Meter[] meters = new Meter[meterList.size()];
         meterList.toArray(meters);
         CTILogger.info("Returning " + meters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
-        //TODO = need to get the true number of meters remaining
-        int numRemaining = (meters.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
-        if( meters != null && numRemaining  != 0) {
-        	multispeakFuncs.getResponseHeader().setLastSent(meters[meters.length-1].getObjectID());
-        }
 
         return meters;
     }
@@ -175,22 +187,26 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     	init();
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        MeterRead[] meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
+        List<MeterRead> meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
                                                                           null, 	//get all
                                                                           startDate.getTime(), 
                                                                           endDate.getTime(), 
                                                                           lastReceived,
                                                                           vendor.getMaxReturnRecords());
-        
-        int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
-        if( meterReads != null && numRemaining  != 0) {
-        	multispeakFuncs.getResponseHeader().setLastSent(meterReads[meterReads.length-1].getObjectID());
+
+        updateObjectsRemaining(meterReads.size(), vendor.getMaxReturnRecords());
+        try {
+            MeterRead lastObject = Iterables.getLast(meterReads);
+            updateLastSent(lastObject);
+        } catch (NoSuchElementException e) {
+            // skip...we don't have any to report.
         }
 
-        return meterReads;
+        MeterRead[] meterReadArray = new MeterRead[meterReads.size()];
+        meterReads.toArray(meterReadArray);
+        return meterReadArray;
     }
-    
+
     @Override
     public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
         init(); //init is already performed on the call to isAMRMeter()
@@ -199,14 +215,16 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         mspValidationService.isYukonMeterNumber(meterNo);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        MeterRead[] meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, 
+        List<MeterRead> meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, 
                                                                           meterNo, 
                                                                           startDate.getTime(), 
                                                                           endDate.getTime(), 
                                                                           null,
                                                                           vendor.getMaxReturnRecords());
         
-        return meterReads;
+        MeterRead[] meterReadArray = new MeterRead[meterReads.size()];
+        meterReads.toArray(meterReadArray);
+        return meterReadArray;
     }
 
     @Override
@@ -223,9 +241,23 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
-    	        ReadableDevice device = MeterReadFactory.createMeterReadObject(meter);
-    	        device.populateWithPointData(meter.getDeviceId());
-    	        return device.getMeterRead();
+                MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
+    	        
+                EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+    
+                for (BuiltInAttribute attribute : attributesToLoad) {
+                    try {
+                        LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
+                        PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+                        if( pointValueQualityHolder != null && 
+                                pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
+                            meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
+                        }
+                    } catch (IllegalUseOfAttribute e) {
+                        //it's okay...just skip
+                    }
+                }
+    	        return meterRead;
             } catch (DynamicDataAccessException e) {
                 String message = "Connection to dispatch is invalid";
                 CTILogger.error(message);
@@ -510,27 +542,57 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         init();
         Date timerStart = new Date();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-                
-        MeterRead[] meterReads = mspRawPointHistoryDao.retrieveLatestMeterReads(lastReceived, vendor.getMaxReturnRecords());
 
-        int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
-        if( meterReads != null && numRemaining  != 0) {
-        	multispeakFuncs.getResponseHeader().setLastSent(meterReads[meterReads.length-1].getObjectID());
+        List<MeterRead> meterReads = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
+
+        updateObjectsRemaining(meterReads.size(), vendor.getMaxReturnRecords());
+        try {
+            MeterRead lastObject = Iterables.getLast(meterReads);
+            updateLastSent(lastObject);
+        } catch (NoSuchElementException e) {
+            // skip...we don't have any to report.
         }
 
-        CTILogger.info("Returning " + meterReads.length + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        return meterReads;
+        CTILogger.info("Returning " + meterReads.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        
+        MeterRead[] meterReadArray = new MeterRead[meterReads.size()];
+        meterReads.toArray(meterReadArray);
+        return meterReadArray;
     }
     
     @Override
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
         init();
         com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
-        FormattedBlockService<Block> formattedBlockServ = 
+        
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+        
+        try {
+            Block block = formattedBlockProcessingService.createBlock(meter);
+            
+            EnumSet<BuiltInAttribute> attributesToLoad = formattedBlockProcessingService.getAttributeSet();
 
-        return formattedBlockServ.getFormattedBlock(meter);
+            for (BuiltInAttribute attribute : attributesToLoad) {
+                try {
+                    LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
+                    PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+                    if( pointValueQualityHolder != null && 
+                            pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
+                        formattedBlockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder);
+                    }
+                } catch (IllegalUseOfAttribute e) {
+                    //it's okay...just skip
+                }
+            }
+            FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(block);
+            return formattedBlock;
+            
+        } catch (DynamicDataAccessException e) {
+            String message = "Connection to dispatch is invalid";
+            CTILogger.error(message);
+            throw new RemoteException(message);
+        }
     }
     
     @Override
@@ -538,39 +600,52 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        FormattedBlockService<Block> formattedBlockServ = 
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+
+        List<Block> blocks = mspRawPointHistoryDao.retrieveLatestBlock(formattedBlockProcessingService, 
+                                                                       lastReceived, vendor.getMaxReturnRecords());
         
-        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveLatestBlock(formattedBlockServ, lastReceived, vendor.getMaxReturnRecords());
-        FormattedBlock[] formattedBlockArray = new FormattedBlock[]{formattedBlock};
-        
-        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
-        setLastSent(formattedBlockServ, formattedBlock);
-        
-        return formattedBlockArray;
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(blocks);
+        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
+
+        // compare to 1 instead of maxRecords. We don't know how many paos are actually in blocks. This may result in 1 extra call from other system but that's the best we can do
+        updateObjectsRemaining(blocks.size(), 1);
+        try {
+            Block lastObject = Iterables.getLast(blocks);
+            updateLastSent(lastObject);
+        } catch (NoSuchElementException e) {
+            // skip...we don't have any to report.
+        }
+        return formattedBlocks;
     }
     
     @Override
     public FormattedBlock[] getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
         init();
-        FormattedBlockService<Block> formattedBlockServ = 
-            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        
-        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlockServ, 
-        																	startDate.getTime(), 
-        																	endDate.getTime(), 
-        																	lastReceived, 
-        																	vendor.getMaxReturnRecords());
-        
-        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
-        setLastSent(formattedBlockServ, formattedBlock);
-        
+
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
+            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+
+        List<Block> blocks = mspRawPointHistoryDao.retrieveBlock(ReadBy.NONE, null,
+                                                                 formattedBlockProcessingService,
+                                                                 startDate.getTime(),
+                                                                 endDate.getTime(),
+                                                                 lastReceived,
+                                                                 vendor.getMaxReturnRecords());
+
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(blocks);
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
-     
-        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
-        setLastSent(formattedBlockServ, formattedBlock);
-        
+
+        // compare to 1 instead of maxRecords. We don't know how many paos are actually in blocks. This may result in 1 extra call from other system but that's t
+        updateObjectsRemaining(blocks.size(), 1);
+        try {
+            Block lastObject = Iterables.getLast(blocks);
+            updateLastSent(lastObject);
+        } catch (NoSuchElementException e) {
+            // skip...we don't have any to report.
+        }
         return formattedBlocks;
     }
 
@@ -582,15 +657,17 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         //Validate the meterNo is in Yukon
         mspValidationService.isYukonMeterNumber(meterNo); 
 
-        FormattedBlockService<Block> formattedBlockServ = 
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
-        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlockServ, 
-                                                                               startDate.getTime(), 
-                                                                               endDate.getTime(),
-                                                                               meterNo,
-                                                                               vendor.getMaxReturnRecords());
+        List<Block> blocks = mspRawPointHistoryDao.retrieveBlock(ReadBy.METER_NUMBER, meterNo,
+                                                                 formattedBlockProcessingService,
+                                                                 startDate.getTime(),
+                                                                 endDate.getTime(),
+                                                                 null,  //don't use lastReceived, we know there is only one
+                                                                 vendor.getMaxReturnRecords());
 
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(blocks);
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
      
         return formattedBlocks;
@@ -620,11 +697,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throw new RemoteException(message);
         }
         
-        FormattedBlockService<Block> formattedBlockServ = 
+        FormattedBlockProcessingService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
-        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, 
-                                                      formattedBlockServ, transactionID);
+        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
@@ -649,35 +725,35 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         init();
         return null;
     }
-    
+
     /**
-     * Sets the responseHeader lastSent field for formattedBlock
-     * The formattedBlock.valueList object will be used to set the last sent objectId 
-     * @param formattedBlockServ
-     * @param formattedBlock
+     * Helper method to update responseHeader.lastSent
+     * @param block
      * @throws RemoteException
      */
-	private void setLastSent(FormattedBlockService<Block> formattedBlockServ,
-			FormattedBlock formattedBlock) throws RemoteException {
-		
-		if (!ArrayUtils.isEmpty(formattedBlock.getValueList()) ) {
-	        String value = formattedBlock.getValueList()[formattedBlock.getValueList().length -1];
-	        Block block = formattedBlockServ.getNewBlock();
-	        block.populate(value, formattedBlock.getSeparator().charAt(0));	//lets hope we never have a longer separator value. :)
-	        multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
-        }
+	private void updateLastSent(Block block) throws RemoteException {
+	    multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
 	}
  
-	/**
-	 * Set the objectsRemaining for formattedBlock
-	 * @param vendor
-	 * @param formattedBlock
-	 * @throws RemoteException
-	 */
-	private void setObjectsRemaining(int maxReturnRecords, FormattedBlock formattedBlock) throws RemoteException {
-		int numRemaining = (formattedBlock.getValueList().length < maxReturnRecords ? 0:1); //at least one item remaining.
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
-	}
+    /**
+     * Helper method to update responseHeader.lastSent
+     * @param lastObject
+     * @throws RemoteException
+     */
+    private void updateLastSent(MspObject lastObject) throws RemoteException{
+        multispeakFuncs.getResponseHeader().setLastSent(lastObject.getObjectID());
+    }
+    
+    /**
+     * Helper method to update responseHeader.objectsRemaining
+     * @param returnResultsSize
+     * @param vendor
+     * @return
+     */
+    private void updateObjectsRemaining(int returnResultsSize, int maxReturnRecords) throws RemoteException {
+        int numberRemaining = (returnResultsSize < maxReturnRecords ? 0 : -1); //assuming at least one item remaining. -1 for unknown size
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numberRemaining)));
+    }
 	
     @Autowired
     public void setMspMeterDao(MspMeterDao mspMeterDao) {
@@ -707,15 +783,23 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     @Required
     public void setReadingTypesMap(
-            Map<String, FormattedBlockService<Block>> readingTypesMap) {
+            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
         this.readingTypesMap = readingTypesMap;
-    }
-    @Autowired
-    public void setMspMeterReadDao(MspMeterReadDao mspMeterReadDao) {
-        this.mspMeterReadDao = mspMeterReadDao;
     }
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
+    }
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+    @Autowired
+    public void setMeterReadProcessingService(MeterReadProcessingService meterReadProcessingService) {
+        this.meterReadProcessingService = meterReadProcessingService;
+    }
+    @Autowired
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
     }
 }

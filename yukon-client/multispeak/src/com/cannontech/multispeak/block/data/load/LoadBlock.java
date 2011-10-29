@@ -1,23 +1,14 @@
 package com.cannontech.multispeak.block.data.load;
 
-import java.io.IOException;
-
-import java.io.StringReader;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dynamic.RichPointData;
-import com.cannontech.multispeak.block.BlockBase;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
-import com.cannontech.tools.csv.CSVReader;
 
-public class LoadBlock extends BlockBase{
+public class LoadBlock implements Block {
 
     public String meterNumber;
     public Double loadProfileDemand;
@@ -29,7 +20,7 @@ public class LoadBlock extends BlockBase{
     public Double voltageProfile;
     public Date voltageProfileDateTime;
     
-    private static int FIELD_COUNT = 9;
+    public boolean hasData = false;
     
     public LoadBlock() {
         super();
@@ -90,122 +81,66 @@ public class LoadBlock extends BlockBase{
         
         return "";
     }
-    
-    //TODO - need to clean this up so that only the attribute that the richPointData is coming for is checked.
-    @Override
-    public void populate(Meter meter, RichPointData richPointData) {
-    	meterNumber = meter.getMeterNumber();
-        loadPointData(meter, richPointData);
-    }
-
-    /**
-     * Load the richPointData data into LoadBlock
-     * @param meter
-     * @param richPointData
-     */
-	private void loadPointData(Meter meter, RichPointData richPointData) {
-		
-		if(!hasValidPointValue(richPointData)) {
-			//get out before doing any more work.
-			return;
-		}
-
-		populateByPointValue(meter, richPointData, BuiltInAttribute.LOAD_PROFILE);
-		populateByPointValue(meter, richPointData, BuiltInAttribute.KVAR);
-		populateByPointValue(meter, richPointData, BuiltInAttribute.VOLTAGE);
-		populateByPointValue(meter, richPointData, BuiltInAttribute.VOLTAGE_PROFILE);
-	}
 
 	@Override
-	public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
-		
-		if (!hasValidPointValue(richPointData)) {
-			return;
-		}
-		
-		if (attribute.equals(BuiltInAttribute.LOAD_PROFILE)) {
-			setLoadProfileDemand(meter, richPointData);
-		} else if (attribute.equals(BuiltInAttribute.KVAR)) {
-			setKVar(meter, richPointData);
-		} else if (attribute.equals(BuiltInAttribute.VOLTAGE)) {
-			setVoltage(meter, richPointData);
-		} else if (attribute.equals(BuiltInAttribute.VOLTAGE_PROFILE)) {
-            setVoltageProfile(meter, richPointData);
-        } else {
-        	throw new IllegalUseOfAttribute("Illegal use of attribute (in LoadBlock): " + attribute.getDescription());
-		}
-		hasData = true;
-	}
-
-    @Override
-    public void populate(String string, char separator){
-    	
-    	StringReader stringReader = new StringReader(string);
-    	CSVReader reader = new CSVReader(stringReader, separator);
-    	try {
-	    	String [] values = reader.readNext();
-	    	if (values.length == FIELD_COUNT){
-	    		meterNumber = values[0];
-	    		loadProfileDemand = StringUtils.isBlank(values[1]) ? null : Double.valueOf(values[1]);
-	    		loadProfileDemandDateTime = StringUtils.isBlank(values[2]) ? null : Iso8601DateUtil.parseIso8601Date(values[2]);
-	    		kVAr = StringUtils.isBlank(values[3]) ? null : Double.valueOf(values[3]);
-	    		kVArDateTime = StringUtils.isBlank(values[4]) ? null : Iso8601DateUtil.parseIso8601Date(values[4]);
-	    		voltage = StringUtils.isBlank(values[5]) ? null : Double.valueOf(values[5]);
-	    		voltageDateTime = StringUtils.isBlank(values[6]) ? null : Iso8601DateUtil.parseIso8601Date(values[6]);
-                voltageProfile = StringUtils.isBlank(values[7]) ? null : Double.valueOf(values[1]);
-                voltageProfileDateTime = StringUtils.isBlank(values[8]) ? null : Iso8601DateUtil.parseIso8601Date(values[2]);
-	    	}else {
-	    		CTILogger.error("LoadBlock could not be parsed (" + stringReader.toString() + ").  Incorrect number of expected fields.");
-	    	}
-    	} catch (IOException e) {
-    		CTILogger.warn(e);
-    	} catch (IllegalArgumentException e) {
-    		CTILogger.warn(e);
-    	}
-    }
-
-	/**
-     * Helper method to set the loadProfileDemand fields
-     * @param meter
-     * @param richPointData
-     */
-	private void setLoadProfileDemand(Meter meter, RichPointData richPointData) {
-        loadProfileDemand = richPointData.getPointValue().getValue();
-        loadProfileDemandDateTime = richPointData.getPointValue().getPointDataTimeStamp();
+	public boolean hasData() {
+	    return hasData;
 	}
 	
-	/**
-     * Helper method to set the kVar fields
-     * @param meter
-     * @param richPointData
-     */
-	private void setKVar(Meter meter, RichPointData richPointData) {
-        kVAr = richPointData.getPointValue().getValue();
-        kVArDateTime = richPointData.getPointValue().getPointDataTimeStamp();
-	}
-	
-	/**
-     * Helper method to set the voltage fields
-     * @param meter
-     * @param richPointData
-     */
-	private void setVoltage(Meter meter, RichPointData richPointData) {
-        voltage = richPointData.getPointValue().getValue();
-        voltageDateTime = richPointData.getPointValue().getPointDataTimeStamp();
-	}
-
-	   /**
-     * Helper method to set the voltageProfile fields
-     * @param meter
-     * @param richPointData
-     */
-    private void setVoltageProfile(Meter meter, RichPointData richPointData) {
-        voltageProfile = richPointData.getPointValue().getValue();
-        voltageProfileDateTime = richPointData.getPointValue().getPointDataTimeStamp();
-    }
-
     @Override
     public String getObjectId() {
     	return meterNumber;
+    }
+    
+    /**
+     * Sets the loadProfile value and timestamp fields
+     * Sets hasData flag
+     * @param value
+     */
+    public void setLoadProfileDemand(PointValueHolder value) {
+        this.loadProfileDemand = value.getValue();
+        this.loadProfileDemandDateTime = value.getPointDataTimeStamp();
+        this.hasData = true;
+    }
+
+    /**
+     * Sets the kVar value and timestamp fields
+     * Sets hasData flag
+     * @param value
+     */
+    public void setkVAr(PointValueHolder value) {
+        kVAr = value.getValue();
+        kVArDateTime = value.getPointDataTimeStamp();
+        this.hasData = true;
+    }
+
+    /**
+     * Sets the voltage value and timestamp fields
+     * Sets hasData flag
+     * @param value
+     */
+    public void setVoltage(PointValueHolder value) {
+        voltage = value.getValue();
+        voltageDateTime = value.getPointDataTimeStamp();
+        this.hasData = true;
+    }
+    
+    /**
+     * Sets the voltageProfile value and timestamp fields
+     * Sets hasData flag
+     * @param value
+     */
+    public void setVoltageProfile(PointValueHolder value) {
+        voltageProfile = value.getValue();
+        voltageProfileDateTime = value.getPointDataTimeStamp();
+        this.hasData = true;
+    }
+    
+    /**
+     * Sets meterNumber field
+     * @param meterNumber
+     */
+    public void setMeterNumber(String meterNumber) {
+        this.meterNumber = meterNumber;
     }
 }

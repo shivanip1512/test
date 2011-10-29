@@ -9,8 +9,9 @@ package com.cannontech.multispeak.service;
 import java.rmi.RemoteException;
 
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.multispeak.block.FormattedBlockService;
+import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
@@ -64,7 +65,8 @@ public interface MultispeakMeterService {
 	        String transactionID) throws RemoteException;
 	
     /**
-     * Send meter read commands to pil connection for each meter in meterNumbers.
+     * Initiate reads for all meterNumber and fire ReadingChangedNotification on callback.
+     * Callback fires for each completed read, may have multiple per meterNumber.
      * @param meterNumbers
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
@@ -73,13 +75,17 @@ public interface MultispeakMeterService {
             String transactionID);
 
     /**
-     * Send meter read commands to pil connection for each meter in meterNumbers.
-     * @param meterNumbers
+     * Initiate reads for meterNumber and fire FormattedBlockChangeNotification on callback.
+     * Callback fires for all completed reads, will have only one for meterNumber. 
+     * @param vendor
+     * @param meterNumber
+     * @param blockProcessingService
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor, 
-            String meterNumber, FormattedBlockService block, String transactionID);
-
+    public ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor,
+                                             String meterNumber,
+                                             FormattedBlockProcessingService<Block> blockProcessingService);
+    
     /**
      * Send a ping command to pil connection for each meter in meterNumbers.
      * @param meterNumbers

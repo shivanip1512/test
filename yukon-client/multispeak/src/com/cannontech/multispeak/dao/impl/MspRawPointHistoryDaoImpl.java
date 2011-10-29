@@ -1,44 +1,30 @@
 package com.cannontech.multispeak.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
-import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.FormattedBlockService;
+import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
-import com.cannontech.multispeak.data.MeterReadFactory;
-import com.cannontech.multispeak.data.ReadableDevice;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -52,9 +38,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	private RawPointHistoryDao rawPointHistoryDao;
 	private MeterReadProcessingService meterReadProcessingService;
     
-    
 	@Override
-	public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
+	public List<MeterRead> retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
 	                                      Date endDate, String lastReceived, int maxRecords) {
 
 	    List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
@@ -92,15 +77,148 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             } 
         }
 
-	    // this last step is kind of annoying, look at changing method signature
-	    MeterRead[] meterReadArray = new MeterRead[result.size()];
-	    result.toArray(meterReadArray);
-
-	    return meterReadArray;
+	    return result;
 	}
 
+	@Override
+    public List<MeterRead> retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
 
+        List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+
+        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+        int estimatedSize = 0;
+
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        // load up results for each attribute
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false);
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
+        }
+
+        List<MeterRead> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+        
+        // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        // attempt to group all attributes for one meter together, because we know we only have one pointValue per meter per attribute. 
+        for (Meter meter : meters) {
+
+            MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
+            boolean hasReadings = false;            
+            
+            for (BuiltInAttribute attribute : attributesToLoad) { 
+                
+                PointValueQualityHolder pointValueQualityHolder = 
+                    resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
+                
+                if (pointValueQualityHolder != null) {
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
+                    hasReadings = true;
+                }
+            }
+            
+            if (hasReadings) {  // only add to the return list if we have actual readings.
+                result.add(meterRead);
+            }
+        }
+
+        return result;
+    }
     
+    @Override
+    public List<Block> retrieveBlock(ReadBy readBy, String readByValue, 
+                                     FormattedBlockProcessingService<Block> blockProcessingService,
+                                     Date startDate, Date endDate, String lastReceived, int maxRecords) {
+
+         List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+
+         EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+         int estimatedSize = 0;
+
+         EnumSet<BuiltInAttribute> attributesToLoad = blockProcessingService.getAttributeSet();
+         // load up results for each attribute
+         for (BuiltInAttribute attribute : attributesToLoad) {
+
+             ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute;
+             resultsForAttribute = rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate,
+                                                                       false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD);
+
+             resultsPerAttribute.put(attribute, resultsForAttribute);
+             estimatedSize += resultsForAttribute.size();
+         }
+
+         List<Block> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+         
+         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+         // results will be one block for every reading, no grouping of similar timstamped data into one block.
+         // this is a change from how things previously worked where we made a best guess to "block" data with like timestamps.
+         for (Meter meter : meters) { 
+             
+             for (BuiltInAttribute attribute : attributesToLoad) { 
+                 List<PointValueQualityHolder> rawValues =  
+                     resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
+     
+                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
+                     Block block = blockProcessingService.createBlock(meter); 
+                     blockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder); 
+                     result.add(block); 
+                 } 
+             } 
+         }
+
+         return result;
+     }
+
+    @Override
+    public List<Block> retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService, String lastReceived, int maxRecords) {
+                                
+        List<Meter> meters = getPaoList(ReadBy.NONE, null, lastReceived, maxRecords);
+
+        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+        int estimatedSize = 0;
+
+        EnumSet<BuiltInAttribute> attributesToLoad = blockProcessingService.getAttributeSet();
+
+        // load up results for each attribute
+        for (BuiltInAttribute attribute : attributesToLoad) {
+
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = 
+                rawPointHistoryDao.getSingleAttributeData(meters, attribute, false);
+
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
+        }
+
+        List<Block> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+
+        // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        // attempt to "block" all attributes for one meter together, because we know we only have one pointValue per meter per attribute.
+        for (Meter meter : meters) {
+            Block block = blockProcessingService.createBlock(meter);
+            for (BuiltInAttribute attribute : attributesToLoad) { 
+                PointValueQualityHolder rawValue = resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier());
+                if (rawValue != null) {
+                    blockProcessingService.updateFormattedBlock(block, attribute, rawValue);
+                }
+            }
+            if (block.hasData()) {
+                result.add(block);
+            }
+        }
+
+        return result;
+    }
+ 
+    /**
+     * Helper method to retrieve a limited set of Meters
+     * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
+     * @param readByValue corresponding value to be used with readBy
+     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param maxRecords - maximum number of meters to return.
+     * @return
+     */
     private List<Meter> getPaoList(ReadBy readBy, String readByValue, String lastReceived,
                                            int maxRecords) {
         // get the paos we want, using readBy, readByValue, and lastReceived
@@ -124,286 +242,6 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         List<Meter> result = yukonJdbcTemplate.queryForLimitedResults(sql, new MeterRowMapper(), maxRecords);
 
         return result;
-    }
-
-    @Override
-    public MeterRead[] retrieveLatestMeterReads(String lastReceived, int maxRecords) {
-    	
-    	final long startTime = System.currentTimeMillis();
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType,");
-        sql.append("pao.type, pao.paobjectId, dmg.meterNumber");
-        sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append(  "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId");
-        sql.append(  "JOIN (SELECT DISTINCT r.pointId, MAX(r.timestamp) AS rDate");
-        sql.append(    "FROM RawPointHistory r GROUP BY pointId) irph ");
-        sql.append(    "ON rph.pointId = irph.pointId AND rph.timestamp = irph.rdate");
-        sql.append("WHERE ( pointOffset < 101 OR pointOffset > 104)");
-    	if (StringUtils.isNotBlank(lastReceived) ){
-    		sql.append(  "AND dmg.meterNumber").gt(lastReceived);
-    	}
-        sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp"); 
-
-        log.info("Data Collection Started for Latest Reads.");
-        List<MeterRead> meterReadList = new ArrayList<MeterRead>();  
-        yukonJdbcTemplate.query(sql, new MeterReadResultSetExtractor(maxRecords, meterReadList));
-
-        MeterRead[] meterReadArray = new MeterRead[meterReadList.size()];
-        meterReadList.toArray(meterReadArray);
-        
-        final long stopTime = System.currentTimeMillis(); 
-        log.info( (stopTime - startTime)*.001 + "secs to load RPH data for lastReceived: " + lastReceived + ". RecordSize: " + meterReadArray.length);
-        
-        return meterReadArray;
-    }
-    
-    /**
-     * Inner class used to create a list of meterReads from a result set
-     */
-    private class MeterReadResultSetExtractor implements ResultSetExtractor {
-        
-    	private int maxRecords = 0;
-    	private List<MeterRead> meterReads; 
-    	
-    	public MeterReadResultSetExtractor(int maxRecords, List<MeterRead> resultsHolder) {
-    		this.maxRecords = maxRecords;
-    		this.meterReads = resultsHolder;
-    	}
-
-        public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
-            
-            int prevPaobjectId = -1;
-            int paobjectId = 0;
-            Date prevDateTime = new Date();
-            
-            ReadableDevice device = null;
-            while( rset.next()) {
-            	YukonResultSet yrs = new YukonResultSet(rset);
-
-//            	int pointId = yrs.getInt("pointid");	// not used, commented out to keep record that it's returned
-                Date dateTime = yrs.getDate("timestamp");
-                double value = yrs.getDouble("value");
-                int pointOffset = yrs.getInt("pointoffset");
-                PointType pointType = yrs.getEnum("pointtype", PointType.class);
-                PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
-                PaoType paoType = yrs.getEnum("type", PaoType.class);
-                paobjectId = yrs.getInt("paobjectid");
-                String meterNumber = yrs.getString("meternumber");
-                
-                //Store any previous meter readings.
-                if (dateTime.after(prevDateTime) || prevPaobjectId != paobjectId) {
-                    if( device != null && device.isPopulated()) {
-                        meterReads.add(device.getMeterRead());
-                    }
-                    device = null;
-                    if( prevPaobjectId != paobjectId && meterReads.size() >= maxRecords) {
-                        break;
-                    }
-                }
-
-                if( device == null) {
-                    device = MeterReadFactory.createMeterReadObject(paoType, meterNumber);
-                }
-
-                if (device != null) {	//a device exists and was successfully created by the factory
-                	device.populate( pointIdentifier, dateTime, value);
-                }
-                prevDateTime.setTime(dateTime.getTime());
-                prevPaobjectId = paobjectId;
-            }
-            
-            //Add the last meterRead object
-            if( device != null && device.isPopulated() &&   //made it all the way through and need to add last one 
-                    prevPaobjectId == paobjectId) {  //but make sure we didn't exit from the break statement
-                meterReads.add(device.getMeterRead());
-            }
-            return meterReads;
-        }
-    }
-    
-    @Override
-    public FormattedBlock retrieveBlock(FormattedBlockService<Block> block, 
-    		Date startDate, Date endDate, String lastReceived, int maxRecords) {
-        
-    	final long startTime = System.currentTimeMillis();
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType, ");
-        sql.append("pao.type, pao.paobjectId, dmg.meterNumber, rph.quality");
-        sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append(  "JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
-        sql.append("WHERE timestamp").gte(startDate);
-        sql.append(  "AND timestamp").lte(endDate);
-        if (StringUtils.isNotBlank(lastReceived)) {
-        	sql.append(  "AND dmg.meterNumber").gt(lastReceived);
-        }
-        sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp");
-        
-        
-        log.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE <= " + endDate);
-        List<Block> blockList = new ArrayList<Block>();  
-        yukonJdbcTemplate.query(sql, new FormattedBlockResultSetExtractor(maxRecords, block, blockList, false));
-        
-        final long stopTime = System.currentTimeMillis();
-        log.info( (stopTime - startTime)*.001 + "secs to load RPH data for lastReceived: " + lastReceived + ". RecordSize: " + blockList.size());
-        
-        return block.createFormattedBlock(blockList);
-    }
-    
-    @Override
-    public FormattedBlock retrieveLatestBlock(FormattedBlockService<Block> block, String lastReceived, int maxRecords) {
-        
-    	final long startTime = System.currentTimeMillis();
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType, ");
-        sql.append("pao.type, pao.paobjectId, dmg.meterNumber, rph.quality");
-        sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append(  "JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
-        sql.append(  "JOIN (SELECT DISTINCT r.pointid, MAX(r.timestamp) AS rDate");
-        sql.append(    "FROM RawPointHistory r GROUP BY pointId) irph ");
-        sql.append(    "ON rph.pointId = irph.pointId AND rph.timestamp = irph.rdate");
-        if (StringUtils.isNotBlank(lastReceived)) {
-        	sql.append("WHERE dmg.meterNumber").eq(lastReceived);
-        }
-        sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp");
-        
-        
-        log.info("Data Collection Started for Latest Reads.");
-        List<Block> blockList = new ArrayList<Block>();  
-        yukonJdbcTemplate.query(sql, new FormattedBlockResultSetExtractor(maxRecords, block, blockList, true));
-        
-        final long stopTime = System.currentTimeMillis(); 
-        log.info( (stopTime - startTime)*.001 + "secs to load RPH data for lastReceived: " + lastReceived + ". RecordSize: " + blockList.size());
-
-        return block.createFormattedBlock(blockList);
-    }
-    
-    @Override
-    public FormattedBlock retrieveBlockByMeterNo(FormattedBlockService<Block> block, Date startDate, 
-                                                Date endDate, String meterNumber, int maxRecords) {
-    	final long startTime = System.currentTimeMillis();
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType, ");
-        sql.append("pao.type, pao.paobjectId, dmg.meterNumber, rph.quality");
-        sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append(  "JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
-        sql.append("WHERE timestamp").gte(startDate);
-        sql.append(   "AND timestamp").lte(endDate);
-        sql.append(   "AND dmg.meterNumber").eq(meterNumber);
-        sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp");
-        
-        log.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE <= " + endDate);
-        List<Block> blockList = new ArrayList<Block>();  
-        yukonJdbcTemplate.query(sql, new FormattedBlockResultSetExtractor(maxRecords, block, blockList, false));
-        
-        final long stopTime = System.currentTimeMillis(); 
-        log.info( (stopTime - startTime)*.001 + "secs to load RPH data for meterNumber: " + meterNumber + ". RecordSize: " + blockList.size());
-
-        return block.createFormattedBlock(blockList);
-    }
-
-    /**
-     * Inner class used to create a list of meterReads from a result set
-     */
-    private class FormattedBlockResultSetExtractor implements ResultSetExtractor {
-        
-    	private int maxRecords = 0;
-    	private FormattedBlockService<Block> block;
-    	private List<Block> blocks; 
-    	private boolean keepTogether = false;
-    	
-    	public FormattedBlockResultSetExtractor(int maxRecords, FormattedBlockService<Block> block, 
-    			List<Block> resultsHolder, boolean keepTogether) {
-    		this.maxRecords = maxRecords;
-    		this.block = block;
-    		this.blocks = resultsHolder;
-    		this.keepTogether = keepTogether;
-    	}
-
-        public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
-            
-        	int lastPaobjectId = 0;
-            int paobjectId = 0;
-            Date prevDateTime = new Date();
-            
-            Block b = block.getNewBlock();
-            
-            while( rset.next()) {
-            	YukonResultSet yrs = new YukonResultSet(rset);
-
-//                int pointID = yrs.getInt("pointid");	// loaded by PointValueBuilder.build()
-//                Date dateTime = yrs.getDate("timestamp");	// loaded by PointValueBuilder.build()
-//                double value = yrs.getDouble("value");	// loaded by PointValueBuilder.build()
-                int pointOffset = yrs.getInt("pointoffset");
-                PointType pointType = yrs.getEnum("pointtype", PointType.class);
-                PaoType paoType = yrs.getEnum("type", PaoType.class);
-                paobjectId = yrs.getInt("paobjectid");
-                String meterNumber = yrs.getString("meternumber");
- 
-                PaoPointIdentifier paoPointIdentifier = 
-                	PaoPointIdentifier.createPaoPointIdentifier(paobjectId, paoType, pointType, pointOffset);
-                
-                //This is only a partial Meter object load
-                Meter meter = new Meter();
-                meter.setDeviceId(paobjectId);
-                meter.setPaoType(paoType);
-                meter.setMeterNumber(meterNumber);
-                
-                PointValueBuilder builder = PointValueBuilder.create();
-                builder.withResultSet(rset);
-                builder.withType(pointType);
-                PointValueQualityHolder pointData = builder.build();
-                
-                RichPointData richPointData = new RichPointData(pointData, paoPointIdentifier);
-
-                //Store any previous meter readings.
-                boolean newRecord = isNewRecord(richPointData, prevDateTime, lastPaobjectId);
-                if (newRecord) {
-                    if( b.hasData()) {
-                        blocks.add(b);
-                    }
-                    b = block.getNewBlock();
-                    
-                    // Break on maxRecords, only when the paobjectId has changed to prevent breaking over one paobject.
-                    if( lastPaobjectId != paobjectId && blocks.size() >= maxRecords) {
-                        break;
-                    }
-                }
-
-                b.populate( meter, richPointData);
-                lastPaobjectId = paobjectId;
-                prevDateTime.setTime(richPointData.getPointValue().getPointDataTimeStamp().getTime());
-            }
-            
-            //Add the last meterRead object
-            if (b.hasData() &&   //made it all the way through and need to add last one
-            		lastPaobjectId == paobjectId) {  //but make sure we didn't exit from the break statement
-                blocks.add(b);
-            }
-
-            return blocks;
-        }
-        
-        private boolean isNewRecord(RichPointData thisPointData, Date prevDateTime, int prevPaobjectId) {
-
-        	final int thisPaobjectId = thisPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoId();
-        	if (prevPaobjectId != thisPaobjectId) {	// Always new record if paobject changes
-        		return true;
-        	} else {
-        		if (keepTogether) {	// Don't create new record (for same paobject)
-        			return false;
-        		} else {	// Else keep only same dateTime records together (for same paobject)
-        			return thisPointData.getPointValue().getPointDataTimeStamp().after(prevDateTime);
-        		}
-        	}
-        }
     }
     
     @Autowired

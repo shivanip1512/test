@@ -13,10 +13,8 @@
   	<property name="porterConnection" ref="porterConnection"/>
     <property name="readingTypesMap">
         <map>
-          <entry key="Load" value-ref="loadFormattedBlock"/>
-          <entry key="Outage" value-ref="outageFormattedBlock"/>
-    <!--      <entry key="Billing" value-ref="billingFormattedBlock"/>
-          <entry key="BillingTOU" value-ref="billingTOUFormattedBlock"/> -->
+          <entry key="Load" value-ref="loadBlockProcessingService"/>
+          <entry key="Outage" value-ref="outageBlockProcessingService"/>
         </map>    
     </property>
   </bean>
@@ -86,7 +84,17 @@
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl"/>
   
   <bean class="com.cannontech.multispeak.dao.impl.MeterReadProcessingServiceImpl"/>
+  
+  <bean id="blockProcessingService" class="com.cannontech.multispeak.dao.impl.FormattedBlockProcessingServiceImpl" abstract="true"/>
 
+  <bean id="loadBlockProcessingService" class="com.cannontech.multispeak.dao.impl.LoadBlockProcessingServiceImpl" 
+         parent="blockProcessingService">
+  </bean>
+  
+  <bean id="outageBlockProcessingService" class="com.cannontech.multispeak.dao.impl.OutageBlockProcessingServiceImpl" 
+         parent="blockProcessingService">
+  </bean>
+  
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>
 
@@ -103,19 +111,6 @@
     <property name="meterDao" ref="meterDao"/>
   </bean>
   
-  <bean id="mspMeterReadDao" class="com.cannontech.multispeak.dao.impl.MspMeterReadDaoImpl">
-    <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
-  </bean>
-
   <bean id="mspMeterDao" class="com.cannontech.multispeak.dao.impl.MspMeterDaoImpl"/>
 
-  <bean id="yukonFormattedBlock" class="com.cannontech.multispeak.block.impl.FormattedBlockServiceImpl" abstract="true">
-      <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
-  </bean>
-  <bean id="loadFormattedBlock" class="com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl" 
-	  	 parent="yukonFormattedBlock">
-  </bean>
-  <bean id="outageFormattedBlock" class="com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl"
-    	 parent="yukonFormattedBlock">
-  </bean>  
 </beans>

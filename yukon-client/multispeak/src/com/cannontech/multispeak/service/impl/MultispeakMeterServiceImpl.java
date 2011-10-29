@@ -1,11 +1,9 @@
 package com.cannontech.multispeak.service.impl;
 
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +53,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -84,12 +83,13 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.multispeak.block.FormattedBlockService;
-import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
-import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
+import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
+import com.cannontech.multispeak.dao.FormattedBlockUpdater;
+import com.cannontech.multispeak.dao.FormattedBlockUpdaterChain;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MeterReadUpdater;
 import com.cannontech.multispeak.dao.MeterReadUpdaterChain;
@@ -98,8 +98,10 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
+import com.cannontech.multispeak.deploy.service.EA_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ExtensionsItem;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
@@ -107,7 +109,6 @@ import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.OutageEventType;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
-import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
 import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
@@ -305,6 +306,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         return event.getLoadActionCode();
     }
     
+    /**
+     * This method still does not support attributes.
+     * The issue is that SEDC does not support the ability to receive ReadingChangedNotification messages.
+     * Therefore, just for them, we initiate a real time read, wait, and return.
+     * This DOES need to be changed in future versions. 
+     */
     @Override
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
             com.cannontech.amr.meter.model.Meter meter,
@@ -420,6 +427,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             @Override
             public void complete() {
                 // do we need to do anything here once we received all of the data?
+                log.debug("deviceAttributeReadCallback.complete for meterReadEvent");
             }
 
             @Override
@@ -444,6 +452,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
             }
             
+            /**
+             * The unfortunate part is that this method is going to fire off a readingChangeNotification for each 
+             *  set of attributes that happened to be able to be collected using the same command 
+             *  (as derived by MeterReadCommandGenerationService.getMinimalCommandSet(...))
+             */
             @Override
             public void receivedLastValue(PaoIdentifier pao) {
                 com.cannontech.amr.meter.model.Meter meter = meterLookup.get(pao);
@@ -485,71 +498,130 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     
     private BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
         for (BuiltInAttribute builtInAttribute : possibleMatches) {
-            PaoPointIdentifier pointForThisAttribute = attributeService.getPaoPointIdentifierForNonMappedAttribute(paoPointIdentifier.getPaoIdentifier(), builtInAttribute);
-            if (paoPointIdentifier.equals(pointForThisAttribute)) {
-                return builtInAttribute;
+            try {
+                PaoPointIdentifier pointForThisAttribute = attributeService.getPaoPointIdentifierForNonMappedAttribute(paoPointIdentifier.getPaoIdentifier(), builtInAttribute);
+                if (paoPointIdentifier.equals(pointForThisAttribute)) {
+                    return builtInAttribute;
+                }
+            } catch (IllegalUseOfAttribute e) {
+                // skip, consider as not a match.
             }
         }
         return null;
     }
     
     @Override
-    public synchronized ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor, 
-            String meterNumber, FormattedBlockService block, String transactionID)
-    {
+    public synchronized ErrorObject[] blockMeterReadEvent(final MultispeakVendor vendor, 
+            String meterNumber, final FormattedBlockProcessingService<Block> blockProcessingService) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
         log.info("Received " + meterNumber+ " for BlockMeterReading from " + vendor.getCompanyName());
         
-        com.cannontech.amr.meter.model.Meter meter;
-        
-        try {
-        	meter = meterDao.getForMeterNumber(meterNumber);
-            
-        	long id = generateMessageID();
-            
-        	if (block instanceof LoadFormattedBlockImpl){
-        		int returnMessages = 0;
-                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-                String lpCommandStr = "getvalue lp channel 1 " + format.format(new Date());
-                returnMessages++;
-                String voltageProfileCommandStr = "getvalue lp channel 4 " + format.format(new Date());
-                returnMessages++;
-                
-                String commandStr = null;
-                if( DeviceTypesFuncs.isMCT410(meter.getPaoType().getDeviceTypeId())) {
-                    commandStr = "getvalue demand";
-                    returnMessages++;
-                }
-                else if (DeviceTypesFuncs.isMCT430(meter.getPaoType().getDeviceTypeId()) ||
-                        DeviceTypesFuncs.isMCT470(meter.getPaoType().getDeviceTypeId())) {
-                    commandStr = "getvalue ied kvar";
-                    returnMessages++;
-                }
-                
-                BlockMeterReadEvent event = 
-                    new BlockMeterReadEvent(vendor, id, meter, block, returnMessages, transactionID);
-                getEventsMap().put(new Long(id), event);
-
-                writePilRequest(meter, lpCommandStr, id, 13);
-                writePilRequest(meter, voltageProfileCommandStr, id, 13);
-                if( commandStr != null)
-                    writePilRequest(meter, commandStr, id, 13);
-            }
-            else if ( block instanceof OutageFormattedBlockImpl) {
-                
-                BlockMeterReadEvent event = 
-                    new BlockMeterReadEvent(vendor, id, meter, block, transactionID);
-                getEventsMap().put(new Long(id), event);
-                String commandStr = "getvalue demand";
-                writePilRequest(meter, commandStr, id, 13);
-            }
-        } 
-        catch (NotFoundException e) {
-               
-            ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "BlockMeterReadEvent", vendor.getCompanyName());
-            errorObjects.add(err);
+        final EA_ServerSoap_PortType port = MultispeakPortFactory.getEA_ServerPort(vendor);
+        if (port == null) {
+            log.error("Port not found for EA_Server (" + vendor.getCompanyName() + ")");
+            return new ErrorObject[0]; // this doesn't quite mimic the old behavior
         }
+        
+        final com.cannontech.amr.meter.model.Meter paoToRead;
+        try {
+            paoToRead = meterDao.getForMeterNumber(meterNumber);
+        } catch (NotFoundException e) {
+            ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", vendor.getCompanyName());
+            errorObjects.add(err);
+            return mspObjectDao.toErrorObject(errorObjects);
+        }
+        
+        final EnumSet<BuiltInAttribute> attributes = blockProcessingService.getAttributeSet();
+
+        //retain only those that ARE readable.
+        //profile attributes are not readable right now, which means that the LoadBlock specifically, will not get many new values.
+        //this is a change from before where we built up a command to retrieve at least the last 6 profile reads. Oh well...
+        //a solution could be implemented a new command for collected the "latest" profile reads available. 
+        attributes.retainAll(attributeService.getReadableAttributes());
+        
+        final ConcurrentMap<PaoIdentifier, FormattedBlockUpdater<Block>> updaterMap = 
+            new MapMaker().concurrencyLevel(2).initialCapacity(1).makeMap();
+        
+        DeviceAttributeReadCallback callback = new DeviceAttributeReadCallback() {
+
+            /**
+             * Because we only have one meterNumber that is being processed, we will wait until all reads are
+             * returned to fire off the formattedBlockNotification. 
+             * This allows us to group them all together into one Block, which is desired.
+             * This is different than the meterReadEvent which may have multiple meterNumbers it is processing and 
+             * therefore fires notifications for each read that comes in (basically using this same layout of code, only
+             * implemented in receivedLastValue instead)
+             */
+            @Override
+            public void complete() {
+
+                Block block = blockProcessingService.createBlock(paoToRead);
+                
+                // because we were so careful about putting updater or updater chains into the
+                // map, we know we can safely remove it and generate a MeterRead from it
+                // whenever we want; but this happens to be a perfect time
+                FormattedBlockUpdater<Block> updater = updaterMap.remove(paoToRead.getPaoIdentifier());
+                if (updater != null) {
+                    updater.update(block);
+                } else {
+                    log.warn("no data updates for meter. notification will contain no readings");
+                }
+
+                FormattedBlock formattedBlock = blockProcessingService.createMspFormattedBlock(block);
+                
+                try {
+                    ErrorObject[] errObjects = port.formattedBlockNotification(formattedBlock);
+                    if (!ArrayUtils.isEmpty(errObjects)) {
+                        String endpointURL = vendor.getEndpointURL(MultispeakDefines.EA_Server_STR);
+                        multispeakFuncs.logErrorObjects(endpointURL, "FormattedBlockNotification", errObjects);
+                    }
+                } catch (RemoteException e) {
+                    log.warn("caught exception in receivedValue of formattedBlockEvent", e);
+                }
+            }
+
+            @Override
+            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                // the following is expensive but unavoidable until PointData is changed
+                PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
+                BuiltInAttribute thisAttribute = getAttributeForPoint(paoPointIdentifier, attributes);
+                if (thisAttribute == null) return;
+                
+                // Get a new updater object for the current value
+                FormattedBlockUpdater<Block> formattedBlockUpdater = blockProcessingService.buildFormattedBlockUpdater(thisAttribute, value);
+
+                // if the map is empty, place the updater into it
+                FormattedBlockUpdater<Block> oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
+
+                while (oldValue != null) {
+                    // looks like the map was not empty, combine the existing updater with the
+                    // new one and then place it back in the map, but we must be careful
+                    // that someone hasn't changed the map out from under us (thus the while loop)
+                    FormattedBlockUpdaterChain<Block> chain = new FormattedBlockUpdaterChain<Block>(oldValue, formattedBlockUpdater);
+                    boolean success = updaterMap.replace(pao, oldValue, chain);
+                    if (success) break;
+                    oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
+                }
+            }
+            
+            @Override
+            public void receivedLastValue(PaoIdentifier pao) {
+                log.debug("deviceAttributeReadCallback.receivedLastValue for formattedBlockEvent");
+            }
+
+            @Override
+            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+                // do we need to send something to the foreign system here?
+                log.warn("received error for " + pao + ": " + error);
+            }
+
+            @Override
+            public void receivedException(DeviceAttributeReadError error) {
+                log.warn("received exception in FormattedBlockEvent callback: " + error);
+            }
+        };
+        deviceAttributeReadService.initiateRead(Collections.singleton(paoToRead), attributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, UserUtils.getYukonUser());
         
         return mspObjectDao.toErrorObject(errorObjects);
     }

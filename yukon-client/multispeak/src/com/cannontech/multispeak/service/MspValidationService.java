@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.FormattedBlockService;
+import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
@@ -13,13 +13,11 @@ import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 public interface MspValidationService {
 
     /**
-     * Returns the formattedBlock object for the readingTypesMap for readingType.
+     * Returns the processingService for the readingTypesMap for readingType.
      * Throws a RemoteException if the readingType is not valid.
      */
-    public FormattedBlockService<Block> isValidBlockReadingType(
-            Map<String, FormattedBlockService<Block>> readingTypesMap,
-            String readingType) throws RemoteException;
-
+    public FormattedBlockProcessingService<Block> isValidBlockReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
+                                                                String readingType) throws RemoteException;
     /**
      * Returns Meter for the meterNumber if MeterNumber is a Yukon MeterNumber.
      * Throws a RemoteException if the meterNumber is not found in Yukon. 

@@ -11,7 +11,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.FormattedBlockService;
+import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -27,9 +27,9 @@ public class MspValidationServiceImpl implements MspValidationService {
     public MspObjectDao mspObjectDao;
     
     @Override
-    public FormattedBlockService<Block> isValidBlockReadingType(Map<String, FormattedBlockService<Block>> readingTypesMap,
+    public FormattedBlockProcessingService<Block> isValidBlockReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
             String readingType) throws RemoteException {
-        FormattedBlockService<Block> formattedBlock = readingTypesMap.get(readingType);
+        FormattedBlockProcessingService<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null) {
             String message = readingType + " is NOT a supported ReadingType.";
             CTILogger.error(message);

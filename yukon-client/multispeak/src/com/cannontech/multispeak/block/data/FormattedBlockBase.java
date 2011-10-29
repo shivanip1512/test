@@ -95,4 +95,17 @@ public abstract class FormattedBlockBase extends FormattedBlock{
         mspSyntaxItem.setUom(syntaxItem.getMspUom());
         return mspSyntaxItem;
     }
+    
+      /**
+      * Helper method to construct a MultiSpeak FormattedBlock object
+      * @param blockBase
+      * @return
+      */
+     public static FormattedBlock createMspFormattedBlock(FormattedBlockBase blockBase) {
+         FormattedBlock mspFormattedBlock = new FormattedBlock();
+         mspFormattedBlock.setValueList(blockBase.getValueList());
+         mspFormattedBlock.setSeparator(blockBase.getSeparator());
+         mspFormattedBlock.setValSyntax(blockBase.getValSyntax());
+         return mspFormattedBlock;
+     }
 }
