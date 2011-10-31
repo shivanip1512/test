@@ -47,8 +47,18 @@ public interface CustomerAccountDao {
     
     public CustomerAccount getAccountByInventoryId(int inventoryId);
     
+    /**
+     * Returns a map of InventoryIds to AccountIds.
+     * @param inventoryIds
+     * @return
+     */
     public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds);
     
+    /**
+     * Returns a map of AccountIds to AccountNumbers. 
+     * @param accountIds
+     * @return
+     */
     public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds);
 
     public CustomerAccount getAccountByContactId(int contactId);

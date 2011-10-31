@@ -42,6 +42,7 @@
     <entry key="yukon.web.modules.operator.zbProblemDevices.timestamp">Timestamp</entry>
     <entry key="yukon.web.modules.operator.zbProblemDevices.noAccountNumber">N/A</entry>
     <entry key="yukon.web.modules.operator.zbProblemDevices.uninitialized">Uninitialized</entry>
+    <entry key="yukon.web.modules.operator.zbProblemDevices.inWarehouse">In Warehouse</entry>
 
     <!-- /inventory/inventoryOperations/setupFilterSelection.jsp -->
     <entry key="yukon.web.modules.operator.filterSelection.pageName">Inventory Selection</entry>

@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="zbProblemDevices">
 
-    <div class="tar padBottom">
+    <div class="exportLink">
         <cti:button nameKey="csv" renderMode="labeledImage" href="/spring/stars/operator/inventory/zbProblemDevices/csv"/>
     </div>
     
@@ -16,6 +16,7 @@
     <table class="resultsTable" style="width:100%;">
         <tr>
             <th><i:inline key=".serialNumber"/></th>
+            <th><i:inline key=".accountNumber"/></th>
             <th><i:inline key=".hardwareType"/></th>
             <th><i:inline key=".label"/></th>
             <th><i:inline key=".state"/></th>
@@ -48,11 +49,10 @@
                 <td><i:inline key="${device.first.identifier.hardwareType}"/></td>
                 <td>${fn:escapeXml(device.first.label)}</td>
                 <td class="fwb" style="color:${stateColorMap[device.second.value]};"><cti:pointValueFormatter value="${device.second}" format="VALUE"/></td>
-                <c:set var="uninitializedTime" value="1900-01-01 00:00:00.0"/>
-                <c:if test="${device.second.pointDataTimeStamp == uninitializedTime}">
+                <c:if test="${device.second.pointDataTimeStamp == NULL}">
                     <td><i:inline key=".uninitialized"/></td>
                 </c:if>
-                <c:if test="${device.second.pointDataTimeStamp != uninitializedTime}">
+                <c:if test="${device.second.pointDataTimeStamp != NULL}">
                     <td><cti:pointValueFormatter value="${device.second}" format="DATE"/></td>
                 </c:if>
             </tr>
