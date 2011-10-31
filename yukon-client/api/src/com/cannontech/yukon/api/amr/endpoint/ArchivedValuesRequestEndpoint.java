@@ -496,7 +496,7 @@ public class ArchivedValuesRequestEndpoint {
                             attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
                     paoPointIdentifiers.add(paoPointIdentifierForAttribute);
                 } catch (IllegalUseOfAttribute isoa) {
-                    log.error("attribute " + attribute + " is not valid for pao " + pao);
+                    log.warn("attribute " + attribute + " is not valid for pao " + pao);
                 }
             }
             Map<PaoIdentifier, PointInfo> retVal = Maps.newHashMap();
