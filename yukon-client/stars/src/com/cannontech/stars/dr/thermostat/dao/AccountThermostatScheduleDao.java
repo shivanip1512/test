@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.management.InvalidAttributeValueException;
 
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 
@@ -78,7 +77,7 @@ public interface AccountThermostatScheduleDao {
 	 *                   
 	 * @return AccountThermostatSchedule or null
 	 */
-	public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, SqlFragmentSource conditions);
+	public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, Integer ignorableScheduleId);
 	
 	/**
 	 * Save given AccountThermostatSchedule.<br><br>

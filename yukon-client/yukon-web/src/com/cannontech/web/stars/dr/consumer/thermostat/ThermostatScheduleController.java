@@ -297,7 +297,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 if(object instanceof FieldError) {
                     FieldError fieldError = (FieldError) object;
                     MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode()));
+                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
                 }
             }
             

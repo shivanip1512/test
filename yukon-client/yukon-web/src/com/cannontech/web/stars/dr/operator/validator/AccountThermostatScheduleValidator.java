@@ -22,10 +22,7 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
     @Override
     protected void doValidation(AccountThermostatSchedule target, Errors errors) {
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("AND AcctThermostatScheduleId").neq(target.getAccountThermostatScheduleId());
-        
-        List <AccountThermostatSchedule> duplicateNames = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(target.getAccountId(), target.getScheduleName(), sql);
+        List <AccountThermostatSchedule> duplicateNames = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(target.getAccountId(), target.getScheduleName(), target.getAccountThermostatScheduleId());
         //check that the schedule name is unique among schedules for this account
         if(duplicateNames.size() > 0){
             errors.rejectValue("scheduleName", "yukon.web.components.thermostat.schedule.error.duplicateName");
