@@ -4754,50 +4754,50 @@
             <point type="Analog" offset="24">
                 <init>true</init>
                 <name>Peak kW (Rate A kW)</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="25">
                 <init>true</init>
                 <name>Rate A kWh</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="26">
                 <name>Peak kW (Rate B kW)</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="27">
                 <name>Rate B kWh</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="28">
                 <name>Peak kW (Rate C kW)</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="29">
                 <name>Rate C kWh</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="30">
                 <name>Peak kW (Rate D kW)</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="31">
                 <name>Rate D kWh</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
