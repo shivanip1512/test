@@ -64,6 +64,8 @@ public class CommandRequestExecutionDefaults {
         b.put(PHASE_DETECT_READ,                                  new CommandRequestExecutionInfo(false, 7, false));
         b.put(VEE_RE_READ,                                        new CommandRequestExecutionInfo(false, 7, false));
         b.put(ARCHIVE_DATA_ANALYSIS_LP_READ,                      new CommandRequestExecutionInfo(false, 7, false));
+        b.put(MULTISPEAK_METER_READ_EVENT,                        new CommandRequestExecutionInfo(true, 13, false));
+        b.put(MULTISPEAK_FORMATTED_BLOCK_READ_EVENT,              new CommandRequestExecutionInfo(true, 13, false));
         infoLookup = b.build();
     }
 	

@@ -621,7 +621,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 log.warn("received exception in FormattedBlockEvent callback: " + error);
             }
         };
-        deviceAttributeReadService.initiateRead(Collections.singleton(paoToRead), attributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, UserUtils.getYukonUser());
+        deviceAttributeReadService.initiateRead(Collections.singleton(paoToRead), attributes, callback, DeviceRequestType.MULTISPEAK_FORMATTED_BLOCK_READ_EVENT, UserUtils.getYukonUser());
         
         return mspObjectDao.toErrorObject(errorObjects);
     }
