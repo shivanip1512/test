@@ -2,6 +2,20 @@
 /**** Oracle DBupdates                 ****/ 
 /******************************************/ 
 
+/*@error warn-once*/ 
+DECLARE
+    errorFlagCount int;
+BEGIN
+	SELECT count (*) into errorFlagCount
+	FROM YukonGroupRole ygr 
+	JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
+	WHERE rolepropertyid = -20008 AND ygr.Value = 'true';
+    IF 0 < errorFlagCount THEN
+        RAISE_APPLICATION_ERROR(-20001, 'The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.');
+    END IF;
+END;        
+/
+
 /* Start YUK-9557 */
 UPDATE CapControlStrategy 
 SET ControlUnits = 'MULTI_VOLT_VAR' 

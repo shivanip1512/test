@@ -1,6 +1,13 @@
 /******************************************/ 
 /**** SQL Server DBupdates             ****/ 
 /******************************************/ 
+ 
+/*@error warn-once*/ 
+IF 0 < (SELECT count (*) 
+FROM YukonGroupRole ygr 
+JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
+WHERE rolepropertyid in (-20892, -40205, -40204, -20899) AND ygr.Value = 'true') 
+RAISERROR('The database contains thermostat role properties that are about to be reset to the default value. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.', 16, 1);
 
 /* Start YUK-10000 */ 
 UPDATE State 
