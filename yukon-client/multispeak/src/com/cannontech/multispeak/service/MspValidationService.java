@@ -16,7 +16,7 @@ public interface MspValidationService {
      * Returns the processingService for the readingTypesMap for readingType.
      * Throws a RemoteException if the readingType is not valid.
      */
-    public FormattedBlockProcessingService<Block> isValidBlockReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
+    public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
                                                                 String readingType) throws RemoteException;
     /**
      * Returns Meter for the meterNumber if MeterNumber is a Yukon MeterNumber.

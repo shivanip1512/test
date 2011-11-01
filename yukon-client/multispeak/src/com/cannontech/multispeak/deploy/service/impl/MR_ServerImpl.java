@@ -17,11 +17,13 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -78,6 +80,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public MeterReadProcessingService meterReadProcessingService;
     public DynamicDataSource dynamicDataSource;
 
+    private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    
     private void init() throws RemoteException {
         multispeakFuncs.init();
     }
@@ -159,7 +163,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         Meter[] meters = new Meter[meterList.size()];
         meterList.toArray(meters);
-        CTILogger.info("Returning " + meters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
+        log.info("Returning " + meters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
 
         return meters;
     }
@@ -260,7 +264,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     	        return meterRead;
             } catch (DynamicDataAccessException e) {
                 String message = "Connection to dispatch is invalid";
-                CTILogger.error(message);
+                log.error(message);
                 throw new RemoteException(message);
             }
         }
@@ -360,7 +364,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
-            CTILogger.error(message);
+            log.error(message);
             throw new RemoteException(message);
         }
 
@@ -540,7 +544,6 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public MeterRead[] getLatestReadings(String lastReceived)
             throws RemoteException {
         init();
-        Date timerStart = new Date();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
         List<MeterRead> meterReads = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
@@ -553,8 +556,6 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             // skip...we don't have any to report.
         }
 
-        CTILogger.info("Returning " + meterReads.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        
         MeterRead[] meterReadArray = new MeterRead[meterReads.size()];
         meterReads.toArray(meterReadArray);
         return meterReadArray;
@@ -566,7 +567,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
         
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
-            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+            mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
         
         try {
             Block block = formattedBlockProcessingService.createBlock(meter);
@@ -590,7 +591,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             
         } catch (DynamicDataAccessException e) {
             String message = "Connection to dispatch is invalid";
-            CTILogger.error(message);
+            log.error(message);
             throw new RemoteException(message);
         }
     }
@@ -601,7 +602,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
-            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+            mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
 
         List<Block> blocks = mspRawPointHistoryDao.retrieveLatestBlock(formattedBlockProcessingService, 
                                                                        lastReceived, vendor.getMaxReturnRecords());
@@ -626,7 +627,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
-            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+            mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
 
         List<Block> blocks = mspRawPointHistoryDao.retrieveBlock(ReadBy.NONE, null,
                                                                  formattedBlockProcessingService,
@@ -658,7 +659,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         mspValidationService.isYukonMeterNumber(meterNo); 
 
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
-            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+            mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
         
         List<Block> blocks = mspRawPointHistoryDao.retrieveBlock(ReadBy.METER_NUMBER, meterNo,
                                                                  formattedBlockProcessingService,
@@ -693,12 +694,12 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
-            CTILogger.error(message);                
+            log.error(message);                
             throw new RemoteException(message);
         }
         
         FormattedBlockProcessingService<Block> formattedBlockServ = 
-            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+            mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
         
         errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ);
 
@@ -733,6 +734,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
      */
 	private void updateLastSent(Block block) throws RemoteException {
 	    multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
+	    LogHelper.debug(log, "Updated MspMessageHeader.LastSent %s", block.getObjectId());
 	}
  
     /**
@@ -742,6 +744,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
      */
     private void updateLastSent(MspObject lastObject) throws RemoteException{
         multispeakFuncs.getResponseHeader().setLastSent(lastObject.getObjectID());
+        LogHelper.debug(log, "Updated MspMessageHeader.LastSent %s", lastObject.getObjectID());
     }
     
     /**
@@ -753,6 +756,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     private void updateObjectsRemaining(int returnResultsSize, int maxReturnRecords) throws RemoteException {
         int numberRemaining = (returnResultsSize < maxReturnRecords ? 0 : -1); //assuming at least one item remaining. -1 for unknown size
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numberRemaining)));
+        LogHelper.debug(log, "Updated MspMessageHeader.ObjectsRemaining %s", numberRemaining);
     }
 	
     @Autowired

@@ -27,7 +27,7 @@ public class MspValidationServiceImpl implements MspValidationService {
     public MspObjectDao mspObjectDao;
     
     @Override
-    public FormattedBlockProcessingService<Block> isValidBlockReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
+    public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
             String readingType) throws RemoteException {
         FormattedBlockProcessingService<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null) {

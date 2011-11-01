@@ -43,7 +43,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	                                      Date endDate, String lastReceived, int maxRecords) {
 
 	    List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
-
+	    
+	    final Date timerStart = new Date();
 	    EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
 	    int estimatedSize = 0;
@@ -77,6 +78,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             } 
         }
 
+        log.debug("Retrieved " + result.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
 	    return result;
 	}
 
@@ -84,7 +86,9 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     public List<MeterRead> retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
 
         List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
-
+        
+        final Date timerStart = new Date();
+        
         EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
         int estimatedSize = 0;
@@ -122,6 +126,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             }
         }
 
+        log.debug("Retrieved " + result.size() + " Latest MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return result;
     }
     
@@ -130,50 +135,54 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                                      FormattedBlockProcessingService<Block> blockProcessingService,
                                      Date startDate, Date endDate, String lastReceived, int maxRecords) {
 
-         List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+        List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
 
-         EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+        final Date timerStart = new Date();
+        
+        EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
-         int estimatedSize = 0;
+        int estimatedSize = 0;
 
-         EnumSet<BuiltInAttribute> attributesToLoad = blockProcessingService.getAttributeSet();
-         // load up results for each attribute
-         for (BuiltInAttribute attribute : attributesToLoad) {
+        EnumSet<BuiltInAttribute> attributesToLoad = blockProcessingService.getAttributeSet();
+        // load up results for each attribute
+        for (BuiltInAttribute attribute : attributesToLoad) {
 
-             ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute;
-             resultsForAttribute = rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate,
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute;
+            resultsForAttribute = rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate,
                                                                        false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD);
 
-             resultsPerAttribute.put(attribute, resultsForAttribute);
-             estimatedSize += resultsForAttribute.size();
-         }
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
+        }
 
-         List<Block> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+        List<Block> result = Lists.newArrayListWithExpectedSize(estimatedSize);
          
-         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
-         // results will be one block for every reading, no grouping of similar timstamped data into one block.
-         // this is a change from how things previously worked where we made a best guess to "block" data with like timestamps.
-         for (Meter meter : meters) { 
-             
-             for (BuiltInAttribute attribute : attributesToLoad) { 
-                 List<PointValueQualityHolder> rawValues =  
-                     resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
-     
-                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
-                     Block block = blockProcessingService.createBlock(meter); 
-                     blockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder); 
-                     result.add(block); 
-                 } 
-             } 
-         }
+        // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        // results will be one block for every reading, no grouping of similar timstamped data into one block.
+        // this is a change from how things previously worked where we made a best guess to "block" data with like timestamps.
+        for (Meter meter : meters) { 
 
-         return result;
-     }
+            for (BuiltInAttribute attribute : attributesToLoad) {
+                List<PointValueQualityHolder> rawValues =
+                    resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
+     
+                for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
+                    Block block = blockProcessingService.createBlock(meter); 
+                    blockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder); 
+                    result.add(block); 
+                } 
+            } 
+        }
+        log.debug("Retrieved " + result.size() + " Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        return result;
+    }
 
     @Override
     public List<Block> retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService, String lastReceived, int maxRecords) {
-                                
+
         List<Meter> meters = getPaoList(ReadBy.NONE, null, lastReceived, maxRecords);
+        
+        final Date timerStart = new Date();
 
         EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
@@ -208,6 +217,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             }
         }
 
+        log.debug("Retrieved " + result.size() + " Latest Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return result;
     }
  
@@ -221,6 +231,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
      */
     private List<Meter> getPaoList(ReadBy readBy, String readByValue, String lastReceived,
                                            int maxRecords) {
+        final Date timerStart = new Date();
+        
         // get the paos we want, using readBy, readByValue, and lastReceived
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paObjectId, ypo.paoName, ypo.type, ypo.disableFlag,");
@@ -241,6 +253,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         
         List<Meter> result = yukonJdbcTemplate.queryForLimitedResults(sql, new MeterRowMapper(), maxRecords);
 
+        log.debug("Retrieved " + result.size() + " paos to process. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return result;
     }
     
