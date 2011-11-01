@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Maps;
 
+@CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
 @RequestMapping("archiveDataAnalysis/list/*")
 public class AdaListController {

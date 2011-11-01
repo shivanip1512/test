@@ -12,19 +12,25 @@ import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectio
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty(YukonRoleProperty.PROFILE_COLLECTION)
+@CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
 @RequestMapping("archiveDataAnalysis/read/*")
 public class AdaReadsController {
     private ArchiveDataAnalysisService archiveDataAnalysisService;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
+    private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
     public String readNow(ModelMap model, HttpServletRequest request, LiteYukonUser user, int analysisId) throws ServletRequestBindingException {
+        if(!rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, user)) {
+            throw new NotAuthorizedException("User is not authorized for profile collection.");
+        }
         String resultId = archiveDataAnalysisService.runProfileReads(analysisId, user);
         
         model.addAttribute("resultId", resultId);
@@ -59,5 +65,10 @@ public class AdaReadsController {
     @Autowired
     public void setDeviceIdListCollectionProducer(ArchiveDataAnalysisCollectionProducer adaCollectionProducer) {
         this.adaCollectionProducer = adaCollectionProducer;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }

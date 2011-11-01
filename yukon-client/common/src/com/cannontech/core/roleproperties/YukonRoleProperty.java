@@ -296,6 +296,7 @@ public enum YukonRoleProperty {
     ADD_REMOVE_POINTS(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.ADD_REMOVE_POINTS, booleanType()),
     ASSIGN_CONFIG(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.ASSIGN_CONFIG, booleanType()),
     SEND_READ_CONFIG(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.SEND_READ_CONFIG, booleanType()),
+    ARCHIVED_DATA_ANALYSIS(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.ARCHIVED_DATA_ANALYSIS, booleanType()),   
     
     OPERATOR_ESUBSTATION_DRAWINGS_VIEW(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.VIEW, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_EDIT(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.EDIT, booleanType()),

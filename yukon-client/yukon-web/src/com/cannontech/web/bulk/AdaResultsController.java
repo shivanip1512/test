@@ -24,7 +24,9 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
 @RequestMapping("archiveDataAnalysis/results/*")
 public class AdaResultsController {

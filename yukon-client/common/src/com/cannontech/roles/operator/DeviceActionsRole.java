@@ -30,4 +30,6 @@ public interface DeviceActionsRole {
     public static final int SEND_READ_CONFIG = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 9; // -21309
     /**Controls access to Assign Config collection action. */
     public static final int ASSIGN_CONFIG = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 10; // -21310
+    /** Access to Archived Data Analysis */
+    public static final int ARCHIVED_DATA_ANALYSIS = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 11; // -21311
 }

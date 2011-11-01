@@ -169,8 +169,10 @@
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
                             action="/spring/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
                         <%-- DATA ANALYSIS --%>
-                        <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
-                            action="/spring/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
+                        <cti:checkProperty property="operator.DeviceActionsRole.ARCHIVED_DATA_ANALYSIS">
+                            <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
+                                action="/spring/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
+                        </cti:checkProperty>        
                     </table>
                 </tags:sectionContainer>
             </cti:dataGridCell>

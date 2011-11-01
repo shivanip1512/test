@@ -31,13 +31,16 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.PeriodPropertyEditor;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Sets;
 
+@CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
 @RequestMapping("archiveDataAnalysis/home/*")
 public class ArchiveDataAnalysisController {
