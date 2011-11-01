@@ -31,7 +31,9 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlBuilder;
@@ -76,6 +78,7 @@ public class RawPointHistoryValidationService {
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private ValidationEventLogService validationEventLogService;
     private PaoLoadingService paoLoadingService;
+    private PaoDefinitionDao paoDefinitionDao;
     
     private AtomicLong changeIdsEvaluated = new AtomicLong(0);
     private AtomicLong rowsPulled = new AtomicLong(0);
@@ -503,20 +506,26 @@ public class RawPointHistoryValidationService {
         AnalysisResult analysisResult = analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
         if (analysisResult.considerReRead && validationMonitor.isReReadOnUnreasonable() ) {
-            // there is no point rereading if the data is over a day old
-            DateTime readingTime = values.get(0).getTime();
-            Duration timeSinceReading = new Duration(readingTime, null); // null means now
-            
-            if (timeSinceReading.isShorterThan(Duration.standardDays(1))) {
-                // re read meter
-                pointReadService.backgroundReadPoint(workUnit.paoPointIdentifier, DeviceRequestType.VEE_RE_READ,  UserUtils.getYukonUser());
-                LogHelper.debug(log, "Sumbitting reread for a %s old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
+            // There is no point in trying to "re-read" anything but PLC at this time.
+            // This is kind of a poor place to implement this check, but iiwii until we properly define paoPointIdentifier "read strategies" for PLC, RF, and IP
+            boolean canRead = paoDefinitionDao.isTagSupported(workUnit.paoPointIdentifier.getPaoIdentifier().getPaoType(),
+                                                              PaoTag.PORTER_COMMAND_REQUESTS);
+            if (canRead) {
+                // there is no point rereading if the data is over a day old
+                DateTime readingTime = values.get(0).getTime();
+                Duration timeSinceReading = new Duration(readingTime, null); // null means now
                 
-                PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();
-                PointIdentifier pointIdentifier = workUnit.paoPointIdentifier.getPointIdentifier();
-                DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
-                
-                validationEventLogService.unreasonableValueCausedReRead(paoIdentifier.getPaoId(), displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
+                if (timeSinceReading.isShorterThan(Duration.standardDays(1))) {
+                    // re read meter
+                    pointReadService.backgroundReadPoint(workUnit.paoPointIdentifier, DeviceRequestType.VEE_RE_READ,  UserUtils.getYukonUser());
+                    LogHelper.debug(log, "Sumbitting reread for a %s old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
+                    
+                    PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();
+                    PointIdentifier pointIdentifier = workUnit.paoPointIdentifier.getPointIdentifier();
+                    DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
+                    
+                    validationEventLogService.unreasonableValueCausedReRead(paoIdentifier.getPaoId(), displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
+                }
             }
         }
         
@@ -685,4 +694,9 @@ public class RawPointHistoryValidationService {
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
 		this.paoLoadingService = paoLoadingService;
 	}
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
 }
