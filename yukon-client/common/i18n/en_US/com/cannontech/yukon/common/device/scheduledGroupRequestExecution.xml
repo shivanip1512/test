@@ -8,8 +8,7 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.noSchedules">No Schedules</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.oneMoreJob">1 More Job</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.moreJobs">{0} More Jobs</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.moreJobs">{0} {0, choice, 1#More Job|1&lt;More Jobs}</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.status">Status</entry>
@@ -58,7 +57,7 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.pageName">All Schedules</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.tableTitle">Schedules</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.tableTitle.title">Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.section">Filters</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateFrom">From</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateTo">To</entry>

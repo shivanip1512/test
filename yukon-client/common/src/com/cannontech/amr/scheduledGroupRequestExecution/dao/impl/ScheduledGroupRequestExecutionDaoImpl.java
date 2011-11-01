@@ -104,7 +104,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
 												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
-												boolean acsendingJobIds) {
+												boolean ascendingJobIds) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT DISTINCT Job.*, JSR.* FROM Job");
@@ -210,7 +210,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         }
         
         // order
-        if (acsendingJobIds) {
+        if (ascendingJobIds) {
         	sql.append("ORDER BY Job.JobID");
         } else {
         	sql.append("ORDER BY Job.JobID DESC");

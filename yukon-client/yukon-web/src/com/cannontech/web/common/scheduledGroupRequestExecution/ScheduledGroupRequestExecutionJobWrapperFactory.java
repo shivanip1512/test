@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionStatusService;
@@ -158,14 +159,10 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	}
 	
 	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getDeviceGroupNameComparator() {
-	    Ordering<String> normalStringComparer = Ordering.natural();
+	    Ordering<String> normalStringComparer = Ordering.natural().nullsFirst();
 	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNameOrdering = normalStringComparer
 	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
 	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
-	            if (from.getDeviceGroupName() == null) {
-	                // So we show up at the top of the list
-	                return "a";
-	            }
 	            return from.getDeviceGroupName();
 	        }
 	    });
@@ -177,7 +174,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobAttributeCommandOrdering = normalStringComparer
 	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
 	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
-	            if (from.getAttributes() != null && !from.getAttributes().isEmpty()) {
+	            if (!CollectionUtils.isEmpty(from.getAttributes())) {
 	                return from.getAttributeDescriptions();
 	            }
 	            return from.getCommand();

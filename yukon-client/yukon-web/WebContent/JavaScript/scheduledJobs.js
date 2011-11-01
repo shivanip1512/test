@@ -6,8 +6,7 @@ jQuery('table#jobsTable button.toggleEnabled').live('click', function(event) {
         dataType: 'json',
         data: {'jobId': jobId},
         success: function(data) {
-            var jobEnabled = data.jobEnabled;
-            if (jobEnabled == false) {
+            if (data.jobEnabled === false) {
                 jQuery(toggleButton).closest('tr').addClass('subtleGray');
                 jQuery('#disableSpan_' + jobId).hide();
                 jQuery('#enableSpan_' + jobId).show();
@@ -24,8 +23,7 @@ function setTrClassByJobState(jobId) {
     //assumes data is of type Hash
     return function(data) {
         var jobRow = '#tr_' + jobId;
-        jQuery(jobRow).removeClass('okGreen');
-        jQuery(jobRow).removeClass('subtleGray');
+        jQuery(jobRow).removeClass('okGreen subtleGray');
         var state = data.get('state');
         if (state == 'DISABLED') {
             jQuery(jobRow).addClass('subtleGray');

@@ -22,7 +22,7 @@ public interface ScheduledGroupRequestExecutionDao {
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
 												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
-												boolean acsendingJobIds);
+												boolean ascendingJobIds);
 			
 	public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending);
 	

@@ -106,14 +106,7 @@
 <c:if test="${numAdditionalJobs != null}">
     <div class="additionalSchedulerJobs fl">
         <a href="/spring/group/scheduledGroupRequestExecutionResults/jobs">&hellip;
-            <c:choose>
-                <c:when test="${numAdditionalJobs > 1}">
-                    <i:inline key=".moreJobs" arguments="${numAdditionalJobs}"/>
-                </c:when>
-                <c:otherwise>
-                    <i:inline key=".oneMoreJob"/>
-                </c:otherwise>
-            </c:choose>
+            <i:inline key=".moreJobs" arguments="${numAdditionalJobs}"/>
         </a>
     </div>
 </c:if>

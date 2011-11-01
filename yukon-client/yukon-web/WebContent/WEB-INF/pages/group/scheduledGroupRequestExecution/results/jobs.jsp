@@ -20,8 +20,7 @@
     </script>
       
     <%-- FILTER POPUP --%>
-    <cti:msg2 key=".filter.section" var="filterSectionText"/>
-    <tags:simplePopup id="filterPopup" title="${filterSectionText}" styleClass="smallSimplePopup">
+	<i:simplePopup titleKey=".filter.section" id="filterPopup" styleClass="smallSimplePopup">
         <cti:flashScopeMessages/>
         <form:form id="filterForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs"
             method="get" commandName="backingBean">
@@ -62,7 +61,7 @@
                 <tags:nameValue2 nameKey=".filter.type">
                     <form:select path="typeFilterAsString">
                         <form:option value="ANY">
-                            <i:inline key=".filter.typeAny" />
+                            <cti:msg2 key=".filter.typeAny"/>
                         </form:option>
                         <c:forEach var="requestType" items="${scheduledCommandRequestExecutionTypes}">
                             <form:option value="${requestType}" title="${requestType.description}">
@@ -78,10 +77,9 @@
                 <cti:button nameKey="clear" href="clear" styleClass="f_blocker" />
             </div>
         </form:form>
-    </tags:simplePopup>	
+    </i:simplePopup>
 	
-    <cti:msg2 var="tableTitle" key=".tableTitle"/>
-    <tags:pagedBox title="${tableTitle}" searchResult="${filterResult}" baseUrl="jobs" filterDialog="filterPopup">
+	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="jobs" filterDialog="filterPopup">
 	<table id="jobsTable" class="compactResultsTable">
 		<tr>
 			<th><tags:sortLink nameKey="executions.tableHeader.scheduleName" baseUrl="jobs" fieldName="NAME" isDefault="false" /></th>
@@ -172,16 +170,15 @@
 				<td class="noResults subtleGray" colspan="7">
 					<c:choose>
 						<c:when test="${canManage}">
-							<cti:msg2 key=".noJobs.createAccess" />  
+                            <i:inline key=".noJobs.createAccess"/>
 						</c:when>
 						<c:otherwise>
-							<cti:msg2 key=".noJobs.noCreateAccess" />  
+                            <i:inline key=".noJobs.noCreateAccess"/>
 						</c:otherwise>
 					</c:choose>
 				</td>
 			</tr>
 		</c:if>
-	
 	</table>
-	</tags:pagedBox>
+	</tags:pagedBox2>
 </cti:standardPage>
