@@ -20,14 +20,16 @@ package com.cannontech.web.taglib;
 public enum JsLibrary {
     EXT_ALL("/JavaScript/extjs/ext-all.js"),
     EXT_BASE("/JavaScript/extjs/ext-base.js"),
-    
+
     //if updating jquery be sure to include the noconflict call at the end of the file if prototype
     //or ext is still being included
     JQUERY("/JavaScript/lib/jQuery/1.6.4/jquery.min.js"),
     JQUERY_NOCONFLICT("/JavaScript/lib/jQuery/1.6.4/jquery.noconflict.min.js"),
+    JQUERY_FORM("/JavaScript/lib/jQuery/plugins/form/jquery.form.js"),
+    JQUERY_UI("/JavaScript/lib/jQuery/plugins/jQueryUI/jquery-ui-1.8.16.custom.min.js"),
     JSTREE("/JavaScript/lib/jQuery/plugins/jsTree/jquery.jstree.js"),
     SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo-1.4.2-min.js"),
-    
+
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     OVERLIB("/JavaScript/ol/overlib_mini.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
