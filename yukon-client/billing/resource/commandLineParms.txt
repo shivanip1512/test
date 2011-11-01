@@ -8,31 +8,23 @@ COMMAND LINE PARAMETERS:
 
 *-- Billing file format - default: CTICSV --*
 format|type=<formatID|formatType>  where formatID|formatType are int|string values from yukon.billingfileformats db table.
+	formatID - BillingFileFormat.FormatId
+	formatType - BillingFileFormat.FormatType
+		* The FormatType is the name of the billing file displayed in the dropdown list when selecting the format of billing file to generate.
 
-
-*-- billGroup type - required --*
-*-- one and only one of the billgroup parameters must be specified --*
-coll[ectiongroup]=<billgroup>  where yukon.devicemetergroup.COLLECTIONGROUP is the database query column
-                               and billgroup is the group(s) to query, (may be a comma separated list of groups).
-
-test[collectiongroup]=<billgroup>  where yukon.devicemetergroup.TESTCOLLECTIONGROUP is the database query column
-                                   and billgroup is the group(s) to query, (may be a comma separated list of groups).
-
-bill[inggroup]=<billgroup>  where yukon.devicemetergroup.BILLINGGROUP is the database query column
-                            and billgroup is the group(s) to query, (may be a comma separated list of groups).
-
+*-- group - required --*
+group=<groupname>  where <groupname> is the fully named group to generate the file for.
+		Example: /Meters/Collection/Cycle 1
+		Example: /System/CIS Substation/LOWER BRULE								
 
 *-- Maximum query date - default: today --*
-end[date]=<mm/dd/yyyy>  where mm/dd/yyyy is the maximum date used for validating meter data.
-
+end=<mm/dd/yyyy>  where mm/dd/yyyy is the maximum date used for validating meter data.
 
 *-- Valid demand reading period - default: 30 --*
 dem[and]=<##>  where ## is the number of days before enddate for validating meter demand data.
 
-
 *-- Valid energy reading period - defulat: 7 --*
 ene[rgy]=<##>  where ## is the number of days before enddate for validating meter energy data.
-
 
 *-- Export filename and directory - default: <yukonhome>\client\export\outfile.txt --*
 file=<filename>  where filename is the the fully qualified directory and filename to export data to.
@@ -42,3 +34,25 @@ mult[iplier]=true|false  when true, the selection is to remove the multiplier fr
 
 *-- Append data to output file, if file exists - defaults: false --*
 app[end]=true|false  when true, if the outputfile already exists, new data will be append to the existing file
+
+
+* EXAMPLES *
+* From command line you can run the following *
+> billing.bat "format=STANDARD" "demand=90" "energy=7" "group=/Meters/Collection/Cycle 01" "end=07/31/2011" "file=C:\Yukon\Export\MyBilling01.csv" 
+ 
+ 
+
+* billing.bat *
+* This is an example batch file. 
+* The first thing this batch file does is redirect to the directory containing the necessary jar files.
+* Next, it sets the Java runtime home
+* Finally, it runs a Java class file; sets the classpath and runs the required BillingFile class.
+*   The BillingFile can accept runtime arguments as defined above. 
+*   You can either specify the arguments in the batch file directory (Example below)
+*   Or, you can specify the arguments when you run the batch file from command line (Example above)
+*     The %# values at the end of the java statement are what allow arguments to be passed through from command line.
+*   NOTE: If the same arguments are passed in both the batch file and from command line; the command line ones will be used.
+ 
+cd /d %YUKON_BASE%\client\bin
+call setjavapath.bat
+java -Djava.class.path=.;%YUKON_BASE%/server/web;billing.jar;common.jar;ojdbc6.jar;jtds.jar;yukonappserver.jar;rwav.jar;log4j-1.2.4.jar;j2ee.jar com.cannontech.billing.mainprograms.BillingFile format=STANDARD group="/Meters/Collection/Cycle 01" %1 %2 %3 %4 %5 %6 %7 %8
