@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/28/2011 2:09:58 PM                        */
+/* Created on:     11/01/2011 4:45:13 PM                        */
 /*==============================================================*/
 
 
@@ -9055,6 +9055,7 @@ INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','false','Control
 INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Update/Remove Points','false','Controls access to Add, Update and Remove Points collection actions.');
 INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','Controls access to Send Config and Read Config collection actions.');
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
+INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true','Controls access to Archived Data Analysis collection action.');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');

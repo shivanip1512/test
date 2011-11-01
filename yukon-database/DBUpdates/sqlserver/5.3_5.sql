@@ -4,9 +4,10 @@
       
 /* Start YUK-10174 */ 
 DELETE FROM YukonServices 
-    WHERE ServiceID = 18 AND ServiceName = 'CymDISTMessageListener';
+WHERE ServiceID = 18 
+  AND ServiceName = 'CymDISTMessageListener';
 /* End YUK-10174 */
-
+    
 /* Start YUK-10287 */ 
 INSERT INTO DeviceTypeCommand VALUES (-820, -1, 'MCT-420CLD', 1, 'Y', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-821, -81, 'MCT-420CLD', 2, 'Y', -1); 
@@ -151,8 +152,14 @@ INSERT INTO DeviceTypeCommand VALUES (-974, -170, 'MCT-420FL', 35, 'Y', -1);
 /*  End YUK-10287  */
 
 /* Start YUK-10333 */
-DELETE FROM YukonListEntry WHERE ListId = 1005 AND EntryId IN (1060, 1061, 1063);
+DELETE FROM YukonListEntry
+WHERE ListId = 1005
+AND EntryId IN (1060, 1061, 1063);
 /*  End  YUK-10333 */
+
+/* Start YUK-10393 */
+INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true','Controls access to Archived Data Analysis collection action.');
+/*  End  YUK-10393 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
