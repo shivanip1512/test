@@ -50,7 +50,7 @@ function setTrClassByJobState(jobId) {
 }
 
 function buildTooltipText(elementId) {
-    //assumes data is of type Hash
+    //assumes data is of type Hash ($H) -- this will need to change with prototype replacement
     return function(data) {
         var tooltipText = data.get('tooltip');
         jQuery('#' + elementId).attr('title', tooltipText);
