@@ -2,18 +2,23 @@
 /**** Oracle DBupdates                 ****/ 
 /******************************************/ 
 
+/* @start-block */
 DECLARE
     errorFlagCount int;
 BEGIN
-    SELECT count (*) into errorFlagCount
-    FROM YukonGroupRole ygr 
-    JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
-    WHERE rolepropertyid in (-20892, -40205, -40204, -20899) AND ygr.Value = 'true';
+    SELECT COUNT(*) INTO errorFlagCount
+    FROM YukonGroupRole YGR, YukonUserRole YUR
+    WHERE (YGR.RolePropertyId IN (-20892, -40205, -40204, -20899)
+           AND YGR.Value = 'true')
+      OR (YUR.RolePropertyId IN (-20892, -40205, -40204, -20899)
+          AND YUR.Value = 'true');
+
     IF 0 < errorFlagCount THEN
         RAISE_APPLICATION_ERROR(-20001, 'The database contains thermostat role properties that are about to be reset to the default value. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.');
     END IF;
-END;        
+END;
 /
+/* @end-block */
 
 /* Start YUK-10000 */ 
 UPDATE State 

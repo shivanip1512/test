@@ -2,12 +2,15 @@
 /**** SQL Server DBupdates             ****/ 
 /******************************************/ 
 
-/*@error warn-once*/ 
-IF 0 < (SELECT count (*) 
-FROM YukonGroupRole ygr 
-JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
-WHERE rolepropertyid = -20008 AND ygr.Value = 'true') 
-RAISERROR('The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.', 16, 1);
+/* @start-block */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroupRole YGR, YukonUserRole YUR
+        WHERE (YGR.RolePropertyId = -20008 
+                AND YGR.Value = 'true')
+          OR (YUR.RolePropertyId = -20008 
+              AND YUR.Value = 'true'))
+    RAISERROR('The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.', 16, 1);
+/* @end-block */
 
 /* Start YUK-9557 */
 UPDATE CapControlStrategy 

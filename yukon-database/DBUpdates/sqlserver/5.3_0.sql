@@ -1,13 +1,16 @@
 /******************************************/ 
 /**** SQL Server DBupdates             ****/ 
-/******************************************/
+/******************************************/ 
 
-/*@error warn-once*/ 
-IF 0 < (SELECT count (*) 
-FROM YukonGroupRole ygr 
-JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
-WHERE rolepropertyid in (-20154, -40052) AND ygr.Value = 'true') 
-RAISERROR('The database contains Automatic Configuration role properties that are about to be reset to the default value. Please record uses of Residential > Automatic Configuration and Consumer Info > Automatic Configuration before continuing. See YUK-9436 for more information.', 16, 1); 
+/* @start-block */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroupRole YGR, YukonUserRole YUR
+        WHERE (YGR.RolePropertyId IN (-20154, -40052)
+                AND YGR.Value = 'true')
+          OR (YUR.RolePropertyId IN (-20154, -40052)
+              AND YUR.Value = 'true'))
+    RAISERROR('The database contains Automatic Configuration role properties that are about to be reset to the default value. Please record uses of Residential > Automatic Configuration and Consumer Info > Automatic Configuration before continuing. See YUK-9436 for more information.', 16, 1);
+/* @end-block */
 
 /* Start YUK-9319 */
 ALTER TABLE YukonServices 

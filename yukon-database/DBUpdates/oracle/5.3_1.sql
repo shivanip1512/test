@@ -2,19 +2,23 @@
 /**** Oracle DBupdates                 ****/ 
 /******************************************/ 
 
-/*@error warn-once*/ 
+/* @start-block */
 DECLARE
-    errorFlagCount int;
+    errorFlagCount INT;
 BEGIN
-	SELECT count (*) into errorFlagCount
-	FROM YukonGroupRole ygr 
-	JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
-	WHERE rolepropertyid = -20008 AND ygr.Value = 'true';
+    SELECT COUNT(*) INTO errorFlagCount
+    FROM YukonGroupRole YGR, YukonUserRole YUR
+    WHERE (YGR.RolePropertyId = -20008 
+           AND YGR.Value = 'true')
+      OR (YUR.RolePropertyId = -20008 
+          AND YUR.Value = 'true');
+
     IF 0 < errorFlagCount THEN
         RAISE_APPLICATION_ERROR(-20001, 'The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.');
     END IF;
-END;        
+END;
 /
+/* @end-block */
 
 /* Start YUK-9557 */
 UPDATE CapControlStrategy 

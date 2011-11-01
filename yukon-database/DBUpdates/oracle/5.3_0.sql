@@ -2,19 +2,23 @@
 /**** Oracle DBupdates                 ****/ 
 /******************************************/ 
 
-/*@error warn-once*/ 
+/* @start-block */
 DECLARE
-    errorFlagCount int;
+    errorFlagCount INT;
 BEGIN
-    SELECT count (*) into errorFlagCount
-    FROM YukonGroupRole ygr 
-    JOIN YukonGroup yg ON ygr.GroupId = yg.GroupId 
-    WHERE rolepropertyid in (-20154, -40052) AND ygr.Value = 'true';
+    SELECT COUNT(*) INTO errorFlagCount
+    FROM YukonGroupRole YGR, YukonUserRole YUR
+    WHERE (YGR.RolePropertyId IN (-20154, -40052)
+           AND YGR.Value = 'true')
+      OR (YUR.RolePropertyId IN (-20154, -40052)
+          AND YUR.Value = 'true');
+          
     IF 0 < errorFlagCount THEN
         RAISE_APPLICATION_ERROR(-20001, 'The database contains Automatic Configuration role properties that are about to be reset to the default value. Please record uses of Residential > Automatic Configuration and Consumer Info > Automatic Configuration before continuing. See YUK-9436 for more information.');
     END IF;
-END;        
+END;
 /
+/* @end-block */
 
 /* Start YUK-9319 */
 ALTER TABLE YukonServices 
