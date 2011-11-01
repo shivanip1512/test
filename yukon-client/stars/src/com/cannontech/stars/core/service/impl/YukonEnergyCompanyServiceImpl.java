@@ -42,7 +42,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         try {
             energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
-            log.warn("No energy company found for user id: " + operator.getUserID() + ". Using default energy company.");
+            log.debug("No energy company found for user id: " + operator.getUserID() + ". Using default energy company.");
             energyCompanyId = StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
         }
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
