@@ -19,6 +19,7 @@ public:
     USHORT           RColQMin;
     QUEENT           QueTable[MAXQUEENTRIES];
     unsigned long    LastColdStartTime;
+    bool             SequencingBroken;
 
 private:
 
@@ -36,7 +37,8 @@ public:
         NCOcts(0),
         FreeSlots(MAXQUEENTRIES),
         RColQMin(0),
-        LastColdStartTime(0)
+        LastColdStartTime(0),
+        SequencingBroken(false)
     {
         for(int i = 0; i < MAXQUEENTRIES; i++)
         {
@@ -85,6 +87,17 @@ public:
         return *this;
     }
 
+    void adjustSequencingForTimeout()
+    {
+        RemoteSequence.Request += 2;
+        RemoteSequence.Reply   += 2;
+
+        RemoteSequence.Request %= 8;
+        RemoteSequence.Reply   %= 8;
+
+        SequencingBroken = true;
+    }
+
     unsigned long getLastColdStartTime()
     {
         return LastColdStartTime;
@@ -93,6 +106,16 @@ public:
     void setLastColdStartTime(unsigned long time)
     {
         LastColdStartTime = time;
+    }
+
+    void setSequencingBroken(bool value)
+    {
+        SequencingBroken = value;
+    }
+
+    bool isSequencingBroken()
+    {
+        return SequencingBroken;
     }
 
 };

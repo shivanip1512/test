@@ -2499,10 +2499,26 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                         if( !status && !(OutMessage->MessageFlags & MessageFlag_PortSharing) )
                                         {
                                             /*
+                                             * We need to know whether or not the sequencing we received was valid 
+                                             * or not. If we manually adjusted the sequencing previously because of 
+                                             * a timeout, then we can't trust the CCU's NSADJ bit being accurate 
+                                             * and must judge for ourselves. 
+                                             */
+                                            bool sequencingBroken = pInfo->isSequencingBroken();
+
+                                            /*
                                              *  This is the guy who does some rudimentary checking on the CCU message
                                              *  He will return REQACK in that case...
                                              */
-                                            status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress(), OutMessage->Command);
+                                            status = GenReply (InMessage->IDLCStat, 
+                                                               InMessage->InLength, 
+                                                               &pInfo->RemoteSequence.Request, 
+                                                               &pInfo->RemoteSequence.Reply, 
+                                                               Device->getAddress(), 
+                                                               OutMessage->Command,
+                                                               sequencingBroken);
+
+                                            pInfo->setSequencingBroken(sequencingBroken);
                                         }
                                     }
                                 }
@@ -2535,12 +2551,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                         //    is the biggest variable contributor here, especially for small messages like the reset).
                                         //  That isn't a problem for a single device on a comm channel, but it is a major problem
                                         //    for a comm channel with multiple devices.
-
-                                        pInfo->RemoteSequence.Request += 2;
-                                        pInfo->RemoteSequence.Reply   += 2;
-
-                                        pInfo->RemoteSequence.Request %= 8;
-                                        pInfo->RemoteSequence.Reply   %= 8;
+                                        pInfo->adjustSequencingForTimeout();
                                     }
                                 }
 

@@ -1,49 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PLIDLC
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/11/14 19:32:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        PLIDLC.C
-
-    Purpose:
-        Along with PPORT.C and PORTPORT.C routines handles level 2 IDLC stuff
-
-    The following procedures are contained in this module:
-        PreIDLC                 PreUnSequenced
-        PrePPU
-        PostIDLC                GenReply
-        RTUReply                RTUReplyHeader
-        IDLCRej                 IDLCSRej
-        IDLCSArm                IDLCua
-        IDLCAlgStat
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        9-7-93   Converted to 32 bit                                WRO
-        2-2-94   Updated SECTN loads                                WRO
-
-   -------------------------------------------------------------------- */
 #include <process.h>
 #include <iostream>
 
@@ -63,6 +19,7 @@
 #include "trx_info.h"
 #include "logger.h"
 #include "guard.h"
+#include "cparms.h"
 
 using namespace std;
 
@@ -217,11 +174,12 @@ INT PostIDLC (PBYTE    Message,       /* message and result */
 /* Routine to check for valid response from a IDLC CCU */
 
 INT GenReply (PBYTE Reply,            /* reply message */
-          USHORT  Length,         /* reply message length */
-          PUSHORT ReqNum,         /* request number */
-          PUSHORT RepNum,         /* reply number */
-          USHORT RemoteAddress,
-          USHORT Command)
+              USHORT  Length,         /* reply message length */
+              PUSHORT ReqNum,         /* request number */
+              PUSHORT RepNum,         /* reply number */
+              USHORT RemoteAddress,
+              USHORT Command,
+              bool &sequencingBroken)
 
 {
    USHORT Save;
@@ -239,24 +197,35 @@ INT GenReply (PBYTE Reply,            /* reply message */
       return(BADCCU);
    }
 
+   *ReqNum = (Reply[2] >> 5) & 0x07;
 
-   *ReqNum = Reply[2] >> 5 & 0x07;
+   int seqNum = (Reply[2] >> 1) & 0x07;
+   const bool slaveSequenceAdjusted = Reply[6] & STAT_NSADJ;
+   const bool sequencesMatch = seqNum == *RepNum;
 
-   Save = Reply[2] >> 1 & 0x07;
-
-   /* Make sure the slave did not jack around sequencing */
-   if(Reply[6] & STAT_NSADJ)
+   if(gConfigParms.isTrue("CCU711_SEQUENCING_FIX") && sequencingBroken)
    {
-      *RepNum = Save;
+       if(sequencesMatch && slaveSequenceAdjusted)
+       {
+           /* Sequencing was adjusted because we lost a message.
+              We're back on track because sequences match and the
+              slave confirmed the adjustment. */
+           sequencingBroken = false;
+       }
+       else
+       {
+           return(FRAMEERR);
+       }
    }
-   else
+   else if(slaveSequenceAdjusted)
    {
-      if(Save != *RepNum)
-      {
-         return(FRAMEERR);
-      }
+       *RepNum = seqNum;
    }
-
+   else if(!sequencesMatch)
+   {
+       return(FRAMEERR);
+   }
+      
    if(++(*RepNum) >= 8)
    {
       *RepNum = 0;
