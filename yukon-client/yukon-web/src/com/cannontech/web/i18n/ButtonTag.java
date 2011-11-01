@@ -17,27 +17,26 @@ import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 public class ButtonTag extends YukonTagSupport {
-
     protected String id = null;
     protected String nameKey = null;
     protected String arguments = null;
     protected String href = null;
     protected String onclick = null;
     protected String styleClass = null;
-    
+
     /* type is the actual type attribute of the generated HTML button tag
      * Possible values are 'submit', 'reset' and 'button' (default) */
     protected String type = "button";
-    
+
     protected String name = null;
     protected String value = null;
     protected boolean imageOnRight = false;
     protected boolean disabled = false;
-    
+
     /* Will add hint to button that it will ask for more info before doing the action.
      * Currently adds ellipsis to end of button text. */
     protected boolean dialogButton = false;
-    
+
     /* renderMode is to describe how the button should look:
      * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
     protected String renderMode = "button";
@@ -49,7 +48,7 @@ public class ButtonTag extends YukonTagSupport {
     public void setNameKey(String nameKey) {
         this.nameKey = nameKey;
     }
-    
+
     public void setArguments(String arguments) {
         this.arguments = arguments;
     }
@@ -73,15 +72,15 @@ public class ButtonTag extends YukonTagSupport {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     public void setImageOnRight(Boolean imageOnRight) {
         this.imageOnRight = imageOnRight;
     }
-    
+
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
@@ -89,7 +88,7 @@ public class ButtonTag extends YukonTagSupport {
     public void setRenderMode(String renderMode) {
         this.renderMode = renderMode;
     }
-    
+
     public void setDialogButton(Boolean dialogButton) {
         this.dialogButton = dialogButton;
     }
@@ -102,27 +101,27 @@ public class ButtonTag extends YukonTagSupport {
         }
 
         String classes = "pointer";
-        
+
         if (!disabled) {
             classes += " hoverableImageContainer";
         }
-        
+
         if (!renderMode.equalsIgnoreCase("image")) {
-            classes += " formSubmit"; // addes padding to left and right inside button tag
+            classes += " formSubmit"; // adds padding to left and right inside button tag
         }
-        
+
         if (renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) {
             classes += " naked"; // draws a button with no border and transparent background
         }
-        
+
         if (renderMode.equalsIgnoreCase("labeledImage")) {
             classes += " labeledImage"; // addes text decoration underline when hovering over button
         }
-        
+
         if (renderMode.equalsIgnoreCase("image")) {
             classes += " image";
         }
-        
+
         if (StringUtils.isNotBlank(styleClass)) {
             classes += " " + styleClass;
         }
@@ -143,7 +142,7 @@ public class ButtonTag extends YukonTagSupport {
              * This means the dialogButton attribut's appending of ellipsis feature will not be respected. */
             MessageSourceResolvable overrideLabelTextResolvable = messageScope.generateResolvable(".label.override", arguments);
             labelText = getLocalMessage(overrideLabelTextResolvable, false);
-            
+
             if (StringUtils.isBlank(labelText)) {
                 MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label", arguments);
                 labelText = getLocalMessage(labelTextResolvable, false);
@@ -153,16 +152,16 @@ public class ButtonTag extends YukonTagSupport {
             } else {
                 override = true;
             }
-            
+
             if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
                 throw new RuntimeException("at least one of .imageUrl or .label is required for " + nameKey);
             }
-            
+
             if (dialogButton && !override) {
                 String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
                 labelText += ellipsis;
             }
-            
+
             if ((renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) 
                     && StringUtils.isBlank(imageUrl)) {
                 throw new RuntimeException(".imageUrl is required for " + nameKey + " when renderMode is 'image' or 'labeledImage'");
@@ -174,7 +173,7 @@ public class ButtonTag extends YukonTagSupport {
             if (!StringUtils.isBlank(hoverText)) {
                 hoverText = StringEscapeUtils.escapeHtml(hoverText);
             }
-            
+
             JspWriter out = getJspContext().getOut();
 
             out.write("<button id=\"");
@@ -192,7 +191,7 @@ public class ButtonTag extends YukonTagSupport {
                 out.write(name);
                 out.write("\"");
             }
-            
+
             /* Value */
             if (value != null) {
                 out.write(" value=\"");
@@ -211,7 +210,7 @@ public class ButtonTag extends YukonTagSupport {
                 out.write(hoverText);
                 out.write("\"");
             }
-            
+
             if (disabled) {
                 out.write(" disabled=\"disabled\"");
             }
@@ -280,5 +279,4 @@ public class ButtonTag extends YukonTagSupport {
         }
         return retVal;
     }
-    
 }
