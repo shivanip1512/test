@@ -14,12 +14,7 @@ public abstract class WaitableRfnMeterDisconnectCallback implements RfnMeterDisc
 
     @Override
     public final void complete() {
-        doComplete();
         completeLatch.countDown();
-    }
-
-    protected void doComplete() {
-        
     }
 
     public void waitForCompletion() throws InterruptedException {
