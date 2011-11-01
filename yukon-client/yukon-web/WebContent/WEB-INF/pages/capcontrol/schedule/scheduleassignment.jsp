@@ -205,17 +205,17 @@
 		                    	<!-- Actions -->
 		                    	<c:choose>
 		                    		<c:when test="${hasActionRoles == true}">
-			                    		<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="pointer" title="Run command" 
+			                    		<img src="/WebConfig/yukon/Icons/control_play_blue.png" class="pointer" title="Run command" 
 			                    		onclick="submitCommand(${item.eventId},'${item.scheduleName}', '<spring:escapeBody javaScriptEscape="true">${item.deviceName}</spring:escapeBody>')">
 		                    			<c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-		                    				<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="pointer" title="Stop verification"
+		                    				<img src="/WebConfig/yukon/Icons/control_stop_blue.png" class="pointer" title="Stop verification"
 		                    				onclick="submitStop('${item.paoId}', '<spring:escapeBody javaScriptEscape="true">${item.deviceName}</spring:escapeBody>')">
 										</c:if>
 									</c:when>
 									<c:otherwise>
-		                    			<img src="/WebConfig/yukon/Icons/control_play_blue_disabled.gif" class="tierImage" title="${notAuthorizedText}">
+		                    			<img src="/WebConfig/yukon/Icons/control_play_blue_disabled.png" class="tierImage" title="${notAuthorizedText}">
 		                    			<c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-		                    				<img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.gif" class="tierImage" title="${notAuthorizedText}">
+		                    				<img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.png" class="tierImage" title="${notAuthorizedText}">
 		                    			</c:if>
 		                    		</c:otherwise>
 		                    	</c:choose>

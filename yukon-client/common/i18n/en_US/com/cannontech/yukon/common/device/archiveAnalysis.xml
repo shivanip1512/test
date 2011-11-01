@@ -50,7 +50,7 @@
     <entry key="yukon.web.modules.amr.analysis.results.reanalyze.imageUrl">/WebConfig/yukon/Icons/arrow_rotate_clockwise.png</entry>
     <entry key="yukon.web.modules.amr.analysis.results.reanalyze.label">Re-run Analysis</entry>
     <entry key="yukon.web.modules.amr.analysis.results.reanalyze.hoverText">Run a new analysis with identical parameters.</entry>
-    <entry key="yukon.web.modules.amr.analysis.results.read.imageUrl">/WebConfig/yukon/Icons/control_play_blue.gif</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.read.imageUrl">/WebConfig/yukon/Icons/control_play_blue.png</entry>
     <entry key="yukon.web.modules.amr.analysis.results.read.label">Read All Devices</entry>
     <entry key="yukon.web.modules.amr.analysis.results.read.hoverText">Attempt to read all missing load profile interval data.</entry>
     <entry key="yukon.web.modules.amr.analysis.results.scheduleRead.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
