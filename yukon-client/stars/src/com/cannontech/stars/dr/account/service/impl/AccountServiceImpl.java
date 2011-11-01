@@ -506,11 +506,6 @@ public class AccountServiceImpl implements AccountService {
                 userId != UserUtils.USER_YUKON_ID) {
             yukonUserDao.deleteUser(userId);
             starsDatabaseCache.deleteStarsYukonUser( userId );
-            dbPersistantDao.processDBChange(new DBChangeMsg(energyCompany.getEnergyCompanyUser().getUserID(),
-                                   DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                   DBChangeMsg.CAT_YUKON_USER,
-                                   DBChangeMsg.CAT_YUKON_USER,
-                                   DbChangeType.DELETE)); 
         }
         
         /*
