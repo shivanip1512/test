@@ -179,7 +179,7 @@ INT GenReply (PBYTE Reply,            /* reply message */
               PUSHORT RepNum,         /* reply number */
               USHORT RemoteAddress,
               USHORT Command,
-              bool &sequencingBroken)
+              bool* sequencingBroken)
 
 {
    USHORT Save;
@@ -203,14 +203,14 @@ INT GenReply (PBYTE Reply,            /* reply message */
    const bool slaveSequenceAdjusted = Reply[6] & STAT_NSADJ;
    const bool sequencesMatch = seqNum == *RepNum;
 
-   if(gConfigParms.isTrue("CCU711_SEQUENCING_FIX") && sequencingBroken)
+   if(gConfigParms.isTrue("CCU711_SEQUENCING_FIX") && *sequencingBroken)
    {
        if(sequencesMatch && slaveSequenceAdjusted)
        {
            /* Sequencing was adjusted because we lost a message.
               We're back on track because sequences match and the
               slave confirmed the adjustment. */
-           sequencingBroken = false;
+           *sequencingBroken = false;
        }
        else
        {

@@ -2499,14 +2499,6 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                         if( !status && !(OutMessage->MessageFlags & MessageFlag_PortSharing) )
                                         {
                                             /*
-                                             * We need to know whether or not the sequencing we received was valid 
-                                             * or not. If we manually adjusted the sequencing previously because of 
-                                             * a timeout, then we can't trust the CCU's NSADJ bit being accurate 
-                                             * and must judge for ourselves. 
-                                             */
-                                            bool sequencingBroken = pInfo->isSequencingBroken();
-
-                                            /*
                                              *  This is the guy who does some rudimentary checking on the CCU message
                                              *  He will return REQACK in that case...
                                              */
@@ -2516,9 +2508,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                                                &pInfo->RemoteSequence.Reply, 
                                                                Device->getAddress(), 
                                                                OutMessage->Command,
-                                                               sequencingBroken);
-
-                                            pInfo->setSequencingBroken(sequencingBroken);
+                                                               &pInfo->SequencingBroken);
                                         }
                                     }
                                 }

@@ -108,14 +108,4 @@ public:
         LastColdStartTime = time;
     }
 
-    void setSequencingBroken(bool value)
-    {
-        SequencingBroken = value;
-    }
-
-    bool isSequencingBroken()
-    {
-        return SequencingBroken;
-    }
-
 };

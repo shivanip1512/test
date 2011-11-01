@@ -13,17 +13,13 @@ int callGenReply(BYTE reply[], int size, CtiTransmitter711Info &pInfo)
 {
     int address = 0, cmd = 0x00;
 
-    bool seqBroken = pInfo.isSequencingBroken();
-
     int status = GenReply(&reply[0],
                           size,
                           &pInfo.RemoteSequence.Request,
                           &pInfo.RemoteSequence.Reply,
                           address,
                           cmd,
-                          seqBroken);
-
-    pInfo.setSequencingBroken(seqBroken);
+                          &pInfo.SequencingBroken);
 
     // Neither of these should have been changed.
     BOOST_CHECK_EQUAL(address, 0);
@@ -47,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
      
        We expect the request and reply numbers to each become 1,
        sequencing broken to remain false, and a return of NORMAL.    */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), false);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 1);
     BOOST_CHECK_EQUAL(status, NORMAL);
@@ -57,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     /* NSADJ = false, SequencingBroken = false, SequencesMatch = false
      
        We expect a FRAMEERR return. SequencingBroken should remain false. */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), false);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 1);
     BOOST_CHECK_EQUAL(status, FRAMEERR);
@@ -66,7 +62,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
        and flip the SequencingBroken value to true.                     */
     pInfo.adjustSequencingForTimeout();
 
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), true);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 3);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 3);
 
@@ -76,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
      
        We expect a FRAMEERR return. SequencingBroken should remain true.
        Request value should be accepted from the reply as 1.            */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), true);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 3);
     BOOST_CHECK_EQUAL(status, FRAMEERR);
@@ -91,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
      
        We expect a FRAMEERR return. Sequencing broken should remain true.
        Request value should be accepted from the reply as 2 this time. */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), true);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 3);
     BOOST_CHECK_EQUAL(status, FRAMEERR);
@@ -108,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     /* NSADJ = true, SequencingBroken = true, SequencesMatch = false
      
        We expect a FRAMEERR to occur here as well.                    */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), true);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 4);
     BOOST_CHECK_EQUAL(status, FRAMEERR);
@@ -123,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
        Everything should be back on track. We expect a return of NORMAL
        and our sequencing should no longer be broken. Our reply number
        should be incremented in the GenReply function back to 4.       */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), false);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 4);
     BOOST_CHECK_EQUAL(status, NORMAL);
@@ -146,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
        it. Since the incoming reply number was 7, 7+1 mod 8 = 0. Our request
        number should have also been changed to 6 from the first 3 bits of
        reply[2].                                                      */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), false);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 6);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 0);
     BOOST_CHECK_EQUAL(status, NORMAL);
@@ -162,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
        reply message gave us as a reply number, then incremented it. We
        have a reply number of 3, the reply message says 7. Since these don't
        match, we expect GenReply to take the 7, then increment it to 0 again. */
-    BOOST_CHECK_EQUAL(pInfo.isSequencingBroken(), false);
+    BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 6);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 0);
     BOOST_CHECK_EQUAL(status, NORMAL);
