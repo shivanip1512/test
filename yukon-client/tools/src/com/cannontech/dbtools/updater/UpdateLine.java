@@ -207,4 +207,9 @@ public class UpdateLine
             return false;
     }
 
+
+    public void setWarnOnce() {
+        getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[6] );
+    }
+
 }

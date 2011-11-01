@@ -450,7 +450,14 @@ public class UpdateDB
                             //if we have a END_BLOCK, this comment is terminated
                             blockState = !token.endsWith(DBMSDefines.END_BLOCK);
                             if(blockState) {
-                                updLine = new UpdateLine();
+                                // @error warn_once should work with blocks. Blocks otherwise would clear this setting and do not work with @error ignore
+                                if(updLine.isWarnOnce()) { 
+                                    updLine = new UpdateLine();
+                                    updLine.setWarnOnce();
+                                } else {
+                                    updLine = new UpdateLine();
+                                }
+                                
                                 updLine.getValue().append(DBMSDefines.START_BLOCK + " ");
                                 continue;
                             }
