@@ -548,7 +548,7 @@ bool CtiANSIApplication::analyzePacket()
              case identified:
              {
                  identificationData( getDatalinkLayer().getCurrentPacket()+6 );
-                 getDatalinkLayer().setToggleMatch((getDatalinkLayer().getCurrentPacket()[2] & 0x20) == getDatalinkLayer().getToggleByte());
+                 getDatalinkLayer().initToggleMatch();
                  _currentState = getNextState (_requestedState);
                  break;
              }

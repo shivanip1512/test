@@ -1060,8 +1060,8 @@ bool CtiANSIDatalink::shouldToggleMatch()
 {
     return _toggleMatch;
 }
-void CtiANSIDatalink::setToggleMatch(bool matchFlag)
+void CtiANSIDatalink::initToggleMatch()
 {
-    _toggleMatch = matchFlag;
+    _toggleMatch = (_currentPacket[2] & 0x20) == getToggleByte();
 }
 

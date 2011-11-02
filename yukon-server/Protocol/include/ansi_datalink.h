@@ -104,7 +104,7 @@ class IM_EX_PROT CtiANSIDatalink
 
       bool compareToggleByte(BYTE toggleByte);
       bool shouldToggleMatch();
-      void setToggleMatch(bool matchFlag);
+      void initToggleMatch();
     
 
    protected:
