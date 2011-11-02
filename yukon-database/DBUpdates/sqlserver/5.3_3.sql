@@ -2,16 +2,6 @@
 /**** SQL Server DBupdates             ****/ 
 /******************************************/ 
 
-/* @start-block */
-IF 0 < (SELECT COUNT(*)
-        FROM YukonGroupRole YGR, YukonUserRole YUR
-        WHERE (YGR.RolePropertyId IN (-20892, -40205, -40204, -20899)
-                AND YGR.Value = 'true')
-          OR (YUR.RolePropertyId IN (-20892, -40205, -40204, -20899)
-              AND YUR.Value = 'true'))
-    RAISERROR('The database contains thermostat role properties that are about to be reset to the default value. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.', 16, 1);
-/* @end-block */
-
 /* Start YUK-10000 */ 
 UPDATE State 
 SET Text = 'Connected' 
@@ -88,6 +78,28 @@ CREATE INDEX Indx_DynVer_TimeArr_Code ON DynamicVerification (
 /* End YUK-10067 */
 
 /* Start YUK-10090 */
+/* @error warn-once */
+/* @start-block */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroupRole YGR, YukonUserRole YUR
+        WHERE (YGR.RolePropertyId IN (-20892, -40205)
+                AND YGR.Value = 'true')
+          OR (YUR.RolePropertyId IN (-20892, -40205)
+              AND YUR.Value = 'true'))
+    RAISERROR('The database contains Thermostat Schedule 7 Day role properties that are about to be reset to the default value. This will change the current value from true to false. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.', 16, 1);
+/* @end-block */
+
+/* @error warn-once */
+/* @start-block */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroupRole YGR, YukonUserRole YUR
+        WHERE (YGR.RolePropertyId IN (-40204, -20899)
+                AND YGR.Value = 'true')
+          OR (YUR.RolePropertyId IN (-40204, -20899)
+              AND YUR.Value = 'true'))
+    RAISERROR('The database contains Thermostat Schedule 5-2 role properties that are about to be reset to the default value. This will change the current value from true to false. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.', 16, 1);
+/* @end-block */
+
 INSERT INTO YukonRoleProperty VALUES(-1121, -2, 'Allow Single Day Thermostat Schedules', 'true', 'Allow the use of schedules where every day shares the same values for compatible thermostats.'); 
 INSERT INTO YukonRoleProperty VALUES(-1122, -2, 'Allow 5/2 Thermostat Schedules', 'false', 'Allow the use of 5/2 day schedules for compatible thermostats. Weekday/Weekend.'); 
 INSERT INTO YukonRoleProperty VALUES(-1123, -2, 'Allow 5/1/1 Thermostat Schedules', 'true', 'Allow the use of 5/1/1 schedules for compatible thermostats. Weekday/Saturday/Sunday.'); 

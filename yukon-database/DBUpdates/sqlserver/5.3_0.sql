@@ -2,16 +2,6 @@
 /**** SQL Server DBupdates             ****/ 
 /******************************************/ 
 
-/* @start-block */
-IF 0 < (SELECT COUNT(*)
-        FROM YukonGroupRole YGR, YukonUserRole YUR
-        WHERE (YGR.RolePropertyId IN (-20154, -40052)
-                AND YGR.Value = 'true')
-          OR (YUR.RolePropertyId IN (-20154, -40052)
-              AND YUR.Value = 'true'))
-    RAISERROR('The database contains Automatic Configuration role properties that are about to be reset to the default value. Please record uses of Residential > Automatic Configuration and Consumer Info > Automatic Configuration before continuing. See YUK-9436 for more information.', 16, 1);
-/* @end-block */
-
 /* Start YUK-9319 */
 ALTER TABLE YukonServices 
 DROP COLUMN ParamNames; 
@@ -120,6 +110,17 @@ WHERE RolePropertyId = -20002;
 /* End YUK-9489 */
 
 /* Start YUK-9436 */
+/* @error warn-once */
+/* @start-block */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroupRole YGR, YukonUserRole YUR
+        WHERE (YGR.RolePropertyId IN (-20154, -40052)
+                AND YGR.Value = 'true')
+          OR (YUR.RolePropertyId IN (-20154, -40052)
+              AND YUR.Value = 'true'))
+    RAISERROR('The database contains Automatic Configuration role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of Residential > Automatic Configuration and Consumer Info > Automatic Configuration before continuing. See YUK-9436 for more information.', 16, 1);
+/* @end-block */
+
 INSERT INTO YukonRoleProperty
 VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment.');
 

@@ -2,24 +2,6 @@
 /**** Oracle DBupdates                 ****/ 
 /******************************************/ 
 
-/* @start-block */
-DECLARE
-    errorFlagCount INT;
-BEGIN
-    SELECT COUNT(*) INTO errorFlagCount
-    FROM YukonGroupRole YGR, YukonUserRole YUR
-    WHERE (YGR.RolePropertyId = -20008 
-           AND YGR.Value = 'true')
-      OR (YUR.RolePropertyId = -20008 
-          AND YUR.Value = 'true');
-
-    IF 0 < errorFlagCount THEN
-        RAISE_APPLICATION_ERROR(-20001, 'The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.');
-    END IF;
-END;
-/
-/* @end-block */
-
 /* Start YUK-9557 */
 UPDATE CapControlStrategy 
 SET ControlUnits = 'MULTI_VOLT_VAR' 
@@ -48,6 +30,25 @@ ALTER TABLE ServiceCompanyDesignationCode
 /* End YUK-9575 */
 
 /* Start YUK-9603 */
+/* @error warn-once */
+/* @start-block */
+DECLARE
+    errorFlagCount INT;
+BEGIN
+    SELECT COUNT(*) INTO errorFlagCount
+    FROM YukonGroupRole YGR, YukonUserRole YUR
+    WHERE (YGR.RolePropertyId = -20008 
+           AND YGR.Value = 'true')
+      OR (YUR.RolePropertyId = -20008 
+          AND YUR.Value = 'true');
+
+    IF 0 < errorFlagCount THEN
+        RAISE_APPLICATION_ERROR(-20001, 'The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.');
+    END IF;
+END;
+/
+/* @end-block */
+
 INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.');
 
 DELETE FROM YukonUserRole 
