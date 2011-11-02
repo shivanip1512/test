@@ -34,7 +34,7 @@ protected:
   virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
   void processNewPiPoint(PiPointInfoStruct &info);
   void removeAllPoints();
-  void processPiPollResults(PiPointId piId, PI_EVENT &piEvent, int32 errors, unsigned int pollPeriod, time_t timeToSend );
+  void processPiPollResults(PiPointInfo piInfo, PI_EVENT &piEvent, int32 error, time_t timeToSend);
 
   void handleNewPoints();
   void handleNewPoint(CtiFDRPointSPtr ctiPoint);

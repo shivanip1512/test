@@ -258,10 +258,10 @@ void CtiFDRPiPoll::doUpdates()
 
             PiPointId* piIdArray = &pollInfo.pointIdList[0];
             PI_EVENT piEvent = pollInfo.eventList[0];
-            int32 errors;
+            int32 error;
 
             int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
-                                   &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETFIRST);
+                                   &piEvent.istat, NULL, &piEvent.timestamp, &error, GETFIRST);
 
             if (!err)
             {
@@ -271,12 +271,12 @@ void CtiFDRPiPoll::doUpdates()
                     // if 'alwaysSendValues' send the time we were supposed to poll, this has the
                     // effect of always sending the values
                     time_t timeToSend = _alwaysSendValues ? pollInfo.nextUpdate: piToYukonTime(piEvent.timestamp);
-
-                    /* handle results */
-                    processPiPollResults(piIdArray[i], piEvent, errors, pollPeriod, timeToSend);
+    
+                   /* handle results */
+                    processPiPollResults(pollInfo.pointList[i], piEvent, error, timeToSend);
                     i++;
                 } while ((err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
-                                                    &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETNEXT))== 0);
+                                                    &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT))== 0);
             }
             else
             {
@@ -299,20 +299,11 @@ void CtiFDRPiPoll::doUpdates()
         }
     }
 }
-void CtiFDRPiPoll::processPiPollResults(PiPointId piId, PI_EVENT &piEvent, int32 errors, unsigned int period, time_t timeToSend ) 
+void CtiFDRPiPoll::processPiPollResults(PiPointInfo info, PI_EVENT &piEvent, int32 error, time_t timeToSend) 
 {
-    
-    // Find all entries that match this Pi Point (probably one, but multiple points could
-    // be linked to a single Pi Point).
-    for each (const PiPointInfo& info in _pollData[period].pointList)
-    {
-       if (info.piPointId == piId)
-       {
-           // pisn_evmesceptions doesn't return error codes per point, default to 0
-           handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, errors);
-        }
+                      
+    handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, error);
       
-    }
     piEvent.bsize = sizeof(piEvent.bval);
 }
 

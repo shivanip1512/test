@@ -260,8 +260,7 @@ void CtiFDRPiNotify::doUpdates()
         // vectors are guaranteed to have contiguous memory
         PiPointId piId    = _notifyInfo.pointList[0].piPointId;
         PI_EVENT piEvent  = _notifyInfo.eventList[0];
-        int32 errors;
-
+        
         int32 pointCount = points_at_a_time;
         // loop until the number of points returned is less than number requested
         while (points_at_a_time == pointCount)
@@ -287,7 +286,7 @@ void CtiFDRPiNotify::doUpdates()
                     throw PiException(err);
                 }
 
-                processPiEventResults(piId, piEvent, errors);
+                processPiEventResults(piId, piEvent, 0);
                 err =  pisn_evmexceptionsx(&pointCount, &piId, &piEvent, GETNEXT);
                
             };
@@ -319,19 +318,19 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
         << " points." << endl;
     }
     PI_EVENT piEvent;
-    int32 errors;
+    int32 error;
 
     int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
-                                 &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETFIRST);
+                                 &piEvent.istat, NULL, &piEvent.timestamp, &error, GETFIRST);
     if (!err)
     {
         int i = 0;
         do 
         {
-            processPiEventResults(piIdArray[i], piEvent, errors);
+            processPiEventResults(piIdArray[i], piEvent, error);
             i++;
         } while ((err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
-                                 &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETNEXT))== 0);
+                                 &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT))== 0);
     }
     else
     {
@@ -345,7 +344,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
   }
 }
 
-void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, int32 errors ) 
+void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, int32 error ) 
 {
     // remove local offset (might not be thread-safe)
     time_t timeToSend = piToYukonTime(piEvent.timestamp);
@@ -361,7 +360,7 @@ void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, in
         const PiPointInfo &info = (*myIter).second;
       
         // pisn_evmesceptions doesn't return error codes per point, default to 0
-        handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, 0);
+        handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, error);
     }
     piEvent.bsize = sizeof(piEvent.bval);
 }
