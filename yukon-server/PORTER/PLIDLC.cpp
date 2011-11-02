@@ -200,8 +200,8 @@ INT GenReply (PBYTE Reply,            /* reply message */
    *ReqNum = (Reply[2] >> 5) & 0x07;
 
    int seqNum = (Reply[2] >> 1) & 0x07;
-   const bool slaveSequenceAdjusted = Reply[6] & STAT_NSADJ;
-   const bool sequencesMatch = seqNum == *RepNum;
+   const bool slaveSequenceAdjusted = (Reply[6] & STAT_NSADJ);
+   const bool sequencesMatch = (seqNum == *RepNum);
 
    if(gConfigParms.isTrue("CCU711_SEQUENCING_FIX") && *sequencingBroken)
    {
