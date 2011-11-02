@@ -85,32 +85,13 @@ DECLARE
 BEGIN
     SELECT COUNT(*) INTO errorFlagCount
     FROM YukonGroupRole YGR, YukonUserRole YUR
-    WHERE (YGR.RolePropertyId IN (-20892, -40205)
-           AND YGR.Value = 'true')
-      OR (YUR.RolePropertyId IN (-20892, -40205)
-          AND YUR.Value = 'true');
-
-    IF 0 < errorFlagCount THEN
-        RAISE_APPLICATION_ERROR(-20001, 'The database contains Thermostat Schedule 7 Day role properties that are about to be reset to the default value. This will change the current value from true to false. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.');
-    END IF;
-END;
-/
-/* @end-block */
-
-/* @error warn-once */
-/* @start-block */
-DECLARE
-    errorFlagCount INT;
-BEGIN
-    SELECT COUNT(*) INTO errorFlagCount
-    FROM YukonGroupRole YGR, YukonUserRole YUR
     WHERE (YGR.RolePropertyId IN (-40204, -20899)
            AND YGR.Value = 'true')
       OR (YUR.RolePropertyId IN (-40204, -20899)
           AND YUR.Value = 'true');
 
     IF 0 < errorFlagCount THEN
-        RAISE_APPLICATION_ERROR(-20001, 'The database contains Thermostat Schedule 5-2 role properties that are about to be reset to the default value. This will change the current value from true to false. Please record all current values for Allow 5/1/1, and 7 day thermostat role properties before continuing. See YUK-10090 for more inforamtion.');
+        RAISE_APPLICATION_ERROR(-20001, 'The database contains Thermostat Schedule 5-2 role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of Consumer Info > Thermostat Schedule 5-2 and Residential Customer > Thermostat Schedule 5-2 before continuing. See YUK-10090 for more inforamtion.');
     END IF;
 END;
 /

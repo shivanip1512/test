@@ -40,7 +40,7 @@ IF 0 < (SELECT COUNT(*)
                 AND YGR.Value = 'true')
           OR (YUR.RolePropertyId = -20008 
               AND YUR.Value = 'true'))
-    RAISERROR('The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.', 16, 1);
+    RAISERROR('The database contains Allow Designation Codes role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of Administrator > Allow Designation Codes and Inventory > Allow Designation Codes before continuing. See YUK-9603 for more information.', 16, 1);
 /* @end-block */
 
 INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.');

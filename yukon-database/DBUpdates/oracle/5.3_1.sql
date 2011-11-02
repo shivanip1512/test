@@ -43,7 +43,7 @@ BEGIN
           AND YUR.Value = 'true');
 
     IF 0 < errorFlagCount THEN
-        RAISE_APPLICATION_ERROR(-20001, 'The database contains ADMIN_ALLOW_DESIGNATION_CODES role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of ADMIN_ALLOW_DESIGNATION_CODES before continuing. See YUK-9603 for more information.');
+        RAISE_APPLICATION_ERROR(-20001, 'The database contains Allow Designation Codes role properties that are about to be reset to the default value. This will change the current value from true to false. Please record uses of Administrator > Allow Designation Codes and Inventory > Allow Designation Codes before continuing. See YUK-9603 for more information.');
     END IF;
 END;
 /
