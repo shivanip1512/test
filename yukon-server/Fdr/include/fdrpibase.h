@@ -19,6 +19,8 @@
 #include "fdrasciiimportbase.h"
 
 
+
+
 class IM_EX_FDRPIBASEAPI CtiFDRPiBase : public CtiFDRSimple
 {
 public:
@@ -47,6 +49,16 @@ protected:
     int digitalLastIndex;
 
   } PiPointInfo;
+
+   
+  typedef struct {
+    std::vector<PiPointInfo> pointList;
+    std::vector<PiPointId> pointIdList;
+    std::vector<PI_EVENT> eventList;
+
+    time_t nextUpdate;
+
+  }PiEventInfo;
 
   /**
    * The amount of connection failures that can occur before the 
@@ -90,12 +102,15 @@ protected:
   int getPiPointIdFromTag(const std::string& tagName, PiPointId& piId);
 
   void handlePiUpdate(const PiPointInfo info,
-                    const float rval,
+                    const float64 rval,
+                    const int32 ival,
                     const int32 istat,
                     const time_t timestamp_utc,
                     const int32 errorcode);
 
   std::string getPiErrorDescription(int errCode, char* functionName = "");
+
+  std::time_t piToYukonTime(PITIMESTAMP piTimeStamp);
 
   virtual void readThisConfig();
 

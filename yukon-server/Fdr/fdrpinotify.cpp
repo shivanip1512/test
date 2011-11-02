@@ -250,77 +250,57 @@ void CtiFDRPiNotify::doUpdates()
 {
   if (_registerList.size() > 0)
   {
-    const int32 points_at_a_time = 500;
+        const int32 points_at_a_time = 500;
 
-    // After this has been called once, memory won't be reallocated
-    // and the following calls will be "cheap."
-    _pointList.resize(points_at_a_time);
-    _rvalList.resize(points_at_a_time);
-    _istatList.resize(points_at_a_time);
-    _timeList.resize(points_at_a_time);
+        // After this has been called once, memory won't be reallocated
+        // and the following calls will be "cheap."
+        _notifyInfo.pointList.resize(points_at_a_time);
+        _notifyInfo.eventList.resize(points_at_a_time);
 
-    // vectors are guaranteed to have contiguous memory
-    PiPointId *piIdArray = &_pointList[0];
-    float *rvalArray = &_rvalList[0];
-    int32 *istatArray = &_istatList[0];
-    int32 *timeArray = &_timeList[0];
+        // vectors are guaranteed to have contiguous memory
+        PiPointId piId    = _notifyInfo.pointList[0].piPointId;
+        PI_EVENT piEvent  = _notifyInfo.eventList[0];
+        int32 errors;
 
-    int32 pointCount = points_at_a_time;
-    // loop until the number of points returned is less than number requested
-    while (points_at_a_time == pointCount)
-    {
-      int err = pisn_evmexceptions(&pointCount, piIdArray, rvalArray, istatArray, timeArray);
-      if (err != 0)
-      {
-        if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+        int32 pointCount = points_at_a_time;
+        // loop until the number of points returned is less than number requested
+        while (points_at_a_time == pointCount)
         {
-          CtiLockGuard<CtiLogger> doubt_guard( dout );
-          logNow() << "Unable to update values from Pi, pisn_evmexceptions returned "
-            << getPiErrorDescription(err, "pisn_evmexceptions") << endl;
+            int err =  pisn_evmexceptionsx(&pointCount, &piId, &piEvent, GETFIRST);
+            if( (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL && pointCount > 0)
+                  || (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL))
+            {
+              CtiLockGuard<CtiLogger> doubt_guard( dout );
+              logNow() << "Received " << pointCount << " exceptions from Pi" << endl;
+            }
+            while (err != 100)
+            {
+                if (err)
+                {
+                    if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+                    {
+                      CtiLockGuard<CtiLogger> doubt_guard( dout );
+                      logNow() << "Unable to update values from Pi, pisn_evmexceptions returned "
+                        << getPiErrorDescription(err, "pisn_evmexceptions") << endl;
+                    }
+                    setConnected(false);
+                    throw PiException(err);
+                }
+
+                processPiEventResults(piId, piEvent, errors);
+                err =  pisn_evmexceptionsx(&pointCount, &piId, &piEvent, GETNEXT);
+               
+            };
         }
-        setConnected(false);
-        throw PiException(err);
-      }
-      if( (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL && pointCount > 0)
-          || (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL))
+    }
+    else
+    {
+      if( getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL )
       {
         CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Received " << pointCount << " exceptions from Pi" << endl;
-      }
-      for (int i = 0; i < pointCount; ++i)
-      {
-        PiPointId thisPoint = piIdArray[i];
-
-        // Find all entries that match this Pi Point (probably one, but multiple points could
-        // be linked to a single Pi Point).
-        pair<PiPointMap::const_iterator,PiPointMap::const_iterator> result = _pointMap.equal_range(thisPoint);
-
-        for (PiPointMap::const_iterator myIter = result.first;
-              myIter != result.second;
-              ++myIter)
-        {
-          const PiPointInfo &info = (*myIter).second;
-
-          // remove local offset (might not be thread-safe)
-          struct tm *temp = NULL;
-          time_t tTime = timeArray[i];
-          temp = CtiTime::gmtime_r(&tTime);
-          time_t timeStamp = mktime(temp);
-          // pisn_evmesceptions doesn't return error codes per point, default to 0
-          handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
-
-        }
+        logNow() << "No check made, no points registered." << endl;
       }
     }
-  }
-  else
-  {
-    if( getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL )
-    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "No check made, no points registered." << endl;
-    }
-  }
 }
 
 /**
@@ -338,57 +318,53 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
       logNow() << "Forcing update of " << pointCount
         << " points." << endl;
     }
+    PI_EVENT piEvent;
+    int32 errors;
 
-    vector<float> rvalList;
-    rvalList.resize(pointCount);
-    float *rvalArray = &rvalList[0];
-
-    vector<int32> istatList;
-    istatList.resize(pointCount);
-    int32 *istatArray = &istatList[0];
-
-    vector<int32> timeList;
-    timeList.resize(pointCount);
-    int32 *timeArray = &timeList[0];
-
-    vector<int32> errorList;
-    errorList.resize(pointCount);
-    int32 *errorArray = &errorList[0];
-
-    int err = pisn_getsnapshots(piIdArray, rvalArray, istatArray, timeArray, errorArray, pointCount);
-    if (err != 0)
+    int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                                 &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETFIRST);
+    if (!err)
+    {
+        int i = 0;
+        do 
+        {
+            processPiEventResults(piIdArray[i], piEvent, errors);
+            i++;
+        } while ((err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                                 &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETNEXT))== 0);
+    }
+    else
     {
       if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
       {
         CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Unable to update values from Pi, pisn_getsnapshots returned "
-          << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
-      }
-    }
-
-    for (int i = 0; i < pointCount; ++i)
-    {
-      // remove local offset (might not be thread-safe)
-      time_t tTime = timeArray[i];
-      time_t timeToSend = mktime(CtiTime::gmtime_r(&tTime) );
-
-      PiPointId thisPoint = piIdArray[i];
-
-      // Find all entries that match this Pi Point (probably one, but multiple points could
-      // be linked to a single Pi Point).
-      pair<PiPointMap::const_iterator,PiPointMap::const_iterator> result = _pointMap.equal_range(thisPoint);
-
-      for (PiPointMap::const_iterator myIter = result.first;
-            myIter != result.second;
-            ++myIter)
-      {
-        const PiPointInfo &info = (*myIter).second;
-        handlePiUpdate(info, rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
+        logNow() << "Unable to update values from Pi, pisn_getsnapshotsx returned "
+          << getPiErrorDescription(err, "pisn_getsnapshotsx") << endl;
       }
     }
   }
 }
 
+void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, int32 errors ) 
+{
+    // remove local offset (might not be thread-safe)
+    time_t timeToSend = piToYukonTime(piEvent.timestamp);
+
+    // Find all entries that match this Pi Point (probably one, but multiple points could
+    // be linked to a single Pi Point).
+    pair<PiPointMap::const_iterator,PiPointMap::const_iterator> result = _pointMap.equal_range(piId);
+
+    for (PiPointMap::const_iterator myIter = result.first;
+          myIter != result.second;
+          ++myIter)
+    {
+        const PiPointInfo &info = (*myIter).second;
+      
+        // pisn_evmesceptions doesn't return error codes per point, default to 0
+        handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, 0);
+    }
+    piEvent.bsize = sizeof(piEvent.bval);
+}
 
 
 

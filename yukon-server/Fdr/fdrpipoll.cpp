@@ -59,15 +59,9 @@ void CtiFDRPiPoll::processNewPiPoint(PiPointInfoStruct &info)
   {
     info.period = _defaultPeriod;
   }
-
-  unsigned int period = info.period;
-  _pollData[period].pointList.push_back(info.piPointId);
-  _pollData[period].infoList.push_back(info);
-  _pollData[period].rvalList.push_back(0);
-  _pollData[period].istatList.push_back(0);
-  _pollData[period].timeList.push_back(0);
-  _pollData[period].errorList.push_back(0);
-
+   unsigned int period = info.period;
+   _pollData[period].pointList.push_back(info);
+   _pollData[period].pointIdList.push_back(info.piPointId);
 }
 
 void CtiFDRPiPoll::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
@@ -97,30 +91,32 @@ void CtiFDRPiPoll::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, b
     return;
   }
 
-  vector<PiPointId>::iterator pointListItr = _pollData[period].pointList.begin();
+
+  vector<PiPointId>::iterator pointIdItr = _pollData[period].pointIdList.begin();
+  for ( ; pointIdItr != _pollData[period].pointIdList.end(); pointIdItr++)
+  {
+    if ((*pointIdItr) == piId)
+    {
+      _pollData[period].pointIdList.erase(pointIdItr);
+      break;
+    }
+  }
+
+  vector<PiPointInfo>::iterator pointListItr = _pollData[period].pointList.begin();
   for ( ; pointListItr != _pollData[period].pointList.end(); pointListItr++)
   {
-    if (*pointListItr == piId)
+    if ((*pointListItr).piPointId == piId)
     {
       _pollData[period].pointList.erase(pointListItr);
       break;
     }
   }
 
-  vector<PiPointInfo>::iterator infoListItr = _pollData[period].infoList.begin();
-  for ( ; infoListItr != _pollData[period].infoList.end(); infoListItr++)
+  if ( _pollData[period].pointList.size() == 0)
   {
-    if ((*infoListItr).piPointId == piId)
-    {
-      _pollData[period].infoList.erase(infoListItr);
-      break;
-    }
+    _pollData.erase(period);
   }
 
-  _pollData[period].rvalList.pop_back();
-  _pollData[period].istatList.pop_back();
-  _pollData[period].timeList.pop_back();
-  _pollData[period].errorList.pop_back();
 
 }
 
@@ -139,11 +135,11 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
   //No good way to update the single point, so every point in the period is being updated.
   //Setting next update to one period ago for this single period.
 
-  PollDataList::iterator itr = _pollData.find(period);
+  PollDataMap::iterator itr = _pollData.find(period);
 
   if (itr != _pollData.end())
   {
-    PollInfo &pollInfo = (*itr).second;
+    PiEventInfo &pollInfo = (*itr).second;
     int pollPeriod = (*itr).first;
 
     time_t now;
@@ -190,12 +186,12 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 void CtiFDRPiPoll::handleNewPoints()
 {
   // loop through all the points we were notified of in the processNewPiPoint call
-  for (PollDataList::iterator myIter =  _pollData.begin();
+  for (PollDataMap::iterator myIter =  _pollData.begin();
        myIter != _pollData.end();
        ++myIter)
   {
 
-    PollInfo &pollInfo = (*myIter).second;
+    PiEventInfo &pollInfo = (*myIter).second;
     int pollPeriod = (*myIter).first;
 
     time_t now;
@@ -235,73 +231,89 @@ void CtiFDRPiPoll::handleNewPoints()
  */
 void CtiFDRPiPoll::doUpdates()
 {
-  time_t now;
-  ::time(&now);
+    time_t now;
+    ::time(&now);
 
-  for (PollDataList::iterator myIter =  _pollData.begin();
-       myIter != _pollData.end();
-       ++myIter)
-  {
-    unsigned int pollPeriod = (*myIter).first;
-    PollInfo &pollInfo = (*myIter).second;
-
-    if (pollInfo.nextUpdate < now)
+    for (PollDataMap::iterator myIter =  _pollData.begin();
+         myIter != _pollData.end();
+         ++myIter)
     {
+        unsigned int pollPeriod = (*myIter).first;
+        PiEventInfo &pollInfo = (*myIter).second;
+        int32 pointCount = pollInfo.pointList.size(); //all sizes should be identical
 
-      if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-      {
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Checking " << pollInfo.pointList.size()
-          << " points for period " << pollPeriod << endl;
-      }
-
-      int pointCount = pollInfo.pointList.size(); //all sizes should be identical
-
-      // the following is supposed to be legit
-      //    (http://www.parashift.com/c++-faq-lite/containers-and-templates.html#faq-34.3)
-      PiPointId *piIdArray = &pollInfo.pointList[0];
-      float *rvalArray = &pollInfo.rvalList[0];
-      int32 *istatArray = &pollInfo.istatList[0];
-      int32 *timeArray = &pollInfo.timeList[0];
-      int32 *errorArray = &pollInfo.errorList[0];
-
-      int err = pisn_getsnapshots(piIdArray, rvalArray, istatArray, timeArray, errorArray, pointCount);
-      if (err != 0)
-      {
-        if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+        if (pollInfo.nextUpdate < now && pointCount > 0)
         {
-          CtiLockGuard<CtiLogger> doubt_guard( dout );
-          logNow() << "Unable to update values from Pi, pisn_getsnapshots returned "
-            << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
+            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+            {
+              CtiLockGuard<CtiLogger> doubt_guard( dout );
+              logNow() << "Checking " << pointCount << " points for period " << pollPeriod << endl;
+            }
+
+            pollInfo.pointIdList.resize(pointCount);
+            pollInfo.eventList.resize(pointCount);
+
+            // the following is supposed to be legit
+            //    (http://www.parashift.com/c++-faq-lite/containers-and-templates.html#faq-34.3)
+
+            PiPointId* piIdArray = &pollInfo.pointIdList[0];
+            PI_EVENT piEvent = pollInfo.eventList[0];
+            int32 errors;
+
+            int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                                   &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETFIRST);
+
+            if (!err)
+            {
+                int i = 0;
+                do 
+                {
+                    // if 'alwaysSendValues' send the time we were supposed to poll, this has the
+                    // effect of always sending the values
+                    time_t timeToSend = _alwaysSendValues ? pollInfo.nextUpdate: piToYukonTime(piEvent.timestamp);
+
+                    /* handle results */
+                    processPiPollResults(piIdArray[i], piEvent, errors, pollPeriod, timeToSend);
+                    i++;
+                } while ((err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                                                    &piEvent.istat, NULL, &piEvent.timestamp, &errors, GETNEXT))== 0);
+            }
+            else
+            {
+                if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+                {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  logNow() << "Unable to update values from Pi, pisn_getsnapshotsx returned "
+                    << getPiErrorDescription(err, "pisn_getsnapshotsx") << endl;
+                }
+                setConnected(false);
+                throw PiException(err);
+            }
+            // calculate next update time
+            // Should only need to go through loop once, but allows
+            // for "catch-up" if thread gets stalled.
+            do
+            {
+              pollInfo.nextUpdate += pollPeriod;
+            } while (pollInfo.nextUpdate < now);
         }
-        setConnected(false);
-        throw PiException(err);
-      }
-
-      for (int i = 0; i < pointCount; ++i)
-      {
-        // remove local offset (might not be thread-safe)
-        struct tm *temp = NULL;
-        time_t tTime = timeArray[i];
-        temp = CtiTime::gmtime_r(&tTime);
-        time_t timeStamp = mktime(temp);
-        // if 'alwaysSendValues' send the time we were supposed to poll, this has the
-        // effect of always sending the values
-        time_t timeToSend = _alwaysSendValues ? pollInfo.nextUpdate: timeStamp;
-        handlePiUpdate(pollInfo.infoList[i], rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
-      }
-
-      // calculate next update time
-      // Should only need to go through loop once, but allows
-      // for "catch-up" if thread gets stalled.
-      do
-      {
-        pollInfo.nextUpdate += pollPeriod;
-      }
-      while (pollInfo.nextUpdate < now);
-
     }
-  }
+}
+void CtiFDRPiPoll::processPiPollResults(PiPointId piId, PI_EVENT &piEvent, int32 errors, unsigned int period, time_t timeToSend ) 
+{
+    
+    // Find all entries that match this Pi Point (probably one, but multiple points could
+    // be linked to a single Pi Point).
+    for each (const PiPointInfo& info in _pollData[period].pointList)
+    {
+       if (info.piPointId == piId)
+       {
+           // pisn_evmesceptions doesn't return error codes per point, default to 0
+           handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, errors);
+        }
+      
+    }
+    piEvent.bsize = sizeof(piEvent.bval);
 }
 
 /**
@@ -328,8 +340,6 @@ void CtiFDRPiPoll::readThisConfig()
     dout << endl;
   }
 }
-
-
 
 
 

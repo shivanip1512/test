@@ -18,18 +18,9 @@
 class IM_EX_FDRPIBASEAPI CtiFDRPiPoll : public CtiFDRPiBase
 {
 private:  
-  typedef struct {
-    std::vector<PiPointId> pointList;
-    std::vector<PiPointInfo> infoList;
-    std::vector<float> rvalList;
-    std::vector<int32> istatList;
-    std::vector<int32> timeList;
-    std::vector<int32> errorList;
-    time_t nextUpdate;
 
-  } PollInfo;
 
-  typedef std::map<unsigned int, PollInfo> PollDataList;
+  typedef std::map<unsigned int, PiEventInfo> PollDataMap;
 
 public:
 
@@ -43,6 +34,7 @@ protected:
   virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
   void processNewPiPoint(PiPointInfoStruct &info);
   void removeAllPoints();
+  void processPiPollResults(PiPointId piId, PI_EVENT &piEvent, int32 errors, unsigned int pollPeriod, time_t timeToSend );
 
   void handleNewPoints();
   void handleNewPoint(CtiFDRPointSPtr ctiPoint);
@@ -51,7 +43,7 @@ protected:
 
   virtual void readThisConfig();
 
-  PollDataList _pollData;
+  PollDataMap _pollData;
 
 private:
   bool _alwaysSendValues;

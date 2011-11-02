@@ -29,6 +29,7 @@ public:
 protected:
 
   void processNewPiPoint(PiPointInfoStruct &info);
+  void processPiEventResults(PiPointId piId, PI_EVENT &piEvent, int32 errors );
   virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
   void removeAllPoints();
@@ -45,9 +46,6 @@ private:
   PiPointMap _pointMap;
   std::vector<PiPointId> _registerList;
 
-  std::vector<PiPointId> _pointList;
-  std::vector<float>     _rvalList;
-  std::vector<int32>     _istatList;
-  std::vector<int32>     _timeList;
+  PiEventInfo _notifyInfo;
 
 };

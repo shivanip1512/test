@@ -481,7 +481,8 @@ int CtiFDRPiBase::getPiPointIdFromTag(const string& tagName, PiPointId& piId)
  * Handle updated values from Pi.
  */
 void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
-                                const float rval,
+                                const float64 rval,
+                                const int32 ival,
                                 const int32 istat,
                                 const time_t timestamp_utc,
                                 const int32 errorcode)
@@ -506,15 +507,15 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
     }
     handleUpdate(info.ctiPoint, rval, timestamp_utc);
   }
-  else if (info.piType == PI_INTEGER_POINT && istat >= 0)
+  else if (info.piType == PI_INTEGER_POINT)
   {
     if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Handling PI_INTEGER_POINT update for " << info.ctiPoint->getPointID()
-        << ", rval=" << rval << ", istat=" << istat <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
+        << ", rval=" << ival <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
     }
-    handleUpdate(info.ctiPoint, istat, timestamp_utc);
+    handleUpdate(info.ctiPoint, ival, timestamp_utc);
   }
   else if (info.piType == PI_DIGITAL_POINT)
   {
@@ -626,7 +627,20 @@ std::string CtiFDRPiBase::getPiErrorDescription(int errCode, char* functionName)
   return errMessage;
 }
 
+time_t CtiFDRPiBase::piToYukonTime(PITIMESTAMP piTimeStamp)
+{
+     // remove local offset (might not be thread-safe)
+     time_t time = CtiTime().seconds();
+     struct tm* temp = CtiTime().localtime_r(&time);
+     temp->tm_year =  piTimeStamp.year - 1900;
+     temp->tm_mon  =  piTimeStamp.month - 1;
+     temp->tm_mday =  piTimeStamp.day;
+     temp->tm_hour =  piTimeStamp.hour;
+     temp->tm_min  =  piTimeStamp.minute;
+     temp->tm_sec  =  piTimeStamp.second;
 
+     return mktime(temp);
+}
 /*==============================================================================
  *      Here Starts some C functions that are used to Start the
  *     Interface and Stop it from the Main() of FDR.EXE.
