@@ -8,8 +8,6 @@
 
 class IM_EX_DEVDB CtiDeviceRTM : public CtiDeviceIED
 {
-private:
-
     typedef CtiDeviceIED Inherited;
 
     CtiOutMessage _outbound;
@@ -19,28 +17,29 @@ private:
     {
         State_Uninit,
         State_Output,
+        State_InputHeader,
         State_Input,
         State_Ack,
         State_Complete
     } _state;
 
     unsigned short _error_count;
-    unsigned long  _in_expected, _in_actual;
+    unsigned long  _in_total, _in_actual;
     int _code_len, _codes_received;
 
     enum
     {
+        HeaderLength = 8,
         MaxErrors = 3
     };
 
     std::queue< CtiVerificationBase * > _verification_objects;
 
-protected:
+    unsigned long findHeader(unsigned char *buf, unsigned long len);
 
 public:
 
     CtiDeviceRTM();
-    virtual ~CtiDeviceRTM();
     virtual LONG getAddress() const;
 
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
