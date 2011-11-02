@@ -95,7 +95,6 @@ import com.cannontech.multispeak.dao.MeterReadUpdater;
 import com.cannontech.multispeak.dao.MeterReadUpdaterChain;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.EA_ServerSoap_PortType;
@@ -155,7 +154,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private DeviceDao deviceDao;
     private MeterSearchDao meterSearchDao;
     private DeviceAttributeReadService deviceAttributeReadService;
-    private MspRawPointHistoryDao mspRawPointHistoryDao;
     private AttributeService attributeService;
     private PointDao pointDao;
     private MeterReadProcessingService meterReadProcessingService;
@@ -399,7 +397,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         final CB_ServerSoap_PortType port = MultispeakPortFactory.getCB_ServerPort(vendor);
         if (port == null) {
             log.error("Port not found for CB_MR (" + vendor.getCompanyName() + ")");
-            return new ErrorObject[0]; // this doesn't quite mimic the old behavior
+            return new ErrorObject[0];	//return without any processing, since we have no one to send to when we're done anyways.
         }
         
         List<com.cannontech.amr.meter.model.Meter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
@@ -520,7 +518,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         final EA_ServerSoap_PortType port = MultispeakPortFactory.getEA_ServerPort(vendor);
         if (port == null) {
             log.error("Port not found for EA_Server (" + vendor.getCompanyName() + ")");
-            return new ErrorObject[0]; // this doesn't quite mimic the old behavior
+            return new ErrorObject[0];	//return without any processing, since we have no one to send to when we're done anyways. 
         }
         
         final com.cannontech.amr.meter.model.Meter paoToRead;
@@ -1995,12 +1993,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public void setDeviceAttributeReadService(DeviceAttributeReadService deviceAttributeReadService) {
         this.deviceAttributeReadService = deviceAttributeReadService;
     }
-    
-    @Autowired
-    public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
-        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
-    }
-    
+
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
