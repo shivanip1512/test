@@ -165,3 +165,4 @@ INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K.', '03-NOV-2011', 'Latest Update', 5);
