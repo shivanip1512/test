@@ -11,8 +11,6 @@
         <cti:button nameKey="csv" renderMode="labeledImage" href="/spring/stars/operator/inventory/zbProblemDevices/csv"/>
     </div>
     
-    <br>
-    
     <table class="resultsTable" style="width:100%;">
         <tr>
             <th><i:inline key=".serialNumber"/></th>

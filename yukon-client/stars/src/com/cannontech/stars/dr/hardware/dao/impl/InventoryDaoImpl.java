@@ -88,21 +88,20 @@ public class InventoryDaoImpl implements InventoryDao {
         PointType pointType = definition.getPointTemplate().getPointType();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Inventory.EnergyCompanyId, Inventory.AccountId, Inventory.InventoryID, Inventory.ManufacturerSerialNumber, Inventory.LMHardwareTypeID, ");
-        sql.append("DeviceLabel = CASE WHEN Inventory.AccountId = 0 THEN '").append(accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse")).append("'");
-        sql.append("                   WHEN Inventory.AccountId > 0 THEN Inventory.DeviceLabel");
-        sql.append("              END,");
-        sql.append("RPH1.POINTID, RPH1.TIMESTAMP, Inventory.PointType, RPH1.Value");
+        sql.append("SELECT Inventory.EnergyCompanyId, Inventory.AccountId, Inventory.InventoryID, Inventory.ManufacturerSerialNumber, ");
+        sql.append("Inventory.LMHardwareTypeID, Inventory.DeviceLabel, RPH1.POINTID, RPH1.TIMESTAMP, Inventory.PointType, RPH1.Value");
         sql.append("FROM RAWPOINTHISTORY RPH1,");
         
-        sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");
-        sql.append("      JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
-        sql.append("      JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
-        sql.append("      JOIN Point P on P.PAObjectID = YPO.PAObjectID");
-        sql.append("      LEFT JOIN ECToAccountMapping ECTA on ECTA.AccountID = IB.AccountID");
-        sql.append("    WHERE P.PointOffset").eq_k(pointOffset);
-        sql.append("      AND P.PointType").eq_k(pointType);
-        sql.append("      AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
+        sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, ");
+        sql.append("          IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType");
+        sql.append("   FROM InventoryBase IB");
+        sql.append("     JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
+        sql.append("     JOIN LMHardwareBase HB on HB.InventoryID = IB.InventoryID");
+        sql.append("     JOIN Point P on P.PAObjectID = YPO.PAObjectID");
+        sql.append("     LEFT JOIN ECToAccountMapping ECTA on ECTA.AccountID = IB.AccountID");
+        sql.append("   WHERE P.PointOffset").eq_k(pointOffset);
+        sql.append("     AND P.PointType").eq_k(pointType);
+        sql.append("     AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(")");
         sql.append("  ) Inventory,");
         
         sql.append("  (SELECT PointId, MAX(timestamp) latestTime");
@@ -125,12 +124,8 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("  AND RPH1.Value").neq_k(Commissioned.CONNECTED.getRawState());
         
         sql.append("UNION");
-        sql.append("(SELECT Inventory.EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, ");
-        sql.append("Inventory.ManufacturerSerialNumber, Inventory.LMHardwareTypeID, ");
-        sql.append("DeviceLabel = CASE WHEN Inventory.AccountID = 0 THEN '").append(accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse")).append("'");
-        sql.append("                   WHEN Inventory.AccountID > 0 THEN Inventory.DeviceLabel");
-        sql.append("              END,");
-        sql.append("Inventory.POINTID, NULL as TIMESTAMP, Inventory.POINTTYPE, ").append(Commissioned.DISCONNECTED.getRawState()).append(" as Value");
+        sql.append("(SELECT Inventory.EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, Inventory.ManufacturerSerialNumber,");
+        sql.append("Inventory.LMHardwareTypeID, Inventory.DeviceLabel, Inventory.POINTID, NULL as TIMESTAMP, Inventory.POINTTYPE, NULL as Value");
         sql.append("FROM");
         sql.append("   (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");
         sql.append("      JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
@@ -149,7 +144,12 @@ public class InventoryDaoImpl implements InventoryDao {
                 LiteLmHardware hw = new LiteLmHardware();
                 InventoryIdentifier id = new InventoryIdentifier(rs.getInt("InventoryId"), getHardwareTypeById(rs.getInt("LMHardwareTypeId")));
                 hw.setIdentifier(id);
-                hw.setLabel(rs.getString("DeviceLabel"));
+                // If this device does not belong to an account, set its label to 'In Warehouse'.
+                if (rs.getString("DeviceLabel").isEmpty()) {
+                    hw.setLabel(accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse"));
+                } else {
+                    hw.setLabel(rs.getString("DeviceLabel"));
+                }
                 hw.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
                 hw.setAccountId(rs.getInt("AccountId"));
                 hw.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
@@ -158,7 +158,10 @@ public class InventoryDaoImpl implements InventoryDao {
                 Date timestamp = rs.getDate("Timestamp");
                 int pointType = rs.getEnum("PointType", PointType.class).getPointTypeId();
                 double pointValue = rs.getDouble("Value");
-                
+                // If there was no point in RPH, set this field to Disconnected.
+                if (rs.wasNull()) { 
+                    pointValue = Commissioned.DISCONNECTED.getRawState();
+                }
                 SimplePointValue pvh = new SimplePointValue(pointId, timestamp, pointType, pointValue);
                 
                 return new Pair<LiteLmHardware, SimplePointValue>(hw, pvh);
