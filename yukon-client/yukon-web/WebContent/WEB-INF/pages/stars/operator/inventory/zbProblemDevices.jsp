@@ -47,10 +47,10 @@
                 <td><i:inline key="${device.first.identifier.hardwareType}"/></td>
                 <td>${fn:escapeXml(device.first.label)}</td>
                 <td class="fwb" style="color:${stateColorMap[device.second.value]};"><cti:pointValueFormatter value="${device.second}" format="VALUE"/></td>
-                <c:if test="${device.second.pointDataTimeStamp == NULL}">
+                <c:if test="${empty device.second.pointDataTimeStamp}">
                     <td><i:inline key=".uninitialized"/></td>
                 </c:if>
-                <c:if test="${device.second.pointDataTimeStamp != NULL}">
+                <c:if test="${not empty device.second.pointDataTimeStamp}">
                     <td><cti:pointValueFormatter value="${device.second}" format="DATE"/></td>
                 </c:if>
             </tr>
