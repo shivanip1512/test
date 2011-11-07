@@ -107,6 +107,6 @@ public interface InventoryDao {
      * @param MessageSourceAccessor
      * @return List<Pair<LiteLmHardware, SimplePointValue>>
      */
-    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(MessageSourceAccessor accessor);
+    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(String inWarehouseMsg);
 
 }

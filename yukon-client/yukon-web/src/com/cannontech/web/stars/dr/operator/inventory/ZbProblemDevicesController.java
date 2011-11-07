@@ -51,7 +51,8 @@ public class ZbProblemDevicesController {
     @RequestMapping
     public String view(ModelMap model, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(accessor);
+        String inWarehouseMsg = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse");
+        List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
         model.addAttribute("devices", devices);
         List<Integer> inventoryIds = Lists.newArrayList();
         for (Pair<LiteLmHardware, SimplePointValue> device : devices) {
@@ -82,6 +83,7 @@ public class ZbProblemDevicesController {
     @RequestMapping
     public String csv(HttpServletResponse response, YukonUserContext context) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String inWarehouseMsg = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse");
 
         String[] headerRow = new String[5];
         headerRow[0] = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.serialNumber");
@@ -91,7 +93,7 @@ public class ZbProblemDevicesController {
         headerRow[4] = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.timestamp");
         
         List<String[]> dataRows = Lists.newArrayList();
-        List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(accessor);
+        List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
         for(Pair<LiteLmHardware, SimplePointValue> pair : devices) {
             String[] dataRow = new String[5];
             dataRow[0] = pair.first.getSerialNumber();

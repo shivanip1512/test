@@ -82,7 +82,7 @@ public class InventoryDaoImpl implements InventoryDao {
     private PaoDefinitionDao paoDefinitionDao;
     
     @Override
-    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final MessageSourceAccessor accessor) {
+    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
         BasicAttributeDefinition definition = (BasicAttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         int pointOffset = definition.getPointTemplate().getOffset();
         PointType pointType = definition.getPointTemplate().getPointType();
@@ -144,14 +144,14 @@ public class InventoryDaoImpl implements InventoryDao {
                 LiteLmHardware hw = new LiteLmHardware();
                 InventoryIdentifier id = new InventoryIdentifier(rs.getInt("InventoryId"), getHardwareTypeById(rs.getInt("LMHardwareTypeId")));
                 hw.setIdentifier(id);
-                // If this device does not belong to an account, set its label to 'In Warehouse'.
-                if (rs.getString("DeviceLabel").isEmpty()) {
-                    hw.setLabel(accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse"));
+                hw.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                hw.setAccountId(rs.getInt("AccountId"));
+                // If a device doesn't belong to an account, the label shows an 'In  Warehouse' message.
+                if (rs.getInt("AccountId") == 0) {
+                    hw.setLabel(inWarehouseMsg);
                 } else {
                     hw.setLabel(rs.getString("DeviceLabel"));
                 }
-                hw.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
-                hw.setAccountId(rs.getInt("AccountId"));
                 hw.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
                 
                 int pointId = rs.getInt("PointId");
