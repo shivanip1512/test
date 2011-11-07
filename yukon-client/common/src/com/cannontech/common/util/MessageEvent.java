@@ -1,14 +1,18 @@
 package com.cannontech.common.util;
 
+import java.util.Date;
+import java.util.EventObject;
+
 /**
  * This type represents system events.
  */
-public class MessageEvent extends java.util.EventObject {
+public class MessageEvent extends EventObject {
 	private String message = null;
-	private java.util.Date creationDate = null;
+	private Date creationDate = null;
 	private int messageType = 0;
 	public static final int INFORMATION_MESSAGE = 0;
 	public static final int ERROR_MESSAGE = 1;
+	
 /**
  * SystemEvent constructor comment.
  * @param source java.lang.Object
@@ -52,7 +56,7 @@ public int getMessageType() {
  */
 private void initialize(String message) {
 
-	creationDate = new java.util.Date();
+	creationDate = new Date();
 	setMessage(message);		
 }
 /**
@@ -61,7 +65,7 @@ private void initialize(String message) {
  */
 private void initialize(String message, int type) {
 
-	creationDate = new java.util.Date();
+	creationDate = new Date();
 	setMessage(message);
 	setMessageType(type);
 }
