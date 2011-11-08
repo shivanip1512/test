@@ -19,7 +19,8 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukonUIToolkit/yukonUiToolkit.css"/>" >
-        
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/jQuery/yukon/jquery-ui-1.8.16.custom.css"/>" >
+
         <!-- Module CSS files from module_config.xml -->
         <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
