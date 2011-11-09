@@ -15,7 +15,7 @@
     			<select name="searchBy" onchange="$('accountSearchValue').value = ''">
     				<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
     					<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
-    						<i:inline key="${operatorAccountSearchBy.formatKey}"/>
+    						<cti:msg2 key="${operatorAccountSearchBy.formatKey}"/>
     					</option>
     				</c:forEach>
     			</select>

@@ -32,10 +32,10 @@
                         <c:otherwise>
                             <select name="entries[${entryIndex}].definitionId" id="entries[${entryIndex}].definitionId">
                                 <option selected value="0">
-                                    <i:inline key="yukon.web.modules.adminSetup.list.noDefinition"/>
+                                    <cti:msg2 key="yukon.web.modules.adminSetup.list.noDefinition"/>
                                 </option>
                                 <c:forEach var="definition" items="${listDefinitions}">
-                                    <option value="${definition.definitionId}"><i:inline key="${definition}"/></option>
+                                    <option value="${definition.definitionId}"><cti:msg2 key="${definition}"/></option>
                                 </c:forEach>
                             </select>
                         </c:otherwise>

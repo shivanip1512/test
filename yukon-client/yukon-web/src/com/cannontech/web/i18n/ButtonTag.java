@@ -115,7 +115,7 @@ public class ButtonTag extends YukonTagSupport {
         }
 
         if (renderMode.equalsIgnoreCase("labeledImage")) {
-            classes += " labeledImage"; // addes text decoration underline when hovering over button
+            classes += " labeledImage"; // adds text decoration underline when hovering over button
         }
 
         if (renderMode.equalsIgnoreCase("image")) {

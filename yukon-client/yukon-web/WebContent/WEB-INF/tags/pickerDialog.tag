@@ -18,7 +18,6 @@
 <%@ attribute name="initialId" description="Id of item selected at the start." rtexprvalue="true"%>
 <%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
 <%@ attribute name="useInitialIdsIfEmpty" type="java.lang.Boolean" description="Clears selection if initial id(s) is empty." rtexprvalue="true"%>
-<%@ attribute name="mode" description="mode (inline or dialog; dialog is default)" rtexprvalue="true"%>
 <%@ attribute name="containerDiv" description="causes picker to be inlined; placed in this div" rtexprvalue="true"%>
 <%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="causes picker display the value only; only usable with selection linkType" rtexprvalue="true"%>
 <%@ attribute name="buttonRenderMode" description="passes the render mode to the cti:button tag; only usable with button linkType" rtexprvalue="true"%>

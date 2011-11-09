@@ -1,3 +1,4 @@
+<%@ tag description="This tag is deprecated.  Please use cti:button instead." %>
 <%@ attribute name="myFormId" required="true" type="java.lang.String" %>
 <%@ attribute name="label" required="true" type="java.lang.String"%>
 <%@ attribute name="labelBusy" required="false" type="java.lang.String"%>

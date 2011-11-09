@@ -72,10 +72,10 @@
                 <c:otherwise>
                     <c:choose>
                         <c:when test="${not empty pageScope.emptyValueKey}">
-                            <i:inline key="${pageScope.emptyValueKey}"/>
+                            <cti:msg2 key="${pageScope.emptyValueKey}"/>
                         </c:when>
                         <c:otherwise>
-                            <i:inline key="defaults.na"/>
+                            <cti:msg2 key="defaults.na"/>
                         </c:otherwise>
                     </c:choose>
                 </c:otherwise>

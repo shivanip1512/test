@@ -83,6 +83,7 @@
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms">Assigned Programs</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.noAssignedPrograms">There are currently no programs assigned to this appliance category.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.programName">Program Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.programName.linkText">Program Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.virtualProgramName">Virtual Program {0}</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.actions">Actions</entry>

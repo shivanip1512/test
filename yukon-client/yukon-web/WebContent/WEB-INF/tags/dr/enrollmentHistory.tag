@@ -58,13 +58,9 @@
             <cti:url var="showCompleteHistoryUrl" value="/spring/stars/operator/enrollment/history">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
-            <table class="actionArea">
-                <tr>
-                    <td class="leftActions">
-                        <a href="${showCompleteHistoryUrl}"><i:inline key=".showCompleteHistory"/></a>
-                    </td>
-                </tr>
-            </table>
+            <div class="pageActionArea">
+                <a href="${showCompleteHistoryUrl}"><i:inline key=".showCompleteHistory"/></a>
+            </div>
         </c:if>
     </c:if>
 </tags:boxContainer2>
