@@ -23,6 +23,13 @@
                 <ref bean="enumArgumentResolver"/>
             </list>
         </property>
+        <property name="order" value="1" />
+        <property name="messageConverters">
+           <list>
+             <!-- Message converters -->
+             <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+            </list>
+         </property>
     </bean>
     
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
