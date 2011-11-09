@@ -1,26 +1,23 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<cti:msgScope paths="modules.survey.list">
+<ajax:dialogPage nameKey="details" module="survey" page="list" okAction="submit">
 
 <script type="text/javascript">
-submitForm = function() {
-	return submitFormViaAjax('ajaxDialog', 'inputForm')
-}
+jQuery(document).ready(function() {
+    jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+});
 </script>
 
-<cti:flashScopeMessages/>
-
-<cti:url var="submitUrl" value="/spring/stars/survey/saveDetails"/>
-<form:form id="inputForm" commandName="survey" action="${submitUrl}"
-    onsubmit="return submitForm()">
+<cti:url var="submitUrl" value="saveDetails"/>
+<form:form id="inputForm" commandName="survey" action="${submitUrl}">
     <form:hidden path="surveyId"/>
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer>
@@ -34,15 +31,6 @@ submitForm = function() {
             <tags:input path="surveyKey" size="30" maxlength="64"/>
         </tags:nameValue>
     </tags:nameValueContainer>
-
-    <div class="actionArea">
-        <cti:button nameKey="ok" type="submit"/>
-        <cti:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
-    </div>
 </form:form>
 
-</cti:msgScope>
-
-<script type="text/javascript">
-$('surveyName').focus();
-</script>
+</ajax:dialogPage>

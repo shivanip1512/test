@@ -243,16 +243,12 @@
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 
 	<c:if test="${fn:length(previousOptOutList) > 0}">
-        <table class="actionArea">
-            <tr>
-                <td class="leftActions">
-                    <cti:url var="optOutHistoryUrl" value="/spring/stars/operator/program/optOut/optOutHistory">
-                        <cti:param name="accountId" value="${accountId}"/>
-                    </cti:url>
-                    <a href="${optOutHistoryUrl}" ><i:inline key=".viewCompleteHistory" /></a>
-                </td>
-            </tr>
-        </table>
+        <div class="pageActionArea">
+            <cti:url var="optOutHistoryUrl" value="/spring/stars/operator/program/optOut/optOutHistory">
+                <cti:param name="accountId" value="${accountId}"/>
+            </cti:url>
+            <a href="${optOutHistoryUrl}" ><i:inline key=".viewCompleteHistory" /></a>
+        </div>
     </c:if>
     
 </tags:boxContainer2>

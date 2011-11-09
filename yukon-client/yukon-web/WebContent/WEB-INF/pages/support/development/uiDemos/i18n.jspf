@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 
-<cti:standardPage module="support" page="i18nDemo">
+<cti:msgScope paths="modules.support.i18nDemo">
 
 <p class="pageDescription">
 This page shows some examples of how to do internationalization in Yukon.  This is the same
@@ -38,4 +38,4 @@ information one would get using i:inline and setting I18N_DESIGN_MODE to true in
 <debug:scopeDemo newPaths=".nested,StartOver,"/>
 </cti:msgScope>
 
-</cti:standardPage>
+</cti:msgScope>

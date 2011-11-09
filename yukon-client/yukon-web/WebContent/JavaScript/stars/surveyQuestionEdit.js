@@ -1,9 +1,6 @@
-// This Javascript file works with pages/stars/survey/editQuestion.jsp (and
-// is only used by it).
-
+// This Javascript file works with pages/stars/survey/editQuestion.jsp (and is only used by it).
 
 function indexOfRow(rowIdNum) {
-
 	for (var index = 0; index < addAnswer.rowIdNums.length; index++) {
 		if (addAnswer.rowIdNums[index] == rowIdNum) {
 			return index;
@@ -12,36 +9,35 @@ function indexOfRow(rowIdNum) {
 }
 
 function disableMoveUp(rowIdNum) {
-    var oldMoveIcon = $('moveUpIcon' + rowIdNum);
+    var oldMoveIcon = jQuery('#moveUpIcon' + rowIdNum)[0];
     var disabledIcon = moveUpDisabledIcon.cloneNode(true);
     disabledIcon.id = 'moveUpIcon' + rowIdNum;
     oldMoveIcon.parentNode.replaceChild(disabledIcon, oldMoveIcon);
 }
 
 function disableMoveDown(rowIdNum) {
-	var oldMoveIcon = $('moveDownIcon' + rowIdNum);
+	var oldMoveIcon = jQuery('#moveDownIcon' + rowIdNum)[0];
 	var disabledIcon = moveDownDisabledIcon.cloneNode(true);
 	disabledIcon.id = 'moveDownIcon' + rowIdNum;
 	oldMoveIcon.parentNode.replaceChild(disabledIcon, oldMoveIcon);
 }
 
 function enableMoveUp(rowIdNum) {
-    var oldMoveIcon = $('moveUpIcon' + rowIdNum);
+    var oldMoveIcon = jQuery('#moveUpIcon' + rowIdNum)[0];
     var enabledIcon = moveUpIcon.cloneNode(true);
     enabledIcon.id = 'moveUpIcon' + rowIdNum;
     oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
-    enabledIcon.href = "javascript:moveAnswerUp(" + rowIdNum + ")";
 }
 
 function enableMoveDown(rowIdNum) {
-	var oldMoveIcon = $('moveDownIcon' + rowIdNum);
+	var oldMoveIcon = jQuery('#moveDownIcon' + rowIdNum)[0];
 	var enabledIcon = moveDownIcon.cloneNode(true);
 	enabledIcon.id = 'moveDownIcon' + rowIdNum;
 	oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
-	enabledIcon.href = "javascript:moveAnswerDown(" + rowIdNum + ")";
 }
 
-function deleteAnswer(rowIdNum) {
+function deleteAnswer(event) {
+    var rowIdNum = jQuery(event.target).closest('tr').data('rowIdNum');
 	if (addAnswer.rowIdNums.length > 1) {
 		if (rowIdNum === addAnswer.rowIdNums[0]) {
 			disableMoveUp(addAnswer.rowIdNums[1]);
@@ -51,7 +47,7 @@ function deleteAnswer(rowIdNum) {
 		}
 	}
 
-	var row = $('answerRow' + rowIdNum);
+	var row = jQuery('#answerRow' + rowIdNum)[0];
 	row.parentNode.removeChild(row);
 
     addAnswer.rowIdNums.splice(indexOfRow(rowIdNum), 1);
@@ -62,6 +58,7 @@ function addAnswer(answerKey) {
 	var rowNum = answerTable.rows.length;
 	var newRow = answerTable.insertRow(rowNum);
 	var newRowIdNum = addAnswer.nextRowIdNum++;
+	jQuery.data(newRow, 'rowIdNum', newRowIdNum);
 	newRow.id = 'answerRow' + newRowIdNum;
 	var isFirstRow = addAnswer.rowIdNums.length == 0;
 
@@ -75,9 +72,6 @@ function addAnswer(answerKey) {
 
 	var icon = (isFirstRow ? moveUpDisabledIcon : moveUpIcon).cloneNode(true);
     icon.id = 'moveUpIcon' + newRowIdNum;
-    if (!isFirstRow) {
-    	icon.href = "javascript:moveAnswerUp(" + newRowIdNum + ")";
-    }
 	actionsCell.appendChild(icon);
 
 	actionsCell.appendChild(document.createTextNode(' '));
@@ -87,7 +81,6 @@ function addAnswer(answerKey) {
 
 	actionsCell.appendChild(document.createTextNode(' '));
 	icon = deleteAnswerIcon.cloneNode(true);
-	icon.href = "javascript:deleteAnswer(" + newRowIdNum + ")";
 	actionsCell.appendChild(icon);
 
 	if (!isFirstRow) {
@@ -112,12 +105,13 @@ function addAnswer(answerKey) {
 	}
 }
 
-function moveAnswerUp(rowIdNum) {
+function moveAnswerUp(event) {
+    var rowIdNum = jQuery(event.target).closest('tr').data('rowIdNum');
 	var index = indexOfRow(rowIdNum);
 	var previousRowId = addAnswer.rowIdNums[index - 1];
-	var rowToMove = $('answerRow' + rowIdNum);
+	var rowToMove = jQuery('#answerRow' + rowIdNum)[0];
 	var parent = rowToMove.parentNode;
-	var previousRow = $('answerRow' + previousRowId);
+	var previousRow = jQuery('#answerRow' + previousRowId)[0];
 	parent.removeChild(rowToMove);
 	parent.insertBefore(rowToMove, previousRow);
 	var save = addAnswer.rowIdNums[index];
@@ -135,12 +129,13 @@ function moveAnswerUp(rowIdNum) {
 	}
 }
 
-function moveAnswerDown(rowIdNum) {
+function moveAnswerDown(event) {
+    var rowIdNum = jQuery(event.target).closest('tr').data('rowIdNum');
 	var index = indexOfRow(rowIdNum);
 	var nextRowId = addAnswer.rowIdNums[index + 1];
-	var rowToMove = $('answerRow' + rowIdNum);
+	var rowToMove = jQuery('#answerRow' + rowIdNum)[0];
 	var parent = rowToMove.parentNode;
-	var nextRow = $('answerRow' + nextRowId);
+	var nextRow = jQuery('#answerRow' + nextRowId)[0];
 	parent.removeChild(nextRow);
 	parent.insertBefore(nextRow, rowToMove);
 	var save = addAnswer.rowIdNums[index];
@@ -166,4 +161,10 @@ function initWithAnswerKeys(answerKeys) {
 			addAnswer(answerKeys[index]);
 		}
 	}
+}
+
+function questionTypeChanged() {
+    var questionType = jQuery('#questionType').val();
+    jQuery('.additionalInfo').hide();
+    jQuery('.additionalInfo[id$=_' + questionType + ']').show();
 }

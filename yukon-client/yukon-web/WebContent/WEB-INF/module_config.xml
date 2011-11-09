@@ -1004,14 +1004,11 @@
             <option name="bulkPointInjection">
               <link>/spring/support/development/bulkPointInjection/main</link>
             </option>
-            <option name="pickerTest">
-              <link>/spring/support/development/pickerTest/main</link>
-            </option>
-            <option name="i18nDemo">
-              <link>/spring/support/development/i18nDemo/main</link>
-            </option>
             <option name="uiToolkitDemo">
               <link>/spring/support/development/uiToolkitDemo/main</link>
+            </option>
+            <option name="uiDemos">
+              <link>/spring/support/development/uiDemos/main</link>
             </option>
             <option name="setupDatabase">
               <link>/spring/support/development/setupDatabase/main</link>
@@ -1097,13 +1094,9 @@
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
                     <menu>development|bulkPointInjection</menu>
                 </page>
-                <page name="pickerTest" type="BASIC">
+                <page name="uiToolkitDemo" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|pickerTest</menu>
-                </page>
-                <page name="i18nDemo" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|i18nDemo</menu>
+                    <menu>development|uiToolkitDemo</menu>
                 </page>
                 <page name="setup" type="BASIC">
                     <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
@@ -1115,9 +1108,9 @@
                 <page name="supportBundle" type = "BASIC">
                     <menu>information|supportBundle</menu>
                 </page>
-                <page name="uiToolkitDemo" type="BASIC">
+                <page name="uiDemos" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|uiToolkitDemo</menu>
+                    <menu>development|uiDemos</menu>
                 </page>
                 <page name="setupDatabase" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />

@@ -39,7 +39,7 @@
     
     <script type="text/javascript">
     Event.observe(window, 'load', function() {
-        groupPicker.show();
+        groupPicker.show(true);
     });
     Event.observe(window, 'load', function() {
         userPicker.show();

@@ -4,18 +4,80 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="survey" page="edit">
 
 <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
+<cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 <cti:includeScript link="/JavaScript/stars/surveyQuestionEdit.js"/>
 
-<tags:simpleDialog id="ajaxDialog"/>
+<div id="ajaxDialog"></div>
+
+<span id="templateIcons" style="display: none">
+<cti:button nameKey="up" styleClass="moveAnswerUp" renderMode="image"/>
+<cti:button nameKey="down" styleClass="moveAnswerDown" renderMode="image"/>
+<cti:button nameKey="deleteAnswer" styleClass="deleteAnswer" renderMode="image"/>
+<cti:button nameKey="up.disabled" renderMode="image" disabled="true"/>
+<cti:button nameKey="down.disabled" renderMode="image" disabled="true"/>
+</span>
 
 <c:set var="surveyId" value="${survey.surveyId}"/>
-<c:set var="baseUrl" value="/spring/stars/survey/edit"/>
+<c:set var="baseUrl" value="edit"/>
+
+<cti:url var="detailUrl" value="editDetails">
+    <cti:param name="surveyId" value="${surveyId}"/>
+</cti:url>
+<cti:url var="addQuestionUrl" value="addQuestion">
+    <cti:param name="surveyId" value="${surveyId}"/>
+</cti:url>
+<cti:url var="editQuestionUrl" value="editQuestion"/>
+<cti:url var="moveQuestionUrl" value="moveQuestion"/>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('#editDetailsBtn').click(function() {
+        jQuery('#ajaxDialog').load('${detailUrl}');
+    });
+
+    jQuery('#addQuestionBtn').click(function() {
+        jQuery('#ajaxDialog').load('${addQuestionUrl}');
+    });
+
+    jQuery('.editQuestionBtn').click(function(event) {
+        var surveyQuestionId = jQuery(event.target).closest('tr').attr('questionId');
+        var editQuestionUrl = '${editQuestionUrl}?surveyQuestionId=' + surveyQuestionId;
+        jQuery('#ajaxDialog').load(editQuestionUrl);
+    });
+
+    function moveQuestionFunc(direction) {
+        return function(event) {
+            var surveyQuestionId = jQuery(event.target).closest('tr').attr('questionId');
+            window.location = '${moveQuestionUrl}?direction=' + direction +
+                    '&surveyQuestionId=' + surveyQuestionId;
+        };
+    }
+
+    jQuery('.moveDownBtn').click(moveQuestionFunc('down'));
+    jQuery('.moveUpBtn').click(moveQuestionFunc('up'));
+    jQuery('.moveAnswerUp').live('click', moveAnswerUp);
+    jQuery('.moveAnswerDown').live('click', moveAnswerDown);
+    jQuery('.deleteAnswer').live('click', deleteAnswer);
+
+    jQuery(document).bind('yukonDetailsUpdated', closeAjaxDialogAndRefresh);
+    jQuery(document).bind('yukonQuestionSaved', closeAjaxDialogAndRefresh);
+});
+
+<c:if test="${!hasBeenTaken}">
+var templateIcons = jQuery('#templateIcons > button')
+moveUpIcon = templateIcons[0];
+moveDownIcon = templateIcons[1];
+deleteAnswerIcon = templateIcons[2];
+moveUpDisabledIcon = templateIcons[3];
+moveDownDisabledIcon = templateIcons[4];
+</c:if>
+</script>
 
 <table class="widgetColumns">
     <tr>
@@ -44,29 +106,20 @@
                             <i:inline key=".hasBeenTaken"/>
                         </div></c:if>
                         <c:if test="${!hasBeenTaken}">
-	                        <cti:url var="detailUrl"
-	                            value="/spring/stars/survey/editDetails">
-	                            <cti:param name="surveyId" value="${surveyId}"/>
-	                        </cti:url>
 	                        <li>
-	                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-	                                nameKey="edit" actionUrl="${detailUrl}"/>
-	                        </li>
-	                        <cti:url var="addQuestionUrl"
-	                            value="/spring/stars/survey/addQuestion">
-	                            <cti:param name="surveyId" value="${surveyId}"/>
-	                        </cti:url>
+                                <cti:button id="editDetailsBtn" nameKey="edit"
+                                    renderMode="labeledImage" styleClass="f_blocker"/>
+                            </li>
 	                        <li>
-	                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-	                                nameKey="addQuestion" actionUrl="${addQuestionUrl}"/>
+                                <cti:button id="addQuestionBtn" nameKey="addQuestion"
+                                    renderMode="labeledImage" styleClass="f_blocker"/>
 	                        </li>
                         </c:if>
-                        <cti:url var="sampleXmlUrl"
-                            value="/spring/stars/survey/sampleXml">
+                        <cti:url var="sampleXmlUrl" value="sampleXml">
                             <cti:param name="surveyId" value="${surveyId}"/>
                         </cti:url>
                         <li>
-                            <cti:labeledImg nameKey="sampleXml" href="${sampleXmlUrl}"/>
+                            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" renderMode="labeledImage"/>
                         </li>
                         <c:if test="${hasBeenTaken}">
                             <cti:url var="reportUrl"
@@ -74,7 +127,7 @@
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
                             <li>
-                                <cti:labeledImg nameKey="report" href="${reportUrl}"/>
+                                <cti:button nameKey="report" href="${reportUrl}" renderMode="labeledImage"/>
                             </li>
                         </c:if>
                     </ul>
@@ -92,13 +145,14 @@
 					<c:if test="${!empty questions}">
 					    <table class="compactResultsTable rowHighlighting">
 					        <tr>
-					            <th><i:inline key=".key"/></th>
+					            <th><i:inline key=".questionKey"/></th>
 					            <th><i:inline key=".answerRequired"/></th>
 					            <th><i:inline key=".questionType"/></th>
 					            <th><i:inline key=".actions"/></th>
 					        </tr>
 					        <c:forEach var="question" varStatus="status" items="${questions}">
-					            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+					            <tr class="<tags:alternateRow odd="" even="altRow"/>"
+                                    questionId="${question.surveyQuestionId}">
 					                <td>
 					                    <spring:escapeBody htmlEscape="true">
 					                        ${question.questionKey}
@@ -116,47 +170,34 @@
 					                    <cti:msg2 key="${question.questionType}"/>
 					                </td>
 					                <td>
-					                    <cti:url var="editQuestionUrl"
-					                        value="/spring/stars/survey/editQuestion">
-					                        <cti:param name="surveyQuestionId"
-					                            value="${question.surveyQuestionId}"/>
-					                    </cti:url>
-					                    <tags:simpleDialogLink2 dialogId="ajaxDialog"
-					                        nameKey="editQuestion" skipLabel="true" 
-					                        actionUrl="${editQuestionUrl}"/>
+                                        <cti:button nameKey="editQuestion" renderMode="image"
+                                            styleClass="editQuestionBtn f_blocker"/>
                                         <c:if test="${!hasBeenTaken}">
 						                    <c:if test="${status.first}">
-						                        <cti:img nameKey="up.disabled"/>
+						                        <cti:button renderMode="image"
+                                                    nameKey="up.disabled" disabled="true"/>
 						                    </c:if>
 						                    <c:if test="${!status.first}">
-						                        <cti:url var="moveProgramUpUrl"
-						                            value="/spring/stars/survey/moveQuestion">
-						                            <cti:param name="direction" value="up"/>
-						                            <cti:param name="surveyQuestionId"
-						                                value="${question.surveyQuestionId}"/>
-						                        </cti:url>
-						                        <cti:img nameKey="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')"/>
+						                        <cti:button renderMode="image" nameKey="up"
+                                                    styleClass="moveUpBtn"/>
 						                    </c:if>
 						                    <c:if test="${status.last}">
-						                        <cti:img nameKey="down.disabled"/>
+						                        <cti:button renderMode="image"
+                                                    nameKey="down.disabled" disabled="true"/>
 						                    </c:if>
 						                    <c:if test="${!status.last}">
-						                        <cti:url var="moveProgramDownUrl"
-						                            value="/spring/stars/survey/moveQuestion">
-						                            <cti:param name="direction" value="down"/>
-						                            <cti:param name="surveyQuestionId"
-						                                value="${question.surveyQuestionId}"/>
-						                        </cti:url>
-						                        <cti:img nameKey="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
+						                        <cti:button renderMode="image" nameKey="down"
+                                                    styleClass="moveDownBtn"/>
 						                    </c:if>
-						                    <cti:url var="deleteUrl"
-						                        value="/spring/stars/survey/confirmDeleteQuestion">
+						                    <cti:url var="deleteUrl" value="deleteQuestion">
 						                        <cti:param name="surveyQuestionId"
 						                            value="${question.surveyQuestionId}"/>
 						                    </cti:url>
-						                    <tags:simpleDialogLink2 dialogId="ajaxDialog"
-						                        nameKey="deleteQuestion" actionUrl="${deleteUrl}"
-						                        skipLabel="true"/>
+                                            <ajax:confirmDialog on="#deleteBtn${question.surveyQuestionId}"
+                                                nameKey="confirmDelete"
+                                                argument="${question.questionKey}" href="${deleteUrl}"/>
+                                            <cti:button id="deleteBtn${question.surveyQuestionId}"
+                                                nameKey="deleteQuestion" renderMode="image"/>
 					                    </c:if>
 					                </td>
 					            </tr>

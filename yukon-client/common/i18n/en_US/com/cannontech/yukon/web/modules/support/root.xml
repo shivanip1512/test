@@ -141,8 +141,16 @@
     <entry key="yukon.web.modules.support.pickerTest.pick20.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
 
     <entry key="yukon.web.modules.support.pickerTest.rememberingPickers.title">Remembering Pickers</entry>
+    <entry key="yukon.web.modules.support.pickerTest.inlinePickers.title">Inline Pickers</entry>
 
     <entry key="yukon.web.modules.support.i18nDemo.pageName">I18N Demo</entry>
+
+    <entry key="yukon.web.modules.support.uiDemos.pageName">UI Demos</entry>
+
+    <entry key="yukon.web.modules.support.uiDemos.confirmGotoHome.title">Confirm GOTO</entry>
+    <entry key="yukon.web.modules.support.uiDemos.confirmGotoHome.message">Are you sure you want to go home?  (Some say you can't go home.)</entry>
+    <entry key="yukon.web.modules.support.uiDemos.searchWikipedia.title">Confirm Search</entry>
+    <entry key="yukon.web.modules.support.uiDemos.searchWikipedia.message">Are you sure you search Wikipedia?</entry>
 
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>

@@ -30,35 +30,6 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
     <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>
     <div id="picker_${id}_results" class="pickerResults"></div>
     <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
-
-    <table class="actionArea">
-        <tr>
-            <c:if test="${multiSelectMode}">
-                <td class="leftActions">
-                    <input class="notButton" id="picker_${id}_selectAll" type="checkbox"
-                        onclick="javascript:${id}.selectAll()">
-                    <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
-                    &nbsp;&nbsp;
-                    <span style="display: none">
-                        <i:inline key=".pageSelected"/>&nbsp;&nbsp;
-                        <a id="picker_${id}_selectAllPages" href="javascript:${id}.selectAllPages()">place holder</a>
-                    </span>
-                    <span style="display: none">
-                        <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
-                        <a id="picker_${id}_clearEntireSelection"
-                            href="javascript:${id}.clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
-                    </span>
-                    <span style="display: none">
-                        <span id="picker_${id}_allPagesSelected">place holder</span>&nbsp;&nbsp;
-                        <a href="javascript:${id}.clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
-                    </span>
-                    <span id="picker_${id}_entireSelectionCleared" style="display: none">
-                        <i:inline key=".entireSelectionCleared"/>
-                    </span>
-                </td>
-            </c:if>
-        </tr>
-    </table>
 </div>
 
 </cti:msgScope>

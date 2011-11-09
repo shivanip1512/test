@@ -19,7 +19,6 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.View;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.search.SearchResult;
@@ -32,16 +31,16 @@ import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -175,32 +174,22 @@ public class SurveyController {
     }
 
     @RequestMapping
-    public String confirmDelete(ModelMap model, int surveyId,
-            FlashScope flashScope, YukonUserContext userContext) {
-        Survey survey = verifyEditable(surveyId, userContext);
-        model.addAttribute("survey", survey);
-        if (surveyDao.usedByOptOutSurvey(surveyId)
-                || surveyDao.hasBeenTaken(surveyId)) {
-            return "survey/inUse.jsp";
-        }
-        return "survey/confirmDelete.jsp";
-    }
-
-    @RequestMapping
     public String delete(ModelMap model, int surveyId, FlashScope flashScope,
             YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
-        if (surveyDao.usedByOptOutSurvey(surveyId)
-                || surveyDao.hasBeenTaken(surveyId)) {
-            model.addAttribute("survey", survey);
-            return "survey/inUse.jsp";
+        if (surveyDao.usedByOptOutSurvey(surveyId) || surveyDao.hasBeenTaken(surveyId)) {
+            MessageSourceResolvable errorMsg =
+                    new YukonMessageSourceResolvable(baseKey + "list.surveyInUse",
+                                                     survey.getSurveyName());
+            flashScope.setError(errorMsg);
+        } else {
+            surveyDao.deleteSurvey(surveyId);
+            MessageSourceResolvable confirmMsg =
+                    new YukonMessageSourceResolvable(baseKey + "list.surveyDeleted",
+                                                     survey.getSurveyName());
+            flashScope.setConfirm(confirmMsg);
         }
-        surveyDao.deleteSurvey(surveyId);
-        MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey + "list.surveyDeleted",
-                                             survey.getSurveyName());
-        flashScope.setConfirm(confirmMsg);
-        return closeDialog(model);
+        return "redirect:list";
     }
 
     @RequestMapping
@@ -244,8 +233,8 @@ public class SurveyController {
     }
 
     @RequestMapping
-    public String saveDetails(ModelMap model, @ModelAttribute Survey survey,
-            BindingResult bindingResult, YukonUserContext userContext,
+    public String saveDetails(HttpServletResponse response, ModelMap model,
+            @ModelAttribute Survey survey, BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
         verifyEditable(survey, userContext);
         boolean isNew = survey.getSurveyId() == 0;
@@ -256,8 +245,8 @@ public class SurveyController {
                 boolean wasNew = survey.getSurveyId() == 0;
                 surveyDao.saveSurvey(survey);
                 if (wasNew) {
-                    newLocation = "/spring/stars/survey/edit?surveyId=" +
-                        survey.getSurveyId();
+                    newLocation = "'/spring/stars/survey/edit?surveyId=" +
+                        survey.getSurveyId() + "'";
                 }
             } catch (DuplicateException duplicateException) {
                 bindingResult.rejectValue(duplicateException.getMessage(),
@@ -280,7 +269,8 @@ public class SurveyController {
             flashScope.setConfirm(confirmMsg);
         }
 
-        return closeDialog(model, newLocation);
+        ServletUtils.dialogFormSuccess(response, "yukonDetailsUpdated", newLocation);
+        return null;
     }
 
     @RequestMapping
@@ -318,10 +308,9 @@ public class SurveyController {
     }
 
     @RequestMapping
-    public String saveQuestion(ModelMap model,
+    public String saveQuestion(HttpServletResponse response, ModelMap model,
             @ModelAttribute Question question, BindingResult bindingResult,
-            String[] answerKeys, YukonUserContext userContext,
-            FlashScope flashScope) {
+            String[] answerKeys, YukonUserContext userContext, FlashScope flashScope) {
         verifyEditable(question.getSurveyId(), userContext);
         if (question.getQuestionType() == QuestionType.DROP_DOWN) {
             int questionId = question.getSurveyQuestionId();
@@ -336,7 +325,8 @@ public class SurveyController {
             question.setAnswers(answers);
         }
         else {
-            question.setTextAnswerAllowed(false);// in case it was set before the type was change to "TEXT"
+            // in case it was set before the type was change to "TEXT"
+            question.setTextAnswerAllowed(false);
         }
         questionValidator.validate(question, bindingResult);
         if (!bindingResult.hasErrors()) {
@@ -355,16 +345,16 @@ public class SurveyController {
         }
 
         MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey +
-                                             "edit.surveyQuestionSaved",
+            new YukonMessageSourceResolvable(baseKey + "edit.surveyQuestionSaved",
                                              question.getQuestionKey());
         flashScope.setConfirm(confirmMsg);
 
-        return closeDialog(model);
+        ServletUtils.dialogFormSuccess(response, "yukonQuestionSaved");
+        return null;
     }
 
     @RequestMapping
-    public View moveQuestion(HttpServletResponse response, ModelMap model,
+    public String moveQuestion(HttpServletResponse response, ModelMap model,
             int surveyQuestionId, String direction, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         if ("up".equals(direction)) {
@@ -374,25 +364,13 @@ public class SurveyController {
         } else {
             throw new RuntimeException("invalid diirection [" + direction + "]");
         }
-        model.addAttribute("action", "reload");
-        return new JsonView();
-    }
-
-    @RequestMapping
-    public String confirmDeleteQuestion(ModelMap model, int surveyQuestionId,
-            YukonUserContext userContext) {
-        Question question = surveyDao.getQuestionById(surveyQuestionId);
-        model.addAttribute("question", question);
-        Survey survey = verifyEditable(question.getSurveyId(), userContext);
-        model.addAttribute("survey", survey);
-        return "survey/confirmDeleteQuestion.jsp";
+        return "redirect:edit?surveyId=" + question.getSurveyId();
     }
 
     @RequestMapping
     public String deleteQuestion(ModelMap model, int surveyQuestionId,
             FlashScope flashScope, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
-        model.addAttribute("question", question);
         verifyEditable(question.getSurveyId(), userContext);
         surveyDao.deleteQuestion(surveyQuestionId);
         MessageSourceResolvable confirmMsg =
@@ -400,19 +378,7 @@ public class SurveyController {
                                              "edit.surveyQuestionDeleted",
                                              question.getQuestionKey());
         flashScope.setConfirm(confirmMsg);
-        return closeDialog(model);
-    }
-
-    private String closeDialog(ModelMap model) {
-        return closeDialog(model, null);
-    }
-
-    private String closeDialog(ModelMap model, String newLocation) {
-        model.addAttribute("popupId", "ajaxDialog");
-        if (newLocation != null) {
-            model.addAttribute("newLocation", newLocation);
-        }
-        return "closePopup.jsp";
+        return "redirect:edit?surveyId=" + question.getSurveyId();
     }
 
     private Survey verifyEditable(Survey survey, YukonUserContext userContext) {

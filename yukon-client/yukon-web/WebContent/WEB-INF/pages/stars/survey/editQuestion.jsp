@@ -4,58 +4,34 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<cti:msgScope paths="modules.survey.edit">
-
-<span id="templateIcons" style="display: none">
-<cti:img nameKey="up" href="#"/>
-<cti:img nameKey="down" href="#"/>
-<cti:img nameKey="deleteAnswer" href="#"/>
-<cti:img nameKey="up.disabled"/>
-<cti:img nameKey="down.disabled"/>
-</span>
-
-<script type="text/javascript">
+<c:set var="okAction" value="none"/>
 <cti:displayForPageEditModes modes="EDIT">
-var templateIcons = $$('#templateIcons > a')
-moveUpIcon = templateIcons[0];
-moveDownIcon = templateIcons[1];
-deleteAnswerIcon = templateIcons[2];
-
-var templateIcons = $$('#templateIcons > img')
-moveUpDisabledIcon = templateIcons[0];
-moveDownDisabledIcon = templateIcons[1];
-
-submitForm = function() {
-	return submitFormViaAjax('ajaxDialog', 'inputForm')
-}
-
-initWithAnswerKeys(${cti:jsonString(answerKeys)});
+    <c:set var="okAction" value="submit"/>
 </cti:displayForPageEditModes>
 
-questionTypeChanged = function() {
-	questionType = $('questionType').value;
-	var divs = $$('.additionalInfo');
-	for (var index = 0; index < divs.length; index++) {
-		var div = divs[index];
-	    if (div.id.endsWith('_' + questionType)) {
-	        div.show();
-	    } else {
-	        div.hide();
-	    }
-	}
-}
+<ajax:dialogPage nameKey="editQuestion" module="survey" page="edit" okAction="${okAction}">
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    questionTypeChanged();
+    jQuery('#questionType').change(questionTypeChanged);
+    jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+
+    <cti:displayForPageEditModes modes="EDIT">
+    initWithAnswerKeys(${cti:jsonString(answerKeys)});
+    jQuery('#questionKey').focus();
+    jQuery('#questionKey').select();
+    </cti:displayForPageEditModes>
+});
 </script>
 
-<cti:flashScopeMessages/>
-
-<cti:url var="submitUrl" value="/spring/stars/survey/saveQuestion"/>
-<form:form id="inputForm" commandName="question" action="${submitUrl}"
-    onsubmit="return submitForm()">
+<cti:url var="submitUrl" value="saveQuestion"/>
+<form:form id="inputForm" commandName="question" action="${submitUrl}">
     <form:hidden path="surveyId"/>
     <form:hidden path="surveyQuestionId"/>
     <form:hidden path="displayOrder"/>
@@ -77,8 +53,7 @@ questionTypeChanged = function() {
                 <form:hidden path="questionType" id="questionType"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
-	            <form:select path="questionType" id="questionType"
-	                onchange="questionTypeChanged()">
+	            <form:select path="questionType" id="questionType">
 	                <c:forEach var="questionType" items="${questionTypes}">
 	                    <cti:msg var="optionLabel" key="${questionType}"/>
 	                    <form:option value="${questionType}" label="${optionLabel}"/>
@@ -120,21 +95,6 @@ questionTypeChanged = function() {
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>
-
-    <div class="actionArea">
-        <cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="ok" type="submit"/>
-        </cti:displayForPageEditModes>
-        <cti:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
-    </div>
 </form:form>
 
-</cti:msgScope>
-
-<script type="text/javascript">
-questionTypeChanged();
-<cti:displayForPageEditModes modes="EDIT">
-$('questionKey').focus();
-$('questionKey').select();
-</cti:displayForPageEditModes>
-</script>
+</ajax:dialogPage>

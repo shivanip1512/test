@@ -1,0 +1,47 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('#confirmDeleteDlg').bind('yukonConfirmDialogOK', function() {
+        jQuery('#confirmDeleteDlg').dialog('close');
+        alert('You seem to be certain you want to delete it.');
+    });
+});
+</script>
+
+<div id="ajaxDialog"></div>
+
+<p class="pageDescription">
+This page shows some examples of how to use AJAX dialogs in Yukon.
+</p>
+
+<tags:sectionContainer title="Confirmation Dialogs">
+
+    <h3>Custom OK Handling</h3>
+    <ajax:confirmDialog id="confirmDeleteDlg" on="#deleteBtn" nameKey="confirmDelete" argument="Thing to Delete"/>
+    <cti:button id="deleteBtn" nameKey="delete"/>
+
+    <h3>OK Goes to a Specified Link</h3>
+    <ajax:confirmDialog on="#gotoHome" nameKey="confirmGotoHome" href="/home"/>
+    <button id="gotoHome">Home</button>
+
+    <h3>OK Submits a Form</h3>
+    <form action="http://en.wikipedia.org/w/index.php" method="get" id="wikipediaForm">
+        <input type="hidden" name="title" value="Special:Search">
+        <input type="text" name="search">
+        <ajax:confirmDialog on="#searchWikipedia" nameKey="searchWikipedia" form="closest"/>
+        <button id="searchWikipedia" type="button">Search Wikipedia</button>
+    </form>
+
+    <h3>OK Submits an Other Form</h3>
+    <ajax:confirmDialog on="#searchWikipedia2" nameKey="searchWikipedia" form="#wikipediaForm"/>
+    <button id="searchWikipedia2" type="button">Search Wikipedia</button>
+
+</tags:sectionContainer>

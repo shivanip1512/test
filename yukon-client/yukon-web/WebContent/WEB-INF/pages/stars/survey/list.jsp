@@ -1,20 +1,33 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
 <cti:standardPage module="survey" page="list">
-    <tags:simpleDialog id="ajaxDialog"/>
+    <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 
-    <c:set var="baseUrl" value="/spring/stars/survey/list"/>
-    <cti:url var="submitUrl" value="${baseUrl}"/>
+    <div id="ajaxDialog"></div>
 
-    <cti:msg2 var="boxTitle" key=".surveys"/>
-    <tags:pagedBox title="${boxTitle}" searchResult="${surveys}"
-        baseUrl="${baseUrl}">
+    <cti:url var="addUrl" value="editDetails"/>
+    <script type="text/javascript">
+    jQuery(document).ready(function() {
+        jQuery('#addSurveyBtn').click(function() {
+            jQuery('#ajaxDialog').load('${addUrl}');
+        });
+
+        jQuery(document).bind('yukonDetailsUpdated', function(event, newUrl) {
+            jQuery('#ajaxDialog').dialog('close');
+            window.location = newUrl;
+        });
+    });
+    </script>
+
+    <c:set var="baseUrl" value="list"/>
+    <tags:pagedBox2 nameKey="surveys" searchResult="${surveys}" baseUrl="${baseUrl}">
         <c:if test="${surveys.hitCount == 0}">
             <cti:msg2 key=".noResults"/>
         </c:if>
@@ -27,34 +40,29 @@
                 </tr>
                 <c:forEach var="survey" items="${surveys.resultList}">
                     <c:set var="surveyId" value="${survey.surveyId}"/>
-                    <c:url var="surveyUrl" value="/spring/stars/survey/edit">
+                    <c:url var="surveyUrl" value="edit">
                         <c:param name="surveyId" value="${surveyId}"/>
-                    </c:url>    
+                    </c:url>
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><a href="${surveyUrl}"><spring:escapeBody
-                            htmlEscape="true">${survey.surveyName}</spring:escapeBody></a></td>
+                        <td><a href="${surveyUrl}">${fn:escapeXml(survey.surveyName)}</a></td>
                         <td>${survey.surveyKey}</td>
                         <td>
-                            <cti:url var="deleteUrl" value="/spring/stars/survey/confirmDelete">
+                            <cti:url var="deleteUrl" value="delete">
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
-                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-                                nameKey="delete" actionUrl="${deleteUrl}"
-                                skipLabel="true"/>
+                            <ajax:confirmDialog on="#deleteBtn${surveyId}" nameKey="confirmDelete"
+                                argument="${survey.surveyName}" href="${deleteUrl}"/>
+                            <cti:button id="deleteBtn${surveyId}" nameKey="delete" renderMode="image"/>
                         </td>
                     </tr>
                 </c:forEach>
             </table>
         </c:if>
 
-        <div class="actionArea">
-            <cti:url var="sampleXmlUrl" value="/spring/stars/survey/sampleXml"/>
-            <input type="button" value="<cti:msg2 key=".sampleXml"/>"
-                onclick="window.location='${sampleXmlUrl}'">
-
-            <cti:url var="addUrl" value="/spring/stars/survey/editDetails"/>
-            <input type="button" value="<cti:msg2 key=".add"/>"
-                onclick="openSimpleDialog('ajaxDialog', '${addUrl}', '<cti:msg2 key=".addTitle"/>')">
+        <div class="actionArea fr">
+            <cti:url var="sampleXmlUrl" value="sampleXml"/>
+            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" styleClass="fl"/>
+            <cti:button id="addSurveyBtn" nameKey="add" styleClass="f_blocker fl"/>
         </div>
-    </tags:pagedBox>
+    </tags:pagedBox2>
 </cti:standardPage>

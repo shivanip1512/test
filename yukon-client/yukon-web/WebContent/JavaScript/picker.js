@@ -197,7 +197,7 @@ Picker.prototype = {
 	 * it doesn't need to be done until the picker is first used (which may
 	 * never happen).
 	 */
-	prime: function(showPicker, initialIds) {
+	prime: function(showPicker, initialIds, skipFocus) {
 		var bodyElem = document.documentElement.getElementsByTagName('body')[0];
 		var pickerDialogDivContainer;
 		if (this.containerDiv) {
@@ -222,7 +222,7 @@ Picker.prototype = {
 		new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', {
 			'parameters': parameters,
 			'evalScripts': true,
-			'onComplete': this.onPrimeComplete.bind(this, showPicker, initialIds)
+			'onComplete': this.onPrimeComplete.bind(this, showPicker, initialIds, skipFocus)
 		});
 	},
 
@@ -230,7 +230,7 @@ Picker.prototype = {
 	 * This is the primary externally called method.  It pops the picker up
 	 * and does the initial search.
 	 */
-	show: function() {
+	show: function(skipFocus) {
 		if (this.immediateSelectMode && this.multiSelectMode) {
 			alert('immediateSelectMode cannot be used with multiSelectMode; ' + 
 				'turning multiSelectMode off');
@@ -242,13 +242,13 @@ Picker.prototype = {
 		this.clearSearchResults();
 		if (!this.primed) {
 			showBusy();
-			this.prime(true);
+			this.prime(true, null, skipFocus);
 		} else {
-			this.doShow();
+			this.doShow(skipFocus);
 		}
 	},
 
-	doShow : function() {
+	doShow : function(skipFocus) {
 		if (!this.containerDiv) {
 		    adjustDialogSizeAndPosition(this.pickerId);
 		}
@@ -260,11 +260,13 @@ Picker.prototype = {
 		if (!this.containerDiv) {
 		    $(this.pickerId).show();
 		}
-		this.ssInput.focus();
+		if (!skipFocus) {
+		    this.ssInput.focus();
+		}
 		this.doSearch();
 	},
 
-	onPrimeComplete : function(showPicker, initialIds, transport, json) {
+	onPrimeComplete : function(showPicker, initialIds, skipFocus, transport, json) {
 		hideBusy();
 		this.ssInput = $('picker_' + this.pickerId + '_ss');
 		this.showAllLink = $('picker_' + this.pickerId + '_showAllLink');
@@ -284,7 +286,7 @@ Picker.prototype = {
 		this.doIdSearch(initialIds);
 
 		if (showPicker) {
-			this.doShow();
+			this.doShow(skipFocus);
 		}
 		this.primed = true;
 	},

@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="support" page="pickerTest">
+<cti:msgScope paths="modules.support.pickerTest">
 
 <c:set var="pickerType" value="pointPicker"/>
 <c:if test="${!empty param.pickerType}">
@@ -53,6 +53,15 @@ function requireEvenNumber(hits) {
     }
     return evenNumberSelected;
 }
+
+function inlinePickerSelectionMade(selectedItems) {
+    alert('You selected ' + selectedItems[0][itemNameProperty] + ' with an id of ' +
+            selectedItems[0][itemIdProperty] + '.');
+}
+
+jQuery(document).ready(function() {
+    inlinePicker.show(true);
+});
 </script>
 
 <p>
@@ -61,7 +70,7 @@ This page should be tested at 1024x768.
 
 <br><br>
 
-<form id="pickerSelectForm" action="/spring/support/development/pickerTest/main">
+<form id="pickerSelectForm" action="main">
     <select name="pickerType" onchange="$('pickerSelectForm').submit()">
         <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
         <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
@@ -456,6 +465,7 @@ This page should be tested at 1024x768.
 </tr>
 </table>
 </tags:sectionContainer2>
+<br>
 
 <tags:sectionContainer2 nameKey="rememberingPickers">
   With this picker, you can make a selection and submit the form and the selection should be
@@ -479,5 +489,19 @@ This page should be tested at 1024x768.
     <input type="submit">
   </form>
 </tags:sectionContainer2>
+<br>
 
-</cti:standardPage>
+<tags:sectionContainer2 nameKey="inlinePickers">
+    <div id="inlinePickerContainer"></div>
+    <tags:pickerDialog
+        id="inlinePicker"
+        type="${pickerType}"
+        destinationFieldName="inlineId"
+        linkType="none"
+        containerDiv="inlinePickerContainer" 
+        immediateSelectMode="true"
+        endAction="inlinePickerSelectionMade"/>
+</tags:sectionContainer2>
+<br>
+
+</cti:msgScope>

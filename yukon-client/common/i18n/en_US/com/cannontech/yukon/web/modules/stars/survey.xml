@@ -11,7 +11,7 @@
 <entry key="yukon.web.modules.survey.list.pageName">Surveys</entry>
 <entry key="yukon.web.modules.survey.list.pageDescription">Surveys</entry>
 
-<entry key="yukon.web.modules.survey.list.surveys">Surveys</entry>
+<entry key="yukon.web.modules.survey.list.surveys.title">Surveys</entry>
 
 <entry key="yukon.web.modules.survey.list.noResults">No surveys currently exist.</entry>
 
@@ -21,20 +21,15 @@
 
 <entry key="yukon.web.modules.survey.list.surveySaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.survey.list.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-<entry key="yukon.web.modules.survey.list.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.survey.list.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+<entry key="yukon.web.modules.survey.list.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 <entry key="yukon.web.modules.survey.list.delete.hoverText">Delete Survey</entry>
-<entry key="yukon.web.modules.survey.list.delete.title">Delete Survey</entry>
-<entry key="yukon.web.modules.survey.list.confirmDelete">Are you sure you want to delete {0}.</entry>
 <entry key="yukon.web.modules.survey.list.surveyInUse">{0} cannot be deleted because it is in use.</entry>
 <entry key="yukon.web.modules.survey.list.surveyDeleted">Successfully deleted {0}.</entry>
 
-<entry key="yukon.web.modules.survey.list.sampleXml">Sample XML</entry>
-<entry key="yukon.web.modules.survey.list.add">Add</entry>
+<entry key="yukon.web.modules.survey.list.sampleXml.label">Sample XML</entry>
 <entry key="yukon.web.modules.survey.list.addTitle">Add Survey</entry>
-
-<entry key="yukon.web.modules.survey.list.ok">OK</entry>
-<entry key="yukon.web.modules.survey.list.cancel">Cancel</entry>
+<entry key="yukon.web.modules.survey.list.details.title">Add Survey</entry>
 
 <!-- Edit Page -->
 
