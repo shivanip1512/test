@@ -28,7 +28,7 @@
 <%@page import="com.cannontech.analysis.controller.ReportController"%>
 <cti:verifyRolesAndProperties value="REPORTING"/>
 
-<%@page import="com.cannontech.yukon.cbc.StreamableCapObject"%><cti:verifyRolesAndProperties value="REPORTING"/>
+<%@page import="com.cannontech.message.capcontrol.streamable.StreamableCapObject"%><cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
