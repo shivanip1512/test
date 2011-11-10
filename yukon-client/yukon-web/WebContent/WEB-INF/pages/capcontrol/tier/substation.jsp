@@ -147,7 +147,7 @@ YEvent.observeSelectorClick('li.toggle', toggleLi);
         
             <tags:boxContainer2 nameKey="infoContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
                 <div style="float:left;width:50%;">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer2 tableClass="infoContainer">
                         <tags:nameValue2 nameKey=".name">
                             <span><spring:escapeBody>${substation.name}</spring:escapeBody></span>
                         </tags:nameValue2>
@@ -168,7 +168,7 @@ YEvent.observeSelectorClick('li.toggle', toggleLi);
                     
                 </div>
                 <div style="float:right;width:50%;">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer2 tableClass="infoContainer">
                         <tags:nameValue2 nameKey=".state" rowClass="nw">
                             <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
                                 <a id="substationState_${substationId}">
@@ -212,7 +212,7 @@ YEvent.observeSelectorClick('li.toggle', toggleLi);
         
             <tags:boxContainer2 nameKey="statsContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
                 <div style="float:left;width:50%;">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer2 tableClass="infoContainer">
                         <tags:nameValue2 nameKey=".availableKvars">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" />
                         </tags:nameValue2>
@@ -224,7 +224,7 @@ YEvent.observeSelectorClick('li.toggle', toggleLi);
                     </tags:nameValueContainer2>
                 </div>
                 <div style="float:right;width:50%;">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer2 tableClass="infoContainer">
                         <tags:nameValue2 nameKey=".closedKvars">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" />
                         </tags:nameValue2>
@@ -236,7 +236,7 @@ YEvent.observeSelectorClick('li.toggle', toggleLi);
                     </tags:nameValueContainer2>
                 </div>
                 <div class="clear">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer2 tableClass="infoContainer">
                         <tags:nameValue2 nameKey=".pfactorEstimated" rowClass="powerFactor">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" />
                         </tags:nameValue2>

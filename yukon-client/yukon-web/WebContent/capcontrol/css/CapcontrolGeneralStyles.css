@@ -221,3 +221,8 @@ div.bankMoveContainer li.radio {
 span.normalText {
     color: black;
 }
+
+table.infoContainer td.name,
+table.infoContainer td.value {
+    font-size: 11px;
+}
