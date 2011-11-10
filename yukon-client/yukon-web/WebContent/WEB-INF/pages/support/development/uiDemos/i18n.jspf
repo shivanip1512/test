@@ -38,4 +38,61 @@ information one would get using i:inline and setting I18N_DESIGN_MODE to true in
 <debug:scopeDemo newPaths=".nested,StartOver,"/>
 </cti:msgScope>
 
+<div class="scopeDemo messageFormat">
+<h1 class="i18nDemo">Message Format Options</h1>
+
+<p>The key value pairs we put in .xml file for localization are parsed using standard Java classes.
+You can read all about this in the
+<a href="http://download.oracle.com/javase/6/docs/api/java/text/MessageFormat.html">official Java Documentation</a>
+but here you will find a summary of the most useful bits.</p> 
+
+<h3>Choice Format</h3>
+
+<p>This is the most common format you'll need.  The most useful format is (replacing
+"argumentNumber", "noItemsMessage", etc. as appropriate):</p>
+
+<p class="exampleCode">{argumentNumber,choice,0#noItemsMessage|1#oneItemMessage|&lt;multipleItemsMessage}</p>
+
+<p>Note that {argumentNumber} will normally also be nested inside the multiple items message.</p>
+
+<p>Using the following i18n value:</p>
+
+<p class="exampleCode">There {0,choice,0#are no items|1#is one item|1&lt;are {0} items}.</p>
+
+<p>you will get the following output using the arguments 0, 1, 2 and 5 respectively:</p>
+
+<ul>
+    <li><i:inline key=".choiceExample" arguments="${numberZero}"/></li>
+    <li><i:inline key=".choiceExample" arguments="${numberOne}"/></li>
+    <li><i:inline key=".choiceExample" arguments="${numberTwo}"/></li>
+    <li><i:inline key=".choiceExample" arguments="${numberFive}"/></li>
+</ul>
+
+<h3>Number Format</h3>
+
+<p>The number format is useful when rounding is needed.  Using the following format:</p>
+
+<p class="exampleCode">{0,number,0.00}</p>
+<ul>
+    <li>1.0/3.0 formats as <i:inline key=".decimalExample.2places" arguments="${numberOneThird}"/></li>
+    <li>1.0/2.0 formats as <i:inline key=".decimalExample.2places" arguments="${numberOneHalf}"/></li>
+    <li>2.0/3.0 formats as <i:inline key=".decimalExample.2places" arguments="${numberTwoThirds}"/></li>
+    <li>5.0/9.0 formats as <i:inline key=".decimalExample.2places" arguments="${numberFiveNinths}"/></li>
+</ul>
+
+<p>The number format can also be useful for adding commas to make large numbers more readable.
+Using the following format:</p>
+
+<p class="exampleCode">{0,number,#,##0.0}</p>
+
+<p>${largeDecimal} formats as <i:inline key=".decimalExample.withCommas" arguments="${largeDecimal}"/></p>
+<p>${largeInteger} formats as <i:inline key=".decimalExample.withCommas" arguments="${largeInteger}"/></p>
+
+<h3>Date and Time Formats</h3>
+
+<p>Don't use these.  Use our own date formatting services (cti:formatDate).  If the date is part of
+a larger message, format it as a string and pass it as an argument to the other format.</p>
+
+</div>
+
 </cti:msgScope>

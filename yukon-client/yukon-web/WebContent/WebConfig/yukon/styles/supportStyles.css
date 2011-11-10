@@ -69,3 +69,18 @@ textarea.xml {
     padding: 2px;;
     background-color: #FAFAFA;
 }
+
+.messageFormat h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.messageFormat p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.messageFormat p.exampleCode {
+    margin: 10px 20px;
+    outline: black dotted thin;
+}
