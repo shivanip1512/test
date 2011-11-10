@@ -4,7 +4,7 @@
 
 <cti:url var="completeHistoryUrl" value="/spring/stars/consumer/controlhistory/completeHistoryView"/>
 
-<cti:standardPage module="consumer" page="controlHistory">
+<cti:standardPage module="consumer" page="controlhistory">
     <cti:standardMenu />
     <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
 

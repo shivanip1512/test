@@ -71,7 +71,7 @@
                             <td class="rightColumn">
                                 <cti:customerAccountInfoTag account="${customerAccount}" />
                                 <br>
-                                <cti:logo key="yukon.dr.${pageKey}.rightColumnLogo"/>
+                                <cti:logo key="yukon.dr.${module.moduleName}.${info.pageName}.rightColumnLogo"/>
                             </td>
                         </tr>
                     </table>

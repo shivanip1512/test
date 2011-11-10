@@ -6,7 +6,7 @@
 <cti:url var="controlHistoryView" value="/spring/stars/consumer/controlhistory"/>
 <cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
-<cti:standardPage module="consumer" page="completeControlHistory">
+<cti:standardPage module="consumer" page="completecontrolhistory">
     <cti:standardMenu />
     <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
     
