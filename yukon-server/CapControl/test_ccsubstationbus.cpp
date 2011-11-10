@@ -26,6 +26,8 @@
 
 #include "StrategyManager.h"
 #include "PFactorKWKVarStrategy.h"
+#include "ExecutorFactory.h"
+#include "MsgVerifyBanks.h"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -299,7 +301,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders2[j-1];
         if (currentFeeder->getOriginalParent().getOriginalParentId() == bus1->getPaoId())
         {
-            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()))->execute();
+            CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()))->execute();
         }
         j--;
     }
@@ -481,7 +483,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     feed11->setCurrentVarLoadPointValue(700, currentDateTime);
     feed11->setCurrentWattLoadPointValue(1200);
 
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, bus1->getPaoId(), CtiPAOScheduleManager::AllBanks, 0, false))->execute();
+    CtiCCExecutorFactory::createExecutor(new VerifyBanks(bus1->getPaoId(),false, CapControlCommand::VERIFY_ALL_BANK))->execute();
 
     bus1->setCapBanksToVerifyFlags(CtiPAOScheduleManager::AllBanks, ccEvents);
 
@@ -529,7 +531,6 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     currentDateTime = currentDateTime + bus1->getStrategy()->getMaxConfirmTime() + 1;
 
-    //should go to CloseFail, then assumedWrongInitialState and go ClosePending again.
     bus1->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
 
     BOOST_CHECK_EQUAL(cap11c->getControlStatus(), CtiCCCapBank::OpenPending);
@@ -548,7 +549,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     BOOST_CHECK_EQUAL(cap11c->getControlStatus(), CtiCCCapBank::Close);
 
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, bus1->getPaoId(), false))->execute();
+    CtiCCExecutorFactory::createExecutor(new VerifyBanks(bus1->getPaoId(),false, CapControlCommand::STOP_VERIFICATION))->execute();
 
     BOOST_CHECK_EQUAL(  bus1->getPerformingVerificationFlag(), FALSE);
     BOOST_CHECK_EQUAL(feed11->getPerformingVerificationFlag(), FALSE);

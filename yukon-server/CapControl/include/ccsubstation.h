@@ -121,3 +121,5 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 };
 
 typedef CtiCCSubstation* CtiCCSubstationPtr;
+typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
+typedef std::set<CtiCCSubstationPtr> CtiCCSubstation_set;

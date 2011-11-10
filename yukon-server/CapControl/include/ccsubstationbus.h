@@ -275,9 +275,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void checkForMaxDailyOpsHit();
 
 
-	int getNumOfBanksInState(std::set<int> s);
-    std::vector<CtiCCCapBankPtr> getAllCapBanks( ); 
-	std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( ); 
+        int getNumOfBanksInState(std::set<int> s);
+    std::vector<CtiCCCapBankPtr> getAllCapBanks( );
+        std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( );
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -323,7 +323,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
     CtiCCSubstationBus& getNextCapBankToVerify(CtiMultiMsg_vec& ccEvents);
     BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    CtiCCSubstationBus& setVerificationFlag(BOOL verificationFlag);
+    CtiCCSubstationBus& setVerificationFlag(bool verificationFlag);
     CtiCCSubstationBus& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCSubstationBus& setVerificationDoneFlag(BOOL verificationDoneFlag);
     CtiCCSubstationBus& setCurrentVerificationFeederId(LONG feederId);
@@ -507,4 +507,6 @@ private:
 };
 
 typedef CtiCCSubstationBus* CtiCCSubstationBusPtr;
+
+typedef std::set<CtiCCSubstationBusPtr> CtiCCSubstationBus_set;
 typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;

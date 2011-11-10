@@ -100,3 +100,5 @@ private:
 };
 
 typedef CtiCCArea* CtiCCAreaPtr;
+typedef std::vector<CtiCCAreaPtr> CtiCCArea_vec;
+typedef std::set<CtiCCAreaPtr> CtiCCArea_set;

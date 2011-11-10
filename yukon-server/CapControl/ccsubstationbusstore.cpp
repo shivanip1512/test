@@ -34,6 +34,7 @@
 #include "PointResponse.h"
 #include "PointResponseDao.h"
 #include "ThreadStatusKeeper.h"
+#include "ExecutorFactory.h"
 
 #include <string>
 
@@ -1441,18 +1442,18 @@ void CtiCCSubstationBusStore::reset()
             dumpAllDynamicData();
         }
         CtiTime currentDateTime = CtiTime();
-        BOOL systemEnabled = FALSE;
+        CapControlCommand command = CapControlCommand::DISABLE_SYSTEM;
         for(LONG h=0;h<_ccGeoAreas->size();h++)
         {
             CtiCCAreaPtr area =  (CtiCCAreaPtr)(*_ccGeoAreas).at(h);
             if (!area->getDisableFlag())
             {
-                systemEnabled = TRUE;
+                command = CapControlCommand::ENABLE_SYSTEM;
                 break;
             }
         }
 
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, systemEnabled))->execute();
+        CtiCCExecutorFactory::createExecutor(new CapControlCommand(command))->execute();
 
         LONG i=0;
         for(i = 0; i< _ccSpecialAreas->size();i++)
@@ -1473,7 +1474,7 @@ void CtiCCSubstationBusStore::reset()
         {
             for(int i=0;i<capMessages.size( );i++)
             {
-                CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
+                CtiCCExecutorFactory::createExecutor((CtiMessage*)capMessages[i])->execute();
             }
         }
         catch(...)
@@ -1485,7 +1486,7 @@ void CtiCCSubstationBusStore::reset()
 
         initializeAllPeakTimeFlagsAndMonitorPoints(true);
 
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA))->execute();
+        CtiCCExecutorFactory::createExecutor(new CapControlCommand(CapControlCommand::REQUEST_ALL_DATA))->execute();
     }
     catch (...)
     {
@@ -4444,7 +4445,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 rdr["areaid"] >> currentSpAreaId;
                 CtiCCSpecialPtr currentCCSpArea = NULL;
                 currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
-                
+
                 if (currentCCSpArea != NULL)
                 {
                     CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(currentSubId);
@@ -8542,7 +8543,7 @@ bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadActio
     {
         deleteArea(reloadId);
 
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId))->execute();
+        CtiCCExecutorFactory::createExecutor(new DeleteItem(reloadId))->execute();
 
         msgSubsBitMask = CtiCCSubstationsMsg::AllSubsSent;;
         msgBitMask  = CtiCCSubstationBusMsg::AllSubBusesSent;;
@@ -8676,7 +8677,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
              removeFromOrphanList(reloadId);
          }
 
-         CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId))->execute();
+         CtiCCExecutorFactory::createExecutor(new DeleteItem(reloadId))->execute();
      }
 
 }
@@ -8688,7 +8689,7 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(LONG reloadId, BYTE reloa
     {
         deleteSubstation(reloadId);
 
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId))->execute();
+        CtiCCExecutorFactory::createExecutor(new DeleteItem(reloadId))->execute();
     }
     else  // ChangeTypeAdd, ChangeTypeUpdate
     {
@@ -8732,7 +8733,7 @@ void CtiCCSubstationBusStore::handleSubBusDBChange(LONG reloadId, BYTE reloadAct
         }
         deleteSubBus(reloadId);
 
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId))->execute();
+        CtiCCExecutorFactory::createExecutor(new DeleteItem(reloadId))->execute();
 
         if (parentStationId != NULL)
         {
@@ -8814,7 +8815,7 @@ void CtiCCSubstationBusStore::handleFeederDBChange(LONG reloadId, BYTE reloadAct
             removeFromOrphanList(reloadId);
         }
 
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId))->execute();
+        CtiCCExecutorFactory::createExecutor(new DeleteItem(reloadId))->execute();
     }
 }
 
@@ -9044,7 +9045,7 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( ULONG &msgBitMask, UL
     {
         for(int i=0;i<capMessages.size( );i++)
         {
-            CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
+            CtiCCExecutorFactory::createExecutor((CtiMessage*)capMessages[i])->execute();
         }
     }
     catch(...)
@@ -9179,7 +9180,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 {
                     for(int i=0;i<capMessages.size( );i++)
                     {
-                        CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
+                        CtiCCExecutorFactory::createExecutor((CtiMessage*)capMessages[i])->execute();
                     }
                 }
                 catch(...)

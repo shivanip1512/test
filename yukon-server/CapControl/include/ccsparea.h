@@ -95,4 +95,5 @@ private:
 };
 
 typedef CtiCCSpecial* CtiCCSpecialPtr;
-
+typedef std::set<CtiCCSpecialPtr> CtiCCSpArea_set;
+typedef std::vector<CtiCCSpecialPtr> CtiCCSpArea_vec;

@@ -15,6 +15,7 @@
 #include "resolvers.h"
 #include "utility.h"
 #include "database_writer.h"
+#include "MsgVerifyBanks.h"
 
 using std::endl;
 
@@ -676,8 +677,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
             try
             {
                 //reset VerificationFlag
-                capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPaoId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
-
+                capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
             }
             catch(...)
             {

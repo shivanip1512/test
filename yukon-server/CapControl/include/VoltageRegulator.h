@@ -3,12 +3,13 @@
 #include "yukon.h"
 #include "CapControlPao.h"
 #include "UpdatablePao.h"
-#include "ccmessage.h"
 #include "LitePoint.h"
 #include "PointValueHolder.h"
 #include "AttributeService.h"
 #include "ccid.h"
 #include "ccutil.h"
+
+#include "EventTypes.h"
 
 #include <rw/collect.h>
 

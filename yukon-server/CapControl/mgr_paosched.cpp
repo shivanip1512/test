@@ -11,6 +11,8 @@
 #include "database_reader.h"
 #include "database_writer.h"
 #include "ThreadStatusKeeper.h"
+#include "ExecutorFactory.h"
+#include "MsgVerifyBanks.h"
 
 #include <stdlib.h>
 
@@ -390,25 +392,25 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
     return retVal;
 }
 
-void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
+void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *paoEvent)
 {
     int strategy;
     long secsSinceLastOp = -1;
-    switch (parseEvent(event->getEventCommand(), strategy, secsSinceLastOp))
+    switch (parseEvent(paoEvent->getEventCommand(), strategy, secsSinceLastOp))
     {
         case CapControlVerification:
         {
-            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp, event->getDisableOvUvFlag()))->execute();
+            CtiCCExecutorFactory::createExecutor(new VerifyBanks(paoEvent->getPAOId(),paoEvent->getDisableOvUvFlag(), strategy))->execute();
             break;
         }
-        case ConfirmSub:
+        case ConfirmSubstationBus:
         {
-            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, event->getPAOId()))->execute();
+            CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, paoEvent->getPAOId()))->execute();
             break;
         }
         case SendTimeSync:
         {
-            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::SEND_TIME_SYNC, event->getPAOId()))->execute();
+            CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::SEND_TIME_SYNC, paoEvent->getPAOId()))->execute();
             break;
         }
         default:
@@ -498,7 +500,7 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     }
     else if (findStringIgnoreCase(command,"Confirm Sub"))
     {
-        retVal = ConfirmSub;
+        retVal = ConfirmSubstationBus;
     }
     else if (findStringIgnoreCase(command,"Send Time Syncs"))
     {

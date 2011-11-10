@@ -3,7 +3,6 @@
 #include "AttributeService.h"
 #include "LitePoint.h"
 #include "PointAttribute.h"
-#include "DynamicCommandExecutor.h"
 #include "ccclientlistener.h"
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"
@@ -13,8 +12,13 @@
 #include "logger.h"
 #include "utility.h"
 #include "ccutil.h"
+#include "ExecutorFactory.h"
 
-using Cti::CapControl::DynamicCommandExecutor;
+#include "MsgChangeOpState.h"
+#include "ExecChangeOpState.h"
+
+#include "MsgCapControlServerResponse.h"
+
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::PaoIdList;
 using Cti::CapControl::createPorterRequestMsg;
@@ -27,10 +31,6 @@ extern BOOL _USE_FLIP_FLAG;
 extern BOOL _LOG_MAPID_INFO;
 extern BOOL _LIMIT_ONE_WAY_COMMANDS;
 
-/*===========================================================================
-    CtiCCCommandExecutor
-===========================================================================*/
-
 void CtiCCCommandExecutor::setAttributeService(AttributeService* attributeService)
 {
     if (_attributeService != NULL)
@@ -41,574 +41,354 @@ void CtiCCCommandExecutor::setAttributeService(AttributeService* attributeServic
     _attributeService = attributeService;
 }
 
-/*---------------------------------------------------------------------------
-    Execute
-
-    Executes the command and places any resulting messages on the result
-    queue.
----------------------------------------------------------------------------*/
 void CtiCCCommandExecutor::execute()
 {
-    switch ( _command->getCommand() )
+    bool success = true;
+
+    switch ( _command->getCommandId() )
     {
-    case CtiCCCommand::DISABLE_SUBSTATION_BUS:
-        DisableSubstationBus();
+    case CapControlCommand::DISABLE_SUBSTATION_BUS:
+        DisableSubstationBus(_itemId);
         break;
 
-    case CtiCCCommand::ENABLE_SUBSTATION_BUS:
-        EnableSubstationBus();
+    case CapControlCommand::ENABLE_SUBSTATION_BUS:
+        EnableSubstationBus(_itemId);
         break;
 
-    case CtiCCCommand::DISABLE_FEEDER:
+    case CapControlCommand::DISABLE_FEEDER:
         DisableFeeder();
         break;
 
-    case CtiCCCommand::ENABLE_FEEDER:
+    case CapControlCommand::ENABLE_FEEDER:
         EnableFeeder();
         break;
 
-    case CtiCCCommand::DISABLE_CAPBANK:
+    case CapControlCommand::DISABLE_CAPBANK:
         DisableCapBank();
         break;
 
-    case CtiCCCommand::ENABLE_CAPBANK:
+    case CapControlCommand::ENABLE_CAPBANK:
         EnableCapBank();
         break;
 
-    case CtiCCCommand::OPEN_CAPBANK:
-        OpenCapBank();
-        break;
-
-    case CtiCCCommand::CLOSE_CAPBANK:
-        CloseCapBank();
-        break;
-
-    case CtiCCCommand::CONFIRM_OPEN:
+    case CapControlCommand::CONFIRM_OPEN:
         ConfirmOpen();
         break;
 
-    case CtiCCCommand::CONFIRM_CLOSE:
+    case CapControlCommand::CONFIRM_CLOSE:
         ConfirmClose();
         break;
 
-    case CtiCCCommand::REQUEST_ALL_DATA:
+    case CapControlCommand::REQUEST_ALL_DATA:
         SendAllData();
         break;
 
-    case CtiCCCommand::RETURN_CAP_TO_ORIGINAL_FEEDER:
+    case CapControlCommand::RETURN_CAP_TO_ORIGINAL_FEEDER:
         ReturnCapToOriginalFeeder();
         break;
 
-    case CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS:
+    case CapControlCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS:
         ReturnFeederToOriginalSubBus();
         break;
-    case CtiCCCommand::RESET_DAILY_OPERATIONS:
+    case CapControlCommand::RESET_DAILY_OPERATIONS:
         ResetDailyOperations();
         break;
 
-    case CtiCCCommand::CONFIRM_FEEDER:
+    case CapControlCommand::CONFIRM_FEEDER:
         ConfirmFeeder();
         break;
 
-    case CtiCCCommand::RESET_SYSTEM_OP_COUNTS:
+    case CapControlCommand::RESET_SYSTEM_OP_COUNTS:
         ResetAllSystemOpCounts();
         break;
 
-    case CtiCCCommand::DELETE_ITEM:
-        DeleteItem();
+    case CapControlCommand::CONFIRM_SUBSTATIONBUS:
+        ConfirmSubstationBus();
         break;
 
-    case CtiCCCommand::CONFIRM_SUB:
-        ConfirmSub();
-        break;
-
-    case CtiCCCommand::CONFIRM_AREA:
+    case CapControlCommand::CONFIRM_AREA:
         ConfirmArea();
         break;
-    case CtiCCCommand::ENABLE_AREA:
+    case CapControlCommand::CONFIRM_SUBSTATION:
+        ConfirmSubstation();
+        break;
+
+    case CapControlCommand::ENABLE_AREA:
         EnableArea();
         break;
-    case CtiCCCommand::DISABLE_AREA:
+    case CapControlCommand::DISABLE_AREA:
         DisableArea();
         break;
-    case CtiCCCommand::ENABLE_SYSTEM:
+
+    case CapControlCommand::ENABLE_SUBSTATION:
+        EnableSubstation();
+        break;
+    case CapControlCommand::DISABLE_SUBSTATION:
+        DisableSubstation();
+        break;
+
+    case CapControlCommand::ENABLE_SYSTEM:
         EnableSystem();
         break;
-    case CtiCCCommand::DISABLE_SYSTEM:
+    case CapControlCommand::DISABLE_SYSTEM:
         DisableSystem();
         break;
-    case CtiCCCommand::SCAN_2WAY_DEVICE:
-        Scan2WayDevice();
-        break;
-    case CtiCCCommand::FLIP_7010_CAPBANK:
+    case CapControlCommand::FLIP_7010_CAPBANK:
         Flip7010Device();
         break;
-    case CtiCCCommand::SYSTEM_STATUS:
-        SendSystemStatus();
-        break;
-    case CtiCCCommand::SEND_ALL_SYNC_CBC_CAPBANK_STATE:
-    case CtiCCCommand::SEND_ALL_OPEN:
-    case CtiCCCommand::SEND_ALL_CLOSE:
-    case CtiCCCommand::SEND_ALL_ENABLE_OVUV:
-    case CtiCCCommand::SEND_ALL_DISABLE_OVUV:
-    case CtiCCCommand::SEND_ALL_SCAN_2WAY_DEVICE:
-    case CtiCCCommand::SEND_ALL_ENABLE_TEMPCONTROL:
-    case CtiCCCommand::SEND_ALL_DISABLE_TEMPCONTROL:
-    case CtiCCCommand::SEND_ALL_ENABLE_VARCONTROL:
-    case CtiCCCommand::SEND_ALL_DISABLE_VARCONTROL:
-    case CtiCCCommand::SEND_ALL_ENABLE_TIMECONTROL:
-    case CtiCCCommand::SEND_ALL_DISABLE_TIMECONTROL:
+    case CapControlCommand::SEND_SYNC_CBC_CAPBANK_STATE:
+    case CapControlCommand::SEND_OPEN_CAPBANK:
+    case CapControlCommand::SEND_CLOSE_CAPBANK:
+    case CapControlCommand::SEND_ENABLE_OVUV:
+    case CapControlCommand::SEND_DISABLE_OVUV:
+    case CapControlCommand::SEND_SCAN_2WAY_DEVICE:
+    case CapControlCommand::SEND_ENABLE_TEMPCONTROL:
+    case CapControlCommand::SEND_DISABLE_TEMPCONTROL:
+    case CapControlCommand::SEND_ENABLE_VARCONTROL:
+    case CapControlCommand::SEND_DISABLE_VARCONTROL:
+    case CapControlCommand::SEND_ENABLE_TIMECONTROL:
+    case CapControlCommand::SEND_DISABLE_TIMECONTROL:
         SendAllCapBankCommands();
         break;
-    case CtiCCCommand::SEND_TIME_SYNC:
+    case CapControlCommand::SEND_TIME_SYNC:
         SendTimeSync();
         break;
-    case CtiCCCommand::CHANGE_OPERATIONALSTATE:
-        changeBankOperationalState();
-        break;
-    case CtiCCCommand::AUTO_ENABLE_OVUV:
+    case CapControlCommand::AUTO_ENABLE_OVUV:
         AutoEnableOvUv();
         break;
-    case CtiCCCommand::AUTO_DISABLE_OVUV:
+    case CapControlCommand::AUTO_DISABLE_OVUV:
         AutoDisableOvUv();
         break;
-    case CtiCCCommand::BANK_ENABLE_TEMPCONTROL:
-    case CtiCCCommand::BANK_DISABLE_TEMPCONTROL:
-    case CtiCCCommand::BANK_ENABLE_VARCONTROL:
-    case CtiCCCommand::BANK_DISABLE_VARCONTROL:
-    case CtiCCCommand::BANK_ENABLE_TIMECONTROL:
-    case CtiCCCommand::BANK_DISABLE_TIMECONTROL:
-    case CtiCCCommand::DISABLE_OVUV:
-    case CtiCCCommand::ENABLE_OVUV:
-        sendLocalControl();
+    case CapControlCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
+    case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
+    case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
+    case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
+    case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
+    case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
+    case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
+        sendVoltageRegulatorCommands( _command->getCommandId() );
         break;
 
-    case CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
-    case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
-    case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
-    case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
-    case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
-    case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
-    case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
-        sendVoltageRegulatorCommands( _command->getCommand() );
+    case CapControlCommand::CHANGE_OPERATIONALSTATE:
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Error: Command, " << _command->getCommandId() << ", not not handled by this executor!" << endl;
+        }
+        success = false;
         break;
-
-    case CtiCCCommand::SYNC_CBC_CAPBANK_STATE:
-        syncCbcAndCapBankStates();
-        break;
-
 
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - unknown command type in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - unknown command type, " << _command->getCommandId() << ", in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
+        success = false;
         break;
-
     }
 
+    long messageId = _command->getMessageId();
+    long commandResult = CtiCCServerResponse::RESULT_SUCCESS;
+    string commandResultText("Command was successful.");
+
+    if (!success)
+    {
+        commandResult = CtiCCServerResponse::RESULT_COMMAND_REFUSED;
+        commandResultText = string("Command Failed.");
+    }
+
+    CtiCCServerResponse* msg = new CtiCCServerResponse(messageId, commandResult, commandResultText);
+    msg->setUser(_command->getUser());
+    CtiCCExecutorFactory::createExecutor(msg)->execute();
 }
 
-
-/*---------------------------------------------------------------------------
-    EnableSubstationVerification
----------------------------------------------------------------------------*/
-void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
+void CtiCCCommandExecutor::EnableSubstation()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subID = _subVerificationMsg->getSubBusId();
-    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
-    CtiCCAreaPtr currentArea = NULL;
-    CtiCCSubstationPtr currentStation = NULL;
-    if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag() &&
-        currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    CtiCCSubstation* station = store->findSubstationByPAObjectID(_itemId);
+    if (station != NULL)
     {
-        currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
-        if (currentStation != NULL && !currentStation->getDisableFlag())
-        {
-            currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
-            if (currentArea != NULL && !currentArea->getDisableFlag())
-            {
-                if (!currentSubstationBus->getVerificationFlag())
-                {
-                    //Check to see if sub is already being operated on.  Set flag, which will finish out normal control
-                    //before verification controls start.
-                    if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Verification Start Message received from client for sub: "<<currentSubstationBus->getPaoName()<<" ("<<currentSubstationBus->getPaoId()<<")"<< endl;
-                    }
+        string text1 = string("Manual Enable Substation");
+        string additional1 = string("Substation: ");
+        additional1 += station->getPaoName();
 
-                    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-                    for(LONG j=0;j<ccFeeders.size();j++)
-                    {
-                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                        for(LONG k=0;k<ccCapBanks.size();k++)
-                        {
-                            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
-                            {
-                                currentSubstationBus->setWaitToFinishRegularControlFlag(TRUE);
-                                string text =  "Verification will be delayed for Sub: ";
-                                text += currentSubstationBus->getPaoName();
-                                text += ", Cap Bank: ";
-                                text += currentCapBank->getPaoName();
-                                text += " is being controlled.";
+        store->UpdatePaoDisableFlagInDB(station, false);
+    }
 
-
-                              INT seqId = CCEventSeqIdGen();
-                                currentSubstationBus->setEventSequence(seqId);
-                                LONG stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
-
-                                if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() <<  " - Verification will be delayed until Current Cap Bank Control is completed."<< endl;
-                                }
-
-                                break;
-                            }
-                        }
-                    }
-
-                    currentSubstationBus->setVerificationFlag(TRUE);
-                    currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
-                    currentSubstationBus->setVerificationDisableOvUvFlag(_subVerificationMsg->getDisableOvUvFlag());
-                    currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-
-                    string text = currentSubstationBus->getVerificationString();
-                    text += " Starting";
-                    string additional("Bus: ");
-                    additional += currentSubstationBus->getPaoName();
-                    if (_LOG_MAPID_INFO)
-                    {
-                        additional += " MapID: ";
-                        additional += currentSubstationBus->getMapLocationId();
-                        additional += " (";
-                        additional += currentSubstationBus->getPaoDescription();
-                        additional += ")";
-                    }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-
-                    INT seqId = CCEventSeqIdGen();
-                    currentSubstationBus->setEventSequence(seqId);
-                    LONG stationId, areaId, spAreaId;
-                    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
-
-                    if (currentSubstationBus->getVerificationDisableOvUvFlag())
-                    {
-                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
-                    }
-
-                    CtiCCCommand* cmdMsg = new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId());
-                    cmdMsg->setUser(_subVerificationMsg->getUser());
-
-                    CtiCCExecutorFactory::createExecutor(cmdMsg)->execute();
-                }
-                else
-                {
-                    if (currentSubstationBus->getPerformingVerificationFlag() &&
-                        _subVerificationMsg->getStrategy() < currentSubstationBus->getVerificationStrategy())
-                    {
-                        currentSubstationBus->setOverlappingVerificationFlag( TRUE );
-                        currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
-                        currentSubstationBus->setVerificationDisableOvUvFlag(_subVerificationMsg->getDisableOvUvFlag());
-                        currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                       //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                        string text = currentSubstationBus->getVerificationString();
-                        text += " Enabled";
-                        string additional("Bus: ");
-                        additional += currentSubstationBus->getPaoName();
-                        if (_LOG_MAPID_INFO)
-                        {
-                            additional += " MapID: ";
-                            additional += currentSubstationBus->getMapLocationId();
-                            additional += " (";
-                            additional += currentSubstationBus->getPaoDescription();
-                            additional += ")";
-                        }
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-
-                        INT seqId = CCEventSeqIdGen();
-                        currentSubstationBus->setEventSequence(seqId);
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
-                    }
-                }
-            }
-            else
-            {
-                if( currentArea != NULL &&
-                    _CC_DEBUG & CC_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPaoName()
-                    <<" due to Area: "<<currentArea->getPaoName() <<" DisableFlag"<< endl;
-                }
-            }
-        }
-        else
-        {
-            if( currentStation != NULL &&
-                _CC_DEBUG & CC_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPaoName()
-                <<" due to Substation: "<<currentStation->getPaoName() <<" DisableFlag"<< endl;
-            }
-        }
+    if (eventMulti->getCount() > 0)
+    {
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
     }
     else
     {
-        if( currentSubstationBus != NULL &&
-            _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-
-            if (currentSubstationBus->getDisableFlag())
-            {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPaoName() <<" due to SubBus DisableFlag"<< endl;
-        }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPaoName() <<" due to SubBus Strategy = "<<ControlStrategy::NoControlUnit<< endl;
-            }
-
-        }
+        delete eventMulti;
     }
+
+    if (multi->getCount() > 0)
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
+    else
+    {
+        delete multi;
+    }
+
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
 }
 
-
-/*---------------------------------------------------------------------------
-    DisableSubstationVerification
----------------------------------------------------------------------------*/
-void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification(bool forceStopImmediately)
+void CtiCCCommandExecutor::DisableSubstation()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subID = _subVerificationMsg->getSubBusId();
-    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+    CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
 
-
-    if( currentSubstationBus != NULL && subID == currentSubstationBus->getPaoId() )
+    CtiCCSubstation* station = store->findSubstationByPAObjectID(_itemId);
+    if (station != NULL)
     {
-        if (!forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
-        {
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        string text1 = string("Manual Disable Substation");
+        string additional1 = string("Substation: ");
+        additional1 += station->getPaoName();
 
-            for(LONG j=0;j<ccFeeders.size();j++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-                if (currentFeeder->getPerformingVerificationFlag())
-                {
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0,0, station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(LONG k=0;k<ccCapBanks.size();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                        if (!currentCapBank->isPendingStatus() &&
-                            (currentCapBank->getVCtrlIndex() <=0 || currentCapBank->getVCtrlIndex() >= 5) )
-                        {
-                            currentCapBank->setVerificationFlag(FALSE);
-                            currentCapBank->setPerformingVerificationFlag(FALSE);
-                            currentCapBank->setVerificationDoneFlag(FALSE);
-                            //wouldn't hurt to set this.
-                            currentCapBank->setVCtrlIndex(0);
-                        }
-                    }
-                }
-                else
-                {
-                    currentFeeder->resetVerificationFlags();
-                }
-            }
-            string text = currentSubstationBus->getVerificationString();
-            text += " Stopping after currentBank";
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-
-            LONG stationId, areaId, spAreaId;
-            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
-
-            if( _CC_DEBUG & CC_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Verification Stop Message received from client.  Current Cap Bank Verification will complete first."<< endl;
-            }
-
-        }
-        else
-        {
-            if (forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Emergency Verification Stop Message received from client. Current Cap Bank Verification will not complete."<< endl;
-            }
-            currentSubstationBus->setVerificationFlag(FALSE);
-            currentSubstationBus->setPerformingVerificationFlag(FALSE);
-            currentSubstationBus->setOverlappingVerificationFlag( FALSE );
-            currentSubstationBus->setVerificationDoneFlag(FALSE);
-            currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
-
-            if (currentSubstationBus->getVerificationDisableOvUvFlag())
-            {
-                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
-                currentSubstationBus->setVerificationDisableOvUvFlag(FALSE);
-            }
-
-            currentSubstationBus->setBusUpdatedFlag(TRUE);
-
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(LONG j=0;j<ccFeeders.size();j++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-                currentFeeder->resetVerificationFlags();
-            }
-
-            string text = currentSubstationBus->getVerificationString();
-            text += " Stopping";
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-
-            LONG stationId, areaId, spAreaId;
-            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
-
-            if (forceStopImmediately)
-            {
-                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
-            }
-        }
+        store->UpdatePaoDisableFlagInDB(station, true);
+        station->checkForAndStopVerificationOnChildSubBuses(capMessages);
     }
 
-}
+    if (eventMulti->getCount() > 0)
+    {
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    }
+    else
+    {
+        delete eventMulti;
+    }
 
+    if (multi->getCount() > 0)
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
+    else
+    {
+        delete multi;
+    }
+
+    CtiMultiMsg_vec& temp = multiCapMsg->getData( );
+    for (int i = 0; i < temp.size( ); i++)
+    {
+        CtiCCExecutorFactory::createExecutor((CtiMessage*)temp[i])->execute();
+    }
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
+}
 
 /*---------------------------------------------------------------------------
     EnableSubstation
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::EnableSubstationBus()
+void CtiCCCommandExecutor::EnableSubstationBus(long subBusId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subID = _command->getId();
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
 
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    if (currentSubstationBus == NULL)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-        if( subID == currentSubstationBus->getPaoId() )
+        if (_CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            currentSubstationBus->setReEnableBusFlag(FALSE);
-            currentSubstationBus->setBusUpdatedFlag(TRUE);
-            store->UpdatePaoDisableFlagInDB(currentSubstationBus, false);
-            string text = string("Substation Bus Enabled");
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-
-            if (!currentSubstationBus->getVerificationFlag())
-            {
-                INT seqId = CCEventSeqIdGen();
-                currentSubstationBus->setEventSequence(seqId);
-            }
-
-            LONG stationId, areaId, spAreaId;
-            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
-            break;
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Unable to enable Substation Bus with ID: " << subBusId << ". It was not found." << endl;
         }
+        return;
     }
+
+    currentSubstationBus->setReEnableBusFlag(FALSE);
+    currentSubstationBus->setBusUpdatedFlag(TRUE);
+    store->UpdatePaoDisableFlagInDB(currentSubstationBus, false);
+    string text = string("Substation Bus Enabled");
+    string additional = string("Bus: ");
+    additional += currentSubstationBus->getPaoName();
+    if (_LOG_MAPID_INFO)
+    {
+        additional += " MapID: ";
+        additional += currentSubstationBus->getMapLocationId();
+        additional += " (";
+        additional += currentSubstationBus->getPaoDescription();
+        additional += ")";
+    }
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+    if (!currentSubstationBus->getVerificationFlag())
+    {
+        INT seqId = CCEventSeqIdGen();
+        currentSubstationBus->setEventSequence(seqId);
+    }
+
+    LONG stationId, areaId, spAreaId;
+    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
 }
 
 /*---------------------------------------------------------------------------
     DisableSubstation
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::DisableSubstationBus()
+void CtiCCCommandExecutor::DisableSubstationBus(long subBusId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subID = _command->getId();
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
 
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    if (currentSubstationBus == NULL)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-        if( subID == currentSubstationBus->getPaoId() )
+        if (_CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            currentSubstationBus->setReEnableBusFlag(FALSE);
-            currentSubstationBus->setBusUpdatedFlag(TRUE);
-            store->UpdatePaoDisableFlagInDB(currentSubstationBus, true);
-            string text = string("Substation Bus Disabled");
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-
-            if (!currentSubstationBus->getVerificationFlag())
-            {
-                INT seqId = CCEventSeqIdGen();
-                currentSubstationBus->setEventSequence(seqId);
-            }
-
-            LONG stationId, areaId, spAreaId;
-            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, text, _command->getUser()));
-
-            break;
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Unable to disable Substation Bus with ID: " << subBusId << ". It was not found." << endl;
         }
+        return;
     }
+
+    currentSubstationBus->setReEnableBusFlag(FALSE);
+    currentSubstationBus->setBusUpdatedFlag(TRUE);
+    store->UpdatePaoDisableFlagInDB(currentSubstationBus, true);
+    string text = string("Substation Bus Disabled");
+    string additional = string("Bus: ");
+    additional += currentSubstationBus->getPaoName();
+    if (_LOG_MAPID_INFO)
+    {
+        additional += " MapID: ";
+        additional += currentSubstationBus->getMapLocationId();
+        additional += " (";
+        additional += currentSubstationBus->getPaoDescription();
+        additional += ")";
+    }
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+    if (!currentSubstationBus->getVerificationFlag())
+    {
+        INT seqId = CCEventSeqIdGen();
+        currentSubstationBus->setEventSequence(seqId);
+    }
+
+    LONG stationId, areaId, spAreaId;
+    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, text, _command->getUser()));
 }
 
 /*---------------------------------------------------------------------------
@@ -619,7 +399,7 @@ void CtiCCCommandExecutor::EnableFeeder()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG feederID = _command->getId();
+    LONG feederID = _itemId;
     BOOL found = FALSE;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -678,7 +458,7 @@ void CtiCCCommandExecutor::DisableFeeder()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG feederID = _command->getId();
+    LONG feederID = _itemId;
     BOOL found = FALSE;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -735,7 +515,7 @@ void CtiCCCommandExecutor::EnableCapBank()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG capBankID = _command->getId();
+    LONG capBankID = _itemId;
     BOOL found = FALSE;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -814,7 +594,7 @@ void CtiCCCommandExecutor::DisableCapBank()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG capBankID = _command->getId();
+    LONG capBankID = _itemId;
     BOOL found = FALSE;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -883,116 +663,34 @@ void CtiCCCommandExecutor::DisableCapBank()
     }
 }
 
-void CtiCCCommandExecutor::sendLocalControl()
-{
-    std::vector<CtiSignalMsg*> signals;
-    std::vector<CtiCCEventLogMsg*> events;
-    std::vector<CtiRequestMsg*> requests;
-
-    switch (_command->getCommand())
-    {
-        case CtiCCCommand::DISABLE_OVUV:
-        {
-            disableOvUv(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::ENABLE_OVUV:
-        {
-            enableOvUv(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::BANK_ENABLE_TEMPCONTROL:
-        {
-            enableTempControl(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::BANK_DISABLE_TEMPCONTROL:
-        {
-            disableTempControl(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::BANK_ENABLE_VARCONTROL:
-        {
-            enableVarControl(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::BANK_DISABLE_VARCONTROL:
-        {
-            disableVarControl(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::BANK_ENABLE_TIMECONTROL:
-        {
-            enableTimeControl(signals,events,requests);
-            break;
-        }
-        case CtiCCCommand::BANK_DISABLE_TIMECONTROL:
-        {
-            disableTimeControl(signals,events,requests);
-            break;
-        }
-        default:
-        {
-             CtiLockGuard<CtiLogger> logger_guard(dout);
-             dout << CtiTime() << " LocalControl not implemented: " << _command->getCommand() << endl;
-        }
-        break;
-    }
-
-    for each(CtiCCEventLogMsg* message in events)
-    {
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(message);
-    }
-    events.clear();
-
-    for each(CtiRequestMsg* message in requests)
-    {
-        CtiCapController::getInstance()->manualCapBankControl(message,new CtiMultiMsg());
-    }
-    requests.clear();
-
-    for each(CtiSignalMsg* message in signals)
-    {
-        CtiCapController::getInstance()->sendMessageToDispatch(message);
-    }
-    signals.clear();
-
-
-}
-
-void CtiCCCommandExecutor::syncCbcAndCapBankStates()
+void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG bankID = _command->getId();
     string commandName = " Sync CBC and CapBank States";
-    //Add check for 702 device type?
-    int controllerId = _command->getId();
-    if (controllerId == 0 )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName <<" command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
+
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
         return;
     }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        return;
+    }
+
     if ( !capBank->isControlDeviceTwoWay() )
     {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, CBC must be two way. " << endl;
         return;
     }
     if ( capBank->getDisableFlag() )
@@ -1045,7 +743,8 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates()
 /*---------------------------------------------------------------------------
     Enable OV/UV
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::enableOvUv(std::vector<CtiSignalMsg*>& signals,
+void CtiCCCommandExecutor::enableOvUv(long bankId,
+                                      std::vector<CtiSignalMsg*>& signals,
                                       std::vector<CtiCCEventLogMsg*>& events,
                                       std::vector<CtiRequestMsg*>& requests)
 {
@@ -1053,29 +752,19 @@ void CtiCCCommandExecutor::enableOvUv(std::vector<CtiSignalMsg*>& signals,
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    //Add check for 702 device type?
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName <<" command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1154,7 +843,8 @@ void CtiCCCommandExecutor::enableOvUv(std::vector<CtiSignalMsg*>& signals,
 /*---------------------------------------------------------------------------
     Disable OV/UV
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::disableOvUv(std::vector<CtiSignalMsg*>& signals,
+void CtiCCCommandExecutor::disableOvUv(long bankId,
+                                       std::vector<CtiSignalMsg*>& signals,
                                        std::vector<CtiCCEventLogMsg*>& events,
                                        std::vector<CtiRequestMsg*>& requests)
 {
@@ -1162,28 +852,19 @@ void CtiCCCommandExecutor::disableOvUv(std::vector<CtiSignalMsg*>& signals,
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1259,35 +940,26 @@ void CtiCCCommandExecutor::disableOvUv(std::vector<CtiSignalMsg*>& signals,
     return;
 }
 
-void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
 {
     string commandName = " Enable Temp Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1368,35 +1040,26 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
         return;
 }
 
-void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
 {
     string commandName = " Disable Temp Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1464,35 +1127,26 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     return;
 }
 
-void CtiCCCommandExecutor::enableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
 {
     string commandName = " Enable Var Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1559,35 +1213,26 @@ void CtiCCCommandExecutor::enableVarControl(std::vector<CtiSignalMsg*>& signals,
     return;
 }
 
-void CtiCCCommandExecutor::disableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
 {
     string commandName = " Disable Var Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1654,7 +1299,7 @@ void CtiCCCommandExecutor::disableVarControl(std::vector<CtiSignalMsg*>& signals
     return;
 }
 
-void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
 {
     string commandName = " Enable Time Control";
     bool implemented = false;
@@ -1662,28 +1307,19 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1764,7 +1400,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     return;
 }
 
-void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests)
 {
     string commandName = " Disable Time Control";
     bool implemented = false;
@@ -1772,28 +1408,19 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int controllerId = _command->getId();
-    if (controllerId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, controller id of 0 received. " << endl;
-        return;
-    }
-
-    int bankId = store->findCapBankIDbyCbcID(controllerId);
-    if (bankId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
-        return;
-    }
-
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
-                                         << " and controller with id: " << controllerId << endl;
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        return;
+    }
+
+    long controllerId = capBank->getControlDeviceId();
+    if (controllerId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
         return;
     }
 
@@ -1861,46 +1488,6 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     return;
 }
 
-
-void CtiCCCommandExecutor::changeBankOperationalState()
-{
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    long paoId = _command->getId();
-    CtiCCCapBankPtr capBankPtr = store->findCapBankByPAObjectID(paoId);
-    if( capBankPtr == NULL )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Capbank does not exist, cannot change operational state." << endl;
-        return;
-    }
-    capBankPtr->setOperationalState( _command->getToken() );
-    store->UpdateCapBankOperationalStateInDB( capBankPtr );
-
-    CtiSignalMsg* msg = new CtiSignalMsg(SYS_PID_CAPCONTROL, 0,
-                                         "Cap Bank Update",
-                                         "Manual Op State Changed: " + capBankPtr->getOperationalState() + " for Bank: " + capBankPtr->getPaoName(),
-                                         CapControlLogType );
-    msg->setUser( _command->getUser() );
-    msg->setMessageTime( CtiTime() );
-
-    CtiCapController::getInstance()->sendMessageToDispatch( msg );
-    CtiCCFeederPtr feederPtr = store->findFeederByPAObjectID( capBankPtr->getParentId() );
-    if( feederPtr == NULL )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Changed operational state of an orphaned Cap Bank." << endl;
-        return;
-    }
-    CtiCCSubstationBusPtr subbusPtr = store->findSubBusByPAObjectID( feederPtr->getParentId() );
-    if( subbusPtr == NULL )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Changed operational state of an orphaned Cap Bank." << endl;
-        return;
-    }
-    subbusPtr->setBusUpdatedFlag(true);
-}
-
 void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks)
 {
     static const std::string timeSyncCommand     = "putconfig timesync";
@@ -1928,7 +1515,7 @@ void CtiCCCommandExecutor::SendTimeSync()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG paoId = _command->getId();
+    LONG paoId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -1966,101 +1553,11 @@ void CtiCCCommandExecutor::SendTimeSync()
 
 void CtiCCCommandExecutor::SendAllCapBankCommands()
 {
-    long paoId = _command->getId();
+    long paoId = _itemId;
     long controlID = 0;
     bool found = FALSE;
     string actionText = "";
-    long action = CtiCCCommand::UNDEFINED;
-
-    switch ( _command->getCommand() )
-    {
-
-        case CtiCCCommand::SEND_ALL_OPEN:
-        {
-            actionText = string(" - Open");
-            action = CtiCCCommand::OPEN_CAPBANK;
-            ControlAllCapBanks(paoId, CtiCCCapBank::Open);
-            return;
-        }
-        case CtiCCCommand::SEND_ALL_CLOSE:
-        {
-            actionText = string(" - Close");
-            action = CtiCCCommand::CLOSE_CAPBANK;
-            ControlAllCapBanks(paoId, CtiCCCapBank::Close);
-            return;
-        }
-        case CtiCCCommand::SEND_ALL_ENABLE_OVUV:
-        {
-            actionText = string(" - Enable OvUv");
-            action = CtiCCCommand::ENABLE_OVUV;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_DISABLE_OVUV:
-        {
-            actionText = string(" - Disable OvUv");
-            action = CtiCCCommand::DISABLE_OVUV;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_SCAN_2WAY_DEVICE:
-        {
-            actionText = string(" - Integrity Scan");
-            action = CtiCCCommand::SCAN_2WAY_DEVICE;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_ENABLE_TEMPCONTROL:
-        {
-            actionText = string(" - Enable Temperature Control");
-            action = CtiCCCommand::BANK_ENABLE_TEMPCONTROL;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_DISABLE_TEMPCONTROL:
-        {
-            actionText = string(" - Disable Temperature Control");
-            action = CtiCCCommand::BANK_DISABLE_TEMPCONTROL;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_ENABLE_VARCONTROL:
-        {
-            actionText = string(" - Enable Var Control");
-            action = CtiCCCommand::BANK_ENABLE_VARCONTROL;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_DISABLE_VARCONTROL:
-        {
-            actionText = string(" - Disable Var Control");
-            action = CtiCCCommand::BANK_DISABLE_VARCONTROL;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_ENABLE_TIMECONTROL:
-        {
-            actionText = string(" - Enable Time Control");
-            action = CtiCCCommand::BANK_ENABLE_TIMECONTROL;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_DISABLE_TIMECONTROL:
-        {
-            actionText = string(" - Disable Time Control");
-            action = CtiCCCommand::BANK_DISABLE_TIMECONTROL;
-            break;
-        }
-        case CtiCCCommand::SEND_ALL_SYNC_CBC_CAPBANK_STATE:
-        {
-            actionText = string(" - Sync CBC and CapBank States");
-            action = CtiCCCommand::SYNC_CBC_CAPBANK_STATE;
-            break;
-        }
-        default:
-        {
-            //This shouldn't happen since the main executor only calls this if it is an above case
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Send All Command Type: " << _command->getCommand() << " is not supported."  << endl;
-            }
-            return;
-        }
-    }
-
-    CtiMultiMsg* newCommands = new CtiMultiMsg();
+    long action = CapControlCommand::UNDEFINED;
 
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
@@ -2092,7 +1589,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                 dout << CtiTime() << " - Special Area is not enabled, will not set OVUV." << endl;
             }
 
-            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
+            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED,CtiCCServerResponse::RESULT_COMMAND_REFUSED, "Special Area is not enabled.");
             msg->setUser(_command->getUser());
             CtiCCExecutorFactory::createExecutor(msg)->execute();
 
@@ -2107,37 +1604,133 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     }
 
     //Main work of this function, split the command to every bank attached to paoId
+    std::vector<CtiSignalMsg*> signals;
+    std::vector<CtiCCEventLogMsg*> events;
+    std::vector<CtiRequestMsg*> requests;
+
     CapBankList banks = store->getCapBanksByPaoIdAndType(paoId,type);
     for each(CtiCCCapBankPtr bank in banks)
     {
         CtiCCFeederPtr feeder = store->findFeederByPAObjectID(bank->getParentId());
         CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(feeder->getParentId());
+        long bankId = bank->getPaoId();
 
-        CtiCCCommand* newCommand = new CtiCCCommand(action, bank->getControlDeviceId());
-        newCommand->setUser(_command->getUser());
-        newCommands->insert(newCommand);
+        //Execute per capbank
+        switch (_command->getCommandId())
+        {
+            case CapControlCommand::SEND_OPEN_CAPBANK:
+            {
+                actionText = string(" - Open");
+                OpenCapBank(bankId);
+                break;
+            }
+            case CapControlCommand::SEND_CLOSE_CAPBANK:
+            {
+                actionText = string(" - Close");
+                CloseCapBank(bankId);
+                break;
+            }
+            case CapControlCommand::SEND_ENABLE_OVUV:
+            {
+                actionText = string(" - Enable OvUv");
+                enableOvUv(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_DISABLE_OVUV:
+            {
+                actionText = string(" - Disable OvUv");
+                disableOvUv(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_ENABLE_TEMPCONTROL:
+            {
+                actionText = string(" - Enable Temperature Control");
+                enableTempControl(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_DISABLE_TEMPCONTROL:
+            {
+                actionText = string(" - Disable Temperature Control");
+                disableTempControl(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_ENABLE_VARCONTROL:
+            {
+                actionText = string(" - Enable Var Control");
+                enableVarControl(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_DISABLE_VARCONTROL:
+            {
+                actionText = string(" - Disable Var Control");
+                disableVarControl(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_ENABLE_TIMECONTROL:
+            {
+                actionText = string(" - Enable Time Control");
+                enableTimeControl(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_DISABLE_TIMECONTROL:
+            {
+                actionText = string(" - Disable Time Control");
+                disableTimeControl(bankId,signals,events,requests);
+                break;
+            }
+            case CapControlCommand::SEND_SYNC_CBC_CAPBANK_STATE:
+            {
+                actionText = string(" - Sync CBC and CapBank States");
+                syncCbcAndCapBankStates(bankId);
+                break;
+            }
+            case CapControlCommand::SEND_SCAN_2WAY_DEVICE:
+            {
+                actionText = string(" - Integrity Scan");
+                Scan2WayDevice(bankId);
+                break;
+            }
+            default:
+            {
+                //This shouldn't happen since the main executor only calls this if it is an above case
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Send All Command Type: " << _command->getCommandId() << " is not supported."  << endl;
+                }
+                return;
+            }
+        }
     }
 
     //Bookwork time
     //This only has to happen for OVUV Currently. There are no flags to set for a scan.
-    if (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV)
+    if (_command->getCommandId()  == CapControlCommand::SEND_ENABLE_OVUV || _command->getCommandId()  == CapControlCommand::SEND_DISABLE_OVUV)
     {
         //Setting the flag on the all parent objects related to the banks we just set.
-        bool ovuvFlag = (action  == CtiCCCommand::ENABLE_OVUV)?false:true;
+        bool ovuvFlag = (_command->getCommandId()  == CapControlCommand::SEND_ENABLE_OVUV)?false:true;
         setParentOvUvFlags(paoId,type,ovuvFlag,modifiedSubsList);
     }
 
     //Happens for all send alls
     printOutEventLogsByIdAndType(paoId,type,actionText,_command->getUser(), pointChanges, ccEvents);
 
-    if (newCommands->getCount() > 0)
+    for each(CtiCCEventLogMsg* message in events)
     {
-       CtiCCExecutorFactory::createExecutor(newCommands)->execute();
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(message);
     }
-    else
+    events.clear();
+
+    for each(CtiRequestMsg* message in requests)
     {
-        delete newCommands;
+        CtiCapController::getInstance()->manualCapBankControl(message,new CtiMultiMsg());
     }
+    requests.clear();
+
+    for each(CtiSignalMsg* message in signals)
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(message);
+    }
+    signals.clear();
 
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
@@ -2406,22 +1999,6 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, Cti::CapContr
     return;
 }
 
-/*---------------------------------------------------------------------------
-    DeleteItem
----------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::DeleteItem()
-{
-    CtiCCClientListener::getInstance()->BroadcastMessage(_command);
-}
-
-/*---------------------------------------------------------------------------
-    SendSystemStatus
----------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::SendSystemStatus()
-{
-    CtiCCClientListener::getInstance()->BroadcastMessage(_command);
-}
-
 bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
 {
     CtiCCCapBank_SVector& ccCapBanks = feeder->getCCCapBanks();
@@ -2437,7 +2014,7 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
                 dout << CtiTime() << " - Feeder already has bank: "<<currentCapBank->getPaoName() <<" in a pending state." << endl;
             }
 
-            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, string("Command Refused: " + currentCapBank->getPaoName() + " is already in a Pending State."));
+            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED, CtiCCServerResponse::RESULT_COMMAND_REFUSED, string("Command Refused: " + currentCapBank->getPaoName() + " is already in a Pending State."));
             msg->setUser(_command->getUser());
             CtiCCExecutorFactory::createExecutor(msg)->execute();
 
@@ -2451,13 +2028,12 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
 /*---------------------------------------------------------------------------
     OpenCapBank
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::OpenCapBank()
+void CtiCCCommandExecutor::OpenCapBank(long bankId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG controlID = 0;
-    LONG bankID = _command->getId();
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
@@ -2475,7 +2051,7 @@ void CtiCCCommandExecutor::OpenCapBank()
     CtiCCSubstation_vec updatedStations;
 
 
-    if (bankID != 0)
+    if (bankId != 0)
     {
 
         for(LONG i=0;i<ccSubstationBuses.size();i++)
@@ -2490,9 +2066,10 @@ void CtiCCCommandExecutor::OpenCapBank()
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( bankID == currentCapBank->getControlDeviceId() )
+                    if( bankId == currentCapBank->getPaoId() )
                     {
                         found = TRUE;
+                        controlID = currentCapBank->getControlDeviceId();
                         if(!currentCapBank->getSendAllCommandFlag() &&
                            checkForCommandRefusal(currentFeeder))
                         {
@@ -2516,7 +2093,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             savedFeederLastOperationTime = currentFeeder->getLastOperationTime();
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
                             currentFeeder->setRecentlyControlledFlag(FALSE);
-                            controlID = currentCapBank->getControlDeviceId();
+
                             if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPaoId());
                             currentSubstationBus->setLastFeederControlled(currentFeeder->getPaoId());
@@ -2681,7 +2258,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             else if (confirmImmediately)
                             {
                                 currentCapBank->setSendAllCommandFlag(FALSE);
-                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
+                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, controlID);
                             }
                             currentSubstationBus->verifyControlledStatusFlags();
                             parentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
@@ -2763,13 +2340,12 @@ void CtiCCCommandExecutor::OpenCapBank()
 /*---------------------------------------------------------------------------
     CloseCapBank
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::CloseCapBank()
+void CtiCCCommandExecutor::CloseCapBank(long bankId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG controlID = 0;
-    LONG bankID = _command->getId();
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
@@ -2787,7 +2363,7 @@ void CtiCCCommandExecutor::CloseCapBank()
     CtiCCSubstationPtr parentStation = NULL;
     CtiCCSubstation_vec updatedStations;
 
-    if (bankID != 0)
+    if (bankId != 0)
     {
 
         for(LONG i=0;i<ccSubstationBuses.size();i++)
@@ -2803,9 +2379,10 @@ void CtiCCCommandExecutor::CloseCapBank()
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( bankID == currentCapBank->getControlDeviceId() )
+                    if( bankId == currentCapBank->getPaoId() )
                     {
                         found = TRUE;
+                        controlID = currentCapBank->getControlDeviceId();
 
                         if(!currentCapBank->getSendAllCommandFlag() &&
                            checkForCommandRefusal(currentFeeder))
@@ -2832,7 +2409,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             savedFeederLastOperationTime = currentFeeder->getLastOperationTime();
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
                             currentFeeder->setRecentlyControlledFlag(FALSE);
-                            controlID = currentCapBank->getControlDeviceId();
+
                             if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPaoId());
                             currentSubstationBus->setLastFeederControlled(currentFeeder->getPaoId());
@@ -2934,7 +2511,7 @@ void CtiCCCommandExecutor::CloseCapBank()
 
                                 if (confirmImmediately)
                                 {
-                                    doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
+                                    doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, controlID);
                                     currentCapBank->setSendAllCommandFlag(FALSE);
 
                                 }
@@ -3073,10 +2650,6 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-    LONG controlID = 0;
-    LONG bankID = _command->getId();
-    BOOL found = FALSE;
 
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
@@ -3426,7 +2999,7 @@ void CtiCCCommandExecutor::EnableArea()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -3479,16 +3052,16 @@ void CtiCCCommandExecutor::EnableArea()
 
             if (refusalFlag)
             {
-                CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, refusalText);
+                CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED, CtiCCServerResponse::RESULT_COMMAND_REFUSED, refusalText);
                 msg->setUser(_command->getUser());
                 CtiCCExecutorFactory::createExecutor(msg)->execute();
-                if (currentSpArea->getDisabledStatePointId() != 0); 
+                if (currentSpArea->getDisabledStatePointId() != 0);
                 {
                     //enable area refused.  disable flag = true.  This will sync the disable point.
-                     CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue( 
+                     CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue(
                          new CtiPointDataMsg( currentSpArea->getDisabledStatePointId(), currentSpArea->getDisableFlag() ) ); // NormalQuality, StatusPointType
                 }
-                
+
             }
             else
             {
@@ -3520,21 +3093,6 @@ void CtiCCCommandExecutor::EnableArea()
                 }
             }
         }
-        else
-        {
-            CtiCCSubstation* station = store->findSubstationByPAObjectID(areaId);
-            if (station != NULL)
-            {
-                string text1 = string("Manual Enable Substation");
-                string additional1 = string("Substation: ");
-                additional1 += station->getPaoName();
-
-                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
-
-                store->UpdatePaoDisableFlagInDB(station, false);
-            }
-        }
     }
     if (eventMulti->getCount() > 0)
     {
@@ -3554,7 +3112,6 @@ void CtiCCCommandExecutor::EnableArea()
     }
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -3565,7 +3122,7 @@ void CtiCCCommandExecutor::DisableArea()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -3623,22 +3180,6 @@ void CtiCCCommandExecutor::DisableArea()
                 }
             }
         }
-        else
-        {
-            CtiCCSubstation* station = store->findSubstationByPAObjectID(areaId);
-            if (station != NULL)
-            {
-                string text1 = string("Manual Disable Substation");
-                string additional1 = string("Substation: ");
-                additional1 += station->getPaoName();
-
-                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0,0, station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
-
-                store->UpdatePaoDisableFlagInDB(station, true);
-                station->checkForAndStopVerificationOnChildSubBuses(capMessages);
-            }
-        }
     }
 
     if (eventMulti->getCount() > 0)
@@ -3661,11 +3202,10 @@ void CtiCCCommandExecutor::DisableArea()
     CtiMultiMsg_vec& temp = multiCapMsg->getData( );
     for(int i=0;i<temp.size( );i++)
     {
-        CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
+        CtiCCExecutorFactory::createExecutor((CtiMessage*)capMessages[i])->execute();
     }
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
 }
 
 
@@ -3677,7 +3217,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
     BOOL isValidIdFlag = FALSE; //is it a valid id passed in
     BOOL isAreaFlag = FALSE; // is it an area or special area.
 
-    LONG cmdId = _command->getId();
+    LONG cmdId = _itemId;
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(cmdId);
     CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(cmdId);
@@ -3709,7 +3249,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
     BOOL isValidIdFlag = FALSE; //is it a valid id passed in
     BOOL isAreaFlag = FALSE; // is it an area or special area.
 
-    LONG cmdId = _command->getId();
+    LONG cmdId = _itemId;
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(cmdId);
     CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(cmdId);
@@ -3746,7 +3286,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
     BOOL isValidIdFlag = FALSE; //is it a valid id passed in
     BOOL isAreaFlag = FALSE; // is it an area or special area.
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -3872,7 +3412,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
                                 if ( currentCapBank->getReEnableOvUvFlag() )
                                 {
                                     currentCapBank->setReEnableOvUvFlag(FALSE);
-                                    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                                    ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_ENABLE_OVUV, currentCapBank->getPaoId());
                                     actionMsg->setUser(_command->getUser());
                                     actionMulti->insert(actionMsg);
                                 }
@@ -3933,7 +3473,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
     BOOL isValidIdFlag = FALSE; //is it a valid id passed in
     BOOL isAreaFlag = FALSE; // is it an area or special area.
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -4060,7 +3600,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
                                 if ( !currentCapBank->getOvUvDisabledFlag() )
                                 {
                                     currentCapBank->setReEnableOvUvFlag(TRUE);
-                                    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId());
+                                    ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_DISABLE_OVUV, currentCapBank->getPaoId());
                                     actionMsg->setUser(_command->getUser());
                                     actionMulti->insert(actionMsg);
                                 }
@@ -4117,7 +3657,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subId = _command->getId();
+    LONG subId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -4222,7 +3762,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                             if ( !currentCapBank->getOvUvDisabledFlag() )
                             {
                                 currentCapBank->setReEnableOvUvFlag(TRUE);
-                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId());
+                                ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_DISABLE_OVUV, currentCapBank->getPaoId());
                                 actionMsg->setUser(_command->getUser());
                                 actionMulti->insert(actionMsg);
                             }
@@ -4233,7 +3773,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                             if ( currentCapBank->getReEnableOvUvFlag() )
                             {
                                 currentCapBank->setReEnableOvUvFlag(FALSE);
-                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                                ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_ENABLE_OVUV, currentCapBank->getPaoId());
                                 actionMsg->setUser(_command->getUser());
                                 actionMulti->insert(actionMsg);
                             }
@@ -4289,7 +3829,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subId = _command->getId();
+    LONG subId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -4361,7 +3901,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
                         if ( !currentCapBank->getOvUvDisabledFlag() )
                         {
                             currentCapBank->setReEnableOvUvFlag(TRUE);
-                            CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId());
+                            ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_DISABLE_OVUV, currentCapBank->getPaoId());
                             actionMsg->setUser(_command->getUser());
                             actionMulti->insert(actionMsg);
                         }
@@ -4372,7 +3912,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
                         if ( currentCapBank->getReEnableOvUvFlag() )
                         {
                             currentCapBank->setReEnableOvUvFlag(FALSE);
-                            CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                            ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_ENABLE_OVUV, currentCapBank->getPaoId());
                             actionMsg->setUser(_command->getUser());
                             actionMulti->insert(actionMsg);
                         }
@@ -4429,7 +3969,7 @@ void CtiCCCommandExecutor::EnableSystem()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -4476,7 +4016,7 @@ void CtiCCCommandExecutor::EnableSystem()
 
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
 
-    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 1);
+    SystemStatus* actionMsg = new SystemStatus(true);
     actionMsg->setUser(_command->getUser());
 
     CtiCCExecutorFactory::createExecutor(actionMsg)->execute();
@@ -4490,7 +4030,7 @@ void CtiCCCommandExecutor::DisableSystem()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -4538,7 +4078,7 @@ void CtiCCCommandExecutor::DisableSystem()
 
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
 
-    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 0);
+    SystemStatus* actionMsg = new SystemStatus(false);
     actionMsg->setUser(_command->getUser());
 
     CtiCCExecutorFactory::createExecutor(actionMsg)->execute();
@@ -4555,7 +4095,7 @@ void CtiCCCommandExecutor::Flip7010Device()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG controlID = 0;
-    LONG bankID = _command->getId();
+    LONG bankID = _itemId;
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
@@ -4768,7 +4308,7 @@ void CtiCCCommandExecutor::Flip7010Device()
                             }
                             else if (confirmImmediately)
                             {
-                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
+                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, currentCapBank->getControlDeviceId());
                             }
                             break;
                         }
@@ -4832,25 +4372,23 @@ void CtiCCCommandExecutor::Flip7010Device()
 /*---------------------------------------------------------------------------
     Scan2WayDevice
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::Scan2WayDevice()
+void CtiCCCommandExecutor::Scan2WayDevice(long bankId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG controlID = 0;
-    LONG cbcID = _command->getId();
-    BOOL found = FALSE;
+    LONG cbcID = 0;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
 
-    LONG bankID = store->findCapBankIDbyCbcID(cbcID);
-    if (bankID != NULL)
+    if (bankId > 0)
     {
-        CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankID);
+        CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankId);
 
         if (currentCapBank != NULL)
         {   long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPaoId());
@@ -4867,9 +4405,11 @@ void CtiCCCommandExecutor::Scan2WayDevice()
                 }
             }
 
+            cbcID = currentCapBank->getControlDeviceId();
+
             if (currentSubstationBus != NULL && currentFeeder != NULL)
             {
-                if (currentCapBank->getControlDeviceId() > 0 &&
+                if (cbcID > 0 &&
                     stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702"))
                 {
 
@@ -4884,6 +4424,23 @@ void CtiCCCommandExecutor::Scan2WayDevice()
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                     ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getControlPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlManualCommand, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
 
+                    CtiRequestMsg* reqMsg = createPorterRequestMsg(cbcID,"scan integrity");
+                    reqMsg->setSOE(5);
+                    CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+                    if (eventMulti->getCount() > 0)
+                    {
+                        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+                    }
+                    else
+                    {
+                        delete eventMulti;
+                    }
+                }
+                else
+                {
+                    delete multi;
+                    delete eventMulti;
                 }
             }
             else
@@ -4893,40 +4450,19 @@ void CtiCCCommandExecutor::Scan2WayDevice()
                     dout << CtiTime() << " - CapBank Not attached to Feeder/Sub.  Cannot Scan Control Device " << endl;
                 }
             }
-
-
         }
     }
-    if( cbcID > 0 )
-    {
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(cbcID,"scan integrity");
-        reqMsg->setSOE(5);
-        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
-
-        if (eventMulti->getCount() > 0)
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-        else
-            delete eventMulti;
-
-    }
-    else
-    {
-        delete multi;
-        delete eventMulti;
-    }
-
 }
-
 
 /*---------------------------------------------------------------------------
     ConfirmOpen
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::ConfirmSub()
+void CtiCCCommandExecutor::ConfirmSubstationBus()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subId = _command->getId();
+    LONG subId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -5121,7 +4657,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG fdrId = _command->getId();
+    LONG fdrId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -5318,15 +4854,12 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
 }
 
-/*---------------------------------------------------------------------------
-    ConfirmOpen
----------------------------------------------------------------------------*/
 void CtiCCCommandExecutor::ConfirmArea()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -5368,7 +4901,7 @@ void CtiCCCommandExecutor::ConfirmArea()
                         {
                             if (!currentSubstationBus->getDisableFlag() && !station->getDisableFlag())
                             {
-                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPaoId());
+                                ItemCommand* actionMsg = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, currentSubstationBus->getPaoId());
                                 actionMsg->setUser(_command->getUser());
                                 confirmMulti->insert(actionMsg);
                             }
@@ -5421,7 +4954,7 @@ void CtiCCCommandExecutor::ConfirmArea()
                     dout << CtiTime() << " - Special Area is not enabled, commands refused." << endl;
                 }
 
-                CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
+                CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED, CtiCCServerResponse::RESULT_COMMAND_REFUSED, "Special Area is not enabled.");
                 msg->setUser(_command->getUser());
 
                 CtiCCExecutorFactory::createExecutor(msg)->execute();
@@ -5455,7 +4988,7 @@ void CtiCCCommandExecutor::ConfirmArea()
                                 {
                                     if (!currentSubstationBus->getDisableFlag() && !station->getDisableFlag())
                                     {
-                                        CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPaoId());
+                                        ItemCommand* actionMsg = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, currentSubstationBus->getPaoId());
                                         actionMsg->setUser(_command->getUser());
                                         confirmMulti->insert(actionMsg);
                                     }
@@ -5492,63 +5025,73 @@ void CtiCCCommandExecutor::ConfirmArea()
                 }
             }
         }
-        else
+    }
+}
+
+void CtiCCCommandExecutor::ConfirmSubstation()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* confirmMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    CtiCCSubstation* station = store->findSubstationByPAObjectID(_itemId);
+    if (station != NULL)
+    {
+        string text1 = string("Manual Confirm Substation");
+        string additional1 = string("Substation: ");
+        additional1 += station->getPaoName();
+
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, station->getParentId(), station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+        Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
+        while (iterBus  != station->getCCSubIds()->end())
         {
-            CtiCCSubstation* station = store->findSubstationByPAObjectID(areaId);
-            if (station != NULL)
+            LONG busId = *iterBus;
+            CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
+            if (currentSubstationBus != NULL)
             {
-                string text1 = string("Manual Confirm Substation");
-                string additional1 = string("Substation: ");
-                additional1 += station->getPaoName();
-
-                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, station->getParentId(), station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
-
-                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                while (iterBus  != station->getCCSubIds()->end())
+                if (!currentSubstationBus->getVerificationFlag() &&
+                    currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                 {
-                    LONG busId = *iterBus;
-                    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
-                    if (currentSubstationBus != NULL)
+                    if (!currentSubstationBus->getDisableFlag())
                     {
-                        if (!currentSubstationBus->getVerificationFlag() &&
-                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
-                        {
-                            if (!currentSubstationBus->getDisableFlag())
-                            {
-                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPaoId());
-                                actionMsg->setUser(_command->getUser());
-                                confirmMulti->insert(actionMsg);
-                            }
-                        }
+                        ItemCommand* actionMsg = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, currentSubstationBus->getPaoId());
+                        actionMsg->setUser(_command->getUser());
+                        confirmMulti->insert(actionMsg);
                     }
-                    iterBus++;
-                }
-
-                if (confirmMulti->getCount() > 0)
-                {
-                    CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
-                    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
-                }
-
-                if (eventMulti->getCount() > 0)
-                {
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-                }
-                else
-                {
-                    delete eventMulti;
-                }
-
-                if (multi->getCount() > 0)
-                {
-                    CtiCapController::getInstance()->sendMessageToDispatch(multi);
-                }
-                else
-                {
-                    delete multi;
                 }
             }
+            iterBus++;
+        }
+
+        if (confirmMulti->getCount() > 0)
+        {
+            CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
+        }
+
+        if (eventMulti->getCount() > 0)
+        {
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
+        else
+        {
+            delete eventMulti;
+        }
+
+        if (multi->getCount() > 0)
+        {
+            CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        }
+        else
+        {
+            delete multi;
         }
     }
 }
@@ -5563,7 +5106,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG controlID = 0;
-    LONG bankID = _command->getId();
+    LONG bankID = _itemId;
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
@@ -5595,9 +5138,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( bankID == currentCapBank->getControlDeviceId() )
+                    if( bankID == currentCapBank->getPaoId() )
                     {
                         found = TRUE;
+                        controlID = currentCapBank->getControlDeviceId();
+
                         updatedSubs.push_back(currentSubstationBus);
                         if (!currentSubstationBus->getVerificationFlag() &&
                             currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
@@ -5608,7 +5153,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             savedFeederLastOperationTime = currentFeeder->getLastOperationTime();
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
                             currentFeeder->setRecentlyControlledFlag(FALSE);
-                            controlID = currentCapBank->getControlDeviceId();
+
 
                             if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPaoId());
@@ -5727,7 +5272,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                         CtiCCCapBank* bank = (CtiCCCapBank*)banks[l];
                                         if (bank->getStatusPointId() > 0)
                                         {
-                                            if ((bank->getControlDeviceId() != bankID && (bank->getControlStatus() == CtiCCCapBank::OpenPending || bank->getControlStatus() == CtiCCCapBank::ClosePending ) ) ||
+                                            if ((bank->getControlDeviceId() != controlID && (bank->getControlStatus() == CtiCCCapBank::OpenPending || bank->getControlStatus() == CtiCCCapBank::ClosePending ) ) ||
                                                  savedControlStatus == CtiCCCapBank::OpenPending )
                                             {
                                                 confirmImmediately = TRUE;
@@ -5784,7 +5329,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             }
                             else
                             {
-                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
+                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, controlID);
                             }
                             break;
                         }
@@ -5864,7 +5409,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG controlID = 0;
-    LONG bankID = _command->getId();
+    LONG bankID = _itemId;
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
@@ -5896,9 +5441,11 @@ void CtiCCCommandExecutor::ConfirmClose()
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( bankID == currentCapBank->getControlDeviceId() )
+                    if( bankID == currentCapBank->getPaoId() )
                     {
                         found = TRUE;
+                        controlID = currentCapBank->getControlDeviceId();
+
                         updatedSubs.push_back(currentSubstationBus);
                         if (!currentSubstationBus->getVerificationFlag() &&
                             currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
@@ -5909,7 +5456,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                             savedFeederLastOperationTime = currentFeeder->getLastOperationTime();
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
                             currentFeeder->setRecentlyControlledFlag(FALSE);
-                            controlID = currentCapBank->getControlDeviceId();
+
 
                             if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPaoId());
@@ -6019,7 +5566,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                                         CtiCCCapBank* bank = (CtiCCCapBank*)banks[l];
                                         if (bank->getStatusPointId() > 0)
                                         {
-                                            if ((bank->getControlDeviceId() != bankID && (bank->getControlStatus() == CtiCCCapBank::OpenPending || bank->getControlStatus() == CtiCCCapBank::ClosePending ) ) ||
+                                            if ((bank->getControlDeviceId() != controlID && (bank->getControlStatus() == CtiCCCapBank::OpenPending || bank->getControlStatus() == CtiCCCapBank::ClosePending ) ) ||
                                                  savedControlStatus == CtiCCCapBank::ClosePending )
                                             {
                                                 confirmImmediately = TRUE;
@@ -6080,7 +5627,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                             }
                             else
                             {
-                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
+                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, controlID);
                             }
                             break;
                         }
@@ -6155,7 +5702,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     doConfirmImmediately
 ---------------------------------------------------------------------------*/
 
-void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG bankId)
+void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long controllerId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -6169,7 +5716,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
         for(LONG k=0;k<ccCapBanks.size();k++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-            if (bankId == currentCapBank->getControlDeviceId())
+            if (controllerId == currentCapBank->getControlDeviceId())
             {
                 currentFeeder->setRecentlyControlledFlag(FALSE);
                 currentFeeder->setRetryIndex(0);
@@ -6316,7 +5863,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if (bankId == currentCapBank->getControlDeviceId())
+                    if (controllerId == currentCapBank->getControlDeviceId())
                     {
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
@@ -6461,7 +6008,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG bankId = _command->getId();
+    LONG bankId = _itemId;
     BOOL found = FALSE;
     LONG tempFeederId = 0;
     LONG movedCapBankId = bankId;
@@ -6539,7 +6086,7 @@ void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG fdrId = _command->getId();
+    LONG fdrId = _itemId;
     BOOL found = FALSE;
     LONG tempSubBusId = 0;
     LONG movedFeederId = fdrId;
@@ -6612,7 +6159,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
-    LONG paoId = _command->getId();
+    LONG paoId = _itemId;
     BOOL found = FALSE;
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
@@ -6799,7 +6346,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     {
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << "Reset Daily Operations for PAO Id: " << paoId << endl;
+            dout << CtiTime() << " Reset Daily Operations for PAO Id: " << paoId << endl;
         }
         if( pointChanges.size() > 0 )
         {
@@ -6820,7 +6367,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
         delete eventMulti;
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << "Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 
@@ -6833,7 +6380,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG areaId = _command->getId();
+    LONG areaId = _itemId;
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -6937,35 +6484,6 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
 }
 
 /*===========================================================================
-    CtiCCSubstationVerificationExecutor
-===========================================================================*/
-/*---------------------------------------------------------------------------
-    Execute
----------------------------------------------------------------------------*/
-void CtiCCSubstationVerificationExecutor::execute()
-{
-    LONG strategy = _subVerificationMsg->getStrategy();
-    LONG action = _subVerificationMsg->getAction();
-    LONG subBusId = _subVerificationMsg->getSubBusId();
-    LONG inactivityTime = _subVerificationMsg->getInactivityTime();
-
-    switch (action)
-    {
-        case CtiCCSubstationVerificationMsg::FORCE_DISABLE_SUBSTATION_BUS_VERIFICATION:
-        DisableSubstationBusVerification(true); //true force substation bus verification to stop immediately
-        break;
-
-        case CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION:
-        DisableSubstationBusVerification(); //default false = don't force immediate stop
-        break;
-
-        case CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION:
-        EnableSubstationBusVerification();
-        break;
-    }
-}
-
-/*===========================================================================
     CtiCCCapBankMoveExecutor
 ===========================================================================*/
 /*---------------------------------------------------------------------------
@@ -6975,19 +6493,34 @@ void CtiCCCapBankMoveExecutor::execute()
 {
     INT permanentFlag = _capMoveMsg->getPermanentFlag();
     LONG oldFeederId = _capMoveMsg->getOldFeederId();
-    LONG movedCapBankId = _capMoveMsg->getCapBankId();
+    LONG movedCapBankId = _capMoveMsg->getItemId();
     LONG newFeederId = _capMoveMsg->getNewFeederId();
     float capSwitchingOrder = _capMoveMsg->getCapSwitchingOrder();
     float capCloseOrder = _capMoveMsg->getCloseOrder();
     float capTripOrder = _capMoveMsg->getTripOrder();
 
-    moveCapBank(permanentFlag, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder, capCloseOrder, capTripOrder);
+    bool result = moveCapBank(permanentFlag, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder, capCloseOrder, capTripOrder);
+
+    long messageId = _capMoveMsg->getMessageId();
+    long commandResult = CtiCCServerResponse::RESULT_SUCCESS;
+    string commandResultText("Temporary Bank Move was successful.");
+
+    if (!result)
+    {
+        commandResult = CtiCCServerResponse::RESULT_COMMAND_REFUSED;
+        commandResultText = string("Temporary Bank Move was refused.");
+    }
+
+    CtiCCServerResponse* msg = new CtiCCServerResponse(messageId, commandResult, commandResultText);
+    msg->setUser(_capMoveMsg->getUser());
+    CtiCCExecutorFactory::createExecutor(msg)->execute();
+
 }
 
 /*---------------------------------------------------------------------------
     moveCapBank
 ---------------------------------------------------------------------------*/
-void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder)
+bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedCapBankId, long newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -7003,8 +6536,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     BOOL verificationFlag = FALSE;
 
     oldFeederPtr = store->findFeederByPAObjectID(oldFeederId);
-   if (oldFeederPtr != NULL)
-   {
+    if (oldFeederPtr != NULL)
+    {
        oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
        if (oldFeederParentSub != NULL)
        {
@@ -7023,10 +6556,11 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                oldFeederParentSub->setBusUpdatedFlag(TRUE);
            }
        }
-   }
-   newFeederPtr = store->findFeederByPAObjectID(newFeederId);
-   if (newFeederPtr != NULL)
-   {
+    }
+
+    newFeederPtr = store->findFeederByPAObjectID(newFeederId);
+    if (newFeederPtr != NULL)
+    {
        newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
        if (newFeederParentSub != NULL)
        {
@@ -7045,10 +6579,10 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                newFeederParentSub->setBusUpdatedFlag(TRUE);
            }
        }
-   }
-   movedCapBankPtr = store->findCapBankByPAObjectID(movedCapBankId);
+    }
 
-    if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL && !verificationFlag)
+    movedCapBankPtr = store->findCapBankByPAObjectID(movedCapBankId);
+    if (movedCapBankPtr!=NULL && !verificationFlag)
     {
         {
             CtiCCCapBank_SVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
@@ -7064,8 +6598,6 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId);
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId);
-
-
 
             if( !permanentFlag )
             {
@@ -7085,7 +6617,6 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
             movedCapBankPtr->setParentId(newFeederId);
             movedCapBankPtr->setDirty(true);
-
         }
 
         {
@@ -7095,14 +6626,29 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             movedCapBankPtr->setCloseOrder(closeOrder);
             movedCapBankPtr->setTripOrder(tripOrder);
 
-            newFeederCapBanks.push_back(movedCapBankPtr);
+
 
             if( permanentFlag )
             {
+                for (CtiCCCapBank_SVector::iterator itr = newFeederCapBanks.begin(); itr != newFeederCapBanks.end(); itr++)
+                {
+                    if((*itr)->getPaoId() == movedCapBankPtr->getPaoId())
+                    {
+                        newFeederCapBanks.erase(itr);
+                        break;
+                    }
+                }
+
+                newFeederCapBanks.push_back(movedCapBankPtr);
+
                 //reorder new feeder.
                 newFeederPtr->checkForAndReorderFeeder();
                 //reorder old feeder
                 oldFeederPtr->checkForAndReorderFeeder();
+            }
+            else
+            {
+                newFeederCapBanks.push_back(movedCapBankPtr);
             }
 
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
@@ -7150,6 +6696,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         }
 
         CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
+
+        return true;
     }
     else
     {
@@ -7172,6 +6720,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             }
         }
     }
+
+    return false;
 }
 
 
@@ -7186,10 +6736,10 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 ---------------------------------------------------------------------------*/
 void CtiCCFeederMoveExecutor::execute()
 {
-    BOOL permanentFlag = _fdrMoveMsg->getPermanentFlag();
-    LONG oldSubBusId = _fdrMoveMsg->getOldParentId();
-    LONG movedFeederId = _fdrMoveMsg->getObjectId();
-    LONG newSubBusId = _fdrMoveMsg->getNewParentId();
+    bool permanentFlag = _fdrMoveMsg->getPermanentFlag();
+    long oldSubBusId = _fdrMoveMsg->getOldParentId();
+    long movedFeederId = _fdrMoveMsg->getObjectId();
+    long newSubBusId = _fdrMoveMsg->getNewParentId();
     float fdrSwitchingOrder = _fdrMoveMsg->getSwitchingOrder();
 
     moveFeeder(permanentFlag, oldSubBusId, movedFeederId, newSubBusId, fdrSwitchingOrder);
@@ -7198,7 +6748,7 @@ void CtiCCFeederMoveExecutor::execute()
 /*---------------------------------------------------------------------------
     moveCapBank
 ---------------------------------------------------------------------------*/
-void CtiCCExecutor::moveFeeder(BOOL permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder)
+void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedFeederId, long newSubBusId, float fdrSwitchingOrder)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -7681,72 +7231,6 @@ void CtiCCShutdownExecutor::execute()
     }
 }
 
-/*===========================================================================
-    CtiCCExecutorFactory
-===========================================================================*/
-std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
-{
-    std::auto_ptr<CtiCCExecutor> ret_val;
-    LONG classId = message->isA();
-
-    switch (classId)
-    {
-        case CTICCSUBSTATIONBUS_MSG_ID:
-        case CTICCCAPBANKSTATES_MSG_ID:
-        case CTICCGEOAREAS_MSG_ID:
-        case CTICCSPECIALAREAS_MSG_ID:
-        case CTICCSUBSTATION_MSG_ID:
-        case CTICCSERVERRESPONSE_ID:
-        case CTIVOLTAGEREGULATOR_MSG_ID:
-            ret_val.reset(new CtiCCClientMsgExecutor((CtiMessage*)message));
-            break;
-
-        case CTICCCOMMAND_ID:
-            ret_val.reset(new CtiCCCommandExecutor((CtiCCCommand*)message));
-            break;
-
-        case DYNAMICCOMMAND_ID:
-            ret_val.reset(new DynamicCommandExecutor((DynamicCommand*)message));
-            break;
-
-        case MSG_POINTDATA:
-            ret_val.reset(new CtiCCPointDataMsgExecutor((CtiPointDataMsg*)message));
-            break;
-
-        case MSG_MULTI:
-            ret_val.reset(new CtiCCMultiMsgExecutor((CtiMultiMsg*)message));
-            break;
-
-        case MSG_COMMAND:
-            ret_val.reset(new CtiCCForwardMsgToDispatchExecutor((CtiMessage*)message));
-            break;
-
-        case CTICCCAPBANKMOVEMSG_ID:
-            ret_val.reset(new CtiCCCapBankMoveExecutor((CtiCCCapBankMoveMsg*)message));
-            break;
-        case CTICCOBJECTMOVEMSG_ID:
-            ret_val.reset(new CtiCCFeederMoveExecutor((CtiCCObjectMoveMsg*)message));
-            break;
-
-        case CTICCSUBVERIFICATIONMSG_ID:
-            ret_val.reset(new CtiCCSubstationVerificationExecutor((CtiCCSubstationVerificationMsg*)message));
-            break;
-        case CTICCSHUTDOWN_ID:
-            ret_val.reset(new CtiCCShutdownExecutor());
-            break;
-
-        default:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - CtiCCExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
-            ret_val.reset(new NoOpExecutor());
-        }
-    }
-
-    return ret_val;
-}
-
-
 void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const LONG command )
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -7757,11 +7241,11 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const LONG command )
     try
     {
         VoltageRegulatorManager::SharedPtr  regulator
-            = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
+            = store->getVoltageRegulatorManager()->getVoltageRegulator( _itemId );
 
         switch ( command )
         {
-            case CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
+            case CapControlCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
             {
                 commandName += "Integrity Scan";
                 regulator->executeIntegrityScan();
@@ -7769,37 +7253,37 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const LONG command )
                     new CtiCCEventLogMsg( "Sent Integrity Scan", regulator->getPaoId(), capControlIvvcScanOperation ) );
                 break;
             }
-            case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
+            case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
             {
                 commandName += "Remote Control Enable";
                 regulator->executeEnableRemoteControl();
                 break;
             }
-            case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
+            case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
             {
                 commandName += "Remote Control Disable";
                 regulator->executeDisableRemoteControl();
                 break;
             }
-            case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
+            case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
             {
                 commandName += "Raise Tap Position";
                 regulator->executeTapUpOperation();
                 break;
             }
-            case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
+            case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
             {
                 commandName += "Lower Tap Position";
                 regulator->executeTapDownOperation();
                 break;
             }
-            case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
+            case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
             {
                 commandName += "Enable Keep Alive";
                 regulator->executeEnableKeepAlive();
                 break;
             }
-            case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
+            case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
             {
                 commandName += "Disable Keep Alive";
                 regulator->executeDisableKeepAlive();
@@ -7827,5 +7311,15 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const LONG command )
         dout << CtiTime() << " - " << commandName << " command failed.\n"
              << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
     }
+}
+
+void SystemStatusExecutor::execute()
+{
+    CtiCCClientListener::getInstance()->BroadcastMessage(_systemStatus);
+}
+
+void DeleteItemExecutor::execute()
+{
+    CtiCCClientListener::getInstance()->BroadcastMessage(_deleteItem);
 }
 

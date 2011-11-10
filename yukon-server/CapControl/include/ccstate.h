@@ -1,7 +1,7 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h> 
+#include <rw/vstream.h>
 
 #include "connection.h"
 #include "observe.h"
@@ -44,4 +44,5 @@ private:
     void restore(Cti::RowReader& rdr);
 };
 
-typedef CtiCCState* CtiCCStatePtr; 
+typedef CtiCCState* CtiCCStatePtr;
+typedef std::vector<CtiCCStatePtr> CtiCCState_vec;

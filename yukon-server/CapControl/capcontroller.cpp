@@ -13,6 +13,7 @@
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_dbchg.h"
+#include "MsgVerifyBanks.h"
 #include "pointtypes.h"
 #include "configparms.h"
 #include "capcontroller.h"
@@ -31,10 +32,12 @@
 #include "ctitime.h"
 #include "ControlStrategy.h"
 #include "ThreadStatusKeeper.h"
+#include "ExecutorFactory.h"
 
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
 #include <rw/thr/prodcons.h>
+
 
 extern void refreshGlobalCParms();
 
@@ -839,7 +842,7 @@ void CtiCapController::controlLoop()
                         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                         for(int i=0;i<temp.size( );i++)
                         {
-                            CtiCCExecutorFactory::createExecutor((CtiCCMessage *) temp[i])->execute();
+                            CtiCCExecutorFactory::createExecutor((CtiMessage *) temp[i])->execute();
                         }
                         multiCapMsg = new CtiMultiMsg();
                     }
@@ -1146,8 +1149,8 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                             //reset VerificationFlag
                             currentSubstationBus->setVerificationFlag(FALSE);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPaoId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
-                            capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
+                            capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+                            capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                             {
                                CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1219,8 +1222,8 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         //reset VerificationFlag
                         currentSubstationBus->setVerificationFlag(FALSE);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPaoId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
-                        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
+                        capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+                        capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
 
                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                         {
@@ -2491,7 +2494,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
         INT seqId = CCEventSeqIdGen();
         currentSubstationBus->setEventSequence(seqId);
-        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
+        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
         if (!currentSubstationBus->getDualBusEnable())
         {
             if (value > 0)
@@ -2501,7 +2504,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                     currentSubstationBus->setDisableFlag(TRUE);
                     currentSubstationBus->setReEnableBusFlag(TRUE);
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
                     string text = currentSubstationBus->getPaoName();
                     text += " Disabled";
                     string additional = string("Inhibit PointId Updated");
@@ -2514,7 +2517,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
             {
                 currentSubstationBus->setDisableFlag(FALSE);
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
+                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
                 string text = currentSubstationBus->getPaoName();
                 text += " Enabled";
                 string additional = string("Inhibit PointId Updated");
@@ -2636,7 +2639,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                     CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
                                     if (currentFeeder->getOriginalParent().getOriginalParentId() == currentSubstationBus->getPaoId())
                                     {
-                                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()))->execute();
+                                        CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()))->execute();
                                     }
                                     j--;
                                 }
@@ -2774,7 +2777,7 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
                         CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
                         if (currentArea != NULL)
                         {
-                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
+                            CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
                         }
                     }
                 }
@@ -2787,7 +2790,7 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
                         CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
                         if (currentArea != NULL)
                         {
-                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
+                            CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
                         }
                     }
                 }
@@ -2801,14 +2804,15 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     }
     return;
 }
+
 void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand)
 {
     if (pao->getDisabledStatePointId() == pointID)
     {
         if (pao->getDisableFlag() != disable)
-        {   
+        {
             long command = disable ? disableCommand : enableCommand;
-            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(command, pao->getPaoId()))->execute();
+            CtiCCExecutorFactory::createExecutor(new ItemCommand(command, pao->getPaoId()))->execute();
         }
     }
 }
@@ -2840,18 +2844,19 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                             {
                                 if (currentArea->getVoltReductionControlValue())
                                 {
-                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
+                                    CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
                                 }
                                 else
                                 {
-                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
+                                    CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
                                 }
                             }
                             currentArea->checkAndUpdateChildVoltReductionFlags();
                         }
                     }
                 }
-                checkDisablePaoPoint(currentArea, pointID, value, CtiCCCommand::ENABLE_AREA, CtiCCCommand::DISABLE_AREA);
+
+                checkDisablePaoPoint(currentArea, pointID, value, CapControlCommand::ENABLE_AREA, CapControlCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -2891,17 +2896,17 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                             {
                                 if (currentSpArea->getVoltReductionControlValue())
                                 {
-                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()))->execute();
+                                    CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()))->execute();
                                 }
                                 else
                                 {
-                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()))->execute();
+                                    CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()))->execute();
                                 }
                             }
                         }
                     }
                 }
-                checkDisablePaoPoint(currentSpArea, pointID, value, CtiCCCommand::ENABLE_AREA, CtiCCCommand::DISABLE_AREA);
+                checkDisablePaoPoint(currentSpArea, pointID, value, CapControlCommand::ENABLE_AREA, CapControlCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -2944,7 +2949,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             }
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()))->execute();
+                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()))->execute();
                             }
                         }
                     }
@@ -2960,12 +2965,12 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             }
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()))->execute();
+                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()))->execute();
                             }
                         }
                     }
                 }
-                checkDisablePaoPoint(currentStation, pointID, value, CtiCCCommand::ENABLE_AREA, CtiCCCommand::DISABLE_AREA);
+                checkDisablePaoPoint(currentStation, pointID, value, CapControlCommand::ENABLE_AREA, CapControlCommand::DISABLE_AREA);
             }
         }
         catch(...)
@@ -3256,7 +3261,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
+                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
                             }
                         }
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -3270,7 +3275,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
+                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
                             }
 
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -3282,15 +3287,15 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 {
                     if (value > 0 && !currentSubstationBus->getDisableFlag())
                     {
-                       CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
+                       CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
                        currentSubstationBus->setReEnableBusFlag(TRUE);
                     }
                     if (value == 0 && currentSubstationBus->getDisableFlag() && currentSubstationBus->getReEnableBusFlag())
                     {
-                       CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
+                       CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
                     }
                 }
-                checkDisablePaoPoint(currentSubstationBus, pointID, value, CtiCCCommand::ENABLE_SUBSTATION_BUS, CtiCCCommand::DISABLE_SUBSTATION_BUS);
+                checkDisablePaoPoint(currentSubstationBus, pointID, value, CapControlCommand::ENABLE_SUBSTATION_BUS, CapControlCommand::DISABLE_SUBSTATION_BUS);
             }
         }
         catch(...)
@@ -3520,7 +3525,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
                     }
-                    checkDisablePaoPoint(currentFeeder, pointID, value, CtiCCCommand::ENABLE_FEEDER, CtiCCCommand::DISABLE_FEEDER);
+                    checkDisablePaoPoint(currentFeeder, pointID, value, CapControlCommand::ENABLE_FEEDER, CapControlCommand::DISABLE_FEEDER);
                 }
             }
         }
@@ -3862,7 +3867,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
                         }
                     }
-                    checkDisablePaoPoint(currentCapBank, pointID, value, CtiCCCommand::ENABLE_CAPBANK, CtiCCCommand::DISABLE_CAPBANK);
+                    checkDisablePaoPoint(currentCapBank, pointID, value, CapControlCommand::ENABLE_CAPBANK, CapControlCommand::DISABLE_CAPBANK);
                 }
             }
         }

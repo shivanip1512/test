@@ -25,6 +25,8 @@
 #include "AttributeService.h"
 #include "DatabaseDaoFactory.h"
 
+#include "MsgCapControlEventLog.h"
+
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
 
 struct CC_DBRELOAD_INFO

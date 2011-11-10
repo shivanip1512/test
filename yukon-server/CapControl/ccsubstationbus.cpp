@@ -23,6 +23,7 @@
 #include "Exceptions.h"
 #include "PointResponse.h"
 #include "ccutil.h"
+#include "MsgVerifyBanks.h"
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointIdList;
@@ -5565,7 +5566,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(CtiMultiMsg_vec& 
     return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setVerificationFlag(BOOL verificationFlag)
+CtiCCSubstationBus& CtiCCSubstationBus::setVerificationFlag(bool verificationFlag)
 {
 
     if( _verificationFlag != verificationFlag )
@@ -6358,8 +6359,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
         setBusUpdatedFlag(TRUE);
 
         setVerificationFlag(FALSE);
-        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, getPaoId(),0, -1, getVerificationDisableOvUvFlag()));
-        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, getPaoId()));
+        capMessages.push_back(new VerifyBanks(getPaoId(),getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+        capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, getPaoId()));
 
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
@@ -10001,45 +10002,42 @@ void CtiCCSubstationBus::deleteCCFeeder(long feederId)
 string CtiCCSubstationBus::getVerificationString()
 {
     string text = string("Verify");
+
     switch (getVerificationStrategy())
     {
-        case CtiPAOScheduleManager::AllBanks:
+        case CapControlCommand::VERIFY_ALL_BANK:
         {
             text += " All";
             break;
         }
-        case CtiPAOScheduleManager::FailedAndQuestionableBanks:
+        case CapControlCommand::VERIFY_FQ_BANK:
         {
             text += " Failed and Questionable";
             break;
         }
-        case CtiPAOScheduleManager::FailedBanks:
+        case CapControlCommand::VERIFY_FAILED_BANK:
         {
             text += " Failed";
             break;
         }
-        case CtiPAOScheduleManager::QuestionableBanks:
+        case CapControlCommand::VERIFY_Q_BANK:
         {
             text += " Questionable";
             break;
         }
-        case CtiPAOScheduleManager::SelectedForVerificationBanks:
+        case CapControlCommand::VERIFY_INACTIVE_BANKS:
         {
             break;
         }
-        case CtiPAOScheduleManager::BanksInactiveForXTime:
-        {
-            break;
-        }
-        case CtiPAOScheduleManager::StandAloneBanks:
+        case CapControlCommand::VERIFY_SA_BANK:
         {
             text += " Standalone";
             break;
         }
-    default:
-        break;
-
+        default:
+            break;
     }
+
     text += " Banks";
     return text;
 }

@@ -29,8 +29,14 @@ class CtiTime;
 #define CTICCSERVERRESPONSE_ID      526
 #define CTIVOLTAGEREGULATOR_ID      527
 #define CTIVOLTAGEREGULATOR_MSG_ID  528
-
 #define DYNAMICCOMMAND_ID           529
+
+#define CHANGE_OP_STATE_MSG_ID       530
+#define ITEM_COMMAND_MSG_ID          531
+#define VERIFY_INACTIVE_BANKS_MSG_ID 532
+#define CAP_CONTROL_COMMAND_ID       533
+#define SYSTEM_STATUS_MSG_ID         534
+#define DELETE_ITEM_MSG_ID           535
 
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059

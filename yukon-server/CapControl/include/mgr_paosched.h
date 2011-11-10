@@ -5,11 +5,11 @@
 #include "pao_schedule.h"
 #include "pao_event.h"
 
-class CtiPAOScheduleManager 
+class CtiPAOScheduleManager
 {
 public:
 
-    typedef enum 
+    typedef enum
     {
         AllBanks = 0,
         FailedAndQuestionableBanks,
@@ -23,7 +23,7 @@ public:
     typedef enum
     {
         CapControlVerification = 0,
-        ConfirmSub = 1,
+        ConfirmSubstationBus = 1,
         SendTimeSync = 2,
         SomethingElse
     } CtiPAOScheduleOperation;
@@ -35,7 +35,7 @@ public:
 
     void mainLoop();
     void doResetThr();
-    
+
     bool checkSchedules(const CtiTime& currentTime, std::list<CtiPAOSchedule*> &schedules);
     void addSchedule(const CtiPAOSchedule &sched);
     bool updateSchedule(const CtiPAOSchedule &sched);
@@ -74,7 +74,7 @@ private:
     std::list <CtiPAOSchedule*> _schedules;
     std::list <CtiPAOEvent*>    _events;
 
-    bool _valid;      
+    bool _valid;
     bool _initialCapControlStartUp;
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 

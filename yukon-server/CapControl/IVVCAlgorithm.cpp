@@ -9,6 +9,8 @@
 #include "ccsubstationbusstore.h"
 #include "PointResponse.h"
 #include "Exceptions.h"
+#include "ExecutorFactory.h"
+#include "MsgVerifyBanks.h"
 
 using Cti::CapControl::PaoIdList;
 using Cti::CapControl::PointIdList;
@@ -256,7 +258,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         state->setCommsLost(true);
 
-                        dispatchConnection->WriteConnQue( 
+                        dispatchConnection->WriteConnQue(
                             new CtiPointDataMsg( subbus->getCommsStatePointId(), 1.0 ) ); // NormalQuality, StatusPointType
 
                         handleCommsLost( state, subbus );
@@ -294,7 +296,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 {
                     state->setCommsLost(false);     // Write to the event log...
 
-                    dispatchConnection->WriteConnQue( 
+                    dispatchConnection->WriteConnQue(
                         new CtiPointDataMsg( subbus->getCommsStatePointId(), 0.0 ) ); // NormalQuality, StatusPointType
 
                     LONG stationId, areaId, spAreaId;
@@ -783,7 +785,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                 }
                 if ( sendScan )
                 {
-                    CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::SCAN_2WAY_DEVICE,
+                    CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
                                                                             bank->getControlDeviceId() ) )->execute();
                 }
             }
@@ -1116,12 +1118,11 @@ void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBus
     }
     else
     {
-
         //reset VerificationFlag
         subbus->setVerificationFlag(FALSE);
         subbus->setBusUpdatedFlag(TRUE);
-        CtiCCExecutorFactory::createExecutor( new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, subbus->getPaoId(),0, -1, subbus->getVerificationDisableOvUvFlag()))->execute();
-        CtiCCExecutorFactory::createExecutor( new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, subbus->getPaoId()))->execute();
+        CtiCCExecutorFactory::createExecutor(new VerifyBanks(subbus->getPaoId(),subbus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION))->execute();
+        CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, subbus->getPaoId()))->execute();
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
            CtiLockGuard<CtiLogger> logger_guard(dout);
