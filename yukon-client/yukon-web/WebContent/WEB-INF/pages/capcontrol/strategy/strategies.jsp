@@ -1,122 +1,131 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage title="Strategies" module="capcontrol">
-    <script type="text/javascript" language="JavaScript">
-    var firstRun = true;
-    function removeStrategy(strategyId, strategyName) {
+<cti:standardPage module="capcontrol" page="strategies">
 
-        if( confirm("Are you sure you want to delete " + strategyName + "?") ) {
-            var url = "/spring/capcontrol/strategy/deleteStrategy";
+<script type="text/javascript" language="JavaScript">
+var firstRun = true;
+function removeStrategy(strategyId, event) {
+    var confirmDeleteMsg = event.findElement().next('span.confirmDelete').innerHTML;
     
-            hideErrors();
-            
-            new Ajax.Request(url, {'parameters': {'strategyId': strategyId}, 
-                onComplete: function(transport, json) {
-            	    $('deletionResult').removeClassName('okGreen');
-            	    $('deletionResult').removeClassName('errorRed');
-                    if (json.success) {
-                    	deleteStrategyFromPage(strategyId);
-                    	$('deletionResult').addClassName('okGreen');
-                    } else {
-                    	$('deletionResult').addClassName('errorRed');
-                    }
-                    $('deletionResult').innerHTML = json.resultText;
-                    $('deletionResult').show();
-                
-                } });
-        }
-    }
+    if (confirm(confirmDeleteMsg)) {
+        var url = "/spring/capcontrol/strategy/deleteStrategy";
 
-    function hideErrors() {
+        hideErrors();
         
-        if(!firstRun) { 
-            $('deletionResult').hide();
-        }
-        firstRun = false;
+        new Ajax.Request(url, {'parameters': {'strategyId': strategyId}, 
+            onComplete: function(transport, json) {
+                $('deletionResult').removeClassName('okGreen');
+                $('deletionResult').removeClassName('errorRed');
+                if (json.success) {
+                    deleteStrategyFromPage(strategyId);
+                    $('deletionResult').addClassName('okGreen');
+                } else {
+                    $('deletionResult').addClassName('errorRed');
+                }
+                $('deletionResult').innerHTML = json.resultText;
+                $('deletionResult').show();
+            
+            } });
     }
+}
 
-    function deleteStrategyFromPage(strategyId) {
-        var line = document.getElementById('s_' + strategyId);
-        var table = document.getElementById('tableBody');
-
-        table.removeChild(line);
-    }
-    </script>
+function hideErrors() {
     
-    <cti:standardMenu menuSelection="view|strategies" />
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
-        <cti:crumbLink title="Strategies"/>
-    </cti:breadCrumbs>
+    if(!firstRun) { 
+        $('deletionResult').hide();
+    }
+    firstRun = false;
+}
 
+function deleteStrategyFromPage(strategyId) {
+    var line = document.getElementById('s_' + strategyId);
+    var table = document.getElementById('tableBody');
+
+    table.removeChild(line);
+}
+</script>
     <div id="deletionResult" class="padded normalBoldLabel"></div>
     
-    <tags:pagedBox title="Strategies" searchResult="${searchResult}"
-        filterDialog="" baseUrl="/spring/capcontrol/strategy/strategies"
-        isFiltered="false" showAllUrl="/spring/capcontrol/strategy/strategies">
+    <tags:pagedBox2 nameKey="strategyContainer" 
+            searchResult="${searchResult}"
+            baseUrl="/spring/capcontrol/strategy/strategies"
+            isFiltered="false" 
+            showAllUrl="/spring/capcontrol/strategy/strategies"
+            styleClass="padBottom">
         
         <c:choose>
             <c:when test="${searchResult.hitCount == 0}">
-                No items to display.
+                <i:inline key=".noStrategies"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable smallPadding" id="strategyTable" width="95%" align="center">
+                <table class="compactResultsTable" id="strategyTable">
+                    
                     <thead>
                         <tr id="header">
-                            <th>Strategy Name</th>
-                            <th>Control Method</th>
-                            <th>Control Algorithm</th>
-                            <th>Start/Stop</th>
-                            <th>Interval</th>
-                            <th>Confirm Time</th>
-                            <th>Pass/Fail(%)</th>
-                            <th>Peak Settings</th>
-                            <th>Off Peak Settings</th>
+                            <th><i:inline key=".strategyName"/></th>
+                            <th><i:inline key=".actions"/></th>
+                            <th><i:inline key=".method"/></th>
+                            <th><i:inline key=".algorithm"/></th>
+                            <th><i:inline key=".startStop"/></th>
+                            <th><i:inline key=".interval"/></th>
+                            <th><i:inline key=".confirmTime"/></th>
+                            <th><i:inline key=".passFail"/></th>
+                            <th><i:inline key=".peakSetting"/></th>
+                            <th><i:inline key=".offPeakSetting"/></th>
                         </tr>
                     </thead>
+                    
                     <tbody id="tableBody">
                         <c:forEach var="item" items="${strategies}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>"
-                                id="s_${item.strategyId}">
-                                <td nowrap="nowrap">
+                            <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.strategyId}">
+                                
+                                <td>
+                                    <spring:escapeBody htmlEscape="true">${item.strategyName}</spring:escapeBody>
+                                </td>
+                    
+                                <td class="nw">
                                     <c:choose>
                                         <c:when test="${hasEditingRole}">
-                                            <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyId}" class="tierIconLink">
-                                                <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.gif" />
-                                            </a>
-                                            <a href="javascript:removeStrategy(${item.strategyId}, '<spring:escapeBody javaScriptEscape="true">${item.strategyName}</spring:escapeBody>');" class="tierIconLink">
-                                                <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
-                                            </a>
+                                            <cti:button nameKey="edit" renderMode="image" href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyId}"/>
+                                            <cti:button nameKey="remove" renderMode="image" onclick="removeStrategy(${item.strategyId}, event)"/>
+                                            <span class="dn confirmDelete"><i:inline key=".confirmDelete" arguments="${item.strategyName}"/></span>
                                         </c:when>
                                         <c:otherwise>
                                             <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyId}" class="tierIconLink">
                                                 <img class="tierImg" src="/WebConfig/yukon/Icons/information.gif" />
                                             </a>
+                                            <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyId}"/>
                                         </c:otherwise>
                                     </c:choose>
-                                    
-                                    <c:out value="${item.strategyName}" />
                                 </td>
-                                <td><c:out value="${item.controlMethod}" /></td>
-                                <td><c:out value="${item.controlUnits}" /></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.controlMethod}</spring:escapeBody></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.controlUnits}</spring:escapeBody></td>
+                    
                                 <td>
-                                    <c:out value="${item.peakStartTime}"/>
-                                    <c:out value="/"/>
-                                    <c:out value="${item.peakStopTime}"/>
+                                    <i:inline key=".startStopTimes" arguments="${item.peakStartTime},${item.peakStopTime}" argumentSeparator=","/>
                                 </td>
-                                <td><c:out value="${item.controlInterval}"/></td>
-                                <td><c:out value="${item.minResponseTime}"/></td>
-                                <td><c:out value="${item.passFailPercent}"/></td>
-                                <td><c:out value="${item.peakSettings}"/></td>
-                                <td><c:out value="${item.offPeakSettings}"/></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.controlInterval}</spring:escapeBody></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.minResponseTime}</spring:escapeBody></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.passFailPercent}</spring:escapeBody></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.peakSettings}</spring:escapeBody></td>
+                    
+                                <td><spring:escapeBody htmlEscape="true">${item.offPeakSettings}</spring:escapeBody></td>
+                                
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
             </c:otherwise>
         </c:choose>
-    </tags:pagedBox>
+    </tags:pagedBox2>
 </cti:standardPage>

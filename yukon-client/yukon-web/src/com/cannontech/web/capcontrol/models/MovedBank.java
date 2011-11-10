@@ -1,6 +1,6 @@
 package com.cannontech.web.capcontrol.models;
 
-import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 
 public class MovedBank {
     

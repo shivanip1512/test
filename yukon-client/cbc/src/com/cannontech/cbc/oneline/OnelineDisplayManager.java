@@ -9,17 +9,18 @@ import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.ExtraUpdatableTextElement;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
-import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxComponent;
 
@@ -59,26 +60,23 @@ public class OnelineDisplayManager {
 
     public String getDisplayValue(StreamableCapObject stream, int rolePropID, UpdatableStats stats, YukonUserContext userContext) {
         
-        CBCDisplay oldWebDisplay = new CBCDisplay(userContext);
-        Integer dispCol = stats.getPropColumnMap().get(rolePropID);
+        UpdaterHelper updaterHelper = YukonSpringHook.getBean("updaterHelper", UpdaterHelper.class);
+        UpdaterHelper.UpdaterDataType dispCol = stats.getPropColumnMap().get(rolePropID);
 
         if (stream instanceof SubBus) {
-            
-            return oldWebDisplay.getOnelineSubBusValueAt((SubBus) stream, dispCol);
-            
+            return updaterHelper.getOnelineSubBusValueAt((SubBus) stream, dispCol, userContext);
         } else if (stream instanceof Feeder) {
-            
-            return (String) oldWebDisplay.getFeederValueAt((Feeder) stream, dispCol);
-            
+            return (String) updaterHelper.getFeederValueAt((Feeder) stream, dispCol, userContext);
         } else if (stream instanceof CapBankDevice) {
-            return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream, dispCol).toString();
-            
+            return updaterHelper.getCapBankValueAt((CapBankDevice) stream, dispCol, userContext).toString();
         } else {
-            return "(none)";
+            YukonUserContextMessageSourceResolver resolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
+            return resolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.defaults.none");
         }    
     }
 
     public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats, LxComponent prevComp, int pos, StreamableCapObject stream, YukonUserContext userContext) {
+        YukonUserContextMessageSourceResolver resolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
         UpdatableTextList temp = allStats.get(pos);
 
         UpdatableStats stats = temp.getStats();
@@ -89,7 +87,7 @@ public class OnelineDisplayManager {
                                                              new Integer((int) prevComp.getHeight() + 10));
         String text = getDisplayValue(stream, temp.getRolePropID(), stats, userContext);
         String displayableText = new String(text);
-        if(stats.getPropColumnMap().get(temp.getRolePropID()) == CBCDisplay.CB_CONTROLLER) {
+        if(stats.getPropColumnMap().get(temp.getRolePropID()) == UpdaterHelper.UpdaterDataType.CB_CONTROLLER) {
             if(text.length() > 13) {
                 displayableText = text.substring(0, 12) + "...";
             }
@@ -109,7 +107,7 @@ public class OnelineDisplayManager {
                                    (ExtraUpdatableTextElement) temp,
                                    labelName,
                                    content,
-                                   CBCDisplay.SYMBOL_SIGNAL_QUALITY,
+                                   resolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.modules.capcontrol.signalQuality"),
                                    Color.RED);
                temp.addExtraElement(t);
             }

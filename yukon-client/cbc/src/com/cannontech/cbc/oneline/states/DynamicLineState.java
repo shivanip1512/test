@@ -1,10 +1,10 @@
 package com.cannontech.cbc.oneline.states;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
-import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 
 public class DynamicLineState implements OnelineState {
 
@@ -23,7 +23,7 @@ public class DynamicLineState implements OnelineState {
                     state = OnelineUtil.SUB_ST_PENDING;
                 }
 
-            } else if (subBus.getSwitchOverStatus().booleanValue() && CBCUtils.isDualBusEnabled(subBus)) {
+            } else if (subBus.getSwitchOverStatus().booleanValue() && CapControlUtils.isDualBusEnabled(subBus)) {
                 state = OnelineUtil.SUB_ST_EN_ALBUS;
             }
 
@@ -41,7 +41,7 @@ public class DynamicLineState implements OnelineState {
             }
             else if( feeder.getRecentlyControlledFlag().booleanValue() )
             {
-                if ( CBCUtils.getFeederPendingState( feeder ) != null)
+                if ( CapControlUtils.getFeederPendingState( feeder ) != null)
                 {
                     state = OnelineUtil.SUB_ST_PENDING;
                 }

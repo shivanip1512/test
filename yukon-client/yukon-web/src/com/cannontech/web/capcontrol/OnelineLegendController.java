@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.YukonImageDao;
@@ -17,20 +16,19 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.util.CapControlConst;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.yukon.cbc.CapControlConst;
 
+@Controller("/oneline/legend/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-public class OnelineLegendController implements Controller {
+public class OnelineLegendController {
     private StateDao stateDao;
     private YukonImageDao yukonImageDao;
-    private String[] excludeStateList;
+    private String[] excludeStateList = {"Verify All", "Verify Stop"};
 
     @SuppressWarnings("unchecked")
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        
+    @RequestMapping
+    public String legend(ModelMap model) {
         LiteStateGroup capBankState = stateDao.getLiteStateGroup(CapControlConst.CAPBANKSTATUS_STATEGROUP_ID);
         List<LiteState> capBankStateList = capBankState.getStatesList();
         
@@ -46,11 +44,11 @@ public class OnelineLegendController implements Controller {
         
         Map<Integer,String> imageNameMap = createImageNameMap(capBankStateList, onelineStateList);
         
-        mav.addObject("imageNameMap", imageNameMap);
-        mav.addObject("capBankStateList", capBankStateList);
-        mav.addObject("onelineStateList", onelineStateList);
-        mav.setViewName("oneline/cbcOnelineLegend.jsp");
-        return mav;
+        model.addAttribute("imageNameMap", imageNameMap);
+        model.addAttribute("capBankStateList", capBankStateList);
+        model.addAttribute("onelineStateList", onelineStateList);
+        
+        return "oneline/cbcOnelineLegend.jsp";
     }
 
     private Map<Integer,String> createImageNameMap(final List<LiteState>... lists) {
@@ -82,16 +80,14 @@ public class OnelineLegendController implements Controller {
         return false;
     }
     
+    @Autowired
     public void setStateDao(StateDao stateDao) {
         this.stateDao = stateDao;
     }
     
+    @Autowired
     public void setYukonImageDao(YukonImageDao yukonImageDao) {
         this.yukonImageDao = yukonImageDao;
-    }
-
-    public void setExcludeStateList(String[] excludeStateList) {
-        this.excludeStateList = excludeStateList;
     }
 
 }

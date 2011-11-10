@@ -1,40 +1,42 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" 
-	action="/spring/capcontrol/schedule/startMultiple">
-	<table class="filterSelection">
-		<tr>
-			<td>Schedules:</td>
-			<td> 
-				<select name="startSchedule" id="startSchedule">
-					<option value="All" <c:if test="${param.schedule == 'All'}">selected="selected" </c:if> >All Schedules</option>
-					<c:forEach var="aSchedule" items="${scheduleList}">
-							<option value="${aSchedule.scheduleName}" <c:if test="${param.schedule == aSchedule.scheduleName}">selected="selected" </c:if> > ${aSchedule.scheduleName}</option>
-					</c:forEach>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>Commands:</td>
-			<td>
-				<select name="startCommand" id="startCommand">
-					<option value="All" <c:if test="${param.schedule == 'All'}">selected="selected" </c:if> >All Commands</option>
-					<c:forEach var="aCommand" items="${commandList}">
-						<c:choose>
-							<c:when test="${param.command == 'All'}">
-								<option value="${aCommand}">${aCommand.commandName}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${aCommand.commandName}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
-			</td>
-		</tr>
-	</table>
-	<div class="actionArea">
-		<input type="submit" value="Start"/>
-		<input type="button" value="Cancel" onclick="$('tierContentPopup').hide();" />
-	</div>
+<cti:msgScope paths="yukon.web.modules.capcontrol.scheduleAssignments">
+<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" action="/spring/capcontrol/schedule/startMultiple">
+    
+    <tags:nameValueContainer2>
+        <tags:nameValue2 nameKey=".schedules">
+            <select name="startSchedule" id="startSchedule">
+                <option value="All"<c:if test="${param.schedule == 'All'}"> selected="selected"</c:if>><i:inline key=".allSchedules"/></option>
+                <c:forEach var="aSchedule" items="${scheduleList}">
+                    <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected"</c:if>> ${aSchedule.scheduleName}</option>
+                </c:forEach>
+            </select>
+        </tags:nameValue2>
+        
+        <tags:nameValue2 nameKey=".commands">
+            <select name="startCommand" id="startCommand">
+                <option value="All"<c:if test="${param.schedule == 'All'}"> selected="selected"</c:if>><i:inline key=".allCommands"/></option>
+                <c:forEach var="aCommand" items="${commandList}">
+                    <c:choose>
+                        <c:when test="${param.command == 'All'}">
+                            <option value="${aCommand}">${aCommand.commandName}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${aCommand}"<c:if test="${param.command == aCommand}"> selected="selected"</c:if>>${aCommand.commandName}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select>
+        </tags:nameValue2>
+    </tags:nameValueContainer2>
+                    
+    <div class="actionArea">
+        <cti:button nameKey="start" type="submit"/>
+        <cti:button nameKey="cancel" onclick="hideContentPopup();"/>
+    </div>
 </form>
+</cti:msgScope>

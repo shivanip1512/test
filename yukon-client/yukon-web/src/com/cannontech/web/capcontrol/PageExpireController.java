@@ -7,18 +7,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsonOLD.JSONArray;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedDAO;
 
-public class PageExpireController implements Controller {
+@Controller
+public class PageExpireController {
     private WebUpdatedDAO<Integer> webUpdatedDAO;
     
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping("/pageExpire")
+    public void pageExpire(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/plain");
         final String paoIds = ServletRequestUtils.getRequiredStringParameter(request, "paoIds");
         final JSONArray array = new JSONArray(paoIds);
@@ -41,12 +43,11 @@ public class PageExpireController implements Controller {
                 writer.close();
             }
         }
-        
-        return null;
     }
     
-    public void setCapControlCache(CapControlCache capControlCache) {
-        webUpdatedDAO = capControlCache.getUpdatedObjMap();
+    @Autowired
+    public void setCapControlCache(CapControlCache cache) {
+        webUpdatedDAO = cache.getUpdatedObjMap();
     }
     
 }

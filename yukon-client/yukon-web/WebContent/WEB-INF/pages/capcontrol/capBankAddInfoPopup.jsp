@@ -1,90 +1,93 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage title="Cap Bank capBankAdd Info" module="capcontrol_internal">
+<cti:msgScope paths="yukon.web.modules.capcontrol.cbAddInfo">
 
 	<c:choose>
-		<c:when test="${capBankAdd.deviceID > 0}">
+		<c:when test="${capBankAdd.paoId > 0}">
 			<table class="compactResultsTable">
                 <tr>
-                    <th>Setting</th>
-                    <th>Value</th>
+                    <th><i:inline key=".setting"/></th>
+                    <th><i:inline key=".value"/></th>
                 </tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Maint Area ID</td>
-					<td>${capBankAdd.maintAreaID}</td>
+					<td><i:inline key=".maintAreaId"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.maintenanceAreaId}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Pole Number</td>
-					<td>${capBankAdd.poleNumber}</td>
+					<td><i:inline key=".poleNumber"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.poleNumber}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Latitude</td>
-					<td>${capBankAdd.latit}</td>
+					<td><i:inline key=".latitude"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.latitude}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Longitude</td>
-					<td>${capBankAdd.longtit}</td>
+					<td><i:inline key=".longitude"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.longitude}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Cap Bank Configuration</td>
-					<td>${capBankAdd.capBankConfig}</td>
+					<td><i:inline key=".cbConfig"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.capbankConfig}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Communication Medium</td>
-					<td>${capBankAdd.commMedium}</td>
+					<td><i:inline key=".commMedium"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.commMedium}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>External Antenna</td>
-					<td>${capBankAdd.extAntenna}</td>
+					<td><i:inline key=".externalAntenna"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.extAntenna}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Antenna Type</td>
-					<td>${capBankAdd.antennaType}</td>
+					<td><i:inline key=".antennaType"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.antennaType}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Last Maintenance Visit</td>
-					<td><cti:formatDate type="DATE" value="${capBankAdd.lastMaintVisit}"/></td>
+					<td><i:inline key=".lastMaintVisit"/></td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.lastMaintenanceVisit}"/></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Last Inspection</td>
-					<td><cti:formatDate type="DATE" value="${capBankAdd.lastInspVisit}"/></td>
+					<td><i:inline key=".lastInspection"/></td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.lastInspection}"/></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Op Count Reset Date</td>
+					<td><i:inline key=".opCountResetDate"/></td>
 					<td><cti:formatDate type="DATE" value="${capBankAdd.opCountResetDate}"/></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Potential Transformer</td>
-					<td>${capBankAdd.potentTransformer}</td>
+					<td><i:inline key=".potentialTransformer"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.potentialTransformer}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Maintenance Request Pending</td>
-					<td>${capBankAdd.maintReqPending}</td>
+					<td><i:inline key=".maintRequestPending"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.maintenanceRequired}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Other Comments</td>
-					<td>${capBankAdd.otherComments}</td>
+					<td><i:inline key=".otherComments"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.otherComments}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Opteam Comments</td>
-					<td>${capBankAdd.opTeamComments}</td>
+					<td><i:inline key=".opteamComments"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.opTeamComments}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>CBC Install Date</td>
-					<td><cti:formatDate type="DATE" value="${capBankAdd.cbcBattInstallDate}"/></td>
+					<td><i:inline key=".cbcInstallDate"/></td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.cbcInstallDate}"/></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Cap Bank Map Address</td>
-					<td>${lite.paoDescription}</td>
+					<td><i:inline key=".cbMapAddress"/></td>
+					<td><spring:escapeBody htmlEscape="true">${lite.paoDescription}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>Driving Directions</td>
-					<td>${capBankAdd.driveDir}</td>
+					<td><i:inline key=".drivingDirections"/></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.driveDirections}</spring:escapeBody></td>
 				</tr>
 			</table>
 		</c:when>
 	</c:choose>
 
-</cti:standardPage>
+</cti:msgScope>

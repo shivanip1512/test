@@ -3,77 +3,74 @@ package com.cannontech.web.updater.capcontrol;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.SubStation;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.user.YukonUserContext;
 
 public class SubStationFormattingService extends AbstractAreaFormatingService<SubStation> {
 
     @Override
-    protected List<CapBankDevice> getAreaCapBanks(int paoId, LiteYukonUser user) {
-        throw new UnsupportedOperationException("Not Supported at this level.");
-    }
-
-    @Override
-    protected List<SubStation> getAreaStations(int paoId, LiteYukonUser user) {
-        throw new UnsupportedOperationException("Not Supported at this level.");
-    }
-
-    @Override
-    protected String getPFactor(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        String pFactory = (String) cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_POWER_FACTOR_COLUMN);
+    protected String getPFactor(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String pFactory = (String) updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_POWER_FACTOR_COLUMN, context);
         return pFactory;
     }
 
     @Override
-    protected String getState(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        String state = (String) cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_CURRENT_STATE_COLUMN);
+    protected String getState(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String state = (String) updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_CURRENT_STATE_COLUMN, context);
         return state;
     }
     
     @Override
-    protected String getSpecialAreaEnabled(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        String spEnabled = (String)cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_SP_AREA_ENABLED);
+    protected String getSpecialAreaEnabledMsg(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String spEnabled = (String)updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_SP_AREA_ENABLED_MSG, context);
         return spEnabled;
     }
     
     @Override
-    protected String getKVarsAvailable(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
+    protected String getSpecialAreaEnabled(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String spEnabled = (String)updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_SP_AREA_ENABLED, context);
+        return spEnabled;
+    }
+    
+    @Override
+    protected String getKVarsAvailable(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        LiteYukonUser user = context.getYukonUser();
         SubStation subStation = getSubStation(latestValue.getCcId(), user);
-        String varsAvailable = CBCUtils.format(CBCUtils.calcVarsAvailableForSubStation(subStation, user));
+        String varsAvailable = CapControlUtils.format(CapControlUtils.calcVarsAvailableForSubStation(subStation, user));
         return varsAvailable;
     }
     
     @Override
-    protected String getKVarsUnavailable(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
+    protected String getKVarsUnavailable(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        LiteYukonUser user = context.getYukonUser();
         SubStation subStation = getSubStation(latestValue.getCcId(), user);
-        String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStation(subStation, user) );
+        String varsUnavailable =  CapControlUtils.format (CapControlUtils.calcVarsUnavailableForSubStation(subStation, user) );
         return varsUnavailable;
     }
     
     @Override
-    protected String getKVarsClosed(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
+    protected String getKVarsClosed(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        LiteYukonUser user = context.getYukonUser();
         List<CapBankDevice> capBankList = getCapBankList(latestValue.getCcId(), user);
-        String closedVars = CBCUtils.format(CBCUtils.calcVarsClosedForCapBanks(capBankList, user));
+        String closedVars = CapControlUtils.format(CapControlUtils.calcVarsClosedForCapBanks(capBankList, user));
         return closedVars;
     }
     
     @Override
-    protected String getKVarsTripped(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
+    protected String getKVarsTripped(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        LiteYukonUser user = context.getYukonUser();
         List<CapBankDevice> capBankList = getCapBankList(latestValue.getCcId(), user);
-        String trippedVars = CBCUtils.format(CBCUtils.calcVarsTrippedForCapBanks(capBankList, user));
+        String trippedVars = CapControlUtils.format(CapControlUtils.calcVarsTrippedForCapBanks(capBankList, user));
         return trippedVars;
     }
     
     @Override
-    protected String getWarningFlag(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        return (String)cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_VOLT_REDUCTION);
+    protected String getWarningFlag(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (String)updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VOLT_REDUCTION, context);
     }
 
     private SubStation getSubStation(final int paoId, final LiteYukonUser user) {

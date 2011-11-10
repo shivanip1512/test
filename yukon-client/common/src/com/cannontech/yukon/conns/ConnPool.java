@@ -13,7 +13,6 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.cbc.CapControlClientConnection;
 
 /**
  * @author rneuharth

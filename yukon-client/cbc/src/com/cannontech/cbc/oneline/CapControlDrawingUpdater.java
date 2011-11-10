@@ -8,7 +8,7 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.util.ESubDrawingUpdater;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.loox.jloox.LxComponent;
 
 public class CapControlDrawingUpdater extends ESubDrawingUpdater {

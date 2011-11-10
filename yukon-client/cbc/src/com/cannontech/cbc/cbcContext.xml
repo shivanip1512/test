@@ -29,8 +29,8 @@
   </bean>
   
   <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl" init-method="initialize" >
-  	  <property name="defCapControlConn" ref="cbcConnection"/>
-  	  <property name="refreshTimer" ref="globalScheduledExecutor"/>
+      <property name="defCapControlConn" ref="cbcConnection"/>
+      <property name="refreshTimer" ref="globalScheduledExecutor"/>
       <property name="stateDao" ref="stateDao"/>
   </bean>
   
@@ -47,11 +47,12 @@
     <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
   </bean> 
 
-	<bean id="capControlCreationService"
-	    class="com.cannontech.cbc.service.impl.CapControlCreationServiceImpl">
-	</bean>
+    <bean id="capControlCreationService" class="com.cannontech.cbc.service.impl.CapControlCreationServiceImpl"/>
 
-    <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl">
-    </bean>
-
+    <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl"/>
+    
+    <bean id="updaterHelper" class="com.cannontech.cbc.util.UpdaterHelper"/>
+    
+    <bean class="com.cannontech.cbc.commands.CapControlCommandExecutor"/>
+    
 </beans>

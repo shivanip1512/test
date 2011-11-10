@@ -4,14 +4,14 @@ import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedPAObjectMap;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CCSpecialArea;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
-import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.yukon.cbc.SubStation;
 
 public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
     private CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
@@ -19,7 +19,7 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	public CBCWebUpdatedObjectMap() {
 	}
 	
-	public void handleCBCChangeEvent(CCArea area) {
+	public void handleCBCChangeEvent(Area area) {
 	    List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoId());
 	    for (final SubStation substation : subList) {
 	        handleCBCChangeEvent(substation);
@@ -27,7 +27,7 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	    updateMap(area.getPaoId());
 	}
 	
-	public void handleCBCChangeEvent(CCSpecialArea specialArea) {
+	public void handleCBCChangeEvent(SpecialArea specialArea) {
 	    List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoId());
 	    for (final SubStation subStation : substationList) {
 	        handleCBCChangeEvent(subStation);

@@ -45,4 +45,5 @@ public enum CapControlType implements DatabaseRepresentationSource {
 	public Object getDatabaseRepresentation() {
 		return dbValue;
 	}
+	
 }

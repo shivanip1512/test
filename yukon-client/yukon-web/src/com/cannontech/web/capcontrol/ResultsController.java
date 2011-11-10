@@ -1,15 +1,14 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
@@ -21,11 +20,12 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.exceptions.MissingSearchType;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.cbc.web.ParentStringPrinter;
 import com.cannontech.cbc.web.ParentStringPrinterFactory;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
@@ -37,16 +37,18 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CCEventLog;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ControlEventSet;
 import com.cannontech.web.capcontrol.models.ResultRow;
 import com.cannontech.web.lite.LiteBaseResults;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -54,6 +56,7 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ResultsController {
     
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     private FilterCacheFactory cacheFactory;
     private SubstationBusDao substationBusDao;
     private SubstationDao substationDao;
@@ -74,8 +77,8 @@ public class ResultsController {
     }
 
     @RequestMapping
-    public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user, Integer itemsPerPage, Integer page) throws MissingSearchType {
-        
+    public String searchResults(HttpServletRequest request, ModelMap model, YukonUserContext context, Integer itemsPerPage, Integer page) throws MissingSearchType {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         if(page == null){
             page = 1;
         }
@@ -85,7 +88,6 @@ public class ResultsController {
         
         int startIndex = (page - 1) * itemsPerPage;
         
-        final ModelAndView mav = new ModelAndView();
         ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
         String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
         if( srchCriteria == null ) {
@@ -93,8 +95,8 @@ public class ResultsController {
             srchCriteria = ccSession.getLastSearchCriteria();
         }
         
-        mav.addObject("lastAreaKey", CCSessionInfo.STR_CC_AREA);
-        mav.addObject("lastSubKey", CCSessionInfo.STR_SUBID);
+        model.addAttribute("lastAreaKey", CCSessionInfo.STR_CC_AREA);
+        model.addAttribute("lastSubKey", CCSessionInfo.STR_SUBID);
         
         String label = srchCriteria;
         boolean orphan = true;
@@ -107,34 +109,41 @@ public class ResultsController {
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
         	searchType = SearchType.CAPCONTROL;
             ccObjects = substationDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned Substations";
+            label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedSubs.pageName");
+            model.addAttribute("pageName", "orphanedSubs");
         }
         else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
         	searchType = SearchType.CAPCONTROL;
             ccObjects = substationBusDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned Substation Buses";
+            label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBuses.pageName");
+            model.addAttribute("pageName", "orphanedBuses");
         }
         else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
         	searchType = SearchType.CAPCONTROL;
             ccObjects = feederDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned Feeders";
+            label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedFeeders.pageName");
+            model.addAttribute("pageName", "orphanedFeeders");
         }
         else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
         	searchType = SearchType.CAPCONTROL;
             ccObjects = capbankDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned CapBanks";
+            label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBanks.pageName");
+            model.addAttribute("pageName", "orphanedBanks");
         }
         else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
         	searchType = SearchType.CBC;
             ccObjects = cbcDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned CBCs";
+            label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedCbcs.pageName");
+            model.addAttribute("pageName", "orphanedCbcs");
         }
         else if( CBCWebUtils.TYPE_ORPH_REGULATORS.equals(srchCriteria) ) {
         	searchType = SearchType.REGULATOR;
             ccObjects = voltageRegulatorDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned Regulators";
+            label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedRegulators.pageName");
+            model.addAttribute("pageName", "orphanedRegulators");
         }
-        else {   
+        else {
+            model.addAttribute("pageName", "general");
         	searchType = SearchType.GENERAL;
         	orphan = false;
             LiteBaseResults lbr = new LiteBaseResults();
@@ -143,17 +152,17 @@ public class ResultsController {
             hitCount = lbr.getFoundItems().size();
         }
         
-        mav.addObject("label", label);
+        model.addAttribute("label", label);
         
         List<ResultRow> rows = new ArrayList<ResultRow>();
-        if(ccObjects == null) {
-            for(LiteWrapper item : items) {
+        if (ccObjects == null) {
+            for (LiteWrapper item : items) {
                 ResultRow row = new ResultRow();
                 row.setName(item.toString());
                 row.setItemId(item.getItemID());
                 row.setIsPaobject(item.getLiteType() == LiteTypes.YUKON_PAOBJECT);
                 
-                boolean isController = CBCUtils.isController(item.getItemID());
+                boolean isController = CapControlUtils.isController(item.getItemID());
                 row.setIsController(isController);
                 
                 boolean isPoint = item.getParentID() != CtiUtilities.NONE_ZERO_ID;
@@ -169,7 +178,7 @@ public class ResultsController {
             }
         } else {
             hitCount = ccObjects.getHitCount();
-            for(LiteCapControlObject item : ccObjects.getResultList()) {
+            for (LiteCapControlObject item : ccObjects.getResultList()) {
                 ResultRow row = new ResultRow();
                 row.setName(item.getName());
                 row.setItemId(item.getId());
@@ -177,7 +186,7 @@ public class ResultsController {
                 
                 //If this is not a device, it is not a controller. Next call will catch it.
                 PaoType paoType = PaoType.getForDbString(item.getType());
-                boolean isController = CBCUtils.checkControllerByType(paoType);
+                boolean isController = CapControlUtils.checkControllerByType(paoType);
                 row.setIsController(isController);
                 
                 String parentString = ParentStringPrinter.ORPH_STRING;
@@ -197,22 +206,21 @@ public class ResultsController {
         
         SearchResult<ResultRow> searchResult = new SearchResult<ResultRow>();
         searchResult.setResultList(rows);
-        if(rows.isEmpty()) {
+        if (rows.isEmpty()) {
             searchResult.setBounds(0, itemsPerPage, 0);
         }
         searchResult.setBounds(startIndex, itemsPerPage, hitCount);
         
-        mav.addObject("rows", rows);
-        mav.addObject("searchResult", searchResult);
-        mav.addObject("itemsPerPage", itemsPerPage);
-        mav.addObject("resultsFound", hitCount);
-        mav.setViewName("search/searchResults.jsp");
+        model.addAttribute("rows", rows);
+        model.addAttribute("searchResult", searchResult);
+        model.addAttribute("itemsPerPage", itemsPerPage);
+        model.addAttribute("resultsFound", hitCount);
         
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         
-        return mav;
+        return "search/searchResults.jsp";
     }
     
     private String getDisplayableType(SearchType searchType, String dbType) throws MissingSearchType {
@@ -237,22 +245,22 @@ public class ResultsController {
     }
     
     @RequestMapping
-    public ModelAndView recentControls(HttpServletRequest request, LiteYukonUser user) {
-        final ModelAndView mav = new ModelAndView();
-        CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
+    public String recentEvents(HttpServletRequest request, ModelMap model, LiteYukonUser user, String value) {
+        CapControlCache cache = cacheFactory.createUserAccessFilteredCache(user);
         YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
-        Integer MAX_DAYS_CNT = 7;   
-        String[] strPaoids = ParamUtil.getStrings(request, "value");
+        Integer MAX_DAYS_CNT = 7;
+        
+        List<Integer> paoIds = ServletUtil.getIntegerListFromString(value);
+        
         int dayCnt = ParamUtil.getInteger(request, "dayCnt", 1);
         List<ControlEventSet>  listOfEventSets = new ArrayList<ControlEventSet>();
         
-        for( int i = 0; i < strPaoids.length; i++ ) {
-            int id = Integer.parseInt( strPaoids[i] );
-            StreamableCapObject cbcPAO = filterCapControlCache.getCapControlPAO(new Integer(id));
+        for (int id : paoIds) {
+            StreamableCapObject cbcPAO = cache.getCapControlPAO(id);
 
-            if( cbcPAO != null ) {
-                List<CCEventLog> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), filterCapControlCache, dayCnt);
-                for(CCEventLog event : events) {
+            if (cbcPAO != null) {
+                List<CCEventLog> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), cache, dayCnt);
+                for (CCEventLog event : events) {
                     String formattedTimestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, context);
                     event.setFormattedTimestamp(formattedTimestamp);
                 }
@@ -263,12 +271,11 @@ public class ResultsController {
             }
         }
         
-        mav.addObject("dayCnt", new Integer(dayCnt));
-        mav.addObject("MAX_DAYS_CNT", MAX_DAYS_CNT);
-        mav.addObject("paoIdString", Arrays.toString( strPaoids));
-        mav.addObject("listOfEventSets", listOfEventSets);
-        mav.setViewName("search/recentControls.jsp");
-        return mav;
+        model.addAttribute("dayCnt", new Integer(dayCnt));
+        model.addAttribute("MAX_DAYS_CNT", MAX_DAYS_CNT);
+        model.addAttribute("paoIdString", value);
+        model.addAttribute("listOfEventSets", listOfEventSets);
+        return "search/recentEvents.jsp";
     }
     
     @Autowired
@@ -320,4 +327,10 @@ public class ResultsController {
     public void setFilterCacheFactory (FilterCacheFactory filterCacheFactory) {
         this.cacheFactory = filterCacheFactory;
     }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
 }

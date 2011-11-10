@@ -45,11 +45,11 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFComparators;
-import com.cannontech.yukon.cbc.Feeder;
 
 public class CapBankEditorForm extends DBEditorForm {
 

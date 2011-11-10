@@ -3,18 +3,18 @@ package com.cannontech.capcontrol;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.message.capcontrol.model.CommandType;
 
 public enum ScheduleCommand {
 	
-	VerifyAll("Verify ALL CapBanks", CapControlCommand.CMD_ALL_BANKS),
-	VerifyFailed("Verify Failed CapBanks", CapControlCommand.CMD_FAILED_BANKS),
-	VerifyFailedAndQuestionable("Verify Failed and Questionable CapBanks", CapControlCommand.CMD_FQ_BANKS),
-	VerifyStandalone("Verify Standalone CapBanks", CapControlCommand.CMD_STANDALONE_VERIFY),
-	VerifyQuestionable("Verify Questionable CapBanks", CapControlCommand.CMD_QUESTIONABLE_BANKS),
-	VerifyNotOperatedIn("Verify CapBanks that have not operated in", CapControlCommand.CMD_BANKS_NOT_OPERATED_IN),
-    ConfirmSub("Confirm Sub", CapControlCommand.CONFIRM_SUB),
-    SendTimeSyncs("Send Time Syncs", CapControlCommand.SEND_TIMESYNC);
+	VerifyAll("Verify ALL CapBanks", CommandType.VERIFY_ALL_BANKS.getCommandId()),
+	VerifyFailed("Verify Failed CapBanks", CommandType.VERIFY_FAILED_BANKS.getCommandId()),
+	VerifyFailedAndQuestionable("Verify Failed and Questionable CapBanks", CommandType.VERIFY_FQ_BANKS.getCommandId()),
+	VerifyStandalone("Verify Standalone CapBanks", CommandType.VERIFY_SA_BANKS.getCommandId()),
+	VerifyQuestionable("Verify Questionable CapBanks", CommandType.VERIFY_Q_BANKS.getCommandId()),
+	VerifyNotOperatedIn("Verify CapBanks that have not operated in", CommandType.VERIFY_INACTIVE_BANKS.getCommandId()),
+    ConfirmSub("Confirm Sub", CommandType.CONFIRM_SUBSTATION_BUS.getCommandId()),
+    SendTimeSyncs("Send Time Syncs", CommandType.SEND_TIME_SYNC.getCommandId());
 	
 	private static List<ScheduleCommand> verifyList = null;
 	
@@ -26,6 +26,8 @@ public enum ScheduleCommand {
             }
         }
 	}
+	
+	public static final int DEFAULT_INACTIVITY_TIME = -1;
 	
 	private String commandName;
 	private int capControlCommand;

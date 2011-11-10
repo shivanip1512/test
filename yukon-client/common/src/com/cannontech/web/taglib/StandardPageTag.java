@@ -68,11 +68,13 @@ public class StandardPageTag extends BodyTagSupport {
             String baseSearchPath = "modules." + model.getModuleName();
             
             String[] pageNameParts = StringUtils.split(model.getPageName(), ".");
-            String[] finalPaths = new String[pageNameParts.length];
+            String[] finalPaths = new String[pageNameParts.length + 1];
 
+            finalPaths[finalPaths.length - 1] = baseSearchPath; // the last path should just be the module name
+            
             for (int i = 0; i < pageNameParts.length; i++) {
                 baseSearchPath = baseSearchPath + "." + pageNameParts[i];
-                finalPaths[finalPaths.length - i - 1] = baseSearchPath;
+                finalPaths[finalPaths.length - i - 2] = baseSearchPath;
             }
             
             messageScope.pushScope(finalPaths);

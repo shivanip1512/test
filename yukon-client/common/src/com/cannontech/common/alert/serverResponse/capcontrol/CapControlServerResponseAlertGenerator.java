@@ -4,8 +4,8 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.capcontrol.CapControlResponseType;
-import com.cannontech.message.capcontrol.CapControlServerResponse;
+import com.cannontech.message.capcontrol.model.CapControlResponseType;
+import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -29,7 +29,7 @@ public class CapControlServerResponseAlertGenerator implements MessageListener {
         String user = in.getUserName();
         if (in instanceof CapControlServerResponse) {
             CapControlServerResponse response = (CapControlServerResponse)in;
-            if (response.getResponseType() == CapControlResponseType.CommandRefused) {
+            if (response.getResponseType() == CapControlResponseType.COMMAND_REFUSED) {
                 ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.serverResponse");
                 resolvableTemplate.addData("responseText", response.getResponse());
                 CapControlServerResonseAlert alert = new CapControlServerResonseAlert(in.getTimeStamp(), resolvableTemplate);

@@ -734,27 +734,6 @@
             </option>
           </options>
         </option>
-        <option name="analysis">
-          <requireRoleProperty value="!HIDE_REPORTS" />
-          <options>
-            <option name="todaykvarperwatt">
-              <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
-            </option>
-            <option name="todaypf">
-              <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('Today PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')</script>
-            </option>
-            <option name="30daykvarperwatt">
-              <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('30 Day kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')</script>
-            </option>
-            <option name="30daypf">
-              <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
-            </option>
-          </options>
-        </option>
         <option name="view">
           <options>
             <option name="schedules">
@@ -766,9 +745,6 @@
 
             <option name="scheduleassignment">
               <link>/spring/capcontrol/schedule/scheduleAssignments</link>
-            </option>
-            <option name="recentcontrols">
-              <script>showRecentCmds('recentControls')</script>
             </option>
             <option name="recentcapbankmoves">
               <link>/spring/capcontrol/move/movedCapBanks</link>
@@ -809,6 +785,76 @@
     <skin name="STANDARD" />
     <css file="/capcontrol/css/CapcontrolGeneralStyles.css" />
     <css file="/WebConfig/yukon/styles/capcontrollogos.css" />
+    <pages>
+        <page name="areas.normal" type="LANDING">
+            <menu></menu>
+            <link>/spring/capcontrol/tier/areas</link>
+            <pages>
+                <page name="areas.special" type="BASIC">
+                    <menu></menu>
+                </page>
+                <page name="area" type="DETAIL">
+                    <menu></menu>
+                    <link>/spring/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
+                    <labelArgument>${bc_areaName}</labelArgument>
+                    <pages>
+                        <page name="substation" type="DETAIL">
+                            <menu></menu>
+                            <link>/spring/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
+                            <labelArgument>${substationName}</labelArgument>
+                            <pages>
+                                <page name="capbankLocations" type="DETAIL_CHILD">
+                                    <menu></menu>
+                                    <labelArgument>${substationName}</labelArgument>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
+                <page name="scheduleAssignments" type="BASIC">
+                    <menu>view|scheduleassignment</menu>
+                    <link>/spring/capcontrol/schedule/scheduleAssignments</link>
+                </page>
+                <page name="schedules" type="BASIC">
+                    <menu>view|schedules</menu>
+                    <link>/spring/capcontrol/schedule/schedules</link>
+                </page>
+                <page name="strategies" type="BASIC">
+                    <menu>view|strategies</menu>
+                    <link>/spring/capcontrol/strategy/strategies</link>
+                </page>
+                <page name="movedCapBanks" type="BASIC">
+                    <menu>view|recentcapbankmoves</menu>
+                    <link>/spring/capcontrol/move/movedCapBanks</link>
+                </page>
+                <page name="search.general" type="BASIC">
+                    <menu></menu>
+                </page>
+                <page name="search.orphanedSubs" type="BASIC">
+                    <menu>orphans|orphanedsubstations</menu>
+                </page>
+                <page name="search.orphanedBuses" type="BASIC">
+                    <menu>orphans|orphanedsubstationbuses</menu>
+                </page>
+                <page name="search.orphanedFeeders" type="BASIC">
+                    <menu>orphans|orphanedfeeders</menu>
+                </page>
+                <page name="search.orphanedBanks" type="BASIC">
+                    <menu>orphans|orphanedcapbanks</menu>
+                </page>
+                <page name="search.orphanedCbcs" type="BASIC">
+                    <menu>orphans|orphanedcbcs</menu>
+                </page>
+                <page name="search.orphanedRegulators" type="BASIC">
+                    <menu>orphans|orphanedregulators</menu>
+                </page>
+                <page name="recentEvents" type="DETAIL_CHILD">
+                    <menu></menu>
+                </page>
+            </pages>
+        </page>
+        
+    </pages>
   </module>
 
   <module name="capcontrol_internal">

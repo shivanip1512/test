@@ -10,7 +10,7 @@
 </span>
 
 <span id="warning_${paoId}_alert" style="display: none;" 
-      onmouseover="showDynamicPopupAbove($('warningPopup_${paoId}'));" 
+      onmouseover="showDynamicPopupAbove('warningPopup_${paoId}');" 
       onmouseout="nd();">
     <img src="/capcontrol/images/yellow.png" class="tierImg"  alt="">
 </span>

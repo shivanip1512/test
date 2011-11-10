@@ -937,9 +937,10 @@
     <!-- database migration -->
     <bean id="databaseMigrationBackingService" class="com.cannontech.web.updater.databaseMigration.DatabaseMigrationBackingService"/>
     
-    <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
-          abstract="true">
+    <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService" abstract="true">
         <property name="filterCacheFactory" ref="filterCacheFactory"/>
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="updaterHelper" ref="updaterHelper" />
     </bean>
     
     <bean id="abstractAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractAreaFormatingService"
@@ -957,10 +958,10 @@
 	<bean id="voltageRegulatorOpTimeHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorOpTimeHandler"/>
 	<bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
 	
-    <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.CBCAreaFormattingService"
+    <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AreaFormattingService"
           parent="abstractAreaFormattingService"/>
     
-    <bean id="cbcSpecialAreaFormattingService" class="com.cannontech.web.updater.capcontrol.CBCSpecialAreaFormattingService"
+    <bean id="cbcSpecialAreaFormattingService" class="com.cannontech.web.updater.capcontrol.SpecialAreaFormattingService"
           parent="abstractAreaFormattingService"/>
     
     <bean id="subStationFormattingService" class="com.cannontech.web.updater.capcontrol.SubStationFormattingService"

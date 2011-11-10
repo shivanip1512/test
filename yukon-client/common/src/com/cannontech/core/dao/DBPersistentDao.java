@@ -57,4 +57,10 @@ public interface DBPersistentDao {
      * @param primaryKey
      */
     public void processDatabaseChange(DbChangeType type, DbChangeCategory category, int primaryKey);
+
+    /**
+     * Retrieve a DBPersistent object, must set device id first.
+     * @param dbPersistent
+     */
+    public DBPersistent retrieveDBPersistent(DBPersistent dbPersistent);
 }

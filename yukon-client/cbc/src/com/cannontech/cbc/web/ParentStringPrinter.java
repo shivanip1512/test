@@ -195,7 +195,7 @@ public class ParentStringPrinter {
         String safeUrl = "";
         final StringBuilder sb = new StringBuilder();
         if(url.equalsIgnoreCase(FEEDER_URL)) {
-            safeUrl = url + "?subStationId=" + paoId + "&areaId=" + areaId + "&isSpecialArea=" + special;
+            safeUrl = url + "?substationId=" + paoId + "&areaId=" + areaId + "&isSpecialArea=" + special;
         }else {
             safeUrl = ServletUtil.createSafeUrl(request, url);
         }

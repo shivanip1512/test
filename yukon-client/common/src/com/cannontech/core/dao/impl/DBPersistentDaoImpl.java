@@ -53,16 +53,21 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     
     @Override
     public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
-
-        //create a DBPersistent from a liteBase object
         DBPersistent dbPersistent = null;
-        if( liteObject != null) {
+        if (liteObject != null) {
+            //create a DBPersistent from a liteBase object
             dbPersistent = LiteFactory.createDBPersistent(liteObject);
-            try {
-                dbPersistentBeanFactory.createNewDbPersistentBean().execute(TransactionType.RETRIEVE, dbPersistent);
-            } catch(Exception e) {
-                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-            }
+            retrieveDBPersistent(dbPersistent);
+        }
+        return dbPersistent;
+    }
+    
+    @Override
+    public DBPersistent retrieveDBPersistent(DBPersistent dbPersistent) {
+        try {
+            dbPersistentBeanFactory.createNewDbPersistentBean().execute(TransactionType.RETRIEVE, dbPersistent);
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
         }
         return dbPersistent;
     }

@@ -124,23 +124,6 @@ div.menuItems {
     font-size:12px;	
 }
 	
-.optDeselect {
-    text-decoration: none;
-    background-color: white;
-    border: 1px #0066CC;
-    cursor:pointer;
-    width: 120px;
-}
-
-.optSelect {
-	color:#FFFFFF;
-    text-decoration: none;
-    background-color: #003399;
-    border: 1px #0066CC;
-    cursor:pointer;
-    width: 120px;
-}
-
 div.deviceSelectionPopup {
   width: 500px;
 }
@@ -349,6 +332,10 @@ table.compactResultsTable th a {
 
 table.compactResultsTable td td {
     padding: 0px 0px;
+}
+
+table.compactResultsTable td img {
+    vertical-align: top;
 }
 
 table.compactResultsTable td {
@@ -573,13 +560,6 @@ div.widgetPopup {
     overflow: hidden;
 }
 
-.popUpDiv iframe
-{
-	width: 100%;
-	height: 100%;
-	border-style: none;
-}
-
 #roundingHelper, #timestampHelper, #valueHelper {
 	background-color:#FFFFCC;
 }
@@ -591,13 +571,11 @@ th.widgetInternalSectionSubHeader {
 	padding-top: 5px; 
 	padding-bottom: 5px; 
 	margin-left: 5px;
-	
 }
 
 div.triangleContainer .triangleContainer_titleBar .controls { 
     cursor: pointer;
 }
-
 
 .greyGradientBox, div.boxContainer .boxContainer_titleBar,
 table.boxContainer td.boxContainer_titleBar,
@@ -667,6 +645,7 @@ div.boxContainer .boxContainer_content, div.pagedBox .content {
 	border-left: 1px solid #BBBBBB;
 	border-right: 1px solid #BBBBBB;
 	border-bottom: 1px solid #BBBBBB;
+	background-color: white;
 }
 
 div.greyGradientBox .boxContainer_content {
@@ -1197,22 +1176,6 @@ div.padded {
 	width: 20px;
 }
 
-/* the following was pulled from http://www.hedgerwow.com/360/bugs/css-select-free.html */
-/* if this needs to be reused, consider making a generic class selector in one of the common css files */
-/* This can be removed when support for IE 6 is dropped. */
-.simplePopup iframe
-{
-    display:none;/*sorry for IE5*/
-    display/**/:block;/*sorry for IE5*/
-    position:absolute;/*must have*/
-    top:0;/*must have*/
-    left:0;/*must have*/
-    z-index:-1;/*must have*/
-    filter:mask();/*must have*/
-    width:3000px;/*must have for any big value*/
-    height:3000px/*must have for any big value*/;
-}
-
 .i18nInline {
     outline: red dotted thin;
 }
@@ -1505,9 +1468,21 @@ ul.buttonStack li {
     padding-bottom: 2px;
 }
 
+table.compactResultsTable button.image {
+    float: left;
+    margin-right: 5px;
+}
+
+table.compactResultsTable button.center {
+    margin-left: auto; 
+    margin-right: auto;
+    float: none;
+}
+
 button.naked,
 button.image {
     padding: 0px !important;
+    font-family: inherit !important;
 }
 
 button.naked {
@@ -1635,6 +1610,11 @@ table.tabular th {
     text-decoration: underline;
     color: #0000EE;
     cursor: pointer;
+}
+
+div.scrollingContainer {
+    border-top:1px solid #CCC;
+    border-bottom:1px solid #CCC;
 }
 
 /* FIELD HELPER (fieldHelper.js) */

@@ -8,7 +8,7 @@ import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 

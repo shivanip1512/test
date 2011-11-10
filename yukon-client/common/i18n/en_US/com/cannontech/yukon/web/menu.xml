@@ -131,26 +131,20 @@
 <entry key="yukon.web.menu.config.capcontrol.create.schedule">Schedule</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.strategy">Strategy</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.voltageregulator">Regulator</entry>
-<entry key="yukon.web.menu.config.capcontrol.analysis">Analysis</entry>
-<entry key="yukon.web.menu.config.capcontrol.analysis.todaykvarperwatt">Today kVAR/Watt</entry>
-<entry key="yukon.web.menu.config.capcontrol.analysis.todaypf">Today PF</entry>
-<entry key="yukon.web.menu.config.capcontrol.analysis.30daykvarperwatt">30 Day kVAR/Watt</entry>
-<entry key="yukon.web.menu.config.capcontrol.analysis.30daypf">30 Day PF</entry>
 <entry key="yukon.web.menu.config.capcontrol.view">View</entry>
 <entry key="yukon.web.menu.config.capcontrol.view.oneline">OneLine</entry>
 <entry key="yukon.web.menu.config.capcontrol.view.schedules">Schedules</entry>
 <entry key="yukon.web.menu.config.capcontrol.view.scheduleassignment">Schedule Assignment</entry>
 <entry key="yukon.web.menu.config.capcontrol.view.strategies">Strategies</entry>
-<entry key="yukon.web.menu.config.capcontrol.view.recentcontrols">Recent Controls</entry>
 <entry key="yukon.web.menu.config.capcontrol.view.recentcapbankmoves">Recent Cap Bank Moves</entry>
 <entry key="yukon.web.menu.config.capcontrol.view.specialareas">Special Areas</entry>
 <entry key="yukon.web.menu.config.capcontrol.orphans">Orphans</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedsubstations">Orphaned Substations</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedsubstationbuses">Orphaned Substation Buses</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedfeeders">Orphaned Feeders</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcapbanks">Orphaned Capbanks</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcbcs">Orphaned CBCs</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedregulators">Orphaned Regulators</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedsubstations">Substations</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedsubstationbuses">Substation Buses</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedfeeders">Feeders</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcapbanks">Cap Banks</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcbcs">CBCs</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedregulators">Regulators</entry>
 
 <!-- Commercial Curtailment Module -->
 <entry key="yukon.web.menu.config.commercialcurtailment.ccurt_events">Events</entry>

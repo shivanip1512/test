@@ -19,14 +19,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.enums.Phase;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubStation;
 import com.google.common.collect.Maps;
-
 
 @RequestMapping("/ivvc/bus/*")
 @Controller
@@ -108,8 +107,8 @@ public class BusViewController {
         
         model.addAttribute("areaId", area.getCcId());
         model.addAttribute("areaName", areaName);
-        model.addAttribute("subStationId", station.getCcId());
-        model.addAttribute("subStationName", substationName);
+        model.addAttribute("substationId", station.getCcId());
+        model.addAttribute("substationName", substationName);
         model.addAttribute("subBusName", subBusName);
     }
     

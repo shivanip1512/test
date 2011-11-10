@@ -15,10 +15,10 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E> implements FilterObjectsMapSource {
     
@@ -49,7 +49,7 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
             CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
             UserAccessCacheFilter cacheFilter = new UserAccessCacheFilter(liteUser);
             
-            List<CCArea> areaList = capControlCache.getCbcAreas();
+            List<Area> areaList = capControlCache.getCbcAreas();
             List<Integer> areasToHide = new ArrayList<Integer>();
             
             for ( StreamableCapObject area : areaList ) {

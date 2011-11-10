@@ -13,7 +13,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.element.LineElement;
-import com.cannontech.yukon.cbc.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public class DynamicLineElement extends LineElement implements OnelineLxElement {
 

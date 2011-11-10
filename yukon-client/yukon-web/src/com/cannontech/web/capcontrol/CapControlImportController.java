@@ -52,7 +52,7 @@ public class CapControlImportController {
 	private CapControlImporterFileDao capControlFileImporterDao;
 	
 	private ConcurrentMap<String, List<CapControlImportResolvable>> resultsLookup = 
-	                                    new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
+	                                    new MapMaker().expireAfterWrite(12, TimeUnit.HOURS).makeMap();
 	
 	public static class CapControlImportResolvable {
 	    private final YukonMessageSourceResolvable message;

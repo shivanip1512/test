@@ -2,14 +2,14 @@ package com.cannontech.cbc.oneline.model.cap;
 
 import java.awt.geom.Point2D;
 
-import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -96,7 +96,7 @@ public class CapBankTagView extends LxAbstractView implements TagView {
             tagString += ":";
         }
         
-        CapBankOperationalState state = CapBankOperationalState.getStateByName(capBank.getOperationalState());
+        BankOpState state = BankOpState.getStateByName(capBank.getOperationalState());
         switch (state) {
             case FIXED : {
                 tagString += "F:";

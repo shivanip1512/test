@@ -12,6 +12,7 @@ import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -22,7 +23,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
@@ -32,15 +32,10 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
 
-/**
- * A set of selection list used for many GUI's
- * 
- * @author ryan
- */
 public class CBCSelectionLists {
 	
-	/* constants for indexing the tabbed pane
-     * 
+	/* 
+     * Constants for indexing the tabbed pane
 	 */
     public static final int General = 0;
     public static final int CapControlSubBusSetup = 1;
@@ -80,51 +75,56 @@ public class CBCSelectionLists {
     };
     
     private static final SelectItem[] pSubtypes = {
-        
         new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Analog Output"),
         new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Status Output"),
-        };
+    };
 
-	
     private static final SelectItem[] typeList701X = {
-		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
-		new SelectItem(new Integer(PAOGroups.CAPBANKCONTROLLER), PAOGroups.getPAOTypeString(PAOGroups.CAPBANKCONTROLLER) ),
-		new SelectItem(new Integer(PAOGroups.CBC_7010), PAOGroups.getPAOTypeString(PAOGroups.CBC_7010) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7011), PAOGroups.getPAOTypeString(PAOGroups.CBC_7011) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7012), PAOGroups.getPAOTypeString(PAOGroups.CBC_7012) ),
-		new SelectItem(new Integer(PAOGroups.CBC_FP_2800), PAOGroups.getPAOTypeString(PAOGroups.CBC_FP_2800) )
+        new SelectItem(PaoType.CBC_EXPRESSCOM.getDeviceTypeId(), PaoType.CBC_EXPRESSCOM.getDbString() ),
+        new SelectItem(PaoType.CAPBANKCONTROLLER.getDeviceTypeId(), PaoType.CAPBANKCONTROLLER.getDbString() ),
+        new SelectItem(PaoType.CBC_7010.getDeviceTypeId(), PaoType.CBC_7010.getDbString() ),
+        new SelectItem(PaoType.CBC_7011.getDeviceTypeId(), PaoType.CBC_7011.getDbString() ),
+        new SelectItem(PaoType.CBC_7012.getDeviceTypeId(), PaoType.CBC_7012.getDbString() ),
+        new SelectItem(PaoType.CBC_FP_2800.getDeviceTypeId(), PaoType.CBC_FP_2800.getDbString() )
     };
     
     private static final SelectItem[] typeList702X = {
-		new SelectItem(new Integer(PAOGroups.CBC_7020), PAOGroups.getPAOTypeString(PAOGroups.CBC_7020) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7022), PAOGroups.getPAOTypeString(PAOGroups.CBC_7022) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7023), PAOGroups.getPAOTypeString(PAOGroups.CBC_7023) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) )
+		new SelectItem(PaoType.CBC_7020.getDeviceTypeId(), PaoType.CBC_7020.getDbString() ),
+        new SelectItem(PaoType.CBC_7022.getDeviceTypeId(), PaoType.CBC_7022.getDbString() ),
+        new SelectItem(PaoType.CBC_7023.getDeviceTypeId(), PaoType.CBC_7023.getDbString() ),
+        new SelectItem(PaoType.CBC_7024.getDeviceTypeId(), PaoType.CBC_7024.getDbString() )
     };
     
     private static final SelectItem[] typeList802X = {
-        new SelectItem(new Integer(PAOGroups.CBC_8020), PAOGroups.getPAOTypeString(PAOGroups.CBC_8020) ),
-        new SelectItem(new Integer(PAOGroups.CBC_8024), PAOGroups.getPAOTypeString(PAOGroups.CBC_8024) )
+        new SelectItem(PaoType.CBC_8020.getDeviceTypeId(), PaoType.CBC_8020.getDbString() ),
+        new SelectItem(PaoType.CBC_8024.getDeviceTypeId(), PaoType.CBC_8024.getDbString() )
     };
     
     private static final SelectItem[] typeListDNP = {
-        new SelectItem(new Integer(PAOGroups.CBC_DNP), PAOGroups.getPAOTypeString(PAOGroups.CBC_DNP) )
+        new SelectItem(PaoType.CBC_DNP.getDeviceTypeId(), PaoType.CBC_DNP.getDbString() )
     };
+    
+    private static final SelectItem[] wizardVoltageRegulatorTypes = {
+        new SelectItem(PaoType.LOAD_TAP_CHANGER.getDeviceTypeId(), CapControlType.LTC.getDisplayValue() ),
+        new SelectItem(PaoType.GANG_OPERATED.getDeviceTypeId(), CapControlType.GO_REGULATOR.getDisplayValue() ),
+        new SelectItem(PaoType.PHASE_OPERATED.getDeviceTypeId(), CapControlType.PO_REGULATOR.getDisplayValue() ), 
+    };
+    
 	private static final SelectItem[] wizardCBCTypes =  {
 		//value, label
-		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
-		new SelectItem(new Integer(PAOGroups.CAPBANKCONTROLLER), PAOGroups.getPAOTypeString(PAOGroups.CAPBANKCONTROLLER) ),
-		new SelectItem(new Integer(PAOGroups.CBC_7010), PAOGroups.getPAOTypeString(PAOGroups.CBC_7010) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7011), PAOGroups.getPAOTypeString(PAOGroups.CBC_7011) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7012), PAOGroups.getPAOTypeString(PAOGroups.CBC_7012) ),        
-		new SelectItem(new Integer(PAOGroups.CBC_7020), PAOGroups.getPAOTypeString(PAOGroups.CBC_7020) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7022), PAOGroups.getPAOTypeString(PAOGroups.CBC_7022) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7023), PAOGroups.getPAOTypeString(PAOGroups.CBC_7023) ),
-        new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) ),
-        new SelectItem(new Integer(PAOGroups.CBC_8020), PAOGroups.getPAOTypeString(PAOGroups.CBC_8020) ),
-        new SelectItem(new Integer(PAOGroups.CBC_8024), PAOGroups.getPAOTypeString(PAOGroups.CBC_8024) ),
-        new SelectItem(new Integer(PAOGroups.CBC_DNP), PAOGroups.getPAOTypeString(PAOGroups.CBC_DNP) ),
-		new SelectItem(new Integer(PAOGroups.CBC_FP_2800), PAOGroups.getPAOTypeString(PAOGroups.CBC_FP_2800) )
+		new SelectItem(PaoType.CBC_EXPRESSCOM.getDeviceTypeId(), PaoType.CBC_EXPRESSCOM.getDbString() ),
+		new SelectItem(PaoType.CAPBANKCONTROLLER.getDeviceTypeId(), PaoType.CAPBANKCONTROLLER.getDbString() ),
+		new SelectItem(PaoType.CBC_7010.getDeviceTypeId(), PaoType.CBC_7010.getDbString() ),
+        new SelectItem(PaoType.CBC_7011.getDeviceTypeId(), PaoType.CBC_7011.getDbString() ),
+        new SelectItem(PaoType.CBC_7012.getDeviceTypeId(), PaoType.CBC_7012.getDbString() ),        
+		new SelectItem(PaoType.CBC_7020.getDeviceTypeId(), PaoType.CBC_7020.getDbString() ),
+        new SelectItem(PaoType.CBC_7022.getDeviceTypeId(), PaoType.CBC_7022.getDbString() ),
+        new SelectItem(PaoType.CBC_7023.getDeviceTypeId(), PaoType.CBC_7023.getDbString() ),
+        new SelectItem(PaoType.CBC_7024.getDeviceTypeId(), PaoType.CBC_7024.getDbString() ),
+        new SelectItem(PaoType.CBC_8020.getDeviceTypeId(), PaoType.CBC_8020.getDbString() ),
+        new SelectItem(PaoType.CBC_8024.getDeviceTypeId(), PaoType.CBC_8024.getDbString() ),
+        new SelectItem(PaoType.CBC_DNP.getDeviceTypeId(), PaoType.CBC_DNP.getDbString() ),
+		new SelectItem(PaoType.CBC_FP_2800.getDeviceTypeId(), PaoType.CBC_FP_2800.getDbString() )
         
 	};
 
@@ -299,13 +299,6 @@ public class CBCSelectionLists {
 		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE) )
 	};
 	
-	private static final SelectItem[] wizardVoltageRegulatorTypes =  {
-		//value, label
-		new SelectItem(new Integer(PAOGroups.CAP_CONTROL_LTC), CapControlType.LTC.getDisplayValue() ),
-		new SelectItem(new Integer(PAOGroups.GANG_OPERATED_REGULATOR), CapControlType.GO_REGULATOR.getDisplayValue() ),
-        new SelectItem(new Integer(PAOGroups.PHASE_OPERATED_REGULATOR), CapControlType.PO_REGULATOR.getDisplayValue() ),
-	};
-
 	private static YukonUserContext userContext;
 	private static YukonUserContext getYukonUserContext() {
 	    if (userContext == null) {
@@ -378,11 +371,8 @@ public class CBCSelectionLists {
 		return wizardCBCTypes;
 	}
 	
-	/**
-	 * Returns possible selection choices for GUI
-	 */
 	public SelectItem[] getVoltageRegulatorTypes() {
-		return wizardVoltageRegulatorTypes;
+	    return wizardVoltageRegulatorTypes;
 	}
 
 	/**
@@ -521,7 +511,7 @@ public class CBCSelectionLists {
     }
 
 	public  SelectItem[] getTypeList701X() {
-		return typeList701X;
+        return typeList701X;
 	}
 
 	public  SelectItem[] getTypeList702X() {
@@ -565,14 +555,14 @@ public class CBCSelectionLists {
     };
  
     public Integer getSubstationType () {
-        return PAOGroups.CAP_CONTROL_SUBSTATION;
+        return PaoType.CAP_CONTROL_SUBSTATION.getDeviceTypeId();
     }
     public Integer getSubstationBusType () {
-        return PAOGroups.CAP_CONTROL_SUBBUS;
+        return PaoType.CAP_CONTROL_SUBBUS.getDeviceTypeId();
     }
     
     public Integer getFeederType () {
-        return PAOGroups.CAP_CONTROL_FEEDER;
+        return PaoType.CAP_CONTROL_FEEDER.getDeviceTypeId();
     }
     
     public Integer getCapType () {

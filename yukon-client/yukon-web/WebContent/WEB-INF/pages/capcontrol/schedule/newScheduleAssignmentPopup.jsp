@@ -52,7 +52,7 @@
     	</div>
     	<div class="actionArea">
     		<input type="submit" value="Add"/>
-    		<input type="button" value="Cancel" onclick="$('tierContentPopup').hide();" />
+    		<input type="button" value="Cancel" onclick="hideContentPopup();" />
     	</div>
     </form>
 </cti:msgScope>

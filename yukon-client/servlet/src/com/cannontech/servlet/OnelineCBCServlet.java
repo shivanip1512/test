@@ -22,12 +22,12 @@ import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.SubBus;
 
 @SuppressWarnings("serial")
 public class OnelineCBCServlet extends HttpServlet {
@@ -43,10 +43,10 @@ public class OnelineCBCServlet extends HttpServlet {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
         Integer currentSubId = ParamUtil.getInteger(req, "id");
         String redirectURL = ParamUtil.getString(req, "redirectURL", null);
-        String subStationId = ParamUtil.getString(req, "subStationId", null);
+        String subStationId = ParamUtil.getString(req, "substationId", null);
         String areaId = ParamUtil.getString(req, "areaId", null);
-        if(!redirectURL.contains("subStationId")) {
-            redirectURL += "&subStationId=" + subStationId + "&areaId=" + areaId;
+        if(!redirectURL.contains("substationId")) {
+            redirectURL += "&substationId=" + subStationId + "&areaId=" + areaId;
         }
         SubBus subBusMsg = cache.getSubBus(currentSubId);
         String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);

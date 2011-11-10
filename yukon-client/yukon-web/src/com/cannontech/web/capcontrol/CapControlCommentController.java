@@ -21,8 +21,8 @@ import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.yukon.cbc.StreamableCapObject;
 
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 @RequestMapping("/comments/*")

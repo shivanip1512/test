@@ -47,7 +47,7 @@ import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.cbc.service.CapControlCreationService;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -106,6 +106,7 @@ import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
@@ -118,7 +119,6 @@ import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
-import com.cannontech.yukon.cbc.SubStation;
 import com.google.common.collect.Lists;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel{
@@ -689,7 +689,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     			getVisibleTabs().put("CBCCapBank", Boolean.TRUE);
                 LiteYukonUser user = JSFUtil.getYukonUser();
                 if (user != null) {
-                    boolean showCapBankAddInfo = CBCUtils.isCBAdditionalInfoAllowed(user);
+                    boolean showCapBankAddInfo = CapControlUtils.isCBAdditionalInfoAllowed(user);
                     getVisibleTabs().put ("CBAddInfo", Boolean.TRUE && showCapBankAddInfo);
                 }
     			break;
@@ -986,7 +986,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         final int type = wizard.getSelectedType();
         final boolean disabled = wizard.getDisabled();
         final PaoType paoType = PaoType.getForId(type);
-        final boolean isController = CBCUtils.checkControllerByType(paoType);
+        final boolean isController = CapControlUtils.checkControllerByType(paoType);
         final int portId = wizard.getPortID();
         final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested());
 
@@ -1312,19 +1312,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     private void reorderBankList(List<CCFeederBankList> childList, float removeDispOrder, float removeCloseOrder, float removeTripOrder) {
     	if (childList.size() > 0 && removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1) {
-    		Collections.sort(childList, CBCUtils.BANK_TRIP_ORDER_COMPARATOR);
+    		Collections.sort(childList, CapControlUtils.BANK_TRIP_ORDER_COMPARATOR);
     		for (int i = 0; i < childList.size(); i++) {
     			CCFeederBankList capBank = childList.get(i);
     			capBank.setTripOrder(new Float(i + 1.0));
     		}
     		
-    		Collections.sort(childList, CBCUtils.BANK_CLOSE_ORDER_COMPARATOR);
+    		Collections.sort(childList, CapControlUtils.BANK_CLOSE_ORDER_COMPARATOR);
     		for (int i = 0; i < childList.size(); i++) {
     			CCFeederBankList capBank = childList.get(i);
     			capBank.setCloseOrder(new Float(i + 1.0));
     		}
     		
-    		Collections.sort(childList, CBCUtils.BANK_DISPLAY_ORDER_COMPARATOR);
+    		Collections.sort(childList, CapControlUtils.BANK_DISPLAY_ORDER_COMPARATOR);
     		for (int i = 0; i < childList.size(); i++) {
     			CCFeederBankList capBank = childList.get(i);
     			capBank.setControlOrder(new Float(i + 1.0));

@@ -1,24 +1,29 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<jsp:directive.page import="com.cannontech.cbc.cache.CapControlCache" />
-<link rel="StyleSheet" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css" />
-<table id="Table" class="miniResultsTable resultsTable" align="center">
-    <tr>
-        <th colspan="4" style="color: black; font-size: 14">Feeder CapBank Information</th>
-    </tr>
-	<tr>
-		<th>CapBank Name</th>
-		<th>Display Order</th>
-		<th>Close Order</th>
-		<th>Trip Order</th>
-	</tr>
-	<c:forEach var="cap" items="${capBankList}">
-		<tr class="<ct:alternateRow odd="" even="altRow"/>">
-			<td>${cap.ccName}</td>
-			<td>${cap.controlOrder}</td>
-			<td>${cap.closeOrder}</td>
-			<td>${cap.tripOrder}</td>
-		</tr>
-	</c:forEach>
-</table>
+<cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
+
+<tags:boxContainer2 nameKey="selectedFeeder">
+    <div style="max-height: 112px;overflow: auto;overflow-x: hidden;">
+    <table class="compactResultsTable">
+    	<tr>
+    		<th><i:inline key=".bankName"/></th>
+    		<th><i:inline key=".displayOrder"/></th>
+    		<th><i:inline key=".closeOrder"/></th>
+    		<th><i:inline key=".tripOrder"/></th>
+    	</tr>
+    	<c:forEach var="cap" items="${capBankList}">
+    		<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    			<td><spring:escapeBody htmlEscape="true">${cap.ccName}</spring:escapeBody></td>
+    			<td>${cap.controlOrder}</td>
+    			<td>${cap.closeOrder}</td>
+    			<td>${cap.tripOrder}</td>
+    		</tr>
+    	</c:forEach>
+    </table>
+    </div>
+</tags:boxContainer2>
+</cti:msgScope>

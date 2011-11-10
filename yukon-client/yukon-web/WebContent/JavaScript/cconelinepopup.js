@@ -77,17 +77,17 @@ function submitOnelineCommand(cmdId, params) {
 function submitTagMenu(isCapBank) {
 
     var disableChange = $("disableCheckBox").checked != eval($("disableCheckBox_orig").value);
-    var disableOVUVChange = false;
-    var disableOVUVValue = false;
-    var disableOVUVCheckBox = $("disableOVUVCheckBox");
-    if(disableOVUVCheckBox != null){
-        disableOVUVChange = $("disableOVUVCheckBox").checked != eval($("disableOVUVCheckBox_orig").value);
-        disableOVUVValue = $("disableOVUVCheckBox").checked; 
+    var disableOvUvChange = false;
+    var disableOvUvValue = false;
+    var disableOvUvCheckBox = $("disableOvUvCheckBox");
+    if(disableOvUvCheckBox != null){
+        disableOvUvChange = $("disableOvUvCheckBox").checked != eval($("disableOvUvCheckBox_orig").value);
+        disableOvUvValue = $("disableOvUvCheckBox").checked; 
     }
-    var disableOVUVReasonValue = "";
-    var disableOVUVReason = $('disableOVUVReason');
-    if(disableOVUVReason != null){
-        disableOVUVReasonValue = disableOVUVReason.value;
+    var disableOvUvReasonValue = "";
+    var disableOvUvReason = $('disableOvUvReason');
+    if(disableOvUvReason != null){
+        disableOvUvReasonValue = disableOvUvReason.value;
     }
     var operationalStateChange = false;
 
@@ -98,30 +98,30 @@ function submitTagMenu(isCapBank) {
         operationalStateChange = state != origState;
     }
     
-    if (!(disableChange || disableOVUVChange || operationalStateChange)) {
+    if (!(disableChange || disableOvUvChange || operationalStateChange)) {
         alert("No Change Was Made.");
         return false;   
-    }    
+    }
         
     params = {};
     params['paoId'] = $('paoId').value;
     params['controlType'] = $('controlType').value;
         
     params['disableValue'] = $('disableCheckBox').checked;
-    params['disableOVUVValue'] = disableOVUVValue;
+    params['disableOvUvValue'] = disableOvUvValue;
     if (isCapBank) params['operationalStateValue'] = $('operationalStateValue').options[$('operationalStateValue').selectedIndex].value;
         
     params['disableChange'] = disableChange;
-    params['disableOVUVChange'] = disableOVUVChange;
+    params['disableOvUvChange'] = disableOvUvChange;
     params['operationalStateChange'] = operationalStateChange;
         
     params['disableReason'] = $('disableReason').value;
-    params['disableOVUVReason'] = disableOVUVReasonValue;
+    params['disableOvUvReason'] = disableOvUvReasonValue;
     if (isCapBank) params['operationalStateReason'] = $('operationalStateReason').value;
         
     var confirmMessage = '';
     if (disableChange) confirmMessage += 'Enable/Disable State Change\n';
-    if (disableOVUVChange) confirmMessage += 'Enable/Disable OV/UV Change\n';
+    if (disableOvUvChange) confirmMessage += 'Enable/Disable OV/UV Change\n';
     if (isCapBank && operationalStateChange) confirmMessage += 'Operational State Change';
         
     if (!confirm(confirmMessage)) return false;
@@ -273,7 +273,7 @@ function showPointTimestamps (cbcID) {
 	var url = '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=';
 	url += cbcID;
 
-	return GB_show('', url, 500, 600);
+	return GB_show('', url, 520, 700);
 }
 
 //over-ridden function from PopupWindow.js

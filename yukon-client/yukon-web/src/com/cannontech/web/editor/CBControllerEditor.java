@@ -21,7 +21,7 @@ import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.cbc.model.ICBControllerModel;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
@@ -145,7 +145,7 @@ public class CBControllerEditor implements ICBControllerModel {
      */
     public boolean isTwoWay() {
         if (getPaoCBC() != null) {
-        	return CBCUtils.isTwoWay(PAOGroups.getDeviceType(getPaoCBC().getPAOType()));
+        	return CapControlUtils.isTwoWay(PAOGroups.getDeviceType(getPaoCBC().getPAOType()));
         }
         return false;
     }
@@ -637,7 +637,7 @@ public class CBControllerEditor implements ICBControllerModel {
 	public boolean isDevice802X() {
 	    if(getPaoCBC() != null) {
 	        PaoType paoType = PaoType.getForDbString(getPaoCBC().getPAOType());
-	        return CBCUtils.isCapBankController802X(paoType);
+	        return CapControlUtils.isCapBankController802X(paoType);
 	    }
 	    return false;
 	}

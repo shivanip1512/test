@@ -1,26 +1,27 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage title="Search Results" module="capcontrol">
+<cti:standardPage module="capcontrol" page="search.${pageName}">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
     
-    <cti:standardMenu menuSelection="orphans"/>
-    
-    <cti:breadCrumbs>
-      <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
-      <cti:crumbLink title="Results"/>
-    </cti:breadCrumbs>
-    
-    <c:set var="baseUrl" value="/spring/capcontrol/search/searchResults" />
+    <c:set var="baseUrl" value="/spring/capcontrol/search/searchResults"/>
     
     <form id="parentForm" action="feeders.jsp" method="post">
         <input type="hidden" name="${lastAreaKey}" />
         <input type="hidden" name="${lastSubKey}" />
     
-        <tags:pagedBox title="Search Results For: ${label}  (${resultsFound} found)" searchResult="${searchResult}" baseUrl="${baseUrl}">
+        <tags:pagedBox2 nameKey="searchContainer"
+                arguments="${label},${resultsFound}" 
+                argumentSeparator=","
+                searchResult="${searchResult}" 
+                baseUrl="${baseUrl}"
+                styleClass="padBottom">
             <c:choose>
             
                 <c:when test="${searchResult.hitCount == 0}">
@@ -31,10 +32,10 @@
                 
                     <table id="resTable" class="compactResultsTable rowHighlighting" align="center">
                         <tr>
-                            <th>Name</th>
-                            <th nowrap="nowrap">Item Type</th>
-                            <th>Description</th>
-                            <th>Parent</th>
+                            <th><i:inline key=".name"/></th>
+                            <th nowrap="nowrap"><i:inline key=".itemType"/></th>
+                            <th><i:inline key=".description"/></th>
+                            <th><i:inline key=".parent"/></th>
                         </tr>
                         <c:forEach items="${searchResult.resultList}" var="row">
                             <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
@@ -78,7 +79,7 @@
             	</c:otherwise>
             </c:choose>
             
-        </tags:pagedBox>
+        </tags:pagedBox2>
         
     </form>
     

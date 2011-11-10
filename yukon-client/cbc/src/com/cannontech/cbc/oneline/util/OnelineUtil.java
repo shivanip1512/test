@@ -33,10 +33,10 @@ import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.esub.util.HTMLOptions;
 import com.cannontech.esub.util.ImageExporter;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.loox.jloox.LxComponent;
 
 public class OnelineUtil {

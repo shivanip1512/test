@@ -3,6 +3,7 @@ package com.cannontech.cbc.oneline.model;
 import java.util.Hashtable;
 
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
+import com.cannontech.cbc.util.UpdaterHelper.UpdaterDataType;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxGraph;
 
@@ -18,7 +19,7 @@ public interface UpdatableStats {
 
     public void setGraph(LxAbstractGraph graph);
 
-    public Hashtable<Integer, Integer> getPropColumnMap();
+    public Hashtable<Integer, UpdaterDataType> getPropColumnMap();
 
     public Hashtable<Integer, String> getPropLabelMap();
 

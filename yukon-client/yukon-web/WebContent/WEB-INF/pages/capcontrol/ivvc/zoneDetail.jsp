@@ -136,7 +136,7 @@
     
 	<cti:url var="feederAddress" value="/spring/capcontrol/tier/feeders">
     	<cti:param name="areaId" value="${areaId}"/>
-    	<cti:param name="subStationId" value="${subStationId}"/>
+    	<cti:param name="substationId" value="${substationId}"/>
     	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
     </cti:url>
     
@@ -157,7 +157,7 @@
     	</c:choose>
     
         <cti:crumbLink url="${substationAddress}" title="${areaName}" />
-        <cti:crumbLink url="${feederAddress}" title="${subStationName}" />
+        <cti:crumbLink url="${feederAddress}" title="${substationName}" />
 		<cti:crumbLink url="${ivvcBusViewAddress}" title="${subBusName}" />
 		<cti:crumbLink title="${zoneName}" />
 	</cti:breadCrumbs>
@@ -186,7 +186,7 @@
     					<th></th>
     					<th><i:inline key=".details.table.name"/></th>
                         <th><i:inline key=".details.table.type"/></th>
-    					<th class="rightActionColumn"><i:inline key=".details.table.actions"/></th>
+    					<th><i:inline key=".details.table.actions"/></th>
     				</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><B><i:inline key=".details.table.zone"/></B></td>
@@ -198,7 +198,7 @@
                                 <i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/>
                             </spring:escapeBody>
                         </td>
-						<td class="rightActionColumn">
+						<td>
 							<c:choose>
 								<c:when test="${hasEditingRole}">
                                     <cti:button nameKey="edit" renderMode="image" onclick="javascript:showZoneWizard('${zoneEditorUrl}');"/> 
@@ -226,7 +226,7 @@
                                     <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
                                 </spring:escapeBody>
                             </td>
-                            <td class="rightActionColumn">
+                            <td>
                                 <cti:button nameKey="edit" renderMode="image" 
                                     href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdMap[phaseKey]}"/>
                             </td>
@@ -252,40 +252,40 @@
                                     <li>
                                         <cti:button renderMode="labeledImage" nameKey="scan" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${scanCommandHolder.cmdId}',
-                                                                    '${scanCommandHolder.commandName}',
+                                                                    '${scanCommandHolder.commandId}',
+                                                                    '${scanCommandHolder}',
                                                                     '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
                                     </li>
                                     <li>
                                         <cti:button renderMode="labeledImage" nameKey="up" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${tapUpCommandHolder.cmdId}',
-                                                                    '${tapUpCommandHolder.commandName}',
+                                                                    '${tapUpCommandHolder.commandId}',
+                                                                    '${tapUpCommandHolder}',
                                                                     '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
                                     </li>
                                     <li>
                                         <cti:button renderMode="labeledImage" nameKey="down" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${tapDownCommandHolder.cmdId}',
-                                                                    '${tapDownCommandHolder.commandName}',
+                                                                    '${tapDownCommandHolder.commandId}',
+                                                                    '${tapDownCommandHolder}',
                                                                     '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
                                     </li>
                                     <li>
                                         <cti:button renderMode="labeledImage" nameKey="enable" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${enableRemoteCommandHolder.cmdId}',
-                                                                    '${enableRemoteCommandHolder.commandName}',
+                                                                    '${enableRemoteCommandHolder.commandId}',
+                                                                    '${enableRemoteCommandHolder}',
                                                                     '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
                                     </li>
                                     <li>
                                         <cti:button renderMode="labeledImage" nameKey="disable" 
                                             onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${disableRemoteCommandHolder.cmdId}',
-                                                                    '${disableRemoteCommandHolder.commandName}',
+                                                                    '${disableRemoteCommandHolder.commandId}',
+                                                                    '${disableRemoteCommandHolder}',
                                                                     '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
                                     </li>

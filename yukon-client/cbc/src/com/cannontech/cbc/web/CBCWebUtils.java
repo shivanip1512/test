@@ -28,12 +28,12 @@ import com.cannontech.database.data.point.SystemLogData;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.database.db.capcontrol.RecentControls;
 import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * Generates a URL for a graph with the given cache and item ID

@@ -4,7 +4,7 @@ package com.cannontech.web.capcontrol.models;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 
 public class ViewableSubBus {
 

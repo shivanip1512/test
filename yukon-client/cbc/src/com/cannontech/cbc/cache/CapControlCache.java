@@ -6,15 +6,15 @@ import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CapControlClientConnection;
-import com.cannontech.yukon.cbc.CCSpecialArea;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.yukon.cbc.SubStation;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
+import com.cannontech.yukon.conns.CapControlClientConnection;
 
 public interface CapControlCache {
 
@@ -26,11 +26,11 @@ public interface CapControlCache {
     
     public StreamableCapObject getArea(int paoId) throws NotFoundException;
     
-    public CCArea getCBCArea(int id);
+    public Area getCBCArea(int id);
     
     public VoltageRegulatorFlags getVoltageRegulatorFlags(int id);
     
-    public CCSpecialArea getCBCSpecialArea(int id);
+    public SpecialArea getCBCSpecialArea(int id);
     
     public StreamableCapObject getObject(int id);
     
@@ -156,14 +156,14 @@ public interface CapControlCache {
 	 * 
 	 * @return List
 	 */
-	public abstract List<CCArea> getCbcAreas();
+	public abstract List<Area> getCbcAreas();
     
     /**
      * Distinct special area Strings that are used by substations
      * 
      * @return List
      */
-    public abstract List<CCSpecialArea> getSpecialCbcAreas();
+    public abstract List<SpecialArea> getSpecialCbcAreas();
 
 	/**
 	 * State group & states to use for CapBanks
@@ -176,5 +176,10 @@ public interface CapControlCache {
 	 * Returns the Parent SubBus ID for the given child id
 	 */
 	public abstract int getParentSubBusID(int childID);
+
+	/**
+	 * Returns the parent substation id for the given child id
+	 */
+    public int getParentSubStationId(int childId);
 
 }

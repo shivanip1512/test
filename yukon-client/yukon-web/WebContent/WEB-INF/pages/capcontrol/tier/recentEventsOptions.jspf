@@ -1,0 +1,56 @@
+<script type="text/javascript">
+YEvent.observeSelectorClick('#recentEventsView', function(){
+    $('recentEventsOptions').hide();
+    var values = $$('table.recentEventsCheckboxes input:checkbox:checked').pluck('value').join(',');
+    window.location.href = '/spring/capcontrol/search/recentEvents?value=' + values;
+});
+</script>
+
+<tags:formElementContainer nameKey="busContainer" styleClass="padBottom">
+    <div>
+        <input type="checkbox" id="recentEventsBusSelectAll" onclick="checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
+        <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
+    </div>
+    <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBuses recentEventsCheckboxes">
+        <c:forEach var="bus" items="${subBusList}">
+            <cti:dataGridCell>
+                <input type="checkbox" value="${bus.subBus.ccId}" id="recentEventsBus_${bus.subBus.ccId}">
+                <label for="recentEventsBus_${bus.subBus.ccId}"><spring:escapeBody htmlEscape="true">${bus.subBus.ccName}</spring:escapeBody></label>
+            </cti:dataGridCell>
+        </c:forEach>
+    </cti:dataGrid>
+</tags:formElementContainer>
+
+<tags:formElementContainer nameKey="feedersContainer" styleClass="padBottom">
+    <div>
+        <input type="checkbox" id="recentEventsFeederSelectAll" onclick="checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
+        <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
+    </div>
+    <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsFeeders recentEventsCheckboxes">
+        <c:forEach var="feeder" items="${feederList}">
+            <cti:dataGridCell>
+                <input type="checkbox" value="${feeder.feeder.ccId}" id="recentEventsFeeder_${feeder.feeder.ccId}">
+                <label for="recentEventsFeeder_${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></label>
+            </cti:dataGridCell>
+        </c:forEach>
+    </cti:dataGrid>
+</tags:formElementContainer>
+
+<tags:formElementContainer nameKey="banksContainer">
+    <div>
+        <input type="checkbox" id="recentEventsBankSelectAll" onclick="checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
+        <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
+    </div>
+    <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBanks recentEventsCheckboxes">
+        <c:forEach var="bank" items="${capBankList}">
+            <cti:dataGridCell>
+                <input type="checkbox" value="${bank.capBankDevice.ccId}" id="recentEventsBank_${bank.capBankDevice.ccId}">
+                <label for="recentEventsBank_${bank.capBankDevice.ccId}"><spring:escapeBody htmlEscape="true">${bank.capBankDevice.ccName}</spring:escapeBody></label>
+            </cti:dataGridCell>
+        </c:forEach>
+    </cti:dataGrid>
+</tags:formElementContainer>
+
+<div class="actionArea">
+    <cti:button nameKey="recentEvents.view" id="recentEventsView" styleClass="f_blocker"/>
+</div>

@@ -19,8 +19,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.SubBus;
 
 public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHModel.ModelRow> implements ReportModelMetaInfo {
     
@@ -75,7 +75,7 @@ public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHM
         	currentWattLoadPointId = subBus_cache.getCurrentWattLoadPointID();
         }
         else if(capControlCache.isFeeder(targetId)) {
-        	com.cannontech.yukon.cbc.Feeder feeder_cache = capControlCache.getFeeder(targetId);
+        	com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
         	com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.getById(targetId);
         	
         	phaseAPointId = feeder_cache.getCurrentVarLoadPointID();

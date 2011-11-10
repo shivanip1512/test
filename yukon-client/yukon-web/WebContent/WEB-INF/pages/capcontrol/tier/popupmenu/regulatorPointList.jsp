@@ -10,7 +10,7 @@
     </c:if>
     
     <div style="overflow: auto;">
-        <table class="tierTable">
+        <table class="compactResultsTable">
             <tr style="text-align: left;">
                 <th>Attribute</th>
                 <th>Device</th>

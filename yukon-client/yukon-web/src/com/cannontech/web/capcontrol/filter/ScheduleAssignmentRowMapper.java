@@ -19,7 +19,6 @@ public class ScheduleAssignmentRowMapper extends
         builder.append("FROM PAOScheduleAssignment sa");
         builder.append(  "JOIN PAOSchedule s on s.ScheduleID = sa.ScheduleID");
         builder.append(  "JOIN YukonPAObject po on sa.PaoID = po.PAObjectID");
-        //builder.append("WHERE 1=1");
         return builder;
     }
 

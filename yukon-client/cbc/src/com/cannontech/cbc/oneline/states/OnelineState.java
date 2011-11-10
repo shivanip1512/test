@@ -1,6 +1,6 @@
 package com.cannontech.cbc.oneline.states;
 
-import com.cannontech.yukon.cbc.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public interface OnelineState {
 

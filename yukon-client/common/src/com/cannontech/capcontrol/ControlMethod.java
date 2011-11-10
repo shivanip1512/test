@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-public enum ControlMethod {
+public enum ControlMethod implements DisplayableEnum {
     
 	INDIVIDUAL_FEEDER("Individual Feeder",
 	                  true,
@@ -101,6 +102,11 @@ public enum ControlMethod {
     
     public boolean isBusControlled() {
         return this == BUSOPTIMIZED_FEEDER || this == SUBSTATION_BUS;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.capcontrol.controlMethod." + name();
     }
     
 }

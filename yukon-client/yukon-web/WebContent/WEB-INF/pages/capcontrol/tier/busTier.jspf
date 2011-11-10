@@ -1,0 +1,198 @@
+<c:if test="${hasSubBusControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="subbusState"]');
+    </script>
+</c:if>
+
+<tags:boxContainer2 nameKey="busContainer" hideEnabled="true" showInitially="true" styleClass="clear">
+
+    <table id="subBusTable" class="compactResultsTable rowHighlighting">
+        
+        <thead>
+            <tr>
+                <th><i:inline key=".name"/></th>
+                <th><i:inline key=".actions"/></th>
+                <th><i:inline key=".state"/></th>
+                <th><i:inline key=".target"/></th>
+                <th><i:inline key=".load"/></th>
+                <th><i:inline key=".timestamp"/></th>
+                <th><i:inline key=".pfactorEstimated"/></th>
+                <th><i:inline key=".kwVolts"/></th>
+                <th><i:inline key=".dailyMax"/></th>
+            </tr>
+        </thead>
+
+        <c:forEach var="viewableSubBus" items="${subBusList}">
+            <!-- Setup Variables -->
+            <c:set var="subbusId" value="${viewableSubBus.subBus.ccId}"/>
+            <cti:url value="${onelineCBCServlet}" var="oneLineLink" htmlEscape="true">
+                <cti:param name="id" value="${subbusId}"/>
+                <cti:param name="redirectURL" value="${fullURL}"/>
+            </cti:url>
+            <cti:url value="/spring/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
+                <cti:param name="subBusId" value="${subbusId}"/>
+                <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+            </cti:url>
+            <cti:url value="/spring/capcontrol/tier/feeders" var="dualBusLink" htmlEscape="true">
+                <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+                <cti:param name="substationId" value="${viewableSubBus.alternateStationId}"/>
+                <cti:param name="areaId" value="${viewableSubBus.alternateAreaId}"/>
+            </cti:url>
+            <cti:url value="/spring/capcontrol/capbank/capBankLocations" var="locationLink" htmlEscape="true">
+                <cti:param name="value" value="${subbusId}"/>
+                <cti:param name="specialArea" value="${isSpecialArea}"/>
+            </cti:url>
+            
+            <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>"  id="tr_sub_${subbusId}">
+                
+                <%-- Name --%>
+                <td id="anc_${subbusId}"  class="nw">
+                    <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${subbusId}">
+                    <spring:escapeBody htmlEscape="true">${viewableSubBus.subBus.ccName}</spring:escapeBody>
+                    <a href="${dualBusLink}" class="tierIconLink">
+                        <capTags:dualBusImg paoId="${subbusId}" type="SUBBUS"/>
+                    </a>
+                    <capTags:verificationImg paoId="${subbusId}" type="SUBBUS"/>
+                </td>
+                
+                <%-- Actions --%>
+                <td class="nw">
+                    <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${subbusId}" styleClass="tierIconLink"/>
+                    <c:if test="${hasEditingRole}">
+                        <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${subbusId}" styleClass="tierIconLink"/>
+                    </c:if>
+                    <cti:msg2 var="busAddInfo" key=".busAddInfo"/>
+                    <cti:msg2 var="busAddInfoTitle" key=".busAddInfoTitle" arguments="${viewableSubBus.subBus.ccName}"/>
+                    <span onmouseover="statusMsgAbove(this, '${busAddInfo}');">
+                        <cti:img nameKey="view" href="javascript:showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" styleClass="tierIconLink"/>
+                    </span>
+                    <cti:img nameKey="location" href="${locationLink}" styleClass="tierIconLink"/>
+                    <c:if test="${!hideOneLine}">
+                        <cti:img nameKey="oneline" href="${oneLineLink}" styleClass="tierIconLink"/>
+                    </c:if>
+                    <c:if test="${viewableSubBus.ivvcControlled}">
+                        <cti:img nameKey="ivvc" href="${ivvcLink}" styleClass="tierIconLink"/>
+                    </c:if>
+                </td>
+                
+                <%-- State --%>
+                <td class="nw">
+                    <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
+                    <a id="subbusState_${subbusId}">
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE"/>
+                    </a>
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_${subbusId}')" initialize="true" value="SUBBUS/${subbusId}/STATE"/>
+                </td>
+                
+                <%-- Target --%>
+                <td>
+                    <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
+                    <c:choose>
+                        <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
+                            <span <c:if test="${viewableSubBus.showTargetTooltip}">
+                                    onmouseover="showDynamicPopupAbove('subPFPopup_${subbusId}_${isPowerFactorControlled}')"
+                                    onmouseout="nd();"
+                                </c:if>>
+                                <c:choose>
+                                    <c:when test="${viewableSubBus.ivvcControlled}">
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcLower"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLAG"/>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <div class="ccPFPopup" id="subPFPopup_${subbusId}_${isPowerFactorControlled}" style="display: none;" >
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
+                    </div>
+                </td>
+                
+                <%-- kVAR Load / Est. --%>
+                <td>
+                    <c:choose>
+                        <c:when test="${viewableSubBus.subBus.usePhaseData}">
+                            <a onmouseover="showDynamicPopup('subVarLoadPopup_${subbusId}');" 
+                               onmouseout="nd();">
+                                <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
+                                <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
+                                    <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                                </cti:classUpdater>
+                                <i:inline key=".statSeparator"/> 
+                                <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <a>
+                                <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
+                                <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
+                                    <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                                </cti:classUpdater>
+                                <i:inline key=".statSeparator"/>  
+                                <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
+                    <div class="ccVarLoadPopup" id="subVarLoadPopup_${subbusId}" style="display: none;" > 
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
+                    </div>
+                </td>
+                
+                <%-- Date/Time --%>
+                <td>
+                    <a id="dateTime_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DATE_TIME"/></a>
+                </td>
+                
+                <%-- PFactor / Est. --%>
+                <td>
+                    <a id="pFactor_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="PFACTOR"/></a>
+                </td>
+                
+                <%-- kW / Volts --%>
+                <td>
+                    <a id="kwVolts_${subbusId}">
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KW"/>
+                        <cti:classUpdater type="SUBBUS" identifier="${subbusId}/WATT_QUALITY">
+                            <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                        </cti:classUpdater>
+                        <i:inline key=".statSeparator"/> 
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="VOLTS"/>
+                        <cti:classUpdater type="SUBBUS" identifier="${subbusId}/VOLT_QUALITY">
+                            <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                        </cti:classUpdater>
+                    </a>
+                </td>
+                
+                <%-- Daily / Max Ops --%>
+                <td>
+                    <a id="dailyMaxOps_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></a>
+                </td>
+                
+            </tr>
+            
+        </c:forEach>
+    </table>
+</tags:boxContainer2>
+
+<c:if test="${fn:length(subBusList) > 1}">
+    <tags:boxContainerFooter>
+        <cti:labeledImg nameKey="filter"/>
+        <select id='subBusFilter' onchange='applySubBusFilter(this);'>
+            <option><i:inline key=".allBuses"/></option>
+            <c:forEach var="sub" items="${subBusList}" >
+               <option value="${sub.subBus.ccId}"><spring:escapeBody htmlEscape="true">${sub.subBus.ccName}</spring:escapeBody></option>
+            </c:forEach>
+        </select>
+    </tags:boxContainerFooter>
+</c:if>
+
+<br>

@@ -1,41 +1,21 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage title="${mainTitle}" module="capcontrol" page="substations">
+<cti:standardPage module="capcontrol" page="area">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    
+
+    <c:if test="${hasSubstationControl}">
+        <script type="text/javascript">
+            addCommandMenuBehavior('a[id^="substationState_"]');
+        </script>
+    </c:if>
+
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
-    
-    <cti:standardMenu/>
-    
-    <cti:breadCrumbs>
-    
-        <c:choose >
-        	<c:when test="${isSpecialArea}">
-        		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" /> 
-        		<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
-        	</c:when>
-        	<c:otherwise>
-        		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" /> 
-        		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Substation Areas" />
-        	</c:otherwise>
-        </c:choose>
-    
-        <cti:crumbLink  title="${areaName}" />
-        
-    </cti:breadCrumbs>
-      
-    <script type="text/javascript">
-    	// handles analysis links (which are not functional for a substation - show error alert)
-    	function loadPointChartGreyBox(title, url) {
-    		alert(title + ' is not available for a Substation.\n\nChoose specific Substation Bus or Feeder within a Substation');
-    		return void(0);
-    	}
-    </script>
-    
+
     <c:choose>
         <c:when test="${hasEditingRole}">
             <c:set var="editKey" value="edit"/>
@@ -45,41 +25,35 @@
         </c:otherwise>
     </c:choose>
     
-    <tags:boxContainer hideEnabled="false" title="${containerTitle}">
+    <tags:boxContainer2 hideEnabled="false" nameKey="substationsContainer" arguments="${bc_areaName}" styleClass="padBottom">
         
-        <table id="subTable" class="tierTable">
+        <table id="subTable" class="compactResultsTable">
             <thead>
                 <tr>
-                    <th>Sub Name</th>
-                    <th>Actions</th>
-                    <th>State</th>
-                    <th>Available<br>kVARS</th>
-                    <th>Unavailable<br>kVARS</th>
-                    <th>Closed<br>kVARS</th>
-                    <th>Tripped<br>kVARS</th>
-                    <th>PFactor / Est.</th>
+                    <th><i:inline key=".name"/></th>
+                    <th><i:inline key=".actions"/></th>
+                    <th><i:inline key=".state"/></th>
+                    <th><i:inline key=".availableKvars"/></th>
+                    <th><i:inline key=".unavailableKvars"/></th>
+                    <th><i:inline key=".closedKvars"/></th>
+                    <th><i:inline key=".trippedKvars"/></th>
+                    <th><i:inline key=".pfactorEstimated"/></th>
                 </tr>
             </thead>
     
             <c:forEach var="subStation" items="${subStations}">
             
-                <!-- Setup Variables -->
                 <c:set var="substationId" value="${subStation.ccId}"/>
-                
-                <c:set var="menuEvent" value="getSubstationMenu('${substationId}', event)"/> 
-                
                 <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                     <cti:param name="itemid" value="${substationId}"/>
                     <cti:param name="type" value="2"/>
                 </cti:url>
-                
                 <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
                     <cti:param name="value" value="${substationId}"/>
                 </cti:url>
-                
                 <cti:url value="/spring/capcontrol/tier/feeders" var="feederLink">
                     <cti:param name="areaId" value="${areaId}"/>
-                    <cti:param name="subStationId" value="${substationId}"/>
+                    <cti:param name="substationId" value="${substationId}"/>
                     <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 </cti:url>
             
@@ -91,23 +65,23 @@
                             <spring:escapeBody>${subStation.ccName}</spring:escapeBody>
                         </a>
     				    <span class="errorRed textFieldLabel">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED" />
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" />
                         </span>
     				</td>
                     
-                    <td>
+                    <td class="nw">
                         <cti:img nameKey="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
                             <cti:img nameKey="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
                         </c:if>
                     </td>
                     
-    				<td>
+    				<td class="nw">
                         <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
-                        <a id="substation_state_${substationId}" <c:if test="${hasSubstationControl}">href="javascript:void(0);" onclick="${menuEvent}"</c:if>>
+                        <a id="substationState_${substationId}">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE" />
                         </a>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
                 	</td>
                     
     				<td><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
@@ -120,10 +94,6 @@
     		
         </table>
     
-    </tags:boxContainer>
-
-    <script type="text/javascript">
-        Event.observe(window, 'load', checkPageExpire);
-    </script>
+    </tags:boxContainer2>
     
 </cti:standardPage>

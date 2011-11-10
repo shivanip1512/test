@@ -1,47 +1,47 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage title="Temp Move Report" module="capcontrol">
+<cti:standardPage module="capcontrol" page="movedCapBanks">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
-
-	<script type="text/javascript">
-	    Event.observe(window, 'load', function() { getMoveBackMenu(); });
-	</script>
+    <script type="text/javascript">
+    Event.observe(window, 'load', function() {
+        $$('a.moveLink').each(function(a) {
+            a.observe('click', function(event) {getMovedBankMenu(a.id, event)});
+        });
+    });
+    </script>
 
 	<cti:url var="movedCapBanksUrl" value="/spring/capcontrol/move/movedCapBanks" />
 	
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
 	
-    <cti:standardMenu menuSelection="view|recentcapbankmoves" />
-	
-    <cti:breadCrumbs>
-		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
-		<cti:crumbLink title="Recent Cap Bank Moves"/>
-	</cti:breadCrumbs>
-
-    <tags:pagedBox title="Moved Cap Banks" searchResult="${searchResult}"
-		filterDialog="" baseUrl="${movedCapBanksUrl}"
-		isFiltered="false" showAllUrl="${movedCapBanksUrl}">
+    <tags:pagedBox2 nameKey="movedContainer" 
+            searchResult="${searchResult}"
+            baseUrl="${movedCapBanksUrl}"
+            isFiltered="false" 
+            showAllUrl="${movedCapBanksUrl}"
+            styleClass="padBottom">
 			
 		<c:choose>
 			<c:when test="${searchResult.hitCount == 0}">
-				No items to display.
+				<i:inline key=".noRecentMoves"/>
 			</c:when>
 			<c:otherwise>
-				<table id="movedCBTable" class="compactResultsTable activeResultsTable" align="center">
-		               <tr class="boldLabel">
-		                <th>Recent Feeder</th>
-		                <th>Original Feeder</th>
-		                <th>Cap Bank</th>
+				<table id="movedCBTable" class="compactResultsTable activeResultsTable">
+                    <tr>
+		                <th><i:inline key=".recentFeeder"/></th>
+		                <th><i:inline key=".originalFeeder"/></th>
+		                <th><i:inline key=".capBank"/></th>
 		            </tr>
 					<c:forEach var="movedCapbank" items="${movedCaps}">
 						<tr id="tr_cap_${movedCapbank.capbank.ccId}" class="<tags:alternateRow odd="" even="altRow"/>">
 							<td id="${movedCapbank.capbank.ccName}">
-		                           <a href="javascript:void(0);" style="color: #F09100;cursor: pointer;" onclick="getCapBankTempMoveBack('${movedCapbank.capbank.ccId}', event)">
-		                               ${movedCapbank.currentFeederName}
-		                           </a>
-		                       </td>
+                                <a href="javascript:void(0);" class="moveLink" id="${movedCapbank.capbank.ccId}">${movedCapbank.currentFeederName}</a>
+                            </td>
 							<td>${movedCapbank.originalFeederName}</td>
 							<td>${movedCapbank.capbank.ccName}</td>
 						</tr>
@@ -49,5 +49,5 @@
 				</table>
 			</c:otherwise>
 		</c:choose>
-	</tags:pagedBox>
+	</tags:pagedBox2>
 </cti:standardPage>

@@ -1,0 +1,58 @@
+<cti:msg2 key=".todayKvarWatt.label" var="todayKvarWatt"/>
+<cti:msg2 key=".thirtyDayKvarWatt.label" var="thirtyDayKvarWatt"/>
+<cti:msg2 key=".todayPf.label" var="todayPf"/>
+<cti:msg2 key=".thirtyDayPf.label" var="thirtyDayPf"/>
+
+<script type="text/javascript">
+function loadPointChartGreyBox(title, url) {
+    $('analysisTrendsOptions').hide();
+    
+    var selectedItems = $$('table.analysisCheckboxes input:checkbox:checked');
+    var targets = new Array();
+    selectedItems.each(function (item) {
+        targets.push(item.readAttribute('value'));
+    });
+    
+    url += '&targets=' + targets.join(',');
+    
+    GB_showFullScreen(title, url, null);
+    return void(0);
+}
+</script>
+
+<tags:formElementContainer nameKey="busContainer" styleClass="padBottom">
+    <div>
+        <input type="checkbox" id="analysisBusSelectAll" onclick="checkAll(this, 'table.analysisBuses input[type=checkbox]');">
+        <label for="analysisBusSelectAll"><i:inline key=".selectAllBuses"/></label>
+    </div>
+    <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses analysisCheckboxes">
+        <c:forEach var="bus" items="${subBusList}">
+            <cti:dataGridCell>
+                <input type="checkbox" value="${bus.subBus.ccId}" id="analysisBus_${bus.subBus.ccId}">
+                <label for="analysisBus_${bus.subBus.ccId}"><spring:escapeBody htmlEscape="true">${bus.subBus.ccName}</spring:escapeBody></label>
+            </cti:dataGridCell>
+        </c:forEach>
+    </cti:dataGrid>
+</tags:formElementContainer>
+
+<tags:formElementContainer nameKey="feedersContainer" styleClass="padBottom">
+    <div>
+        <input type="checkbox" id="analysisFeederSelectAll" onclick="checkAll(this, 'table.analysisFeeders input[type=checkbox]');">
+        <label for="analysisFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
+    </div>
+    <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders analysisCheckboxes">
+        <c:forEach var="feeder" items="${feederList}">
+            <cti:dataGridCell>
+                <input type="checkbox" value="${feeder.feeder.ccId}" id="analysisFeeder_${feeder.feeder.ccId}">
+                <label for="analysisFeeder_${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></label>
+            </cti:dataGridCell>
+        </c:forEach>
+    </cti:dataGrid>
+</tags:formElementContainer>
+
+<div class="actionArea">
+    <cti:button nameKey="todayKvarWatt" onclick="loadPointChartGreyBox('${todayKvarWatt}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')"/>
+    <cti:button nameKey="thirtyDayKvarWatt" onclick="loadPointChartGreyBox('${thirtyDayKvarWatt}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')"/>
+    <cti:button nameKey="todayPf" onclick="loadPointChartGreyBox('${todayPf}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')"/>
+    <cti:button nameKey="thirtyDayPf" onclick="loadPointChartGreyBox('${thirtyDayPf}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')"/>
+</div>

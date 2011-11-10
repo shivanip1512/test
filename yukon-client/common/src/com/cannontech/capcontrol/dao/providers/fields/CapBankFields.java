@@ -1,12 +1,12 @@
 package com.cannontech.capcontrol.dao.providers.fields;
 
-import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.util.CtiUtilities;
 
 public class CapBankFields implements PaoTemplatePart {
 
-	private CapBankOperationalState operationalState = CapBankOperationalState.SWITCHED;
+	private BankOpState operationalState = BankOpState.SWITCHED;
     private int controlDeviceId = 0;
     private int controlPointId = 0;
     private int bankSize = 600;
@@ -18,11 +18,11 @@ public class CapBankFields implements PaoTemplatePart {
     private String mapLocationId = "0";
     private String maxOpDisable = "N";
     
-    public CapBankOperationalState getOperationalState() {
+    public BankOpState getOperationalState() {
 		return operationalState;
 	}
     
-    public void setOperationalState(CapBankOperationalState operationalState) {
+    public void setOperationalState(BankOpState operationalState) {
 		this.operationalState = operationalState;
 	}
 

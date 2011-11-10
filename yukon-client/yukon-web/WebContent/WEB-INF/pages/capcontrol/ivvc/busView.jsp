@@ -60,7 +60,7 @@
     
 	<cti:url value="/spring/capcontrol/tier/feeders" var="feederAddress">
     	<cti:param name="areaId" value="${areaId}"/>
-    	<cti:param name="subStationId" value="${subStationId}"/>
+    	<cti:param name="substationId" value="${substationId}"/>
     	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
     </cti:url>
     
@@ -76,7 +76,7 @@
     	</c:choose>
     
         <cti:crumbLink url="${substationAddress}" title="${areaName}" />
-        <cti:crumbLink url="${feederAddress}" title="${subStationName}" />
+        <cti:crumbLink url="${feederAddress}" title="${substationName}" />
 		
 		<cti:crumbLink title="${subBusName}" />
 	</cti:breadCrumbs>
@@ -122,7 +122,7 @@
                         <th class="zoneName"><i:inline key=".zoneList.name" /></th>
                         <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
                         <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
-                        <th class="rightActionColumn"><i:inline key="modules.capcontrol.actions"/></th>
+                        <th><i:inline key="modules.capcontrol.actions"/></th>
                     </tr>
     				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
     					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
@@ -161,7 +161,7 @@
                                 <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR"
                                     phaseMap="${phaseMap}"/>
                             </td>
-                            <td class="rightActionColumn">
+                            <td>
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
                                         <cti:button nameKey="edit" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>

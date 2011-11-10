@@ -1,136 +1,135 @@
 package com.cannontech.web.updater.capcontrol;
 
-import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.user.YukonUserContext;
 
 public class CapBankFormattingService extends AbstractFormattingService<CapBankDevice> {
 
     @Override
-    protected String getWarningFlag(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String color = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_WARNING_IMAGE_COLOR);
-        String text = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_WARNING_IMAGE_TEXT);
+    protected String getWarningFlag(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String color = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_COLOR, context);
+        String text = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_TEXT, context);
         return color + text;
     }
     
     @Override
-    protected String getWarningFlagMessage(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_WARNING_POPUP);
+    protected String getWarningFlagMessage(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_WARNING_POPUP, context);
         return value;
     }
 
     @Override
-    protected String getCBName(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_NAME_COLUMN);
+    protected String getCBName(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_NAME_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseABefore(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEA_BEFORE);
+    protected String getCBPhaseABefore(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEA_BEFORE, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseBBefore(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEB_BEFORE);
+    protected String getCBPhaseBBefore(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEB_BEFORE, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseCBefore(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEC_BEFORE);
+    protected String getCBPhaseCBefore(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEC_BEFORE, context);
         return value;
     }
 
     @Override
-    protected String getCBBeforeTotal(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_BEFORE_TOTAL);
+    protected String getCBBeforeTotal(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_BEFORE_TOTAL, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseAAfter(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEA_AFTER);
+    protected String getCBPhaseAAfter(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEA_AFTER, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseBAfter(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEB_AFTER);
+    protected String getCBPhaseBAfter(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEB_AFTER, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseCAfter(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEC_AFTER);
+    protected String getCBPhaseCAfter(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEC_AFTER, context);
         return value;
     }
     
     @Override
-    protected String getCBAfterTotal(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_AFTER_TOTAL);
+    protected String getCBAfterTotal(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_AFTER_TOTAL, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseAPercentChange(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEA_PERCENTCHANGE);
+    protected String getCBPhaseAPercentChange(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEA_PERCENTCHANGE, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseBPercentChange(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEB_PERCENTCHANGE);
+    protected String getCBPhaseBPercentChange(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEB_PERCENTCHANGE, context);
         return value;
     }
     
     @Override
-    protected String getCBPhaseCPercentChange(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEC_PERCENTCHANGE);
+    protected String getCBPhaseCPercentChange(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PHASEC_PERCENTCHANGE, context);
         return value;
     }
     
     @Override
-    protected String getCBPercentChangeTotal(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PERCENTCHANGE_TOTAL);
+    protected String getCBPercentChangeTotal(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PERCENTCHANGE_TOTAL, context);
         return value;
     }
     
     @Override
-    protected String getCBStatus(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_STATUS_COLUMN);
+    protected String getCBStatus(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_STATUS_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getCBStatusColor(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = cbcDisplay.getHTMLFgColor(latestValue);
+    protected String getCBStatusColor(CapBankDevice latestValue, UpdaterHelper updaterHelper) {
+        String value = updaterHelper.getHTMLFgColor(latestValue);
         return value;
     }
     
     @Override
-    protected String getCBSize(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+    protected String getCBSize(CapBankDevice latestValue, UpdaterHelper updaterHelper) {
         String value = latestValue.getBankSize().toString();
         return value;
     }
     
     @Override
-    protected String getCBParent(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        LiteYukonPAObject parent = (LiteYukonPAObject) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PARENT_COLUMN);
-        String value = parent.getPaoName();
+    protected String getCBParent(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_PARENT_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getDateTime(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_TIME_STAMP_COLUMN);
+    protected String getDateTime(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_TIME_STAMP_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getDailyMaxOps(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN);
+    protected String getDailyMaxOps(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_DAILY_MAX_TOTAL_OP_COLUMN, context);
         return value;
     }
 

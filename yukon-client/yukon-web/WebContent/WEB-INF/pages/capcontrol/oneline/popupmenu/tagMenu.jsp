@@ -1,6 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
 <cti:url var="commentsUrl" value="/spring/capcontrol/comments/paoCommentsForOneline">
@@ -13,7 +16,7 @@
 <div>
     <table width="295px">
         <tr>
-            <td align="center" style="color:#9FBBAC; font-weight: bold; font-size: 16;">${paoName}</td>
+            <td align="center" style="color:#9FBBAC; font-weight: bold; font-size: 16;"><spring:escapeBody htmlEscape="true">${paoName}</spring:escapeBody></td>
             <td align="right">
                 <a href="javascript:void(0);" style="color: gray; font-weight: bold; font-size: 16;" title="Click To Close" onclick="closePopupWindow();">x</a>
             </td>
@@ -29,7 +32,9 @@
                     <div style="color: white;">
                         <input type="checkbox" id="disableCheckBox" onclick="toggleReason(this, 'disableReasonId');" <c:if test="${isDisabled}">checked</c:if> />
                         <input type="hidden" id="disableCheckBox_orig" value="${isDisabled}"/>
-                        Disable
+                        <input type="hidden" name="disableCommandId" value="${disableCommandId}">
+                        <input type="hidden" name="enableCommandId" value="${enableCommandId}">
+                        <span>Disable</span>
                     </div>
                     <div id="disableReasonId" <c:if test="${!isDisabled}">style="display:none;"</c:if>>
                         <span style="color: gray; margin-right: 0.2cm;">Reason :</span>
@@ -38,13 +43,15 @@
                     <br>
                 <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
                     <div style="color: white;"> 
-                        <input type="checkbox" id="disableOVUVCheckBox" onclick="toggleReason(this, 'disableOVUVReasonId');" <c:if test="${isDisabledOVUV}">checked</c:if> />
-                        <input type="hidden" id="disableOVUVCheckBox_orig" value="${isDisabledOVUV}"/>
-                         Disable OV/UV
+                        <input type="checkbox" id="disableOvUvCheckBox" onclick="toggleReason(this, 'disableOvUvReasonId');" <c:if test="${isDisabledOvUv}">checked</c:if> />
+                        <input type="hidden" id="disableOvUvCheckBox_orig" value="${isDisabledOvUv}"/>
+                        <input type="hidden" name="disableOvUvCommandId" value="${disableOvUvCommandId}">
+                        <input type="hidden" name="enableOvUvCommandId" value="${enableOvUvCommandId}">
+                         <span>Disable OV/UV</span>
                     </div>     
-                    <div id="disableOVUVReasonId" <c:if test="${!isDisabledOVUV}">style="display:none;"</c:if>>
+                    <div id="disableOvUvReasonId" <c:if test="${!isDisabledOvUv}">style="display:none;"</c:if>>
                         <span style="color: gray; margin-right: 0.2cm;">Reason :</span>
-                        <textarea id="disableOVUVReason" style='width: 225px; vertical-align: bottom;' rows="2" disabled>${disableOVUVReason}</textarea>
+                        <textarea id="disableOvUvReason" style='width: 225px; vertical-align: bottom;' rows="2" disabled>${disableOvUvReason}</textarea>
                     </div>
                 </cti:checkProperty>
                 

@@ -1,60 +1,38 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage title="${title}" module="capcontrol" page="areas">
+<cti:standardPage module="capcontrol" page="areas.${type}">
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    
-	<script type="text/javascript" language="JavaScript">
-		// handles analysis links (which are not functional for a substation area - show error alert)
-		function loadPointChartGreyBox(title, url) {
-		    alert(title + ' is not available for a Substation Area.\n\nChoose specific Substation Bus or Feeder within a Substation');
-		    return void(0);
-		}
-	</script>
-	
-	<c:choose>
-		<c:when test="${isSpecialArea}">
-			<cti:standardMenu menuSelection="view|specialareas"/>
-		</c:when>
-		<c:otherwise>
-			<cti:standardMenu />
-		</c:otherwise>
-	</c:choose>
-    
-	<cti:breadCrumbs>
-	    <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home"/>
-		<c:choose>
-			<c:when test="${isSpecialArea}">
-				<cti:crumbLink title="Special Substation Areas"/>
-			</c:when>
-			<c:otherwise>
-				<cti:crumbLink title="Substation Areas"/>
-			</c:otherwise>
-		</c:choose>
-	</cti:breadCrumbs>
-	
+
+    <c:if test="${hasAreaControl}">
+        <script type="text/javascript">
+            addCommandMenuBehavior('a[id^="areaState_"]');
+        </script>
+    </c:if>
+     
 	<c:if test="${!isSpecialArea}">
         <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
-			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT" >
-                <div align="right">
-                    <tags:boxContainer hideEnabled="false" title="System Actions" styleClass="systemCommands">
-                        <div align="left" id="systemCommandLink">
+			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <div class="fr">
+                    <tags:boxContainer2 nameKey="systemActions" hideEnabled="false" styleClass="systemCommands padBottom">
+                        <div id="systemCommandLink">
                             <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
                                 <tags:dynamicChooseOption optionId="enabled">
-                                    <cti:labeledImg nameKey="disableSystem" href="javascript:handleSystemCommand(true)" id="systemOn"/>
+                                    <cti:button nameKey="disableSystem" renderMode="labeledImage" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOn"/>
                                 </tags:dynamicChooseOption>
                                 <tags:dynamicChooseOption optionId="disabled">
-                                    <cti:labeledImg nameKey="enableSystem" href="javascript:handleSystemCommand(false)" id="systemOff"/>
+                                    <cti:button nameKey="enableSystem" renderMode="labeledImage" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOff"/>
                                 </tags:dynamicChooseOption>
                             </tags:dynamicChoose>
                         </div>
-        				<div align="left">
-                            <cti:labeledImg nameKey="resetOpCount" href="javascript:sendResetOpCountCommand()" id="systemResetOpCountsLink"/>
+        				<div>
+                            <cti:button nameKey="resetOpCount" renderMode="labeledImage" onclick="doSystemCommand(${resetOpCountCommandId})" id="systemResetOpCountsLink"/>
         				</div>
-                    </tags:boxContainer>
+                    </tags:boxContainer2>
                 </div>
 				<br>
 			</cti:checkRolesAndProperties>
@@ -70,20 +48,20 @@
         </c:otherwise>
     </c:choose>
     
-	<tags:boxContainer hideEnabled="false" title="${title}">
-		<table id="areaTable" class="tierTable">
+	<tags:boxContainer2 nameKey="areasContainer" hideEnabled="false" styleClass="cr padBottom">
+		<table id="areaTable" class="compactResultsTable">
         
 			<thead>
     			<tr>
-                    <th>Area Name</th>
-                    <th>Actions</th>
-                    <th>State</th>
-                    <th>Substations</th>
-                    <th>Available<br> kVARS</th>
-                    <th>Unavailable <br>kVARS</th>
-                    <th>Closed <br>kVARS</th>
-                    <th>Tripped <br>kVARS</th>
-                    <th>PFactor/Est.</th>
+                    <th><i:inline key=".name"/></th>
+                    <th><i:inline key=".actions"/></th>
+                    <th><i:inline key=".state"/></th>
+                    <th><i:inline key=".substations"/></th>
+                    <th><i:inline key=".availableKvars"/></th>
+                    <th><i:inline key=".unavailableKvars"/></th>
+                    <th><i:inline key=".closedKvars"/></th>
+                    <th><i:inline key=".trippedKvars"/></th>
+                    <th><i:inline key=".pfactorEstimated"/></th>
             	</tr>
         	</thead>
             
@@ -92,15 +70,6 @@
         			
                     <!-- Setup Variables -->
                     <c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
-                    
-                    <c:choose>
-                        <c:when test="${isSpecialArea}"> 
-                            <c:set var="menuEvent" value="getSpecialAreaMenu('${thisAreaId}', event)"/> 
-                        </c:when>
-                        <c:otherwise> 
-                            <c:set var="menuEvent" value="getAreaMenu('${thisAreaId}', event)"/> 
-                        </c:otherwise>
-                    </c:choose>
                     
                     <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                         <cti:param name="itemid" value="${thisAreaId}"/>
@@ -112,7 +81,7 @@
                     </cti:url>
                     
                     <cti:url var="substationUrl" value="/spring/capcontrol/tier/substations">
-                        <cti:param name="areaId" value="${thisAreaId}"/>
+                        <cti:param name="bc_areaId" value="${thisAreaId}"/>
                         <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                     </cti:url>
                     
@@ -120,7 +89,7 @@
 	        			
                         <td>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif" <c:if test="${empty viewableArea.subStations}">style="visibility: hidden;"</c:if> 
-								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
+								 onclick="expandRow( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
 	        				<a href="${substationUrl}">
 	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
 	        				</a>
@@ -135,18 +104,18 @@
 	        			
                         <td>
                             <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
-                            <a id="area_state_${thisAreaId}" href="javascript:void(0);" <c:if test="${hasAreaControl}">onclick="${menuEvent}"</c:if>>
+                            <a id="areaState_${thisAreaId}">
 								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
 							</a>
-                            <cti:dataUpdaterCallback function="updateStateColorGenerator('area_state_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
+                            <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
 	        			</td>
                         
-	        			<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="SETUP" /> Substation(s)</td>
-						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE" /></td>
-						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE" /></td>
-						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED" /></td>
-						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED" /></td>
-						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR" /></td>
+	        			<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="CHILD_COUNT"/></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE"/></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE"/></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED"/></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED"/></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR"/></td>
                         
 					</tr>
 					
@@ -155,9 +124,9 @@
 						<table id="allAreas${thisAreaId}">
 							<c:forEach var="station" items="${viewableArea.subStations}">
 								<tr style="display: none;">
-									<td><span class="smallIndent">${station.subStationName}</span></td>
-									<td align="right">${station.feederCount} Feeder(s)</td>
-									<td align="right">${station.capBankCount} Bank(s)</td>
+									<td><span class="smallIndent">${station.name}</span></td>
+									<td align="right"><i:inline key=".feeders" arguments="${station.feederCount}"/></td>
+									<td align="right"><i:inline key=".banks" arguments="${station.capBankCount}"/></td>
 								</tr>
 							</c:forEach>
 	  					</table>
@@ -169,6 +138,6 @@
         	
         </table>
 
-	</tags:boxContainer>
+	</tags:boxContainer2>
 	
 </cti:standardPage>

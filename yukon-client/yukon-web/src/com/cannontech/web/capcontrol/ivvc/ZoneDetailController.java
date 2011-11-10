@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,13 @@ import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.web.CapControlCommandExecutor;
+import com.cannontech.cbc.commands.CapControlCommandExecutor;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -41,17 +44,20 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.model.DynamicCommand;
+import com.cannontech.message.capcontrol.model.DynamicCommand.DynamicCommandType;
+import com.cannontech.message.capcontrol.model.DynamicCommand.Parameter;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.capcontrol.CommandHolder;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubStation;
-import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -70,36 +76,47 @@ public class ZoneDetailController {
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
     private PaoDao paoDao;
     private PointDao pointDao;
+    private CapControlCommandExecutor executor;
+    private static final Logger log = YukonLogManager.getLogger(ZoneDetailController.class);
     
     @RequestMapping
-    public String detail(ModelMap model, FlashScope flash, HttpServletRequest request, 
-                         YukonUserContext userContext, int zoneId, Boolean isSpecialArea) {
-        setupDetails(model, flash, request, userContext, zoneId, isSpecialArea);
+    public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+        setupDetails(model, request, context, zoneId, isSpecialArea);
         return "ivvc/zoneDetail.jsp";
     }
     
     @RequestMapping
-    public String deltaUpdate(ModelMap model, boolean staticDelta, int bankId, int pointId, String delta, 
-                              int zoneId, Boolean isSpecialArea, LiteYukonUser user,
-                              HttpServletRequest request, FlashScope flashScope) {
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        CapControlCommandExecutor exec = new CapControlCommandExecutor(cache, user);
-        
+    public String deltaUpdate(ModelMap model, 
+                              boolean staticDelta, 
+                              int bankId, 
+                              int pointId, 
+                              String delta, 
+                              int zoneId, 
+                              Boolean isSpecialArea,
+                              LiteYukonUser user,
+                              HttpServletRequest request,
+                              FlashScope flashScope) {
         try {
             double deltaAsDbl = Double.valueOf(delta);
-            exec.executeDeltaUpdate(bankId, pointId, deltaAsDbl, staticDelta);
-            MessageSourceResolvable successMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateSuccess");
-            flashScope.setConfirm(successMessage);
+        
+            DynamicCommand command = new DynamicCommand(DynamicCommandType.DELTA);
+            command.addParameter(Parameter.DEVICE_ID, bankId);
+            command.addParameter(Parameter.POINT_ID, pointId);
+            command.addParameter(Parameter.POINT_RESPONSE_DELTA, deltaAsDbl);
+            command.addParameter(Parameter.POINT_RESPONSE_STATIC_DELTA, staticDelta ? 1 : 0);
+            
+            executor.execute(command);
+            
+            if(isSpecialArea == null) {
+                isSpecialArea = false;
+            }
         } catch (NumberFormatException e) {
             // The user entered something invalid into the delta field
-            MessageSourceResolvable failureMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure");
+            MessageSourceResolvable failureMessage = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure");
             flashScope.setError(failureMessage);
-        }
-        
-        if(isSpecialArea == null) {
-            isSpecialArea = false;
+        } catch (CommandExecutionException e) {
+            MessageSourceResolvable failureMessage = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure", e);
+            flashScope.setError(failureMessage);
         }
         
         model.addAttribute("isSpecialArea", isSpecialArea);
@@ -108,15 +125,14 @@ public class ZoneDetailController {
     }
     
     @RequestMapping
-    public String chart(ModelMap model, FlashScope flash, HttpServletRequest request, 
-                        YukonUserContext userContext, int zoneId) {
-        boolean zoneAttributesExist = voltageFlatnessGraphService.
-                                        zoneHasRequiredAttribute(zoneId, BuiltInAttribute.VOLTAGE_Y,
-                                                                 userContext.getYukonUser());
+    public String chart(ModelMap model, YukonUserContext context, int zoneId) {
+        LiteYukonUser user = context.getYukonUser();
+        
+        boolean zoneAttributesExist = voltageFlatnessGraphService. zoneHasRequiredAttribute(zoneId, BuiltInAttribute.VOLTAGE_Y, user);
         model.addAttribute("zoneAttributesExist", zoneAttributesExist);
 
         if (zoneAttributesExist) {
-            VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
+            VfGraph graph = voltageFlatnessGraphService.getZoneGraph(context, zoneId);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());
         }
@@ -124,9 +140,8 @@ public class ZoneDetailController {
         return "ivvc/flatnessGraphLine.jsp";
     }
     
-    private void setupDetails(ModelMap model, FlashScope flash, HttpServletRequest request, 
-                              YukonUserContext userContext, int zoneId, Boolean isSpecialArea) {
-        LiteYukonUser user = userContext.getYukonUser();
+    private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+        LiteYukonUser user = context.getYukonUser();
         if(isSpecialArea == null) {
             isSpecialArea = false;
         }
@@ -143,15 +158,15 @@ public class ZoneDetailController {
         setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
         setupCapBanks(model, cache, zoneDto);
         setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
-        setupDeltas(model, request, cache, zoneDto.getZoneId());
-        setupRegulatorPointMappings(model, zoneDto, userContext);
+        setupDeltas(model, request, zoneDto.getZoneId());
+        setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
         
         List<String> nameKeys = Lists.newArrayList("attributesRegAll", "attributesRegA", "attributesRegB", "attributesRegC");
         model.addAttribute("nameKeys", nameKeys);
 
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
-        int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, userContext.getYukonUser()));
+        int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, user));
         model.addAttribute("updaterDelay", updaterDelay);
     }
 
@@ -160,8 +175,7 @@ public class ZoneDetailController {
         Map<Phase, String> regulatorNameMap = Maps.newHashMapWithExpectedSize(3);
         Map<Phase, RegulatorToZoneMapping> regulators = zoneDto.getRegulators();
         for (Entry<Phase, RegulatorToZoneMapping> entry : regulators.entrySet()) {
-            VoltageRegulatorFlags regulatorFlags =
-                cache.getVoltageRegulatorFlags(entry.getValue().getRegulatorId());
+            VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(entry.getValue().getRegulatorId());
             Integer regulatorId = regulatorFlags.getCcId();
             String regulatorName = regulatorFlags.getCcName();
             regulatorIdMap.put(entry.getKey(), regulatorId);
@@ -192,11 +206,11 @@ public class ZoneDetailController {
             regulatorTypeMap.put(entry.getKey(), regTypeString);
         }
         model.addAttribute("regulatorTypeMap", regulatorTypeMap);
-        model.addAttribute("scanCommandHolder",CommandHolder.LTC_SCAN_INTEGRITY);
-        model.addAttribute("tapDownCommandHolder",CommandHolder.LTC_TAP_POSITION_LOWER);
-        model.addAttribute("tapUpCommandHolder",CommandHolder.LTC_TAP_POSITION_RAISE);
-        model.addAttribute("enableRemoteCommandHolder",CommandHolder.LTC_REMOTE_ENABLE);
-        model.addAttribute("disableRemoteCommandHolder",CommandHolder.LTC_REMOTE_DISABLE);
+        model.addAttribute("scanCommandHolder", CommandType.VOLTAGE_REGULATOR_INTEGRITY_SCAN);
+        model.addAttribute("tapDownCommandHolder", CommandType.VOLTAGE_REGULATOR_TAP_POSITION_LOWER);
+        model.addAttribute("tapUpCommandHolder", CommandType.VOLTAGE_REGULATOR_TAP_POSITION_RAISE);
+        model.addAttribute("enableRemoteCommandHolder", CommandType.VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE);
+        model.addAttribute("disableRemoteCommandHolder", CommandType.VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE);
     }
     
     private void setupIvvcEvents(ModelMap model, int zoneId, int subBusId) {
@@ -255,8 +269,7 @@ public class ZoneDetailController {
         model.addAttribute("capBankList", viewableCapBankList);
     }
     
-    private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone,
-                                                   YukonUserContext userContext) {
+    private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone) {
         Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
         Map<Phase, List<VoltageRegulatorPointMapping>> pointMappingsMap = Maps.newHashMapWithExpectedSize(3);
         for (Entry<Phase, RegulatorToZoneMapping> entry: regulators.entrySet()) {
@@ -268,7 +281,7 @@ public class ZoneDetailController {
         model.addAttribute("regulatorPointMappingsMap", pointMappingsMap);
     }
     
-    private void setupDeltas(ModelMap model, HttpServletRequest request, CapControlCache cache, int zoneId) {
+    private void setupDeltas(ModelMap model, HttpServletRequest request, int zoneId) {
         List<Integer> bankIds = zoneService.getCapBankIdsForZoneId(zoneId);
         
         List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
@@ -354,8 +367,8 @@ public class ZoneDetailController {
         
         model.addAttribute("areaId", area.getCcId());
         model.addAttribute("areaName", areaName);
-        model.addAttribute("subStationId", station.getCcId());
-        model.addAttribute("subStationName", substationName);
+        model.addAttribute("substationId", station.getCcId());
+        model.addAttribute("substationName", substationName);
         model.addAttribute("subBusId", subBusId);
         model.addAttribute("subBusName", subBusName);
         model.addAttribute("zoneName", zoneName);
@@ -400,4 +413,10 @@ public class ZoneDetailController {
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
+    
+    @Autowired
+    public void setCapControlCommandExecutor(CapControlCommandExecutor executor) {
+        this.executor = executor;
+    }
+    
 }

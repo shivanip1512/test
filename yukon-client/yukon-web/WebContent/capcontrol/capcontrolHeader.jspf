@@ -18,6 +18,7 @@
 <!-- Included JavaScript -->
 <cti:includeScript link="/capcontrol/js/capcontrolCommand.js"/>
 <cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
+<cti:includeScript link="/capcontrol/js/updaterFunctions.js"/>
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/scriptaculous/scriptaculous.js"/>
@@ -36,28 +37,18 @@
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>     
 
 <!-- Beans -->
-<jsp:useBean id="ccSession"
-	class="com.cannontech.cbc.web.CCSessionInfo"
-	type="com.cannontech.cbc.web.CCSessionInfo" scope="session">
-</jsp:useBean>
-
-<jsp:useBean id="CtiNavObject"
-	class="com.cannontech.web.navigation.CtiNavObject"
-	type="com.cannontech.web.navigation.CtiNavObject"
-	scope="session">
-</jsp:useBean>
+<jsp:useBean id="ccSession" class="com.cannontech.cbc.web.CCSessionInfo" type="com.cannontech.cbc.web.CCSessionInfo" scope="session"/>
+<jsp:useBean id="CtiNavObject" class="com.cannontech.web.navigation.CtiNavObject" type="com.cannontech.web.navigation.CtiNavObject" scope="session"/>
 
 <jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
 
 <!-- Popup for simple content -->
-<tags:simpleDialog id="tierContentPopup" onClose="closeTierContentPopup()" title=""/>
+<tags:simpleDialog id="contentPopup" onClose="hideContentPopup()" title=""/>
 
 <!-- Popup for tooltips -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;-webkit-box-shadow: #999 3px 3px 3px;-moz-box-shadow: #999 3px 3px 3px;box-shadow: #999 3px 3px 3px;"></div>
 
 <!-- Popup for menus -->
-<tags:simplePopup id="tierMenuPopup" onClose="closeTierPopup()" title="" styleClass="thinBorder">
-    <div id="popupBody"></div>
-</tags:simplePopup>
+<div id="menuPopup" class="menuPopup"></div>
 
 <capTags:commandMsgDiv/>

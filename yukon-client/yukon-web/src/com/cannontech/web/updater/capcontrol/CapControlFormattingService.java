@@ -7,7 +7,7 @@ public interface CapControlFormattingService<E> {
     public enum Format {
         NAME,
         STATE,
-        SETUP,
+        CHILD_COUNT,
         KVARS_AVAILABLE,
         KVARS_UNAVAILABLE,
         KVARS_CLOSED,
@@ -49,6 +49,7 @@ public interface CapControlFormattingService<E> {
         DAILY_MAX_OPS,
         VERIFICATION_FLAG,
         SA_ENABLED,
+        SA_ENABLED_MSG,
         DUALBUS_MESSAGE,
         DUALBUS
     }

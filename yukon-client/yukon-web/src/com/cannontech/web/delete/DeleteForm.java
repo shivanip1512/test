@@ -17,14 +17,14 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.JSFParamUtil;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.SubStation;
 
 /**
  * @author ryan
@@ -57,7 +57,7 @@ public abstract class DeleteForm extends DBEditorForm {
                 //this message will be filled in by the super class
                 FacesMessage facesMsg = new FacesMessage();
                 try {
-                    CCArea area = null;
+                    Area area = null;
                     
                     Deleteable deleteable = deletables[i];
                     if(deleteable.getDbPersistent() instanceof CapControlSubstation) { // get these before the delete

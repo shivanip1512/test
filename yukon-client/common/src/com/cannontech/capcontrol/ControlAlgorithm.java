@@ -1,7 +1,9 @@
 package com.cannontech.capcontrol;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum ControlAlgorithm {
+
+public enum ControlAlgorithm implements DisplayableEnum {
 	
     NONE("NONE"),
 	KVAR("kVAr"),
@@ -30,5 +32,10 @@ public enum ControlAlgorithm {
 		}
 		throw new IllegalArgumentException();
 	}
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.capcontrol.controlAlgorithm." + name();
+    }
 	
 };

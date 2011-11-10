@@ -1,30 +1,24 @@
 package com.cannontech.web.capcontrol;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
-import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.CapControlDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.CachingPointFormattingService;
@@ -33,94 +27,79 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.CapControlCommand;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 
+@Controller("/oneline/popupmenu/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-public class OnelinePopupMenuController extends MultiActionController {
-    private static final CapBankOperationalState[] allowedOperationStates;
-    private CapControlCache capControlCache;
+public class OnelinePopupMenuController {
+    
+    private static final BankOpState[] allowedOperationStates;
+    private CapControlCache cache;
     private CapControlCommentService capControlCommentService;
-    private DataSource dataSource;
     private PaoDao paoDao;
+    private DBPersistentDao dbPersistentDao;
     private CapControlDao capControlDao = null;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
     
     static {
-        allowedOperationStates  = new CapBankOperationalState[] {
-                                                                 CapBankOperationalState.FIXED,
-                                                                 CapBankOperationalState.STANDALONE,
-                                                                 CapBankOperationalState.SWITCHED};
+        allowedOperationStates  = new BankOpState[] {
+                                                                 BankOpState.FIXED,
+                                                                 BankOpState.STANDALONE,
+                                                                 BankOpState.SWITCHED};
     }
 
-    public ModelAndView subTagMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
-        final SubBus subBus = capControlCache.getSubBus(id);
+    @RequestMapping
+    public String subTagMenu(ModelMap model, int id) {
+        CapControlType type = CapControlType.SUBBUS;
+        final SubBus subBus = cache.getSubBus(id);
         
-        mav.addObject("paoId", id);
-        mav.addObject("returnUrl", returnUrl);
+        model.addAttribute("paoId", id);
         
         String paoName = subBus.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
-        boolean isDisabled = subBus.getCcDisableFlag();
-        mav.addObject("isDisabled", isDisabled);
-        
-        boolean isDisabledOVUV = subBus.getOvUvDisabledFlag();
-        mav.addObject("isDisabledOVUV", isDisabledOVUV);
-        
-        CapControlType type = CapControlType.SUBBUS;
-
+        model.addAttribute("isDisabled", subBus.getCcDisableFlag());
+        model.addAttribute("disableCommandId", CommandType.DISABLE_SUBSTATION_BUS.getCommandId());
+        model.addAttribute("enableCommandId", CommandType.ENABLE_SUBSTATION_BUS.getCommandId());
         String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, type);
-        mav.addObject("disableReason", disableReason);
+        model.addAttribute("disableReason", disableReason);
         
-        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
-        mav.addObject("disableOVUVReason", disableOVUVReason);
-        
-        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, type);
-        mav.addObject("operationalStateReason", operationalStateReason);
+        model.addAttribute("isDisabledOvUv", subBus.getOvUvDisabledFlag());
+        model.addAttribute("disableOvUvCommandId", CommandType.SEND_DISABLE_OVUV.getCommandId());
+        model.addAttribute("enableOvUvCommandId", CommandType.SEND_ENABLE_OVUV.getCommandId());
+        String disableOvUvReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
+        model.addAttribute("disableOvUvReason", disableOvUvReason);
         
         List<String> comments = capControlCommentService.getComments(id, 5); 
-        mav.addObject("comments", comments);
+        model.addAttribute("comments", comments);
         
-        mav.addObject("isCapBank", false);
-        mav.addObject("controlType", type);
-        mav.setViewName("oneline/popupmenu/tagMenu.jsp");
-        return mav;
+        model.addAttribute("isCapBank", false);
+        model.addAttribute("controlType", type);
+        
+        return "oneline/popupmenu/tagMenu.jsp";
     }
     
-    public ModelAndView capInfoMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final CapBankDevice cap = capControlCache.getCapBankDevice(id);
-
-        String paoName = cap.getCcName();
-        mav.addObject("paoName", paoName);
+    @RequestMapping
+    public String capInfoMenu(ModelMap model, int id) {
+        CapBankDevice cap = cache.getCapBankDevice(id);
+        model.addAttribute("paoName", cap.getCcName());
         
-        final LiteYukonPAObject lite = paoDao.getLiteYukonPAO(id);
-        final CapBankAdditional info = new CapBankAdditional();
+        LiteYukonPAObject lite = paoDao.getLiteYukonPAO(id);
+        CapBankAdditional info = new CapBankAdditional();
         info.setDeviceID(id);
+        dbPersistentDao.retrieveDBPersistent(info);
         
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            info.setDbConnection(connection);
-            info.retrieve();
-        } catch (SQLException e) {
-            CTILogger.error(e);
-        } finally {
-            if (connection != null) connection.close();
-        }
-        
-        Map<String,Object> infoMap = new LinkedHashMap<String,Object>(19);
+        Map<String,Object> infoMap = new LinkedHashMap<String, Object>(19);
         infoMap.put("Maintenance Area ID:", info.getMaintAreaID());
         infoMap.put("Pole Number:", info.getPoleNumber());
         infoMap.put("Latitude:", info.getLatit());
@@ -140,300 +119,282 @@ public class OnelinePopupMenuController extends MultiActionController {
         infoMap.put("CBC Install Date:", info.getCbcBattInstallDate());
         infoMap.put("Cap Bank Map Address", lite.getPaoDescription());
         infoMap.put("Driving Directions:", info.getDriveDir()); 
-        mav.addObject("infoMap", infoMap);
+        model.addAttribute("infoMap", infoMap);
         
-        mav.setViewName("oneline/popupmenu/capInfoMenu.jsp");
-        return mav;
+        return "oneline/popupmenu/capInfoMenu.jsp";
     }
     
-    public ModelAndView feederTagMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
-        final Feeder feeder = capControlCache.getFeeder(id);
+    @RequestMapping
+    public String feederTagMenu(ModelMap model, int id) {
+        CapControlType type = CapControlType.FEEDER;
+        Feeder feeder = cache.getFeeder(id);
         
-        mav.addObject("paoId", id);
-        mav.addObject("returnUrl", returnUrl);
+        model.addAttribute("paoId", id);
         
         String paoName = feeder.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
         boolean isDisabled = feeder.getCcDisableFlag();
-        mav.addObject("isDisabled", isDisabled);
-        
-        boolean isDisabledOVUV = feeder.getOvUvDisabledFlag();
-        mav.addObject("isDisabledOVUV", isDisabledOVUV);
-        
-        CapControlType type = CapControlType.FEEDER;
-
+        model.addAttribute("isDisabled", isDisabled);
+        model.addAttribute("disableCommandId", CommandType.DISABLE_FEEDER.getCommandId());
+        model.addAttribute("enableCommandId", CommandType.ENABLE_FEEDER.getCommandId());
         String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, type);
-        mav.addObject("disableReason", disableReason);
+        model.addAttribute("disableReason", disableReason);
         
-        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
-        mav.addObject("disableOVUVReason", disableOVUVReason);
+        boolean isDisabledOvUv = feeder.getOvUvDisabledFlag();
+        model.addAttribute("isDisabledOvUv", isDisabledOvUv);
+        model.addAttribute("disableOvUvCommandId", CommandType.SEND_DISABLE_OVUV.getCommandId());
+        model.addAttribute("enableOvUvCommandId", CommandType.SEND_ENABLE_OVUV.getCommandId());
+        String disableOvUvReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
+        model.addAttribute("disableOvUvReason", disableOvUvReason);
         
         List<String> comments = capControlCommentService.getComments(id, 5);
-        mav.addObject("comments", comments);
+        model.addAttribute("comments", comments);
         
-        mav.addObject("isCapBank", false);
-        mav.addObject("controlType", type);
-        mav.setViewName("oneline/popupmenu/tagMenu.jsp");
-        return mav;
+        model.addAttribute("isCapBank", false);
+        model.addAttribute("controlType", type);
+        
+        return "oneline/popupmenu/tagMenu.jsp";
     }
     
-    public ModelAndView capTagMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
-        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
+    @RequestMapping
+    public String capTagMenu(ModelMap model, int id) {
+        CapControlType type = CapControlType.CAPBANK;
+        CapBankDevice capBank = cache.getCapBankDevice(id);
         
-        mav.addObject("paoId", id);
-        mav.addObject("returnUrl", returnUrl);
+        model.addAttribute("paoId", id);
         
         String paoName = capBank.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
         boolean isDisabled = capBank.getCcDisableFlag();
-        mav.addObject("isDisabled", isDisabled);
-        
-        boolean isDisabledOVUV = capBank.getOvUVDisabled();
-        mav.addObject("isDisabledOVUV", isDisabledOVUV);
-
-        CapBankOperationalState operationalState = CapBankOperationalState.getStateByName(capBank.getOperationalState());
-        mav.addObject("operationalState", operationalState);
-        mav.addObject("allowedOperationStates", allowedOperationStates);
-
-        CapControlType type = CapControlType.CAPBANK;
-        
+        model.addAttribute("isDisabled", isDisabled);
+        model.addAttribute("disableCommandId", CommandType.DISABLE_CAPBANK.getCommandId());
+        model.addAttribute("enableCommandId", CommandType.ENABLE_CAPBANK.getCommandId());
         String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, type);
-        mav.addObject("disableReason", disableReason);
+        model.addAttribute("disableReason", disableReason);
         
-        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
-        mav.addObject("disableOVUVReason", disableOVUVReason);
-        
+        boolean isDisabledOvUv = capBank.getOvUVDisabled();
+        model.addAttribute("isDisabledOvUv", isDisabledOvUv);
+        model.addAttribute("disableOvUvCommandId", CommandType.SEND_DISABLE_OVUV.getCommandId());
+        model.addAttribute("enableOvUvCommandId", CommandType.SEND_ENABLE_OVUV.getCommandId());
+        String disableOvUvReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
+        model.addAttribute("disableOvUvReason", disableOvUvReason);
+
+        BankOpState operationalState = BankOpState.getStateByName(capBank.getOperationalState());
+        model.addAttribute("operationalState", operationalState);
+        model.addAttribute("allowedOperationStates", allowedOperationStates);
         String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, type);
-        mav.addObject("operationalStateReason", operationalStateReason);
+        model.addAttribute("operationalStateReason", operationalStateReason);
         
         List<String> comments = capControlCommentService.getComments(id, 5);
-        mav.addObject("comments", comments);
+        model.addAttribute("comments", comments);
         
-        mav.addObject("isCapBank", true);
-        mav.addObject("controlType", type);
+        model.addAttribute("isCapBank", true);
+        model.addAttribute("controlType", type);
         
         if (capBank.isIgnoreFlag()) {
-        	mav.addObject("isIgnoreFlag",true);
-        	mav.addObject("refusedReason",CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()));
+        	model.addAttribute("isIgnoreFlag",true);
+        	model.addAttribute("refusedReason",CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()));
         }
         
-        mav.setViewName("oneline/popupmenu/tagMenu.jsp");
-        return mav;
+        return "oneline/popupmenu/tagMenu.jsp";
     }
     
-    public ModelAndView capBankMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+    @RequestMapping
+    public String capBankMenu(ModelMap model, int id) {
+        model.addAttribute("controlType", CapControlType.CAPBANK);
         
-        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
-        final int cbcDeviceId = capBank.getControlDeviceID();
-        final LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
+        CapBankDevice capBank = cache.getCapBankDevice(id);
+        int cbcDeviceId = capBank.getControlDeviceID();
+        LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         
-        mav.addObject("paoId", id);
+        model.addAttribute("paoId", id);
         
         String paoName = capBank.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
-        int open = CapControlCommand.OPEN_CAPBANK;
-        mav.addObject("open", open);
+        int open = CommandType.SEND_OPEN_CAPBANK.getCommandId();
+        model.addAttribute("open", open);
         
-        int close = CapControlCommand.CLOSE_CAPBANK;
-        mav.addObject("close", close);
+        int close = CommandType.SEND_CLOSE_CAPBANK.getCommandId();
+        model.addAttribute("close", close);
         
-        int confirm = CapControlCommand.CONFIRM_OPEN;
-        mav.addObject("confirm", confirm);
+        int confirm = CommandType.CONFIRM_OPEN.getCommandId();
+        model.addAttribute("confirm", confirm);
         
-        boolean isTwoWay = CBCUtils.isTwoWay(cbcPaoObject);
+        boolean isTwoWay = CapControlUtils.isTwoWay(cbcPaoObject);
         String scanOptionDis = Boolean.toString(!isTwoWay);
         String childCapMaintPaoId = "CapBankMaint_" + id + "_" + scanOptionDis;
-        mav.addObject("childCapMaintPaoId", childCapMaintPaoId);
+        model.addAttribute("childCapMaintPaoId", childCapMaintPaoId);
         
         String childCapDBChangePaoId = "CapDBChange_" + id;
-        mav.addObject("childCapDBChangePaoId", childCapDBChangePaoId);
+        model.addAttribute("childCapDBChangePaoId", childCapDBChangePaoId);
         
-        mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("oneline/popupmenu/capBankMenu.jsp");
-        return mav;
+        return "oneline/popupmenu/capBankMenu.jsp";
     }
     
-    public ModelAndView feederMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final Feeder feeder = capControlCache.getFeeder(id);
+    @RequestMapping
+    public String feederMenu(ModelMap model, int id) {
+        Feeder feeder = cache.getFeeder(id);
 
-        mav.addObject("paoId", id);
+        model.addAttribute("paoId", id);
         
         String paoName = feeder.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
-        int resetOpCount = CapControlCommand.RESET_OPCOUNT;
-        mav.addObject("resetOpCount", resetOpCount);
+        int resetOpCount = CommandType.RESET_DAILY_OPERATIONS.getCommandId();
+        model.addAttribute("resetOpCount", resetOpCount);
         
-        int confirmFdr = CapControlCommand.CONFIRM_CLOSE;
-        mav.addObject("confirmFdr", confirmFdr);
+        int confirmFdr = CommandType.CONFIRM_CLOSE.getCommandId();
+        model.addAttribute("confirmFdr", confirmFdr);
         
-        int openAllFdr = CapControlCommand.SEND_ALL_OPEN;
-        mav.addObject("openAllFdr", openAllFdr);
+        int openAllFdr = CommandType.SEND_OPEN_CAPBANK.getCommandId();
+        model.addAttribute("openAllFdr", openAllFdr);
         
-        int closeAllFdr = CapControlCommand.SEND_ALL_CLOSE;
-        mav.addObject("closeAllFdr", closeAllFdr);
+        int closeAllFdr = CommandType.SEND_CLOSE_CAPBANK.getCommandId();
+        model.addAttribute("closeAllFdr", closeAllFdr);
         
-        int enableOvUvFdr = CapControlCommand.SEND_ALL_ENABLE_OVUV;
-        mav.addObject("enableOvUvFdr", enableOvUvFdr);
+        int enableOvUvFdr = CommandType.SEND_ENABLE_OVUV.getCommandId();
+        model.addAttribute("enableOvUvFdr", enableOvUvFdr);
         
-        int disableOvUvFdr = CapControlCommand.SEND_ALL_DISABLE_OVUV;
-        mav.addObject("disableOvUvFdr", disableOvUvFdr);
+        int disableOvUvFdr = CommandType.SEND_DISABLE_OVUV.getCommandId();
+        model.addAttribute("disableOvUvFdr", disableOvUvFdr);
         
-        int sendAll2WayFdr = CapControlCommand.SEND_ALL_SCAN_2WAY;
-        mav.addObject("sendAll2WayFdr", sendAll2WayFdr);
+        int sendAll2WayFdr = CommandType.SEND_SCAN_2WAY_DEVICE.getCommandId();
+        model.addAttribute("sendAll2WayFdr", sendAll2WayFdr);
         
-        int sendTimeSyncFdr = CapControlCommand.SEND_TIMESYNC;
-        mav.addObject("sendTimeSyncFdr", sendTimeSyncFdr);
+        int sendTimeSyncFdr = CommandType.SEND_TIME_SYNC.getCommandId();
+        model.addAttribute("sendTimeSyncFdr", sendTimeSyncFdr);
         
-        int syncCapBankStatesFdr = CapControlCommand.SYNC_ALL_CAPBANK_STATES;
-        mav.addObject("syncCapBankStatesFdr", syncCapBankStatesFdr);
+        int syncCapBankStatesFdr = CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId();
+        model.addAttribute("syncCapBankStatesFdr", syncCapBankStatesFdr);
         
-        mav.addObject("controlType", CapControlType.FEEDER);
-        mav.setViewName("oneline/popupmenu/feederMenu.jsp");
-        return mav;
+        model.addAttribute("controlType", CapControlType.FEEDER);
+        
+        return "oneline/popupmenu/feederMenu.jsp";
     }
     
-    public ModelAndView subMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final SubBus subBus = capControlCache.getSubBus(id);
+    @RequestMapping
+    public String subMenu(ModelMap model, int id) {
+        SubBus subBus = cache.getSubBus(id);
         
-        mav.addObject("paoId", id);
+        model.addAttribute("paoId", id);
         
         String paoName = subBus.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
         boolean isV = subBus.getVerificationFlag();
-        mav.addObject("isV", isV);
+        model.addAttribute("isV", isV);
         
-        int resetOpCount = CapControlCommand.RESET_OPCOUNT;
-        mav.addObject("resetOpCount", resetOpCount);
+        int resetOpCount = CommandType.RESET_DAILY_OPERATIONS.getCommandId();
+        model.addAttribute("resetOpCount", resetOpCount);
         
-        int confirmSub = CapControlCommand.CONFIRM_CLOSE;
-        mav.addObject("confirmSub", confirmSub);
+        int confirmSub = CommandType.CONFIRM_CLOSE.getCommandId();
+        model.addAttribute("confirmSub", confirmSub);
         
-        int openAllSub = CapControlCommand.SEND_ALL_OPEN;
-        mav.addObject("openAllSub", openAllSub);
+        int openAllSub = CommandType.SEND_OPEN_CAPBANK.getCommandId();
+        model.addAttribute("openAllSub", openAllSub);
         
-        int closeAllSub = CapControlCommand.SEND_ALL_CLOSE;
-        mav.addObject("closeAllSub", closeAllSub);
+        int closeAllSub = CommandType.SEND_CLOSE_CAPBANK.getCommandId();
+        model.addAttribute("closeAllSub", closeAllSub);
         
-        int enableOvUvSub = CapControlCommand.SEND_ALL_ENABLE_OVUV;
-        mav.addObject("enableOvUvSub", enableOvUvSub);
+        int enableOvUvSub = CommandType.SEND_ENABLE_OVUV.getCommandId();
+        model.addAttribute("enableOvUvSub", enableOvUvSub);
         
-        int disableOvUvSub = CapControlCommand.SEND_ALL_DISABLE_OVUV;
-        mav.addObject("disableOvUvSub", disableOvUvSub);
+        int disableOvUvSub = CommandType.SEND_DISABLE_OVUV.getCommandId();
+        model.addAttribute("disableOvUvSub", disableOvUvSub);
         
-        int sendAll2WaySub = CapControlCommand.SEND_ALL_SCAN_2WAY;
-        mav.addObject("sendAll2WaySub", sendAll2WaySub);
+        int sendAll2WaySub = CommandType.SEND_SCAN_2WAY_DEVICE.getCommandId();
+        model.addAttribute("sendAll2WaySub", sendAll2WaySub);
         
-        int sendTimeSyncSub = CapControlCommand.SEND_TIMESYNC;
-        mav.addObject("sendTimeSyncSub", sendTimeSyncSub);
+        int sendTimeSyncSub = CommandType.SEND_TIME_SYNC.getCommandId();
+        model.addAttribute("sendTimeSyncSub", sendTimeSyncSub);
         
-        int syncCapBankStatesSub = CapControlCommand.SYNC_ALL_CAPBANK_STATES;
-        mav.addObject("syncCapBankStatesSub", syncCapBankStatesSub);
+        int syncCapBankStatesSub = CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId();
+        model.addAttribute("syncCapBankStatesSub", syncCapBankStatesSub);
         
-        int verifyAll = CapControlCommand.CMD_ALL_BANKS;
-        mav.addObject("verifyAll", verifyAll);
+        int verifyAll = CommandType.VERIFY_ALL_BANKS.getCommandId();
+        model.addAttribute("verifyAll", verifyAll);
         
-        int verifyFQ = CapControlCommand.CMD_FQ_BANKS;
-        mav.addObject("verifyFQ", verifyFQ);
+        int verifyFQ = CommandType.VERIFY_FQ_BANKS.getCommandId();
+        model.addAttribute("verifyFQ", verifyFQ);
         
-        int verifyFailed = CapControlCommand.CMD_FAILED_BANKS;
-        mav.addObject("verifyFailed", verifyFailed);
+        int verifyFailed = CommandType.VERIFY_FAILED_BANKS.getCommandId();
+        model.addAttribute("verifyFailed", verifyFailed);
         
-        int verifyQuestion = CapControlCommand.CMD_QUESTIONABLE_BANKS;
-        mav.addObject("verifyQuestion", verifyQuestion);
+        int verifyQuestion = CommandType.VERIFY_Q_BANKS.getCommandId();
+        model.addAttribute("verifyQuestion", verifyQuestion);
         
-        int verifyStandalone = CapControlCommand.CMD_STANDALONE_VERIFY;
-        mav.addObject("verifyStandalone", verifyStandalone);
+        int verifyStandalone = CommandType.VERIFY_SA_BANKS.getCommandId();
+        model.addAttribute("verifyStandalone", verifyStandalone);
         
-        int verifyStop = CapControlCommand.CMD_DISABLE_VERIFY;
-        mav.addObject("verifyStop", verifyStop);
+        int verifyStop = CommandType.STOP_VERIFICATION.getCommandId();
+        model.addAttribute("verifyStop", verifyStop);
         
-        int verifyEmergencyStop = CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY;
-        mav.addObject("verifyEmergencyStop", verifyEmergencyStop);
+        int verifyEmergencyStop = CommandType.EMERGENCY_VERIFICATION_STOP.getCommandId();
+        model.addAttribute("verifyEmergencyStop", verifyEmergencyStop);
         
-        mav.addObject("controlType", CapControlType.SUBBUS);
-        mav.setViewName("oneline/popupmenu/subMenu.jsp");
-        return mav;
+        model.addAttribute("controlType", CapControlType.SUBBUS);
+        
+        return "oneline/popupmenu/subMenu.jsp";
     }
     
-    public ModelAndView capBankMaint(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
+    @RequestMapping
+    public String capBankMaint(ModelMap model, int id) {
+        CapBankDevice capBank = cache.getCapBankDevice(id);
         
-        mav.addObject("paoId", id);
+        model.addAttribute("paoId", id);
         
         String paoName = capBank.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
         LiteYukonPAObject lite = paoDao.getLiteYukonPAO(capBank.getControlDeviceID());
-        boolean scanDisabled = !CBCUtils.isTwoWay( lite );
-        mav.addObject("scanDisabled", scanDisabled);
+        boolean scanDisabled = !CapControlUtils.isTwoWay( lite );
+        model.addAttribute("scanDisabled", scanDisabled);
         
-        int scanCmdId = CapControlCommand.SCAN_2WAY_DEV;
-        mav.addObject("scanCmdId", scanCmdId);
+        int scanCmdId = CommandType.SEND_SCAN_2WAY_DEVICE.getCommandId();
+        model.addAttribute("scanCmdId", scanCmdId);
         
-        int enableOVUVCmdId = CapControlCommand.BANK_ENABLE_OVUV;
-        mav.addObject("enableOVUVCmdId", enableOVUVCmdId);
+        int enableOvUvCmdId = CommandType.SEND_ENABLE_OVUV.getCommandId();
+        model.addAttribute("enableOvUvCmdId", enableOvUvCmdId);
         
-        int sendTimeSyncCmdId = CapControlCommand.SEND_TIMESYNC;
-        mav.addObject("sendTimeSyncCmdId", sendTimeSyncCmdId);
+        int sendTimeSyncCmdId = CommandType.SEND_TIME_SYNC.getCommandId();
+        model.addAttribute("sendTimeSyncCmdId", sendTimeSyncCmdId);
         
-        int syncCapBankState = CapControlCommand.SYNC_CBC_CAPBANK_STATE;
-        mav.addObject("syncCapBankState", syncCapBankState);
+        int syncCapBankState = CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId();
+        model.addAttribute("syncCapBankState", syncCapBankState);
         
-        mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("oneline/popupmenu/capBankMaint.jsp");
-        return mav;
+        model.addAttribute("controlType", CapControlType.CAPBANK);
+        return "oneline/popupmenu/capBankMaint.jsp";
     }
 
-    public ModelAndView capBankDBChange(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
+    @RequestMapping
+    public String capBankDBChange(ModelMap model, int id) {
+        CapBankDevice capBank = cache.getCapBankDevice(id);
         
-        mav.addObject("paoId", id);
+        model.addAttribute("paoId", id);
         
         String paoName = capBank.getCcName();
-        mav.addObject("paoName", paoName);
+        model.addAttribute("paoName", paoName);
         
-        int resetOpcount = CapControlCommand.RESET_OPCOUNT;
-        mav.addObject("resetOpcount", resetOpcount);
+        int resetOpcount = CommandType.RESET_DAILY_OPERATIONS.getCommandId();
+        model.addAttribute("resetOpcount", resetOpcount);
 
-        LiteState[] states = CBCUtils.getCBCStateNames();
-        mav.addObject("states", states);
+        LiteState[] states = CapControlUtils.getCBCStateNames();
+        model.addAttribute("states", states);
         
-        mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("oneline/popupmenu/capBankDBChange.jsp");
-        return mav;
+        model.addAttribute("controlType", CapControlType.CAPBANK);
+        return "oneline/popupmenu/capBankDBChange.jsp";
     }
     
-    public ModelAndView pointTimestamp(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping
+    public String pointTimestamp(ModelMap model, int cbcID) {
+        String paoName = paoDao.getYukonPAOName(cbcID);
+        model.addAttribute("paoName", paoName);
         
-        ModelAndView mav = new ModelAndView("cbcPointTimestamps.jsp");
-        int cbcId = ServletRequestUtils.getRequiredIntParameter(request, "cbcID");
-        
-        String paoName = paoDao.getYukonPAOName(cbcId);
-        mav.addObject("paoName", paoName);
-        
-        Map<String, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
-        mav.addObject("pointMap", pointTimestamps);
+        Map<String, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcID);
+        model.addAttribute("pointMap", pointTimestamps);
         
         List<LitePoint> pointList = new ArrayList<LitePoint>();
         for(List<LitePoint> list : pointTimestamps.values()) {
@@ -444,17 +405,13 @@ public class OnelinePopupMenuController extends MultiActionController {
         cachingPointFormattingService.addLitePointsToCache(pointList);
         pointUpdateBackingService.notifyOfImminentPoints(pointList);
         
-        return mav;
+        return "oneline/cbcPoints.jsp";
     }
     
-    public ModelAndView varChangePopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
-        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
-        
-        mav.addObject("paoId", id);
-        mav.addObject("returnUrl", returnUrl);
+    @RequestMapping
+    public String varChangePopup(ModelMap model, int id) {
+        final CapBankDevice capBank = cache.getCapBankDevice(id);
+        model.addAttribute("paoId", id);
         
         String before = capBank.getBeforeVars().trim();
         String beforeRow = "";
@@ -528,58 +485,49 @@ public class OnelinePopupMenuController extends MultiActionController {
             changeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + change + "</td>";
         }
         
-        mav.addObject("beforeRow", beforeRow);
-        mav.addObject("afterRow", afterRow);
-        mav.addObject("changeRow", changeRow);
-        mav.setViewName("oneline/popupmenu/varChangePopup.jsp");
-        return mav;
+        model.addAttribute("beforeRow", beforeRow);
+        model.addAttribute("afterRow", afterRow);
+        model.addAttribute("changeRow", changeRow);
+        
+        return "oneline/popupmenu/varChangePopup.jsp";
     }
     
-    public ModelAndView moveBankBackPopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
-
-    	int cmdId = CapControlCommand.RETURN_BANK_TO_FEEDER;
-        
-        mav.addObject("paoId", id);
-        mav.addObject("cmdId", cmdId);
-        mav.addObject("returnUrl", returnUrl);
-        mav.setViewName("oneline/popupmenu/moveBankBackPopup.jsp");
-        return mav;
+    @RequestMapping
+    public String moveBankBackPopup(ModelMap model, int id) {
+    	int cmdId = CommandType.RETURN_CAP_TO_ORIGINAL_FEEDER.getCommandId();
+        model.addAttribute("paoId", id);
+        model.addAttribute("cmdId", cmdId);
+        return "oneline/popupmenu/moveBankBackPopup.jsp";
     }
 
-    public ModelAndView warningInfoPopop(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+    @RequestMapping
+    public String warningInfoPopop(ModelMap model, YukonUserContext context, int id) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         
         List<String> infoList;
         
         /* Handle each type for the warning popup. */
-        if( capControlCache.isCapBank(id) ) {
-        	infoList = capbankWarning(id);
-        } else if(capControlCache.isFeeder(id)) {
-        	infoList = feederWarning(id);
+        if( cache.isCapBank(id) ) {
+        	infoList = capbankWarning(id, messageSourceAccessor);
+        } else if(cache.isFeeder(id)) {
+        	infoList = feederWarning(id, messageSourceAccessor);
         } else {//subbus
-        	infoList = subBusWarning(id);
+        	infoList = subBusWarning(id, messageSourceAccessor);
         }
         
-        mav.addObject("infoList", infoList);
+        model.addAttribute("infoList", infoList);
         
-        mav.setViewName("oneline/popupmenu/warningInfoPopup.jsp");
-        return mav;
+        return "oneline/popupmenu/warningInfoPopup.jsp";
     }
 
-    public ModelAndView moveBankPopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");       
-        mav.addObject("paoId", id);
-        mav.setViewName("oneline/popupmenu/moveBankPopup.jsp");
-        return mav;
+    @RequestMapping
+    public String moveBankPopup(ModelMap model, YukonUserContext context, int id) {
+        model.addAttribute("paoId", id);
+        return "oneline/popupmenu/moveBankPopup.jsp";
     }
 
-    private List<String> subBusWarning(int id) {
-        final SubBus sub = capControlCache.getSubBus(id);
+    private List<String> subBusWarning(int id, MessageSourceAccessor accessor) {
+        final SubBus sub = cache.getSubBus(id);
         
         boolean likeDay = sub.getLikeDayControlFlag();
         boolean voltR = sub.getVoltReductionFlag();
@@ -587,31 +535,31 @@ public class OnelinePopupMenuController extends MultiActionController {
         List<String> infoList = new ArrayList<String>();
 
         if (likeDay) {
-        	infoList.add(CBCDisplay.WARNING_LIKE_DAY);
+        	infoList.add(accessor.getMessage("yukon.web.modules.capcontrol.likeDay"));
         }
         if (voltR) {
-        	infoList.add(CBCDisplay.WARNING_VOLT_REDUCTION);
+        	infoList.add(accessor.getMessage("yukon.web.modules.capcontrol.voltReduction"));
         }
 
         return infoList;
     }
     
-    private List<String> feederWarning(int id) {
-        final Feeder feeder = capControlCache.getFeeder(id);
+    private List<String> feederWarning(int id, MessageSourceAccessor accessor) {
+        final Feeder feeder = cache.getFeeder(id);
         
         boolean likeDay = feeder.getLikeDayControlFlag();
         
         List<String> infoList = new ArrayList<String>();
 
         if (likeDay) {
-        	infoList.add(CBCDisplay.WARNING_LIKE_DAY);
+        	infoList.add(accessor.getMessage("yukon.web.modules.capcontrol.likeDay"));
         }
 
         return infoList;
     }
     
-    private List<String> capbankWarning(int id) {
-        final CapBankDevice cap = capControlCache.getCapBankDevice(id);
+    private List<String> capbankWarning(int id, MessageSourceAccessor accessor) {
+        final CapBankDevice cap = cache.getCapBankDevice(id);
         
         boolean ovuv = cap.getOvuvSituationFlag();
         boolean maxOp = cap.getMaxDailyOperationHitFlag();
@@ -619,38 +567,36 @@ public class OnelinePopupMenuController extends MultiActionController {
         List<String> infoList = new ArrayList<String>();
 
         if (maxOp) {
-        	infoList.add(CBCDisplay.WARNING_MAX_DAILY_OPS);
+        	infoList.add(accessor.getMessage("yukon.web.modules.capcontrol.maxDailyOps"));
         }
         if (ovuv) {
-        	infoList.add(CBCDisplay.WARNING_OVUV_SITUATION);
+        	infoList.add(accessor.getMessage("yukon.web.modules.capcontrol.ovuvSituation"));
         }
         return infoList;
     }
     
+    @Autowired
     public void setCapControlCache(CapControlCache capControlCache) {
-        this.capControlCache = capControlCache;
+        this.cache = capControlCache;
     }
 
+    @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
 
-    public void setCapControlCommentService(
-            CapControlCommentService capControlCommentService) {
+    @Autowired
+    public void setCapControlCommentService(CapControlCommentService capControlCommentService) {
         this.capControlCommentService = capControlCommentService;
     }
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-    
+    @Autowired
     public void setCapControlDao(CapControlDao capControlDao) {
         this.capControlDao = capControlDao;
     }
 
 	@Autowired
-	public void setCachingPointFormattingService(
-			CachingPointFormattingService cachingPointFormattingService) {
+	public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
 		this.cachingPointFormattingService = cachingPointFormattingService;
 	}
 		
@@ -660,4 +606,14 @@ public class OnelinePopupMenuController extends MultiActionController {
 		this.pointUpdateBackingService = pointUpdateBackingService;
 	}
     
+	@Autowired
+	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+	
+	@Autowired
+	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+	
 }

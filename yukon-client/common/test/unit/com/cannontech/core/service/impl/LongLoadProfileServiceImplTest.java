@@ -173,6 +173,11 @@ public class LongLoadProfileServiceImplTest {
 
             @Override
             public void processDatabaseChange(DbChangeType type, DbChangeCategory category, int primaryKey) {
+            }
+
+            @Override
+            public DBPersistent retrieveDBPersistent(DBPersistent dbPersistent) {
+                return null;
             }            
 
         });

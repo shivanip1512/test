@@ -8,6 +8,7 @@ public enum PageTypeEnum {
     DETAIL_CHILD(false),
     DETAIL_CHILD_WITH_INFO(false),
     LANDING(true),
+    NONE(true),
     ;
     
     private final boolean linkable;

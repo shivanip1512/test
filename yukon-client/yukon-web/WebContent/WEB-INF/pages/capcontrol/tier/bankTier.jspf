@@ -1,0 +1,203 @@
+<script type="text/javascript">
+// Add behavior
+Event.observe(window, 'load', function() {
+    $$('tr[id^="tr_cap"]').each(function (row) {
+        var bankId = row.id.split('_')[2];
+        
+        // Add timestamp hover
+        var timestamp = row.down('a[id^="dateTime_"]');
+        timestamp.observe('mouseover', function() {showDynamicPopupAbove('capBankStatusPopup_' + bankId, 250)});
+        timestamp.observe('mouseout', function() {nd()});
+        
+        if (${hasCapbankControl}) {
+            var parentFeeder = row.down('a.parentFeeder');
+            parentFeeder.addClassName('actsAsAnchor');
+            
+            // Add move back link
+            if (parentFeeder.hasClassName('warning')) {
+                parentFeeder.observe('click', function(event) {getMovedBankMenu(bankId, event)});
+            } else {
+                // Add move link
+                parentFeeder.observe('mouseover', function() {statusMsgAbove(parentFeeder, '${moveBank}')});
+                parentFeeder.observe('mouseout', function() {nd()});
+                var title = parentFeeder.down('span.moveBankTitle').innerHTML;
+                parentFeeder.observe('click', function() {showDialog(title, '/spring/capcontrol/move/bankMove?bankid=' + bankId)});
+            }
+            
+            // Add menus
+            var bankName = row.down('a[id^="bankName"]');
+            bankName.addClassName('actsAsAnchor');
+            bankName.observe('click', function(event) {getCommandMenu(bankId, event)});
+            
+            var bankState = row.down('a[id^="capbankState"]');
+            bankState.addClassName('actsAsAnchor');
+            bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event)});
+        }
+    })
+});
+</script>
+
+<tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
+    
+    <table id="capBankTable" class="compactResultsTable rowHighlighting">
+    
+        <thead>
+            <tr>
+                <th><i:inline key=".cbcName"/></th>
+                <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
+                <th class="nw">
+                    <cti:msg2 var="cbOrderInfo" key=".cbOrderInfo"/>
+                    <i:inline key=".cbName"/>
+                    <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif" onmouseover="statusMsgAbove(this, '${cbOrderInfo}');" >
+                </th>
+                <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
+                <th class="nw">
+                    <cti:msg2 var="stateInfo" key=".stateInfo"/>
+                    <i:inline key="yukon.web.modules.capcontrol.state"/> 
+                    <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif" onmouseover="statusMsgAbove(this,'${stateInfo}');">  
+                </th>
+                <th><i:inline key=".timestamp"/></th>
+                <th><i:inline key=".bankSize"/></th>
+                <th><i:inline key=".parentFeeder"/></th>
+                <th><i:inline key=".dailyMaxTotal"/></th>
+            </tr>
+        </thead>
+        
+        <!-- Reset the alternating row style -->
+        <tags:alternateRowReset/>
+        
+        <c:forEach var="viewableCapBank" items="${capBankList}">
+            
+            <c:set var="bankId" value="${viewableCapBank.capBankDevice.ccId}"/>
+            <c:set var="parentId" value="${viewableCapBank.capBankDevice.parentID}"/>
+            
+            <tr id="tr_cap_${bankId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+                
+                <%-- CBC Name --%>
+                <td class="nw">
+                    <input type="hidden" id="paoId_${bankId}" value="${bankId}">
+                    <c:choose>
+                        <c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
+                            <spring:escapeBody htmlEscape="true">${viewableCapBank.controlDevice.paoName}</spring:escapeBody>
+                        </c:when>
+                        <c:otherwise>
+                            <i:inline key="yukon.web.defaults.dashes"/>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                
+                <%-- CBC Actions --%>
+                <td class="nw">
+                    <c:if test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
+                        <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" styleClass="tierIconLink"/>
+                        <c:if test="${hasEditingRole}">
+                            <cti:img nameKey="copy" href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" styleClass="tierIconLink"/>
+                        </c:if>
+                    </c:if>
+                    <c:if test="${viewableCapBank.twoWayCbc}">
+                        <cti:msg2 var="timestampInfo" key=".timestampInfo"/>
+                        <span onmouseover="statusMsgAbove(this,'${timestampInfo}');">
+                            <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}"/>
+                            <cti:img nameKey="view" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}')" styleClass="tierIconLink"/>
+                        </span>
+                    </c:if>
+                </td>
+                
+                <%-- Bank Name --%>
+                <td>
+                    <a id="bankName_${bankId}">
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_NAME"/>
+                    </a>
+                </td>
+                
+                <%-- Bank Actions --%>
+                <td class="nw">
+                    <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}" styleClass="tierIconLink"/>
+                    <c:if test="${hasEditingRole}">
+                        <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${bankId}" styleClass="tierIconLink"/>
+                    </c:if>
+                    <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
+                        <cti:msg2 var="addInfo" key=".addInfo"/>
+                        <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/>
+                        <span onmouseover="statusMsgAbove(this, '${addInfo}');">
+                            <cti:img nameKey="view" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}')" styleClass="tierIconLink"/>
+                        </span>
+                    </cti:checkRolesAndProperties>
+                </td>
+
+                <%-- State --%>
+                <td class="nw">
+                    <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
+                    
+                    <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
+                        <a id="capbankState_${bankId}">
+                           <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
+                        </a>
+                    </cti:capBankStateColor>
+                    <div id="capBankStatusPopup_${bankId}" style="display: none">
+                        <table class='compactResultsTable'>
+                            <tr>
+                                <th><i:inline key=".kvar"/></th>
+                                <th class="nw"><i:inline key=".phaseA"/></th>
+                                <th class="nw"><i:inline key=".phaseB"/></th>
+                                <th class="nw"><i:inline key=".phaseC"/></th>
+                                <th><i:inline key=".total"/></th>
+                            </tr>
+                            <tr>
+                                <td><i:inline key=".before"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_BEFORE_TOTAL"/></td>
+                            </tr>
+                            <tr>
+                                <td><i:inline key=".after"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_AFTER_TOTAL"/></td>
+                            </tr>
+                            <tr>
+                                <td><i:inline key=".change"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
+                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                
+                <%-- Timestamp --%>
+                <td>
+                    <a id="dateTime_${bankId}">
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
+                    </a>
+                </td>
+                
+                <%-- Bank Size --%>
+                <td>
+                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_SIZE"/>
+                </td>
+                
+                <%-- Parent Feeder --%>
+                <td class="nw">
+                    <a class="parentFeeder<c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>">
+                        <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
+                    </a>
+                </td>
+                
+                <%-- Daily/Max/Total Ops --%>
+                <td>
+                    <a>
+                      <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
+                    </a>
+                </td>
+            </tr>
+            
+        </c:forEach>
+        
+    </table>
+        
+</tags:boxContainer2>

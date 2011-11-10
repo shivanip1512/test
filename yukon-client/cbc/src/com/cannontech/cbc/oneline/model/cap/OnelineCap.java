@@ -10,8 +10,8 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
-import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -19,11 +19,11 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
@@ -72,7 +72,7 @@ public class OnelineCap extends OnelineObject {
         initEditorImage();
         initInformationImage();
         
-        if (CBCUtils.isTwoWay(PAOGroups.getDeviceType(getStreamable().getControlDeviceType()))) {
+        if (CapControlUtils.isTwoWay(PAOGroups.getDeviceType(getStreamable().getControlDeviceType()))) {
             initPointTimestampsImage();
         }
 
@@ -169,9 +169,9 @@ public class OnelineCap extends OnelineObject {
         CapBankDevice capBank = getCurrentCapFromMessage();
         
         /* Choose which warning image to use */
-        CBCDisplay cbcDisplay = new CBCDisplay(userContext);
-        String type = (String) cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_TEXT);
-        String color = (String) cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_COLOR);
+        UpdaterHelper updaterHelper = YukonSpringHook.getBean("updaterHelper", UpdaterHelper.class);
+        String type = (String) updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_TEXT, userContext);
+        String color = (String) updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_COLOR, userContext);
         String image;
         if( color.equalsIgnoreCase("Yellow")) {
         	if( type.equalsIgnoreCase("Local")) {

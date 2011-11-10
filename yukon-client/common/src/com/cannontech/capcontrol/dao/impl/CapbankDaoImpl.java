@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
@@ -149,9 +149,9 @@ public class CapbankDaoImpl implements CapbankDao {
         
         String result = yukonJdbcTemplate.queryForString(sql);
         
-        CapBankOperationalState state = CapBankOperationalState.getStateByName(result);
+        BankOpState state = BankOpState.getStateByName(result);
     
-        return state == CapBankOperationalState.SWITCHED;
+        return state == BankOpState.SWITCHED;
     }
     
     @Override

@@ -11,9 +11,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.capcontrol.VoltageRegulatorUpdaterTypeEnum;
-import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 
 public class VoltageRegulatorOpTimeHandler implements VoltageRegulatorUpdaterHandler {
     private static final Logger log = YukonLogManager.getLogger(VoltageRegulatorOpTimeHandler.class);

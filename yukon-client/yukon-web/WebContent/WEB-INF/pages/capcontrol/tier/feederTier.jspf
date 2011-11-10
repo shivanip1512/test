@@ -1,0 +1,171 @@
+<c:if test="${hasFeederControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="feederState"]');
+    </script>
+</c:if>
+
+<tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true">
+
+    <table id="fdrTable" class="compactResultsTable rowHighlighting">
+        
+        <thead>
+            <tr>
+                <th><i:inline key=".name"/></th>
+                <th><i:inline key=".actions"/></th>
+                <th><i:inline key=".state"/></th>
+                <th><i:inline key=".target"/></th>
+                <th><i:inline key=".load"/></th>
+                <th><i:inline key=".timestamp"/></th>
+                <th><i:inline key=".pfactorEstimated"/></th>
+                <th><i:inline key=".kwVolts"/></th>
+                <th><i:inline key=".dailyMax"/></th>
+             </tr>
+        </thead>
+        
+        <tags:alternateRowReset/>
+        
+        <c:forEach var="viewfeeder" items="${feederList}">
+            <c:set var="feederId" value="${viewfeeder.feeder.ccId}"/>
+            <c:set var="parentId" value="${viewfeeder.feeder.parentID}"/>
+            
+            <tr id="tr_feeder_${feederId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+            
+                <%-- Name --%>
+                <td class="nw">
+                    <input type="hidden" id="paoId_${feederId}" value="${feederId}">
+                    <span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
+                        <spring:escapeBody htmlEscape="true">${viewfeeder.feeder.ccName}</spring:escapeBody>
+                    </span>
+                </td>
+                
+                <%-- Actions --%>
+                <td class="nw">
+                    <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${feederId}" styleClass="tierIconLink"/>
+                    <c:if test="${hasEditingRole}">
+                        <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${feederId}" styleClass="tierIconLink"/>
+                    </c:if>
+                    <cti:img nameKey="location" href="/spring/capcontrol/capbank/capBankLocations?value=${feederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
+                </td>
+                
+                <%-- State --%>
+                <td class="nw">
+                    <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
+                    <a id="feederState_${feederId}">
+                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
+                    </a>
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('feederState_${feederId}')" initialize="true" value="FEEDER/${feederId}/STATE"/>
+                </td>
+                
+                <%-- Target --%>
+                <td>
+                    <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
+                    <c:choose>
+                        <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
+                            <span <c:if test="${viewfeeder.showTargetTooltip}">
+                                    onmouseover="showDynamicPopupAbove('feederPFPopup_${feederId}_${isPowerFactorControlled}');"
+                                    onmouseout="nd();"
+                                </c:if>>
+                                <c:choose>
+                                    <c:when test="${viewfeeder.ivvcControlled}">
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
+                                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcLower"/></span>
+                                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
+                                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET" />
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </c:when>
+                        <c:otherwise>
+                           <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <div class="ccPFPopup" id="feederPFPopup_${feederId}_${isPowerFactorControlled}" style="display: none;">
+                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
+                   </div>
+                </td>
+                
+                <%-- kVAR Load / Est. --%>
+                <td class="nw">
+                    <c:choose>
+                        <c:when test="${viewfeeder.feeder.usePhaseData}">
+                            <a onmouseover="showDynamicPopupAbove('feederVarLoadPopup_${feederId}');" onmouseout="nd();">
+                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
+                                <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
+                                    <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                                </cti:classUpdater>    
+                                <i:inline key=".statSeparator"/> 
+                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
+                            </a>
+                          </c:when>
+                          <c:otherwise>
+                            <a>
+                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
+                                <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
+                                    <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                                 </cti:classUpdater>
+                                <i:inline key=".statSeparator"/>  
+                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
+                            </a>
+                          </c:otherwise>
+                    </c:choose>
+                    <div class="ccVarLoadPopup" id="feederVarLoadPopup_${feederId}" style="display: none;">
+                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
+                    </div>
+                </td>
+                
+                <%-- Date/Time --%>
+                <td>
+                    <a id="dateTime_${feederId}"><cti:capControlValue paoId="${feederId}" type="FEEDER" format="DATE_TIME"/></a>
+                </td>
+                
+                <%-- PFactor / Est. --%>
+                <td>
+                    <a id="pFactor_${feederId}"><cti:capControlValue paoId="${feederId}" type="FEEDER" format="PFACTOR"/></a>
+                </td>
+                
+                <%-- kW / Volts--%>
+                <td class="nw">
+                    <a id="kwVolts_${feederId}">
+                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KW"/> 
+                        <cti:classUpdater type="FEEDER" identifier="${feederId}/WATT_QUALITY">
+                            <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                        </cti:classUpdater>
+                        <i:inline key=".statSeparator"/> 
+                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="VOLTS"/>
+                        <cti:classUpdater type="FEEDER" identifier="${feederId}/VOLT_QUALITY">
+                            <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                        </cti:classUpdater>
+                    </a>
+                </td>
+                
+                <%-- Daily / Max Ops --%>
+                <td>
+                    <a id="dailyMaxOps_${feederId}">
+                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="DAILY_MAX_OPS"/>
+                    </a>
+                </td>
+            </tr>
+        </c:forEach>
+
+    </table>
+
+</tags:boxContainer2>
+
+<c:if test="${fn:length(feederList) > 1}">
+    <tags:boxContainerFooter>
+        <cti:labeledImg nameKey="filter"/>
+        <select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
+            <option><i:inline key=".allFeeders"/></option>
+            <c:forEach var="feeder" items="${feederList}">
+                <option value="${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></option>
+            </c:forEach>
+        </select>
+    </tags:boxContainerFooter>
+</c:if>
+
+<br>

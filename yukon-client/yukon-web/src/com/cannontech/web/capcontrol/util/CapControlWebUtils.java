@@ -6,12 +6,18 @@ import java.util.List;
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
@@ -23,12 +29,6 @@ import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.models.ViewableSubStation;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.yukon.cbc.SubStation;
 import com.google.common.collect.ImmutableSet;
 
 public class CapControlWebUtils {
@@ -123,8 +123,8 @@ public class CapControlWebUtils {
             
             viewable.setCapBankDevice(cbc);
             viewable.setControlDevice(controller);
-            viewable.setTwoWayCbc(CBCUtils.isTwoWay(controller));
-            viewable.setDevice701x(CBCUtils.is701xDevice(controller));
+            viewable.setTwoWayCbc(CapControlUtils.isTwoWay(controller));
+            viewable.setDevice701x(CapControlUtils.is701xDevice(controller));
             
             viewableList.add(viewable);
         }
@@ -163,7 +163,7 @@ public class CapControlWebUtils {
             List<CapBankDevice> capBanks = cache.getCapBanksBySubStation(subStation);
             List<Feeder> feeders = cache.getFeedersBySubStation(subStation);
             
-            viewable.setSubStationName(subStation.getCcName());
+            viewable.setName(subStation.getCcName());
             viewable.setFeederCount(feeders.size());
             viewable.setCapBankCount(capBanks.size());
             
@@ -176,7 +176,7 @@ public class CapControlWebUtils {
     public static List<NavigableArea> buildSimpleHierarchy(){
         List<NavigableArea> areas = new ArrayList<NavigableArea>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-        for(CCArea area : cache.getCbcAreas()) {
+        for(Area area : cache.getCbcAreas()) {
             NavigableArea navigableArea = new NavigableArea(getSimpleSubstations(area));
             navigableArea.setName(area.getCcName());
             navigableArea.setId(area.getCcId());
@@ -185,7 +185,7 @@ public class CapControlWebUtils {
         return areas;
     }
     
-    public static List<NavigableSubstation> getSimpleSubstations(CCArea area){
+    public static List<NavigableSubstation> getSimpleSubstations(Area area){
         List<NavigableSubstation> substations = new ArrayList<NavigableSubstation>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         for(SubStation substation : cache.getSubstationsByArea(area.getCcId())) {

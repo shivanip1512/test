@@ -3,7 +3,7 @@ package com.cannontech.web.capcontrol.models;
 import java.util.List;
 
 import com.cannontech.capcontrol.ControlMethod;
-import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.message.capcontrol.streamable.Feeder;
 
 public class ViewableFeeder {
 

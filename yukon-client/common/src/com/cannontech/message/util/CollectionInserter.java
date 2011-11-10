@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.yukon.cbc.SerializableByIdentifier;
+import com.cannontech.message.capcontrol.model.SerializableByIdentifier;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualOutputStream;
 

@@ -1,32 +1,26 @@
 package com.cannontech.web.capcontrol;
 
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-
-import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@Controller("/tier/cceditorpopup/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-public class CCEditorController implements Controller {
+public class CCEditorController {
     private CapControlDao capControlDao;
     
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        
-        List<OrphanCBC> orphans = capControlDao.getOrphanedCBCs();
-        mav.addObject("orphans", orphans);
-        
-        mav.setViewName("tier/popupmenu/orphanedCBCPopup.jsp");
-        return mav;
+    @RequestMapping
+    public String orphans(ModelMap model) {
+        model.addAttribute("orphans", capControlDao.getOrphanedCBCs());
+        return "tier/popupmenu/orphanedCBCPopup.jsp";
     }
 
+    @Autowired
     public void setCapControlDao(CapControlDao capControlDao) {
         this.capControlDao = capControlDao;
     }

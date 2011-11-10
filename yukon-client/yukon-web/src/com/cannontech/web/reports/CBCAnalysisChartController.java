@@ -28,9 +28,9 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 
 @CheckFalseRoleProperty(YukonRoleProperty.HIDE_REPORTS)
 public class CBCAnalysisChartController extends MultiActionController  {
@@ -130,7 +130,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    	}
     	    	else if(capControlCache.isFeeder(targetId)) {
     	    		
-    	    		com.cannontech.yukon.cbc.Feeder feeder_cache = capControlCache.getFeeder(targetId);
+    	    		com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
     	    		com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.getById(targetId);
     	    		
     	    		if ("Y".equalsIgnoreCase(feeder_dao.getUsePhaseData())) {

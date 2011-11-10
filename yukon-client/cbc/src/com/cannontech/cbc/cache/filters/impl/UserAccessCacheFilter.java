@@ -7,10 +7,10 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CCSpecialArea;
-import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
 {
@@ -34,8 +34,8 @@ public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
      *  However if they belong to multiple groups, only one groups needs to not be denied in order to see it.
      */
 	public boolean valid(StreamableCapObject capObject) {
-	    if (!(capObject instanceof CCArea || 
-	          capObject instanceof CCSpecialArea)) return false;
+	    if (!(capObject instanceof Area || 
+	          capObject instanceof SpecialArea)) return false;
 	    
         int paoId = capObject.getCcId();
         PaoType type = PaoType.getForDbString(capObject.getCcType());

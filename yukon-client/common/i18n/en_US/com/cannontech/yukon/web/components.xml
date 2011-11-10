@@ -187,6 +187,12 @@
     
     <entry key="yukon.web.components.button.delete.label">Delete</entry>
     
+    <entry key="yukon.web.components.button.execute.label">Execute</entry>
+    
+    <entry key="yukon.web.components.button.stop.label">Stop</entry>
+    
+    <entry key="yukon.web.components.button.start.label">Start</entry>
+    
     <entry key="yukon.web.components.button.next.label">Next</entry>
     <entry key="yukon.web.components.button.previous.label">Previous</entry>
     

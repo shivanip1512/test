@@ -8,8 +8,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.element.StateImage;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 
 public class SubDynamicImage extends StateImage implements OnelineLxElement {
     SubBus subBusMsg;

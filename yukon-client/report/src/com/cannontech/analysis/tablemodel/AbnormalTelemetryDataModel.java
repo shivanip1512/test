@@ -14,10 +14,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.yukon.cbc.SubStation;
 
 public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTelemetryDataModel.ModelRow> implements CapControlFilterable {
     

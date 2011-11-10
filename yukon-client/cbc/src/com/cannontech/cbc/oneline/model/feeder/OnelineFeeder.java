@@ -13,16 +13,16 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
-import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxArrowElement;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
@@ -126,9 +126,8 @@ public class OnelineFeeder extends OnelineObject {
         double imgXPos = startPoint.getX() - 2;
         
         /* Choose which warning image to use */
-        CBCDisplay cbcDisplay = new CBCDisplay(userContext);
-
-        String color = (String) cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_WARNING_IMAGE);
+        UpdaterHelper updaterHelper = YukonSpringHook.getBean("updaterHelper", UpdaterHelper.class);
+        String color = (String) updaterHelper.getFeederValueAt(feeder, UpdaterHelper.UpdaterDataType.FDR_WARNING_IMAGE, userContext);
 
         String image;
         if( color.equalsIgnoreCase("true")) {

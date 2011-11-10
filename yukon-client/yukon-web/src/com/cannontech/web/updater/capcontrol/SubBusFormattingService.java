@@ -1,81 +1,83 @@
 package com.cannontech.web.updater.capcontrol;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.user.YukonUserContext;
 
 public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
 
     @Override
-    protected String getName(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+    protected String getName(final SubBus latestValue, final UpdaterHelper updaterHelper) {
         String name = latestValue.getCcName();
         return name;
     }
 
     @Override
-    protected String getState(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String state = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_CURRENT_STATE_COLUMN);
+    protected String getState(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String state = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_CURRENT_STATE_COLUMN, context);
         return state;
     }
     
     @Override
-    protected String getTargetPeakLead(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN_PEAKLEAD);
+    protected String getTargetPeakLead(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN_PEAKLEAD, context);
         return value;
     }
     
     @Override
-    protected String getTargetPeakLag(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN_PEAKLAG);
+    protected String getTargetPeakLag(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN_PEAKLAG, context);
         return value;
     }
     
     @Override
-    protected String getTargetCloseOpenPercent(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN_CLOSEOPENPERCENT);
+    protected String getTargetCloseOpenPercent(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN_CLOSEOPENPERCENT, context);
         return value;
     }
     
     @Override
-    protected String getTarget(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String target = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN);
+    protected String getTarget(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String target = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN, context);
         return target;
     }
     
     @Override
-    protected String getTargetMessage(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String target = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_POPUP);
+    protected String getTargetMessage(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String target = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_POPUP, context);
         return target;
     }
     
     @Override
-    protected String getDailyMaxOps(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN);
+    protected String getDailyMaxOps(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_DAILY_OPERATIONS_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getWarningFlag(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_WARNING_IMAGE);
+    protected String getWarningFlag(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_WARNING_IMAGE, context);
         return value;
     }
     
     @Override
-    protected String getWarningFlagMessage(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_WARNING_POPUP);
+    protected String getWarningFlagMessage(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_WARNING_POPUP, context);
         return value;
     }
     
     @Override
-    protected String getKVarLoad(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN);
+    protected String getKVarLoad(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_VAR_LOAD_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getKVarLoadEst(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_EST_LOAD_COLUMN);
+    protected String getKVarLoadEst(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_VAR_EST_LOAD_COLUMN, context);
         return value;
     }
     
@@ -83,8 +85,8 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
      * Returns a css class to be updated. 
      */
     @Override
-    protected String getKVarLoadQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_VAR_LOAD_QUALITY);
+    protected String getKVarLoadQuality(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VAR_LOAD_QUALITY, context);
         return value;    
     }
     
@@ -92,8 +94,8 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
      * Returns a css class to be updated. 
      */
     @Override
-    protected String getVoltQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_VOLT_QUALITY);
+    protected String getVoltQuality(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VOLT_QUALITY, context);
         return value;    
     }
     
@@ -101,56 +103,58 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
      * Returns a css class to be updated. 
      */
     @Override
-    protected String getWattQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_WATT_QUALITY);
+    protected String getWattQuality(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_WATT_QUALITY, context);
         return value;    
     }
     
     @Override
-    protected String getKVarLoadMessage(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_POPUP);
+    protected String getKVarLoadMessage(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_VAR_LOAD_POPUP, context);
         return value;
     }
     
     @Override
-    protected String getDateTime(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN);
+    protected String getDateTime(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_TIME_STAMP_COLUMN, context);
         return value;
     }
 
     @Override
-    protected String getPFactor(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN);
+    protected String getPFactor(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_POWER_FACTOR_COLUMN, context);
         return value;
     }
 
     @Override
-    protected String getKw(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN);
+    protected String getKw(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_WATTS_COLUMN, context);
         return value;
     }
 
     @Override
-    protected String getVolts(final SubBus subBus, final CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VOLTS_COLUMN);
+    protected String getVolts(final SubBus subBus, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getSubBusValueAt(subBus, UpdaterHelper.UpdaterDataType.SUB_VOLTS_COLUMN, context);
         return value;
     }
     
     @Override
-    protected String getVerificationFlag(SubBus latestValue, CBCDisplay cbcDisplay) {
+    protected String getVerificationFlag(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         String value = latestValue.getVerificationFlag().toString();
         return value;
     }
     
     @Override
-    protected String getDualBus(SubBus latestValue, CBCDisplay cbcDisplay) {
-        String ret = "Disabled";
+    protected String getDualBus(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        
+        String ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusDisabled");
         
         if (latestValue.getDualBusEnabled()) {        	
         	if (latestValue.getPrimaryBusFlag()) {
-	            ret = "Primary";
+	            ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusPrimary");
 	        } else if (latestValue.getSwitchOverStatus()) {
-	            ret = "Alternate";
+	            ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusAlternate");
 	        }
         }
         
@@ -158,21 +162,23 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     }
     
     @Override
-    protected String getDualBusMessage(SubBus latestValue, CBCDisplay cbcDisplay) {
+    protected String getDualBusMessage(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String ret = "";
         int subbusId = latestValue.getAlternateBusId();
         
         if (subbusId > 0) {
-            LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
+            LiteYukonUser user = context.getYukonUser();
             CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
             SubBus otherBus = cache.getSubBus(subbusId);
             
             if (latestValue.getPrimaryBusFlag()) {
-                ret = "This Substation Bus is operating under dual bus mode, " + otherBus.getCcName() + " is the Alternate Bus.";
+                ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusPrimaryMsg", otherBus.getCcName());
             } else if (latestValue.getSwitchOverStatus()) {
-                ret = "This Substation Bus is operating under dual bus mode, " + otherBus.getCcName() + " is the Primary Bus.";;
+                ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusAlternateMsg", otherBus.getCcName());
             }
         }
         return ret;
     }
+    
 }

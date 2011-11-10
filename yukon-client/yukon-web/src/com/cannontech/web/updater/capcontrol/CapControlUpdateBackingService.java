@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.capcontrol.CapControlFormattingService.Format;
-import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public class CapControlUpdateBackingService implements UpdateBackingService {
     private static final Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");

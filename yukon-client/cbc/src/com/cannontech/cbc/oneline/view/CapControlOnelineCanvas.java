@@ -11,9 +11,9 @@ import java.util.List;
 
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.esub.Drawing;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author alauinger

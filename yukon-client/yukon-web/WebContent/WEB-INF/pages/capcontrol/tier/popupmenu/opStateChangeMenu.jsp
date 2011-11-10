@@ -1,58 +1,60 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
+<cti:msgScope paths="yukon.web.modules.capcontrol.menu">
+
 <c:set var="maxCommentLength" value="35"/>
 
-<script language="JavaScript" type="text/javascript" src="/JavaScript/cconelinepopup.js"></script>
-
-<div style="background: white;">
-    <input type="hidden" id="commentPaoName" value="${paoName}"/>
-    <table width="295px">
-        <tr>
-            <td>
+<div id="menuPopupBoxContainer" class="thinBorder">
+    <div class="titledContainer boxContainer">
+    
+        <div class="titleBar boxContainer_titleBar">
+            <div class="controls" onclick="$('menuPopup').hide()">
+                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
+            </div>
+            <div class="title boxContainer_title">${title}</div>
+        </div>
+        
+        <div class="content boxContainer_content">
+        
+            <div class="changeOpState">
                 <div>
-                    <span >Operational State</span>
-                    <select id="operationalStateValue" size="1">
-                    <c:forEach items="${allowedOperationStates}" var="currentState">
-                        <option value="${currentState}" <c:if test="${operationalState == currentState}">selected</c:if>>${currentState}</option>
-                    </c:forEach>
+                    <span><i:inline key=".opState"/></span>
+                    <select id="newOpState">
+                        <c:forEach items="${allowedOperationStates}" var="state">
+                            <option value="${state}" <c:if test="${currentState == state}">selected</c:if>><i:inline key="${state}"/></option>
+                        </c:forEach>
                     </select>
-                    <input type="hidden" id="operationalStateValue_orig" value="${operationalState}"/>
                 </div>
-                <div id="operationalStateReasonId" style="margin-top: 0.2cm;">
-                    <span >Reason :</span>
-                    <textarea id="operationalStateReason" style="width: 98%;" rows="2">${operationalStateReason}</textarea>
+                <div>
+                    <div><i:inline key=".reason"/></div>
+                    <textarea id="coReason" rows="3" style="width:100%;">${reason}</textarea>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <select onchange="$('operationalStateReason').value = this.options[this.selectedIndex].value;">
-                    <option>&lt;Choose a previously entered comment&gt;</option>
-                    <c:forEach var="comment" items="${comments}">
-                        <c:choose>
-                            <c:when test="${fn:length(comment) > maxCommentLength}">
-                                <c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}"/>
-                                <c:set var="formattedComment" value="${subString}..."/>   
-                            </c:when>
-                            <c:otherwise>
-                                <c:set var="formattedComment" value="${comment}"/>
-                            </c:otherwise>
-                        </c:choose>
-                        <option value="${formattedComment}">${formattedComment}</option>
-                    </c:forEach>
-                </select>        
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input type="button" name="execute" value="Execute" onclick="closeTierPopup(); submitChangeOpStateMenu();" />
-           </td>
-        </tr>
-    </table>
-    <input type="hidden" id="url" name="url" value="${url}" />
-    <input type="hidden" id="paoId" name="paoId" value="${paoId}" />
-    <input type="hidden" id="controlType" name="controlType" value="${controlType}" />
-</div>
+                <div>
+                    <select onchange="$('reason').value = this.options[this.selectedIndex].value;">
+                        <option><i:inline key=".previousComment"/></option>
+                        <c:forEach var="comment" items="${comments}">
+                            <c:choose>
+                                <c:when test="${fn:length(comment) > maxCommentLength}">
+                                    <c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}"/>
+                                    <c:set var="formattedComment" value="${subString}..."/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="formattedComment" value="${comment}"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <option value="${formattedComment}">${formattedComment}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+                <div class="actionArea">
+                    <cti:button nameKey="execute" onclick="doChangeOpState(${bankId}, $F('newOpState'), $F('coReason'), 'true')"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</cti:msgScope>

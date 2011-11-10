@@ -11,6 +11,7 @@ import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.message.capcontrol.model.CommandType;
 
 public class CapControlCommentServiceImpl implements CapControlCommentService {
     private static final String defaultReason = "";
@@ -66,7 +67,7 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
      */
     public List<String> getLastTenCommentsForActionAndType(final int paoId, final int cmdId) {
         final List<String> list = new ArrayList<String>(10);
-        CommentAction action = CapControlComment.getActionForCommandId(cmdId);
+        CommentAction action = CapControlComment.getActionForCommand(CommandType.getForId(cmdId));
         final List<String> commentList = capControlCommentDao.getLastTenCommentsByActionAndType(paoId, action);
         
         for (String comment : commentList) {

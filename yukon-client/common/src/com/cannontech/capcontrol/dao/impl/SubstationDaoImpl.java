@@ -1,5 +1,6 @@
 package com.cannontech.capcontrol.dao.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.Substation;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -17,7 +20,10 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class SubstationDaoImpl implements SubstationDao {	
@@ -34,6 +40,28 @@ public class SubstationDaoImpl implements SubstationDao {
     @Autowired
     public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Override
+    public Substation getSubstationById (final int id) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAOName, ypo.Type, ypo.Description, ypo.DisableFlag, s.MapLocationId, s.voltReductionPointId");
+        sql.append("FROM YukonPAObject ypo");
+        sql.append("JOIN CapControlSubstation s ON s.SubstationID = ypo.PAObjectID");
+        sql.append("WHERE PAObjectID").eq(id);
+        
+        return yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<Substation>() {
+            @Override
+            public Substation mapRow(YukonResultSet rs) throws SQLException {
+                Substation sub = new Substation(new PaoIdentifier(id, rs.getEnum("type", PaoType.class)));
+                sub.setName(rs.getString("paoName"));
+                sub.setDisabled(rs.getEnum("DisableFlag", YNBoolean.class).getBoolean());
+                sub.setDescription(rs.getString("Description"));
+                sub.setMapLocationId(rs.getString("MapLocationId"));
+                sub.setVoltReductionPointId(rs.getInt("voltReductionPointId"));
+                return sub;
+            }
+        });
     }
     
     @Override 

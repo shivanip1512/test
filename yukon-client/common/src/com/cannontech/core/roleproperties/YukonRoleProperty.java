@@ -134,7 +134,7 @@ public enum YukonRoleProperty {
     HIDE_ONELINE(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_ONELINE, booleanType()),
     CAP_CONTROL_INTERFACE(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CAP_CONTROL_INTERFACE, stringType()),
     CBC_CREATION_NAME(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_CREATION_NAME, stringType()),
-    PFACTOR_DECIMAL_PLACES(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.PFACTOR_DECIMAL_PLACES, stringType()),
+    PFACTOR_DECIMAL_PLACES(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.PFACTOR_DECIMAL_PLACES, integerType()),
     CBC_ALLOW_OVUV(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_ALLOW_OVUV, booleanType()),
     CBC_DATABASE_EDIT(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT, booleanType()),
     SHOW_FLIP_COMMAND(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.SHOW_FLIP_COMMAND, booleanType()),

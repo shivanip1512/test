@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.search.SearchResult;
 
 public interface SubstationDao {
@@ -24,4 +25,6 @@ public interface SubstationDao {
     public List<Integer> getAllSubstationIds();
     
     public int getSubstationIdByName( String name )  throws EmptyResultDataAccessException;
+
+    public Substation getSubstationById(int id);
 }

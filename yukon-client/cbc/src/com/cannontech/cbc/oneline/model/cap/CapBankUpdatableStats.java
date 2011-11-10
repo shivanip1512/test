@@ -9,11 +9,11 @@ import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
-import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.CapBankDevice;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxAbstractView;
@@ -31,7 +31,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     private LxAbstractGraph graph;
     private OnelineCap parentCap;
     private YukonUserContext userContext;
-    private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
+    private Hashtable<Integer, UpdaterHelper.UpdaterDataType> propColumnMap = new Hashtable<Integer, UpdaterHelper.UpdaterDataType>();
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
     private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
 
@@ -61,12 +61,12 @@ public class CapBankUpdatableStats extends LxAbstractView implements
 
     private void initPropColumnMap() {
         propColumnMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP,
-                CBCDisplay.CB_SHORT_TIME_STAMP_COLUMN);
+                UpdaterHelper.UpdaterDataType.CB_SHORT_TIME_STAMP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE,
-                          CBCDisplay.CB_BANK_SIZE_COLUMN);
+                          UpdaterHelper.UpdaterDataType.CB_BANK_SIZE_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT,
-                CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, CBCDisplay.CB_CONTROLLER);
+                UpdaterHelper.UpdaterDataType.CB_DAILY_MAX_TOTAL_OP_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, UpdaterHelper.UpdaterDataType.CB_CONTROLLER);
     }
 
     private CapBankDevice getStreamable() {
@@ -95,7 +95,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         this.graph = graph;
     }
 
-    public Hashtable<Integer, Integer> getPropColumnMap() {
+    public Hashtable<Integer, UpdaterHelper.UpdaterDataType> getPropColumnMap() {
         return propColumnMap;
     }
 

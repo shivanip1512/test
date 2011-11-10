@@ -7,7 +7,7 @@ import com.cannontech.common.pao.YukonPao;
 
 public class CapbankAdditional implements YukonPao {
 
-	PaoIdentifier paoIdentifier;
+	private PaoIdentifier paoIdentifier;
 	private int maintenanceAreaId;
 	private int poleNumber;
 	private int commStrength;

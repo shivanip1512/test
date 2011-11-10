@@ -10,11 +10,11 @@ import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
-import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.Feeder;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxAbstractView;
@@ -48,7 +48,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
     private OnelineFeeder parent;
     private YukonUserContext userContext;
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
-    private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
+    private Hashtable<Integer, UpdaterHelper.UpdaterDataType> propColumnMap = new Hashtable<Integer, UpdaterHelper.UpdaterDataType>();
     private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
 
     public FeederUpdatableStats(LxGraph graph, OnelineFeeder parent) {
@@ -84,21 +84,21 @@ public class FeederUpdatableStats extends LxAbstractView implements
 
     private void initPropColumnMap() {
         propColumnMap.put(CBCOnelineSettingsRole.FDR_TIMESTAMP,
-                          CBCDisplay.FDR_SHORT_TIME_STAMP_COLUMN);        
+                          UpdaterHelper.UpdaterDataType.FDR_SHORT_TIME_STAMP_COLUMN);        
         propColumnMap.put(CBCOnelineSettingsRole.FDR_KVAR,
-                          CBCDisplay.FDR_ONELINE_VAR_LOAD_COLUMN);
+                          UpdaterHelper.UpdaterDataType.FDR_ONELINE_VAR_LOAD_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_PF,
-                          CBCDisplay.FDR_POWER_FACTOR_COLUMN);
+                          UpdaterHelper.UpdaterDataType.FDR_POWER_FACTOR_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT,
-                          CBCDisplay.FDR_ONELINE_WATTS_COLUMN);
+                          UpdaterHelper.UpdaterDataType.FDR_ONELINE_WATTS_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_OP_CNT,
-                          CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN);
+                          UpdaterHelper.UpdaterDataType.FDR_DAILY_OPERATIONS_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_VOLT,
-                          CBCDisplay.FDR_ONELINE_VOLTS_COLUMN);
+                          UpdaterHelper.UpdaterDataType.FDR_ONELINE_VOLTS_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_TARGET,
-                          CBCDisplay.FDR_TARGET_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT_VOLT, CBCDisplay.FDR_ONELINE_WATTS_VOLTS_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_THREE_PHASE, CBCDisplay.FDR_ONELINE_THREE_PHASE_COLUMN);
+                          UpdaterHelper.UpdaterDataType.FDR_TARGET_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT_VOLT, UpdaterHelper.UpdaterDataType.FDR_ONELINE_WATTS_VOLTS_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_THREE_PHASE, UpdaterHelper.UpdaterDataType.FDR_ONELINE_THREE_PHASE_COLUMN);
     }
 
     private Feeder getStreamable() {
@@ -128,7 +128,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
         graph = (LxGraph) g;
     }
 
-    public Hashtable<Integer, Integer> getPropColumnMap() {
+    public Hashtable<Integer, UpdaterHelper.UpdaterDataType> getPropColumnMap() {
         return propColumnMap;
     }
 

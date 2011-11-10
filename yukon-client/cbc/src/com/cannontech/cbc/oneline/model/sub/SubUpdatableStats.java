@@ -10,12 +10,12 @@ import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
-import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxAbstractView;
@@ -55,7 +55,7 @@ public class SubUpdatableStats extends LxAbstractView implements
     private LxGraph graph;
     private SubBus subBus;
     private YukonUserContext userContext;
-    public static Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
+    public static Hashtable<Integer, UpdaterHelper.UpdaterDataType> propColumnMap = new Hashtable<Integer, UpdaterHelper.UpdaterDataType>();
     public static Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();;
     public List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
 
@@ -87,16 +87,16 @@ public class SubUpdatableStats extends LxAbstractView implements
     }
 
     private void initPropColumnMap() {
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_TARGET, CBCDisplay.SUB_TARGET_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_TIMESTAMP, CBCDisplay.SUB_SHORT_TIME_STAMP_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_VARLOAD, CBCDisplay.SUB_ONELINE_KVAR_LOAD_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_THREE_PHASE, CBCDisplay.SUB_ONELINE_THREE_PHASE_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD, CBCDisplay.SUB_ONELINE_KVAR_ESTMATED_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR, CBCDisplay.SUB_ONELINE_PF_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, CBCDisplay.SUB_ONELINE_EST_PF_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS, CBCDisplay.SUB_ONELINE_WATT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS, CBCDisplay.SUB_ONELINE_VOLT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, CBCDisplay.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_TARGET, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_TIMESTAMP, UpdaterHelper.UpdaterDataType.SUB_SHORT_TIME_STAMP_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_VARLOAD, UpdaterHelper.UpdaterDataType.SUB_ONELINE_KVAR_LOAD_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_THREE_PHASE, UpdaterHelper.UpdaterDataType.SUB_ONELINE_THREE_PHASE_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD, UpdaterHelper.UpdaterDataType.SUB_ONELINE_KVAR_ESTMATED_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR, UpdaterHelper.UpdaterDataType.SUB_ONELINE_PF_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, UpdaterHelper.UpdaterDataType.SUB_ONELINE_EST_PF_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS, UpdaterHelper.UpdaterDataType.SUB_ONELINE_WATT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS, UpdaterHelper.UpdaterDataType.SUB_ONELINE_VOLT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, UpdaterHelper.UpdaterDataType.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
 
     }
 
@@ -205,7 +205,7 @@ public class SubUpdatableStats extends LxAbstractView implements
 
     }
 
-    public Hashtable<Integer, Integer> getPropColumnMap() {
+    public Hashtable<Integer, UpdaterHelper.UpdaterDataType> getPropColumnMap() {
         return propColumnMap;
     }
 

@@ -118,7 +118,7 @@ public class LabeledImageTag extends ImageTag {
             imgClass += " hoverableImage";
         }
         
-        out.write("<img class=\"" + imgClass + "\" src=\"");
+        out.write("<img alt=\"\" class=\"" + imgClass + "\" src=\"");
         out.write(imageUrl);
         out.write("\">");
     }

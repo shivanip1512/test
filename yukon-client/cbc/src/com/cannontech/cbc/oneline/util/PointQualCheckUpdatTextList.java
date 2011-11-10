@@ -1,8 +1,8 @@
 package com.cannontech.cbc.oneline.util;
 
 import com.cannontech.cbc.oneline.model.UpdatableStats;
-import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.yukon.cbc.PointQualityCheckable;
+import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.message.capcontrol.streamable.PointQualityCheckable;
 
 public class PointQualCheckUpdatTextList extends UpdatableTextList implements
         PointQualityCheckable, ExtraUpdatableTextElement {
@@ -44,7 +44,7 @@ public class PointQualCheckUpdatTextList extends UpdatableTextList implements
     }
 
     public boolean conditionToAddIsTrue() { //add the (*) to the display if the quality is NOT normal
-        return !CBCUtils.signalQualityNormal(getPointCheckable(), getType());
+        return !CapControlUtils.signalQualityNormal(getPointCheckable(), getType());
     }
 
 
