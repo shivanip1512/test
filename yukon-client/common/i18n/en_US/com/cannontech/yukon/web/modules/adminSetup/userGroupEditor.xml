@@ -43,11 +43,15 @@
     <entry key="yukon.web.modules.adminSetup.groupPermissions.pageName">Permissions</entry>
     <entry key="yukon.web.modules.adminSetup.groupPermissions.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.groupPermissions.instructions">Instructions: </entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.lm.notes">Use this permission for Load Management. Select items to ALLOW group access.</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.cc.notes">Use this permission for Cap Control. Select items to DENY group access.</entry>
     
     <!-- User Permission Editor -->
     <entry key="yukon.web.modules.adminSetup.userPermissions.pageName">Permissions</entry>
     <entry key="yukon.web.modules.adminSetup.userPermissions.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.userPermissions.instructions">Instructions: </entry>
+    <entry key="yukon.web.modules.adminSetup.userPermissions.lm.notes">Use this permission for Load Management. Select items to ALLOW user access.</entry>
+    <entry key="yukon.web.modules.adminSetup.userPermissions.cc.notes">Use this permission for Cap Control. Select items to DENY user access.</entry>
     
     <!-- Users Editor users.jsp -->
     <entry key="yukon.web.modules.adminSetup.users.pageName">Users</entry>
