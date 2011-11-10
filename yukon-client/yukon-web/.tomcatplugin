@@ -30,7 +30,6 @@
         <webClassPathEntry>/tdc/resource</webClassPathEntry>
         <webClassPathEntry>/third-party</webClassPathEntry>
         <webClassPathEntry>/third-party/SchemaCompare.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/SchemaDumpToXml.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activemq-all-5.4.2.jar</webClassPathEntry>
@@ -61,6 +60,7 @@
         <webClassPathEntry>/third-party/ezmorph-1.0.6.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/guava-r09.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jackson-all-1.9.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-runtime.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxrpc.jar</webClassPathEntry>
