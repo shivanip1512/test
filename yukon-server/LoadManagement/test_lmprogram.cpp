@@ -624,7 +624,7 @@ BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
     CtiTime startTime = GetTimeFromOffsetAndDate(30000, today); // Some time inside of window
     CtiTime stopTime = gEndOfCtiTime;      // LM internal infinity time
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
     BOOST_CHECK_EQUAL(    0, constraints.getViolations().size() );
 
     BOOST_CHECK_EQUAL(true, constraints.checkControlWindows(startTime.seconds(), stopTime.seconds()));
@@ -1840,13 +1840,13 @@ BOOST_AUTO_TEST_CASE(test_util_fit_to_window)
     BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(1, 0, 0).addDays(1));
 
     start = CtiTime(0,0,0);
-    stop  = CtiTime(CtiTime::pos_infin);
+    stop  = gEndOfCtiTime;
     BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
     BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(0, 0, 0));
     BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(1, 0, 0));
 
     start = CtiTime(1,0,0);
-    stop  = CtiTime(CtiTime::pos_infin);
+    stop  = gEndOfCtiTime;
     BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
     BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(23, 0, 0));
     BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(1, 0, 0).addDays(1));
@@ -1867,13 +1867,13 @@ BOOST_AUTO_TEST_CASE(test_util_fit_to_window)
     BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(23, 30, 0));
 
     start = CtiTime(0,0,0);
-    stop  = CtiTime(CtiTime::pos_infin);
+    stop  = gEndOfCtiTime;
     BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
     BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(0, 30, 0));
     BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(1, 0, 0));
 
     start = CtiTime(1,0,0);
-    stop  = CtiTime(CtiTime::pos_infin);
+    stop  = gEndOfCtiTime;
     BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
     BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(23, 0, 0));
     BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(23, 30, 0));

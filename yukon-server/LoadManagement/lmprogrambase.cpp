@@ -808,7 +808,7 @@ BOOL CtiLMProgramBase::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
     Performs an necessary timed control and returns TRUE if it did something.
     It is up to subclasses to implement this.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+BOOL CtiLMProgramBase::handleTimedControl(CtiTime currentTime, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -823,7 +823,7 @@ BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFro
     Returns a BOOLean if the control area can be controlled more because the
     time since the last control is at least as long as the min response time.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramBase::isPastMinRestartTime(ULONG secondsFrom1901)
+BOOL CtiLMProgramBase::isPastMinRestartTime(CtiTime currentTime)
 {
     return TRUE;
 }

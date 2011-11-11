@@ -93,19 +93,19 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
 
-    BOOL maintainProgramControl(LONG currentPriority, std::vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
-    BOOL hasGearChanged(LONG currentPriority,         std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
+    BOOL maintainProgramControl(LONG currentPriority, std::vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
+    BOOL hasGearChanged(LONG currentPriority,         std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, CtiTime currentTime, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     CtiLMProgramDirectGear* getCurrentGearObject();
-    DOUBLE updateProgramControlForGearChange(ULONG secondsFrom1901, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    BOOL refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    DOUBLE manualReduceProgramLoad(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE updateProgramControlForGearChange(CtiTime currentTime, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL refreshStandardProgramControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE manualReduceProgramLoad(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     BOOL doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
     BOOL hasGroupExceededMaxDailyOps(CtiLMGroupPtr& lm_group) const;
     LONG calculateGroupControlTimeLeft(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
-    BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupPtr& currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupPtr& currentLMGroup, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
-    bool updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
+    bool updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiTime currentTime);
     bool isControlling();
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
@@ -113,23 +113,23 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL wasControlActivatedByStatusTrigger();
 
     virtual CtiLMProgramBaseSPtr replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
-    virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
-    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
-    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime);
+    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime);
+    virtual BOOL handleManualControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
-    virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    virtual bool startTimedProgram(unsigned long secondsFrom1901, long secondsFromBeginningOfDay,CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
+    virtual BOOL handleTimedControl(CtiTime currentTime, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    virtual bool startTimedProgram(CtiTime currentTime, long secondsFromBeginningOfDay,CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual BOOL isPastMinRestartTime(CtiTime currentTime);
 
     double getCurrentLoadReduction();
-    ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
+    ULONG estimateOffTime(ULONG proposed_Gear, CtiTime start_time, CtiTime stop_time);
 
     void startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
     void refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
-    bool restoreGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
-    bool terminateGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
+    bool restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
+    bool terminateGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
 
     void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
     void scheduleStartNotification(const CtiTime& start_time);
@@ -203,10 +203,10 @@ private:
     void ResetGroups();
     void ResetGroupsControlState();
     void ResetGroupsInternalState();
-    void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
+    void RampInGroups(CtiTime currentTime, CtiLMProgramDirectGear* lm_gear = 0);
     void updateStandardControlActiveState(LONG numberOfActiveGroups);
-    double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
-    bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh);
+    double StartMasterCycle(CtiTime currentTime, CtiLMProgramDirectGear* lm_gear);
+    bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh);
     bool recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time);
     bool isAControlState(int state);
     bool isAStopState(int state);

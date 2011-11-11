@@ -21,8 +21,8 @@ using std::vector;
 using std::string;
 using std::endl;
 
-CtiLMProgramConstraintChecker::CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901)
-: _lm_program(lm_program), _seconds_from_1901(seconds_from_1901)
+CtiLMProgramConstraintChecker::CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, CtiTime current_time)
+: _lm_program(lm_program), _current_time(current_time)
 {
 }
 
@@ -30,58 +30,58 @@ CtiLMProgramConstraintChecker::CtiLMProgramConstraintChecker(CtiLMProgramDirect&
  * Checks all the constraints.
  */
 bool CtiLMProgramConstraintChecker::checkConstraints(ULONG proposed_gear,
-                                                     ULONG proposed_start_from_1901,
-                                                     ULONG proposed_stop_from_1901)
+                                                     CtiTime proposed_start,
+                                                     CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkManualProgramConstraints(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkGroupConstraints(proposed_gear, proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkManualProgramConstraints(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkGroupConstraints(proposed_gear, proposed_start, proposed_stop) && ret_val);
     return ret_val;
 }
 
-bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkSeason(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkWeekDays(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkSeason(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
     ret_val = (checkMasterActive() && ret_val);
-    ret_val = (checkControlWindows(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkNotifyActiveOffset(proposed_start_from_1901) && ret_val);
+    ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkNotifyActiveOffset(proposed_start) && ret_val);
 
     return ret_val;
 }
 
-bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkSeason(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkWeekDays(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkSeason(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
     ret_val = (checkMasterActive() && ret_val);
-    ret_val = (checkControlWindows(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
 
     return ret_val;
 }
 
-bool CtiLMProgramConstraintChecker::checkGroupConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkGroupConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkMaxHoursDaily(proposed_gear, proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkMaxHoursMonthly(proposed_gear, proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkMaxHoursSeasonal(proposed_gear, proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkMaxHoursAnnually(proposed_gear, proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkMinActivateTime(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
-    ret_val = (checkMinRestartTime(proposed_start_from_1901) && ret_val);
+    ret_val = (checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMinActivateTime(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMinRestartTime(proposed_start) && ret_val);
     ret_val = (checkMaxDailyOps() && ret_val);
-    ret_val = (checkMaxActivateTime(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkMaxActivateTime(proposed_start, proposed_stop) && ret_val);
     return ret_val;
 }
 
 /*
  * Checks if the given program is allowed to run during the given period.
- * proposed_start and proposed_stop are seconds from 1901, ala roguewave
+ * proposed_start and proposed_stop
  */
-bool CtiLMProgramConstraintChecker::checkSeason(ULONG proposed_start_from_1901,
-                                                ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkSeason(CtiTime proposed_start,
+                                                CtiTime proposed_stop)
 {
     if( _lm_program.getSeasonScheduleId() <= 0 )
     {
@@ -91,15 +91,15 @@ bool CtiLMProgramConstraintChecker::checkSeason(ULONG proposed_start_from_1901,
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if( proposed_stop_from_1901 == gEndOfCtiTimeSeconds )
+    if( proposed_stop == gEndOfCtiTime )
     {
-        proposed_stop_from_1901 = proposed_start_from_1901;
+        proposed_stop = proposed_start;
     }
 
     CtiSeasonManager& seasonMgr = CtiSeasonManager::getInstance();
 
-    CtiTime startTime(proposed_start_from_1901);
-    CtiTime stopTime(proposed_stop_from_1901);
+    CtiTime startTime(proposed_start);
+    CtiTime stopTime(proposed_stop);
 
     CtiDate startDate(startTime);
     CtiDate stopDate(stopTime);
@@ -128,22 +128,22 @@ bool CtiLMProgramConstraintChecker::checkSeason(ULONG proposed_start_from_1901,
 /*
  * Checks if the program is allowed to control based on the week day constraint
  */
-bool CtiLMProgramConstraintChecker::checkWeekDays(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkWeekDays(CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool violated = false;
 
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if( proposed_stop_from_1901 == gEndOfCtiTimeSeconds )
+    if( proposed_stop == gEndOfCtiTime )
     {
-        proposed_stop_from_1901 = proposed_start_from_1901;
+        proposed_stop = proposed_start;
     }
 
     const string& weekdays = _lm_program.getAvailableWeekDays();
 
-    CtiTime startTime(proposed_start_from_1901);
-    CtiTime stopTime(proposed_stop_from_1901);
+    CtiTime startTime(proposed_start);
+    CtiTime stopTime(proposed_stop);
 
     CtiDate startDate(startTime);
     CtiDate stopDate(stopTime);
@@ -209,7 +209,7 @@ bool CtiLMProgramConstraintChecker::checkWeekDays(ULONG proposed_start_from_1901
     return !violated;
 }
 
-bool CtiLMProgramConstraintChecker::checkMaxHoursDaily(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkMaxHoursDaily(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {
     if( _lm_program.getMaxHoursDaily() == 0 )
     {
@@ -217,7 +217,7 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursDaily(ULONG proposed_gear, ULON
     }
 
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0;//convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start,proposed_stop)/60.0;//convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)_lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for( CtiLMGroupIter i = groups.begin(); i != groups.end(); i++ )
@@ -253,7 +253,7 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursDaily(ULONG proposed_gear, ULON
     }
     return !violated;
 }
-bool CtiLMProgramConstraintChecker::checkMaxHoursMonthly(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkMaxHoursMonthly(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {
     if( _lm_program.getMaxHoursMonthly() == 0 )
     {
@@ -261,7 +261,7 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursMonthly(ULONG proposed_gear, UL
     }
 
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0; //convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start,proposed_stop)/60.0; //convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)_lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for( CtiLMGroupIter i = groups.begin(); i != groups.end(); i++ )
@@ -298,14 +298,14 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursMonthly(ULONG proposed_gear, UL
     return !violated;
 }
 
-bool CtiLMProgramConstraintChecker::checkMaxHoursSeasonal(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkMaxHoursSeasonal(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {    if( _lm_program.getMaxHoursSeasonal() == 0 )
     {
         return true;
     }
 
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0;//convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start,proposed_stop)/60.0;//convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)_lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for( CtiLMGroupIter i = groups.begin(); i != groups.end(); i++ )
@@ -342,14 +342,14 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursSeasonal(ULONG proposed_gear, U
     return !violated;
 }
 
-bool CtiLMProgramConstraintChecker::checkMaxHoursAnnually(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkMaxHoursAnnually(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {    if( _lm_program.getMaxHoursAnnually() == 0 )
     {
         return true;
     }
 
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0;//convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)_lm_program).estimateOffTime(proposed_gear, proposed_start,proposed_stop)/60.0;//convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)_lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for( CtiLMGroupIter i = groups.begin(); i != groups.end(); i++ )
@@ -389,14 +389,14 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursAnnually(ULONG proposed_gear, U
 /*
  * Check that the program will run at least the minactivatetime
  */
-bool CtiLMProgramConstraintChecker::checkMinActivateTime(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start, CtiTime proposed_stop)
 {
     if( _lm_program.getMinActivateTime() == 0 )
     {
         return true;
     }
 
-    ULONG run_time = proposed_stop_from_1901 - proposed_start_from_1901;
+    ULONG run_time = proposed_stop.seconds() - proposed_start.seconds();
     if( !(run_time >= _lm_program.getMinActivateTime()) )
     {
         double numHours = (double)_lm_program.getMinActivateTime()/60.0/60.0;
@@ -415,7 +415,7 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(ULONG proposed_start_fr
 /*
  * Check that the program won't start again until min restart time has elapsed
  */
-bool CtiLMProgramConstraintChecker::checkMinRestartTime(ULONG proposed_start_from_1901)
+bool CtiLMProgramConstraintChecker::checkMinRestartTime(CtiTime proposed_start)
 {
     if( _lm_program.getMinRestartTime() == 0 )
     {
@@ -427,7 +427,7 @@ bool CtiLMProgramConstraintChecker::checkMinRestartTime(ULONG proposed_start_fro
     for( CtiLMGroupIter i = groups.begin(); i != groups.end(); i++ )
     {
         CtiLMGroupPtr lm_group  = *i;
-        if( lm_group->getControlCompleteTime().seconds() + _lm_program.getMinRestartTime() > proposed_start_from_1901 )
+        if( lm_group->getControlCompleteTime() + _lm_program.getMinRestartTime() > proposed_start )
         {
             string paoName  = lm_group->getPAOName();
             double numHours = (double)_lm_program.getMinRestartTime()/60.0/60.0;
@@ -481,14 +481,14 @@ bool CtiLMProgramConstraintChecker::checkMaxDailyOps()
 /*
  * Check that the program will run at least its max activate time
  */
-bool CtiLMProgramConstraintChecker::checkMaxActivateTime(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkMaxActivateTime(CtiTime proposed_start, CtiTime proposed_stop)
 {
     if( _lm_program.getMaxActivateTime() == 0 )
     {
         return true;
     }
 
-    ULONG run_time = proposed_stop_from_1901 - proposed_start_from_1901;
+    ULONG run_time = proposed_stop.seconds() - proposed_start.seconds();
     if( !(run_time <= _lm_program.getMaxActivateTime()) )
     {
         double numHours = (double)_lm_program.getMaxActivateTime()/60.0/60.0;
@@ -504,7 +504,7 @@ bool CtiLMProgramConstraintChecker::checkMaxActivateTime(ULONG proposed_start_fr
     return true;
 }
 
-bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, CtiTime proposed_stop)
 {
     CtiLMProgramBase& lm_base = (CtiLMProgramBase&) _lm_program;
     if( lm_base.getLMProgramControlWindows().size() == 0 )// ||
@@ -516,13 +516,13 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if( proposed_stop_from_1901 == gEndOfCtiTimeSeconds )
+    if( proposed_stop == gEndOfCtiTime )
     {
-        proposed_stop_from_1901 = proposed_start_from_1901;
+        proposed_stop = proposed_start;
     }
 
-    CtiTime proposedStartTime(proposed_start_from_1901),
-            proposedStopTime(proposed_stop_from_1901);
+    CtiTime proposedStartTime(proposed_start),
+            proposedStopTime(proposed_stop);
 
     CtiDate proposedDate(proposedStartTime);
 
@@ -627,14 +627,15 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
     return false;
 }
 
-bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_epoch, ULONG proposed_stop_from_epoch, const CtiDate &theDate)
+bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlArea &controlArea, CtiTime proposed_start, CtiTime proposed_stop, const CtiDate &theDate)
 {
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if( proposed_stop_from_epoch == gEndOfCtiTimeSeconds )
+
+    if( proposed_stop == gEndOfCtiTime )
     {
-        proposed_stop_from_epoch = proposed_start_from_epoch;
+        proposed_stop = proposed_start;
     }
 
     CtiTime controlAreaStartTime = controlArea.getCurrentDailyStartTime(theDate);
@@ -646,8 +647,8 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         return true;
     }
 
-    const CtiTime proposedStartTime(proposed_start_from_epoch);
-    const CtiTime proposedStopTime(proposed_stop_from_epoch);
+    const CtiTime proposedStartTime(proposed_start);
+    const CtiTime proposedStopTime(proposed_stop);
 
     if( proposedStartTime > proposedStopTime )
     {
@@ -759,23 +760,23 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
  * Check that the program is starting before the notify active offset.
  * If the notify active offset is 60 minutes and the program is asked to start in 50 mintes we are violating this constraint
  */
-bool CtiLMProgramConstraintChecker::checkNotifyActiveOffset(ULONG proposed_start_from_1901)
+bool CtiLMProgramConstraintChecker::checkNotifyActiveOffset(CtiTime proposed_start)
 {
     if( _lm_program.getNotifyActiveOffset() == CtiLMProgramDirect::invalidNotifyOffset )   // there is no notify active offset
     {
         return true;
     }
 
-    if( proposed_start_from_1901 < _seconds_from_1901 )
+    if( proposed_start < _current_time )
     {
-        proposed_start_from_1901 = _seconds_from_1901;
+        proposed_start = _current_time;
     }
 
-    if( (proposed_start_from_1901 - _seconds_from_1901) < _lm_program.getNotifyActiveOffset() )
+    if( (proposed_start.seconds() - _current_time.seconds()) < _lm_program.getNotifyActiveOffset() )
     {
-        double minutesFromNow = (proposed_start_from_1901 - _seconds_from_1901)/60.0;
+        double minutesFromNow = (proposed_start.seconds() - _current_time.seconds())/60.0;
         double offsetMinutes  = _lm_program.getNotifyActiveOffset() / 60.0;
-        CtiTime proposedTime  = CtiTime(proposed_start_from_1901);
+        CtiTime proposedTime  = CtiTime(proposed_start);
 
         string result = "The program cannot start at the proposed start time of ";
         result += proposedTime.asString();
@@ -851,8 +852,8 @@ void CtiLMProgramConstraintChecker::dumpViolations()
     }
 }
 
-CtiLMGroupConstraintChecker::CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, ULONG seconds_from_1901)
-: _lm_program(lm_program), _lm_group(lm_group), _seconds_from_1901(seconds_from_1901)
+CtiLMGroupConstraintChecker::CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, CtiTime current_time)
+: _lm_program(lm_program), _lm_group(lm_group), _current_time(current_time)
 {}
 
 
@@ -989,7 +990,7 @@ bool CtiLMGroupConstraintChecker::checkMinActivateTime()
 bool CtiLMGroupConstraintChecker::checkMinRestartTime()
 {
     if( _lm_program.getMinRestartTime() == 0 ||
-        _seconds_from_1901 - _lm_group->getControlCompleteTime().seconds() >= _lm_program.getMinRestartTime() )
+        _current_time.seconds() - _lm_group->getControlCompleteTime().seconds() >= _lm_program.getMinRestartTime() )
     {
         return true;
     }
@@ -1199,10 +1200,7 @@ bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_durati
     }
     else
     {
-        CtiTime now_t(_seconds_from_1901);
-        CtiTime now_dt(now_t); // move this calc to a util function at least
-
-        LONG seconds_from_beginning_of_today = (now_dt.hour() * 3600) + (now_dt.minute() * 60) + now_dt.second();
+        LONG seconds_from_beginning_of_today = (_current_time.hour() * 3600) + (_current_time.minute() * 60) + _current_time.second();
 
         CtiLMProgramControlWindow* control_window = _lm_program.getControlWindow(seconds_from_beginning_of_today);
         if( control_window == 0 )

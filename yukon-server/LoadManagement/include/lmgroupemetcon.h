@@ -29,7 +29,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
-    virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
+    virtual BOOL doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

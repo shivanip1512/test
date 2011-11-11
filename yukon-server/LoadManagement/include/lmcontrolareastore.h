@@ -70,7 +70,7 @@ class CtiLMControlAreaStore
 {
 public:   
 
-    std::vector<CtiLMControlArea*>* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
+    std::vector<CtiLMControlArea*>* getControlAreas(CtiTime currentTime = CtiTime());
     bool findProgram(LONG programID, CtiLMProgramBaseSPtr& program = CtiLMProgramBaseSPtr(), CtiLMControlArea** controlArea = NULL);
     
     CtiLMGroupPtr             findGroupByPointID       (long point_id);

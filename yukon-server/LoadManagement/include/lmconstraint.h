@@ -14,7 +14,7 @@ class CtiLMProgramConstraintChecker
 {
 public:
 
-    CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901);
+    CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, CtiTime current_time);
 
     const std::vector<std::string>& getResults() const;
     const std::vector<ConstraintViolation>& getViolations();
@@ -22,38 +22,38 @@ public:
 
     void dumpViolations();
     
-    bool checkConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkManualProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkAutomaticProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);    
-    bool checkGroupConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkManualProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkAutomaticProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop);    
+    bool checkGroupConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
     bool checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds);
     
-    bool checkSeason(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkWeekDays(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkControlWindows(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_epoch, ULONG proposed_stop_from_epoch, const CtiDate &theDate);
+    bool checkSeason(CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkWeekDays(CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkControlWindows(CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkControlAreaControlWindows(CtiLMControlArea &controlArea, CtiTime proposed_start, CtiTime proposed_stop, const CtiDate &theDate);
     bool checkMasterActive();
-    bool checkNotifyActiveOffset(ULONG proposed_start_from_1901);
+    bool checkNotifyActiveOffset(CtiTime proposed_start);
     
     // Group related constraings
-    bool checkMaxHoursDaily(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkMaxHoursMonthly(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkMaxHoursSeasonal(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkMaxHoursAnnually(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkMinActivateTime(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkMinRestartTime(ULONG proposed_start_from_1901);
+    bool checkMaxHoursDaily(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkMaxHoursMonthly(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkMaxHoursSeasonal(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkMaxHoursAnnually(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkMinActivateTime(CtiTime proposed_start, CtiTime proposed_stop);
+    bool checkMinRestartTime(CtiTime proposed_start);
     bool checkMaxDailyOps();
-    bool checkMaxActivateTime(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMaxActivateTime(CtiTime proposed_start, CtiTime proposed_stop);
 
 //    bool checkWeekDays(const CtiLMProgram
 
     CtiLMProgramConstraintChecker* getInstance();
 private:
 
-    ULONG estimateGroupControlTime(CtiLMGroupBase& lm_group, CtiLMProgramDirectGear& lm_gear, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, std::vector<std::string>* results = 0);
+    ULONG estimateGroupControlTime(CtiLMGroupBase& lm_group, CtiLMProgramDirectGear& lm_gear, ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop, std::vector<std::string>* results = 0);
 
     CtiLMProgramDirect& _lm_program;
-    ULONG _seconds_from_1901;
+    CtiTime _current_time;
     std::vector<std::string> _results;
     std::vector<ConstraintViolation> _constraintViolations;
 };
@@ -62,7 +62,7 @@ class CtiLMGroupConstraintChecker
 {
 public:
 
-    CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, ULONG control_start_from_1901); 
+    CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, CtiTime current_time); 
 
     const std::vector<std::string>& getViolations();
     void clearViolations();
@@ -90,7 +90,7 @@ private:
     bool checkDurationConstraint(LONG current_duration, LONG max_duration, LONG& control_duration, bool adjust_duration);
     CtiLMProgramBase& _lm_program;
     CtiLMGroupPtr& _lm_group;
-    ULONG _seconds_from_1901;
+    CtiTime _current_time;
     
     std::vector<std::string> _results;
     std::vector<ConstraintViolation> _constraintViolations;

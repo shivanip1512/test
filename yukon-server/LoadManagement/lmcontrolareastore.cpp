@@ -116,9 +116,9 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 
     Returns a Vector of CtiLMControlAreas
 ---------------------------------------------------------------------------*/
-vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
+vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(CtiTime currentTime)
 {
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+ 90 )//is not valid and has been at 1 1/2 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
+    if( !_isvalid && currentTime >= (_lastdbreloadtime + 90) )//is not valid and has been at 1 1/2 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
     {
         reset();
     }
@@ -140,7 +140,7 @@ vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsF
 bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBaseSPtr& program, CtiLMControlArea** controlArea)
 {
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime());
     for( LONG i=0; i < controlAreas->size(); i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*) (*controlAreas)[i];
@@ -2322,7 +2322,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     bool returnBool = false;
-    vector<CtiLMControlArea*>& controlAreas = *getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *getControlAreas(CtiTime());
     for( long i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];

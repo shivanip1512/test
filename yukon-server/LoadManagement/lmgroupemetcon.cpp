@@ -177,11 +177,11 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
 
 
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime)
 {
     BOOL returnBOOL = FALSE;
 
-    LONG controlTimeLeft = groupControlDone - secondsFrom1901;
+    LONG controlTimeLeft = controlEndTime.seconds() - currentTime.seconds();
     if( !_refreshsent &&
         controlTimeLeft < 580 &&
         controlTimeLeft >= 560 ) //This function better be evaluated every 20 seconds or we might miss!!

@@ -108,15 +108,15 @@ public:
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void setControlArea(CtiLMControlArea *controlArea);
 
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBaseSPtr replicate() const = 0;
 
     virtual BOOL hasControlHoursAvailable() = 0;
-    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901) = 0;
-    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg) = 0;
+    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime) = 0;
+    virtual BOOL handleManualControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg) = 0;
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
-    virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
+    virtual BOOL handleTimedControl(CtiTime currentTime, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    virtual BOOL isPastMinRestartTime(CtiTime currentTime);
     virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay, CtiDate &defaultDate = CtiDate::now());
     virtual CtiLMProgramControlWindow* getNextControlWindow(LONG secondsFromBeginningOfDay);
 

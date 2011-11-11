@@ -151,11 +151,11 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(LONG offTime, LONG 
 
 
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime)
 {
     BOOL returnBOOL = FALSE;
 
-    LONG controlTimeLeft = groupControlDone - secondsFrom1901;
+    LONG controlTimeLeft = controlEndTime.seconds() - currentTime.seconds();
     LONG trueShedTime = getShedTime()+60;
     if( !_refreshsent &&
         controlTimeLeft < trueShedTime+2 &&
@@ -175,8 +175,8 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
             LONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
             for(LONG i=0;i<numberOfTimesToExtend;i++)
             {
-                if( secondsFrom1901 < getLastControlSent().seconds()+trueShedTime+2 &&
-                    secondsFrom1901 >= getLastControlSent().seconds()+trueShedTime-1 )
+                if( currentTime < getLastControlSent()+trueShedTime+2 && // This seems terribly broken, but has been since the beginning of time
+                    currentTime >= getLastControlSent()+trueShedTime-1 ) // Please forward all questions to jwolberg circa 2002.
                 {
                     returnBOOL = TRUE;
                     /*{

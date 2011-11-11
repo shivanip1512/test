@@ -1125,7 +1125,7 @@ string CtiLMGroupBase::buildPeriodString(LONG periodTime) const
 
     doesMasterCycleNeedToBeUpdated
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime)
 {
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -933,7 +933,7 @@ CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate )
         if( rate == 2592000 ) // 1 month. == Midnight 1st of month.
         {
            CtiDate origindate(origin);
-           CtiDate nextMonth = origindate.firstDayOfMonth() + origindate.daysInMonthYear(origindate.month(), origindate.year());
+           CtiDate nextMonth = origindate - (origindate.dayOfMonth()-1) + origindate.daysInMonthYear(origindate.month(), origindate.year());
            first = CtiTime(nextMonth);
         }
         else if( rate == 604800 ) // = 1 week. == Midnight Sunday!

@@ -432,7 +432,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const string
 
     Sets the group selection method of the curtailment program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
 
 
@@ -446,7 +446,7 @@ DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LO
 
     Stops control on the program by sending all groups that are active.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901)
+BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime)
 {
     BOOL returnBool = TRUE;
 
@@ -519,7 +519,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 
     Handles manual control messages for the curtailment program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+BOOL CtiLMProgramCurtailment::handleManualControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     BOOL returnBoolean = FALSE;
 
@@ -559,7 +559,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
         {
             returnBoolean = TRUE;
             setProgramState(CtiLMProgramBase::StoppingState);
-            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, currentTime);
             setManualControlReceivedFlag(FALSE);
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -572,7 +572,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
     else if( getProgramState() == CtiLMProgramBase::StoppingState )
     {
         returnBoolean = TRUE;
-        stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
+        stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, currentTime);
         setManualControlReceivedFlag(FALSE);
     }
     else

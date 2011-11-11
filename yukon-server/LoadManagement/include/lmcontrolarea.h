@@ -73,7 +73,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setDefDailyStartTime(LONG start);
     CtiLMControlArea& setDefDailyStopTime(LONG stop);
     CtiLMControlArea& setRequireAllTriggersActiveFlag(BOOL requireall);
-    CtiLMControlArea& figureNextCheckTime(ULONG secondsFrom1901);
+    CtiLMControlArea& figureNextCheckTime(CtiTime currentTime);
     CtiLMControlArea& setNewPointDataReceivedFlag(BOOL newdatareceived);
     CtiLMControlArea& setUpdatedFlag(BOOL updated);
     CtiLMControlArea& setControlAreaStatusPointId(LONG statuspointid);
@@ -84,10 +84,10 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& resetCurrentDailyStartTime();
     CtiLMControlArea& resetCurrentDailyStopTime();
 
-    BOOL isTriggerCheckNeeded(ULONG secondsFrom1901);
+    BOOL isTriggerCheckNeeded(CtiTime currentTime);
     BOOL isControlTime(LONG secondsFromBeginningOfDay);
     BOOL isControlStillNeeded();
-    BOOL isPastMinResponseTime(ULONG secondsFrom1901);
+    BOOL isPastMinResponseTime(CtiTime currentTime);
     BOOL isManualControlReceived();
     void clearManualControlReceivedFlags();
     BOOL isThresholdTriggerTripped(CtiLMProgramBaseSPtr program = CtiLMProgramBaseSPtr());
@@ -99,17 +99,17 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     double calculateExpectedLoadIncrease(int stop_priority);
     bool shouldReduceControl();
 
-    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    void reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    void manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    void manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, bool forceAll);
-    BOOL stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL examinedControlAreaForControlNeededFlag);
-    BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
-    void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    void handleTimeBasedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    void handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiNotifMsg);
+    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    void reduceControlAreaControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    void manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    void manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, bool forceAll);
+    BOOL stopProgramsBelowThreshold(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL examinedControlAreaForControlNeededFlag);
+    BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime);
+    void handleManualControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    void handleTimeBasedControl(CtiTime currentTime, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+    void handleNotification(CtiTime currentTime, CtiMultiMsg* multiNotifMsg);
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void updateTimedPrograms(LONG secondsFromBeginningOfDay);
     void updateStateFromPrograms();
