@@ -11,8 +11,8 @@ protected:
 
     enum PointOffsets
     {
-        PointOffset_FirmwareRevisionMajor = 5,
-        PointOffset_FirmwareRevisionMinor = 6,
+        PointOffset_FirmwareRevisionMajor = 3,
+        PointOffset_FirmwareRevisionMinor = 4,
         /**
          * Offset 9999 was chosen for the artificial Firmware Revision 
          * point since negative offsets are not allowable. Analog 
