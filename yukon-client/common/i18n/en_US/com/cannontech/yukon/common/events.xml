@@ -398,14 +398,16 @@
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissionByOperator">The user {1} has pressed the commission button for ZigBee device {2}.</entry>
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissionByOperator">The user {1} has pressed the decommission button for ZigBee device {2}.</entry>
     <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshByOperator">The user {1} has pressed the refresh button for the ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.hardware.commands.action.zigbeeSendTextByOperator">The user {1} has entered a text message to send to the ZigBee device {2}: "{3}"</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendTextByOperator">The user {1} has entered a text message to send to the ZigBee device {2}: "{3}"</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendTextByOperator.2">Device Name</entry>
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssignByOperator">The user {1} pressed the assign button to link ZigBee device {2} to the ZigBee gateway {3}.</entry>
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassignByOperator">The user {1} pressed the unassign button to remove the link between ZigBee device {2} and ZigBee gateway {3}.</entry>
 
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissioned">Commission command has been sent for ZigBee device {1}.</entry>
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissioned">Decommission command has been sent for ZigBee device {1}.</entry>
     <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshed">ZigBee device {1} was successfully refreshed.</entry>
-    <entry key="yukon.common.events.hardware.commands.action.zigbeeSentText">The text message was successfully sent to the ZigBee device {1}: "{2}"</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSentText">The text message was successfully sent to the ZigBee device {1}: "{2}"</entry>
+	<entry key="yukon.common.events.hardware.commands.actions.zigbeeSentText.1">Device Name</entry>
 
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssigned">ZigBee device {1} was assigned to the ZigBee gateway {2}.</entry>
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} was unassigned from the ZigBee gateway {2}.</entry>
