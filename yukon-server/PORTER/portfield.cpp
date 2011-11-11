@@ -1321,11 +1321,10 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                     ReturnResultMessage(im->EventCode & 0x3fff, im, om);
                                 }
-                                else
-                                {
-                                    delete om;
-                                    delete im;
-                                }
+
+                                // clean up the allocated memory
+                                delete om;
+                                delete im;
                             }
 
                             queue< CtiVerificationBase * > verification_queue;
