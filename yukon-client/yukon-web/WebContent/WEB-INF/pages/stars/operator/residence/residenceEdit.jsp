@@ -63,10 +63,12 @@
 			<cti:button nameKey="cancel" href="${viewUrl}"/>
 		</cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
-            <cti:url value="/spring/stars/operator/residence/edit" var="editUrl">
-                <cti:param name="accountId" value="${accountId}"/>
-            </cti:url>
-            <cti:button nameKey="edit" href="${editUrl}"/>
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <cti:url value="/spring/stars/operator/residence/edit" var="editUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                </cti:url>
+                <cti:button nameKey="edit" href="${editUrl}"/>
+            </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         </div>
 

@@ -809,11 +809,12 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
     </cti:dataGrid>
         
     <cti:displayForPageEditModes modes="VIEW">
+        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
             <cti:url value="/spring/stars/operator/hardware/edit" var="editUrl">
                 <cti:param name="accountId" value="${accountId}"/>
                 <cti:param name="inventoryId" value="${inventoryId}"/>
             </cti:url>
             <cti:button nameKey="edit" href="${editUrl}"/>
-        </cti:displayForPageEditModes>
-    
+        </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
 </cti:standardPage>

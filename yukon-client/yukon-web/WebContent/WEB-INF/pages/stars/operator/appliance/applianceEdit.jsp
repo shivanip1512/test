@@ -135,11 +135,13 @@
                     </cti:displayForPageEditModes>
                     
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:url value="/spring/stars/operator/appliances/edit" var="editUrl">
-                            <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
-                        </cti:url>
-                        <cti:button nameKey="edit" href="${editUrl}"/>
+                        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                            <cti:url value="/spring/stars/operator/appliances/edit" var="editUrl">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
+                            </cti:url>
+                            <cti:button nameKey="edit" href="${editUrl}"/>
+                        </cti:checkRolesAndProperties>
                     </cti:displayForPageEditModes>
                     
                 </form:form>
