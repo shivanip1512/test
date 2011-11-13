@@ -329,7 +329,11 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         if (responseFields.contains(ResponseDescriptor.CARRIER_ADDRESS)) {
-            element.setAttribute("carrierAddress", Integer.toString(paoData.getCarrierAddress()));
+        	//carrier address not always valid (ie only plc _meters_ have carrier addresses)
+        	Integer address = paoData.getCarrierAddress();
+        	if (address != null) {
+        		element.setAttribute("carrierAddress", Integer.toString(address));
+        	}
         }
 
         if (responseFields.contains(ResponseDescriptor.ENABLED)) {
@@ -337,6 +341,7 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         if (responseFields.contains(ResponseDescriptor.METER_NUMBER)) {
+        	//meter number not always valid (ie only _meters_ have meter numbers)
             String meterNumber = paoData.getMeterNumber();
             if (meterNumber != null) {
                 element.setAttribute("meterNumber", meterNumber);
@@ -392,7 +397,11 @@ public class ArchivedValuesRequestEndpoint {
             }
 
             if (responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)) {
-                element.setAttribute("uofm", pointInfo.getUnitOfMeasure());
+            	//uom not always valid (ie status points do not have uoms)
+            	String uom = pointInfo.getUnitOfMeasure();
+            	if (uom != null) {
+            		element.setAttribute("uofm", pointInfo.getUnitOfMeasure());
+            	}
             }
         }
     }
