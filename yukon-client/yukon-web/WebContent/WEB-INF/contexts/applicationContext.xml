@@ -641,7 +641,7 @@
         </property>
     </bean>
     
-    <bean id="scheduledGroupRequstExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequstExecutionWidget">
+    <bean id="scheduledGroupRequestExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequestExecutionWidget">
     	<property name="title" value="Scheduled Requests"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
     </bean>

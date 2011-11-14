@@ -7,21 +7,21 @@
     <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.noSchedules">No Schedules</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.moreJobs">{0} {0, choice, 1#More Job|1&lt;More Jobs}</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.status">Status</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.edit.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.edit.hoverUrl">/WebConfig/yukon/Icons/script_over.gif</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.edit.hoverText">Edit Schedule Details ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
-	<entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.enable.hoverText">Enable ({0})</entry>
-	<entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.noSchedules">No Schedules</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.moreJobs">{0} {0, choice, 1#More Job|1&lt;More Jobs}</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleName">Name</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.status">Status</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverUrl">/WebConfig/yukon/Icons/script_over.gif</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverText">Edit Schedule Details ({0})</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
+	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.hoverText">Enable ({0})</entry>
+	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     
     <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
@@ -148,9 +148,9 @@
     <!-- Misc -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.common.device.scheduledGroupRequstExecution.state.ENABLED">Scheduled</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecution.state.DISABLED">Disabled</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecution.state.DELETED">Deleted</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecution.state.RUNNING">Running</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.ENABLED">Scheduled</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.DISABLED">Disabled</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.DELETED">Deleted</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.RUNNING">Running</entry>
     
 </properties>

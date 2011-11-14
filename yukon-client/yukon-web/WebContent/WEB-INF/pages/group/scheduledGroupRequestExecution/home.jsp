@@ -115,7 +115,7 @@
         		 		
         		 		<c:if test="${editMode}">
 	        		 		<tags:nameValue name="${scheduleStateLabel}">
-	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequstExecution.state.${status}"/>
+	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequestExecution.state.${status}"/>
 	        		 		</tags:nameValue>
 	        		 	</c:if>
         		 		
@@ -201,7 +201,7 @@
         		 		
         		 		<c:if test="${editMode}">
 	        		 		<tags:nameValue name="${scheduleStateLabel}">
-	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequstExecution.state.${status}"/>
+	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequestExecution.state.${status}"/>
 	        		 		</tags:nameValue>
 	        		 	</c:if>
         		 		

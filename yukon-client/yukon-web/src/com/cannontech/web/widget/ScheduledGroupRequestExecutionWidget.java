@@ -36,7 +36,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 @CheckRole(YukonRole.SCHEDULER)
-public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
+public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;

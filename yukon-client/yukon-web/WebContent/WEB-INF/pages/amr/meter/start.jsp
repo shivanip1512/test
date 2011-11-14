@@ -30,7 +30,7 @@
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
-						<ct:widget bean="scheduledGroupRequstExecutionWidget"/>
+						<ct:widget bean="scheduledGroupRequestExecutionWidget"/>
 					</cti:checkRolesAndProperties>
 					
 				</td>
