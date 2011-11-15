@@ -135,7 +135,7 @@ public class DefaultThermostatScheduleController {
                 defaultAts.setScheduleName(schedule.getScheduleName());
                 defaultAts.setThermostatScheduleMode(mode);
                 defaultAts.setThermostatType(schedulableThermostatType);
-                thermostatService.addMissingScheduleEntries(defaultAts);
+                thermostatService.addMissingScheduleEntries(defaultAts, schedule);
                 
                 defaultSchedules.add(defaultAts);
             }

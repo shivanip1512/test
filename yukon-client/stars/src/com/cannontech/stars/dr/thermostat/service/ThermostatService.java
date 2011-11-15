@@ -45,7 +45,7 @@ public interface ThermostatService {
      * TimeOfWeek, entries are copied from TimeOfWeek.WEEKDAY and added to the schedule for that 
      * TimeOfWeek.
      */
-    public void addMissingScheduleEntries(AccountThermostatSchedule schedule);
+    public void addMissingScheduleEntries(AccountThermostatSchedule schedule, AccountThermostatSchedule copyDefaultsFrom);
     
     /**
      * Prepares a ThermostatManualEvent for each thermostat being controlled, then attempts to

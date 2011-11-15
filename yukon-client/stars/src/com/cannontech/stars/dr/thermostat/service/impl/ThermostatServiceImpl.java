@@ -195,13 +195,123 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
 
     @Override
-    public void addMissingScheduleEntries(AccountThermostatSchedule ats) {
+    public void addMissingScheduleEntries(AccountThermostatSchedule ats, AccountThermostatSchedule copyDefaultsFrom) {
+        //iterate through each 'day' expected for this schedule based on its mode
         for (TimeOfWeek timeOfWeek : ats.getThermostatScheduleMode().getAssociatedTimeOfWeeks()) {
+            //get the actual entries contained in this schedule
             List<AccountThermostatScheduleEntry> entries = ats.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
+
             if (entries.size() == 0) {
-                //No entries for this time of week on this schedule.
+                //No entries for this this 'day' (TimeOfWeek).
                 //Copy entries from WEEKDAY, which is used in most modes.
-                List<AccountThermostatScheduleEntry> weekdayEntries = ats.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+                List<AccountThermostatScheduleEntry> weekdayEntries = Lists.newArrayList();
+                
+                //Try to copy the entries from the default schedule
+                if(copyDefaultsFrom != null){
+                    
+                    ThermostatScheduleMode defaultMode = copyDefaultsFrom.getThermostatScheduleMode();
+                    
+                    //by default we will grab the WEEKDAY entry as it is most common.
+                    TimeOfWeek defaultTimeOfWeek = TimeOfWeek.WEEKDAY;
+                    
+                    /* The following switch and getEntriesByTimeOfWeekMultimap().get(defaultTimeOfWeek) call
+                     *  will map values as such:
+                     *  
+                     *  default schedule        |       incomplete schedule
+                     *  ALL                     |       ALL
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |       SEVEN_DAY
+                     *                          |           - (M-Su)     = WEEKDAY
+                     *                          |       WEEKDAY_SAT_SUN
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |           - SATURDAY  = WEEKDAY
+                     *                          |           - SUNDAY    = WEEKDAY
+                     *                          |       WEEKDAY_WEEKEND    
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |           - WEEKEND   = WEEKDAY
+                     *                          |
+                     *  SEVEN_DAY               |       ALL
+                     *                          |           - WEEKDAY   = MONDAY
+                     *                          |       SEVEN_DAY
+                     *                          |           - (M-Su)    = (M-Su)
+                     *                          |       WEEKDAY_SAT_SUN
+                     *                          |           - WEEKDAY   = MONDAY
+                     *                          |           - SATURDAY  = SATURDAY
+                     *                          |           - SUNDAY    = SUNDAY
+                     *                          |       WEEKDAY_WEEKEND
+                     *                          |           - WEEKDAY   = MONDAY
+                     *                          |           - WEEKEND   = SATURDAY
+                     *                          |
+                     *  WEEKDAY_SAT_SUN         |       ALL
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |       SEVEN_DAY
+                     *                          |           - (M-F)     = WEEKDAY
+                     *                          |           - SATURDAY  = SATURDAY
+                     *                          |           - SUNDAY    = SUNDAY
+                     *                          |       WEEKDAY_SAT_SUN
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |           - SATURDAY  = SATURDAY
+                     *                          |           - SUNDAY    = SUNDAY
+                     *                          |       WEEKDAY_WEEKEND
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |           - WEEKEND   = SATURDAY
+                     *                          |
+                     *  WEEKDAY_WEEKEND         |       ALL
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |       SEVEN_DAY
+                     *                          |           - (M-F)     = WEEKDAY
+                     *                          |           - SATURDAY  = WEEKEND
+                     *                          |           - SUNDAY    = WEEKEND
+                     *                          |       WEEKDAY_SAT_SUN
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |           - SATURDAY  = WEEKEND
+                     *                          |           - SUNDAY    = WEEKEND
+                     *                          |       WEEKDAY_WEEKEND
+                     *                          |           - WEEKDAY   = WEEKDAY
+                     *                          |           - WEEKEND   = WEEKEND
+                     */
+
+                    
+                    switch(defaultMode){
+                    case ALL:
+                        //the default schedule should contain only weekday entries
+                        break;
+                        
+                    case SEVEN_DAY:
+                        if(timeOfWeek == TimeOfWeek.SATURDAY || timeOfWeek == TimeOfWeek.SUNDAY){
+                            defaultTimeOfWeek = timeOfWeek;
+                        }else{
+                            //ALL mode does NOT have a WEEKDAY TimeOfWeek.
+                            if(timeOfWeek == TimeOfWeek.WEEKDAY){
+                                defaultTimeOfWeek = TimeOfWeek.MONDAY;
+                            }else if(timeOfWeek == TimeOfWeek.WEEKEND){
+                                defaultTimeOfWeek = TimeOfWeek.SATURDAY;
+                            }else{
+                                defaultTimeOfWeek = timeOfWeek;
+                            }
+                        }
+                        break;
+                        
+                    case WEEKDAY_SAT_SUN:
+                        if(timeOfWeek == TimeOfWeek.SATURDAY || timeOfWeek == TimeOfWeek.SUNDAY){
+                            defaultTimeOfWeek = timeOfWeek;
+                        }else if(timeOfWeek == TimeOfWeek.WEEKEND){
+                            defaultTimeOfWeek = TimeOfWeek.SATURDAY;
+                        }
+                        break;
+                        
+                    case WEEKDAY_WEEKEND:
+                        if(timeOfWeek == TimeOfWeek.SATURDAY || timeOfWeek == TimeOfWeek.SUNDAY){
+                            defaultTimeOfWeek = TimeOfWeek.WEEKEND;
+                        }
+                        break;
+                    }
+                    
+                    weekdayEntries = copyDefaultsFrom.getEntriesByTimeOfWeekMultimap().get(defaultTimeOfWeek);
+                }else{
+                    weekdayEntries = ats.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+                }
+                
                 if(weekdayEntries.size() == 0){
                     Set<TimeOfWeek> keys = ats.getEntriesByTimeOfWeekMultimap().keySet();
                     if(keys.size() == 0){

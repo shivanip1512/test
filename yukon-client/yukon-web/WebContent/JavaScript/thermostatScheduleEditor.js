@@ -158,12 +158,19 @@ Yukon.ThermostatScheduleEditor = {
             
             form.request({
                 onFailure: function(data) {
-                    Yukon.ThermostatScheduleEditor.clearErrors(form);
-                    var errors = data.responseJSON.errors;
-                    for(error in errors){
-                        form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
+                    //client errors
+                    if(data.status >= 400 && data.status < 500){
+                        Yukon.ThermostatScheduleEditor.clearErrors(form);
+                        var errors = data.responseJSON.errors;
+                        for(error in errors){
+                            form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
+                        }
+                        Yukon.ui.unblockPage();
+                    }else{
+                        //reload the page in case of other server error
+                        alert(data.responseText);
+                        window.location = window.location;
                     }
-                    Yukon.ui.unblockPage();
                 },
                 onSuccess: function(data) {
                     window.location = window.location;
@@ -237,25 +244,25 @@ Yukon.ThermostatScheduleEditor = {
     resetDefaults: function(args){
         if(args.recForm != null){
             var days = args.ourForm.select(".day");
-            var defaultDays = args.recForm.down(".day");
+            var defaultDays = args.recForm.select(".day");
             for(var i=0; i<days.length; i++){
                 var timeOfWeek = args.recForm.down("." + days[i].down("input[name=timeOfWeek]").value);
                 
                 //copy values over
                 var times = days[i].select("input[name=secondsFromMidnight]");
-                var defaultTimes = defaultDays.select("input[name=secondsFromMidnight]");
+                var defaultTimes = defaultDays[i].select("input[name=secondsFromMidnight]");
                 for(var j=0; j<times.length; j++){
                     times[j].value = defaultTimes[j].getAttribute("defaultValue");
                 }
                 
                 var heatTemps = days[i].select("input[name=heat_F]");
-                var defaultHeatTemps = defaultDays.select("input[name=heat_F]");
+                var defaultHeatTemps = defaultDays[i].select("input[name=heat_F]");
                 for(var j=0; j<heatTemps.length; j++){
                     heatTemps[j].value = defaultHeatTemps[j].getAttribute("defaultValue");
                 }
                 
                 var coolTemps = days[i].select("input[name=cool_F]");
-                var defaultCoolTemps = defaultDays.select("input[name=cool_F]");
+                var defaultCoolTemps = defaultDays[i].select("input[name=cool_F]");
                 for(var j=0; j<coolTemps.length; j++){
                     coolTemps[j].value = defaultCoolTemps[j].getAttribute("defaultValue");
                 }

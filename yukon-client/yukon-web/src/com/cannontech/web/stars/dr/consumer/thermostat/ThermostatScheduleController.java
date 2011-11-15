@@ -169,7 +169,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 defaultAts.setScheduleName(useDefaultScheduleName);
                 defaultAts.setThermostatScheduleMode(mode);
                 defaultAts.setThermostatType(SchedulableThermostatType.getByHardwareType(thermostat.getType()));
-                thermostatService.addMissingScheduleEntries(defaultAts);
+                thermostatService.addMissingScheduleEntries(defaultAts, defaultSchedule);
                 
                 defaultSchedules.add(defaultAts);
             }
