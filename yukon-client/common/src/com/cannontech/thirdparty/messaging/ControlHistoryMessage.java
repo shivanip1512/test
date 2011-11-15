@@ -18,6 +18,8 @@ public class ControlHistoryMessage extends Message {
     private int controlPriority;
     private int associationId;
     
+    public static final int CONTROL_RESTORE_DURATION = -1;
+    
     public int getPaoId() {
         return paoId;
     }

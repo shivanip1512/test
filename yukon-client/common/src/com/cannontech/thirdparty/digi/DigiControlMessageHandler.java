@@ -1,5 +1,7 @@
 package com.cannontech.thirdparty.digi;
 
+import static com.cannontech.thirdparty.messaging.ControlHistoryMessage.CONTROL_RESTORE_DURATION;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -107,7 +109,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     private ControlHistoryMessage buildControlHistoryMessageForRestore(SepRestoreMessage message, Instant date) {
         ControlHistoryMessage chMessage = buildCommonControlHistoryMessage(0,message.getGroupId(),date);
         
-        chMessage.setControlDuration(0);
+        chMessage.setControlDuration(CONTROL_RESTORE_DURATION);
         chMessage.setReductionRatio(0);
         
         chMessage.setActiveRestore("M");
@@ -146,6 +148,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         else {
             chMessage.setActiveRestore("M");
             chMessage.setRawState(0);
+            chMessage.setControlDuration(CONTROL_RESTORE_DURATION);
         }
         
         chMessage.setReductionValue(0.0);
