@@ -7,6 +7,12 @@
 
 <cti:standardPage module="dr" page="programDetail">
 
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    setTimeout('window.location = window.location', 15 * 1000);
+});
+</script>
+
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>

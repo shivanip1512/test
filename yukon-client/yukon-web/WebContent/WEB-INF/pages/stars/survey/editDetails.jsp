@@ -4,11 +4,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<ajax:dialogPage nameKey="details" module="survey" page="list" okAction="submit">
+<dialog:ajaxPage nameKey="details" module="survey" page="list" okAction="submit">
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -33,4 +33,4 @@ jQuery(document).ready(function() {
     </tags:nameValueContainer>
 </form:form>
 
-</ajax:dialogPage>
+</dialog:ajaxPage>

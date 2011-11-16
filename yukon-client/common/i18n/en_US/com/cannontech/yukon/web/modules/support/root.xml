@@ -150,7 +150,14 @@
     <entry key="yukon.web.modules.support.uiDemos.confirmGotoHome.title">Confirm GOTO</entry>
     <entry key="yukon.web.modules.support.uiDemos.confirmGotoHome.message">Are you sure you want to go home?  (Some say you can't go home.)</entry>
     <entry key="yukon.web.modules.support.uiDemos.searchWikipedia.title">Confirm Search</entry>
-    <entry key="yukon.web.modules.support.uiDemos.searchWikipedia.message">Are you sure you search Wikipedia?</entry>
+    <entry key="yukon.web.modules.support.uiDemos.searchWikipedia.message">Are you sure you want to search Wikipedia?</entry>
+
+    <entry key="yukon.web.modules.support.uiDemos.inlineDialog1.title">In-line Test, no OK</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inline1.label">In-line 1, no okAction</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inlineDialog2.title">In-line Test, submit</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inline2.label">In-line 2, submit okAction</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inlineDialog3.title">In-line Test, custom event</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inline3.label">In-line 3, custom event okAction</entry>
 
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>

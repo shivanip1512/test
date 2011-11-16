@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
 <cti:standardPage module="survey" page="list">
@@ -50,7 +50,7 @@
                             <cti:url var="deleteUrl" value="delete">
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
-                            <ajax:confirmDialog on="#deleteBtn${surveyId}" nameKey="confirmDelete"
+                            <dialog:confirm on="#deleteBtn${surveyId}" nameKey="confirmDelete"
                                 argument="${survey.surveyName}" href="${deleteUrl}"/>
                             <cti:button id="deleteBtn${surveyId}" nameKey="delete" renderMode="image"/>
                         </td>
@@ -59,10 +59,10 @@
             </table>
         </c:if>
 
-        <div class="actionArea fr">
+        <div class="actionArea">
             <cti:url var="sampleXmlUrl" value="sampleXml"/>
-            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" styleClass="fl"/>
-            <cti:button id="addSurveyBtn" nameKey="add" styleClass="f_blocker fl"/>
+            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}"/>
+            <cti:button id="addSurveyBtn" nameKey="add" styleClass="f_blocker"/>
         </div>
     </tags:pagedBox2>
 </cti:standardPage>

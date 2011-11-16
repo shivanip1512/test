@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery('#tabs').tabs({'selected' : 1});
+    jQuery('#tabs').tabs({'selected' : 2});
 });
 </script>
 

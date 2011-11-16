@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ajax" tagdir="/WEB-INF/tags/ajax"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
@@ -193,7 +193,7 @@ moveDownDisabledIcon = templateIcons[4];
 						                        <cti:param name="surveyQuestionId"
 						                            value="${question.surveyQuestionId}"/>
 						                    </cti:url>
-                                            <ajax:confirmDialog on="#deleteBtn${question.surveyQuestionId}"
+                                            <dialog:confirm on="#deleteBtn${question.surveyQuestionId}"
                                                 nameKey="confirmDelete"
                                                 argument="${question.questionKey}" href="${deleteUrl}"/>
                                             <cti:button id="deleteBtn${question.surveyQuestionId}"
