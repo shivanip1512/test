@@ -193,8 +193,14 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	
     	AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
         String oldScheduleName = oldAts.getScheduleName();
-    	
-    	accountCheckerService.checkInventory(user, thermostatIdsList);
+
+        for (int thermostatId : thermostatIds) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            accountEventLogService.thermostatScheduleSavingAttemptedByConsumer(user,
+                account.getAccountNumber(), thermostat.getSerialNumber(), oldAts.getScheduleName());
+        }
+
+        accountCheckerService.checkInventory(user, thermostatIdsList);
     	accountThermostatScheduleDao.deleteById(scheduleId);
     	
     	//flash message

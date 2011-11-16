@@ -298,6 +298,18 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
+    public void thermostatScheduleDeleteAttemptedByOperator(LiteYukonUser yukonUser,
+                                                            String accountNumber,
+                                                            String serialNumber, String scheduleName) {
+    }
+
+    @Override
+    public void thermostatScheduleDeleteAttemptedByConsumer(LiteYukonUser yukonUser,
+                                                            String accountNumber,
+                                                            String serialNumber, String scheduleName) {
+    }
+
+    @Override
     public void thermostatManualSetAttemptedByOperator(LiteYukonUser yukonUser,
                                                        String accountNumber, String serialNumber) {
     }
@@ -323,6 +335,10 @@ public class MockAccountEventLogService implements AccountEventLogService{
 
     @Override
     public void thermostatScheduleSaved(String accountNumber, String scheduleName) {
+    }
+
+    @Override
+    public void thermostatScheduleDeleted(String accountNumber, String scheduleName) {
     }
 
     @Override

@@ -351,8 +351,20 @@ public interface AccountEventLogService {
                                                             @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                             @Arg(ArgEnum.serialNumber) String serialNumber,
                                                             @Arg(ArgEnum.scheduleName) String scheduleName);
-    
-    
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatScheduleDeleteAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                            @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                            @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatScheduleDeleteAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                            @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                            @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+
+
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatManualSetAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                        @Arg(ArgEnum.accountNumber) String accountNumber, 
@@ -381,6 +393,10 @@ public interface AccountEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.thermostat")
     public void thermostatScheduleSaved(@Arg(ArgEnum.accountNumber) String accountNumber, 
                                         @Arg(ArgEnum.scheduleName) String scheduleName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.thermostat")
+    public void thermostatScheduleDeleted(@Arg(ArgEnum.accountNumber) String accountNumber, 
+                                          @Arg(ArgEnum.scheduleName) String scheduleName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.thermostat")
     public void thermostatManuallySet(@Arg(ArgEnum.username) LiteYukonUser yukonUser,

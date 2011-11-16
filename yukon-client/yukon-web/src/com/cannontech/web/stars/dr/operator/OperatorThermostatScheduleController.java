@@ -291,19 +291,22 @@ public class OperatorThermostatScheduleController {
 
 	// DELETE SAVED SCHEDULE
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String viewSavedSchedule(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
-                                    @RequestParam(value="scheduleId", required=true) Integer scheduleId,
-                                    LiteYukonUser user,
-                                    ModelMap model,
-                                    AccountInfoFragment fragment,
-                                    FlashScope flash) {
+    public String deleteSchedule(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
+                                 @RequestParam(value="scheduleId", required=true) Integer scheduleId,
+                                 LiteYukonUser user, ModelMap model, AccountInfoFragment fragment,
+                                 FlashScope flash) {
     	
 	    List<Integer> thermostatIdList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
 	    
 		accountCheckerService.checkInventory(user, thermostatIdList);
 		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-		
+
 		AccountThermostatSchedule schedule = accountThermostatScheduleDao.getById(scheduleId);
+        for (int thermostatId : thermostatIdList) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user,
+                fragment.getAccountNumber(), thermostat.getSerialNumber(), schedule.getScheduleName());
+        }
 		accountThermostatScheduleDao.deleteById(scheduleId);
 		
 		MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.schedules.scheduleDeleted", schedule.getScheduleName());

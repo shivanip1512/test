@@ -149,7 +149,8 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	@Override
 	@Transactional
 	public void deleteById(int atsId) {
-		
+		AccountThermostatSchedule ats = getById(atsId);
+
 		// delete InventoryToAcctThermostatSch
 		SqlStatementBuilder deleteInventoryToAcctThermostatSch = new SqlStatementBuilder();
 		deleteInventoryToAcctThermostatSch.append("DELETE FROM InventoryToAcctThermostatSch");
@@ -164,6 +165,10 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		deleteAcctThermostatSchedule.append("DELETE FROM AcctThermostatSchedule");
 		deleteAcctThermostatSchedule.append("WHERE AcctThermostatScheduleId").eq(atsId);
 		yukonJdbcTemplate.update(deleteAcctThermostatSchedule);
+
+		CustomerAccount customerAccount = customerAccountDao.getById(ats.getAccountId());
+        accountEventLogService.thermostatScheduleDeleted(customerAccount.getAccountNumber(),
+                                                         ats.getScheduleName());
 	}
     
 	// DELETE ALL BY ACCOUNT ID

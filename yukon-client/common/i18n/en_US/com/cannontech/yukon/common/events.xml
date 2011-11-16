@@ -141,6 +141,8 @@
     <!-- Thermostat Schedule -->
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttemptedByOperator">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttemptedByConsumer">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttemptedByOperator">The user {1} is attempting to delete the schedule {4} to the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttemptedByConsumer">The user {1} is attempting to delete the schedule {4} to the device {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByOperator">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByConsumer">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByOperator">The user {1} is attempting to change the thermostat label from {4} to {5} through the operator pages for the device {3} which is on the account {2}.</entry>
@@ -152,6 +154,7 @@
     
     <!-- Thermostat Schedule Service Level -->
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSaved">The schedule {2} has been saved on the account {1}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleted">The schedule {2} has been deleted on the account {1}.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatManuallySet">The user {1} has manually set the device {3}, which is on the account {2}.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChanged">The user {1} has changed the label of the device {3} from {4} to {5}, which is on the account {2}.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChanged.4">Old Thermostat Label</entry>
