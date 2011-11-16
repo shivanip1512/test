@@ -6065,37 +6065,27 @@
                 <name>Abnormal Delta Voltage</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="73">
-                <init>true</init>
-                <name>Power Fail</name>
-                <stategroup value="TrueFalse"/>
-            </point>
-            <point type="Status" offset="74">
-                <init>true</init>
-                <name>Power On</name>
-                <stategroup value="TrueFalse"/>
-            </point>
-            <point type="Status" offset="85">
+            <point type="Status" offset="83">
                 <init>true</init>
                 <name>Relay Sense Failed</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="86">
+            <point type="Status" offset="84">
                 <init>true</init>
                 <name>Reclose Block</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="88">
+            <point type="Status" offset="86">
                 <init>true</init>
                 <name>Manual Control Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="89">
+            <point type="Status" offset="87">
                 <init>true</init>
                 <name>Remote Control Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="90">
+            <point type="Status" offset="88">
                 <init>true</init>
                 <name>Auto Control Mode</name>
                 <stategroup value="TrueFalse"/>
@@ -6108,58 +6098,49 @@
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="2">
-                <init>true</init>
-                <name>Control Mode</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="3">
+            <point type="Analog" offset="12">
                 <init>true</init>
                 <name>Average Line Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="4">
+            <point type="Analog" offset="21">
                 <init>true</init>
                 <name>Line Voltage THD</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Percent"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="7">
+            <point type="Analog" offset="5">
                 <init>true</init>
                 <name>Temperature</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
-            <!-- Only difference between this Analog offset 8 entry and the
-            CBC_702X_BASE Analog offset 8 entry is the multiplier -->
-            <point type="Analog" offset="8">
+            <point type="Analog" offset="6">
                 <init>true</init>
                 <name>Delta Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="9">
+            <point type="Analog" offset="7">
                 <init>true</init>
                 <name>High Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10">
+            <point type="Analog" offset="8">
                 <init>true</init>
                 <name>Low Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="11">
+            <point type="Analog" offset="2">
                 <init>true</init>
                 <name>Last Control Reason</name>
                 <multiplier value="1.0"/>
@@ -6187,91 +6168,98 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10003">
+            <point type="Analog" offset="10005">
                 <init>true</init>
                 <name>Daily Control Limit</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10004">
-                <init>true</init>
-                <name>Close Delay Time</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10005">
-                <init>true</init>
-                <name>Open Delay Time</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="10006">
                 <init>true</init>
-                <name>Bank Control Time</name>
+                <name>Auto Close Delay Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10007">
                 <init>true</init>
+                <name>Manual Close Delay Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10008">
+                <init>true</init>
+                <name>Open Delay Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10009">
+                <init>true</init>
+                <name>Bank Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10010">
+                <init>true</init>
                 <name>Re-Close Delay Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10008">
+            <point type="Analog" offset="10011">
                 <init>true</init>
                 <name>Comms Loss Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10009">
+            <point type="Analog" offset="10012">
                 <init>true</init>
                 <name>CVR OV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10010">
+            <point type="Analog" offset="10013">
                 <init>true</init>
                 <name>CVR UV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10011">
+            <point type="Analog" offset="10015">
                 <init>true</init>
                 <name>Emergency OV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10012">
+            <point type="Analog" offset="10016">
                 <init>true</init>
                 <name>Emergency UV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10013">
+            <point type="Analog" offset="10018">
                 <init>true</init>
                 <name>Comms Loss OV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10014">
+            <point type="Analog" offset="10019">
                 <init>true</init>
                 <name>Comms Loss UV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="10015">
+            <point type="Analog" offset="10020">
                 <init>true</init>
                 <name>Average Line Voltage Time</name>
                 <multiplier value="1.0"/>
