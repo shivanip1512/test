@@ -18,7 +18,8 @@ enum PointRequestType
 {
     CbcRequestType,
     RegulatorRequestType,
-    OtherRequestType
+    OtherRequestType,
+    RequiredRequestType
 };
 
 typedef std::map<long,PointValue> PointValueMap;

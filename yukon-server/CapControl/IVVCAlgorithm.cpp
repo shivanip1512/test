@@ -643,7 +643,8 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
 {
     return checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO,          CbcRequestType,       "CBC")
         || checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO,      RegulatorRequestType, "Regulator")
-        || checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType,     "Other");
+        || checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType,     "Other")
+        || checkForStaleData( request, timeNow, 1.0,                                  RequiredRequestType,  "Required");
 }
 
 
@@ -826,7 +827,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
     if (busWattPointId > 0)
     {
-        pointRequests.insert( PointRequest(busWattPointId, OtherRequestType) );
+        pointRequests.insert( PointRequest(busWattPointId, RequiredRequestType) );
     }
     else
     {
@@ -843,7 +844,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     {
         if (ID > 0)
         {
-            pointRequests.insert( PointRequest(ID, OtherRequestType) );
+            pointRequests.insert( PointRequest(ID, RequiredRequestType) );
         }
         else
         {
@@ -1153,7 +1154,9 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     // Can't get here if these IDs don't exist
     long wattPointID = subbus->getCurrentWattLoadPointId();
     PointValueMap::iterator iter = pointValues.find(wattPointID);
-    double wattValue = iter->second.value;
+
+    // if not found default to 0 -- this shouldn't happen now that watt point is required to be in the point request and up to date
+    double wattValue = ( iter != pointValues.end() ) ? iter->second.value : 0.0;
     pointValues.erase(wattPointID);
 
     double varValue = 0.0;
@@ -1162,7 +1165,9 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     for each (long pointId in pointIds)
     {
         iter = pointValues.find(pointId);
-        varValue += iter->second.value;
+
+        // if not found default to 0 -- this shouldn't happen now that var points are required to be in the point request and up to date
+        varValue += ( iter != pointValues.end() ) ? iter->second.value : 0.0;
         pointValues.erase(pointId);
     }//At this point we have removed the var and watt points. Only volt points remain.
 
