@@ -1,12 +1,10 @@
 package com.cannontech.clientutils;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
@@ -93,6 +91,9 @@ public class YukonFileAppender extends AppenderSkeleton {
         dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
         dailyRollingFileAppender.setMaxFileSize(maxFileSize);
         
+        dailyRollingFileAppender.setMaxFileOpenRetries(configSource.getInteger("LOG_MAX_FILE_OPEN_RETRIES", DatedFileAppender.MAX_FILE_OPEN_RETRIES));
+        dailyRollingFileAppender.setRetryDelayInMillis(configSource.getLong("LOG_RETRY_DELAY_IN_MS", DatedFileAppender.RETRY_DELAY_IN_MS));
+
         //The layout for the log file:
         Layout layout = new PatternLayout(conversionPattern);
         dailyRollingFileAppender.setLayout(layout);

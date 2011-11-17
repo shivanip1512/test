@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -150,6 +152,8 @@ import com.cannontech.common.util.CtiUtilities;
  */
 
 public class DatedFileAppender extends FileAppender {
+    public final static int MAX_FILE_OPEN_RETRIES = 5;
+    public final static int RETRY_DELAY_IN_MS = 1000;
 
     //----------------------------------------------------- class Variables
     /**
@@ -211,6 +215,16 @@ public class DatedFileAppender extends FileAppender {
      * String representation of the date and time this log was started.
      */
     private String startDate = "";
+    
+    /**
+     * Maximum number of retries attempting to open/create a file
+     */
+    private int maxFileOpenRetries = MAX_FILE_OPEN_RETRIES;
+    
+    /**
+     * The delay in millis between file open attempts.
+     */
+    private long retryDelayInMillis = RETRY_DELAY_IN_MS;
     
     // ----------------------------------------------------------- Constructors
 
@@ -307,6 +321,14 @@ public class DatedFileAppender extends FileAppender {
         this.maxFileSize = maxFileSize;
     }
     
+    public void setRetryDelayInMillis(long retryDelayInMillis) {
+		this.retryDelayInMillis = retryDelayInMillis;
+	}
+
+    public void setMaxFileOpenRetries(int maxFileOpenRetries) {
+		this.maxFileOpenRetries = maxFileOpenRetries;
+	}
+    
     // --------------------------------------- Public Methods
 
     /**
@@ -334,7 +356,7 @@ public class DatedFileAppender extends FileAppender {
      * Called by AppenderSkeleton.doAppend() to write a log message formatted
      * according to the layout defined for this appender.
      */
-    public void append(LoggingEvent event) {
+    public synchronized void append(LoggingEvent event) {
         File newFile = null;
         String datestamp = null;
         if (this.layout == null) {
@@ -375,10 +397,31 @@ public class DatedFileAppender extends FileAppender {
                 newFile.delete();
             }
 
-            this.fileName = newFile.getAbsolutePath();
+            // The below while loop is basically a copy from super.activateOptions();
+            // This allows us to catch any exceptions and retry open/create of a file.
+            int numTries = 0;
+            while (numTries < maxFileOpenRetries) {
+                try {
+                	numTries++;
+                    this.fileName = newFile.getAbsolutePath();
+                    setFile(fileName, fileAppend, bufferedIO, bufferSize);
+                    break;	//made it to here, was a success...break from while.
+                } catch (java.io.IOException e) {
+                    if (numTries < maxFileOpenRetries) {
+                        LogLog.error("could not open " + fileName + " after trying " + numTries +
+                                     " times; trying again", e);
+                        try {
+                            Thread.sleep(retryDelayInMillis);
+                        } catch (InterruptedException e1) {
+                            LogLog.warn("interrupted waiting to retry opening log " + fileName, e1);
+                        }
+                    } else {
+                        errorHandler.error("setFile(" + fileName + "," + fileAppend + ") call failed.",
+                                           e, ErrorCode.FILE_OPEN_FAILURE);
+                    }
+                }
+            }
 
-            super.activateOptions(); // close current file and open new file
-            
             //append a header including version info at the start of the new log file
             FileWriter fwriter = null;
             try{
