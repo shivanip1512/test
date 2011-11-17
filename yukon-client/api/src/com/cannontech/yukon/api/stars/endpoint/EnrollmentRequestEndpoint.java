@@ -51,11 +51,9 @@ public class EnrollmentRequestEndpoint {
                                                                                              enrollmentResultList, 
                                                                                              enrollmentHelper);
 
-            accountEventLogService.enrollmentAttemptedThroughApi(user, 
-                                                                         enrollmentHelper.getAccountNumber(), 
-                                                                         enrollmentHelper.getSerialNumber(), 
-                                                                         enrollmentHelper.getProgramName(), 
-                                                                         enrollmentHelper.getLoadGroupName());
+            accountEventLogService.enrollmentAttemptedThroughApi(user, enrollmentHelper.getAccountNumber(), 
+                                                                 enrollmentHelper.getSerialNumber(), enrollmentHelper.getProgramName(), 
+                                                                 enrollmentHelper.getLoadGroupName());
             
             Element resultElement;
             try {
@@ -75,15 +73,12 @@ public class EnrollmentRequestEndpoint {
     }
     
     @Autowired
-    public void setEnrollmentHelperService(
-            EnrollmentHelperService enrollmentHelperService) {
-        this.enrollmentHelperService = enrollmentHelperService;
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
     }
     
+    @Autowired
+    public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
+        this.enrollmentHelperService = enrollmentHelperService;
+    }
 }
-
-
-
-
-
-
