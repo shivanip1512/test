@@ -374,13 +374,6 @@ public interface AccountEventLogService {
     public void thermostatManualSetAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                        @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                        @Arg(ArgEnum.serialNumber) String serialNumber);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatLabelChangeAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                         @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                         @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                         @Arg(ArgEnum.thermostatLabel) String oldThermostatLabel,
-                                                         @Arg(ArgEnum.thermostatLabel) String newThermostatLabel);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatLabelChangeAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,

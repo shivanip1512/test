@@ -16,7 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
@@ -42,13 +42,14 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.Commissioned;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
@@ -80,7 +81,9 @@ public class InventoryDaoImpl implements InventoryDao {
     private InventoryIdentifierMapper inventoryIdentifierMapper;
     private YukonListDao yukonListDao;
     private PaoDefinitionDao paoDefinitionDao;
-    
+    private AccountEventLogService accountEventLogService;
+    private CustomerAccountDao customerAccountDao;
+
     @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
         BasicAttributeDefinition definition = (BasicAttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
@@ -292,15 +295,26 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    public void updateLabel(Thermostat thermostat) {
+    public void updateLabel(Thermostat thermostat, LiteYukonUser user) {
+        int inventoryId = thermostat.getId();
 
-        StringBuilder sql = new StringBuilder("UPDATE InventoryBase");
-        sql.append(" SET DeviceLabel = ?");
-        sql.append(" WHERE InventoryId = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceLabel FROM InventoryBase");
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        String oldThermostatLabel = yukonJdbcTemplate.queryForString(sql);
 
-        int id = thermostat.getId();
-        String label = thermostat.getDeviceLabel();
-        yukonJdbcTemplate.update(sql.toString(), label, id);
+        sql = new SqlStatementBuilder();
+        sql.append("UPDATE InventoryBase");
+        sql.append("SET DeviceLabel").eq(thermostat.getDeviceLabel());
+        sql.append("WHERE InventoryId").eq(inventoryId);
+
+        yukonJdbcTemplate.update(sql);
+
+        int accountId = getAccountIdForInventory(inventoryId);
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        accountEventLogService.thermostatLabelChanged(user, customerAccount.getAccountNumber(),
+                                                      thermostat.getSerialNumber(),
+                                                      oldThermostatLabel, thermostat.getDeviceLabel());
     }
 
     /**
@@ -637,5 +651,15 @@ public class InventoryDaoImpl implements InventoryDao {
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
+    }
+
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
     }
 }

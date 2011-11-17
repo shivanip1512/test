@@ -97,30 +97,33 @@ public class ThermostatManualController extends AbstractThermostatController {
     }
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
-    public String saveLabel(ModelMap map,
-                            @ModelAttribute Thermostat thermostat,
-                            BindingResult bindingResult,
-                            String displayLabel, 
-                            FlashScope flashScope,
-                            YukonUserContext yukonUserContext)  {
-        
-        accountEventLogService.thermostatLabelChangeAttemptedByConsumer(yukonUserContext.getYukonUser(),
+    public String saveLabel(ModelMap map, @ModelAttribute Thermostat thermostat,
+                            BindingResult bindingResult, FlashScope flashScope,
+                            YukonUserContext userContext)  {
+        LiteYukonUser user = userContext.getYukonUser();
+        int inventoryId = thermostat.getId();
+        // They are only allowed to change the label so we read the old thermostat from the
+        // database and just change the one field they're allowed to change.
+        String newLabel = thermostat.getDeviceLabel();
+        thermostat = inventoryDao.getThermostatById(inventoryId);
+        String oldLabel = thermostat.getDeviceLabel();
+        thermostat.setDeviceLabel(newLabel);
+        accountEventLogService.thermostatLabelChangeAttemptedByConsumer(user,
                                                                         thermostat.getSerialNumber(),
-                                                                        thermostat.getDeviceLabel(),
-                                                                        displayLabel);
-        
-        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostat.getId());
-        
+                                                                        oldLabel, newLabel);
+
+        accountCheckerService.checkInventory(user, inventoryId);
+
         ThermostatValidator validator = new ThermostatValidator();
         validator.validate(thermostat, bindingResult);
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-        }else{
-            inventoryDao.updateLabel(thermostat);
+        } else {
+            inventoryDao.updateLabel(thermostat, user);
         }
 
-        map.addAttribute("thermostatIds", thermostat.getId());
+        map.addAttribute("thermostatIds", inventoryId);
 
         return "redirect:/spring/stars/consumer/thermostat/view";
     }

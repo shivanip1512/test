@@ -11,6 +11,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
@@ -65,7 +66,7 @@ public interface InventoryDao {
      * Method to update the label of a thermostat
      * @param thermostat - Thermostat to save
      */
-    public void updateLabel(Thermostat thermostat);
+    public void updateLabel(Thermostat thermostat, LiteYukonUser user);
 
     public List<Integer> getInventoryIdsByAccount(int accountId);
     

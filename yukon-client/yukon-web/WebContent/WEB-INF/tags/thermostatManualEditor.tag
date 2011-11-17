@@ -22,12 +22,7 @@
                 <form:form action="/spring/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
                     <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                     <form:hidden path="id"/>
-                    <form:hidden path="serialNumber"/>
-                    <form:hidden path="type"/>
-                    <form:hidden path="category"/>
-                    <form:hidden path="routeId"/>
-                    <form:hidden path="status"/>
-                    
+
                     <span id="editName" style="display: none;">
                         <form:input path="deviceLabel" maxlength="60" />
                         <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>

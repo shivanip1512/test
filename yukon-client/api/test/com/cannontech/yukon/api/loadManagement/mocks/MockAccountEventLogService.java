@@ -320,13 +320,6 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void thermostatLabelChangeAttemptedByOperator(LiteYukonUser yukonUser,
-                                                         String accountNumber, String serialNumber,
-                                                         String oldThermostatLabel,
-                                                         String newThermostatLabel) {
-    }
-
-    @Override
     public void thermostatLabelChangeAttemptedByConsumer(LiteYukonUser yukonUser,
                                                          String serialNumber,
                                                          String oldThermostatLabel,
