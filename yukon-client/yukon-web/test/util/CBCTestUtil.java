@@ -13,7 +13,6 @@ import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.web.util.CBCDBUtil;
 
 public class CBCTestUtil {
