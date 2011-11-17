@@ -64,15 +64,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
 //        mav.addObject("group", group);
 
         putPaosInModel(request, mav, group);
-        
-        Permission permission = getPermission(request);
-        String instructionText = "should";
-        if(permission.getDefault()) {
-        	instructionText = "should not";
-        }
-        
-        mav.addObject("instructionText", instructionText);
-
+        addPermissionDefaultObject(request, mav);
         return mav;
     }
     
@@ -88,7 +80,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         // Remove pao
         idList.remove(paoId);
 
-        return this.getPaoTableMav(idList);
+        return this.getPaoTableMav(request, idList);
 
     }
 
@@ -106,7 +98,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
             }
         }
 
-        return this.getPaoTableMav(idList);
+        return this.getPaoTableMav(request, idList);
     }
 
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -122,8 +114,9 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
                                           permission, allow)) {
             return new ModelAndView(new TextView("Save Successful"));
         }
-
-        return new ModelAndView(new TextView("Save Failed"));
+        ModelAndView mav = new ModelAndView(new TextView("Save Failed"));
+        addPermissionDefaultObject(request, mav);
+        return mav;
     }
 
     protected void putPaosInModel(HttpServletRequest request, ModelAndView mav, T it) throws Exception {
@@ -142,6 +135,23 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         mav.addObject("paoIds", sb);
     }
 
+    /**
+     * Add text for permission.default to mav
+     * @param request
+     * @param mav
+     * @throws ServletRequestBindingException
+     */
+	private void addPermissionDefaultObject(HttpServletRequest request,
+			ModelAndView mav) throws ServletRequestBindingException {
+		Permission permission = getPermission(request);
+        String instructionText = "should";
+        if(permission.getDefault()) {
+        	instructionText = "should not";
+        }
+        
+        mav.addObject("instructionText", instructionText);
+	}
+	
     private Permission getPermission(HttpServletRequest request) throws ServletRequestBindingException {
         String permissionStr = WidgetParameterHelper.getRequiredStringParameter(request, "permission");
         Permission permission = Permission.valueOf(permissionStr);
@@ -153,7 +163,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
      * @param idList - List of paoIds to add to the view
      * @return Populated paoTable MAV
      */
-    private ModelAndView getPaoTableMav(List<Integer> idList) {
+    private ModelAndView getPaoTableMav(HttpServletRequest request, List<Integer> idList) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("userGroupPermissionEditor/render.jsp");
 
         List<LiteYukonPAObject> paoList = new ArrayList<LiteYukonPAObject>();
@@ -170,6 +180,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         mav.addObject("paoList", getUltraLitePaoList(paoList));
         mav.addObject("paoIds", idBuffer.toString());
         mav.addObject("showSave", true);
+        addPermissionDefaultObject(request, mav);
         return mav;
     }
 
