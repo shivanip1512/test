@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
@@ -59,6 +61,8 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class ZigBeeHardwareController {
+    
+    private static final Logger log = YukonLogManager.getLogger(ZigBeeHardwareController.class);
     
     private static final String keyPrefix = "yukon.web.modules.operator.hardware.";
     private ZigbeeWebService zigbeeWebService;
@@ -389,7 +393,12 @@ public class ZigBeeHardwareController {
         LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);
         zigbeeEventLogService.zigbeeDeviceUnassignByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
         
-        zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
+        try {
+            zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
+        } catch (DigiWebServiceException e) {
+            log.warn("Problem while sending uninstall command to the device. Device will still be unassigned from the gateway.");
+        }
+        
         gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
         
         zigbeeEventLogService.zigbeeDeviceUnassigned(device.getPaoName(), gateway.getPaoName());
