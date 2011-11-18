@@ -22,7 +22,9 @@
        </copy>
    </target>
       	   			
-   <target name="clean">       
-    </target>
+   <target name="clean"/>
+
+   <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
+   <target name="runUnitTests" description="Run all unit tests, stop on failure" />
    
 </project>

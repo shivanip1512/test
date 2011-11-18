@@ -45,8 +45,12 @@
 
         <delete dir="${yukon-web}/build_jsp" />
         <delete dir="${yukon-web}/WebContent_temp" />
-        <delete dir="${yukon-web}/WebContent_merged" />      
-        <delete file="${yukon-web}/generated_web.xml" />      
+        <delete dir="${yukon-web}/WebContent_merged" />
+        <delete file="${yukon-web}/generated_web.xml" />
+		
+		<!-- Remove testing files -->
+        <delete dir="test/build"/>        
+        <delete dir="test/testResults"/>        
 
     </target>
 
@@ -175,11 +179,75 @@
  	 	<copy tofile="${yukon.lib}/WebContent/WEB-INF/web.xml" file="${yukon-web}/generated_web.xml" />
     </target>
     
+    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
+    <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
+        <antcall target="executeTests">
+            <param name="halt" value="yes" />
+            <param name="testDir" value="test/build" />
+        </antcall>
+    </target>
+
+    <!-- Compile unit tests - will compile all unit tests -->
+    <target name="compileUnitTests">
+        <antcall target="compileTests">
+            <param name="srcdir" value="test" />
+            <param name="destdir" value="test/build" />
+        </antcall>
+    </target>
+
+    <!-- Compile the test classes for testing. This target must be supplied a srcdir and a destdir property -->
+    <target name="compileTests">
+
+        <delete dir="${destdir}" />
+        <mkdir dir="${destdir}" />
+        <javac srcdir="${srcdir}"
+               destdir="${destdir}"
+               target="${yukon.javac.target}"
+               source="${yukon.javac.source}"
+               bootclasspath="${yukon.javac.bootclasspath}"
+               debug="${yukon.javac.debug}">
+            <classpath>
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+
+    </target>
+    
+    <!-- Run tests. This target must be supplied a halt and testDir property -->
+    <target name="executeTests" depends="compileUnitTests">
+
+        <property name="test.results.dir" value="test/testResults"/>
+        <!-- Clear out any old results -->
+        <delete dir="${test.results.dir}" />
+        <mkdir dir="${test.results.dir}" />
+
+        <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}">
+            <classpath id="junit.class.path">
+                <dirset dir="test" />
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar" />
+                    <exclude name="**/WebContent/**" />
+                </fileset>
+            </classpath>
+            <formatter type="xml" />
+            <batchtest fork="yes" todir="${test.results.dir}">
+                <fileset dir="${testDir}">
+                    <include name="**/*Test.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <!-- Create the html reports for test results -->
+        <property name="test.results.dir" value="test/unitTestResults" />
+        <junitreport todir="${test.results.dir}">
+            <fileset dir="${test.results.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report todir="${test.results.dir}" />
+        </junitreport>
+    </target>
+    
 </project>
-
-
-
-
-
-
-

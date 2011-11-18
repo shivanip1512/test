@@ -39,12 +39,9 @@
     </target>
 
     <target name="runUnitTests" depends="init">
-        <!-- All of our build files need this target for this to work !!!TEST!!!
         <antcall target="callall" inheritAll="true">
             <param name="dotarget" value="runUnitTests"/>
         </antcall>
--->
-        <ant dir="${common}" target="runUnitTests" />
     </target>
 
     <target name="init">
@@ -112,7 +109,6 @@
         <ant dir="${stars}" target="${dotarget}" />
 
         <ant dir="${api}" target="${dotarget}" />
-
         <ant dir="${tools}" target="${dotarget}" />
 
         <ant dir="${multispeak}" target="${dotarget}" />

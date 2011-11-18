@@ -1,25 +1,24 @@
 package com.cannontech.stars.dr.account.service;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.easymock.EasyMockSupport;
+import org.easymock.IMockBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.model.Address;
-import com.cannontech.common.model.SiteInformation;
+import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.UserNameUnavailableException;
@@ -31,7 +30,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -41,11 +39,14 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.YukonEnergyCompanyMockFactory;
+import com.cannontech.stars.dr.account.AccountDtoMockFactory;
+import com.cannontech.stars.dr.account.ContactMockFactory;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -57,14 +58,21 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.impl.AccountServiceImpl;
+import com.cannontech.stars.dr.adapters.ContactServiceAdapter;
+import com.cannontech.stars.dr.adapters.YukonEnergyCompanyServiceAdapter;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
+import com.cannontech.stars.dr.general.service.ContactNotificationService;
+import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
-public class AccountServiceTest {
+public class AccountServiceTest extends EasyMockSupport {
     
     // Class under test
     private AccountServiceImpl accountService;
@@ -75,8 +83,7 @@ public class AccountServiceTest {
     private AuthDao authDaoMock;
     private YukonGroupDao yukonGroupDaoMock;
     private AddressDao addressDaoMock;
-    private ContactDao contactDaoMock;
-    private ContactNotificationDao contactNotificationDaoMock;
+    private ContactNotificationService contactNotificationServiceMock;
     private CustomerDao customerDaoMock;
     private SiteInformationDao siteInformationDaoMock;
     private AccountSiteDao accountSiteDaoMock;
@@ -92,17 +99,21 @@ public class AccountServiceTest {
     private EventAccountDao eventAccountDaoMock;
     private StarsCustAccountInformationDao starsCustAccountInformationDaoMock;
     private DBPersistentDao dbPersistantDaoMock;
+    private AccountEventLogService accountEventLogServiceMock;
     
+    private YukonEnergyCompanyService yukonEnergyCompanyServiceMock;
+    private ContactService contactServiceMock;
+    private StarsDatabaseCache starsDatabaseCacheMock;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SecurityException, NoSuchMethodException {
         yukonUserDaoMock = createNiceMock(YukonUserDao.class);
         rolePropertyDaoMock = createMock(RolePropertyDao.class);
         authDaoMock = createMock(AuthDao.class);
         yukonGroupDaoMock = createMock(YukonGroupDao.class);
         addressDaoMock = createMock(AddressDao.class);
-        contactDaoMock = createNiceMock(ContactDao.class);
-        contactNotificationDaoMock = createNiceMock(ContactNotificationDao.class);
+        
+        contactNotificationServiceMock = createNiceMock(ContactNotificationService.class);
         customerDaoMock = createMock(CustomerDao.class);
         siteInformationDaoMock = createMock(SiteInformationDao.class);
         accountSiteDaoMock = createMock(AccountSiteDao.class);
@@ -118,16 +129,58 @@ public class AccountServiceTest {
         eventAccountDaoMock = createMock(EventAccountDao.class);
         starsCustAccountInformationDaoMock = createMock(StarsCustAccountInformationDao.class);
         dbPersistantDaoMock = createNiceMock(DBPersistentDao.class);
+        accountEventLogServiceMock = createMock(AccountEventLogService.class);
+
         
+        
+        YukonEnergyCompanyService yecServiceMock = new YukonEnergyCompanyServiceAdapter() {
+            @Override
+            public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+                return YukonEnergyCompanyMockFactory.getYukonEC1();
+            }
+            
+            @Override
+            public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
+                return YukonEnergyCompanyMockFactory.getYukonEC1();
+            }
+        };
+        List<String> yukonEnergyCompanyServiceMockableMethods = 
+            getMethodNamesToMock(yecServiceMock.getClass(), "getEnergyCompanyByOperator", "getEnergyCompanyByAccountId");
+        yukonEnergyCompanyServiceMock = createPartialMock(yecServiceMock.getClass(), yukonEnergyCompanyServiceMockableMethods).createMock();        
+        
+        ContactService contServiceMock = new ContactServiceAdapter() {
+            @Override
+            public LiteContact createContact(String firstName, String lastName, LiteYukonUser contactUser) {
+                return ContactMockFactory.getLiteContact1();
+            }
+
+            @Override
+            public void updateContact(LiteContact liteContact, String firstName, String lastName, Integer loginId) {}
+        };
+        List<String> contactServiceMockableMethods = 
+            getMethodNamesToMock(contServiceMock.getClass(), "createContact", "updateContact");
+        contactServiceMock = createPartialMock(contServiceMock.getClass(), contactServiceMockableMethods).createMock();        
+
+        starsDatabaseCacheMock = new StarsDatabaseCache() {
+            @Override
+            public LiteStarsEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
+                LiteStarsEnergyCompany ec = new LiteStarsEnergyCompany() {
+                    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNumber) {
+                        return null;
+                    }
+                };
+                return ec;
+            }
+        };
+
         accountService = new AccountServiceImpl();
-        
         accountService.setYukonUserDao(yukonUserDaoMock);
         accountService.setRolePropertyDao(rolePropertyDaoMock);
         accountService.setAuthDao(authDaoMock);
         accountService.setYukonGroupDao(yukonGroupDaoMock);
         accountService.setAddressDao(addressDaoMock);
-        accountService.setContactDao(contactDaoMock);
-        accountService.setContactNotificationDao(contactNotificationDaoMock);
+        accountService.setContactService(contactServiceMock);
+        accountService.setContactNotificationService(contactNotificationServiceMock);
         accountService.setCustomerDao(customerDaoMock);
         accountService.setSiteInformationDao(siteInformationDaoMock);
         accountService.setAccountSiteDao(accountSiteDaoMock);
@@ -143,43 +196,44 @@ public class AccountServiceTest {
         accountService.setEventAccountDao(eventAccountDaoMock);
         accountService.setStarsCustAccountInformationDao(starsCustAccountInformationDaoMock);
         accountService.setDBPersistentDao(dbPersistantDaoMock);
-        accountService.setStarsDatabaseCache(new StarsDatabaseCache(){
+        accountService.setYukonEnergyCompanyService(yukonEnergyCompanyServiceMock);
+        accountService.setAccountEventLogService(accountEventLogServiceMock);
+        accountService.setStarsDatabaseCache(starsDatabaseCacheMock);
+    }
+    
+    private <T> IMockBuilder<T> createPartialMock(final Class<T> toMock, List<String> yukonEnergyCompanyServiceMockableMethods) {
+        
+        IMockBuilder<T> mockBuilder = createMockBuilder(toMock);
+        for (String methodName : yukonEnergyCompanyServiceMockableMethods) {
+            try {
+                mockBuilder.addMockedMethod(methodName);
+            }catch (IllegalArgumentException e) {
+                // There are several methods that could show up in this list that aren't reflection methods.  Just ignore them.
+            }
+        }
+        
+        return mockBuilder;
+    }
+
+    private List<String> getMethodNamesToMock(Class<?> mockClass, String... nonMockedMethodNames) {
+
+        List<Method> classDeclaredMethods = Lists.newArrayList(mockClass.getClass().getDeclaredMethods());
+        List<String> methodNamesToMock = Lists.transform(classDeclaredMethods, new Function<Method, String>() {
+
             @Override
-            public LiteStarsEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
-                LiteStarsEnergyCompany ec = new LiteStarsEnergyCompany() {
-                    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNumber) {
-                        return null;
-                    }
-                };
-                return ec;
+            public String apply(Method method) {
+                return method.getName();
             }
         });
+        
+        methodNamesToMock.removeAll(Lists.newArrayList(nonMockedMethodNames));
+        return methodNamesToMock;
     }
     
     @Test
     public void testEmptyAddAccount() {
-        replay(yukonUserDaoMock);
-        replay(rolePropertyDaoMock);
-        replay(authDaoMock);
-        replay(yukonGroupDaoMock);
-        replay(addressDaoMock);
-        replay(contactDaoMock);
-        replay(contactNotificationDaoMock);
-        replay(customerDaoMock);
-        replay(siteInformationDaoMock);
-        replay(accountSiteDaoMock);
-        replay(customerAccountDaoMock);
-        replay(ecMappingDaoMock);
-        replay(inventoryDaoMock);
-        replay(hardwareBaseDaoMock);
-        replay(lmProgramEventDaoMock);
-        replay(applianceDaoMock);
-        replay(workOrderDaoMock);
-        replay(callReportDaoMock);
-        replay(accountThermostatScheduleDaoMock);
-        replay(eventAccountDaoMock);
-        replay(starsCustAccountInformationDaoMock);
-        replay(dbPersistantDaoMock);
+
+        replayAll();
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         LiteYukonUser user = new LiteYukonUser();
@@ -198,59 +252,34 @@ public class AccountServiceTest {
          * Setup the account info
          */
         UpdatableAccount updatableAccount = new UpdatableAccount();
-        updatableAccount.setAccountNumber("999999");
+        AccountDto accountDto1 = AccountDtoMockFactory.getAccountDto1();
+        updatableAccount.setAccountNumber(accountDto1.getAccountNumber());
+        updatableAccount.setAccountDto(accountDto1);
+
         LiteYukonUser user = new LiteYukonUser();
-        AccountDto dto = new AccountDto();
-        
-        dto.setFirstName("Bob");
-        dto.setFirstName("Vila");
-        dto.setEmailAddress("bob@aol.com");
-        dto.setHomePhone("763 867 5309");
-        dto.setWorkPhone("1 800 GHOSTBUSTERS");
-        dto.setIsCommercial(false);
-        dto.setLoginGroup("Residential Customer");
-        dto.setMapNumber("123456");
-        dto.setUserName("bob");
-        dto.setPassword("itsasecrettoeveryone");
-        dto.setAltTrackingNumber("123456");
-        dto.setCompanyName("");
-        dto.setStreetAddress(new Address());
-        dto.getStreetAddress().setLocationAddress1("12345 Bob Street NE");
-        dto.getStreetAddress().setLocationAddress2("");
-        dto.getStreetAddress().setCityName("Minneapolis");
-        dto.getStreetAddress().setStateCode("MN");
-        dto.getStreetAddress().setZipCode("55374");
-        dto.getStreetAddress().setCounty("Hennepin");
-        dto.setBillingAddress(new Address());
-        dto.getBillingAddress().setLocationAddress1("12345 Bob Street NE");
-        dto.getBillingAddress().setLocationAddress2("");
-        dto.getBillingAddress().setCityName("Minneapolis");
-        dto.getBillingAddress().setStateCode("MN");
-        dto.getBillingAddress().setZipCode("55374");
-        dto.getBillingAddress().setCounty("Hennepin");
-        dto.setSiteInfo(new SiteInformation());
-        dto.getSiteInfo().setSubstationName("SuperStation");
-        dto.getSiteInfo().setFeeder("SuperFeeder");
-        dto.getSiteInfo().setPole("SouthPole");
-        dto.getSiteInfo().setServiceVoltage("120");
-        dto.getSiteInfo().setTransformerSize("2400");
-        updatableAccount.setAccountDto(dto);
-        
+
+        LiteYukonUser newuser = new LiteYukonUser(); 
+        newuser.setUsername(updatableAccount.getAccountDto().getUserName());
+        newuser.setLoginStatus(LoginStatusEnum.ENABLED);
+        newuser.setAuthType(AuthType.NONE);
+
+        LiteCustomer liteCustomer = new LiteCustomer();
+        liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
+        liteCustomer.setAltTrackingNumber(updatableAccount.getAccountDto().getAltTrackingNumber());
+        liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
+
         /*
          * Record what should happen
          */
-        expect(yukonUserDaoMock.findUserByUsername(dto.getUserName())).andReturn(null);
-        expect(rolePropertyDaoMock.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user)).andReturn(AuthType.NONE);
+        expect(customerAccountDaoMock.getByAccountNumber(updatableAccount.getAccountDto().getAccountNumber(), 1)).andReturn(null);
+        expect(yukonUserDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
+        expect(rolePropertyDaoMock.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null)).andReturn(AuthType.NONE);
         expect(yukonGroupDaoMock.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID)).andReturn(new LiteYukonGroup());
-        expect(yukonGroupDaoMock.getLiteYukonGroupByName(dto.getLoginGroup())).andReturn(new LiteYukonGroup());
+        expect(yukonGroupDaoMock.getLiteYukonGroupByName(updatableAccount.getAccountDto().getLoginGroup())).andReturn(new LiteYukonGroup());
         List<LiteYukonGroup> list = new ArrayList<LiteYukonGroup>();
         list.add(null);
         list.add(null);
-        LiteYukonUser newuser = new LiteYukonUser(); 
-        newuser.setUsername(dto.getUserName());
-        newuser.setLoginStatus(LoginStatusEnum.ENABLED);
-        newuser.setAuthType(AuthType.NONE);
-        yukonUserDaoMock.addLiteYukonUserWithPassword(newuser, dto.getPassword(), list );
+        yukonUserDaoMock.addLiteYukonUserWithPassword(newuser, updatableAccount.getAccountDto().getPassword(), list );
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),
             DBChangeMsg.CHANGE_YUKON_USER_DB,
             DBChangeMsg.CAT_YUKON_USER,
@@ -258,17 +287,24 @@ public class AccountServiceTest {
             DbChangeType.ADD));
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
-        contactDaoMock.saveContact(new LiteContact(1));
+        expect(contactServiceMock.createContact(updatableAccount.getAccountDto().getFirstName(), 
+                                                updatableAccount.getAccountDto().getLastName(), user));
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
                                DBChangeMsg.CHANGE_CONTACT_DB,
                                DBChangeMsg.CAT_CUSTOMERCONTACT,
                                DBChangeMsg.CAT_CUSTOMERCONTACT,
                                DbChangeType.ADD));
-        contactNotificationDaoMock.saveNotification(new LiteContactNotification(1));
+        expect(contactNotificationServiceMock.createNotification(new LiteContact(1), ContactNotificationType.HOME_PHONE, 
+                                                                 updatableAccount.getAccountDto().getHomePhone())).andReturn(null);
+        expect(contactNotificationServiceMock.createNotification(new LiteContact(1), ContactNotificationType.WORK_PHONE, 
+                                                                 updatableAccount.getAccountDto().getWorkPhone())).andReturn(null);
+        expect(contactNotificationServiceMock.createNotification(new LiteContact(1), ContactNotificationType.EMAIL, 
+                                                                 updatableAccount.getAccountDto().getEmailAddress())).andReturn(null);
         expectLastCall().times(3);
         expect(authDaoMock.getUserTimeZone(user)).andReturn(TimeZone.getDefault());
         expect(authDaoMock.getRolePropertyValue(-9999, -1110)).andReturn(null);
-        customerDaoMock.addCustomer(new LiteCustomer());
+        expect(rolePropertyDaoMock.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyUser())).andReturn(null);
+        customerDaoMock.addCustomer(liteCustomer);
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
                                DBChangeMsg.CAT_CUSTOMER,
@@ -279,38 +315,22 @@ public class AccountServiceTest {
         expect(accountSiteDaoMock.add(new AccountSite())).andReturn(true);
         CustomerAccount customerAccount = new CustomerAccount();
         customerAccount.setAccountNumber(updatableAccount.getAccountNumber());
+        customerAccount.setAccountNotes(updatableAccount.getAccountDto().getAccountNotes());
+        customerAccount.setCustomerId(liteCustomer.getCustomerID());
+        customerAccountDaoMock.add(customerAccount);
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
                                                             DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                             DbChangeType.ADD));
-        ecMappingDaoMock.addECToAccountMapping(new ECToAccountMapping());
+
+        ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
+        ecToAccountMapping.setEnergyCompanyId(YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId());
+        ecToAccountMapping.setAccountId(customerAccount.getAccountId());
+        ecMappingDaoMock.addECToAccountMapping(ecToAccountMapping);
+        accountEventLogServiceMock.accountAdded(user, updatableAccount.getAccountDto().getAccountNumber());
         
-        /*
-         * Set Mocks to replay mode
-         */
-        replay(yukonUserDaoMock);
-        replay(rolePropertyDaoMock);
-        replay(authDaoMock);
-        replay(yukonGroupDaoMock);
-        replay(addressDaoMock);
-        replay(contactDaoMock);
-        replay(contactNotificationDaoMock);
-        replay(customerDaoMock);
-        replay(siteInformationDaoMock);
-        replay(accountSiteDaoMock);
-        replay(customerAccountDaoMock);
-        replay(ecMappingDaoMock);
-        replay(inventoryDaoMock);
-        replay(hardwareBaseDaoMock);
-        replay(lmProgramEventDaoMock);
-        replay(applianceDaoMock);
-        replay(workOrderDaoMock);
-        replay(callReportDaoMock);
-        replay(accountThermostatScheduleDaoMock);
-        replay(eventAccountDaoMock);
-        replay(starsCustAccountInformationDaoMock);
-        replay(dbPersistantDaoMock);
+        replayAll();
         
         /*
          * run test

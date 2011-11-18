@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.loadManagement.adapters;
+package com.cannontech.stars.dr.adapters;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyService {
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+    public List<YukonEnergyCompany> getAllEnergyCompanies() {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -24,7 +24,7 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
-    public List<YukonEnergyCompany> getAllEnergyCompanies() {
+    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -32,4 +32,5 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
+
 }
