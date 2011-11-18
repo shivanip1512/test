@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.capcontrol.cbAddInfo">
+<cti:msgScope paths="modules.capcontrol.cbAddInfo">
 
 	<c:choose>
 		<c:when test="${capBankAdd.paoId > 0}">

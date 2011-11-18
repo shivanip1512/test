@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -22,17 +21,6 @@ public class DefineCollectableVerifyInactiveBanks extends DefineCollectableItemC
         return new VerifyBanks();
     }
 
-    public Comparator getComparator() {
-        return new Comparator() {
-          public int compare(Object x, Object y) {
-                if( x == y )
-                    return 0;
-                else
-                    return -1;
-          }
-        };
-    }
-    
     public int getCxxClassId() {
         return CTI_VERIFY_BANKS_ID;
     }

@@ -6,7 +6,7 @@
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.capcontrol.cbcPoints">
+<cti:msgScope paths="modules.capcontrol.cbcPoints">
 
     <div style="overflow-y:auto;overflow-x:hidden;height:500px;">
 

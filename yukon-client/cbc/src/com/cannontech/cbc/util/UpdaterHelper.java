@@ -183,13 +183,9 @@ public class UpdaterHelper {
         }
         
         switch (dataType) {
+
         case CB_NAME_COLUMN: {
-            NumberFormat num = NumberFormat.getNumberInstance();
-            num.setMaximumFractionDigits(2);
-            num.setMinimumFractionDigits(0);
-            String order = num.format(capBank.getControlOrder());
-            
-            return accessor.getMessage("yukon.web.modules.capcontrol.capBankName", capBank.getCcName(), order);
+            return accessor.getMessage("yukon.web.modules.capcontrol.capBankName", capBank.getCcName(), capBank.getControlOrder());
         }
 
         case CB_STATUS_COLUMN: {

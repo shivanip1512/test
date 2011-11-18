@@ -10,7 +10,7 @@
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".schedules">
             <select name="startSchedule" id="startSchedule">
-                <option value="All"<c:if test="${param.schedule == 'All'}"> selected="selected"</c:if>><i:inline key=".allSchedules"/></option>
+                <option value="All"<c:if test="${param.schedule == 'All'}"> selected="selected"</c:if>><cti:msg2 key=".allSchedules"/></option>
                 <c:forEach var="aSchedule" items="${scheduleList}">
                     <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected"</c:if>> ${aSchedule.scheduleName}</option>
                 </c:forEach>

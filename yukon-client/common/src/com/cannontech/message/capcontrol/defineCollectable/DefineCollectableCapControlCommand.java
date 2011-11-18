@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -21,17 +20,6 @@ public class DefineCollectableCapControlCommand extends DefineCollectableMessage
     
     public Object create(VirtualInputStream vstr) {
         return new CapControlCommand();
-    }
-    
-    public Comparator getComparator() {
-        return new Comparator() {
-          public int compare(Object x, Object y) {
-                if( x == y )
-                    return 0;
-                else
-                    return -1;
-          }
-        };
     }
     
     public int getCxxClassId() {

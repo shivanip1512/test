@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.capcontrol.comments">
+<cti:msgScope paths="modules.capcontrol.comments">
 
 <script type="text/javascript">
 $('executeCommand').observe('click', function(event) {

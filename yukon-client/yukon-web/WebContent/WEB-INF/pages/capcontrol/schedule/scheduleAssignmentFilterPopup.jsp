@@ -10,7 +10,7 @@
 		<tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".schedules">
                 <select name="schedule" id="scheduleSelection">
-                    <option value="All"><i:inline key=".allSchedules"/></option>
+                    <option value="All"><cti:msg2 key=".allSchedules"/></option>
                     <c:forEach var="aSchedule" items="${scheduleList}">
                         <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected" </c:if>>
                             <spring:escapeBody htmlEscape="true">${aSchedule.scheduleName}</spring:escapeBody>
@@ -20,7 +20,7 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".commands">
                 <select name="command" id="commandSelection">
-                    <option value="All"><i:inline key=".allCommands"/></option>
+                    <option value="All"><cti:msg2 key=".allCommands"/></option>
                     <c:forEach var="aCommand" items="${commandList}">
                         <c:choose>
                             <c:when test="${param.command == 'All'}">

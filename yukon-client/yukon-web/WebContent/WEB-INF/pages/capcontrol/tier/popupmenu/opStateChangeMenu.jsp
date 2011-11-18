@@ -26,7 +26,7 @@
                     <span><i:inline key=".opState"/></span>
                     <select id="newOpState">
                         <c:forEach items="${allowedOperationStates}" var="state">
-                            <option value="${state}" <c:if test="${currentState == state}">selected</c:if>><i:inline key="${state}"/></option>
+                            <option value="${state}" <c:if test="${currentState == state}">selected</c:if>><cti:msg2 key="${state}"/></option>
                         </c:forEach>
                     </select>
                 </div>
@@ -36,7 +36,7 @@
                 </div>
                 <div>
                     <select onchange="$('reason').value = this.options[this.selectedIndex].value;">
-                        <option><i:inline key=".previousComment"/></option>
+                        <option><cti:msg2 key=".previousComment"/></option>
                         <c:forEach var="comment" items="${comments}">
                             <c:choose>
                                 <c:when test="${fn:length(comment) > maxCommentLength}">

@@ -187,7 +187,7 @@
     <tags:boxContainerFooter>
         <cti:labeledImg nameKey="filter"/>
         <select id='subBusFilter' onchange='applySubBusFilter(this);'>
-            <option><i:inline key=".allBuses"/></option>
+            <option><cti:msg2 key=".allBuses"/></option>
             <c:forEach var="sub" items="${subBusList}" >
                <option value="${sub.subBus.ccId}"><spring:escapeBody htmlEscape="true">${sub.subBus.ccName}</spring:escapeBody></option>
             </c:forEach>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.Substation;
@@ -95,7 +96,7 @@ public class TierController {
 	                          HttpSession session, 
 	                          ModelMap model,
 	                          LiteYukonUser user, 
-			                  int bc_areaId, 
+			                  @RequestParam("bc_areaId") int areaId,
 			                  Boolean isSpecialArea) {
 	    
 		CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
@@ -106,16 +107,16 @@ public class TierController {
 		
 		boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
 	    
-		StreamableCapObject area = cache.getArea(bc_areaId);
+		StreamableCapObject area = cache.getArea(areaId);
 		
 	    List<SubStation> subStations = null;
 	    if (isSpecialArea) {
-	    	subStations = cache.getSubstationsBySpecialArea(bc_areaId);
+	    	subStations = cache.getSubstationsBySpecialArea(areaId);
 	    } else {
-	    	subStations = cache.getSubstationsByArea(bc_areaId);
+	    	subStations = cache.getSubstationsByArea(areaId);
 	    }
 	    
-	    model.addAttribute("bc_areaId", bc_areaId);
+	    model.addAttribute("bc_areaId", areaId);
 	    model.addAttribute("bc_areaName", area.getCcName());
 	    model.addAttribute("isSpecialArea", isSpecialArea);
 	    model.addAttribute("hasSubstationControl", hasSubstationControl);

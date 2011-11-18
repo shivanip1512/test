@@ -32,7 +32,7 @@
     <entry key="yukon.web.modules.capcontrol.peakLeadLag">{0} to {1} Pk</entry>
     <entry key="yukon.web.modules.capcontrol.offPeakLeadLag">{0} to {1} OffPk</entry>
     <entry key="yukon.web.modules.capcontrol.varLoad">Phase A: {0} Phase B: {1} Phase C: {2}</entry>
-    <entry key="yukon.web.modules.capcontrol.capBankName">{0} ({1})</entry>
+    <entry key="yukon.web.modules.capcontrol.capBankName">{0} ({1,number,0.##})</entry>
     <entry key="yukon.web.modules.capcontrol.cbcPointsTitle">CBC Points: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.addInfoTitle">Cap Bank Additional Information: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.busAddInfoTitle">Sub Bus Additional Information: {0}</entry>

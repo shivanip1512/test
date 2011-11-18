@@ -3,7 +3,6 @@ package com.cannontech.message.capcontrol.defineCollectable;
 import java.io.IOException;
 
 import com.cannontech.message.capcontrol.model.ItemCommand;
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -20,17 +19,6 @@ public class DefineCollectableItemCommand extends DefineCollectableCapControlCom
     
     public Object create(VirtualInputStream vstr) {
         return new ItemCommand();
-    }
-    
-    public Comparator getComparator() {
-        return new Comparator() {
-          public int compare(Object x, Object y) {
-                if( x == y )
-                    return 0;
-                else
-                    return -1;
-          }
-        };
     }
     
     public int getCxxClassId() {

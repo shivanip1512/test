@@ -160,7 +160,7 @@
     <tags:boxContainerFooter>
         <cti:labeledImg nameKey="filter"/>
         <select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
-            <option><i:inline key=".allFeeders"/></option>
+            <option><cti:msg2 key=".allFeeders"/></option>
             <c:forEach var="feeder" items="${feederList}">
                 <option value="${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></option>
             </c:forEach>
