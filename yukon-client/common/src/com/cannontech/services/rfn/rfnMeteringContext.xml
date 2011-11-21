@@ -12,7 +12,6 @@
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
 
     <bean id="meterReadingArchiveRequestListener" class="com.cannontech.amr.rfn.endpoint.MeterReadingArchiveRequestListener" />
-    
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -20,6 +19,26 @@
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
+
+    <bean id="rfnEventArchiveRequestListener" class="com.cannontech.amr.rfn.endpoint.RfnEventArchiveRequestListener" />
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="2" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.rr.obj.amr.rfn.EventArchiveRequest" ref="rfnEventArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
+
+    <bean id="rfnAlarmArchiveRequestListener" class="com.cannontech.amr.rfn.endpoint.RfnAlarmArchiveRequestListener" />
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="2" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.rr.obj.amr.rfn.AlarmArchiveRequest" ref="rfnAlarmArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 
 </beans>

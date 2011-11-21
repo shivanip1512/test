@@ -1063,7 +1063,7 @@
               <link>/spring/support/development/miscellaneousMethod/main</link>
             </option>
             <option name="rfn">
-              <link>/spring/support/development/rfn/view</link>
+              <link>/spring/support/development/rfn/viewBase</link>
             </option>
           </options>
         </option> 
@@ -1169,6 +1169,17 @@
                 <page name="rfnTest" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
                     <menu>development|rfn</menu>
+                    <pages>
+                        <page name="rfnTest.viewMeterReadArchive" type="DETAIL">
+                            <menu>development|rfn</menu>
+                        </page>
+                        <page name="rfnTest.viewEventArchive" type="DETAIL">
+                            <menu>development|rfn</menu>
+                        </page>
+                        <page name="rfnTest.viewAlarmArchive" type="DETAIL">
+                            <menu>development|rfn</menu>
+                        </page>
+                    </pages>
                 </page>
             </pages>
             <link>/spring/support/</link>

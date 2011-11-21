@@ -3,51 +3,43 @@ package com.cannontech.amr.rfn.message.read;
 import java.io.Serializable;
 import java.util.List;
 
+import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 
 public class RfnMeterReadingData implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
-    private List<ChannelData> channelDataList;
-    private String sensorManufacturer;
-    private String sensorModel;
-    private String sensorSerialNumber;
+    private List<ChannelData> channelDataList; // Non timestamped data
+    private List<DatedChannelData> datedChannelDataList; // Timestamped data like Peak Demand
+    private RfnMeterIdentifier rfnMeterIdentifier;
     private long timeStamp;
 
     public List<ChannelData> getChannelDataList() {
         return channelDataList;
     }
 
-    public String getSensorManufacturer() {
-        return sensorManufacturer;
-    }
-
-    public String getSensorModel() {
-        return sensorModel;
-    }
-
-    public String getSensorSerialNumber() {
-        return sensorSerialNumber;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
     public void setChannelDataList(List<ChannelData> channelDataList) {
         this.channelDataList = channelDataList;
     }
 
-    public void setSensorManufacturer(String sensorManufacturer) {
-        this.sensorManufacturer = sensorManufacturer;
+    public List<DatedChannelData> getDatedChannelDataList() {
+        return datedChannelDataList;
     }
 
-    public void setSensorModel(String sensorModel) {
-        this.sensorModel = sensorModel;
+    public void setDatedChannelDataList(List<DatedChannelData> datedChannelDataList) {
+        this.datedChannelDataList = datedChannelDataList;
     }
 
-    public void setSensorSerialNumber(String sensorSerialNumber) {
-        this.sensorSerialNumber = sensorSerialNumber;
+    public RfnMeterIdentifier getRfnMeterIdentifier() {
+        return rfnMeterIdentifier;
+    }
+
+    public void setRfnMeterIdentifier(RfnMeterIdentifier rfnMeterIdentifier) {
+        this.rfnMeterIdentifier = rfnMeterIdentifier;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
     }
 
     public void setTimeStamp(long timeStamp) {
@@ -59,9 +51,10 @@ public class RfnMeterReadingData implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((channelDataList == null) ? 0 : channelDataList.hashCode());
-        result = prime * result + ((sensorManufacturer == null) ? 0 : sensorManufacturer.hashCode());
-        result = prime * result + ((sensorModel == null) ? 0 : sensorModel.hashCode());
-        result = prime * result + ((sensorSerialNumber == null) ? 0 : sensorSerialNumber.hashCode());
+        result =
+            prime * result + ((datedChannelDataList == null) ? 0 : datedChannelDataList.hashCode());
+        result =
+            prime * result + ((rfnMeterIdentifier == null) ? 0 : rfnMeterIdentifier.hashCode());
         result = prime * result + (int) (timeStamp ^ (timeStamp >>> 32));
         return result;
     }
@@ -80,20 +73,15 @@ public class RfnMeterReadingData implements Serializable {
                 return false;
         } else if (!channelDataList.equals(other.channelDataList))
             return false;
-        if (sensorManufacturer == null) {
-            if (other.sensorManufacturer != null)
+        if (datedChannelDataList == null) {
+            if (other.datedChannelDataList != null)
                 return false;
-        } else if (!sensorManufacturer.equals(other.sensorManufacturer))
+        } else if (!datedChannelDataList.equals(other.datedChannelDataList))
             return false;
-        if (sensorModel == null) {
-            if (other.sensorModel != null)
+        if (rfnMeterIdentifier == null) {
+            if (other.rfnMeterIdentifier != null)
                 return false;
-        } else if (!sensorModel.equals(other.sensorModel))
-            return false;
-        if (sensorSerialNumber == null) {
-            if (other.sensorSerialNumber != null)
-                return false;
-        } else if (!sensorSerialNumber.equals(other.sensorSerialNumber))
+        } else if (!rfnMeterIdentifier.equals(other.rfnMeterIdentifier))
             return false;
         if (timeStamp != other.timeStamp)
             return false;
@@ -102,12 +90,12 @@ public class RfnMeterReadingData implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("MeterReadingDataMessage [channelDataList=%s, sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s, timeStamp=%tc]",
-                             channelDataList,
-                             sensorManufacturer,
-                             sensorModel,
-                             sensorSerialNumber,
-                             timeStamp);
+        return String
+            .format("RfnMeterReadingData [channelDataList=%s, datedChannelDataList=%s, rfnMeterIdentifier=%s, timeStamp=%s]",
+                    channelDataList,
+                    datedChannelDataList,
+                    rfnMeterIdentifier,
+                    timeStamp);
     }
 
 }

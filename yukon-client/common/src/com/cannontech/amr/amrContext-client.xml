@@ -95,7 +95,15 @@
 
     <!-- RFN Meter Lookup Service -->
     <bean id="rfnMeterLookupService" class="com.cannontech.amr.rfn.service.RfnMeterLookupService"/>
-
+    
+    <bean id="rfnMeterEventService" class="com.cannontech.amr.rfn.service.RfnMeterEventService"/>
+    <bean id="rfnArchiveRequestService" class="com.cannontech.amr.rfn.service.RfnArchiveRequestService"/>
+    
+    <bean id="rfnOutageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnOutageEventArchiveRequestProcessor"/>
+    <bean id="rfnOutageBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnOutageBlinkEventArchiveRequestProcessor"/>
+    <bean id="rfnRestoreEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnRestoreEventArchiveRequestProcessor"/>
+    <bean id="rfnRestoreBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnRestoreBlinkEventArchiveRequestProcessor"/>
+    
     <bean id="rfnMeterDao" class="com.cannontech.amr.rfn.dao.impl.RfnMeterDaoImpl"/>
     <bean class="com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMappingParser"/>
     

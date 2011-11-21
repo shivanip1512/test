@@ -1,5 +1,10 @@
 package com.cannontech.common.pao.attribute.model;
 
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+
 
 public enum BuiltInAttribute implements Attribute {
     
@@ -50,7 +55,142 @@ public enum BuiltInAttribute implements Attribute {
     USAGE_WATER("Water Usage Reading", false, true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
-    ;
+    
+    // Rfn Events that map to Event Status points (this list must be kept in sync with both 
+    // our rfn set below AND its version in RfnConditionType.java. Outages and restores are
+    // the only exception to this rule (as in the names don't exactly match))
+    CONFIGURATION_ERROR("Configuration Error"),
+    CLOCK_ERROR("Clock Error"),
+    CRYSTAL_OSCILLATOR_ERROR("Crystal Oscillator Error"),
+    CURRENT_LOSS("Current Loss"),
+    DEMAND_OVERLOAD("Demand Overload"),
+    DEMAND_READS_AND_RESET("Demand Reads And Reset"),
+    DEMAND_THRESHOLD_EXCEEDED_WARNING("Demand Threshold Exceeded Warning"),
+    DISPLAY_LOCKED_BY_WARNING("Display Locked By Warning"),
+    EEPROM_ACCESS_ERROR("Eeprom Access Error"),
+    ENCRYPTION_KEY_TABLE_CRC_ERROR("Encryption Key Table Crc Error"),
+    END_OF_CALENDAR_WARNING("End Of Calendar Warning"),
+    ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE("Energy Accumulated While In Standby Mode"),
+    IMPROPER_METER_ENGINE_OPERATION_WARNING("Improper Meter Engine Operation Warning"),
+    INTERNAL_COMMUNICATION_ERROR("Internal Communication Error"),
+    INVALID_SERVICE("Invalid Service"),
+    LINE_FREQUENCY_WARNING("Line Frequency Warning"),
+    LOAD_SIDE_VOLTAGE_IS_MISSING("Load Side Voltage Is Missing"),
+    LOSS_OF_ALL_CURRENT("Loss Of All Current"),
+    LOSS_OF_PHASE_A_CURRENT("Loss Of Phase A Current"),
+    LOSS_OF_PHASE_C_CURRENT("Loss Of Phase C Current"),
+    LOW_BATTERY_WARNING("Low Battery Warning"),
+    LOW_LOSS_POTENTIAL("Low Loss Potential"),
+    MEASUREMENT_ERROR("Measurement Error"),
+    NON_VOLATILE_MEM_FAILURE("Non Volatile Mem Failure"),
+    PASSWORD_TABLE_CRC_ERROR("Password Table Crc Error"),
+    POTENTIAL_INDICATOR_WARNING("Potential Indicator Warning"),
+    POWER_FAIL_DATA_SAVE_ERROR("Power Fail Data Save Error"),
+    POWER_FAILURE("Power Failure"),
+    PQM_TEST_FAILURE_WARNING("Pqm Test Failure Warning"),
+    RAM_ERROR("Ram Error"),
+    REVERSE_ROTATION("Reverse Rotation"),
+    REVERSED_AGGREGATE("Reversed Aggregate"),
+    REVERSED_PHASE_A("Reversed Phase A"),
+    REVERSED_PHASE_C("Reversed Phase C"),
+    RFN_BLINK_COUNT("Rfn Blink Count"),
+    RFN_BLINK_RESTORE_COUNT("Rfn Blink Restore Count"),
+    RFN_OUTAGE_COUNT("Rfn Outage Count"),
+    RFN_OUTAGE_RESTORE_COUNT("Rfn Outage Restore Count"),
+    ROM_ERROR("Rom Error"),
+    SECURITY_CONFIGURATION_ERROR("Security Configuration Error"),
+    SELF_CHECK_ERROR("Self Check Error"),
+    SERVICE_CURRENT_TEST_FAILURE_WARNING("Service Current Test Failure Warning"),
+    SERVICE_DISCONNECT_SWITCH_ERROR("Service Disconnect Switch Error"),
+    SERVICE_DISCONNECT_SWITCH_OPEN("Service Disconnect Switch Open"),
+    SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR("Service Disconnect Switch Sensor Error"),
+    STUCK_SWITCH("Stuck Switch"),
+    TABLE_CRC_ERROR("Table Crc Error"),
+    TAMPER_DETECT("Tamper Detect"),
+    TIME_ADJUSTMENT("Time Adjustment"),
+    UNCONFIGURED("Unconfigured"),
+    UNPROGRAMMED("Unprogrammed"),
+    USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED("User Programmable Temperature Threshold Exceeded"),
+    VOLTAGE_ALERTS("Voltage Alerts"),
+    VOLTAGE_LOSS("Voltage Loss"),
+    VOLTAGE_PHASE_A_OUT("Voltage Phase A Out"),
+    VOLTAGE_PHASE_B_OUT("Voltage Phase B Out"),
+    VOLTAGE_PHASE_C_OUT("Voltage Phase C Out"),
+    VOLTAGE_PHASE_ERROR("Voltage Phase Error");
+    
+    private static ImmutableSet<BuiltInAttribute> rfnEventTypes;
+    private static ImmutableSet<BuiltInAttribute> rfnEventStatusTypes;
+    private static ImmutableSet<BuiltInAttribute> rfnEventAnalogTypes;
+    static {
+        Builder<BuiltInAttribute> builder = ImmutableSet.builder();
+        builder.add(CONFIGURATION_ERROR);
+        builder.add(CLOCK_ERROR);
+        builder.add(CRYSTAL_OSCILLATOR_ERROR);
+        builder.add(CURRENT_LOSS);
+        builder.add(DEMAND_OVERLOAD);
+        builder.add(DEMAND_READS_AND_RESET);
+        builder.add(DEMAND_THRESHOLD_EXCEEDED_WARNING);
+        builder.add(DISPLAY_LOCKED_BY_WARNING);
+        builder.add(EEPROM_ACCESS_ERROR);
+        builder.add(ENCRYPTION_KEY_TABLE_CRC_ERROR);
+        builder.add(END_OF_CALENDAR_WARNING);
+        builder.add(ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE);
+        builder.add(IMPROPER_METER_ENGINE_OPERATION_WARNING);
+        builder.add(INTERNAL_COMMUNICATION_ERROR);
+        builder.add(INVALID_SERVICE);
+        builder.add(LINE_FREQUENCY_WARNING);
+        builder.add(LOAD_SIDE_VOLTAGE_IS_MISSING);
+        builder.add(LOSS_OF_ALL_CURRENT);
+        builder.add(LOSS_OF_PHASE_A_CURRENT);
+        builder.add(LOSS_OF_PHASE_C_CURRENT);
+        builder.add(LOW_BATTERY_WARNING);
+        builder.add(LOW_LOSS_POTENTIAL);
+        builder.add(MEASUREMENT_ERROR);
+        builder.add(NON_VOLATILE_MEM_FAILURE);
+        builder.add(PASSWORD_TABLE_CRC_ERROR);
+        builder.add(POTENTIAL_INDICATOR_WARNING);
+        builder.add(POWER_FAIL_DATA_SAVE_ERROR);
+        builder.add(POWER_FAILURE);
+        builder.add(PQM_TEST_FAILURE_WARNING);
+        builder.add(RAM_ERROR);
+        builder.add(REVERSE_ROTATION);
+        builder.add(REVERSED_AGGREGATE);
+        builder.add(REVERSED_PHASE_A);
+        builder.add(REVERSED_PHASE_C);
+        builder.add(ROM_ERROR);
+        builder.add(SECURITY_CONFIGURATION_ERROR);
+        builder.add(SELF_CHECK_ERROR);
+        builder.add(SERVICE_CURRENT_TEST_FAILURE_WARNING);
+        builder.add(SERVICE_DISCONNECT_SWITCH_ERROR);
+        builder.add(SERVICE_DISCONNECT_SWITCH_OPEN);
+        builder.add(SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
+        builder.add(STUCK_SWITCH);
+        builder.add(TABLE_CRC_ERROR);
+        builder.add(TAMPER_DETECT);
+        builder.add(TIME_ADJUSTMENT);
+        builder.add(UNCONFIGURED);
+        builder.add(UNPROGRAMMED);
+        builder.add(USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
+        builder.add(VOLTAGE_ALERTS);
+        builder.add(VOLTAGE_LOSS);
+        builder.add(VOLTAGE_PHASE_A_OUT);
+        builder.add(VOLTAGE_PHASE_B_OUT);
+        builder.add(VOLTAGE_PHASE_C_OUT);
+        builder.add(VOLTAGE_PHASE_ERROR);
+        
+        rfnEventStatusTypes = builder.build();
+        
+        Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();
+        analogBuilder.add(RFN_BLINK_COUNT);
+        analogBuilder.add(RFN_BLINK_RESTORE_COUNT);
+        analogBuilder.add(RFN_OUTAGE_COUNT);
+        analogBuilder.add(RFN_OUTAGE_RESTORE_COUNT);
+
+        rfnEventAnalogTypes = analogBuilder.build();
+        
+        builder.addAll(rfnEventAnalogTypes);
+        rfnEventTypes = builder.build();
+    }
 
     private BuiltInAttribute(String description) {
     	this.description = description;
@@ -78,6 +218,22 @@ public enum BuiltInAttribute implements Attribute {
     public boolean isAccumulator() {
 		return accumulator;
 	}
+    
+    public static Set<BuiltInAttribute> getRfnEventTypes() {
+        return rfnEventTypes;
+    }
+    
+    public boolean isRfnEventType() {
+        return rfnEventTypes.contains(this);
+    }
+    
+    public boolean isRfnEventStatusType() {
+        return rfnEventStatusTypes.contains(this);
+    }
+    
+    public boolean isRfnEventAnalogType() {
+        return rfnEventAnalogTypes.contains(this);
+    }
     
     public String getKey() {
         return this.name();

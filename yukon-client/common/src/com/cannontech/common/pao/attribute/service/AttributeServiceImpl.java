@@ -225,8 +225,6 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
-        
-
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
@@ -237,7 +235,6 @@ public class AttributeServiceImpl implements AttributeService {
                 // TODO this should throw a different exception
                 throw new DataAccessException("Could not create point for pao: " + pao, e) {};
             }
-
         }
     }
     

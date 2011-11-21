@@ -16,7 +16,7 @@ function useRandom() {
 }
 </script>
 
-    <tags:sectionContainer title="RFN Meter Archive Request Test">
+    <tags:sectionContainer title="RFN Meter Read Archive Request Test">
         <form action="sendMeterArchiveRequest" method="post">
             <tags:nameValueContainer>
                 

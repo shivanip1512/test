@@ -4462,7 +4462,7 @@
         <displayName>SIXNET</displayName>
 	</pao>
 	
-	<pao id="RFN_ELECTRIC_BASE" abstract="true">
+	<pao id="RFN_ELECTRIC_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
@@ -4522,13 +4522,645 @@
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
+<!--             Will uncomment when support is added to this file for CalcAnalog Points (coming soon) -->
+<!--             <point type="CalcAnalog" offset="24"> -->
+<!--                 <init>true</init> -->
+<!--                 <name>Total Outage Count</name> -->
+<!--                 <multiplier value="1.0"/> -->
+<!--                 <unitofmeasure value="Counts"/> -->
+<!--                 <decimalplaces value="0"/> -->
+<!--             </point> -->
+            <point type="Analog" offset="100">
+                <init>true</init>
+                <name>Outages</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            
+            <!-- Events -->
+            <point type="Status" offset="2">
+               <name>Configuration Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="3">
+               <name>Clock Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="4">
+               <name>Crystal Oscillator Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="5">
+               <name>Current Loss</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="6">
+               <name>Demand Overload</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="7">
+               <name>Demand Reads And Reset</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="8">
+               <name>Demand Threshold Exceeded Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="9">
+               <name>Display Locked By Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="10">
+               <name>Eeprom Access Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="11">
+               <name>Encryption Key Table Crc Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="12">
+               <name>End Of Calendar Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="13">
+               <name>Energy Accumulated While In Standby Mode</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="14">
+               <name>Improper Meter Engine Operation Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="15">
+               <name>Internal Communication Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="16">
+               <name>Invalid Service</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="17">
+               <name>Line Frequency Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="18">
+               <name>Load Side Voltage Is Missing</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="19">
+               <name>Loss Of All Current</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="20">
+               <name>Loss Of Phase A Current</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="21">
+               <name>Loss Of Phase C Current</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="22">
+               <name>Low Battery Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="23">
+               <name>Low Loss Potential</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="24">
+               <name>Measurement Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="25">
+               <name>Non Volatile Mem Failure</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="28">
+               <name>Password Table Crc Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="29">
+               <name>Potential Indicator Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="30">
+               <name>Power Fail Data Save Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="31">
+               <name>Power Failure</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="32">
+               <name>Pqm Test Failure Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="33">
+               <name>Ram Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="35">
+               <name>Reverse Rotation</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="36">
+               <name>Reversed Aggregate</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="37">
+               <name>Reversed Phase A</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="38">
+               <name>Reversed Phase C</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="39">
+               <name>Rom Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="40">
+               <name>Security Configuration Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="41">
+               <name>Self Check Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="42">
+               <name>Service Current Test Failure Warning</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="43">
+               <name>Service Disconnect Switch Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="44">
+               <name>Service Disconnect Switch Open</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="45">
+               <name>Service Disconnect Switch Sensor Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="46">
+               <name>Stuck Switch</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="47">
+               <name>Table Crc Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="48">
+               <name>Tamper Detect</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="49">
+               <name>Time Adjustment</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="50">
+               <name>Unconfigured</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="51">
+               <name>Unprogrammed</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="52">
+               <name>User Programmable Temperature Threshold Exceeded</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="53">
+               <name>Voltage Alerts</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="54">
+               <name>Voltage Loss</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="55">
+               <name>Voltage Phase A Out</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="56">
+               <name>Voltage Phase B Out</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="57">
+               <name>Voltage Phase C Out</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="58">
+               <name>Voltage Phase Error</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
+
         </points>
         <attributes>
             <attribute name="USAGE">
-                <basicLookup point="Delivered kWh" />
-            </attribute>
-            <attribute name="BLINK_COUNT">
+            	<basicLookup point="Delivered kWh" />
+			</attribute>
+<!--             Will uncomment when support is added to this file for CalcAnalog Points (coming soon) -->
+<!--             <attribute name="BLINK_COUNT"> -->
+<!--                 <basicLookup point="Total Outage Count" /> -->
+<!--             </attribute> -->
+            <attribute name="RFN_BLINK_COUNT">
                 <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="RFN_BLINK_RESTORE_COUNT">
+                <basicLookup point="Blink Restore Count" />
+            </attribute>
+            <attribute name="RFN_OUTAGE_COUNT">
+                <basicLookup point="Outage Count" />
+            </attribute>
+            <attribute name="RFN_OUTAGE_RESTORE_COUNT">
+                <basicLookup point="Outage Restore Count" />
+            </attribute>
+
+            <!-- Outage Duration -->
+            <attribute name="OUTAGE_LOG">
+                <basicLookup point="Outages" />
+            </attribute>
+
+            <!-- Rfn Event Attributes -->
+            <attribute name="CONFIGURATION_ERROR">
+                <basicLookup point="Configuration Error" />
+            </attribute>
+            <attribute name="CLOCK_ERROR">
+                <basicLookup point="Clock Error" />
+            </attribute>
+            <attribute name="CRYSTAL_OSCILLATOR_ERROR">
+                <basicLookup point="Crystal Oscillator Error" />
+            </attribute>
+            <attribute name="CURRENT_LOSS">
+                <basicLookup point="Current Loss" />
+            </attribute>
+            <attribute name="DEMAND_OVERLOAD">
+                <basicLookup point="Demand Overload" />
+            </attribute>
+            <attribute name="DEMAND_READS_AND_RESET">
+                <basicLookup point="Demand Reads And Reset" />
+            </attribute>
+            <attribute name="DEMAND_THRESHOLD_EXCEEDED_WARNING">
+                <basicLookup point="Demand Threshold Exceeded Warning" />
+            </attribute>
+            <attribute name="DISPLAY_LOCKED_BY_WARNING">
+                <basicLookup point="Display Locked By Warning" />
+            </attribute>
+            <attribute name="EEPROM_ACCESS_ERROR">
+                <basicLookup point="Eeprom Access Error" />
+            </attribute>
+            <attribute name="ENCRYPTION_KEY_TABLE_CRC_ERROR">
+                <basicLookup point="Encryption Key Table Crc Error" />
+            </attribute>
+            <attribute name="END_OF_CALENDAR_WARNING">
+                <basicLookup point="End Of Calendar Warning" />
+            </attribute>
+            <attribute name="ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE">
+                <basicLookup point="Energy Accumulated While In Standby Mode" />
+            </attribute>
+            <attribute name="IMPROPER_METER_ENGINE_OPERATION_WARNING">
+                <basicLookup point="Improper Meter Engine Operation Warning" />
+            </attribute>
+            <attribute name="INTERNAL_COMMUNICATION_ERROR">
+                <basicLookup point="Internal Communication Error" />
+            </attribute>
+            <attribute name="INVALID_SERVICE">
+                <basicLookup point="Invalid Service" />
+            </attribute>
+            <attribute name="LINE_FREQUENCY_WARNING">
+                <basicLookup point="Line Frequency Warning" />
+            </attribute>
+            <attribute name="LOAD_SIDE_VOLTAGE_IS_MISSING">
+                <basicLookup point="Load Side Voltage Is Missing" />
+            </attribute>
+            <attribute name="LOSS_OF_ALL_CURRENT">
+                <basicLookup point="Loss Of All Current" />
+            </attribute>
+            <attribute name="LOSS_OF_PHASE_A_CURRENT">
+                <basicLookup point="Loss Of Phase A Current" />
+            </attribute>
+            <attribute name="LOSS_OF_PHASE_C_CURRENT">
+                <basicLookup point="Loss Of Phase C Current" />
+            </attribute>
+            <attribute name="LOW_BATTERY_WARNING">
+                <basicLookup point="Low Battery Warning" />
+            </attribute>
+            <attribute name="LOW_LOSS_POTENTIAL">
+                <basicLookup point="Low Loss Potential" />
+            </attribute>
+            <attribute name="MEASUREMENT_ERROR">
+                <basicLookup point="Measurement Error" />
+            </attribute>
+            <attribute name="NON_VOLATILE_MEM_FAILURE">
+                <basicLookup point="Non Volatile Mem Failure" />
+            </attribute>
+            <attribute name="PASSWORD_TABLE_CRC_ERROR">
+                <basicLookup point="Password Table Crc Error" />
+            </attribute>
+            <attribute name="POTENTIAL_INDICATOR_WARNING">
+                <basicLookup point="Potential Indicator Warning" />
+            </attribute>
+            <attribute name="POWER_FAIL_DATA_SAVE_ERROR">
+                <basicLookup point="Power Fail Data Save Error" />
+            </attribute>
+            <attribute name="POWER_FAILURE">
+                <basicLookup point="Power Failure" />
+            </attribute>
+            <attribute name="PQM_TEST_FAILURE_WARNING">
+                <basicLookup point="Pqm Test Failure Warning" />
+            </attribute>
+            <attribute name="RAM_ERROR">
+                <basicLookup point="Ram Error" />
+            </attribute>
+            <attribute name="REVERSE_ROTATION">
+                <basicLookup point="Reverse Rotation" />
+            </attribute>
+            <attribute name="REVERSED_AGGREGATE">
+                <basicLookup point="Reversed Aggregate" />
+            </attribute>
+            <attribute name="REVERSED_PHASE_A">
+                <basicLookup point="Reversed Phase A" />
+            </attribute>
+            <attribute name="REVERSED_PHASE_C">
+                <basicLookup point="Reversed Phase C" />
+            </attribute>
+            <attribute name="ROM_ERROR">
+                <basicLookup point="Rom Error" />
+            </attribute>
+            <attribute name="SECURITY_CONFIGURATION_ERROR">
+                <basicLookup point="Security Configuration Error" />
+            </attribute>
+            <attribute name="SELF_CHECK_ERROR">
+                <basicLookup point="Self Check Error" />
+            </attribute>
+            <attribute name="SERVICE_CURRENT_TEST_FAILURE_WARNING">
+                <basicLookup point="Service Current Test Failure Warning" />
+            </attribute>
+            <attribute name="SERVICE_DISCONNECT_SWITCH_ERROR">
+                <basicLookup point="Service Disconnect Switch Error" />
+            </attribute>
+            <attribute name="SERVICE_DISCONNECT_SWITCH_OPEN">
+                <basicLookup point="Service Disconnect Switch Open" />
+            </attribute>
+            <attribute name="SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR">
+                <basicLookup point="Service Disconnect Switch Sensor Error" />
+            </attribute>
+            <attribute name="STUCK_SWITCH">
+                <basicLookup point="Stuck Switch" />
+            </attribute>
+            <attribute name="TABLE_CRC_ERROR">
+                <basicLookup point="Table Crc Error" />
+            </attribute>
+            <attribute name="TAMPER_DETECT">
+                <basicLookup point="Tamper Detect" />
+            </attribute>
+            <attribute name="TIME_ADJUSTMENT">
+                <basicLookup point="Time Adjustment" />
+            </attribute>
+            <attribute name="UNCONFIGURED">
+                <basicLookup point="Unconfigured" />
+            </attribute>
+            <attribute name="UNPROGRAMMED">
+                <basicLookup point="Unprogrammed" />
+            </attribute>
+            <attribute name="USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED">
+                <basicLookup point="User Programmable Temperature Threshold Exceeded" />
+            </attribute>
+            <attribute name="VOLTAGE_ALERTS">
+                <basicLookup point="Voltage Alerts" />
+            </attribute>
+            <attribute name="VOLTAGE_LOSS">
+                <basicLookup point="Voltage Loss" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_A_OUT">
+                <basicLookup point="Voltage Phase A Out" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B_OUT">
+                <basicLookup point="Voltage Phase B Out" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_C_OUT">
+                <basicLookup point="Voltage Phase C Out" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_ERROR">
+                <basicLookup point="Voltage Phase Error" />
             </attribute>
         </attributes>
         <tags>
