@@ -191,9 +191,8 @@ Mct470Device::read_key_store_t Mct470Device::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(-1, Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     CtiTableDynamicPaoInfo::Key_MCT_AddressCollection));
     readKeyStore.insert(read_key_info_t(-1, Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID));
     readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        CtiTableDynamicPaoInfo::Key_MCT_DemandInterval));
-    // These must be set manually, since they come back in units of minutes and we store in seconds.
-    //readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    //readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
     readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance));
     readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,               Memory_DSTBeginLen,              CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime));
     readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                 Memory_DSTEndLen,                CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime));
@@ -232,9 +231,10 @@ Mct470Device::read_key_store_t Mct470Device::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      1, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
     readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      2, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
     readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      3, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
-    // These must be set manually, since they come back in units of minutes and we store in seconds.
-    //readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    //readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    //  Still stored as seconds - maybe change someday?
+    //readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      6, 1, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval));
 
     readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
     readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  1, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1));
@@ -409,10 +409,10 @@ bool Mct470Device::isLPDynamicInfoCurrent( void )
     retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
 
     //  This compares against either the device config, if available, or the database table
-    retval &= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == getLoadProfile()->getLoadProfileDemandRate());
+    retval &= ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) == getLoadProfile()->getLoadProfileDemandRate());
 
     //  we don't use the second load profile rate yet
-    //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
+    //retval |= ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) * 60) == getLoadProfile().getVoltageProfileDemandRate());
 
     if( retval && ((sspec == Sspec_MCT470_128k && sspec_rev >= SspecRev_Min && sspec_rev <= SspecRev_Max)
                    || sspec == Sspec_MCT430A
@@ -718,7 +718,7 @@ void Mct470Device::changeDeviceConfig(Cti::Config::DeviceConfigSPtr config)
     setDeviceConfig(config);
 }
 
-//  zero-based channel offset
+//  zero-based channel offset, returns interval length in seconds
 long Mct470Device::getLoadProfileInterval( unsigned channel )
 {
     long retval = -1;
@@ -732,7 +732,11 @@ long Mct470Device::getLoadProfileInterval( unsigned channel )
         }
         else
         {
-            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, retval);
+            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, retval) )
+            {
+                //  Value is stored in minutes, return it as seconds
+                retval *= 60;
+            }
         }
     }
     else
@@ -1169,7 +1173,7 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
                      || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430S
                      || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT470_256k )
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile()->getLoadProfileDemandRate() )
+                if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) != getLoadProfile()->getLoadProfileDemandRate() )
                 {
                     OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
 
@@ -1195,7 +1199,7 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
             }
             else
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile()->getLoadProfileDemandRate() )
+                if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) != getLoadProfile()->getLoadProfileDemandRate() )
                 {
                     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
                     {
@@ -5087,10 +5091,7 @@ INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
         }
 
         resultString += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[1] * 60L);
-
         resultString += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[2]) + " minutes\n";
-        // setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[2] * 60L);  //  eventually?
 
         resultString += getName() + " / Table Read Interval: " + CtiNumStr(DSt->Message[3] * 15) + " seconds\n";
 
@@ -5194,10 +5195,12 @@ string Mct470Device::describeChannel(unsigned char channel_config) const
 
         if( channel_config & 0x02 )
         {
+            long lp_interval;
+
             //  TODO:  add support for LP interval 2
-            if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
+            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, lp_interval) && (lp_interval <= 60) )
             {
-                result_string += ", " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) / 60) + " minute interval";
+                result_string += ", " + CtiNumStr(lp_interval) + " minute interval";
             }
             else
             {
@@ -5234,12 +5237,10 @@ INT Mct470Device::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNo
         string result_string, dynamic_info;
 
         result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[4] * 60);
-
         result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
-        //  setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, DSt->Message[5] * 60);  //  someday?
-
         result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " minutes\n";
+        //  The MCT_LoadProfileInterval keys are set automatically by extractDynamicInfo(),
+        //    but MCT_IEDLoadProfileInterval is still adjusted from seconds and stored manually
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, (long)DSt->Message[6] * 60);
 
         for( int i = 0; i < ChannelCount; i++ )
