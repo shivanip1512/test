@@ -323,7 +323,7 @@
     <entry key="yukon.web.modules.consumer.thermostat.single.send.NO_SERIAL_ERROR">Cannot send schedule {0} to thermostat, the serial number is missing. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.single.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostat.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.single.send.MULTIPLE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.single.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.single.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.single.send.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.single.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
     
@@ -332,7 +332,7 @@
     <entry key="yukon.web.modules.consumer.thermostat.multiple.send.NO_SERIAL_ERROR">Cannot send schedule {0} to thermostats, the serial number is missing. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.multiple.send.UPDATE_SCHEDULE_ERROR">Cannot send schedule {0} to thermostats.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.multiple.send.MULTIPLE_ERROR">There was a problem sending the schedule to the thermostats you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.multiple.send.UPDATE_SCHEDULE_SUCCESS">The schedule {0} has been saved.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.multiple.send.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostats you selected. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.web.modules.consumer.thermostat.multiple.send.SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostats receive it.</entry>
     
