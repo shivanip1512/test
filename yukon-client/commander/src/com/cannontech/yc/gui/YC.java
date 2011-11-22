@@ -59,8 +59,8 @@ import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.model.LiteBaseTreeModel;
-import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.database.model.NullDBTreeModel;
+import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -155,9 +155,6 @@ public class YC extends Observable implements MessageListener
 	protected java.text.SimpleDateFormat displayFormat = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
 	/** Keep track of the last userMessageID from the MessageEvents */
 	private long prevUserID = -1;
-	/**TODO - fix this!!*/
-	/**Flag indicating first display type data (for headings)*/
-	private boolean firstTime = true;
     private LiteYukonUser user = null;
 	
 	public class OutputMessage{
@@ -995,8 +992,6 @@ public class YC extends Observable implements MessageListener
 				String debugOutput = "";
 				String displayOutput = "";
 
-				/**inner class object used to contain displayable Return message data.*/
-				OutputMessage message;
 				/** When new (one that is different from the previous) userMessageID occurs, print datetime, command, etc info*/ 
 				if( prevUserID != returnMsg.getUserMessageID())
 				{
@@ -1077,7 +1072,7 @@ public class YC extends Observable implements MessageListener
 					DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
 					DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
 					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.getMessageType(returnMsg.getStatus()));
-				} //0=succes, 1="Not Normal" return, but not necessarily an error
+				} //0=success; 1="Not Normal" YUK-10411/TSSL-1230 changed 1 to an "error" (but don't have a good error-code.xml entry for this so still excluding it)
 				writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.getMessageType(returnMsg.getStatus()));
 
 				synchronized ( YukonCommander.class )
