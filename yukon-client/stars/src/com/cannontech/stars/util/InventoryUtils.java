@@ -116,6 +116,8 @@ public class InventoryUtils {
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G2
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G3
             || devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP
             || devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102)
 			return HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId();
