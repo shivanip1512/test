@@ -2,6 +2,27 @@
 /**** Oracle DBupdates                 ****/ 
 /******************************************/ 
 
+/* Start YUK-10442 */
+/* @error warn-once */
+/* @start-block */
+DECLARE
+    errorFlagCount INT;
+BEGIN
+    SELECT COUNT(*) INTO errorFlagCount FROM (
+      SELECT COUNT(*)
+      FROM YukonListEntry     YLE
+      JOIN YukonSelectionList YSL ON YSL.ListId = YLE.ListId
+      WHERE YSL.ListName = 'DeviceType'
+        AND YLE.YukonDefinitionId IN (1301, 1304, 1313, 1314, 1316, 1318, 1319)
+      GROUP BY YLE.YukonDefinitionId, YSL.EnergyCompanyId
+      HAVING COUNT(*) > 1);
+    IF (0 < errorFlagCount) THEN
+        RAISE_APPLICATION_ERROR(-20001, 'There are thermostat device types that share a base device type.  While this is an acceptable configuration, it will cause default schedules for shared base device types to be invalid after this upgrade script (5.2_1.sql) is run.  This issue requires manual intervention to preserve the integrity of the system''s default schedules.  See YUK-10442 for more information and instructions.');
+    END IF;
+END;
+/* @end-block */
+/* End YUK-10442 */
+
 /* Start YUK-8881 */
 ALTER TABLE SequenceNumber MODIFY SequenceName VARCHAR2(30); 
    

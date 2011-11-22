@@ -2,6 +2,21 @@
 /**** SQL Server DBupdates             ****/ 
 /******************************************/ 
 
+/* Start YUK-10442 */
+/* @error warn-once */
+/* @start-block */
+IF 0 < (SELECT COUNT(*) 
+        FROM (SELECT COUNT(YLE.EntryId) as numEntries
+              FROM YukonListEntry     YLE
+              JOIN YukonSelectionList YSL ON YSL.ListId = YLE.ListId
+              WHERE YSL.ListName = 'DeviceType'
+                AND YLE.YukonDefinitionId IN (1301, 1304, 1313, 1314, 1316, 1318, 1319)
+              GROUP BY YLE.YukonDefinitionId, YSL.EnergyCompanyId
+              HAVING COUNT(YLE.EntryId)>1) i1)
+    RAISERROR('There are thermostat device types that share a base device type.  While this is an acceptable configuration, it will cause default schedules for shared base device types to be invalid after this upgrade script (5.2_1.sql) is run.  This issue requires manual intervention to preserve the integrity of the system''s default schedules.  See YUK-10442 for more information and instructions.', 16, 1);
+/* @end-block */
+/* End YUK-10442 */
+
 /* Start YUK-8881 */
 ALTER TABLE SequenceNumber ALTER COLUMN SequenceName VARCHAR(30) NOT NULL;
 
