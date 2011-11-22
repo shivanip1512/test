@@ -44,6 +44,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private int energyCompanyId;
+    private boolean showOverridesThatDoNotCount;
     private Set<Integer> accountIds;
     private Set<Integer> inventoryIds;
     private Set<Integer> programIds;
@@ -111,6 +112,13 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         this.energyCompanyId = energyCompanyId;
     }
 
+    public boolean getShowOverridesThatDoNotCount(){
+        return showOverridesThatDoNotCount;
+    }
+    public void setShowOverridesThatDoNotCount(boolean showOverridesThatDoNotCount) {
+        this.showOverridesThatDoNotCount = showOverridesThatDoNotCount;
+    }
+    
     public Set<Integer> getAccountIds() {
         return accountIds;
     }
@@ -217,9 +225,13 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         
         for (OverrideHistory overrideHistory : overrideHistoryList) {
             
+            // If the user doesn't want to see opt outs that don't count then lets not add them.
+            if (!showOverridesThatDoNotCount && !overrideHistory.isCountedAgainstLimit()) {
+                continue;
+            }
+            
             CustomerAccountWithNames customerAccountWithName =
-                customerAccountDao.getAcountWithNamesByAccountNumber(overrideHistory.getAccountNumber(),
-                                                                             energyCompanyId);
+                customerAccountDao.getAcountWithNamesByAccountNumber(overrideHistory.getAccountNumber(), energyCompanyId);
             
             if (overrideHistory.getStatus().equals(OverrideStatus.Active)) {
    

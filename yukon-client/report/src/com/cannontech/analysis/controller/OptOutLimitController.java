@@ -18,6 +18,9 @@ import com.google.common.collect.Sets;
 
 public class OptOutLimitController extends ReportControllerBase {
     
+    private static final String ATT_SHOW_OVERRIDES_THAT_DO_NOT_COUNT = "showOverridesThatDoNotCount";
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.ACCOUNT_NUMBER,
             ReportFilter.SERIAL_NUMBER,
@@ -31,8 +34,24 @@ public class OptOutLimitController extends ReportControllerBase {
         report = new OptOutLimitReport(model);
     }
 
+    @Override
     public String getHTMLOptionsTable() {
-        return "";
+        final StringBuilder sb = new StringBuilder();
+        
+        sb.append("<table class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("  <tr>" + LINE_SEPARATOR);
+        sb.append("    <td>" + LINE_SEPARATOR);        
+        sb.append("      <table cellspacing='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td><input type='checkbox' name='"+ATT_SHOW_OVERRIDES_THAT_DO_NOT_COUNT+"' value='true'> Show Overrides That Do Not Count" + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("      </table>" + LINE_SEPARATOR);
+        sb.append("    </td>" + LINE_SEPARATOR);
+        
+        sb.append("  </tr>" + LINE_SEPARATOR);
+        sb.append("</table>" + LINE_SEPARATOR);
+        
+        return sb.toString();
     }
 
     public YukonReportBase getReport() {
@@ -56,8 +75,9 @@ public class OptOutLimitController extends ReportControllerBase {
         EnergyCompanyModelAttributes ecModel = (EnergyCompanyModelAttributes)model;
         super.setRequestParameters(request);
 
-        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
+        optOutLimitModel.setShowOverridesThatDoNotCount(ServletRequestUtils.getBooleanParameter(request, ATT_SHOW_OVERRIDES_THAT_DO_NOT_COUNT, false));
         
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
         if (filter == ReportFilter.ACCOUNT_NUMBER) {
             
             String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
