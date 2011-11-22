@@ -47,7 +47,6 @@ public class OptOutLimitController extends ReportControllerBase {
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
-        
         sb.append("  </tr>" + LINE_SEPARATOR);
         sb.append("</table>" + LINE_SEPARATOR);
         
