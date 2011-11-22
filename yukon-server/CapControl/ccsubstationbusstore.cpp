@@ -7476,11 +7476,11 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
 
             for each (PointResponse pointResponse in pointResponses)
             {
-                if (paobject_capbank_map->find(pointResponse.getBankId()) != paobject_capbank_map->end())
+                PaoIdToCapBankMap::const_iterator bank_itr = paobject_capbank_map->find(pointResponse.getBankId());
+                if (bank_itr != paobject_capbank_map->end())
                 {
-                    CtiCCCapBankPtr bank = paobject_capbank_map->find(pointResponse.getBankId())->second;
+                    CtiCCCapBankPtr bank = bank_itr->second;
                     bank->addPointResponse(pointResponse);
-
                     requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getBankId() ) );
                 }
             }
