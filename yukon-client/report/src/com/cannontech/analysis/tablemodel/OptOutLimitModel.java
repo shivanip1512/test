@@ -326,12 +326,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         if (programNames != null && programNames.size() > 0) {
             programNamesStr = programNames.get(0);
             for (int i = 1; i < programNames.size(); i++) {
-                if (i < programNames.size()) {
-                    programNamesStr += ", ";
-                }
-                
-                String programName = programNames.get(i);
-                programNamesStr += programName;
+                programNamesStr += ", " + programNames.get(i);
             }
         }
         
