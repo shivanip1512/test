@@ -7476,14 +7476,12 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
 
             for each (PointResponse pointResponse in pointResponses)
             {
-                CtiCCCapBankPtr bank = paobject_capbank_map->find(pointResponse.getBankId())->second;
-                bank->addPointResponse(pointResponse);
-
-                requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getBankId() ) );
-
+                if (paobject_capbank_map->find(pointResponse.getBankId()) != paobject_capbank_map->end())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " currentPointResponse bankId: " << bank->getPaoId() << " pointId: " << pointResponse.getPointId() << endl;
+                    CtiCCCapBankPtr bank = paobject_capbank_map->find(pointResponse.getBankId())->second;
+                    bank->addPointResponse(pointResponse);
+
+                    requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getBankId() ) );
                 }
             }
 
@@ -7493,11 +7491,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
 
                 PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false);
                 bank->addPointResponse(defaultPointResponse);
-
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " currentPointResponse bankId: " << thePair.second << " pointId: " << thePair.first << endl;
-                }
             }
         }
     }
