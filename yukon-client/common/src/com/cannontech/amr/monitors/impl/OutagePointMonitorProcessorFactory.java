@@ -40,7 +40,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
     }
 
     protected RichPointDataListener createPointListener(final OutageMonitor outageMonitor) {
-        final DeviceGroup monitorGroup = deviceGroupService.resolveGroupName(outageMonitor.getGroupName());
+        final DeviceGroup monitorGroup = deviceGroupService.findGroupName(outageMonitor.getGroupName());
         final StoredDeviceGroup resultGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
         PointMonitorProcessor monitorProcessor = new PointMonitorProcessor() {
 

@@ -15,6 +15,7 @@ public interface PointMonitorProcessor {
 
 	/**
 	 * Returns the group this processor is monitoring
+	 * May return null if deviceGroup being monitored no longer exists. 
 	 * @return
 	 */
 	public DeviceGroup getGroupToMonitor();

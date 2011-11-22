@@ -100,11 +100,13 @@
             <tags:nameValue2 nameKey=".supportedDevices">
                 <span id="supportedDevicesMsg"></span>
                 <span id="addPointsSpan" style="display: none;">
+                <c:if test="${deviceCollection != null}">
                     <cti:url value="/spring/bulk/addPoints/home" var="addPointsLink">
                         <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                     </cti:url>
                     <span> - </span>
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
+                </c:if>
                 </span>
                 <cti:img id="supportedDevicesHelpIcon" nameKey="help" styleClass="pointer hoverableImage nameValueLogoImage" />&nbsp
             </tags:nameValue2>

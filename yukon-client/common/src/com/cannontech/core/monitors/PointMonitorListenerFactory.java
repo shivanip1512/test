@@ -30,13 +30,15 @@ public class PointMonitorListenerFactory {
 	            SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
 
 	            DeviceGroup groupToMonitor = processor.getGroupToMonitor();
-	            boolean deviceInGroup = deviceGroupProviderDao.isDeviceInGroup(groupToMonitor, simpleDevice);
-	            if (deviceInGroup) {
-	                boolean matches = processor.evaluate(pointData);
-	                if (matches) {
-	                    StoredDeviceGroup resultsGroup = processor.getResultsGroup();
-	                    deviceGroupMemberEditorDao.addDevices(resultsGroup, simpleDevice);
-	                }
+	            if (groupToMonitor != null) {	//this check supports a device group that is being monitored but no longer exists.
+		            boolean deviceInGroup = deviceGroupProviderDao.isDeviceInGroup(groupToMonitor, simpleDevice);
+		            if (deviceInGroup) {
+		                boolean matches = processor.evaluate(pointData);
+		                if (matches) {
+		                    StoredDeviceGroup resultsGroup = processor.getResultsGroup();
+		                    deviceGroupMemberEditorDao.addDevices(resultsGroup, simpleDevice);
+		                }
+		            }
 	            }
 	        }
 	    };

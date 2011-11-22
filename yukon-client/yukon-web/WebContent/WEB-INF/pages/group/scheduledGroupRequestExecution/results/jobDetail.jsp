@@ -1,7 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle" />
 <cti:msg var="infoSectionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section" />

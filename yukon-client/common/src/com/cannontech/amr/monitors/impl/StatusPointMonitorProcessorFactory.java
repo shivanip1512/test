@@ -65,8 +65,13 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                     return;
                 }
                 
+                DeviceGroup groupToMonitor = deviceGroupService.findGroupName(statusPointMonitor.getGroupName());
+                if (groupToMonitor == null) {
+                	// group does not exist, have nothing to monitor
+                	return;
+                }
+
                 SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
-                DeviceGroup groupToMonitor = deviceGroupService.resolveGroupName(statusPointMonitor.getGroupName());
                 boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
                 if (!deviceInGroup) {
                     return;

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -34,6 +37,8 @@ import com.google.common.collect.SetMultimap;
 
 public class ValidationMonitorDaoImpl implements ValidationMonitorDao, InitializingBean  {
 
+	private final Logger log = YukonLogManager.getLogger(ValidationMonitorDaoImpl.class);
+		
     private static final ParameterizedRowMapper<ValidationMonitor> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -51,8 +56,13 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
             
             if (validationMonitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
                 DeviceGroup groupName = deviceGroupService.findGroupName(validationMonitor.getDeviceGroupName());
-                Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(groupName));
-                deviceGroupCache.putAll(validationMonitor, deviceIds);    
+                if (groupName != null) {	// check if group name still exists.	
+                	Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(groupName));
+                	deviceGroupCache.putAll(validationMonitor, deviceIds);
+                } else {
+                	LogHelper.warn(log, "Device Group %s no longer exists. Monitor %s is not validating any readings.", 
+                			validationMonitor.getDeviceGroupName(), validationMonitor.getName());
+                }
             }
             
         }

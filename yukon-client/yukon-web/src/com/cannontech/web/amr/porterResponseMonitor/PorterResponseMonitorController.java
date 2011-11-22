@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsonOLD.JSONObject;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,8 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatch
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRuleDto;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -88,6 +91,8 @@ public class PorterResponseMonitorController {
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
 	private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
 
+	private final Logger log = YukonLogManager.getLogger(PorterResponseMonitorController.class);
+	
 	private Validator nameValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
 		@Override
 		public void doValidation(PorterResponseMonitor monitor, Errors errors) {
@@ -339,22 +344,33 @@ public class PorterResponseMonitorController {
         } catch (InterruptedException e) {
         }
 
-        PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
-        DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
-        int totalGroupCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
-        List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
-        int existingPointCount = pointService.getCountOfGroupAttributeStateGroup(group,
-                                                            monitor.getAttribute(),
-                                                            monitor.getStateGroup());
-        int missingPointCount = supportedDevices.size() - existingPointCount;
-        String supportedDevicesMessage;
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        if (missingPointCount > 0) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String attributeString = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." + monitor.getAttribute().getKey());
-            supportedDevicesMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor.supportedDevicesMessage", supportedDevices.size(), missingPointCount, attributeString);
+        // Default values in case group does not exist.
+        String supportedDevicesMessage = messageSourceAccessor.getMessage("yukon.web.defaults.na");
+        int totalGroupCount = 0;
+        int missingPointCount = 0;
+        
+        PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
+        DeviceGroup group = deviceGroupService.findGroupName(monitor.getGroupName());
+        if (group != null) {	// check if group no longer exists.
+	        totalGroupCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
+	        List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
+	        int existingPointCount = pointService.getCountOfGroupAttributeStateGroup(group,
+	                                                            monitor.getAttribute(),
+	                                                            monitor.getStateGroup());
+	        missingPointCount = supportedDevices.size() - existingPointCount;
+	        
+	        
+	        if (missingPointCount > 0) {
+	            String attributeString = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." + monitor.getAttribute().getKey());
+	            supportedDevicesMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor.supportedDevicesMessage", supportedDevices.size(), missingPointCount, attributeString);
+	        } else {
+	            supportedDevicesMessage = String.valueOf(supportedDevices.size());
+	        }
         } else {
-            supportedDevicesMessage = String.valueOf(supportedDevices.size());
+        	LogHelper.warn(log, "Device Group %s no longer exists. Porter Response Monitor %s is not monitoring any data.",
+        			monitor.getGroupName(), monitor.getName());
         }
         
         JSONObject object = new JSONObject();
@@ -391,9 +407,11 @@ public class PorterResponseMonitorController {
         boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
         model.addAttribute("showAddRemovePoints", showAddRemovePoints);
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        model.addAttribute("deviceCollection", deviceCollection);
+        DeviceGroup group = deviceGroupService.findGroupName(monitor.getGroupName());
+        if (group != null) {
+        	DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+	        model.addAttribute("deviceCollection", deviceCollection);
+        }
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String attributeString = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." + monitor.getAttribute().getKey());
