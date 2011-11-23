@@ -6730,18 +6730,11 @@
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="12">
+            <point type="Analog" offset="2">
                 <init>true</init>
-                <name>Average Line Voltage</name>
+                <name>Last Control Reason</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="21">
-                <init>true</init>
-                <name>Line Voltage THD</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Percent"/>
+                <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="5">
@@ -6772,11 +6765,18 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="2">
+            <point type="Analog" offset="12">
                 <init>true</init>
-                <name>Last Control Reason</name>
+                <name>Average Line Voltage</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="21">
+                <init>true</init>
+                <name>Line Voltage THD</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Percent"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="114">
