@@ -184,6 +184,7 @@
     
     <!--  operatorThermostat/schedule/hints.jsp -->
     <entry key="yukon.web.modules.consumer.savedSchedules.hint"><![CDATA[
+    <div style="font-size:11px">
         The schedule page allows you to set your ongoing temperature schedule.
         There are different time intervals available depending on the schedule mode selected. 
         Within each of these time intervals, you may select your cooling and heating temperatures. 
@@ -191,55 +192,33 @@
         
         <ol>
             <li>
-                Click 'Create' and select the desired schedule mode from the list in the resulting popup.
-                <br><small><b>Note:</b> All modes may not be available.</small>
-                <ul class="sub_items">
-                    <li>
-                        <b>Same schedule every day of the week</b>: Each day of the week will have identical schedules.
-                    </li>
-                    <li>
-                        <b>Weekday, Saturday, Sunday Schedules</b>: Monday - Friday will have 
-                        identical schedules.  Saturday and Sunday can have independent schedules.
-                    </li>
-                    <li>
-                        <b>Weekday, Weekend schedules </b>: Monday - Friday will have identical 
-                        schedules.  Saturday and Sunday will have identical schedules.
-                    </li>
-                    <li>
-                        <b>Different schedule every day of the week</b>: Each day of the week will 
-                        have can have independent schedules.
-                    </li>
-                </ul>
+                Click 'Create' and select the schedule mode from the list in the resulting popup: 
+                <b>Same schedule every day of the week</b>, 
+                <b>Weekday, Saturday, Sunday schedules</b>,
+                <b>Weekday and Weekend schedules</b> or
+                <b>Different schedule each day of the week</b>.
+                <br><small><b>Note:</b> Not all modes may be available.</small>
             </li>
-            
             <li>
                 The utility recommended settings are loaded for new schedules. If at any time you 
                 would like to revert to these settings, click the <b>Recommended Settings</b> 
-                button.  By default we create 1 schedule for you.
+                button.  By default 1 schedule is created for you.
             </li>
                
             <li>
                 Each row represents an entire day or group of days that share the same schedule. Within each day
-                there are 2 or 4 time intervals in which to define temperature settings. Times may be 
+                there are 2 or 4 time intervals (depending on the thermostat) in which to define temperature settings. Times may be 
                 entered directly in the text boxes, increased or decreased by pressing the
-                up/down key on the keyboard respectively or moving the slider left/right.
+                up/down key on the keyboard or moving the slider left/right.
             </li>
                
             <li>
                 Heating and Cooling temperatures may be set at each individual time interval.  
                 Temperatures may be entered directly in the text boxes, increased or decreased by pressing the
-                up/down key on the keyboard respectively or moving the slider left/right.
+                up/down key on the keyboard or moving the slider left/right.
             </li>
-               
-           <li>
-               If you would like to temporarily change your thermostat,
-               click on the<b> Manual</b> link at left or at the link provided at
-               the top of the page. This page is also a convenient location for
-               holding a temperature for a short amount of time that is different
-               from your regular schedule. You may use this feature, for example,
-               while away on vacation or while you have visiting guests.
-           </li>
        </ol>
+    </div>
     ]]></entry>
     
     <!-- operatorThermostat/schedule/savedSchedules.jsp -->
@@ -361,6 +340,12 @@
     <entry key="yukon.web.modules.operator.thermostat.schedule.SATURDAY">Saturday</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedule.SUNDAY">Sunday</entry>
     
+    <!-- shared dialog popup messages -->
+    <entry key="yukon.web.modules.operator.thermostat.deleteConfirm">Are you sure you want to delete the schedule {0}?</entry>
+    <entry key="yukon.web.modules.operator.thermostat.sendConfirm">Are you sure you want to send the schedule {0}?</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.deleteConfirm">Are you sure you want to delete the schedule {0}?</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.sendConfirm">Are you sure you want to send the schedule {0}?</entry>
+    
     <!--  mode -->
     <entry key="yukon.web.modules.operator.thermostatMode.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatMode.WEEKDAY_WEEKEND">Weekday, Weekend schedules</entry>
@@ -386,6 +371,14 @@
 
     <!-- validation errors -->    
     <entry key="yukon.web.components.thermostat.schedule.error.duplicateName">Name already in use, please provide a different schedule name.</entry>
+
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntry">This schedule contains errors. To correct this, please edit the schedule, choose a different mode and save.  You may then edit the schedule again to restore the original mode.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTimeOfWeek">This schedule contains incompatible days of the week: {0}.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooCold">The cooling temperature {0} is too low.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooWarm">The cooling temperature {0} is too high.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooCold">The heating temperature {0} is too low.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooWarm">The heating temperature {0} is too high.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryCount">There are an invalid number of periods for {0}.</entry>
 
     <!-- Time of week -->
     <entry key="yukon.web.components.thermostat.schedule.EVERYDAY">Everyday</entry>
