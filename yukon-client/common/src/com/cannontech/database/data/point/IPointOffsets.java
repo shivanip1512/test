@@ -34,7 +34,9 @@ public interface IPointOffsets
    public static final int PT_OFFSET_PROFILE_CHANNEL3       = 103; 
    
    public static final int PT_OFFSET_LPROFILE_VOLTAGE_DEMAND = 104;
-		
+   
+   public static final int PT_OFFSET_DISABLE_STATUS          = 500;
+   
    public static final int PT_OFFSET_TRANS_STATUS			= 2000;
 
    public static final int PT_OFFSET_DAILY_HISTORY			= 2500;

@@ -23,8 +23,10 @@ import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
@@ -40,11 +42,14 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.IPointOffsets;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.point.stategroup.TrueFalse;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
@@ -65,6 +70,8 @@ public class CapBankEditorForm extends DBEditorForm {
     private static CapbankDao dao = YukonSpringHook.getBean("capbankDao", CapbankDao.class);
     private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
+    private static SimplePointAccessDao pointAccessDao = YukonSpringHook.getBean("simplePointAccessDao",SimplePointAccessDao.class);
+
     
    //over-rides the drop-down values
     private boolean customSize = false;
@@ -107,6 +114,13 @@ public class CapBankEditorForm extends DBEditorForm {
         try {
             checkForErrors();
             updateAddInfo();
+            try {
+                //Send point data message for optional disable 
+                LitePoint disablePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(capBank.getPAObjectID().intValue(), IPointOffsets.PT_OFFSET_DISABLE_STATUS, PointType.Status.getPointTypeId());
+                TrueFalse disableState = ((CapBank) getDbPersistent()).isDisabled() ? TrueFalse.TRUE : TrueFalse.FALSE;
+                pointAccessDao.setPointValue(disablePoint, disableState);
+            } catch (NotFoundException eae) {/*IGNORE: This point is optional*/}
+            
             updateDBObject(getDbPersistent(), facesMessage);
             capBank = (CapBank) getDbPersistent();
             handleMonitorPointsForController(capBank.getCapBank()
