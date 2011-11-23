@@ -45,7 +45,7 @@ class CapControlPao
         void setPaoDescription(const std::string& description);
 
         bool getDisableFlag() const;
-        void setDisableFlag(bool disableFlag);
+        void setDisableFlag(bool disableFlag, int priority = 7);
 
         const std::string& getPaoStatistics() const;
         void setPaoStatistics(const std::string& paoStatistics);
@@ -58,6 +58,6 @@ class CapControlPao
         bool CapControlPao::operator == (const CapControlPao& right) const;
         bool CapControlPao::operator != (const CapControlPao& right) const;
 
-        void setDisabledStatePointId( const long newId );
+        void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
         long getDisabledStatePointId() const;
 };

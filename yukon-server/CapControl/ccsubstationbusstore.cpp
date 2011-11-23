@@ -3238,9 +3238,17 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
                                                   pao->getPaoType(),
                                                   ChangeTypeUpdate);
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-    pao->setDisableFlag(disableFlag);
+    
+    if (disableFlag)
+    {
+        pao->setDisableFlag(disableFlag, MAXPRIORITY);//high priority, process before DB Change 
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    }
+    else
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+        pao->setDisableFlag(disableFlag); //normal priority, DB Change will be processed first
+    }
 
     return updateSuccessful;
 }
@@ -4522,7 +4530,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     if ( resolvePointType(tempPointType) == StatusPointType &&
                          tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        currentStation->setDisabledStatePointId(tempPointId);
+                        currentStation->setDisabledStatePointId(tempPointId, substationId);
                         pointid_station_map->insert(make_pair(tempPointId,currentStation));
                         currentStation->getPointIds()->push_back(tempPointId);
                     }
@@ -4902,7 +4910,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                     if ( resolvePointType(tempPointType) == StatusPointType &&
                          tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        currentArea->setDisabledStatePointId(tempPointId);
+                        currentArea->setDisabledStatePointId(tempPointId, areaId);
                         pointid_area_map->insert(make_pair(tempPointId,currentArea));
                         currentArea->getPointIds()->push_back(tempPointId);
                     }
@@ -5219,7 +5227,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                     if ( resolvePointType(tempPointType) == StatusPointType &&
                          tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        currentSpArea->setDisabledStatePointId(tempPointId);
+                        currentSpArea->setDisabledStatePointId(tempPointId, true);
                         pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
                         currentSpArea->getPointIds()->push_back(tempPointId);
                     }
@@ -5923,7 +5931,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     if ( resolvePointType(tempPointType) == StatusPointType &&
                          tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                     {
-                        currentCCSubstationBus->setDisabledStatePointId(tempPointId);
+                        currentCCSubstationBus->setDisabledStatePointId(tempPointId, subBusId);
                         pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                         currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                     }
@@ -6576,7 +6584,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                         if ( resolvePointType(tempPointType) == StatusPointType &&
                              tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                         {
-                            currentCCFeeder->setDisabledStatePointId(tempPointId);
+                            currentCCFeeder->setDisabledStatePointId(tempPointId, feederId);
                             pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                             currentCCFeeder->getPointIds()->push_back(tempPointId);
                         }
@@ -6983,7 +6991,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         if ( resolvePointType(tempPointType) == StatusPointType &&
                              tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                         {
-                            currentCCCapBank->setDisabledStatePointId(tempPointId);
+                            currentCCCapBank->setDisabledStatePointId(tempPointId, capBankId); 
                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                             currentCCCapBank->getPointIds()->push_back(tempPointId);
                         }
@@ -8006,6 +8014,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 {
                     if (station->getSaEnabledId() > 0)
                     {
+						++iter;
                         continue;
                     }
                     PaoIdList::iterator iterBus = station->getCCSubIds()->begin();
@@ -8581,7 +8590,6 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
               CtiLockGuard<CtiLogger> logger_guard(dout);
               dout << CtiTime() << " Reload Cap "<< reloadId<<" because of ChangeTypeUpdate message " << endl;
          }
-         //reloadCapBankFromDatabase(reloadTemp.objectId);
          reloadCapBankFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
                                    &_paobject_subbus_map, &_pointid_capbank_map, &_capbank_subbus_map,
                                    &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
