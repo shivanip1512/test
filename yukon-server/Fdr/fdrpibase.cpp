@@ -513,7 +513,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Handling PI_INTEGER_POINT update for " << info.ctiPoint->getPointID()
-        << ", rval=" << ival <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
+        << ", ival=" << ival <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
     }
     handleUpdate(info.ctiPoint, ival, timestamp_utc);
   }
@@ -629,7 +629,6 @@ std::string CtiFDRPiBase::getPiErrorDescription(int errCode, char* functionName)
 
 time_t CtiFDRPiBase::piToYukonTime(PITIMESTAMP piTimeStamp)
 {
-     // remove local offset (might not be thread-safe)
      time_t time = CtiTime().seconds();
      struct tm* temp = CtiTime().localtime_r(&time);
      temp->tm_year =  piTimeStamp.year - 1900;

@@ -272,7 +272,7 @@ void CtiFDRPiNotify::doUpdates()
               CtiLockGuard<CtiLogger> doubt_guard( dout );
               logNow() << "Received " << pointCount << " exceptions from Pi" << endl;
             }
-            while (err != 100)
+            while (err != PI_NOMOREVALUES)
             {
                 if (err)
                 {
@@ -329,8 +329,9 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
         {
             processPiEventResults(piIdArray[i], piEvent, error);
             i++;
-        } while ((err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
-                                 &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT))== 0);
+            err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                                 &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT);
+        } while (!err);
     }
     else
     {

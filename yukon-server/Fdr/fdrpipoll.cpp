@@ -275,8 +275,9 @@ void CtiFDRPiPoll::doUpdates()
                    /* handle results */
                     processPiPollResults(pollInfo.pointList[i], piEvent, error, timeToSend);
                     i++;
-                } while ((err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
-                                                    &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT))== 0);
+                    err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                                                    &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT);
+                } while (!err);
             }
             else
             {
