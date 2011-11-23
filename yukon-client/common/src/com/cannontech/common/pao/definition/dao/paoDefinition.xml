@@ -6965,6 +6965,9 @@
         </attributes>
         <tags>
         	<tag name="VOLTAGE_REGULATOR"/>
+            <tag name="PAO_CREATION_SERVICE">
+                <value>YUKONPAOBJECT,REGULATOR</value>
+            </tag>
         </tags>
     </pao>
 
@@ -6991,11 +6994,6 @@
                 </mappedLookup>
             </attribute>
         </attributes>
-        <tags>
-        	<tag name="PAO_CREATION_SERVICE">
-        		<value>YUKONPAOBJECT,REGULATOR</value>
-        	</tag>
-       	</tags>
     </pao>
     
     <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">
