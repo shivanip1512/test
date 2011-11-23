@@ -201,6 +201,8 @@ Event.observe(window, 'load', function(){
     <input type="hidden" name="thermostatId" value="${thermostatId}">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
     <input type="hidden" name="accountId" value="${accountId}">
+    <cti:msg2 var="delete_message" key="yukon.web.modules.operator.thermostat.deleteConfirm" />
+    <input type="hidden" name="message" value="${delete_message}"/>
     <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup f_blocker" submitName="delete" on=".delete"/>
 </form>
 
@@ -209,6 +211,8 @@ Event.observe(window, 'load', function(){
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
     <input type="hidden" name="accountId" value="${accountId}">
     <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
+    <cti:msg2 var="send_message" key="yukon.web.modules.operator.thermostat.sendConfirm" />
+    <input type="hidden" name="message" value="${send_message}"/>
     <tags:confirmDialog nameKey=".sendConfirm" styleClass="smallSimplePopup f_blocker" submitName="send" on=".send"/>
 </form>
 <!--  END action forms -->

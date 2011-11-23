@@ -76,12 +76,14 @@ Yukon.ThermostatScheduleEditor = {
         YEvent.observeSelectorClick(".send", function(e){
             //confirmation popup already shown at this point
             $$("form[name=sendSchedule] input[name=scheduleId]")[0].value = e.target.up("form").down("input[name=scheduleId]").value;
+            $$("form[name=sendSchedule] p:first")[0].innerHTML = $$("form[name=sendSchedule] input[name=message]")[0].value.replace("{0}", e.target.up("form").down("input[name=scheduleName]").value);
         });
         
         YEvent.observeSelectorClick(".delete", function(e){
             //confirmation popup already shown at this point, so hide it
             e.target.up(".popUpDiv").hide();
             $$("form[name=deleteSchedule] input[name=scheduleId]")[0].value = e.target.up(".popUpDiv").down("form input[name=scheduleId]").value;
+            $$("form[name=deleteSchedule] p:first")[0].innerHTML = $$("form[name=deleteSchedule] input[name=message]")[0].value.replace("{0}", e.target.up(".popUpDiv").down("form input[name=scheduleName]").value);
         });
         
         YEvent.observeSelectorClick(".cancel", function(e){
