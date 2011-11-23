@@ -18,7 +18,11 @@
 
 	widgetActionRefreshCheckbox_${uniqueId} = function() {
 
-		${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', 'n/a', '${uniqueId}');
+		${widgetParameters.jsWidget}.doActionRefresh({
+		    command:      '${method}', 
+		    buttonID:     '${thisId}', 
+		    waitingText:  'n/a', 
+		    key:          '${uniqueId}'});
 	}
 
 </script>

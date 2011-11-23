@@ -23,6 +23,10 @@
         <c:if test="${showConfirm}">
             <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${arguments}"/>
         </c:if>
+        
+        <%-- Prepending '.' and appending '.labelBusy' here to stay consistent with the xml key style of cti:button --%>
+        <cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/>
+        
         <cti:button nameKey="${nameKey}" id="${buttonId}"/>
         <script type="text/javascript">
             $("${buttonId}").observe("click", function() {
@@ -32,7 +36,11 @@
                     confirmed = confirm(confirmText);
                 }
                 if (confirmed) {
-                    ${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${uniqueId}');
+                    ${widgetParameters.jsWidget}.doActionRefresh({
+                        command:        '${method}', 
+                        buttonID:       '${thisId}', 
+                        waitingText:    '${labelBusyText}...',
+                        key:            '${uniqueId}'});
                 }
             });
         </script>

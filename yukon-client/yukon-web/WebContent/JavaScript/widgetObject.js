@@ -38,40 +38,66 @@ JsWidgetObject.prototype = {
     new Ajax.Updater(container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
   },
   
-  doActionRefresh: function(cmd, actionButton, key) {
-    var widgetContainer = '#' + $(actionButton).up('.widgetContainer').down('.content').id;
-    Yukon.ui.blockElement({'selector':widgetContainer});
+  /**
+   * args = {
+   *    command = string final path for the url
+   *    buttonID = string containing the ID of the button
+   *    waitingText = text that will be placed on the button while the ajax call is in progress
+   *    key = 
+   * }
+   */
+  doActionRefresh: function(args) {
+      var defaultButtonText = $(args.buttonID).down('span').innerHTML;
+      $(args.buttonID).down('span').innerHTML = args.waitingText;
+    $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
+    $(this.container).getElementsBySelector('input').invoke('disable');
+    $(this.container).getElementsBySelector('button').invoke('disable');
     
     var that = this;
     var localSuccess = function(transport, json) {
-        Yukon.ui.unblockElement({'selector':widgetContainer});
+        $(args.buttonID).down('span').innerHTML = defaultButtonText;
+        $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
+        $(this.container).getElementsBySelector('input').invoke('enable');
+        $(this.container).getElementsBySelector('button').invoke('enable');
         that.onSuccess(transport, json);
     }
     
-    newParams = $H(this.linkInfo.get(key));
+    newParams = $H(this.linkInfo.get(args.key));
     oldParams = this.getWidgetParameters();
     oldParams.update(newParams);
     
-    var url = "/spring/widget/" + this.shortName + "/" + cmd;
+    var url = "/spring/widget/" + this.shortName + "/" + args.command;
     new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
   },
   
-  doActionUpdate: function(cmd, theContainer, actionButton, key) {
-    var widgetContainer = '#' + $(actionButton).up('.widgetContainer').down('.content').id;
-    Yukon.ui.blockElement({'selector':widgetContainer});
+  /**
+   * args = {
+   *    command = string final path for the url
+   *    containerID = string containing the ID of the container
+   *    buttonID = string containing the ID of the button
+   *    waitingText = text that will be placed on the button while the ajax call is in progress
+   *    key = 
+   * }
+   */
+  doActionUpdate: function(args) {
+    var defaultButtonText = $(args.buttonID).down('span').innerHTML;
+    $(args.buttonID).down('span').innerHTML = args.waitingText;
+    $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
+    var container = this.container;
+    $(container).getElementsBySelector('button').invoke('disable');
     
-    var that = this;
-    var localSuccess = function(transport, json) {
-        Yukon.ui.unblockElement({'selector':widgetContainer});
-        that.onSuccess(transport, json);
+    var localSuccess = function() {
+        $(args.buttonID).down('span').innerHTML = defaultButtonText;
+        $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
+        $(container).getElementsBySelector('button').invoke('enable');
     }
     
-    newParams = $H(this.linkInfo.get(key));
+    newParams = $H(this.linkInfo.get(args.key));
     oldParams = this.getWidgetParameters();
     oldParams.update(newParams);
     
-    var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(theContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
+    var url = "/spring/widget/" + this.shortName + "/" + args.command;
+    new Ajax.Updater(args.containerID, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
   },
   
   setParameter: function(name, value){

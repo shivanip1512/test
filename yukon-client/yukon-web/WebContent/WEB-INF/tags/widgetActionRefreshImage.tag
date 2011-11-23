@@ -28,11 +28,18 @@
 		}
 
 		if (confirmed) {
-			${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${uniqueId}');
+			${widgetParameters.jsWidget}.doActionRefresh({
+			    command:     '${method}', 
+			    buttonID:    '${thisId}', 
+			    waitingText: "", 
+			    key:         '${uniqueId}'});
 		}
 	}
 </script>
 
 <span id="${thisId}">
     <cti:button nameKey="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();"/>
+    <span class="widgetAction_waiting" style="display:none">
+        <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>">
+    </span>
 </span>
