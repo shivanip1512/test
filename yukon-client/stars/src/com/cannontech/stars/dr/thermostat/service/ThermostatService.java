@@ -42,10 +42,19 @@ public interface ThermostatService {
     /**
      * Checks the AccountThermostatSchedule to see if it contains AccountThermostatScheduleEntries 
      * for all times of week associated with its schedule mode.  If entries are missing for any 
+     * TimeOfWeek, entries are copied from TimeOfWeek.WEEKDAY as defined by the default schedule
+     * and added to the schedule for that TimeOfWeek.  If that TimeOfWeek does not exist, it is extrapolated
+     * per the detailed comments in the function.
+     */
+    public void addMissingScheduleEntries(AccountThermostatSchedule schedule, AccountThermostatSchedule copyDefaultsFrom);
+    
+    /**
+     * Checks the AccountThermostatSchedule to see if it contains AccountThermostatScheduleEntries 
+     * for all times of week associated with its schedule mode.  If entries are missing for any 
      * TimeOfWeek, entries are copied from TimeOfWeek.WEEKDAY and added to the schedule for that 
      * TimeOfWeek.
      */
-    public void addMissingScheduleEntries(AccountThermostatSchedule schedule, AccountThermostatSchedule copyDefaultsFrom);
+    public void addMissingScheduleEntriesForDefaultSchedules(AccountThermostatSchedule ats);    
     
     /**
      * Prepares a ThermostatManualEvent for each thermostat being controlled, then attempts to

@@ -160,12 +160,12 @@ Yukon.ThermostatScheduleEditor = {
                 onFailure: function(data) {
                     //client errors
                     if(data.status >= 400 && data.status < 500){
+                        Yukon.ui.unblockPage();
                         Yukon.ThermostatScheduleEditor.clearErrors(form);
                         var errors = data.responseJSON.errors;
                         for(error in errors){
                             form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
                         }
-                        Yukon.ui.unblockPage();
                     }else{
                         //reload the page in case of other server error
                         alert(data.responseText);

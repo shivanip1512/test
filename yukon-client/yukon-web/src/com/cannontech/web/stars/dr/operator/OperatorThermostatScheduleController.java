@@ -65,10 +65,7 @@ public class OperatorThermostatScheduleController {
 	private OperatorThermostatHelper operatorThermostatHelper;
 	private AccountCheckerService accountCheckerService;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
-	@Autowired
-    private AccountThermostatScheduleValidator accountThermostatScheduleValidator;
-    @Autowired 
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	// SAVE - ajaxy
 	//Try to save the schedule
@@ -96,6 +93,8 @@ public class OperatorThermostatScheduleController {
         
         //validate the schedule as posted
         DataBinder binder = new DataBinder(ats);
+        AccountThermostatScheduleValidator accountThermostatScheduleValidator =
+            new AccountThermostatScheduleValidator(accountThermostatScheduleDao, messageSourceResolver.getMessageSourceAccessor(yukonUserContext));
         binder.setValidator(accountThermostatScheduleValidator);
         binder.validate();
         BindingResult bindingResult = binder.getBindingResult();

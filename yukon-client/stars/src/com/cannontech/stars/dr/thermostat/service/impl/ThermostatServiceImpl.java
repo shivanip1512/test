@@ -355,6 +355,56 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
+    public void addMissingScheduleEntriesForDefaultSchedules(AccountThermostatSchedule ats) {
+        for (TimeOfWeek timeOfWeek : ats.getThermostatScheduleMode().getAssociatedTimeOfWeeks()) {
+            List<AccountThermostatScheduleEntry> entries = ats.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
+            if (entries.size() == 0) {
+                //No entries for this time of week on this schedule.
+                //Copy entries from WEEKDAY, which is used in most modes.
+                List<AccountThermostatScheduleEntry> weekdayEntries = ats.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+                if(weekdayEntries.size() == 0){
+                    Set<TimeOfWeek> keys = ats.getEntriesByTimeOfWeekMultimap().keySet();
+                    if(keys.size() == 0){
+                        //Nothing exists, create a default day of periods
+                        List<ThermostatSchedulePeriod> periods = ats.getThermostatType().getPeriodStyle().getAllPeriods();
+                        for(ThermostatSchedulePeriod period : periods){
+                            AccountThermostatScheduleEntry atse = new AccountThermostatScheduleEntry();
+                            atse.setTimeOfWeek(TimeOfWeek.WEEKDAY);
+                            if(period.isPsuedo()){
+                                atse.setCoolTemp(Temperature.fromFahrenheit(-1));
+                                atse.setHeatTemp(Temperature.fromFahrenheit(-1));
+                            }else{
+                                atse.setCoolTemp(Temperature.fromFahrenheit(72));
+                                atse.setHeatTemp(Temperature.fromFahrenheit(72));
+                            }
+                            atse.setStartTime(period.getDefaultStartTime());
+                            
+                            weekdayEntries.add(atse);
+                        }
+                    }else{
+                        //copy the first one we can find as a last resort
+                        for(TimeOfWeek day : keys){
+                            weekdayEntries = ats.getEntriesByTimeOfWeekMultimap().get(day);
+                            break;
+                        }
+                    }
+                }
+                
+                List<AccountThermostatScheduleEntry> newEntries = Lists.newArrayList();
+                for (AccountThermostatScheduleEntry weekdayEntry : weekdayEntries) {
+                    AccountThermostatScheduleEntry copiedEntry = new AccountThermostatScheduleEntry();
+                    copiedEntry.setTimeOfWeek(timeOfWeek);
+                    copiedEntry.setCoolTemp(weekdayEntry.getCoolTemp());
+                    copiedEntry.setHeatTemp(weekdayEntry.getHeatTemp());
+                    copiedEntry.setStartTime(weekdayEntry.getStartTime());
+                    newEntries.add(copiedEntry);
+                }
+                ats.addScheduleEntries(newEntries);
+            }
+        }
+    }
+    
+    @Override
     public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, Temperature tempInF, ThermostatMode mode) {
         
         //The UI only allows selection of multiple thermostats of the same type, so the type of the

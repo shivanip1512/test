@@ -50,6 +50,26 @@ public class YukonValidationUtils extends ValidationUtils {
 
     public static List<MessageSourceResolvable> errorsForBindingResult(
             BindingResult bindingResult) {
+        return errorsForBindingResult(bindingResult, false);
+    }
+
+    /**
+     * Think twice before using this method.  Then get some coffee, talk to your neighbor, and
+     * think about using it again.  This method was created out of necessity: YUK-10443.  
+     * Example:
+     * Thermostat schedules do not have a space for binding field errors.  Even though the UI does a good job
+     * of validating/preventing error states on the schedules there are cases where errors might have existed
+     * pre-update and we need to display that to the user.
+     * 
+     * This is really the only reasonable case for including the FieldErrors in in the top level.
+     * 
+     * @param bindingResult
+     * @param includeFieldErrors    if set to true, all field errors will be returned in a flat list with the
+     *                              global errors.
+     * @return
+     */
+    public static List<MessageSourceResolvable> errorsForBindingResult(BindingResult bindingResult, 
+                                                                       boolean includeFieldErrors) {
         List<MessageSourceResolvable> retVal = Lists.newArrayList();
 
         // global
@@ -60,6 +80,18 @@ public class YukonValidationUtils extends ValidationUtils {
                                                  objectError.getArguments(),
                                                  objectError.getDefaultMessage());
             retVal.add(message);
+        }
+        
+        if(includeFieldErrors){
+            //field errors
+            Iterable<ObjectError> fieldErrors = Iterables.filter(bindingResult.getFieldErrors(), ObjectError.class);
+            for (ObjectError objectError : fieldErrors) {
+                YukonMessageSourceResolvable message =
+                    new YukonMessageSourceResolvable(objectError.getCodes(),
+                                                     objectError.getArguments(),
+                                                     objectError.getDefaultMessage());
+                retVal.add(message);
+            }
         }
 
         int numErrors = bindingResult.getFieldErrorCount();

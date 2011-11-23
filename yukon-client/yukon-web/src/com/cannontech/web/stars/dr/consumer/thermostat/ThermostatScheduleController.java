@@ -68,10 +68,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private OperatorThermostatHelper operatorThermostatHelper;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    @Autowired
-    private AccountThermostatScheduleValidator accountThermostatScheduleValidator;
-    @Autowired 
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping(value = "send", method = RequestMethod.POST)
     public String sendSchedule(HttpServletRequest request,
@@ -293,6 +290,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         //validate the schedule as posted
         DataBinder binder = new DataBinder(ats);
+        AccountThermostatScheduleValidator accountThermostatScheduleValidator =
+            new AccountThermostatScheduleValidator(accountThermostatScheduleDao, messageSourceResolver.getMessageSourceAccessor(yukonUserContext));
         binder.setValidator(accountThermostatScheduleValidator);
         binder.validate();
         BindingResult bindingResult = binder.getBindingResult();
@@ -368,11 +367,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
         this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
     
     @Autowired

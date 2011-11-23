@@ -11,9 +11,12 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.ui.context.Theme;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +26,13 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -40,8 +45,10 @@ import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
 import com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
+import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleValidator;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -60,6 +67,7 @@ public class DefaultThermostatScheduleController {
     private RolePropertyDao rolePropertyDao;   
     private StarsDatabaseCache starsDatabaseCache;
     private ThermostatService thermostatService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
@@ -98,9 +106,10 @@ public class DefaultThermostatScheduleController {
                                                 EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                                 HttpServletRequest request,
                                                 String type,
-                                                YukonUserContext userContext) {
+                                                FlashScope flashScope,
+                                                YukonUserContext yukonUserContext) {
 
-        setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
+        setupModelMap(modelMap, energyCompanyInfoFragment, yukonUserContext);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
@@ -123,6 +132,25 @@ public class DefaultThermostatScheduleController {
         String typeStr = getMessage(request).getMessage(schedulableThermostatType.getHardwareType());
         modelMap.addAttribute("typeStr", typeStr);
         
+        //check for invalid schedule bits
+        DataBinder binder = new DataBinder(schedule);
+        
+        AccountThermostatScheduleValidator accountThermostatScheduleValidator =
+            new AccountThermostatScheduleValidator(accountThermostatScheduleDao, messageSourceResolver.getMessageSourceAccessor(yukonUserContext));
+        
+        binder.setValidator(accountThermostatScheduleValidator);
+        binder.validate();
+        BindingResult bindingResult = binder.getBindingResult();
+        
+        //show the errors in the flash scope
+        if(bindingResult.hasErrors()){
+            //we want to show the field errors in the flash scope since the UI does not have room for showing the errors
+            //individually
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult, true);
+            messages.add(0, new YukonMessageSourceResolvable("yukon.web.components.thermostat.schedule.error.invalidScheduleEntry"));
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
+        
         List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();
         for(ThermostatScheduleMode mode : modes){
             if(schedule.getThermostatScheduleMode() == mode){
@@ -135,7 +163,7 @@ public class DefaultThermostatScheduleController {
                 defaultAts.setScheduleName(schedule.getScheduleName());
                 defaultAts.setThermostatScheduleMode(mode);
                 defaultAts.setThermostatType(schedulableThermostatType);
-                thermostatService.addMissingScheduleEntries(defaultAts, schedule);
+                thermostatService.addMissingScheduleEntriesForDefaultSchedules(defaultAts);
                 
                 defaultSchedules.add(defaultAts);
             }
