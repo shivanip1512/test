@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
@@ -14,7 +13,6 @@ import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceScanRateFields;
 import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.PaoCategory;
@@ -23,32 +21,27 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
-    private final Logger log = YukonLogManager.getLogger(CapbankControllerDaoImpl.class);
 	
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private PaoDao paoDao;
-	private PaoDefinitionDao paoDefinitionDao;
-	private PaoCreationHelper paoCreationHelper;
+    private @Autowired YukonJdbcTemplate yukonJdbcTemplate;
+    private @Autowired PaoDao paoDao;
+    private @Autowired AttributeService attributeService;
+	private @Autowired PaoCreationHelper paoCreationHelper;
+	
 	private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
-
-	private PointDao pointDao;
 	
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
@@ -80,18 +73,10 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
 	@Override
 	public boolean assignController(int capbankId, int controllerId) {
-	    YukonPao pao = paoDao.getYukonPao(capbankId);
-	    AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), 
-	                                                                                  BuiltInAttribute.CONTROL_POINT);
-	    PaoPointIdentifier identifier = attributeDefinition.getPointIdentifier(pao);
+	    YukonPao controller = paoDao.getYukonPao(controllerId);
 	    
-	    Integer pointId = null;
-	    try {
-	        pointId = pointDao.getPointId(identifier);
-	    } catch (NotFoundException e) {
-	        log.debug(e);
-	        return false;
-	    }
+	    LitePoint pointForAttribute = attributeService.getPointForAttribute(controller, BuiltInAttribute.CONTROL_POINT);
+	    int pointId = pointForAttribute.getPointID();
 	    
         unassignController(controllerId);
         
@@ -108,7 +93,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         boolean result = (rowsAffected == 1);
         
         if (result) {
-            YukonPao controller = paoDao.getYukonPao(controllerId);
             YukonPao capBank = paoDao.getYukonPao(capbankId);
             paoCreationHelper.processDbChange(controller, DbChangeType.UPDATE);
             paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
@@ -271,30 +255,5 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		DeviceAddressFields addressFields = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
 		
 		return addressFields;
-	}
-	
-	@Autowired
-	public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
-        this.paoCreationHelper = paoCreationHelper;
-    }
-	
-	@Autowired
-	public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-	
-	@Autowired
-	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    @Autowired
-	public void setPointDao(PointDao pointDao) {
-		this.pointDao = pointDao;
-	}
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
+	}	
 }
