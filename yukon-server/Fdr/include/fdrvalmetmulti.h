@@ -1,9 +1,5 @@
 #pragma once
 
-#include <map>
-
-#include "dlldefs.h"
-#include "queues.h"
 #include "fdrpointlist.h"
 #include "fdrscadaserver.h"
 #include "fdrscadahelper.h"
@@ -60,7 +56,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         virtual bool alwaysSendRegistrationPoints();
 
         virtual std::string decodeClientName(CHAR *data);
-        virtual int readConfig( void );
+        virtual int readConfig();
         virtual unsigned int getMessageSize(const char* data);
         virtual unsigned int getMagicInitialMsgSize(){return VALMET_MULTI_HEADER_SIZE;};
 
@@ -93,10 +89,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         void updatePointQualitiesOnDevice(PointQuality_t quality, long paoId);
 
-        private:
+    private:
 
-        void startup();
-       
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
         static const CHAR * KEY_TIMESTAMP_WINDOW;
         static const CHAR * KEY_DB_RELOAD_RATE;
@@ -111,15 +105,15 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME; 
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
+
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;
         ServerNameMap _serverNameLookup;
 
-
-        std::map<std::string,int> nameToPointId;
-        string scanDevicePointName;
-        string sendAllPointsPointName;
-
+        typedef std::map<std::string,int> NameToPointIdMap;
+        NameToPointIdMap _nameToPointId;
+        std::string _scanDevicePointName;
+        std::string _sendAllPointsPointName;
 };
 
 

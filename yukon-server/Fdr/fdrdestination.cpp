@@ -1,13 +1,13 @@
 #include "precompiled.h"
 
 #include <boost/tokenizer.hpp>
-
+#include <boost/regex.hpp>
 
 #include "fdrpoint.h"
 #include "fdrdestination.h"
 #include "logger.h"
 #include "guard.h"
-/** local definitions **/
+#include "ctistring.h"
 
 using std::string;
 
@@ -66,7 +66,6 @@ bool CtiFDRDestination::operator==(const CtiFDRDestination& other) const
 
     return eq;
 }
-
 
 string & CtiFDRDestination::getTranslation(void)
 {

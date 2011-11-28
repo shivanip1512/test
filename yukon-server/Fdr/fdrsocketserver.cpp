@@ -1,9 +1,3 @@
-/*
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
-
 #include "precompiled.h"
 
 #include <iostream>
@@ -562,21 +556,24 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
 
         CtiLockGuard<CtiMutex> guard(_connectionListMutex);
         CtiFDRPoint::DestinationList& destList = point->getDestinationList();
-        CtiFDRPoint::DestinationList::const_iterator destIter;
-        for (destIter = destList.begin();
-             destIter != destList.end();
-             ++destIter)
+        for each( CtiFDRDestination dest in destList )
         {
-            CtiFDRClientServerConnection::Destination dest = (*destIter).getDestination();
+            CtiFDRClientServerConnection::Destination destination = dest.getDestination();
 
-            if (dest == connection->getName())
+            // For ValmetMulti interface, we may have multiple connections to the same
+            // IP differentiated only by port number, so we need to check if this port
+            // is correct before sending out all the points.
+            int portNum = atoi(dest.getTranslationValue("Port").c_str());
+            bool portValid = !portNum || portNum == connection->getPortNumber();
+
+            if (destination == connection->getName() && portValid)
             {
                 if (!connection->isRegistered()) {
                     continue;
                 }
                 char* buffer = NULL;
                 unsigned int bufferSize = 0;
-                bool result = buildForeignSystemMessage(*destIter, &buffer, bufferSize);
+                bool result = buildForeignSystemMessage(dest, &buffer, bufferSize);
                 if (result && bufferSize > 0)
                 {
                     bool tmpRet = connection->queueMessage(buffer, bufferSize, MAXPRIORITY-1);
@@ -642,21 +639,14 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         return false;
     }
 
-
     bool retVal = true;
     try
     {
         CtiLockGuard<CtiMutex> guard(_connectionListMutex);
         CtiFDRPoint::DestinationList& destList = point.getDestinationList();
-        CtiFDRPoint::DestinationList::const_iterator destIter;
-        for (destIter = destList.begin();
-             destIter != destList.end();
-             ++destIter)
+        for each (const CtiFDRDestination dest in destList)
         {
-            CtiFDRClientServerConnection::Destination dest = (*destIter).getDestination();
-
-            CtiFDRClientServerConnection* connection;
-            connection = findConnectionForDestination(dest);
+            CtiFDRClientServerConnection* connection = findConnectionForDestination(dest);
             if (connection)
             {
                 if (!connection->isRegistered())
@@ -665,7 +655,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
                 }
                 char* buffer = NULL;
                 unsigned int bufferSize = 0;
-                bool result = buildForeignSystemMessage(*destIter, &buffer, bufferSize);
+                bool result = buildForeignSystemMessage(dest, &buffer, bufferSize);
                 if (result && bufferSize > 0)
                 {
                     bool tmpRet = connection->queueMessage(buffer, bufferSize, MAXPRIORITY-1);
@@ -718,22 +708,26 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
     return result;
 }
 
-CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(
-  const CtiFDRClientServerConnection::Destination& destination) const
+CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(CtiFDRDestination destination) const
 {
+    // Port match needs to happen for ValmetMulti.
+    int destPort = atoi(destination.getTranslationValue("Port").c_str());
+
     // Because new connections are put on the end of the list,
     // we want to search the list backwards so that we find
     // the newest connection that matches the destination
     // (eventually the older connections will timeout, but
     // that could take a while).
     ConnectionList::const_reverse_iterator myIter;
-    for (myIter = _connectionList.rbegin();
-         myIter != _connectionList.rend();
-         ++myIter) {
-        if ((*myIter)->getName() == destination) {
+    for (myIter = _connectionList.rbegin(); myIter != _connectionList.rend(); ++myIter) 
+    {
+        bool portValid = !destPort || destPort == (*myIter)->getPortNumber();
+        if ((*myIter)->getName() == destination.getDestination() && portValid) 
+        {
             return (*myIter);
         }
     }
+
     return NULL;
 }
 

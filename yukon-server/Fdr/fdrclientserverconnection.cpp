@@ -204,7 +204,14 @@ bool CtiFDRClientServerConnection::queueMessage(CHAR *aBuffer,
     return success;
 }
 
+int CtiFDRClientServerConnection::getPortNumber() 
+{
+    sockaddr_in peerAddr;
+    int peerAddrSize = sizeof(peerAddr);
+    getpeername(getRawSocket(), (SOCKADDR*) &peerAddr, &peerAddrSize);
 
+    return ntohs(peerAddr.sin_port);
+}
 
 ULONG CtiFDRClientServerConnection::getDebugLevel()
 {

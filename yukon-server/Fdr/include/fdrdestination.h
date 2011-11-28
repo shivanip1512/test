@@ -15,7 +15,6 @@ class IM_EX_FDRBASE CtiFDRDestination
         virtual ~CtiFDRDestination();
         CtiFDRDestination& operator=( const CtiFDRDestination &other );
 
-
         std::string & getTranslation(void);
         std::string  getTranslation(void) const;
         CtiFDRDestination& setTranslation (std::string aTranslation);

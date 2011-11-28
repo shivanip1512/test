@@ -44,6 +44,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
                           unsigned int bufferSize,
                           int aPriority);
 
+        int getPortNumber();
 
     protected:
         void failConnection();

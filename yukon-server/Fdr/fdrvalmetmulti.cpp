@@ -1,6 +1,4 @@
-
 #include "precompiled.h"
-
 
 #include <iostream>
 
@@ -76,125 +74,51 @@ CtiFDR_ValmetMulti::~CtiFDR_ValmetMulti()
 *
 * Description: loads cparm config values
 *
-**************************************************
-*/
+*************************************************/
 int CtiFDR_ValmetMulti::readConfig()
 {
-    int         successful = TRUE;
-    string   tempStr;
+    int linkTimeout = gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60);
+    setLinkTimeout(linkTimeout);
 
-    tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
-    if (tempStr.length() > 0)
-    {
-        setLinkTimeout (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        setLinkTimeout (60);
-    }
-    tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
-    if (tempStr.length() > 0)
-    {
-        setPortNumber (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        setPortNumber (VALMET_PORTNUMBER);
-    }
+    int portNumber = gConfigParms.getValueAsInt(KEY_LISTEN_PORT_NUMBER, VALMET_PORTNUMBER);
+    setPortNumber(portNumber);
 
-    tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
-    if (tempStr.length() > 0)
-    {
-        setTimestampReasonabilityWindow (atoi (tempStr.c_str()));
-    }
-    else
-    {
-        setTimestampReasonabilityWindow (120);
-    }
+    int timestampWindow = gConfigParms.getValueAsInt(KEY_TIMESTAMP_WINDOW, 120);
+    setTimestampReasonabilityWindow(timestampWindow);
 
-    tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
-    if (tempStr.length() > 0)
-    {
-        setReloadRate (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        setReloadRate (86400);
-    }
+    int reloadRate = gConfigParms.getValueAsInt(KEY_DB_RELOAD_RATE, 86400);
+    setReloadRate(reloadRate);
 
-    tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
-    if (tempStr.length() > 0)
-    {
-        setQueueFlushRate (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        // default to 5 seconds, this could be a lot of points
-        setQueueFlushRate (1);
-    }
+    int queueFlushRate = gConfigParms.getValueAsInt(KEY_QUEUE_FLUSH_RATE, 1);
+    setQueueFlushRate(queueFlushRate);
 
-    tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_RATE);
-    if (tempStr.length() > 0)
-    {
-        setOutboundSendRate (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        // default to 1
-        setOutboundSendRate (1);
-    }
+    int outboundSendRate = gConfigParms.getValueAsInt(KEY_OUTBOUND_SEND_RATE, 1);
+    setOutboundSendRate(outboundSendRate);
 
-    tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_INTERVAL);
-    if (tempStr.length() > 0)
-    {
-        setOutboundSendInterval (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        // default to 1
-        setOutboundSendInterval (0);
-    }
+    int outboundSendInterval = gConfigParms.getValueAsInt(KEY_OUTBOUND_SEND_INTERVAL, 0);
+    setOutboundSendInterval(outboundSendInterval);
 
-    tempStr = getCparmValueAsString(KEY_TIMESYNC_VARIATION);
-    if (tempStr.length() > 0)
+    int timesyncVariation = gConfigParms.getValueAsInt(KEY_TIMESYNC_VARIATION, 30);
+    setTimeSyncVariation(timesyncVariation);
+
+    if(getTimeSyncVariation() < 5)
     {
-        setTimeSyncVariation (atoi(tempStr.c_str()));
-        if (getTimeSyncVariation() < 5)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Valmet max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
-            }
-            // default to 5 seconds
-            setTimeSyncVariation(5);
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Valmet max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
         }
-    }
-    else
-    {
         // default to 5 seconds
-        setTimeSyncVariation(30);
+        setTimeSyncVariation(5);
     }
 
-    // default to true
-    setUpdatePCTimeFlag (true);
-    tempStr = getCparmValueAsString(KEY_TIMESYNC_UPDATE);
-    if (tempStr.length() > 0)
-    {
-        if (ciStringEqual(tempStr,"false"))
-        {
-            setUpdatePCTimeFlag (false);
-        }
-    }
+    bool updatePcTimeFlag = gConfigParms.isTrue(KEY_TIMESYNC_UPDATE, true);
+    setUpdatePCTimeFlag(updatePcTimeFlag);
 
+    string tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
+    setInterfaceDebugMode(tempStr.length() > 0);
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
-    scanDevicePointName = gConfigParms.getValueAsString(KEY_SCAN_DEVICE_POINTNAME, "DEVICE_SCAN");
-    sendAllPointsPointName = gConfigParms.getValueAsString(KEY_SEND_ALL_POINTS_POINTNAME, "SEND_ALL_POINTS");
+    _scanDevicePointName = gConfigParms.getValueAsString(KEY_SCAN_DEVICE_POINTNAME, "DEVICE_SCAN");
+    _sendAllPointsPointName = gConfigParms.getValueAsString(KEY_SEND_ALL_POINTS_POINTNAME, "SEND_ALL_POINTS");
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -206,65 +130,62 @@ int CtiFDR_ValmetMulti::readConfig()
         dout << CtiTime() << " Valmet Multi send interval " << getOutboundSendInterval() << " second(s) " << endl;
         dout << CtiTime() << " Valmet Multi max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
         dout << CtiTime() << " Valmet Multi link timeout " << getLinkTimeout() << " second(s) " << endl;        
-        dout << CtiTime() << " Valmet Multi force scan pointname " << sendAllPointsPointName << endl;
-        dout << CtiTime() << " Valmet Multi scan device compare string " << scanDevicePointName << endl;
-
-
-        if (shouldUpdatePCTime())
-            dout << CtiTime() << " Valmet time sync will reset PC clock" << endl;
-        else
-            dout << CtiTime() << " Valmet time sync will not reset PC clock" << endl;
-
-        if (isInterfaceInDebugMode())
-            dout << CtiTime() << " Valmet running in debug mode " << endl;
-        else
-            dout << CtiTime() << " Valmet running in normal mode "<< endl;
+        dout << CtiTime() << " Valmet Multi force scan pointname " << _sendAllPointsPointName << endl;
+        dout << CtiTime() << " Valmet Multi scan device compare string " << _scanDevicePointName << endl;
+        dout << CtiTime() << " Valmet time sync will " + string(shouldUpdatePCTime() ? "" : "not ") + "reset PC clock" << endl;
+        dout << CtiTime() << " Valmet running in " + string(isInterfaceInDebugMode() ? "debug" : "normal") + " mode" << endl;
     }
 
-    return successful;
+    return TRUE;
 }
 
 void CtiFDR_ValmetMulti::signalReloadList()
 {
     //The list is being reloaded. Clear our tracking map to be re-filled.
-    nameToPointId.clear();
+    _nameToPointId.clear();
 }
 
 void CtiFDR_ValmetMulti::signalPointRemoved(string &pointName)
 {
     //This point is being removed, so lets remove it from our lists.
-    nameToPointId.erase(pointName);
+    _nameToPointId.erase(pointName);
 }
 
 bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool foundPoint = false;
 
-    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    for each(const CtiFDRDestination &pointDestination in translationPoint->getDestinationList())
     {
         foundPoint = true;
-        CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
-        // translate and put the point id the list
  
         string pointName = pointDestination.getTranslationValue("Point");
         string portNumber = pointDestination.getTranslationValue("Port");
-
         
-
         if (portNumber.empty() || pointName.empty())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Unable to add destination " << pointDestination
-                << " because one of the fields was blank" << endl;
+            logNow() << "Unable to add destination " << pointDestination << " because one of the fields was blank" << endl;
             return false;
         }
 
         CtiValmetPortId valmetPortId;
-        valmetPortId.PortNumber = 0;
-        valmetPortId.PointName = "whatever";
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
         valmetPortId.ServerName = pointDestination.getDestination();
+
+        int pointId = translationPoint->getPointID();
+        NameToPointIdMap::iterator itr = _nameToPointId.find(pointName);
+        if(itr == _nameToPointId.end())
+        {
+            if(getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+            {
+                // We don't have this point in our translation list yet, add it!
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                logNow() << " Point [" << pointName << "," << pointId << "] added to translation map." << endl;
+            }
+            _nameToPointId.insert(std::pair<string,int>(pointName, pointId));
+        }
 
         if (sendList)
         {
@@ -281,11 +202,9 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
 
 void CtiFDR_ValmetMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
-    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    for each(const CtiFDRDestination &pointDestination in translationPoint->getDestinationList())
     {
-        CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
         // translate and put the point id the list
-
         string pointName = pointDestination.getTranslationValue("Point");
         string portNumber = pointDestination.getTranslationValue("Port");
 
@@ -297,8 +216,6 @@ void CtiFDR_ValmetMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPo
         }
 
         CtiValmetPortId valmetPortId;
-        valmetPortId.PortNumber = 0;
-        valmetPortId.PointName = "wahtever";
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
         valmetPortId.ServerName = pointDestination.getDestination();
@@ -313,6 +230,7 @@ void CtiFDR_ValmetMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPo
         }
     }
 }
+
 CtiFDRClientServerConnection* CtiFDR_ValmetMulti::createNewConnection(SOCKET newSocket)
 {
     sockaddr_in peerAddr;
@@ -352,16 +270,14 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
     * inside of the write function on the connection
     */
 
-
     CtiValmetPortId valmetPortId;
     if (!_helper->getIdForDestination(destination, valmetPortId))
     {
         return false;
     }
 
-    valmet = new CHAR[sizeof (ValmetExtendedInterface_t)];
+    valmet = new CHAR[sizeof(ValmetExtendedInterface_t)];
     ValmetExtendedInterface_t *ptr = (ValmetExtendedInterface_t *)valmet;
-
 
     if (point.isCommStatus() && point.getValue() != 0)
     {
@@ -373,7 +289,6 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
     ***************************
     */
 
-    // make sure we have all the pieces
     // make sure we have all the pieces
     if (valmet == NULL)
     {
@@ -390,7 +305,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
         case DemandAccumulatorPointType:
             {
                 ptr->Function = htons (SINGLE_SOCKET_VALUE);
-                        strcpy (ptr->Value.Name,point.getTranslateName(string (FDR_VALMETMULTI)).c_str());
+                strcpy(ptr->Value.Name,valmetPortId.PointName.c_str());
                 ptr->Value.Quality = YukonToForeignQuality (point.getQuality());
                 ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point.getValue());
 
@@ -398,7 +313,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Analog/Calculated point " << point.getPointID();
-                    dout << " queued as " << point.getTranslateName(string (FDR_VALMETMULTI));
+                    dout << " queued as " << ptr->Value.Name;
                     dout << " value " << point.getValue() << " with quality of " << ForeignQualityToString(ptr->Value.Quality);
                     dout << " to " << getInterfaceName() << endl;
                 }
@@ -411,7 +326,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                 if (point.isControllable())
                 {
                     ptr->Function = htons (SINGLE_SOCKET_CONTROL);
-                    strcpy (ptr->Control.Name,point.getTranslateName(string (FDR_VALMETMULTI)).c_str());
+                    strcpy (ptr->Control.Name,valmetPortId.PointName.c_str());
 
                     // check for validity of the status, we only have open or closed in controls
                     if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))
@@ -449,7 +364,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                 else
                 {
                     ptr->Function = htons (SINGLE_SOCKET_STATUS);
-                    strcpy (ptr->Value.Name,point.getTranslateName(string (FDR_VALMETMULTI)).c_str());
+                    strcpy (ptr->Value.Name,valmetPortId.PointName.c_str());
                     ptr->Status.Quality = YukonToForeignQuality (point.getQuality());
 
                     // check for validity of the status, we only have open or closed for Valmet
@@ -492,9 +407,10 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
             delete []valmet;
             valmet = NULL;
             break;
-
     }
-    return true;
+    *buffer = valmet;
+    bufferSize = sizeof(ValmetExtendedInterface_t);
+    return valmet != NULL;
 }
 
 bool CtiFDR_ValmetMulti::buildForeignSystemHeartbeatMsg(char** buffer, unsigned int& bufferSize)
@@ -506,7 +422,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemHeartbeatMsg(char** buffer, unsigned 
     * inside of the write function on the connection
     ***************************
     */
-    valmet = new CHAR[sizeof (ValmetExtendedInterface_t)];
+    valmet = new CHAR[sizeof(ValmetExtendedInterface_t)];
     ValmetExtendedInterface_t *ptr = (ValmetExtendedInterface_t *)valmet;
     bool retVal = true;
 
@@ -515,9 +431,10 @@ bool CtiFDR_ValmetMulti::buildForeignSystemHeartbeatMsg(char** buffer, unsigned 
         ptr->Function = htons (SINGLE_SOCKET_NULL);
         strcpy (ptr->TimeStamp, YukonToForeignTime (CtiTime()).c_str());
     }
-    return true;
+    *buffer = valmet;
+    bufferSize = sizeof(ValmetExtendedInterface_t);
+    return valmet != NULL;
 }
-
 
 unsigned int CtiFDR_ValmetMulti::getMessageSize(const char* data)
 {
@@ -528,8 +445,6 @@ string CtiFDR_ValmetMulti::decodeClientName(CHAR * aBuffer)
 {
     return getInterfaceName();
 }
-
-
 
 bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
@@ -661,20 +576,18 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
 bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
-    int retVal = NORMAL;
-    CtiPointDataMsg     *pData;
-    ValmetExtendedInterface_t  *data = (ValmetExtendedInterface_t*)aData;
-    string           translationName;
-    int                 quality;
-    DOUBLE              value;
-    CtiTime             timestamp;
-    CtiFDRPointSPtr     point;
-    bool   flag = true;
-    string           desc;
-    CHAR               action[60];
+    int retVal = NORMAL, quality;
+    CtiPointDataMsg *pData;
+    ValmetExtendedInterface_t *data = (ValmetExtendedInterface_t*)aData;
+    string desc;
+    double value;
+    CtiTime timestamp;
+    CtiFDRPointSPtr point;
+    bool flag = true;
+    char action[60];
 
     // convert to our name
-    translationName = string (data->Value.Name);
+    const string translationName = string(data->Value.Name);
 
     //Find
     //flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -684,8 +597,8 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
         string pointName = translationName;
         std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
 
-        std::map<string,int>::iterator iter = nameToPointId.find(pointName);
-        if( iter != nameToPointId.end() ) {
+        std::map<string,int>::iterator iter = _nameToPointId.find(pointName);
+        if( iter != _nameToPointId.end() ) {
             point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
             flag = true;
         }
@@ -695,14 +608,11 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
         }
     }
 
-
-
     if ((flag == true) &&
         ((point->getPointType() == AnalogPointType) ||
          (point->getPointType() == PulseAccumulatorPointType) ||
          (point->getPointType() == DemandAccumulatorPointType) ||
          (point->getPointType() == CalculatedPointType)))
-
     {
         // assign last stuff
         quality = ForeignToYukonQuality (data->Value.Quality);
@@ -785,13 +695,11 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
             }
 
         }
-
         retVal = !NORMAL;
     }
 
     return retVal;
 }
-
 
 bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
@@ -817,8 +725,8 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
         string pointName = translationName;
         std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
 
-        std::map<string,int>::iterator iter = nameToPointId.find(pointName);
-        if( iter != nameToPointId.end() ) {
+        std::map<string,int>::iterator iter = _nameToPointId.find(pointName);
+        if( iter != _nameToPointId.end() ) {
             point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
             flag = true;
         }
@@ -934,7 +842,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CHAR *aData)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Received Scan Request for Translation Point: " << translationName << endl;
     }
-    if (ciStringEqual(translationName, sendAllPointsPointName))
+    if (ciStringEqual(translationName, _sendAllPointsPointName))
     {
         //sendAllPoints();
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -947,21 +855,20 @@ int CtiFDR_ValmetMulti::processScanMessage(CHAR *aData)
     return NORMAL;
 }
 
-
 bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
     int retVal = NORMAL;
-    CtiPointDataMsg     *pData;
-    ValmetExtendedInterface_t  *data = (ValmetExtendedInterface_t*)aData;
-    string           translationName;
-    int                 quality =NormalQuality;
-    USHORT              value = ntohs(data->Control.Value);        
-    CtiTime              timestamp;
-    CtiFDRPointSPtr         point;
+    CtiPointDataMsg *pData;
+    ValmetExtendedInterface_t *data = (ValmetExtendedInterface_t*)aData;
+    string translationName;
+    int quality =NormalQuality;
+    USHORT value = ntohs(data->Control.Value);        
+    CtiTime timestamp;
+    CtiFDRPointSPtr point;
 
-    string           desc;
-    CHAR          action[60];
+    string desc;
+    CHAR action[60];
 
     // convert to our name
     translationName = string (data->Control.Name);
@@ -969,11 +876,9 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
     // see if the point exists
     {
         CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
-        string pointName = translationName;
-        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
 
-        std::map<string,int>::iterator iter = nameToPointId.find(pointName);
-        if( iter != nameToPointId.end() ) {
+        std::map<string,int>::iterator iter = _nameToPointId.find(translationName);
+        if( iter != _nameToPointId.end() ) {
             point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
         }
     }
@@ -1004,7 +909,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
             {
                 // build the command message and send the control
                 CtiCommandMsg *cmdMsg = NULL;
-                if (stringContainsIgnoreCase(translationName, scanDevicePointName)) 
+                if (stringContainsIgnoreCase(translationName, _scanDevicePointName)) 
                 {
                     if (controlState == CLOSED)
                     {
@@ -1119,33 +1024,30 @@ void CtiFDR_ValmetMulti::updatePointQualitiesOnDevice(PointQuality_t quality, lo
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Updating All Point Qualities on Device with ID: "<< paoId <<" with Send Direction to Quality of " << quality << endl;
     }
+
+    CtiFDRManager* mgrPtr = getSendToList().getPointList();
+    CtiFDRManager::readerLock guard(mgrPtr->getLock());
+    CtiFDRPointSPtr point;
+
+    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+    CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
+
+    for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
     {
-        CtiFDRManager* mgrPtr = getSendToList().getPointList();
-        CtiFDRManager::readerLock guard(mgrPtr->getLock());
-        CtiFDRPointSPtr point;
-    
-        CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-        CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
-    
-        for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
+        // find the point id
+        point = (*myIterator).second;
+
+        if (point->getPaoID() == paoId && !point->isCommStatus() && point->getQuality() != quality)
         {
-            // find the point id
-            point = (*myIterator).second;
-    
-            if (point->getPaoID() == paoId && !point->isCommStatus() && point->getQuality() != quality)
-            {
-                CtiPointDataMsg* localMsg = new CtiPointDataMsg (point->getPointID(), point->getValue(), quality, point->getPointType());
-                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                            {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Updating quality to: " << quality << " for PointId: "<<point->getPointID() << " for " << getInterfaceName() << " interface."<< endl;
-                }
-                sendMessageToDispatch (localMsg);
+            CtiPointDataMsg* localMsg = new CtiPointDataMsg (point->getPointID(), point->getValue(), quality, point->getPointType());
+            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                        {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Updating quality to: " << quality << " for PointId: "<<point->getPointID() << " for " << getInterfaceName() << " interface."<< endl;
             }
+            sendMessageToDispatch (localMsg);
         }
-
     }
-
 }
 
 bool CtiFDR_ValmetMulti::alwaysSendRegistrationPoints()
