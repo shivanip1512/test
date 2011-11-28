@@ -161,7 +161,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private CapbankControllerDao capbankControllerDao;
     private CapControlCache capControlCache;
     private StrategyDao strategyDao;
-    private PaoScheduleDao scheduleDao;
+    private PaoScheduleDao paoScheduleDao;
     private CapbankDao capbankDao;
     private FeederDao feederDao;
     private SubstationBusDao substationBusDao;
@@ -994,7 +994,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     //If this is a Schedule or Strategy it is NOT a Pao, handle accordingly.
                     if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-                        itemId = scheduleDao.add(name, disabled);
+                        itemId = paoScheduleDao.add(name, disabled);
                         return;
                     } else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
                         itemId = strategyDao.add(name);
@@ -2143,8 +2143,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         this.strategyDao = strategyDao;
     }
     
-    public void setScheduleDao(PaoScheduleDao scheduleDao) {
-    	this.scheduleDao = scheduleDao;
+    public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
+    	this.paoScheduleDao = paoScheduleDao;
     }
     
     public void setCapControlCache(CapControlCache capControlCache) {

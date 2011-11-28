@@ -31,8 +31,8 @@
         </managed-property>
         
         <managed-property>
-        	<property-name>scheduleDao</property-name>
-        	<value>#{scheduleDao}</value>
+        	<property-name>paoScheduleDao</property-name>
+        	<value>#{paoScheduleDao}</value>
         </managed-property>
         
         <managed-property>
