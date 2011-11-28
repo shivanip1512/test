@@ -985,15 +985,26 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
         final int type = wizard.getSelectedType();
         final boolean disabled = wizard.getDisabled();
-        final PaoType paoType = PaoType.getForId(type);
-        final boolean isController = CapControlUtils.checkControllerByType(paoType);
         final int portId = wizard.getPortID();
         final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested());
-
+        
         try {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    //If this is a Schedule or Strategy it is NOT a Pao, handle accordingly.
+                    if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
+                        itemId = scheduleDao.add(name, disabled);
+                        return;
+                    } else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
+                        itemId = strategyDao.add(name);
+                        return;
+                    }
+                    
+                    //Must be a Pao
+                    PaoType paoType = PaoType.getForId(type);
+                    boolean isController = CapControlUtils.checkControllerByType(paoType);
+                    
                     if (isCapBankAndNested) {
                         /* Create the cbc, then the cap bank, then assign cbc to cap bank */
                         CBCWizardModel cbcWizard = wizard.getNestedWizard();
@@ -1002,24 +1013,18 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         String cbcName = cbcWizard.getName();
                         int cbcPortId = cbcWizard.getPortID();
                         PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId);
-                        PaoIdentifier tempItem = capControlCreationService.createCapControlObject(paoType, name);
+                        PaoIdentifier capbank = capControlCreationService.createCapControlObject(paoType, name);
                         int controllerId = controller.getPaoId();
-                        int tempItemId = tempItem.getPaoId();
+                        int tempItemId = capbank.getPaoId();
                         capbankControllerDao.assignController(tempItemId, controllerId);
                         itemId = tempItemId;
+                    } else if (isController) {
+                        PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
+                	    PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId);
+                	    itemId = item.getPaoId();
                     } else {
-                    	if (isController) {
-                    		PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
-                    		PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId);
-                    		itemId = item.getPaoId();
-                    	} else if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-                    		itemId = scheduleDao.add(name, disabled);
-                    	} else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
-                    		itemId = strategyDao.add(name);
-                    	} else {
-                    		PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name);
-                    		itemId = item.getPaoId();
-                    	}
+                        PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name);
+                        itemId = item.getPaoId();
                     }
                 }
             });
@@ -1047,13 +1052,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
 
             return "";
-        }catch (Exception e) {
+        } catch (Exception e) {
             facesMsg.setDetail(e.getCause().getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             return "";
         } finally {
             facesContext.addMessage("cti_db_add", facesMsg);
         }
+        
         return "";
 	}
 
