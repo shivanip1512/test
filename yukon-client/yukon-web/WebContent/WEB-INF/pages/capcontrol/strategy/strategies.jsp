@@ -6,48 +6,10 @@
 
 <cti:standardPage module="capcontrol" page="strategies">
 
-<script type="text/javascript" language="JavaScript">
-var firstRun = true;
-function removeStrategy(strategyId, event) {
-    var confirmDeleteMsg = event.findElement().next('span.confirmDelete').innerHTML;
-    
-    if (confirm(confirmDeleteMsg)) {
-        var url = "/spring/capcontrol/strategy/deleteStrategy";
+<form id="deleteForm" action="deleteStrategy">
+    <input id="deleteStrategyId" type="hidden" name="strategyId"> 
+</form>
 
-        hideErrors();
-        
-        new Ajax.Request(url, {'parameters': {'strategyId': strategyId}, 
-            onComplete: function(transport, json) {
-                $('deletionResult').removeClassName('okGreen');
-                $('deletionResult').removeClassName('errorRed');
-                if (json.success) {
-                    deleteStrategyFromPage(strategyId);
-                    $('deletionResult').addClassName('okGreen');
-                } else {
-                    $('deletionResult').addClassName('errorRed');
-                }
-                $('deletionResult').innerHTML = json.resultText;
-                $('deletionResult').show();
-            
-            } });
-    }
-}
-
-function hideErrors() {
-    
-    if(!firstRun) { 
-        $('deletionResult').hide();
-    }
-    firstRun = false;
-}
-
-function deleteStrategyFromPage(strategyId) {
-    var line = document.getElementById('s_' + strategyId);
-    var table = document.getElementById('tableBody');
-
-    table.removeChild(line);
-}
-</script>
     <div id="deletionResult" class="padded normalBoldLabel"></div>
     
     <tags:pagedBox2 nameKey="strategyContainer" 
@@ -67,7 +29,6 @@ function deleteStrategyFromPage(strategyId) {
                     <thead>
                         <tr id="header">
                             <th><i:inline key=".strategyName"/></th>
-                            <th><i:inline key=".actions"/></th>
                             <th><i:inline key=".method"/></th>
                             <th><i:inline key=".algorithm"/></th>
                             <th><i:inline key=".startStop"/></th>
@@ -84,23 +45,9 @@ function deleteStrategyFromPage(strategyId) {
                             <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.strategyId}">
                                 
                                 <td>
-                                    <spring:escapeBody htmlEscape="true">${item.strategyName}</spring:escapeBody>
-                                </td>
-                    
-                                <td class="nw">
-                                    <c:choose>
-                                        <c:when test="${hasEditingRole}">
-                                            <cti:button nameKey="edit" renderMode="image" href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyId}"/>
-                                            <cti:button nameKey="remove" renderMode="image" onclick="removeStrategy(${item.strategyId}, event)"/>
-                                            <span class="dn confirmDelete"><i:inline key=".confirmDelete" arguments="${item.strategyName}"/></span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyId}" class="tierIconLink">
-                                                <img class="tierImg" src="/WebConfig/yukon/Icons/information.gif" />
-                                            </a>
-                                            <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyId}"/>
-                                        </c:otherwise>
-                                    </c:choose>
+                                    <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyId}">
+                                        <spring:escapeBody htmlEscape="true">${item.strategyName}</spring:escapeBody>
+                                    </a>
                                 </td>
                     
                                 <td><spring:escapeBody htmlEscape="true">${item.controlMethod}</spring:escapeBody></td>

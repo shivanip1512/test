@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.commands.CapControlCommandExecutor;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -58,6 +56,7 @@ import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -66,6 +65,7 @@ import com.google.common.collect.Ordering;
 
 @RequestMapping("/ivvc/zone/*")
 @Controller
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ZoneDetailController {
 
     private FilterCacheFactory filterCacheFactory;
@@ -77,7 +77,6 @@ public class ZoneDetailController {
     private PaoDao paoDao;
     private PointDao pointDao;
     private CapControlCommandExecutor executor;
-    private static final Logger log = YukonLogManager.getLogger(ZoneDetailController.class);
     
     @RequestMapping
     public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
@@ -149,7 +148,10 @@ public class ZoneDetailController {
         model.addAttribute("title", "IVVC Zone Detail View");
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        model.addAttribute("hasEditingRole",hasEditingRole);
+        model.addAttribute("hasEditingRole", hasEditingRole);
+        
+        boolean hasControlRole = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
+        model.addAttribute("hasControlRole", hasControlRole);
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);

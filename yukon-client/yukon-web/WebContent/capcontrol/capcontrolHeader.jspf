@@ -49,6 +49,6 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;-webkit-box-shadow: #999 3px 3px 3px;-moz-box-shadow: #999 3px 3px 3px;box-shadow: #999 3px 3px 3px;"></div>
 
 <!-- Popup for menus -->
-<div id="menuPopup" class="menuPopup"></div>
+<div id="menuPopup" style="display: none;" class="menuPopup"></div>
 
 <capTags:commandMsgDiv/>

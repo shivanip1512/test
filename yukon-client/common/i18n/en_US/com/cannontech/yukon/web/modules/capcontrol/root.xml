@@ -411,6 +411,7 @@
     <entry key="yukon.web.modules.capcontrol.strategies.offPeakSetting">Off Peak Setting</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.startStopTimes">{0} / {1}</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.confirmDelete">Are you sure you want to delete {0}?</entry>
+    <entry key="yukon.web.modules.capcontrol.strategies.deleteSuccess">Strategy {0} was deleted successfully</entry>
     
     <!-- schedules.jsp -->
     <entry key="yukon.web.modules.capcontrol.schedules.pageName">Schedules</entry>

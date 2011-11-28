@@ -85,6 +85,14 @@
         
         Event.observe(window, 'load', function() {
             var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
+            if (${hasControlRole}) {
+                $$('tr[id^="tr_cap"]').each(function (row) {
+                    var bankId = row.id.split('_')[2];
+                    var bankState = row.down('a[id^="capbankState"]');
+                    bankState.addClassName('actsAsAnchor');
+                    bankState.observe('click', function(event) {getMenuFromURL('/spring/capcontrol/menu/capBankState?id=' + bankId, event)});
+                });
+            }
         });
         
         function updateRecentEvents() {
@@ -124,6 +132,13 @@
                 }
             });
         }
+        
+        YEvent.observeSelectorClick('button.commandButton', function(event) {
+            var button = event.findElement('button');
+            var cmdId = button.next('input.cmdId').value;
+            var paoId = button.next('input.paoId').value;
+            doItemCommand(paoId, cmdId, event);
+        });
     </script>
 
     
@@ -250,44 +265,29 @@
                             <td>
                                 <ul class="buttonStack">
                                     <li>
-                                        <cti:button renderMode="labeledImage" nameKey="scan" 
-                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${scanCommandHolder.commandId}',
-                                                                    '${scanCommandHolder}',
-                                                                    '${regulatorTypeMap[phaseKey]}',
-                                                                    'false');"/>
+                                        <cti:button renderMode="labeledImage" nameKey="scan" styleClass="commandButton"/>
+                                        <input type="hidden" class="paoId" value="${regulatorIdMap[phaseKey]}">
+                                        <input type="hidden" class="cmdId" value="${scanCommandHolder.commandId}">
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" nameKey="up" 
-                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${tapUpCommandHolder.commandId}',
-                                                                    '${tapUpCommandHolder}',
-                                                                    '${regulatorTypeMap[phaseKey]}',
-                                                                    'false');"/>
+                                        <cti:button renderMode="labeledImage" nameKey="up" styleClass="commandButton"/>
+                                        <input type="hidden" class="paoId" value="${regulatorIdMap[phaseKey]}">
+                                        <input type="hidden" class="cmdId" value="${tapUpCommandHolder.commandId}">
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" nameKey="down" 
-                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${tapDownCommandHolder.commandId}',
-                                                                    '${tapDownCommandHolder}',
-                                                                    '${regulatorTypeMap[phaseKey]}',
-                                                                    'false');"/>
+                                        <cti:button renderMode="labeledImage" nameKey="down" styleClass="commandButton"/>
+                                        <input type="hidden" class="paoId" value="${regulatorIdMap[phaseKey]}">
+                                        <input type="hidden" class="cmdId" value="${tapDownCommandHolder.commandId}">
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" nameKey="enable" 
-                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${enableRemoteCommandHolder.commandId}',
-                                                                    '${enableRemoteCommandHolder}',
-                                                                    '${regulatorTypeMap[phaseKey]}',
-                                                                    'false');"/>
+                                        <cti:button renderMode="labeledImage" nameKey="enable" styleClass="commandButton"/> 
+                                        <input type="hidden" class="paoId" value="${regulatorIdMap[phaseKey]}">
+                                        <input type="hidden" class="cmdId" value="${enableRemoteCommandHolder.commandId}">
                                     </li>
                                     <li>
-                                        <cti:button renderMode="labeledImage" nameKey="disable" 
-                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
-                                                                    '${disableRemoteCommandHolder.commandId}',
-                                                                    '${disableRemoteCommandHolder}',
-                                                                    '${regulatorTypeMap[phaseKey]}',
-                                                                    'false');"/>
+                                        <cti:button renderMode="labeledImage" nameKey="disable" styleClass="commandButton"/>
+                                        <input type="hidden" class="paoId" value="${regulatorIdMap[phaseKey]}">
+                                        <input type="hidden" class="cmdId" value="${disableRemoteCommandHolder.commandId}">
                                     </li>
                                 </ul>
                             </td>
@@ -519,7 +519,8 @@
 						<th><i:inline key=".capBanks.bankVoltage"/></th>
 					</tr>
 		            <c:forEach var="capBank" items="${capBankList}">
-		                <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+                        <c:set var="bankId" value="${capBank.capBankDevice.ccId}"/>
+		                <tr id="tr_cap_${bankId}" class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 		                    <td>
 		                    	<c:if test="${capBank.notAssignedToZone}">
                                     <span class="strongWarningMessage">*</span>
@@ -531,22 +532,20 @@
                                 </a>
 		                    </td>
 		                    <td>
-                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${capBank.capBankDevice.ccId}">
+                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}">
                                     <spring:escapeBody htmlEscape="true">
                                         ${capBank.capBankDevice.ccName}
                                     </spring:escapeBody>
                                 </a>
                             </td>
 		                    <td>
-                                <capTags:capBankWarningImg paoId="${capBank.capBankDevice.ccId}" type="CAPBANK"/>
-		                    	<cti:capBankStateColor paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS_COLOR">
-                                    <a id="capbank_status_${thisCapBankId}"
-                                        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
-                                            href="javascript:void(0);" onclick ="getCapBankSystemMenu('${capBank.capBankDevice.ccId}', event);"
-                                        </cti:checkRolesAndProperties>>
-                                        <cti:capControlValue paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS"/>
+                                <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
+                                <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
+                                    <a id="capbankState_${bankId}">
+                                       <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
                                     </a>
                                 </cti:capBankStateColor>
+                                
                         	</td>
 		                    <td>
 								<c:choose>
