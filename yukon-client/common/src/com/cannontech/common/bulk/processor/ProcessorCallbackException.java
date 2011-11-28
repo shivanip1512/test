@@ -7,5 +7,5 @@ package com.cannontech.common.bulk.processor;
  *
  */
 public interface ProcessorCallbackException {
-    
+    public String getMessage();
 }

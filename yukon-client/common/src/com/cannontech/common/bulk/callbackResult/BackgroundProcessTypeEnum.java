@@ -12,6 +12,7 @@ public enum BackgroundProcessTypeEnum {
     UPDATE_POINTS("Update Points", "updatePoints"),
     ASSIGN_CONFIG("Assign Config", "assignConfig"),
     ARCHIVE_DATA_ANALYSIS("Archive Data Analysis", "archiveDataAnalysis"),
+    IMPORT_FDR_TRANSLATION("Import FDR Translation", "fdrTranslationManager")
     ;
     
     private String title;

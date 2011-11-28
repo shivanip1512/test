@@ -44,7 +44,7 @@
             <tr>
                 <td>
                     <form id="bulkImportForm" method="get" action="/spring/bulk/import/upload">
-                        <input type="button" id="massChangeTypeButton" value="Bulk Import" onclick="$('bulkImportForm').submit();" style="width:140px;"/>
+                        <input type="button" id="massChangeTypeButton" value="Bulk Import" onclick="$('bulkImportForm').submit();" style="width:170px;"/>
                     </form>
                 </td>
                 <td>Import a file to create meters.</td>
@@ -56,7 +56,7 @@
             <tr>
                 <td>
                     <form id="bulkUpdateForm" method="get" action="/spring/bulk/update/upload">
-                        <input type="button" id="massChangeTypeButton" value="Bulk Update" onclick="$('bulkUpdateForm').submit();" style="width:140px;"/>
+                        <input type="button" id="massChangeTypeButton" value="Bulk Update" onclick="$('bulkUpdateForm').submit();" style="width:170px;"/>
                     </form>
                 </td>
                 <td>Import a file to update existing meters.</td>
@@ -68,10 +68,19 @@
             <tr>
                 <td>
                     <form id="createCollectionForm" method="get" action="/spring/bulk/deviceSelection">
-                        <input type="button" id="massChangeTypeButton" value="Create Collection" onclick="$('createCollectionForm').submit();" style="width:140px;"/>
+                        <input type="button" id="massChangeTypeButton" value="Create Collection" onclick="$('createCollectionForm').submit();" style="width:170px;"/>
                     </form>
                 </td>
                 <td>Create a collection of meters to perform actions upon.</td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <form id="manageFdrTranslationsForm" method="post" action="/spring/bulk/fdrTranslationManager/home">
+                        <input type="button" id="massChangeTypeButton" value="Manage FDR Translations" onclick="$('manageFdrTranslationsForm').submit();" style="width:170px;"/>
+                    </form>
+                </td>
+                <td>Import, export or delete FDR translations.</td>
             </tr>
             
         </table>

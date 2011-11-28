@@ -34,5 +34,6 @@ public enum DataType {
     DEVICE_RECONFIG,
     ARCHIVE_DATA_ANALYSIS_LP_READ,
     DEVELOPMENT,
+    FDR_TRANSLATION_IMPORT,
     ;
 }

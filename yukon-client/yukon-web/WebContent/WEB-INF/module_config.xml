@@ -428,7 +428,6 @@
                         </page>
                     </pages>
                 </page>
-                
             </pages>
         </page>
         <page name="analysis.home" type="BASIC">
@@ -451,6 +450,14 @@
                         </page>
                     </pages>
                 </page>   
+            </pages>
+        </page>
+        <page name="fdrTranslationManagement" type="BASIC">
+            <menu></menu>
+            <pages>
+                <page name="fdrTranslationManagement.import" type="DETAIL">
+                    <menu></menu>
+                </page>
             </pages>
         </page>
     </pages>

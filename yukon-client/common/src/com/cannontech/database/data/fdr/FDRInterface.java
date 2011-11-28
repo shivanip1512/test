@@ -1,7 +1,10 @@
 package com.cannontech.database.data.fdr;
 
+import java.util.List;
+
 import com.cannontech.database.db.point.fdr.FDRInterfaceOption;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
+import com.google.common.collect.Lists;
 
 /**
  * Insert the type's description here.
@@ -52,6 +55,12 @@ public java.util.Vector getInterfaceOptionVector()
 		interfaceOptionVector = new java.util.Vector(5);
 
 	return interfaceOptionVector;
+}
+
+public List<FDRInterfaceOption> getInterfaceOptionList() {
+    List<FDRInterfaceOption> options = Lists.newArrayList(getInterfaceOptionVector());
+    
+    return options;
 }
 /**
  * This method was created by a SmartGuide.

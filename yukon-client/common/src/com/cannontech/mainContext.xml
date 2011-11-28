@@ -153,6 +153,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnMeterDisconnectWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/touWidget</value>
                <value>classpath:com/cannontech/yukon/common/device/attributeRead</value>
+               <value>classpath:com/cannontech/yukon/common/device/fdrTranslationManagement</value>
                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                <value>classpath:com/cannontech/yukon/common/device/archiveAnalysis</value>
                <value>classpath:com/cannontech/yukon/common/device/commander</value>

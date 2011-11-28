@@ -2,9 +2,6 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
 
@@ -19,5 +16,8 @@ public interface FdrTranslationDao {
     public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type);
     
 	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation);
-
+	
+	public List<FdrTranslation> getAllTranslations();
+	
+	public boolean delete(FdrTranslation translation);
 }

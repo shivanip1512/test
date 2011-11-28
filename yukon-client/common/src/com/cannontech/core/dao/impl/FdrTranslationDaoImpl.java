@@ -17,10 +17,12 @@ import com.cannontech.core.dao.FdrTranslationDao;
 public class FdrTranslationDaoImpl implements FdrTranslationDao {
 
     private static final String insertSql;
+    private static final String selectAllSql;
     private static final String selectByPointIdAndTypeSql;
     private static final String selectByPaoIdAndTypeSql;    
     private static final String selectByTypeSql;
     private static final String selectByTypeAndTranslationSql;
+    private static final String deleteSql;
     
     private static final ParameterizedRowMapper<FdrTranslation> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -30,6 +32,8 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         insertSql = "INSERT INTO fdrtranslation " +
         		"(pointid,directiontype,interfacetype,destination,translation) " +
         		"VALUES (?,?,?,?,?)";
+        
+        selectAllSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation";
         
         selectByPointIdAndTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
         	+ " WHERE pointid = ? AND interfacetype = ?";
@@ -45,6 +49,13 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         
         selectByTypeAndTranslationSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
         	+ " WHERE InterfaceType = ? and Translation = ?";
+        
+        deleteSql = "DELETE FROM fdrtranslation "
+                  + "WHERE pointId = ? "
+                  + "AND directionType = ? "
+                  + "AND interfaceType = ? "
+                  + "AND destination = ? "
+                  + "AND translation = ? ";
         
         rowMapper = new ParameterizedRowMapper<FdrTranslation>() {
             public FdrTranslation mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -84,6 +95,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
+    
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(FdrTranslation trans) {
         int rowsAffected = simpleJdbcTemplate.update(insertSql, trans.getPointId(),
@@ -115,4 +127,22 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
 	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
     	return simpleJdbcTemplate.query(selectByTypeAndTranslationSql, rowMapper, type.toString(), translation );
 	}
+    
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public List<FdrTranslation> getAllTranslations() {
+        return simpleJdbcTemplate.query(selectAllSql, rowMapper);
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public boolean delete(FdrTranslation translation) {
+        int rowsAffected = simpleJdbcTemplate.update(deleteSql,
+                                                     translation.getPointId(),
+                                                     translation.getDirection().toString(),
+                                                     translation.getFdrInterfaceType().toString(),
+                                                     translation.getDestination().toString(),
+                                                     translation.getTranslation()
+                                                     );
+        boolean result = (rowsAffected == 1);
+        return result;
+    }
 }

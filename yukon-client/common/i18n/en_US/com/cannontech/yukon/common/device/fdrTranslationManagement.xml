@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <!-- FDR TRANSLATION MANAGEMENT HOME -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.pageName">FDR Translation Management</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.pageDescription">FDR Translation Management Home</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.mainBox.title">Manage FDR Translations</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.addRemoveTitle">Add and Remove Translations</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.addRemoveText">Upload a CSV to import new translations and/or remove existing translations.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.ignoreInvalidText">Ignore columns with invalid headers</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.importSubmitButton.label">Import</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.reportTitle">Download Translations Report</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.reportText">Download a CSV file listing all translations that currently exist in Yukon.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceFilterLabel">Filter by interface</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.downloadTranslationsButton.label">Download</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.allInterfaces">All Interfaces</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.importTitle">Import Instructions</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.importText">Files must contain a header row with valid columns as listed in the tables below.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsText">All import files must contain the following columns.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsHeader">Default Columns</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsDescriptionHeader">Description</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsLabel">Choose an interface</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.action">ACTION</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.actionDescription">ADD or REMOVE</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceName">DEVICE_NAME</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceNameDescription">The name of the Yukon device.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceType">DEVICE_TYPE</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceTypeDescription">The type of the Yukon device.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointName">POINT_NAME</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointNameDescription">A point on the specified Yukon device.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.direction">DIRECTION</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.directionDescription">"Send", "Send for control","Receive" or "Receive for control".</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsText">Each interface requires additional columns. Select an interface to see required columns and download a sample file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsHeader">Columns</entry>
+    
+    <!-- FDR TRANSLATION IMPORT -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.pageName">FDR Translation Import</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.pageDescription">FDR Translation Import</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.mainBox.title">Import Progress</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.progressLabel">Importing Translations</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.importLogBox.title">Import Results</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.downloadFailedButton.label">Download</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.downloadFailed">Failed entries are available in a CSV file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.ignoringInvalidColumns">Ignoring columns with invalid headers.</entry>
+    
+    <!-- IMPORT ERROR MESSAGES -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.noImportFile">Import Error: No import file was specified, or file was not readable.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.emptyImportFile">Import Error: The import file was empty.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.duplicateColumn">Import Error: The import file contained a duplicate column header - {0}.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.badColumn">Import Error: The column {0} is not a valid column header. Select "Ignore columns with invalid headers" to ignore this.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.missingColumn">Import Error: Missing column "{0}" for interface "{1}".</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.defaultHeaderMissing">Import Error: Missing required column "{0}".</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.noValidInterface">Unable to find a valid interface for column "{0}".</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidColumnForInterface">The column "{0}" is not valid for interface "{1}".</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.unableToInsert">Unable to insert translation - a conflicting translation exists on this point.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.unableToRemove">Unable to remove translation - no matching translation found.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDestination">"{0}" is not a valid destination.</entry>
+    
+    <!-- FDR INTERFACE KEYS -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.INET">INET</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.ACS">ACS</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.VALMET">VALMET</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.CYGNET">CYGNET</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.STEC">STEC</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.RCCS">RCCS</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TRISTATE">TRISTATE</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.SYSTEM">SYSTEM</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.DSM2IMPORT">DMS2IMPORT</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TELEGYR">TELEGYR</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TEXTIMPORT">TEXTIMPORT</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TEXTEXPORT">TEXTEXPORT</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.EMPTY">EMPTY</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.EMPTY2">EMPTY2</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.LODESTAR_STD">LODESTAR_STD</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.LODESTAR_ENH">LODESTAR_ENH</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.DSM2FILEIN">DMS2FILEIN</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.XA21LM">XA21LM</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.BEPC">BEPC</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.PI">PI</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.LIVEDATA">LIVEDATA</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.ACSMULTI">ACSMULTI</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.WABASH">WABASH</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TRISTATESUB">TRISTATESUB</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.OPC">OPC</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.MULTISPEAK_LM">MULTISPEAK_LM</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.DNPSLAVE">DNPSLAVE</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.RDEX">RDEX</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.VALMETMULTI">VALMETMULTI</entry>
+    
+    <!-- COLUMN DESCRIPTIONS -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.optionText">Select one option: </entry>
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACS_CATEGORY"></entry -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACS_REMOTE">The RTU address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACS_POINT">The point name.</entry>
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACSMULTI_CATEGORY"></entry -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACSMULTI_REMOTE">The RTU address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACSMULTI_POINT">The point name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.ACSMULTI_DESTINATION_SOURCE">The foreign system IP address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.BEPC_COOP_ID">Coop identifier, used in the file as an identifier.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.BEPC_FILENAME">The name of the BEPC file. The path is set in the master.cfg file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.CYGNET_POINTID">The point identifier on the Cygnet system.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DNPSLAVE_MASTERID">The DNP master address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DNPSLAVE_SLAVEID">The DNP slave address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DNPSLAVE_OFFSET">The DNP offset/index.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DNPSLAVE_DESTINATION_SOURCE">The foreign system IP address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DNPSLAVE_MULTIPLIER">The multiplier applied to values (default 1.0)</entry>
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DSM2FILEIN_OPTION_NUMBER"></entry -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DSM2FILEIN_POINT_ID">The name of the DSM2FILEIN point.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.DSM2IMPORT_POINT">The name of the DSM2IMPORT point.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.INET_DEVICE">The name of the INET device.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.INET_POINT">The name of the INET point.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.INET_DESTINATION_SOURCE">The foreign system IP address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LIVEDATA_ADDRESS">The point address on the LIVEDATA system. Must be an integer value.</entry>
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LIVEDATA_TYPE"></entry -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_ENH_CUSTOMER">The LOADSTAR_ENH customer name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_ENH_CHANNEL">The LOADSTAR_ENH channel number.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_ENH_DRIVEPATH">The file path of the LODESTAR_ENH import file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_ENH_FILENAME">The name of the LOADSTAR_ENH import file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_STD_CUSTOMER">The LOADSTAR_STD customer name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_STD_CHANNEL">The LOADSTAR_STD channel number.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_STD_DRIVEPATH">The file path of the LOADSTAR_STD import file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.LODESTAR_STD_FILENAME">The name of the LOADSTAR_STD import file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.MULTISPEAK_LM_OBJECTID">The ID of the MULTISPEAK_LM object.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.OPC_SERVER_NAME">The Server name. References the SERVER_NAME:IP_ADDRESS pair in the master.cfg file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.OPC_OPC_GROUP">The name of the OPC Group this value is a part of.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.OPC_OPC_ITEM">Name of the OPC item to link this Yukon point to.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.PI_TAG_NAME">The PI tag name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.PI_PERIOD_SEC">The PI polling period, in seconds.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.RCCS_DEVICE">The RCCS device name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.RCCS_POINT">The RCCS point name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.RCCS_DESTINATION_SOURCE">Select one option: RCCS PAIR ONE, RCCS PAIR TWO, RCCS PAIR THREE, RCCS PAIR FOUR, STANDALONE.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.RDEX_TRANSLATION">The name to match the sending system.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.RDEX_DESTINATION_SOURCE">The RDEX IP address.</entry>
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.STEC_POINT"></entry -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.SYSTEM_CLIENT">The FDRInterface name.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TELEGYR_POINT">The name to match the TELEGYR system.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TELEGYR_INTERVAL_SEC">How frequently updated values are sent. 0 means spontaneous (by exception).</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TEXTEXPORT_POINT_ID">The name of the TEXTEXPORT point.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TEXTIMPORT_POINT_ID">The name of the TEXTIMPORT point.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TEXTIMPORT_DRIVEPATH">The file path of the TEXTIMPORT file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TEXTIMPORT_FILENAME">The name of the TEXTIMPORT file.</entry>
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TRISTATE_POINT"></entry -->
+    <!-- entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.TRISTATESUB_POINT"></entry -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.VALMET_POINT">The name of the VALMET point (maximum 16 characters).</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.VALMETMULTI_POINT">The name of the VALMETMULTI point (maximum 32 characters).</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.VALMETMULTI_DESTINATION_SOURCE">The foreign system IP address.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.VALMETMULTI_PORT">The foreign system port.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.WABASH_SCHEDNAME">The string value to match in the WABASH import file.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.WABASH_PATH">The file path of the WABASH import file (default is c:\yukon\server\export)</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.WABASH_FILENAME">The name of the WABASH import file (default is control.txt)</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.XA21LM_TRANSLATION">The name of the XA21LM point.</entry>
+</properties>

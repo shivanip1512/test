@@ -1,6 +1,8 @@
 package com.cannontech.common.fdr;
 
-public enum FdrInterfaceType {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum FdrInterfaceType implements DisplayableEnum {
 	INET(1),
 	ACS(2),
 	VALMET(3),
@@ -10,7 +12,7 @@ public enum FdrInterfaceType {
 	TRISTATE(7),
 	RDEX(8),
 	SYSTEM(9),
-	DMS2IMPORT(10),
+	DSM2IMPORT(10),
 	TELEGYR(11),
 	TEXTIMPORT(12),
 	TEXTEXPORT(13),
@@ -18,7 +20,7 @@ public enum FdrInterfaceType {
 	EMPTY2(15),
 	LODESTAR_STD(16),
 	LODESTAR_ENH(17),
-	DMS2FILEIN(18),
+	DSM2FILEIN(18),
 	XA21LM(19),
 	BEPC(20),
 	PI(21),
@@ -28,9 +30,11 @@ public enum FdrInterfaceType {
 	TRISTATESUB(25),
 	OPC(26),
 	MULTISPEAK_LM(27),
-	DNPSLAVE(28);
+	DNPSLAVE(28),
+	VALMETMULTI(29);
 	
 	private final int pos;
+	private final String keyPrefix = "yukon.web.modules.amr.fdrTranslationManagement.interfaces.";
 	
 	FdrInterfaceType(int pos) {
 		this.pos = pos;
@@ -39,4 +43,18 @@ public enum FdrInterfaceType {
 	public int getValue() {
 		return pos;
 	}
+	
+	public static FdrInterfaceType getById(int id) {
+	    for(FdrInterfaceType interfaceType : FdrInterfaceType.values()) {
+	        if(id == interfaceType.getValue()) {
+	            return interfaceType;
+	        }
+	    }
+	    return null;
+	}
+	
+	@Override
+    public String getFormatKey() {
+        return keyPrefix + name();
+    }
 }
