@@ -18,8 +18,8 @@
     <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteDialog" styleClass="mediumSimplePopup">
         <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
         <div class="actionArea">
-            <input type="button" value="<cti:msg2 key=".confirmDeleteOk"/>" onclick="window.location='${deleteUrl}'"/>
-            <input type="button" value="<cti:msg2 key=".confirmDeleteCancel"/>" onclick="$('confirmDeleteDialog').hide()"/>
+            <cti:button nameKey="confirmDeleteOk" href="${deleteUrl}" styleClass="f_blocker" />
+            <cti:button nameKey="confirmDeleteCancel" onclick="$('confirmDeleteDialog').hide()" />
         </div>
     </i:simplePopup>
 
@@ -30,8 +30,8 @@
     <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteLoginDialog" styleClass="mediumSimplePopup">
         <cti:msg2 key=".confirmDeleteLogin" arguments="${accountGeneral.accountDto.accountNumber}"/>
         <div class="actionArea">
-            <input type="button" value="<cti:msg2 key=".confirmDeleteOk"/>" onclick="window.location='${deleteLoginUrl}'"/>
-            <input type="button" value="<cti:msg2 key=".confirmDeleteCancel"/>" onclick="$('confirmDeleteLoginDialog').hide()"/>
+            <cti:button nameKey="confirmDeleteOk" href="${deleteLoginUrl}" styleClass="f_blocker"/>
+            <cti:button nameKey="confirmDeleteCancel" onclick="$('confirmDeleteLoginDialog').hide()"/>
         </div>
     </i:simplePopup>
 
