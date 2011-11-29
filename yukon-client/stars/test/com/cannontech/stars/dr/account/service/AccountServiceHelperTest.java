@@ -22,6 +22,7 @@ public class AccountServiceHelperTest {
         // should change
         from.getAccountDto().setFirstName("Tester");
         from.getAccountDto().getStreetAddress().setCityName("Slack Jawed Yokel Township");
+        from.getAccountDto().getStreetAddress().setCounty(null);
         from.getAccountDto().getSiteInfo().setSubstationName("Flux Capacitor");
         
         // shouldn't change
@@ -34,7 +35,7 @@ public class AccountServiceHelperTest {
         Assert.assertEquals("First Name was not copied properly.", "Tester", to.getFirstName());
         Assert.assertEquals("First Name was not copied properly.", "McTesty", to.getLastName());
         Assert.assertEquals("Street Address: City was not copied properly.", "Slack Jawed Yokel Township", to.getStreetAddress().getCityName());
-//        Assert.assertEquals("Street Address: County was not copied properly.", "Cletus County", to.getStreetAddress().getCounty());  Should "" be counted as null in the copy method?
+        Assert.assertEquals("Street Address: County was not copied properly.", "Cletus County", to.getStreetAddress().getCounty());
         Assert.assertEquals("SiteInformation: Substation name was not copied properly.", "Flux Capacitor", to.getSiteInfo().getSubstationName());
         Assert.assertEquals("SiteInformation: Service Voltage was not copied properly.", "1.21 Gigawatts", to.getSiteInfo().getServiceVoltage());
         
