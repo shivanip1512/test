@@ -5,7 +5,16 @@
 #include "PointDataRequestFactory.h"
 #include "ZoneManager.h"
 
+
+namespace Cti           {
+namespace Messaging     {
+namespace CapControl    {
+    class IVVCAnalysisMessage;
+}
+}
+}
 class IVVCStrategy;
+
 
 class IVVCAlgorithm
 {
@@ -21,10 +30,21 @@ class IVVCAlgorithm
 
     protected:
 
+        void sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAnalysisMessage * message );
+
         bool checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
-        virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow);
-        virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString);
+        enum DataStatus
+        {
+            DataStatus_Good,
+            DataStatus_Incomplete,
+            DataStatus_Stale,
+        };
+        typedef std::pair<DataStatus, double>   DataCheckResult;
+
+        virtual bool            checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, const long subbusId);
+        virtual DataCheckResult checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString);
+
         virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);

@@ -11,6 +11,8 @@
 #include "Exceptions.h"
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h"
+#include "amq_connection.h"
+#include "IVVCAnalysisMessage.h"
 
 using Cti::CapControl::PaoIdList;
 using Cti::CapControl::PointIdList;
@@ -33,6 +35,7 @@ extern double _IVVC_VOLTAGEMONITOR_REPORTING_RATIO;
 extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 extern ULONG _REFUSAL_TIMEOUT;
+extern ULONG _MAX_KVAR;
 
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
@@ -225,7 +228,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            bool hasStaleData           = checkForStaleData( request, timeNow );
+            bool hasStaleData           = checkForStaleData( request, timeNow, subbus->getPaoId() );
             bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
 
             if ( hasStaleData || hasAutoModeRegulator )
@@ -575,6 +578,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         if ( tapOpCount != 0 )
                         {
+                            using namespace Cti::Messaging::CapControl;
+
                             VoltageRegulatorManager::SharedPtr  regulator
                                 = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
@@ -602,6 +607,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                                       << " - Lowering Tap on Voltage Regulator with ID: " << regulatorId << std::endl;
                                 }
                             }
+
+                            sendIVVCAnalysisMessage(
+                                IVVCAnalysisMessage::createTapOperationMessage( subbus->getPaoId(),
+                                                                                ( tapOpCount > 0 )
+                                                                                    ? IVVCAnalysisMessage::Scenario_TapRaiseOperation
+                                                                                        : IVVCAnalysisMessage::Scenario_TapLowerOperation,
+                                                                                timeNow,
+                                                                                regulatorId ) );
                         }
                     }
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -639,16 +652,81 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 }//execute
 
 
-bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow)
+bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, const long subbusId)
 {
-    return checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO,          CbcRequestType,       "CBC")
-        || checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO,      RegulatorRequestType, "Regulator")
-        || checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType,     "Other")
-        || checkForStaleData( request, timeNow, 1.0,                                  RequiredRequestType,  "Required");
+    using namespace Cti::Messaging::CapControl;
+
+    bool hasStaleData = false;
+
+    DataCheckResult result = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
+
+    if ( result.first != DataStatus_Good )
+    {
+        hasStaleData = true;
+
+        sendIVVCAnalysisMessage(
+            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                          ( result.first == DataStatus_Incomplete )
+                                                                ? IVVCAnalysisMessage::Scenario_CBCCommsIncomplete
+                                                                    : IVVCAnalysisMessage::Scenario_CBCCommsStale,
+                                                          timeNow,
+                                                          result.second * 100.0,
+                                                          _IVVC_BANKS_REPORTING_RATIO * 100.0 ) );
+    }
+
+    result = checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
+
+    if ( result.first != DataStatus_Good )
+    {
+        hasStaleData = true;
+
+        sendIVVCAnalysisMessage(
+            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                          ( result.first == DataStatus_Incomplete )
+                                                                ? IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete
+                                                                    : IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
+                                                          timeNow,
+                                                          result.second * 100.0,
+                                                          _IVVC_REGULATOR_REPORTING_RATIO * 100.0 ) );
+    }
+
+    result = checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
+
+    if ( result.first != DataStatus_Good )
+    {
+        hasStaleData = true;
+
+        sendIVVCAnalysisMessage(
+            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                          ( result.first == DataStatus_Incomplete )
+                                                                ? IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete
+                                                                    : IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
+                                                          timeNow,
+                                                          result.second * 100.0,
+                                                          _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100.0 ) );
+    }
+
+    result = checkForStaleData( request, timeNow, 1.0, RequiredRequestType, "Required" );
+
+    if ( result.first != DataStatus_Good )
+    {
+        hasStaleData = true;
+
+        sendIVVCAnalysisMessage(
+            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                          ( result.first == DataStatus_Incomplete )
+                                                                ? IVVCAnalysisMessage::Scenario_RequiredPointCommsIncomplete
+                                                                    : IVVCAnalysisMessage::Scenario_RequiredPointCommsStale,
+                                                          timeNow,
+                                                          result.second * 100.0,
+                                                          100.0 ) );
+    }
+
+    return hasStaleData;
 }
 
 
-bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
+IVVCAlgorithm::DataCheckResult IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
 {
     double ratio = request->ratioComplete(pointRequestType);
     if (ratio < desiredRatio)
@@ -658,7 +736,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - IVVC Algorithm: Incomplete data. Received " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << requestTypeString << std::endl;
         }
-        return true;
+        return std::make_pair(DataStatus_Incomplete, ratio);
     }
     else
     {
@@ -693,7 +771,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - IVVC Algorithm: Stale data. Received updates for " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << requestTypeString << std::endl;
             }
-            return true;
+            return std::make_pair(DataStatus_Stale, ratio);
         }
         else
         {
@@ -712,7 +790,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
         }
     }
 
-    return false;
+    return std::make_pair(DataStatus_Good, ratio);
 }
 
 //sendScan must be false for unit tests.
@@ -905,11 +983,23 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                 //Check for a retry
             }
 
+            using namespace Cti::Messaging::CapControl;
+
+            CtiTime timetamp;
+
             if (request != NULL)
             {
                 CtiTime time = request->getMessageTime();
                 CtiConnectionPtr pilConn = CtiCapController::getInstance()->getPILConnection();
                 pilConn->WriteConnQue(request);
+
+                sendIVVCAnalysisMessage(
+                    IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
+                                                                        isCapBankOpen 
+                                                                            ? IVVCAnalysisMessage::Scenario_CapbankCloseOperation
+                                                                            : IVVCAnalysisMessage::Scenario_CapbankOpenOperation,
+                                                                        timetamp,
+                                                                        bankId ) );
 
                 subbus->setLastOperationTime(time);
                 subbus->setLastFeederControlled(feeder->getPaoId());
@@ -926,6 +1016,13 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                 }
 
                 sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
+            }
+            else    // if request is NULL we returned early from create(In|De)creaseVarRequest( ... ) - this only happens if we exceed KVar
+            {
+                sendIVVCAnalysisMessage( IVVCAnalysisMessage::createExceedMaxKVarMessage( subbus->getPaoId(),
+                                                                                          timetamp,
+                                                                                          bankId,
+                                                                                          _MAX_KVAR ) );
             }
         }
     }
@@ -1406,9 +1503,14 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy,
                                  const PointValueMap & pointValues)
 {
+    using namespace Cti::Messaging::CapControl;
+
     state->setState(IVVCState::IVVC_WAIT);
 
     CtiTime now;
+
+    bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
+    long subbusId = subbus->getPaoId();
 
     if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) <= (_IVVC_MIN_TAP_PERIOD_MINUTES * 60) )
     {
@@ -1418,13 +1520,12 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             dout << CtiTime() << " IVVC Algorithm: "<<subbus->getPaoName() <<"  Not Operating Voltage Regulators due to minimum tap period." << std::endl;
         }
 
+        sendIVVCAnalysisMessage( IVVCAnalysisMessage::createNoTapOpMinTapPeriodMessage( subbusId, now, _IVVC_MIN_TAP_PERIOD_MINUTES ) );
+
         return;
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
-    long subbusId = subbus->getPaoId();
 
     // get all zones on the subbus...
 
@@ -1549,6 +1650,8 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
     else
     {
         state->setState(IVVCState::IVVC_WAIT);
+
+        sendIVVCAnalysisMessage( IVVCAnalysisMessage::createNoTapOpNeededMessage( subbusId, now ) );
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
@@ -1896,5 +1999,14 @@ bool IVVCAlgorithm::hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & ta
     }
 
     return false;
+}
+
+
+void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAnalysisMessage * message )
+{
+    using namespace Cti::Messaging;
+
+    std::auto_ptr<StreamableMessage> msg( message );
+    gActiveMQConnection.enqueueMessage( ActiveMQConnectionManager::Queue_IvvcAnalysisMessage, msg );
 }
 

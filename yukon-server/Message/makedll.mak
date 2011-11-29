@@ -33,6 +33,7 @@ INCLPATHS+= \
 
 
 OBJS=\
+IVVCAnalysisMessage.obj \
 DispatchConnection.obj \
 DispatchPointDataRequest.obj \
 PointDataHandler.obj \
@@ -197,6 +198,8 @@ dll_msg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		connection.h
 id_ctimsg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h id_ctimsg.h
+ivvcanalysismessage.obj:	precompiled.h CtiTime.h dlldefs.h \
+		IVVCAnalysisMessage.h StreamableMessage.h
 lmsepcontrolmessage.obj:	precompiled.h LMSepControlMessage.h dlldefs.h \
 		msg_pcreturn.h msg_multi.h collectable.h msg_pdata.h yukon.h \
 		types.h ctidbgmem.h pointdefs.h pointtypes.h message.h \
