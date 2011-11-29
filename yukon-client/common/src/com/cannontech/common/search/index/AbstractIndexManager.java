@@ -449,7 +449,6 @@ public abstract class AbstractIndexManager implements IndexManager {
             CTILogger.info("Building " + this.getIndexName() + " index.");
 
             // Get a new index writer
-            System.out.println("open mode = "+getIndexWriterConfig().getOpenMode());
             indexWriter = new IndexWriter(indexLocation,  getIndexWriterConfig().setOpenMode(OpenMode.CREATE));
 
             // Get the total # of records to be written into the index

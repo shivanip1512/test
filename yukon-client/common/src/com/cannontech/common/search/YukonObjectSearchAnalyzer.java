@@ -16,7 +16,6 @@ public class YukonObjectSearchAnalyzer extends Analyzer {
 
     private static Version LUCENE_VERSION = Version.LUCENE_34;
 
-    
     public YukonObjectSearchAnalyzer() {
         super();
     }
