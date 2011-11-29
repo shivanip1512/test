@@ -90,8 +90,8 @@
     <entry key="yukon.web.modules.operator.account.confirmDeleteDialogTitle">Confirm Delete</entry>
     <entry key="yukon.web.modules.operator.account.confirmDelete">Are you sure you want to delete account {0}?</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteLogin">Are you sure you want to delete the login for account {0}?</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteOk">OK</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteCancel">Cancel</entry>
+    <entry key="yukon.web.modules.operator.account.confirmDeleteOk.label">OK</entry>
+    <entry key="yukon.web.modules.operator.account.confirmDeleteCancel.label">Cancel</entry>
 
     <entry key="yukon.web.modules.operator.account.accountCreated">Account Created</entry>
     <entry key="yukon.web.modules.operator.account.accountUpdated">Account Updated</entry>
