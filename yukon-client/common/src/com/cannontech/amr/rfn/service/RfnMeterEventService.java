@@ -47,18 +47,18 @@ public class RfnMeterEventService {
      * status point), then continue on to our more specific processor
      */
     public <T extends RfnEvent> void processEvent(RfnMeter meter, T event, List<? super PointData> pointDatas) {
-        handleRfnEventStatusEvents(meter, event, pointDatas);
+        boolean handledStatusEvent = handleRfnEventStatusEvents(meter, event, pointDatas);
 
         RfnArchiveRequestProcessorBase processor = processorsMap.get(event.getType());
         if (processor != null) {
             processor.process(meter, event, pointDatas);
-        } else {
+        } else if (handledStatusEvent == false){
             String className = event.getClass().getSimpleName();
             log.debug(className + " of type " + event.getType() + " is not currently supported");
         }
     }
     
-    private <T extends RfnEvent> void handleRfnEventStatusEvents(RfnMeter meter, T event,
+    private <T extends RfnEvent> boolean handleRfnEventStatusEvents(RfnMeter meter, T event,
                                                                  List<? super PointData> pointDatas) {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
@@ -67,10 +67,12 @@ public class RfnMeterEventService {
                 int rawEventStatusState = clearedStateMap.get(cleared);
                 
                 processAttributePointData(meter, pointDatas, eventAttr, rawEventStatusState);
+                return true;
             }
         } catch (IllegalArgumentException e) {
             // event type is OUTAGE or RESTORE, which don't map to Attributes. That's fine.
         }
+        return false;
     }
     
     /**
