@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/01/2011 4:45:13 PM                        */
+/* Created on:     11/29/2011 10:30:55 AM                       */
 /*==============================================================*/
 
 
@@ -3243,7 +3243,6 @@ INSERT INTO DeviceTypeCommand VALUES (-390, -107, 'MCT-410IL', 18, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-391, -108, 'MCT-410IL', 19, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-392, -109, 'All MCT-4xx Series', 20, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-393, -108, 'MCT-410IL', 21, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-394, -111, 'MCT-410IL', 22, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-395, -112, 'All MCT-4xx Series', 23, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-396, -113, 'All MCT-4xx Series', 24, 'Y', -1);
@@ -3494,35 +3493,29 @@ INSERT INTO DeviceTypeCommand VALUES (-636, -105, 'MCT-470', 26, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-637, -109, 'MCT-470', 27, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-638, -112, 'MCT-470', 28, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-639, -113, 'MCT-470', 29, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES(-640, -130, 'MCT-410 kWh Only', 21, 'N', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-641, -130, 'MCT-410CL', 27, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-642, -130, 'MCT-410FL', 27, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-643, -130, 'MCT-410GL', 27, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-644, -130, 'MCT-410IL', 27, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-645, -130, 'MCT-410iLE', 21, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-646, -130, 'MCT-430A', 23, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-647, -130, 'MCT-430S4', 23, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-648, -130, 'MCT-430SL', 23, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-649, -130, 'MCT-470', 29, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-650, -131, 'MCT-410 kWh Only', 22, 'N', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-651, -131, 'MCT-410CL', 28, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-652, -131, 'MCT-410FL', 28, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-653, -131, 'MCT-410GL', 28, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-654, -131, 'MCT-410IL', 28, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-655, -131, 'MCT-410iLE', 22, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-656, -131, 'MCT-430A', 24, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-657, -131, 'MCT-430S4', 24, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-658, -131, 'MCT-430SL', 24, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-659, -131, 'MCT-470', 30, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-660, -132, 'MCT-410 kWh Only', 23, 'N', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-661, -132, 'MCT-410CL', 29, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-662, -132, 'MCT-410FL', 29, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-663, -132, 'MCT-410GL', 29, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-664, -132, 'MCT-410IL', 29, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-665, -132, 'MCT-410iLE', 23, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-666, -132, 'MCT-430A', 25, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-667, -132, 'MCT-430S4', 25, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-668, -132, 'MCT-430SL', 25, 'N', -1);

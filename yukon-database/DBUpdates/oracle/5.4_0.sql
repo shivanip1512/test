@@ -145,6 +145,12 @@ ALTER TABLE CCFeederBankList
         ON DELETE CASCADE;
 /*  End YUK-10175  */
         
+/* Start YUK-10249 */
+DELETE FROM DeviceTypeCommand WHERE DeviceType = 'MCT-410iLE';
+DELETE FROM DeviceTypeCommand WHERE DeviceType = 'MCT-410 kWh Only';
+DELETE FROM DeviceTypeCommand WHERE (DeviceCommandId = -393 AND CommandId = -108 AND DeviceType = 'MCT-410IL');
+/*  End YUK-10249  */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
