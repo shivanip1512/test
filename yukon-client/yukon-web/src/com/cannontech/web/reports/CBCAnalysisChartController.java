@@ -103,7 +103,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     			if(capControlCache.isSubBus(targetId)) {
     				
     	    		SubBus subBus_cache = capControlCache.getSubBus(targetId);
-    	    		SubstationBus subBus_dao = substationBusDao.getById(targetId);
+    	    		SubstationBus subBus_dao = substationBusDao.finSubBusdById(targetId);
     	    		
     	    		if ("Y".equalsIgnoreCase(subBus_dao.getUsephasedata())) {
     	    			
@@ -131,7 +131,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    	else if(capControlCache.isFeeder(targetId)) {
     	    		
     	    		com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-    	    		com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.getById(targetId);
+    	    		com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.findById(targetId);
     	    		
     	    		if ("Y".equalsIgnoreCase(feeder_dao.getUsePhaseData())) {
     	    			

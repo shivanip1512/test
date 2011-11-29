@@ -11,8 +11,18 @@ import com.cannontech.common.search.SearchResult;
 
 public interface CapbankDao {
     
-    public PaoIdentifier getCapBankIdByCBC(int paoId);
+    /**
+     * Returns the PaoID of the capbank whose CBC is specified by cbcId.
+     * @param cbcId the paoId of the CBC whose CapBank we want the ID of.
+     * @return a PaoIdentifier representing the cap bank.
+     */
+    public PaoIdentifier findCapBankIdByCBC(int cbcId);
     
+    /**
+     * Returns the capbank additional information for a CapBank
+     * @param paoId the paoId of the capbank whose information is desired.
+     * @return CapbankAdditional object containing the information from the database.
+     */
     public CapbankAdditional getCapbankAdditional(int paoId);
     
     /**
@@ -29,11 +39,34 @@ public interface CapbankDao {
      */
     public int getParentFeederId( int capBankID )  throws EmptyResultDataAccessException;
     
+    /**
+     * Returns whether or not the cap bank is switched.
+     * @param paoID for the capbank in question.
+     * @return true if the bank is switched, false if it is not.
+     */
     public boolean isSwitchedBank( Integer paoID );
     
+    /**
+     * Assigns a capbank to a feeder and processes the necessary dbchange messages.
+     * @param capbankId the id of the capbank being assigned
+     * @param feederName name of the feeder being assigned to.
+     * @return true if the assignment occurred with only one row in the db updated, false otherwise.
+     */
     public boolean assignCapbank(int capbankId, String feederName);
     
+    /**
+     * Assigns a capbank to a feeder and processes the necessary dbchange messages.
+     * @param feederId the id of the feeder being assigned to
+     * @param capbankId the id of the capbank being assigned
+     * @return true if the assignment occurred with only one row in the db updated, false otherwise.
+     */
     public boolean assignCapbank(int feederId, int capbankId);
     
+    /**
+     * Removes all assignments in the database for a given capbank.
+     * @param capbankId the id of the capbank being unassigned.
+     * @return true if the unassignment occurred with only one row in the db 
+     * updated, false otherwise.
+     */
     public boolean unassignCapbank(int capbankId);
 }

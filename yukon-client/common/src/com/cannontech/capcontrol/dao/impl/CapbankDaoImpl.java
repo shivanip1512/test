@@ -238,12 +238,12 @@ public class CapbankDaoImpl implements CapbankDao {
 	}
 
 	@Override
-	public PaoIdentifier getCapBankIdByCBC(int paoId) {
+	public PaoIdentifier findCapBankIdByCBC(int cbcId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
 		sql.append("SELECT DeviceID");
 		sql.append("FROM CapBank");
-		sql.append("WHERE ControlDeviceID").eq(paoId);
+		sql.append("WHERE ControlDeviceID").eq(cbcId);
 		
         try {
             int capBankId = yukonJdbcTemplate.queryForInt(sql);

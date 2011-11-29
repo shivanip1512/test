@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
@@ -43,7 +42,7 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Override
-    public Substation getSubstationById (final int id) {
+    public Substation findSubstationById (final int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.PAOName, ypo.Type, ypo.Description, ypo.DisableFlag, s.MapLocationId, s.voltReductionPointId");
         sql.append("FROM YukonPAObject ypo");
@@ -167,6 +166,7 @@ public class SubstationDaoImpl implements SubstationDao {
         return searchResult;
 	}
     
+    @Override
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -182,31 +182,6 @@ public class SubstationDaoImpl implements SubstationDao {
         List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return listmap;
-    }
-
-    @Override
-    public List<Integer> getAllSubstationIds() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("SELECT SubstationID");
-        sql.append("FROM CapControlSubstation");
-        
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-        
-        return listmap;
-    }
-    
-    @Override
-    public int getSubstationIdByName(String name) throws EmptyResultDataAccessException{
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("SELECT SubstationID");
-    	sql.append("FROM CapControlSubstation, YukonPAObject");
-    	sql.append("WHERE SubstationID = PAObjectID AND PAOName LIKE '" + name + "'");
-
-        int i = yukonJdbcTemplate.queryForInt(sql);
-        
-        return i;
     }
     
     @Autowired

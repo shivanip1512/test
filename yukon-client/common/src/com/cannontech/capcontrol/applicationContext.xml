@@ -25,11 +25,6 @@
 	<bean class="com.cannontech.capcontrol.dao.providers.AreaProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.CapbankProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.CapbankAdditionalProvider"/>
-	<bean class="com.cannontech.capcontrol.dao.providers.DeviceAddressProvider"/>
-	<bean class="com.cannontech.capcontrol.dao.providers.DeviceCbcProvider"/>
-	<bean class="com.cannontech.capcontrol.dao.providers.DeviceDirectCommSettingsProvider"/>
-	<bean class="com.cannontech.capcontrol.dao.providers.DeviceScanRateProvider"/>
-	<bean class="com.cannontech.capcontrol.dao.providers.DeviceWindowProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.FeederProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.SpecialAreaProvider"/>
 	<bean class="com.cannontech.capcontrol.dao.providers.SubstationProvider"/>

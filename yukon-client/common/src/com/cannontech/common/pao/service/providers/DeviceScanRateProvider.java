@@ -1,54 +1,59 @@
-package com.cannontech.capcontrol.dao.providers;
+package com.cannontech.common.pao.service.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceCbcFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTable;
 import com.cannontech.common.pao.service.PaoTypeProvider;
+import com.cannontech.common.pao.service.providers.fields.DeviceScanRateFields;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 
-public class DeviceCbcProvider implements PaoTypeProvider<DeviceCbcFields> {
+public class DeviceScanRateProvider implements PaoTypeProvider<DeviceScanRateFields>{
 
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTable getSupportedTable() {
-		return PaoProviderTable.DEVICECBC;
+		return PaoProviderTable.DEVICESCANRATE;
 	}
 
 	@Override
-	public Class<DeviceCbcFields> getRequiredFields() {
-		return DeviceCbcFields.class;
+	public Class<DeviceScanRateFields> getRequiredFields() {
+		return DeviceScanRateFields.class;
+	}
+	
+	private void setupParameters(SqlParameterSink params, DeviceScanRateFields fields) {
+	    params.addValue("ScanType", fields.getScanType());
+        params.addValue("IntervalRate", fields.getIntervalRate());
+        params.addValue("ScanGroup", fields.getScanGroup());
+        params.addValue("AlternateRate", fields.getAlternateRate());
 	}
 
 	@Override
-	public void handleCreation(PaoIdentifier paoIdentifier,DeviceCbcFields fields) {
+	public void handleCreation(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
 		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
 		params.addValue("DeviceId", paoIdentifier.getPaoId());
-		params.addValue("SerialNumber", fields.getSerialNumber());
-		params.addValue("RouteId", fields.getRouteId());
+		setupParameters(params, fields);
 		
 		yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override
-	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceCbcFields fields) {
+	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceScanRateFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
 		SqlParameterSink params = sql.update(getSupportedTable().name());
-		params.addValue("SerialNumber", fields.getSerialNumber());
-		params.addValue("RouteId", fields.getRouteId());
+		setupParameters(params, fields);
 		
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		
 		yukonJdbcTemplate.update(sql);
 	}
-	
+
 	@Override
 	public void handleDeletion(PaoIdentifier paoIdentifier) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -2,10 +2,10 @@ package com.cannontech.common.pao.service.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTable;
 import com.cannontech.common.pao.service.PaoTypeProvider;
+import com.cannontech.common.pao.service.providers.fields.DeviceFields;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -53,7 +53,7 @@ public class YukonDeviceProvider implements PaoTypeProvider<DeviceFields> {
     public void handleDeletion(PaoIdentifier paoIdentifier) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		sql.append("DELETE FROM " + getSupportedTable().name());
+		sql.append("DELETE FROM").append(getSupportedTable());
 		sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
 		
 		yukonJdbcTemplate.update(sql);

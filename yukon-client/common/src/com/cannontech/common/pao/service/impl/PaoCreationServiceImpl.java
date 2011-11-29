@@ -64,9 +64,8 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     
     @Override
     public PaoIdentifier createPao(PaoTemplate paoTemplate) {
-        PaoIdentifier paoIdentifier = handleProviders(paoTemplate);
+        PaoIdentifier paoIdentifier = createNewPao(paoTemplate);
 
-        // Create and Add points - db change message isn't handled after default points are added.
         // db change message happens in the processDbChange call below.
         paoCreationHelper.addDefaultPointsToPao(paoIdentifier);
         
@@ -78,7 +77,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     
     @Override
     public PaoIdentifier createPaoWithCustomPoints(PaoTemplate paoTemplate, List<PointBase> points) {
-    	PaoIdentifier paoIdentifier = handleProviders(paoTemplate);
+    	PaoIdentifier paoIdentifier = createNewPao(paoTemplate);
     	
     	// Write the points we need to copy to the DB.
     	paoCreationHelper.applyPoints(paoIdentifier.getPaoId(), points);
@@ -89,7 +88,13 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     	return paoIdentifier;
     }
     
-    private PaoIdentifier handleProviders(PaoTemplate paoTemplate) {
+    /**
+     * This method uses the next available paoId and the PaoType provided in the 
+     * template to create the new pao using the required providers.
+     * @param paoTemplate containing the PaoType and fields required for building the new pao.
+     * @return a paoIdentifier representing the newly created pao.
+     */
+    private PaoIdentifier createNewPao(PaoTemplate paoTemplate) {
     	// get ID, create PaoIdentifier
         int paoId = paoDao.getNextPaoId();
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoTemplate.getPaoType());

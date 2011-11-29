@@ -66,7 +66,7 @@ public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHM
         
         if(capControlCache.isSubBus(targetId)) {
         	SubBus subBus_cache = capControlCache.getSubBus(targetId);
-        	SubstationBus subBus_dao = substationBusDao.getById(targetId);
+        	SubstationBus subBus_dao = substationBusDao.finSubBusdById(targetId);
         	
         	phaseAPointId = subBus_cache.getCurrentVarLoadPointID();
         	phaseBPointId = subBus_dao.getPhaseb();
@@ -76,7 +76,7 @@ public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHM
         }
         else if(capControlCache.isFeeder(targetId)) {
         	com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-        	com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.getById(targetId);
+        	com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.findById(targetId);
         	
         	phaseAPointId = feeder_cache.getCurrentVarLoadPointID();
         	phaseBPointId = feeder_dao.getPhaseb();

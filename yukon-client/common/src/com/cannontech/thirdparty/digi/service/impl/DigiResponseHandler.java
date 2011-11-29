@@ -18,7 +18,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -27,6 +26,7 @@ import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.providers.fields.DeviceFields;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;

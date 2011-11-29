@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceFields;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -18,6 +17,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.providers.fields.DeviceFields;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;

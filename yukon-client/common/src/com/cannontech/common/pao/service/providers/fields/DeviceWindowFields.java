@@ -1,4 +1,4 @@
-package com.cannontech.capcontrol.dao.providers.fields;
+package com.cannontech.common.pao.service.providers.fields;
 
 import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.service.PaoTemplatePart;

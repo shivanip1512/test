@@ -155,7 +155,7 @@ public class ParentStringPrinter {
                 return ORPH_STRING;
             }
         } else {
-            PaoIdentifier capbankIdentifier = capbankDao.getCapBankIdByCBC(paoId);
+            PaoIdentifier capbankIdentifier = capbankDao.findCapBankIdByCBC(paoId);
             if (capbankIdentifier != null) {
                 int capbankId = capbankIdentifier.getPaoId();
                 Integer feederId = CCFeederBankList.getFeederIdForCapBank(capbankId);

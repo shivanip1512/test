@@ -34,8 +34,6 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     private List<VoltageRegulatorPointMapping> pointMappings;
     private int keepAliveTimer;
     private int keepAliveConfig;
-    
-    private PaoCreationService paoCreationService;
 
     public VoltageRegulator() {
         super();
@@ -89,6 +87,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(getPAOName()));
         paoFields.put(VoltageRegulatorFields.class, new VoltageRegulatorFields(keepAliveTimer, keepAliveConfig));
         
+        PaoCreationService paoCreationService = YukonSpringHook.getBean("paoCreationService", PaoCreationService.class);
         paoCreationService.updatePao(paoId, new PaoTemplate(getPaoIdentifier().getPaoType(), paoFields));
         
         //Point Mappings
@@ -162,11 +161,6 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     public boolean isDisplayConfig() {
         PaoType paoType = PaoType.getForDbString(getPAOType());
         return paoType == PaoType.LOAD_TAP_CHANGER;
-    }
-
-    @Autowired
-    public void setPaoCreationService(PaoCreationService paoCreationService) {
-        this.paoCreationService = paoCreationService;
     }
     
     @Override

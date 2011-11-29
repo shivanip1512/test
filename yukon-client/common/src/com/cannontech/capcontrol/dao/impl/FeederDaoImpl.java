@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -12,7 +11,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -27,9 +25,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
-public class FeederDaoImpl implements FeederDao {
-	private static final Logger log = YukonLogManager.getLogger(FeederDaoImpl.class);
-    
+public class FeederDaoImpl implements FeederDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private PaoDao paoDao;
@@ -62,27 +58,8 @@ public class FeederDaoImpl implements FeederDao {
             return feeder;
         }
     };
-
-    @Override
-    public void add(Feeder feeder) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	SqlParameterSink params = sql.insertInto("CapControlFeeder");
-    	params.addValue("FeederID", feeder.getPaoId());
-    	params.addValue("CurrentVarLoadPointID", feeder.getCurrentVarLoadPointId());
-    	params.addValue("CurrentWattLoadPointID", feeder.getCurrentWattLoadPointId());
-    	params.addValue("MapLocationID", feeder.getMapLocationId());
-    	params.addValue("CurrentVoltLoadPointID", feeder.getCurrentVoltLoadPointId());
-    	params.addValue("MultiMonitorControl", feeder.getMultiMonitorControl());
-    	params.addValue("UsePhaseData", feeder.getUsePhaseData());
-    	params.addValue("PhaseB", feeder.getPhaseb());
-    	params.addValue("PhaseC", feeder.getPhasec());
-    	params.addValue("ControlFlag", feeder.getControlFlag());
-    	
-		yukonJdbcTemplate.update(sql);
-    }
     
-    public Feeder getById(int id) {
+    public Feeder findById(int id) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         
     	sql.append("SELECT YP.PAOName, FeederId, CurrentVarLoadPointID, CurrentWattLoadPointID,");
@@ -94,48 +71,6 @@ public class FeederDaoImpl implements FeederDao {
     	Feeder f = yukonJdbcTemplate.queryForObject(sql, rowMapper);
     	
         return f;
-    }
-    
-    @Override
-    public boolean remove(PaoIdentifier feederId) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("DELETE FROM CapControlFeeder");
-    	sql.append("WHERE FeederId").eq(feederId.getPaoId());
-    	
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        
-        boolean result = (rowsAffected == 1);
-        
-        return result;
-    }
-    
-    @Override
-    public boolean update(Feeder feeder) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	SqlParameterSink params = sql.update("CapControlFeeder");
-    	params.addValue("CurrentVarLoadPointID", feeder.getCurrentVarLoadPointId());
-    	params.addValue("CurrentWattLoadPointID", feeder.getCurrentWattLoadPointId());
-    	params.addValue("MapLocationID", feeder.getMapLocationId());
-    	params.addValue("CurrentVoltLoadPointID", feeder.getCurrentVoltLoadPointId());
-    	params.addValue("MultiMonitorControl", feeder.getMultiMonitorControl());
-    	params.addValue("UsePhaseData", feeder.getUsePhaseData());
-    	params.addValue("PhaseB", feeder.getPhaseb());
-    	params.addValue("PhaseC", feeder.getPhasec());
-    	params.addValue("ControlFlag", feeder.getControlFlag());
-    	
-    	sql.append("WHERE FeederId").eq(feeder.getPaoId());
-    	
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        
-        boolean result = (rowsAffected == 1);
-        
-		if (result == false) {
-			log.debug("Update of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
-		}
-		
-        return result;
     }
 
     /**
@@ -236,11 +171,6 @@ public class FeederDaoImpl implements FeederDao {
 	}
 
 	@Override
-	public boolean unassignFeeder(Feeder feeder) {
-		return unassignFeeder(feeder.getPaoId());
-	}
-
-	@Override
 	public boolean unassignFeeder(int feederId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
@@ -251,19 +181,6 @@ public class FeederDaoImpl implements FeederDao {
 		
 		boolean result = (rowsAffected == 1);
 		return result;
-	}
-
-	@Override
-	public int getParentId(Feeder feeder) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("SELECT SubStationBusID");
-		sql.append("FROM CCFeederSubAssignment");
-		sql.append("WHERE FeederID").eq(feeder.getPaoId());
-		
-		int id = yukonJdbcTemplate.queryForInt(sql);
-		
-		return id;
 	}
 	
 	@Autowired

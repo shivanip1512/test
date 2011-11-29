@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -131,7 +132,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     @Override
     public List<ZigbeeDeviceAssignment> getZigbeeDevicesForAccount(int accountId, List<Integer> hardwareTypeIds) {
         // Let's not error out even if there are no Zigbee device types set up yet.
-        if (hardwareTypeIds == null || hardwareTypeIds.size() == 0) {
+        if (CollectionUtils.isEmpty(hardwareTypeIds)) {
             return Collections.emptyList();
         }
 

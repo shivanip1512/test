@@ -1,39 +1,37 @@
-package com.cannontech.capcontrol.dao.providers;
+package com.cannontech.common.pao.service.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.providers.fields.DeviceWindowFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTable;
 import com.cannontech.common.pao.service.PaoTypeProvider;
+import com.cannontech.common.pao.service.providers.fields.DeviceAddressFields;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 
-public class DeviceWindowProvider implements PaoTypeProvider<DeviceWindowFields> {
+public class DeviceAddressProvider implements PaoTypeProvider<DeviceAddressFields> {
 
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	
 	@Override
 	public PaoProviderTable getSupportedTable() {
-		return PaoProviderTable.DEVICEWINDOW;
+		return PaoProviderTable.DEVICEADDRESS;
 	}
 
 	@Override
-	public Class<DeviceWindowFields> getRequiredFields() {
-		return DeviceWindowFields.class;
+	public Class<DeviceAddressFields> getRequiredFields() {
+		return DeviceAddressFields.class;
 	}
 	
-	private void setupParameters(SqlParameterSink params, DeviceWindowFields fields) {
-	    params.addValue("Type", fields.getType());
-        params.addValue("WinOpen", fields.getWindowOpen());
-        params.addValue("WinClose", fields.getWindowClose());
-        params.addValue("AlternateOpen", fields.getAlternateOpen());
-        params.addValue("AlternateClose", fields.getAlternateClose());
+	private void setupParameters(SqlParameterSink params, DeviceAddressFields fields) {
+	    params.addValue("MasterAddress", fields.getMasterAddress());
+        params.addValue("SlaveAddress", fields.getSlaveAddress());
+        params.addValue("PostCommWait", fields.getPostCommWait());
 	}
 
 	@Override
-	public void handleCreation(PaoIdentifier paoIdentifier, DeviceWindowFields fields) {		
+	public void handleCreation(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
 		SqlParameterSink params = sql.insertInto(getSupportedTable().name());
@@ -42,9 +40,9 @@ public class DeviceWindowProvider implements PaoTypeProvider<DeviceWindowFields>
 		
 		yukonJdbcTemplate.update(sql);
 	}
-
+	
 	@Override
-	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceWindowFields fields) {
+	public void handleUpdate(PaoIdentifier paoIdentifier, DeviceAddressFields fields) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
 		SqlParameterSink params = sql.update(getSupportedTable().name());
@@ -64,7 +62,7 @@ public class DeviceWindowProvider implements PaoTypeProvider<DeviceWindowFields>
 		
 		yukonJdbcTemplate.update(sql);
 	}
-	
+
 	@Autowired
 	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
 		this.yukonJdbcTemplate = yukonJdbcTemplate;

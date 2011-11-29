@@ -143,7 +143,7 @@ public class TierController {
 	    
 		CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 		SubStation cachedSubstation = cache.getSubstation(substationId);
-		Substation substation = substationDao.getSubstationById(substationId);
+		Substation substation = substationDao.findSubstationById(substationId);
 		model.addAttribute("substation", substation);
 		
 		boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
