@@ -4234,7 +4234,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                 numberOfGroupsToTake = _lmprogramdirectgroups.size();
             }
 
-            CtiTime sendRateEnd = (unsigned long)0;
+            CtiTime sendRateEnd(0UL);
 
             // First we need to update the state of the currently active rotating groups
             for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
