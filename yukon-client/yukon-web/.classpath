@@ -66,11 +66,6 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar" sourcepath="/TOMCAT_SOURCE_HOME/apache-tomcat-6.0.29-src.zip"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper-el.jar" sourcepath="/TOMCAT_SOURCE_HOME/apache-tomcat-6.0.29-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/lucene-core-2.3.2.jar" sourcepath="/third-party/linked-sources/lucene-2.3.2-src.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/ezmorph-1.0.6.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
