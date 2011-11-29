@@ -4,15 +4,21 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 
 
 public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao> implements PaoTypeSearcher {
-    private static final Sort sort = new Sort(new String[]{"category", "type", "paoid"});
+    private SortField sortList[] = 
+        {new SortField("category", SortField.STRING),
+         new SortField("type", SortField.STRING),
+         new SortField("paoid", SortField.INT)};
+    private final Sort sort = new Sort(sortList);
     
     public PaoTypeLuceneSearcher() {
     }
@@ -37,10 +43,14 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
         final Query query = new TermQuery(new Term("paoid", Integer.toString(currentPaoId)));
         
         try {
-            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new HitsCallbackHandler<SearchResult<UltraLightPao>>() {
-                public SearchResult<UltraLightPao> processHits(Hits hits) throws IOException {
-                    if (hits.length() != 1) return SearchResult.emptyResult();
-                    Document document = hits.doc(0);
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new TopDocsCallbackHandler<SearchResult<UltraLightPao>>() {
+                public SearchResult<UltraLightPao> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
+                    if (topDocs.totalHits != 1) {
+                        return SearchResult.emptyResult();
+                    }
+                    
+                    int docId = topDocs.scoreDocs[0].doc;
+                    Document document = indexSearcher.doc(docId);
                     String type = document.get("type");
                     Query aQuery = new TermQuery(new Term("type", type));
                     aQuery = compileAndCombine(aQuery, criteria);

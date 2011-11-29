@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.lucene.analysis.Token;
-
 import junit.framework.TestCase;
+
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public class PrefixTokenizerTest extends TestCase {
 
@@ -39,6 +39,7 @@ public class PrefixTokenizerTest extends TestCase {
             "65412",
         });
         testNextHelper(testInput, expectedList);
+        
         String testInput2 = " 65412 my    name is . ";
         List<String> expectedList2 = Arrays.asList(new String[] {
             "6",
@@ -62,10 +63,11 @@ public class PrefixTokenizerTest extends TestCase {
     private void testNextHelper(String testInput, List<String> expectedList) throws IOException {
         List<String> tokeTextList = new ArrayList<String>();
         PrefixTokenizer tokenizer = new PrefixTokenizer(new StringReader(testInput));
-        Token tok;
-        while ((tok = tokenizer.next()) != null) {
-            String tokeText = tok.termText();
-            tokeTextList.add(tokeText);
+
+        while (tokenizer.incrementToken()) {
+            CharTermAttribute termAttribute = tokenizer.getAttribute(CharTermAttribute.class);
+            String tokenText = termAttribute.toString();
+            tokeTextList.add(tokenText);
         }
         
         

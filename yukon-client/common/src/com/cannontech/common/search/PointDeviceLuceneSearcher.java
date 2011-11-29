@@ -4,18 +4,20 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 
 public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLightPoint> implements PointDeviceSearcher {
-    private static final Sort sort = new Sort(new String[]{"pointName", "pointid"});
+    private SortField sortList[] = 
+        {new SortField("pointName", SortField.STRING),
+         new SortField("pointid", SortField.INT)};
+    private final Sort sort = new Sort(sortList);
     
-    public PointDeviceLuceneSearcher() {
-    }
-
     @Override
     public UltraLightPoint buildResults(final Document doc) {
         final UltraLightPoint ultra = new UltraLightPoint() {
@@ -43,10 +45,14 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         final Query query = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
 
         try {
-            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new HitsCallbackHandler<SearchResult<UltraLightPoint>>() {
-                public SearchResult<UltraLightPoint> processHits(Hits hits) throws IOException {
-                    if (hits.length() != 1) return SearchResult.emptyResult();
-                    Document document = hits.doc(0);
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new TopDocsCallbackHandler<SearchResult<UltraLightPoint>>() {
+                public SearchResult<UltraLightPoint> processHits(TopDocs hits, IndexSearcher indexSearcher) throws IOException {
+                    if (hits.totalHits != 1) {
+                        return SearchResult.emptyResult();
+                    }
+                    
+                    int docId = hits.scoreDocs[0].doc;
+                    Document document = indexSearcher.doc(docId);
                     String deviceId = document.get("deviceid");
                     Query aQuery = new TermQuery(new Term("deviceid", deviceId));
                     aQuery = compileAndCombine(aQuery, criteria);

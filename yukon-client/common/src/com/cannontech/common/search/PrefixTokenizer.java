@@ -5,6 +5,7 @@ import java.io.Reader;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 /**
  * Similar to a CharTokenizer, this will return every prefix of a term in addition to
@@ -18,6 +19,9 @@ public class PrefixTokenizer extends Tokenizer {
 
     public PrefixTokenizer(Reader input) {
         super(input);
+
+        clearAttributes();
+        addAttribute(CharTermAttribute.class);
     }
 
     private int offset = 0, bufferIndex = 0, dataLen = 0;
@@ -27,20 +31,7 @@ public class PrefixTokenizer extends Tokenizer {
     private final char[] ioBuffer = new char[IO_BUFFER_SIZE];
     private int length = 0;
     private int start = 0;
-
-    /** Returns true iff a character should be included in a token.  This
-     * tokenizer generates as tokens adjacent sequences of characters which
-     * satisfy this predicate.  Characters for which this is false are used to
-     * define token boundaries and are not included in tokens. */
-    public static boolean isTokenChar(char c) {
-        return !((Character.isWhitespace(c)) || 
-                (c == '_') || 
-                (c == '-') || 
-                (c == '(') ||
-                (c == ')') ||
-                (c == '/'));
-    }
-
+    
     /** Called on each token character to normalize it before it is added to the
      * token.  The default implementation does nothing.  Subclasses may use this
      * to, e.g., lowercase tokens. */
@@ -48,40 +39,63 @@ public class PrefixTokenizer extends Tokenizer {
       return Character.toLowerCase(c);
     }
 
-    @Override
-    public Token next() throws IOException {
-        start = offset;
-        while (true) {
-            final char c;
-            
-            offset++;
-            if (bufferIndex >= dataLen) {
-                dataLen = input.read(ioBuffer);
-                bufferIndex = 0;
-            }
-            if (dataLen == -1) {
-                break;
-            } else {
-                c = ioBuffer[bufferIndex++];
-            }
-            
-            if (isTokenChar(c)) {
-                
-                if (length == 0) {
-                    start = offset - 1;
-                }
-                
-                buffer[length++] = normalize(c); // buffer it, normalized
-                return new Token(new String(buffer, 0, length), start, start + length);
-                
-                
-            } else if (length > 0) {
-                length = 0;
-            }
-            
+    /** Returns true if a character should be included in a token.  This
+     * tokenizer generates as tokens adjacent sequences of characters which
+     * satisfy this predicate.  Characters for which this is false are used to
+     * define token boundaries and are not included in tokens. */
+    protected static boolean isTokenChar(int c) {
+        switch(c)
+        {
+            case '_': case '-':
+            case '(': case ')':
+            case '/': case ' ':
+                return false;
+            default:
+                return true;
         }
-        
-        return null;
     }
-}
+    
+    @Override
+    public boolean incrementToken() throws IOException {
+      clearAttributes();
+      
+      start = offset;
+      while (true) {
+          final char c;
+          
+          offset++;
+          if (bufferIndex >= dataLen) {
+              dataLen = input.read(ioBuffer);
+              bufferIndex = 0;
+          }
+          if (dataLen == -1) {
+              break;
+          } else {
+              c = ioBuffer[bufferIndex++];
+          }
+          
+          if (isTokenChar(c)) {
+              
+              if (length == 0) {
+                  start = offset - 1;
+              }
+              
+              buffer[length++] = normalize(c); // buffer it, normalized
 
+              CharTermAttribute charTermAttribute = getAttribute(CharTermAttribute.class);
+              Token token = new Token(new String(buffer, 0, length), start, start + length);
+              charTermAttribute.append(token);
+
+              return true;
+              
+          } else if (length > 0) {
+              length = 0;
+          }
+          
+      }
+      
+      // We have reached the end of the string.
+      return false;
+    }
+
+}

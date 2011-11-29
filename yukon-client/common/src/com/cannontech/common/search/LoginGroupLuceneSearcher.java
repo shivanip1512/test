@@ -6,12 +6,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 
 public class LoginGroupLuceneSearcher extends AbstractLuceneSearcher<UltraLightLoginGroup> implements LoginGroupSearcher {
-    private static final Sort sort = new Sort(new String[]{"groupName", "groupid"});
-    
-    public LoginGroupLuceneSearcher() {
-    }
+    private SortField sortList[] = 
+        {new SortField("groupName", SortField.STRING),
+         new SortField("groupid", SortField.INT)};
+    private final Sort sort = new Sort(sortList);
     
     @Override
     public UltraLightLoginGroup buildResults(final Document doc) {

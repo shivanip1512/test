@@ -82,7 +82,7 @@
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/libfonts-0.1.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/log4j-1.2.14.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/lucene-core-2.3.2.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/lucene-core-3.4.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mail.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-tools.jar</webClassPathEntry>

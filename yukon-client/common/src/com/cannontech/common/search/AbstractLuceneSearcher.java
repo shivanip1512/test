@@ -13,10 +13,12 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.Version;
 
 import com.cannontech.common.search.index.IndexManager;
 import com.google.common.collect.Lists;
@@ -45,17 +47,21 @@ public abstract class AbstractLuceneSearcher<E> {
     
     protected final SearchResult<E> doSearch(final Query query, final Sort sort, final int start, final int count) throws IOException {
         final Sort aSort = (sort == null) ? new Sort() : sort;
-        final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, aSort, new HitsCallbackHandler<SearchResult<E>>() {
-            public SearchResult<E> processHits(Hits hits) throws IOException {
-                final int stop = Math.min(start + count, hits.length());
+        final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, aSort, new TopDocsCallbackHandler<SearchResult<E>>() {
+            
+            @Override
+            public SearchResult<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
+                final int stop = Math.min(start + count, topDocs.totalHits);
                 final List<E> list = Lists.newArrayListWithCapacity(stop - start);
 
                 for (int i = start; i < stop; ++i) {
-                    list.add(buildResults(hits.doc(i)));
+                    int docId = topDocs.scoreDocs[i].doc;
+                    Document document = indexSearcher.doc(docId);
+                    list.add(buildResults(document));
                 }
 
                 SearchResult<E> result = new SearchResult<E>();
-                result.setBounds(start, count, hits.length());
+                result.setBounds(start, count, topDocs.totalHits);
                 result.setResultList(list);
                 return result;
             }
@@ -81,7 +87,7 @@ public abstract class AbstractLuceneSearcher<E> {
             query = new MatchAllDocsQuery();
         } else {
             String newQueryString = StringUtils.join(cleanList.toArray(), " ");
-            QueryParser parser = new QueryParser("all", analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_34, "all", analyzer);
             parser.setDefaultOperator(QueryParser.AND_OPERATOR);
             query = parser.parse(newQueryString);
         }

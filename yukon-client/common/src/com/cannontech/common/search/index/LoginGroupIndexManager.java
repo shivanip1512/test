@@ -48,10 +48,10 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         String groupID = Integer.toString(groupIDInt);
         
         String all = groupName + " " + groupID;
-        doc.add(new Field("group", groupName, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("groupid", groupID, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("groupName", groupName, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("group", groupName, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("groupid", groupID, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("groupName", groupName, Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         return doc;
     }

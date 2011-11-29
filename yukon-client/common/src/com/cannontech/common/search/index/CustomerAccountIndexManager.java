@@ -71,10 +71,10 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
         int energyCompanyIdInt = rs.getInt("EnergyCompanyId");
         String energyCompanyId = Integer.toString(energyCompanyIdInt);
         
-        doc.add(new Field("all", accountNumber, Field.Store.NO, Field.Index.TOKENIZED));
-        doc.add(new Field("accountNumber", accountNumber, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("accountId", accountId, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("energyCompanyId", energyCompanyId, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("all", accountNumber, Field.Store.NO, Field.Index.ANALYZED));
+        doc.add(new Field("accountNumber", accountNumber, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("accountId", accountId, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("energyCompanyId", energyCompanyId, Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         return doc;
     }

@@ -84,19 +84,19 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         String deviceid = Integer.toString(rs.getInt("paobjectid"));
         String stateGroupID = Integer.toString(stateGrpID);
         String all = pointName + " " + paoName + " " + pointid + " " + deviceid;
-        doc.add(new Field("point", pointName, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("device", paoName, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("all", all, Field.Store.NO, Field.Index.TOKENIZED));
+        doc.add(new Field("point", pointName, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("device", paoName, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("all", all, Field.Store.NO, Field.Index.ANALYZED));
 
-        doc.add(new Field("uomid", uomid, Field.Store.NO, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("pointid", pointid, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("deviceid", deviceid, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("uomid", uomid, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("pointid", pointid, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("deviceid", deviceid, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
-        doc.add(new Field("pointtype", pointType, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("stategroupid", stateGroupID, Field.Store.NO, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("paotype", paoType, Field.Store.NO, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.UN_TOKENIZED)); // an untokenized version
-        doc.add(new Field("pointoffset", Integer.toString(pointOffset), Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("pointtype", pointType, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("stategroupid", stateGroupID, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("paotype", paoType, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("pointoffset", Integer.toString(pointOffset), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         return doc;
     }

@@ -53,12 +53,12 @@ public class UserIndexManager extends AbstractIndexManager {
         //will not be setting password here; no need for it
         
         String all = userName + " " + userID;
-        doc.add(new Field("user", userName, Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("user", userName, Field.Store.YES, Field.Index.ANALYZED));
         /*Don't store this; we don't want to display based off of this one*/
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("userid", userID, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("status", status, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("userName", userName, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("userid", userID, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("status", status, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("userName", userName, Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         return doc;
     }

@@ -21,14 +21,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -41,7 +44,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.search.HitsCallbackHandler;
+import com.cannontech.common.search.TopDocsCallbackHandler;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -70,7 +73,8 @@ public abstract class AbstractIndexManager implements IndexManager {
     protected JdbcOperations jdbcTemplate = null;
 
     // All indexes will be written to: {yukon home}/cache/{index name}/index
-    private File indexLocation = null;
+    private Version luceneVersion = Version.LUCENE_34;
+    private Directory indexLocation = null;
     private File versionFile = null;
     private String version = null;
     private String database = null;
@@ -249,38 +253,43 @@ public abstract class AbstractIndexManager implements IndexManager {
         int queueSize = configurationSource.getInteger("WEB_INDEX_MANAGER_QUEUE_SIZE", 1000);
         updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>(queueSize);
 
-        this.indexLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName()
-                + "/index");
-
-        // Read in the information from the version file (if it exists)
-        this.versionFile = new File(this.indexLocation, "version.txt");
+        // Using SimpleFSDirectory isn't the speediest form of Directories, but seems to be the most
+        // stable of the implementations.  Once they fix some of the other options we should look at switching.
+        File indexFileLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName() + "/index");
         try {
-            InputStream iStream = new FileInputStream(this.versionFile);
-            Properties properties = new Properties();
-            properties.load(iStream);
+            this.indexLocation = new SimpleFSDirectory(indexFileLocation);
+            // Read in the information from the version file (if it exists)
+            this.versionFile = new File(indexFileLocation, "version.txt");
 
-            this.version = properties.getProperty(VERSION_PROPERTY);
-            this.database = properties.getProperty(DATABASE_PROPERTY);
-            this.databaseUsername = properties.getProperty(DATABASE_USER_PROPERTY);
-            String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
-            if (dateString != null) {
-                try {
-                    this.dateCreated = DATE_FORMAT.parse(dateString);
-                } catch (ParseException e) {
-                    CTILogger.error(e);
+            try {
+                InputStream iStream = new FileInputStream(this.versionFile);
+                Properties properties = new Properties();
+                properties.load(iStream);
+    
+                this.version = properties.getProperty(VERSION_PROPERTY);
+                this.database = properties.getProperty(DATABASE_PROPERTY);
+                this.databaseUsername = properties.getProperty(DATABASE_USER_PROPERTY);
+                String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
+                if (dateString != null) {
+                    try {
+                        this.dateCreated = DATE_FORMAT.parse(dateString);
+                    } catch (ParseException e) {
+                        CTILogger.error(e);
+                    }
                 }
+            } catch (FileNotFoundException e) {
+                // do nothing - no version.txt
             }
-        } catch (FileNotFoundException e) {
-            // do nothing - no version.txt
         } catch (IOException e) {
-            CTILogger.error("Exception reading " + this.getIndexName() + " index version file", e);
+            CTILogger.error("Exception reading " + this.getIndexName() + " lucene index directory", e);
         }
+
         
         // If index is locked, must have shutdown improperly last time - rebuild
         boolean indexLocked = false;
         try {
-            if(IndexReader.isLocked(indexLocation.getAbsolutePath())){
-                IndexReader.unlock(FSDirectory.getDirectory(indexLocation));
+            if(IndexWriter.isLocked(indexLocation)){
+                IndexWriter.unlock(indexLocation);
                 indexLocked = true;
             }
             
@@ -303,7 +312,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     
     public SearchTemplate getSearchTemplate(){
         return new SearchTemplate(){
-            public <R> R doCallBackSearch(Query query, Sort sort, HitsCallbackHandler<R> handler) throws IOException {
+            public <R> R doCallBackSearch(Query query, Sort sort, TopDocsCallbackHandler<R> handler) throws IOException {
                 
                 // Make sure there are currently no issues with the index
                 checkForException();
@@ -314,11 +323,11 @@ public abstract class AbstractIndexManager implements IndexManager {
                 }
                 
                 // Make sure we don't search while someone is updating the index
-                final IndexSearcher indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
+                final IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
                 final Sort aSort = (sort == null) ? new Sort() : sort;
                 try {
-                    final Hits hits = indexSearcher.search(query, aSort);
-                    return handler.processHits(hits);
+                    TopDocs topDocs = indexSearcher.search(query, Integer.MAX_VALUE, aSort);
+                    return handler.processHits(topDocs, indexSearcher);
                 } finally {
                     indexSearcher.close();
                 }
@@ -344,8 +353,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
                 IndexWriter indexModifier = null;
                 try {
-                    indexModifier = new IndexWriter(this.indexLocation, this.getAnalyzer(), false);
-                    indexModifier.setMaxBufferedDocs(maxBufferedDocs);
+                    indexModifier = new IndexWriter(indexLocation, getIndexWriterConfig());
 
                     while (info != null) {
                         processSingleInfoWithWriter(indexModifier, info);
@@ -414,7 +422,7 @@ public abstract class AbstractIndexManager implements IndexManager {
         if (!overwrite) {
             boolean indexExists = true;
             try {
-                IndexSearcher indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
+                IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
                 indexSearcher.close();
             } catch (IOException e) {
                 indexExists = false;
@@ -441,8 +449,8 @@ public abstract class AbstractIndexManager implements IndexManager {
             CTILogger.info("Building " + this.getIndexName() + " index.");
 
             // Get a new index writer
-            indexWriter = new IndexWriter(indexLocation.getAbsolutePath(), getAnalyzer(), true);
-            indexWriter.setMaxBufferedDocs(maxBufferedDocs);
+            System.out.println("open mode = "+getIndexWriterConfig().getOpenMode());
+            indexWriter = new IndexWriter(indexLocation,  getIndexWriterConfig().setOpenMode(OpenMode.CREATE));
 
             // Get the total # of records to be written into the index
             String sql = getDocumentCountQuery();
@@ -652,6 +660,12 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
     
+    protected IndexWriterConfig getIndexWriterConfig() {
+        IndexWriterConfig writerConfig = new IndexWriterConfig(luceneVersion, getAnalyzer());
+        writerConfig.setMaxBufferedDocs(maxBufferedDocs);
+        return writerConfig;
+    }
+
     @ManagedAttribute
     public int getUpdateQueueSize() {
         return updateQueue.size();

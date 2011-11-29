@@ -58,22 +58,22 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         String paoid = Integer.toString(rs.getInt("paobjectid"));
         String paoClass = rs.getString("paoclass");
         String all = paoName + " " + type + " " + paoid + " " + paoClass + " " + category;
-        doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("type", type, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("type", type, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
 
-        doc.add(new Field("paoid", paoid, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("paoid", paoid, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
-        doc.add(new Field("category", category, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("paoclass", paoClass, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("category", category, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("paoclass", paoClass, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
         String isDeviceVal = rs.getString("deviceId");
         String isDevice = new Boolean(!StringUtils.isEmpty(isDeviceVal)).toString();
-        doc.add(new Field("isDevice", isDevice, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("isDevice", isDevice, Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         String isMeterVal = rs.getString("meternumber");
         String isMeter = new Boolean(!StringUtils.isEmpty(isMeterVal)).toString();
-        doc.add(new Field("isMeter", isMeter, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("isMeter", isMeter, Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         return doc;
     }
