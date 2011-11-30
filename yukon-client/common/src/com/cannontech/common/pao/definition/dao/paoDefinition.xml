@@ -109,6 +109,11 @@
             <tag name="SUPPORTS_THREE_PHASE_VOLTAGE"/>
         </tags>
     </pao>
+    <pao id="SUPPORTS_THREE_PHASE_CURRENT"  abstract="true">
+        <tags>
+            <tag name="SUPPORTS_THREE_PHASE_CURRENT"/>
+        </tags>
+    </pao>
 
     <pao id="SUPPORTS_MCT_DISCONNECT" abstract="true">  <!--  Ability to disconnect through collar device -->
         <points>
@@ -895,7 +900,7 @@
     </pao>
     
     <!-- MCT 4XX POLYPHASE BASE -->
-    <pao id="MCT_4XX_POLYPHASE_BASE" abstract="true">
+    <pao id="MCT_4XX_POLYPHASE_BASE" abstract="true" inherits="SUPPORTS_THREE_PHASE_CURRENT">
 		<points>
             <point type="Analog" offset="44">
             	<init>false</init>
@@ -936,7 +941,19 @@
         		<pointRef name="Phase C Current"/>
         	</command>
         </commands>
+        <attributes>
+            <attribute name="CURRENT_A">
+                <basicLookup point="Phase A Current"/>
+            </attribute>
+            <attribute name="CURRENT_B">
+                <basicLookup point="Phase B Current"/>
+            </attribute>
+            <attribute name="CURRENT_C">
+                <basicLookup point="Phase C Current"/>
+            </attribute>
+        </attributes>
    </pao>
+   
     <!-- MCT 430 BASE -->
     <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG">
 		<points>
@@ -1290,7 +1307,7 @@
         </tags>
    </pao>
    
-   <pao id="MCT_430_S_BASE" abstract="true" inherits="MCT_430_BASE, MCT_4XX_POLYPHASE_BASE, SUPPORTS_VOLTAGE_TAG">
+   <pao id="MCT_430_S_BASE" abstract="true" inherits="MCT_430_BASE, MCT_4XX_POLYPHASE_BASE, SUPPORTS_THREE_PHASE_VOLTAGE">
 		<points>
 			<point type="Analog" offset="41">
                 <name>Voltage Phase A</name>
@@ -1322,8 +1339,14 @@
             </command>
         </commands>
         <attributes>
-        	<attribute name="VOLTAGE">
+            <attribute name="VOLTAGE_A">
                 <basicLookup point="Voltage Phase A" />
+            </attribute>
+            <attribute name="VOLTAGE_B">
+                <basicLookup point="Voltage Phase B" />
+            </attribute>
+            <attribute name="VOLTAGE_C">
+                <basicLookup point="Voltage Phase C" />
             </attribute>
         </attributes>
    </pao>
@@ -1332,14 +1355,14 @@
     <pao id="MCT430A" inherits="MCT_430_BASE">	<!-- Why doesn't MCT430A inherit MCT_4XX_POLYPHASE_BASE? -->
         <displayName>MCT-430A</displayName>
     </pao>
+    <pao id="MCT430A3" inherits="MCT_430_BASE, MCT_4XX_POLYPHASE_BASE">
+        <displayName>MCT-430A3</displayName>
+    </pao>
     <pao id="MCT430S4" inherits="MCT_430_S_BASE">
         <displayName>MCT-430S4</displayName>
     </pao>
     <pao id="MCT430SL" inherits="MCT_430_S_BASE">
         <displayName>MCT-430SL</displayName>
-    </pao>
-    <pao id="MCT430A3" inherits="MCT_430_BASE, MCT_4XX_POLYPHASE_BASE">
-        <displayName>MCT-430A3</displayName>
     </pao>
 	
 	<!-- MCT 420 BASE -->

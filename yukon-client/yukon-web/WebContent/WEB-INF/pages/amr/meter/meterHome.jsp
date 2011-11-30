@@ -16,9 +16,14 @@
 			<tr>
 				<td class="widgetColumnCell" valign="top">
 				    <ct:widget bean="meterInformationWidget" />
-	
-					<ct:widget bean="meterReadingsWidget" />
-                    
+
+                    <c:if test="${not isThreePhaseMeter}">
+					   <ct:widget bean="meterReadingsWidget" />
+                    </c:if>
+                    <c:if test="${isThreePhaseMeter}">
+                       <ct:widget bean="polyphaseMeterReadingsWidget" />
+                    </c:if>
+
                     <c:if test="${isRFMesh_JUST_HIDE_FOR_NOW}">
                         <ct:widget bean="rfnMeterInfoWidget" />
                     </c:if>
@@ -64,7 +69,7 @@
 						</c:if >
 	                        
 						<!-- Actions: Voltage & TOU -->
-						<c:if test="${isMCT4XX && voltageSupported}">
+						<c:if test="${isMCT4XX && (voltageSupported || isThreePhaseMeter)}">
 							<cti:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
 								<cti:param name="deviceId" value="${deviceId}" />
 							</cti:url>

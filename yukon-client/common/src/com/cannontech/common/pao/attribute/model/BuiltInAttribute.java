@@ -14,6 +14,9 @@ public enum BuiltInAttribute implements Attribute {
     BLINK_COUNT("Blink Count"), 
     CONNECTION_STATUS("Connection Status"),
     CONTROL_POINT("Control Point"),
+    CURRENT_A("Current (Phase A)"),
+    CURRENT_B("Current (Phase B)"),
+    CURRENT_C("Current (Phase C)"),
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
@@ -47,7 +50,10 @@ public enum BuiltInAttribute implements Attribute {
     TOU_RATE_C_USAGE("Tou Rate C Usage", false, true), 
     TOU_RATE_D_USAGE("Tou Rate D Usage", false, true), 
     USAGE("Usage Reading", false, true), 
-    VOLTAGE("Voltage"), 
+    VOLTAGE("Voltage"),
+    VOLTAGE_A("Voltage (Phase A)"),
+    VOLTAGE_B("Voltage (Phase B)"),
+    VOLTAGE_C("Voltage (Phase C)"),
     VOLTAGE_X("Voltage X"), // Source Side
     VOLTAGE_Y("Voltage Y"), // Load Side
     TERMINATE("Terminate"),

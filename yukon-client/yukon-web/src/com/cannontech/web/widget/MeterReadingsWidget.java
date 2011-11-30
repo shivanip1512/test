@@ -23,7 +23,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -90,10 +89,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
         mav.addObject("readable", readable);
-        
-        // For showing special label when using 3phase voltage, temporary until 3phase voltage widgets are supported
-        mav.addObject("threePhaseVoltage", paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE));
-        mav.addObject("voltageAttribute", BuiltInAttribute.VOLTAGE);
         
         return mav;
     }

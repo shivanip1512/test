@@ -47,6 +47,7 @@ public enum PaoTag {
 	DB_EDITOR_INCOMPATIBLE("Not Displayable in Database Editor"),   // Excludes devices from DeviceTreeModel.java, hiding them in DB Editor and Commander
 	SUPPORTS_ROUTE_ENCRYPTION("Supports Route Encryption"),
 	SUPPORTS_THREE_PHASE_VOLTAGE("Supports Three Phase Voltage"),
+	SUPPORTS_THREE_PHASE_CURRENT("Supports Three Phase Current"),
 	PAO_CREATION_SERVICE("PAO Creation Service Compatible", stringType()),
 	SUPPORTS_RFN_EVENTS("Supports Rfn Events"),
 	;

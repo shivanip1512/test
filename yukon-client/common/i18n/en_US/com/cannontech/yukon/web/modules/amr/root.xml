@@ -127,11 +127,15 @@
     <!-- voltageAndTou.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageDescription">Voltage &amp; TOU</entry>
-    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle">Voltage</entry>
-    <entry key="yukon.web.widgets.simpleAttributesWidget.read.label">Read</entry>
+    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle.voltage">Voltage</entry>
+    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle.current">Current</entry>
+    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle.voltageAndCurrent">Voltage &amp; Current</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.read.label">Read Now</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.errorReading">There was an error reading the meter:</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.successReading">Successful Read</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.unsupported">Unsupported</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.notConfigured">Not Configured</entry>
     
     <!-- manualCommand.jsp -->
     <entry key="yukon.web.modules.amr.manualCommand.pageName">Manual Commander</entry>

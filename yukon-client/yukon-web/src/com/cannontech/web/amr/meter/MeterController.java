@@ -220,8 +220,14 @@ public class MeterController extends MultiActionController {
         boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
         mav.addObject("isMCT4XX", isMCT4XX);
         
-        boolean voltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
-        mav.addObject("voltageSupported", voltageSupported);
+        boolean singlePhaseVoltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
+        mav.addObject("singlePhaseVoltageSupported", singlePhaseVoltageSupported);
+
+        boolean isThreePhaseMeter = (paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
+                                                                    PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE) ||
+                                                                    paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
+                                                                                                    PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE));
+        mav.addObject("isThreePhaseMeter", isThreePhaseMeter);
         
         boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
         mav.addObject("configSupported", configSupported);

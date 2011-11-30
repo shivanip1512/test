@@ -38,7 +38,7 @@
     <c:set target="${widgetParameters}" property="width" value="100%"/>
 </c:if>
 
-<div id="widgetWrapper_${widgetParameters.widgetId}" style="width: ${widgetParameters.width};">
+<div id="widgetWrapper_${widgetParameters.widgetId}" class="widgetWrapper" style="width: ${widgetParameters.width};">
     <c:set var="showIdentity" value="${widgetParameters.identify and beanInst.hasIdentity}"/>
     <c:if test="${showIdentity}">
         <c:import var="widgetIdentity" url="/spring/widget/${beanInst.shortName}/identity" scope="page"/>

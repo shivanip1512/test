@@ -12,20 +12,36 @@
         </tags:widgetContainer>
             
         <%-- VOLTAGE --%>
-        <br>
         <tags:widgetContainer deviceId="${deviceId}">
-            <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle"/>
-            <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" attributes="VOLTAGE,MINIMUM_VOLTAGE,MAXIMUM_VOLTAGE" />
+            <c:choose>
+                <c:when test="${threePhaseVoltage && threePhaseCurrent}">
+                    <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltageAndCurrent"/>
+                    <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
+                                 attributes="VOLTAGE_A,VOLTAGE_B,VOLTAGE_C,CURRENT_A,CURRENT_B,CURRENT_C"/>
+                </c:when>
+                <c:when test="${not threePhaseVoltage && threePhaseCurrent}">
+                    <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.current"/>
+                    <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
+                                 attributes="CURRENT_A,CURRENT_B,CURRENT_C"/>
+                </c:when>
+                <c:when test="${threePhaseVoltage && not threePhaseCurrent}">
+                    <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltage"/>
+                    <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
+                                 attributes="VOLTAGE_A,VOLTAGE_B,VOLTAGE_C"/>
+                </c:when>
+                <c:otherwise>
+                    <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltage"/>
+                    <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
+                                 attributes="VOLTAGE,MINIMUM_VOLTAGE,MAXIMUM_VOLTAGE"/>
+                </c:otherwise>
+            </c:choose>
         </tags:widgetContainer>
             
         <%-- TOU SCHEDULE --%>
         <c:if test="${not empty schedules && fn:length(schedules) > 0}">
-            <br>
             <tags:widgetContainer deviceId="${deviceId}">
                 <tags:widget bean="touScheduleWidget" />
             </tags:widgetContainer>
         </c:if>
-    
     </div>
-
 </cti:standardPage>
