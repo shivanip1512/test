@@ -230,6 +230,10 @@ public class MeterController extends MultiActionController {
             mav.addObject("isRFMesh", true);
         }
         
+        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.SUPPORTS_RFN_EVENTS)) {
+            mav.addObject("rfnEventsSupported", true);
+        }
+        
         if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
             mav.addObject("porterCommandRequestsSupported", true);
         }

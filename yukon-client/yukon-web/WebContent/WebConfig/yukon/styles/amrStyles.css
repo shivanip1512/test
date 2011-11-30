@@ -114,3 +114,12 @@ div.resultBar > div {
     margin: 5px 0px 0px 8px;
     font-size: 12px;
 }
+
+.eventStatusCleared,
+.eventStatusGood {
+    color:#006633;
+}
+.eventStatusActive,
+.eventStatusBad {
+    color:#CC0000;
+}

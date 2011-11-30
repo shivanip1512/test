@@ -21,7 +21,9 @@
 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
 
-    <br><cti:button nameKey="groupTree" type="button" id="showPopupButton"/>
+    <div class="actionArea">
+        <cti:button nameKey="groupTree" type="button" id="showPopupButton"/>
+    </div>
 
     <ext:multiNodeValueSelectingPopupTree fieldId="groupIds"
                                           fieldName="groupIds"

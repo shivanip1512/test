@@ -906,11 +906,14 @@ ul.errorMessage {
     margin: 0 0 8px 0;
 }
 
+.strongMessage,
 .strongWarningMessage {
-    color:#CC0000;
     font-style: italic;
     font-weight: bold;
     margin: 0 0 8px 0;
+}
+.strongWarningMessage {
+    color:#CC0000;
 }
 
 .flashMessage {

@@ -71,6 +71,12 @@
             <tag name="SUPPORTS_ROUTE_ENCRYPTION"/>
         </tags>
     </pao>
+    
+    <pao id="SUPPORTS_RFN_EVENTS"  abstract="true">
+        <tags>
+            <tag name="SUPPORTS_RFN_EVENTS"/>
+        </tags>
+    </pao>
 
     <pao id="ROUTE_WCTP_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
         <displayName>WCTP Terminal Route</displayName>
@@ -4462,7 +4468,7 @@
         <displayName>SIXNET</displayName>
 	</pao>
 	
-	<pao id="RFN_ELECTRIC_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE">
+	<pao id="RFN_ELECTRIC_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, SUPPORTS_RFN_EVENTS, SUPPORTS_OUTAGE_TAG">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>

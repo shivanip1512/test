@@ -291,6 +291,21 @@
         </property>
     </bean>
     
+    <bean id="rfnMeterEventsWidget" class="com.cannontech.web.widget.RfnMeterEventsWidget">
+        <property name="title" value="Rfn Events"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="meterOutagesWidget"
     	class="com.cannontech.web.widget.MeterOutagesWidget">
     	<property name="title" value="Outages"/>

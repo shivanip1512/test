@@ -178,6 +178,8 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(VOLTAGE_PHASE_C_OUT);
         builder.add(VOLTAGE_PHASE_ERROR);
         
+        builder.add(OUTAGE_STATUS);
+        
         rfnEventStatusTypes = builder.build();
         
         Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();
@@ -218,6 +220,14 @@ public enum BuiltInAttribute implements Attribute {
     public boolean isAccumulator() {
 		return accumulator;
 	}
+    
+    public static Set<BuiltInAttribute> getRfnEventStatusTypes() {
+        return rfnEventStatusTypes;
+    }
+    
+    public static Set<BuiltInAttribute> getRfnEventAnalogTypes() {
+        return rfnEventAnalogTypes;
+    }
     
     public static Set<BuiltInAttribute> getRfnEventTypes() {
         return rfnEventTypes;
