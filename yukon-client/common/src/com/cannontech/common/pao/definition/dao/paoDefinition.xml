@@ -5658,8 +5658,8 @@
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
-            	<init>true</init>
-                <name>Battery Low</name>
+                <init>false</init>
+                <name>Reed Switch Communication</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="4">
