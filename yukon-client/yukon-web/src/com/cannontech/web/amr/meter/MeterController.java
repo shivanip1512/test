@@ -224,9 +224,9 @@ public class MeterController extends MultiActionController {
         mav.addObject("singlePhaseVoltageSupported", singlePhaseVoltageSupported);
 
         boolean isThreePhaseMeter = (paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
-                                                                    PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE) ||
-                                                                    paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
-                                                                                                    PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE));
+                                                                     PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE) || 
+                                     paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
+                                                                     PaoTag.SUPPORTS_THREE_PHASE_CURRENT));
         mav.addObject("isThreePhaseMeter", isThreePhaseMeter);
         
         boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
