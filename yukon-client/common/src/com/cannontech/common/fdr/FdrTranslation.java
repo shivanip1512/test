@@ -17,7 +17,7 @@ public class FdrTranslation {
 	private int pointId;
 	private FdrDirection direction;
 	private FdrInterfaceType fdrInterfaceType;
-	private FdrInterfaceType destination;
+	private String destination;
 	private String translation;
 	
 	protected Map<String,String> parameterMap;
@@ -51,11 +51,11 @@ public class FdrTranslation {
 		this.fdrInterfaceType = interfaceType;
 	}
 
-	public FdrInterfaceType getDestination() {
+	public String getDestination() {
 		return destination;
 	}
 
-	public void setDestination(FdrInterfaceType destination) {
+	public void setDestination(String destination) {
 		this.destination = destination;
 	}
 

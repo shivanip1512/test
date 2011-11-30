@@ -56,7 +56,9 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     private final String DEVICE_TYPE = "DEVICE_TYPE";
     private final String POINT_NAME = "POINT_NAME";
     private final String DIRECTION = "DIRECTION";
-    private final int DEFAULT_COLS_FOR_EXPORT = 4;
+    private final String POINTTYPE = "POINTTYPE";
+    
+    private final int DEFAULT_COLS_FOR_EXPORT = 5;
     private final String[] defaultImportColumnHeaders = {ACTION, DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION};
     
     @Override
@@ -74,6 +76,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
         list.add(DEVICE_TYPE);
         list.add(POINT_NAME);
         list.add(DIRECTION);
+        list.add(DESTINATION);
     }
     
     @Override
@@ -165,10 +168,12 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
             String deviceType = pao.getPaoType().getPaoTypeName();
             String pointName = point.getPointName();
             String direction = translation.getDirection().toString();
+            String destination = translation.getDestination();
             dataGrid[i+1][0] = deviceName;
             dataGrid[i+1][1] = deviceType;
             dataGrid[i+1][2] = pointName;
             dataGrid[i+1][3] = direction;
+            dataGrid[i+1][4] = destination;
             
             //Iterate through interface-specific columns
             for(int j = DEFAULT_COLS_FOR_EXPORT; j < dataGrid[0].length; j++) {
@@ -272,6 +277,14 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                                 throw new ProcessingException(error);
                             }
                         }
+                        
+                        //Quick check to for ####_POINTTYPE column
+                        if (header.equals(fdrInterface.toString() + "_" + POINTTYPE)) {
+                            //skip point type!
+                            continue;
+                        }
+                        
+                        
                         //find an option that matches
                         boolean foundMatch = false;
                         for(int j = 0; j < interfaceOptions.size(); j++) {
@@ -290,8 +303,10 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     }
                 }
                 
+                
+                //TODO: This section needs a closer look
                 FdrInterfaceType interfaceType = FdrInterfaceType.valueOf(fdrInterface.toString());//TODO is this right?
-                FdrInterfaceType destinationType = null;
+                String destinationType = null;
                 
                 //make sure all required columns are filled or fail
                 String missingColumn = null;
@@ -299,17 +314,14 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     if(destination == null) {
                         missingColumn = DESTINATION;
                     } else {
-                        try {
-                            destinationType = FdrInterfaceType.valueOf(destination);
-                        } catch(IllegalArgumentException e) {
-                            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.invalidDestination", destination);
-                            throw new ProcessingException(error);
-                        }
+                        //Validate Destination by Interface Type?
+                        destinationType = destination;
                     }
                 } else {
                     //if destination is not required for this interface, just use the interface type string
-                    destinationType = interfaceType;
+                    destinationType = interfaceType.toString();
                 }
+                /// end TODO closer look
                 
                 if(deviceName == null){
                     missingColumn = DEVICE_NAME;
@@ -357,7 +369,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 
                 //build translation
                 FdrTranslation translation = new FdrTranslation();
-                translation.setDestination(destinationType);
+                translation.setDestination(destination);
                 translation.setTranslation(translationString);
                 translation.setDirection(fdrDirection);
                 translation.setPointId(point.getPointID());

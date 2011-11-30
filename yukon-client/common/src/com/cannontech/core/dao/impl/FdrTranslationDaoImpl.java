@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +13,7 @@ import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.core.dao.FdrTranslationDao;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class FdrTranslationDaoImpl implements FdrTranslationDao {
 
@@ -25,7 +26,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     private static final String deleteSql;
     
     private static final ParameterizedRowMapper<FdrTranslation> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
                 
@@ -70,7 +71,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
             	fdrTranslation.setInterfaceType(FdrInterfaceType.valueOf(interfacetype));
             	
             	String destination = rs.getString("destination");
-            	fdrTranslation.setDestination(FdrInterfaceType.valueOf(destination));
+            	fdrTranslation.setDestination(destination);
             	
             	String translation = rs.getString("translation");
             	fdrTranslation.setTranslation(translation);
@@ -92,13 +93,14 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         };
     }
     
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(FdrTranslation trans) {
-        int rowsAffected = simpleJdbcTemplate.update(insertSql, trans.getPointId(),
+        int rowsAffected = yukonJdbcTemplate.update(insertSql, trans.getPointId(),
                                                      trans.getDirection().toString(),
                                                      trans.getFdrInterfaceType().toString(),
                                                      trans.getDestination().toString(),
@@ -110,36 +112,36 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public FdrTranslation getByPointIdAndType(int id, FdrInterfaceType type) {
-    	return simpleJdbcTemplate.queryForObject(selectByPointIdAndTypeSql, rowMapper, id, type.toString());
+    	return yukonJdbcTemplate.queryForObject(selectByPointIdAndTypeSql, rowMapper, id, type.toString());
 	}
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type) {
-        return simpleJdbcTemplate.query(selectByPaoIdAndTypeSql, rowMapper, type.toString(), paoId);        
+        return yukonJdbcTemplate.query(selectByPaoIdAndTypeSql, rowMapper, type.toString(), paoId);        
     }
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
-    	return simpleJdbcTemplate.query(selectByTypeSql, rowMapper, type.toString() );
+    	return yukonJdbcTemplate.query(selectByTypeSql, rowMapper, type.toString() );
 	}
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
-    	return simpleJdbcTemplate.query(selectByTypeAndTranslationSql, rowMapper, type.toString(), translation );
+    	return yukonJdbcTemplate.query(selectByTypeAndTranslationSql, rowMapper, type.toString(), translation );
 	}
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<FdrTranslation> getAllTranslations() {
-        return simpleJdbcTemplate.query(selectAllSql, rowMapper);
+        return yukonJdbcTemplate.query(selectAllSql, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public boolean delete(FdrTranslation translation) {
-        int rowsAffected = simpleJdbcTemplate.update(deleteSql,
+        int rowsAffected = yukonJdbcTemplate.update(deleteSql,
                                                      translation.getPointId(),
                                                      translation.getDirection().toString(),
                                                      translation.getFdrInterfaceType().toString(),
-                                                     translation.getDestination().toString(),
+                                                     translation.getDestination(),
                                                      translation.getTranslation()
                                                      );
         boolean result = (rowsAffected == 1);
