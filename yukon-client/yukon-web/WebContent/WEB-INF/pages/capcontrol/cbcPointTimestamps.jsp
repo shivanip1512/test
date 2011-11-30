@@ -22,11 +22,19 @@
                     <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
                     <td>
                         <c:choose>
+                            <c:when test="${point.pointName == 'Firmware Version'}">
+                               <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToFirmwareVersion}"/>
+                            </c:when>
                             <c:when test="${point.pointName == 'IP Address'}">
                                 <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToOctalIp}"/>
                             </c:when>
                             <c:when test="${point.pointName == 'Neutral Current Sensor'}">
                                 <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertNeutralCurrent}"/>
+                            </c:when>
+                            <c:when test="${point.pointName == 'Last Control Reason'}">
+                                <cti:pointStatusColor pointId="${point.pointID}">
+                                    <cti:pointValue pointId="${point.pointID}" format="{state}"/>
+                                </cti:pointStatusColor>
                             </c:when>
                             <c:otherwise>
                                 <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
@@ -69,7 +77,11 @@
             <c:forEach var="point" items="${pointMap.STATUS}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
-                    <td><cti:pointValue pointId="${point.pointID}" format="VALUE"/></td>
+                    <td class="b">
+                        <cti:pointStatusColor pointId="${point.pointID}">
+                           <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
+                        </cti:pointStatusColor>
+                    </td>
                     <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                 </tr>
             </c:forEach>

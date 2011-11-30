@@ -91,21 +91,21 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 	shortQuality = getDisplayStringForQuality(((PointValueQualityHolder) data).getPointQuality(), userContext);
                 }
                 
-                if (statusPoint) {
-                    
-                    //LitePoint
-                    LitePoint litePoint = litePointCache.get(data.getId());
-                    if (litePoint == null) {
-                        litePoint = pointDao.getLitePoint(data.getId());
-                        litePointCache.put(data.getId(), litePoint);
-                    }
-                    
-                    //State
-                    LiteState liteState = stateDao.getLiteState(litePoint.getStateGroupID(),(int)data.getValue());
-
+                //LitePoint
+                LitePoint litePoint = litePointCache.get(data.getId());
+                if (litePoint == null) {
+                    litePoint = pointDao.getLitePoint(data.getId());
+                    litePointCache.put(data.getId(), litePoint);
+                }
+                
+                //State
+                LiteState liteState = stateDao.getLiteState(litePoint.getStateGroupID(),(int)data.getValue());
+                
+                if (liteState != null) {
                     state = liteState.getStateText();
+                
                     stateColor = Colors.getColor(liteState.getFgColor());
-                    
+                
                     /* Use custom colors for red and green.
                      * Should be the same as the errorRed and okGreen styles in YukonGeneralStyles.css 
                      * YUK-9652 will solve this problem, at which point this can be reverted. */
@@ -114,6 +114,9 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                     } else if (stateColor == Color.red) {
                         stateColor = new Color(204, 0, 0); //#CC0000
                     }
+                }
+                    
+                if (statusPoint) {
                     
                     value = liteState.getStateText();
                     valueStr = liteState.getStateText();

@@ -43,15 +43,19 @@ public class CapControlDaoImpl  implements CapControlDao{
     static {
     	
 		// Analog Group
-    	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Voltage");
+    	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Average Line Voltage");
+        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Last Control Reason");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "High Voltage");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Low Voltage");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Delta Voltage");
+        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Line Voltage THD");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Temperature");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Neutral Current Sensor");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Analog Input 1");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "RSSI");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Control Ignored Reason");
+        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Ignored Control Reason");
+        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Serial Number");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "IP Address");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "UDP Port");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Firmware Version");
@@ -67,7 +71,13 @@ public class CapControlDaoImpl  implements CapControlDao{
     	// Status Group
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Capacitor Bank State");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Control Mode");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Auto Control Mode");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Manual Control Mode");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Remote Control Mode");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "CVR Mode");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "SCADA Override");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Re-Close Blocked");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Reclose Block");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Local");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Remote");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - OVUV");
@@ -77,31 +87,50 @@ public class CapControlDaoImpl  implements CapControlDao{
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Analog");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Temperature");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Auto Volt Control");
+    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Line Voltage High");
+    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Line Voltage Low");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "OV Condition");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "UV Condition");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Voltage Delta Abnormal");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Abnormal Delta Voltage");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Operation Failed");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Op Failed - Neutral Current");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Neutral Current Fault");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Neutral Lockout");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Relay Sense Failed");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Bad Relay");
+    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Bad Active Close Relay");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Bad Active Trip Relay");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Daily Max Ops");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Max Operation Count");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Temp Alarm");
+    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Temperature High");
+        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Temperature Low");       
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "DST Active");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Control Ignored Indicator");
     	
     	// Configurable Parameters
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Daily Control Limit");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Close Op Count");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Open Op Count");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "UV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "OV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control OVUV Track Time");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency UV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OV Threshold");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency UV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OVUV Track Time");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "CVR UV Threshold");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "CVR OV Threshold");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Comms Loss OV Threshold");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Comms Loss UV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Neutral Current Alarm Threshold");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Trip Delay Time");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Close Delay Time");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Auto Close Delay Time");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Manual Close Delay Time");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Open Delay Time");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Re-Close Delay Time");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Bank Control Time");
+        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Average Line Voltage Time");
     	
     }
     
@@ -199,6 +228,17 @@ public class CapControlDaoImpl  implements CapControlDao{
        
         return sb.toString();
     }
+    static public String convertToFirmwareVersion(Double value) {
+        
+        Long majorValue = new Long(value.longValue());
+        Double minorValue = (value - majorValue) * 100;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( majorValue > 0 ? (char)(65 + majorValue) : '0');
+        sb.append("." + minorValue.toString());
+      
+        return sb.toString();
+    }
     
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
         List<LiteYukonPAObject> subList = new ArrayList<LiteYukonPAObject>(10);
@@ -234,7 +274,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         String sql = "select deviceid from capbank where controldeviceid = ?";
         Integer parentID = 0;
         try{
-            parentID = jdbcOps.queryForInt(sql, new Integer[] {id});
+            parentID = jdbcOps.queryForInt(sql, new Object[] {id});
         }
         catch (EmptyResultDataAccessException dae)
         {
@@ -247,7 +287,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         String sql = "select paobjectid from point where pointid = ?";
         Integer parentID = 0;
         try{
-            parentID = jdbcOps.queryForInt(sql, new Integer[] {id});
+            parentID = jdbcOps.queryForInt(sql, new Object[] {id});
         }
         catch (EmptyResultDataAccessException dae)
         {
