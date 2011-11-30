@@ -373,6 +373,10 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                             pdm->setTime(time);
                             point_list.push_back(pdm);
 
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_ReedSwitch, reed_triggered, NormalQuality, StatusPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
                             if( msg_flags & 0x10 )
                             {
                                 battery_voltage = convertBytes( p_data, pos, 2);

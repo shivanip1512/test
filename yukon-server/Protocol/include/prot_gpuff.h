@@ -48,6 +48,7 @@ public:
     {
         GCVTx_Status_Fault                = 1,
         GCVTx_Status_NoPower              = 2,
+        GCVTx_Status_ReedSwitch           = 3,
         GCVTx_Status_Momentary            = 4,
         GCVTx_Status_RSSI                 = 100,    // 5 state status 0-4 "bars".
 
