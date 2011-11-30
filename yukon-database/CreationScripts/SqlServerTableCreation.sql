@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/29/2011 10:33:49 AM                       */
+/* Created on:     11/30/2011 1:27:44 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4785,6 +4785,7 @@ INSERT INTO FDRInterface VALUES (25, 'TRISTATESUB', 'Receive,Send', 'f' );
 INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive,Send', 'f');
 INSERT INTO FDRInterface VALUES (27, 'MULTISPEAK_LM', 'Receive', 'f'); 
 INSERT INTO FDRInterface VALUES (28, 'DNPSLAVE', 'Send', 't');
+INSERT INTO FDRInterface VALUES (29, 'VALMETMULTI', 'Send,Send for control,Receive,Receive for control,Receive for Analog Output', 't' );
 
 /*==============================================================*/
 /* Table: FDRInterfaceOption                                    */
@@ -4856,6 +4857,9 @@ INSERT INTO FDRInterfaceOption VALUES(28, 'SlaveId', 2, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Offset', 3, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Multiplier', 5, 'Text', '1.0');
+INSERT INTO FDRInterfaceOption VALUES(29, 'Point', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(29, 'Destination/Source', 2, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(29, 'Port', 3, 'Text', '(none)');
 
 /*==============================================================*/
 /* Table: FDRTranslation                                        */
