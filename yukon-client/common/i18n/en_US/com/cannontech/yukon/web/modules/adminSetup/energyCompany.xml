@@ -78,6 +78,8 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.remove">Remove</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noMembers">No Member Energy Companies</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.updateSuccessful">General Info Updated Successfully</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.generalInfo.invalidEnergyCompanyName">Not a valid energy company name.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidPhoneNumber">Main Phone # contains invalid characters.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidFaxNumber">Main Fax # contains invalid characters.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidEmail">Not a valid email address.</entry>

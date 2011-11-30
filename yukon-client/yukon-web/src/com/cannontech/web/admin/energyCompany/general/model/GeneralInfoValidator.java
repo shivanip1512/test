@@ -21,6 +21,7 @@ public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
 
     @Override
     public void doValidation(GeneralInfo generalInfo, Errors errors) {
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.modules.adminSetup.generalInfo.invalidEnergyCompanyName");
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", generalInfo.getName(), 60);
         
         /* Validate Address */
