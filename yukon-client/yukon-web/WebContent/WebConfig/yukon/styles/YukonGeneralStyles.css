@@ -489,6 +489,10 @@ div.roundedContainer .bottomBar{
 
 /* Widget styles */
 
+.widgetWrapper {
+    padding-bottom: 8px;
+}
+
 .widgetText {
 	font-size: .75em;
 }
