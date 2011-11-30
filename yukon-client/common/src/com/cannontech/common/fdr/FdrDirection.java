@@ -1,10 +1,12 @@
 package com.cannontech.common.fdr;
 
-/* for control options are not here because of the space. 
- * If we need to support those styles, we need to remove the spaces in the database*/
+
 public enum FdrDirection {
 	Receive("Receive"),
+	ReceiveForControl("Receive for control"),
+	ReceiveForAnalogOutput("Receive for Analog Output"),
 	Send("Send"),
+	SendForControl("Send for control"),
 	LinkStatus("Link Status");
 	
 	private final String dbName;
