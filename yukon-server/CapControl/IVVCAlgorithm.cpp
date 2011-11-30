@@ -985,7 +985,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
             using namespace Cti::Messaging::CapControl;
 
-            CtiTime timetamp;
+            CtiTime timestamp;
 
             if (request != NULL)
             {
@@ -998,7 +998,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                                                                         isCapBankOpen 
                                                                             ? IVVCAnalysisMessage::Scenario_CapbankCloseOperation
                                                                             : IVVCAnalysisMessage::Scenario_CapbankOpenOperation,
-                                                                        timetamp,
+                                                                        timestamp,
                                                                         bankId ) );
 
                 subbus->setLastOperationTime(time);
@@ -1020,7 +1020,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             else    // if request is NULL we returned early from create(In|De)creaseVarRequest( ... ) - this only happens if we exceed KVar
             {
                 sendIVVCAnalysisMessage( IVVCAnalysisMessage::createExceedMaxKVarMessage( subbus->getPaoId(),
-                                                                                          timetamp,
+                                                                                          timestamp,
                                                                                           bankId,
                                                                                           _MAX_KVAR ) );
             }
