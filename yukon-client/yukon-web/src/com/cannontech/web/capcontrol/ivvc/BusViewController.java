@@ -13,8 +13,10 @@ import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
@@ -36,6 +38,7 @@ public class BusViewController {
     private ZoneService zoneService;
     private StrategyDao strategyDao;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
+    private PointDao pointDao;
     
     @RequestMapping
     public String detail(ModelMap model, LiteYukonUser user, Boolean isSpecialArea, int subBusId) {
@@ -53,6 +56,9 @@ public class BusViewController {
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole",hasEditingRole);
+        
+        List<LitePoint> allSubBusPoints = pointDao.getLitePointsByPaObjectId(subBusId);
+        model.addAttribute("allSubBusPoints", allSubBusPoints);
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
@@ -150,5 +156,10 @@ public class BusViewController {
     @Autowired
     public void setVoltageFlatnessGraphService(VoltageFlatnessGraphService voltageFlatnessGraphService) {
         this.voltageFlatnessGraphService = voltageFlatnessGraphService;
+    }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
     }
 }

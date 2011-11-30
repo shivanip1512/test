@@ -47,9 +47,31 @@
 			});
 
 			span.addClassName('selectedZone');
-
+		}
+		
+		function ivvcAnalysisMessageRecieved(msgDivId) {
+		    //assumes data is of type Hash
+            return function(data) {
+                var msg = data.get('value');
+                
+                if (msg != null && msg != '' && msg != jQuery(msgDivId + " span:last").html()) {
+                    jQuery(msgDivId + " span:last").html(msg);
+                    jQuery(msgDivId + " span:first").hide();
+                    jQuery(msgDivId + " span:last").show();
+                    jQuery(msgDivId + "").effect("highlight", {"color": "#FFFF00"}, 3000);
+                } else if (msg == null || msg == '') {
+                    jQuery(msgDivId + " span:first").show();
+                    jQuery(msgDivId + " span:last").hide();
+                }
+            };
 		}
  	</script>
+    
+    <cti:checkProperty property="CBCSettingsRole.ALLOW_SUBBUS_CONTROLS">
+        <script type="text/javascript">
+            addCommandMenuBehavior('a[id^="subbusState"]');
+        </script>
+    </cti:checkProperty>
 
     <cti:standardMenu/>
     
@@ -198,6 +220,18 @@
 						</tr>
 					</thead>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+						<td><i:inline key=".busDetail.table.state"/>: </td>
+                        <%-- State --%>
+                        <td class="nw">
+                            <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
+                            <a id="subbusState_${subBusId}">
+                                <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
+                            </a>
+                            <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_${subBusId}')"
+                                initialize="true" value="SUBBUS/${subBusId}/STATE"/>
+                        </td>
+					</tr>
+					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><i:inline key=".busDetail.table.volts"/>: </td>
 						<td>
 						    <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
@@ -224,7 +258,20 @@
                         	</cti:classUpdater>
                         </td>
 					</tr>
+                    <c:forEach items="${allSubBusPoints}" var="point">
+                        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+                            <td>${point.pointName}: </td>
+                            <td>
+                                <cti:pointStatusColor pointId="${point.liteID}">
+                                    <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
+                                </cti:pointStatusColor>
+                            </td>
+                        </tr>
+                    </c:forEach>
 				</table>
+                <div class="actionArea">
+                    <cti:button nameKey="edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${subBusId}"/>
+                </div>
 			</tags:boxContainer2>
 		</cti:dataGridCell>
 		<cti:dataGridCell>
@@ -272,6 +319,15 @@
                 <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
 
 			</tags:boxContainer2>
+            
+            <br>
+            <tags:boxContainer2 nameKey="ivvcAnalysisContainer">
+                <div id="ivvcAnalysisMsg" class="wsn">
+                    <span class="strongMessage"><i:inline key=".noIvvcMessage"/></span>
+                    <span></span>
+                </div>
+                <cti:dataUpdaterCallback function="ivvcAnalysisMessageRecieved(['div#ivvcAnalysisMsg'])" initialize="false" value="CAPCONTROL/${subBusId}/IVVC_ANALYSIS_MESSAGE" />
+            </tags:boxContainer2>
 		</cti:dataGridCell>
 	</cti:dataGrid>
 	

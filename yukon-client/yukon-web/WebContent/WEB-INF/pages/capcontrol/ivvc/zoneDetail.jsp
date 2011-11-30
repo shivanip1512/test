@@ -326,7 +326,7 @@
 			<br>
             <c:choose>
                 <c:when test="${zoneDto.zoneType == threePhase}">
-                    <tags:tabbedBoxContainer nameKeys="${nameKeys}">
+                    <tags:tabbedBoxContainer nameKeys="${nameKeys}" styleClass="ivvcRegulatorTabs">
                         <tags:tabbedBoxContainerElement>
                             <tags:alternateRowReset/>
                             <table class="compactResultsTable">

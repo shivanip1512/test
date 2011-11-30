@@ -214,6 +214,7 @@ dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
 .fwb{font-weight:bold}
 .fwn{font-weight:normal}
 .nw{white-space: nowrap}
+.wsn{white-space: normal}
 
 .vat {vertical-align:top;}
 .vam {vertical-align:middle;}

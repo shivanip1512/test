@@ -85,6 +85,10 @@ table td.rightActionColumn {
     color: #EE8800;    
 }
 
+.ivvcRegulatorTabs ul.f_tabs li.title {
+    font-size: 12px;
+}
+
 div.historyContainer {
     max-height: 98px;
     overflow: auto;
@@ -141,4 +145,8 @@ table.ivvcGridLayout tr {
 
 .regulatorAttributeRow {
     height: 21px;
+}
+
+#ivvcAnalysisMsg {
+    font-size: 12px;
 }

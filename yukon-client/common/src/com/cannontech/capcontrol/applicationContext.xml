@@ -32,4 +32,8 @@
         
 	<bean class="com.cannontech.capcontrol.creation.service.impl.PaoTableParserServiceImpl"/>
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
+
+    <bean id="ivvcAnalysisMessageListener" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisMessageListener"/>
+    <bean id="ivvcAnalysisScenarioProcessor" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisScenarioProcessor"/>
+    <bean id="ivvcAnalysisMessageService" class="com.cannontech.capcontrol.service.IvvcAnalysisMessageService"/>
 </beans>

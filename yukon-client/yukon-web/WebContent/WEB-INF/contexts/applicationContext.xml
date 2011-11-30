@@ -1007,6 +1007,17 @@
     <bean id="capControlLargestGraphTimeForSubBusUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlLargestGraphTimeForSubBusUpdaterHandler"/>
     <bean id="capControlLargestGraphTimeForZoneUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlLargestGraphTimeForZoneUpdaterHandler"/>
     
+    <bean id="ivvcAnalysisMessageUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.IvvcAnalysisMessageUpdaterHandler"/>
+    
+    <bean id="ivvcAnalysisMessageListener" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisMessageListener" />
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.stream.cc.IvvcAnalysisMessage" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="ivvcAnalysisMessageListener"/>
+    </bean>
+    
     <bean id="voltageRegulatorBackingService" class="com.cannontech.web.updater.capcontrol.VoltageRegulatorBackingService"/>
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>
 	<bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>

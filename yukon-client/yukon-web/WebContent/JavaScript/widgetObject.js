@@ -50,15 +50,16 @@ JsWidgetObject.prototype = {
       var defaultButtonText = $(args.buttonID).down('span').innerHTML;
       $(args.buttonID).down('span').innerHTML = args.waitingText;
     $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
-    $(this.container).getElementsBySelector('input').invoke('disable');
-    $(this.container).getElementsBySelector('button').invoke('disable');
+    var container = this.container;
+    $(container).getElementsBySelector('input').invoke('disable');
+    $(container).getElementsBySelector('button').invoke('disable');
     
     var that = this;
     var localSuccess = function(transport, json) {
         $(args.buttonID).down('span').innerHTML = defaultButtonText;
         $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
-        $(this.container).getElementsBySelector('input').invoke('enable');
-        $(this.container).getElementsBySelector('button').invoke('enable');
+        $(container).getElementsBySelector('input').invoke('enable');
+        $(container).getElementsBySelector('button').invoke('enable');
         that.onSuccess(transport, json);
     }
     
