@@ -89,6 +89,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         void updatePointQualitiesOnDevice(PointQuality_t quality, long paoId);
 
+        CtiFDRPointSPtr findFdrPointInPointList(const std::string &translationName);
+
     private:
 
         static const CHAR * KEY_LISTEN_PORT_NUMBER;

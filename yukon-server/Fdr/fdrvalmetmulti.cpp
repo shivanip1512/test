@@ -184,7 +184,7 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << " Point [" << pointName << "," << pointId << "] added to translation map." << endl;
             }
-            _nameToPointId.insert(std::pair<string,int>(pointName, pointId));
+            _nameToPointId.insert(std::make_pair(pointName, pointId));
         }
 
         if (sendList)
@@ -573,6 +573,22 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
     return retVal;
 }
 
+CtiFDRPointSPtr CtiFDR_ValmetMulti::findFdrPointInPointList(const std::string &translationName)
+{
+    CtiFDRPointSPtr point;
+
+    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
+    string pointName = translationName;
+    std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
+
+    NameToPointIdMap::iterator iter = _nameToPointId.find(pointName);
+    if( iter != _nameToPointId.end() ) {
+        point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
+    }
+
+    return point;
+}
+
 bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
@@ -582,8 +598,6 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
     string desc;
     double value;
     CtiTime timestamp;
-    CtiFDRPointSPtr point;
-    bool flag = true;
     char action[60];
 
     // convert to our name
@@ -591,92 +605,62 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
 
     //Find
     //flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
+    CtiFDRPointSPtr point = findFdrPointInPointList(translationName);
 
+    if (point) 
     {
-        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
-        string pointName = translationName;
-        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
-
-        std::map<string,int>::iterator iter = _nameToPointId.find(pointName);
-        if( iter != _nameToPointId.end() ) {
-            point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
-            flag = true;
-        }
-        else
+        if ((point->getPointType() == AnalogPointType) ||
+            (point->getPointType() == PulseAccumulatorPointType) ||
+            (point->getPointType() == DemandAccumulatorPointType) ||
+            (point->getPointType() == CalculatedPointType))
         {
-            flag = false;
-        }
-    }
-
-    if ((flag == true) &&
-        ((point->getPointType() == AnalogPointType) ||
-         (point->getPointType() == PulseAccumulatorPointType) ||
-         (point->getPointType() == DemandAccumulatorPointType) ||
-         (point->getPointType() == CalculatedPointType)))
-    {
-        // assign last stuff
-        quality = ForeignToYukonQuality (data->Value.Quality);
-        value = CtiFDRSocketInterface::ntohieeef (data->Value.LongValue);
-        value *= point->getMultiplier();
-        value += point->getOffset();
-
-        timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
-        if (timestamp == PASTDATE)
-        {
-            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
-            }
-
-            desc = getInterfaceName() + " analog point received with an invalid timestamp ";
-            desc += string (data->TimeStamp);
-            _snprintf(action,60,"%s for pointID %d",
-                      translationName.c_str(),
-                      point->getPointID());
-            logEvent (desc,string (action));
-            retVal = !NORMAL;
-        }
-        else
-        {
-            if (point->isControllable())
-            {
-                CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, value);
-                sendMessageToDispatch(aoMsg);
-                return  NORMAL;
-            }
-            pData = new CtiPointDataMsg(point->getPointID(),
-                                            value,
-                                            quality,
-                                            point->getPointType());
-            pData->setTime(timestamp);
+            // assign last stuff
+            quality = ForeignToYukonQuality (data->Value.Quality);
+            value = CtiFDRSocketInterface::ntohieeef (data->Value.LongValue);
+            value *= point->getMultiplier();
+            value += point->getOffset();
     
-            // consumes a delete memory
-            queueMessageToDispatch(pData);
-            
-
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
+            if (timestamp == PASTDATE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog point " << translationName;
-                dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
-            }
-        }
-    }
-    else
-    {
-        if (flag == false)
-        {
-            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-            {
+                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for analog point " << translationName;
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
+                    dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
                 }
-                desc = getInterfaceName() + string (" analog point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName.c_str());
+    
+                desc = getInterfaceName() + " analog point received with an invalid timestamp ";
+                desc += string (data->TimeStamp);
+                _snprintf(action,60,"%s for pointID %d",
+                          translationName.c_str(),
+                          point->getPointID());
                 logEvent (desc,string (action));
+                retVal = !NORMAL;
+            }
+            else
+            {
+                if (point->isControllable())
+                {
+                    CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, value);
+                    sendMessageToDispatch(aoMsg);
+                    return  NORMAL;
+                }
+                pData = new CtiPointDataMsg(point->getPointID(),
+                                                value,
+                                                quality,
+                                                point->getPointType());
+                pData->setTime(timestamp);
+        
+                // consumes a delete memory
+                queueMessageToDispatch(pData);
+                
+    
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Analog point " << translationName;
+                    dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
+                }
             }
         }
         else
@@ -693,7 +677,21 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
                 _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
-
+            retVal = !NORMAL;
+        }
+    }
+    else 
+    {
+        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Translation for analog point " << translationName;
+                dout << " from " << getInterfaceName() << " was not found" << endl;
+            }
+            desc = getInterfaceName() + string (" analog point is not listed in the translation table");
+            _snprintf(action,60,"%s", translationName.c_str());
+            logEvent (desc,string (action));
         }
         retVal = !NORMAL;
     }
@@ -704,111 +702,77 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
 bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
-    int retVal = NORMAL;
-    CtiPointDataMsg     *pData;
-    ValmetExtendedInterface_t  *data = (ValmetExtendedInterface_t*)aData;
-    string           translationName;
-    int                 quality;
-    DOUBLE              value;
-    CtiTime              timestamp;
-    CtiFDRPointSPtr         point;
-    bool                 flag = true;
+    int retVal = NORMAL, quality;
+    CtiPointDataMsg *pData;
+    ValmetExtendedInterface_t *data = (ValmetExtendedInterface_t*)aData;
+    DOUBLE value;
+    CtiTime timestamp;
+    string desc;
+    CHAR action[60];
 
-    string           desc;
-    CHAR           action[60];
+    string translationName = string (data->Status.Name);
 
-    translationName = string (data->Status.Name);
+    CtiFDRPointSPtr point = findFdrPointInPointList(translationName);
 
-    // see if the point exists
+    if(point)
     {
-        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
-        string pointName = translationName;
-        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
-
-        std::map<string,int>::iterator iter = _nameToPointId.find(pointName);
-        if( iter != _nameToPointId.end() ) {
-            point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
-            flag = true;
-        }
-        else
+        if(point->getPointType() == StatusPointType)
         {
-            flag = false;
-        }
-    }
-
-    if ((flag == true) && (point->getPointType() == StatusPointType))
-    {
-        // assign last stuff
-        quality = ForeignToYukonQuality (data->Status.Quality);
-
-        value = ForeignToYukonStatus (data->Status.Value);
-        timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
-        if (timestamp == PASTDATE)
-        {
-            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+            // assign last stuff
+            quality = ForeignToYukonQuality (data->Status.Quality);
+    
+            value = ForeignToYukonStatus (data->Status.Value);
+            timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
+            if (timestamp == PASTDATE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
-            }
-
-            desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
-            _snprintf(action,60,"%s for pointID %d",
-                      translationName.c_str(),
-                      point->getPointID());
-            logEvent (desc,string (action));
-            retVal = !NORMAL;
-        }
-        else
-        {
-            pData = new CtiPointDataMsg(point->getPointID(),
-                                        value,
-                                        quality,
-                                        StatusPointType);
-
-            pData->setTime(timestamp);
-
-            // consumes a delete memory
-            queueMessageToDispatch(pData);
-
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Status point " << translationName;
-                if (value == OPENED)
-                {
-                    dout << " new state: Open " ;
-                }
-                else if (value == CLOSED)
-                {
-                    dout << " new state: Closed " ;
-                }
-                else if (value == INDETERMINATE)
-                {
-                    dout << " new state: Indeterminate " ;
-                }
-                else
-                {
-                    dout << " new state: " << value;
-                }
-
-                dout <<" from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
-            }
-        }
-    }
-    else
-    {
-        if (flag == false)
-        {
-            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-            {
+                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for status point " <<  translationName;
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
+                    dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
                 }
-                desc = getInterfaceName() + string (" status point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName.c_str());
+    
+                desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
+                _snprintf(action,60,"%s for pointID %d",
+                          translationName.c_str(),
+                          point->getPointID());
                 logEvent (desc,string (action));
+                retVal = !NORMAL;
+            }
+            else
+            {
+                pData = new CtiPointDataMsg(point->getPointID(),
+                                            value,
+                                            quality,
+                                            StatusPointType);
+    
+                pData->setTime(timestamp);
+    
+                // consumes a delete memory
+                queueMessageToDispatch(pData);
+    
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Status point " << translationName;
+                    if (value == OPENED)
+                    {
+                        dout << " new state: Open " ;
+                    }
+                    else if (value == CLOSED)
+                    {
+                        dout << " new state: Closed " ;
+                    }
+                    else if (value == INDETERMINATE)
+                    {
+                        dout << " new state: Indeterminate " ;
+                    }
+                    else
+                    {
+                        dout << " new state: " << value;
+                    }
+    
+                    dout <<" from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
+                }
             }
         }
         else
@@ -825,6 +789,21 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
                 _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
+            retVal = !NORMAL;
+        }
+    }
+    else
+    {
+        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Translation for status point " <<  translationName;
+                dout << " from " << getInterfaceName() << " was not found" << endl;
+            }
+            desc = getInterfaceName() + string (" status point is not listed in the translation table");
+            _snprintf(action,60,"%s", translationName.c_str());
+            logEvent (desc,string (action));
         }
         retVal = !NORMAL;
     }
@@ -858,30 +837,18 @@ int CtiFDR_ValmetMulti::processScanMessage(CHAR *aData)
 bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
-    int retVal = NORMAL;
+    int retVal = NORMAL, quality = NormalQuality;
     CtiPointDataMsg *pData;
     ValmetExtendedInterface_t *data = (ValmetExtendedInterface_t*)aData;
-    string translationName;
-    int quality =NormalQuality;
     USHORT value = ntohs(data->Control.Value);        
     CtiTime timestamp;
-    CtiFDRPointSPtr point;
-
     string desc;
     CHAR action[60];
 
     // convert to our name
-    translationName = string (data->Control.Name);
+    string translationName = string (data->Control.Name);
 
-    // see if the point exists
-    {
-        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
-
-        std::map<string,int>::iterator iter = _nameToPointId.find(translationName);
-        if( iter != _nameToPointId.end() ) {
-            point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
-        }
-    }
+    CtiFDRPointSPtr point = findFdrPointInPointList(translationName);
 
     if (point && point->isControllable())
     {
