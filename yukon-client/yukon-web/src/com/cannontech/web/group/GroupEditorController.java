@@ -534,9 +534,7 @@ public class GroupEditorController extends MultiActionController {
             
             // Make sure we can remove the group
             if (removeGroup.isEditable()) {
-                
-                Set<SimpleDevice> deviceList = deviceGroupDao.getChildDevices(removeGroup);
-                deviceGroupMemberEditorDao.removeDevices(removeGroup, deviceList);
+                deviceGroupMemberEditorDao.removeAllChildDevices(removeGroup);
             } else {
                 membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();
             }
