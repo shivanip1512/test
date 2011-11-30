@@ -70,13 +70,13 @@ public:
 
 protected:
 
-    long                _subbusId;
+    int                 _subbusId;
     long                _timestamp;
     int                 _scenarioId;
     std::vector<int>    _intData;
     std::vector<float>  _floatData;
 
-    IVVCAnalysisMessage( const long      subbusId,
+    IVVCAnalysisMessage( const int       subbusId,
                          const int       scenarioId,
                          const CtiTime & timestamp );
 };

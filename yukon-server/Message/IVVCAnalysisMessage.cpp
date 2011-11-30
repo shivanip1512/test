@@ -10,7 +10,7 @@ namespace Messaging     {
 namespace CapControl    {
 
 
-IVVCAnalysisMessage::IVVCAnalysisMessage( const long      subbusId,
+IVVCAnalysisMessage::IVVCAnalysisMessage( const int       subbusId,
                                           const int       scenarioId,
                                           const CtiTime & timestamp )
     : _subbusId( subbusId ),
@@ -97,7 +97,7 @@ IVVCAnalysisMessage * IVVCAnalysisMessage::createExceedMaxKVarMessage( const int
 
 void IVVCAnalysisMessage::streamInto( cms::StreamMessage & message ) const
 {
-    message.writeLong( _subbusId );
+    message.writeInt( _subbusId );
     message.writeLong( _timestamp );
     message.writeInt( _scenarioId );
     message.writeInt( _intData.size() );
