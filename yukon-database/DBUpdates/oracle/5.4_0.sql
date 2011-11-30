@@ -167,8 +167,14 @@ INSERT INTO FDRInterfaceOption
 VALUES(29, 'Port', 3, 'Text', '(none)');
 /*  End YUK-10463  */
 
+/* Start YUK-10254 */
+create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
+   TIMESTAMP ASC,
+   POINTID ASC
+);
+/*  End YUK-10254  */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '30-NOV-2011', 'Latest Update', 0 );

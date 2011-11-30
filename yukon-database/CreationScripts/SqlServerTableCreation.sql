@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/30/2011 1:27:44 AM                        */
+/* Created on:     11/30/2011 1:50:21 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7192,9 +7192,9 @@ create table RAWPOINTHISTORY (
 go
 
 /*==============================================================*/
-/* Index: Index_PointID                                         */
+/* Index: Index_PointId                                         */
 /*==============================================================*/
-create index Index_PointID on RAWPOINTHISTORY (
+create index Index_PointId on RAWPOINTHISTORY (
 POINTID ASC
 )
 go
@@ -7208,11 +7208,20 @@ TIMESTAMP ASC
 go
 
 /*==============================================================*/
-/* Index: Indx_RwPtHisPtIDTst                                   */
+/* Index: Indx_RwPtHisPtIdTst                                   */
 /*==============================================================*/
-create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
+create index Indx_RwPtHisPtIdTst on RAWPOINTHISTORY (
 POINTID ASC,
 TIMESTAMP ASC
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_RwPtHisTstPtId                                   */
+/*==============================================================*/
+create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
+TIMESTAMP ASC,
+POINTID ASC
 )
 go
 
