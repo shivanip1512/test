@@ -6,7 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
 <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
@@ -133,21 +133,20 @@
                 
                 <input type="hidden" name="collectionType" value="group" />
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
-            
-                <ext:nodeValueSelectingPopupTree    fieldId="group.name"
+                                                    
+                <jsTree:nodeValueSelectingPopupTree    fieldId="group.name"
                                                     fieldName="group.name"
                                                     nodeValueName="groupName"
                                                     submitButtonText="${submitButtonText}"
                                                     cancelButtonText="${cancelButtonText}"
                                                     submitCallback="submitSelectDevicesByGroupForm();"
-                                                    
                                                     id="bulkDeviceSelectionByGroupTree"
-                                                    treeAttributes="{}"
                                                     triggerElement="selectByGroupButton"
                                                     dataJson="${groupDataJson}"
                                                     title="${addDeviceTitle}"
                                                     width="432"
-                                                    height="600" />
+                                                    height="600"
+                                                    includeControlBar="true"/>
                                 
             </form>                    
                                 

@@ -545,7 +545,7 @@ div.widgetPopup {
 	background-color: yellow;	
 }
 
-.disabled {
+.disabled, .default {
 	color: gray;
 }
 
@@ -1648,3 +1648,7 @@ div.scrollingContainer {
     width: 0;
 }
 /* END FIELD HELPER */
+
+input.working {
+    background: transparent url("../Icons/working_throbber.gif") right top no-repeat;
+}

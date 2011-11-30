@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.home.pageTitle"/>
@@ -48,7 +48,7 @@
 			<div class="largeBoldLabel">${selectGroupLabel}</div>
 			
 			<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${groupName}" selectedNodePathVar="selectedNodePath"/>
-			<ext:nodeValueSelectingInlineTree   fieldId="groupName" 
+			<jsTree:nodeValueSelectingInlineTree   fieldId="groupName" 
 			                                    fieldName="groupName"
 			                                    nodeValueName="groupName" 
 			                                    fieldValue="${groupName}"
@@ -56,7 +56,8 @@
 			                                    id="selectGroupTree" 
 			                                    dataJson="${dataJson}" 
 			                                    width="500"
-			                                    height="400" treeAttributes="{'border':true}"
+			                                    height="400"
+                                                includeControlBar="true"
 			                                    highlightNodePath="${selectedNodePath}" />
 			                                    
 			      

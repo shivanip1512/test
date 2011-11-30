@@ -47,7 +47,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 public class GroupEditorController extends MultiActionController {
 
@@ -134,7 +134,7 @@ public class GroupEditorController extends MultiActionController {
         
         // ALL GROUPS TREE JSON
         HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
-        ExtTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(allGroupsGroupHierarchy, "Groups", callback);
+        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(allGroupsGroupHierarchy, "Groups", callback);
         
         // selected node Ext path
         String extSelectedNodePath = callback.getExtSelectedNodePath();
@@ -147,7 +147,7 @@ public class GroupEditorController extends MultiActionController {
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
-        ExtTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(moveGroupHierarchy, "Groups", null);
+        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(moveGroupHierarchy, "Groups", null);
         
         JSONObject moveGroupJsonObj = new JSONObject(moveGroupRoot.toMap());
         mav.addObject("moveGroupDataJson", moveGroupJsonObj.toString()); 
@@ -159,7 +159,7 @@ public class GroupEditorController extends MultiActionController {
             }
         };
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
-        ExtTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(copyGroupHierarchy, "Groups", null);
+        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(copyGroupHierarchy, "Groups", null);
         
         JSONObject copyGroupJson = new JSONObject(copyExtRoot.toMap());
         mav.addObject("copyGroupDataJson", copyGroupJson.toString()); 
@@ -334,7 +334,7 @@ public class GroupEditorController extends MultiActionController {
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class DisableCurrentGroup implements NodeAttributeSettingCallback<DeviceGroup> {
-            public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
+            public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
                 
                 if (group.equals(deviceGroup)) {
                     node.setAttribute("disabled", true);
@@ -342,7 +342,7 @@ public class GroupEditorController extends MultiActionController {
             }
         }
         
-        ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", new DisableCurrentGroup());
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", new DisableCurrentGroup());
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();
         

@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <c:choose>
 <c:when test="${addRemove eq 'ADD'}">
@@ -72,8 +72,8 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" /> 
                                 
             <%-- SELECT DEVICE GROUP TREE INPUT --%>
-            <cti:deviceGroupHierarchyJson predicates="MODIFIABLE" var="dataJson" />
-            <ext:nodeValueSelectingInlineTree   fieldId="groupName"
+            <cti:deviceGroupHierarchyJson predicates="MODIFIABLE" var="dataJson" />                                              
+            <jsTree:nodeValueSelectingInlineTree   fieldId="groupName"
                                                 fieldName="groupName"
                                                 nodeValueName="groupName"
                                                 multiSelect="false"
@@ -82,7 +82,7 @@
                                                 dataJson="${dataJson}"
                                                 width="500"
                                                 height="400"
-                                                treeAttributes="{'border':true}" />
+                                                includeControlBar="true"/>
                             
             <%-- ADD/REMOVE BUTTON --%>
             <input type="button" name="addRemoveButton" value="${buttonText}" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">

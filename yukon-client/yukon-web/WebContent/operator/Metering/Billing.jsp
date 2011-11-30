@@ -6,7 +6,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING"/>
 
@@ -75,7 +75,7 @@
 				<tags:nameValue name="Billing Group">
                 
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
-                    <ext:nodeValueSelectingInlineTree   fieldId="billGroup"
+                    <jsTree:nodeValueSelectingInlineTree fieldId="billGroup"
                                                         fieldName="billGroup"
                                                         nodeValueName="groupName"
                                                         multiSelect="true"
@@ -84,7 +84,7 @@
                                                         dataJson="${dataJson}"
                                                         width="500"
                                                         height="400"
-                                                        treeAttributes="{'border':true}" />
+                                                        includeControlBar="true" />
 				</tags:nameValue>
 				
 			</tags:nameValueContainer>

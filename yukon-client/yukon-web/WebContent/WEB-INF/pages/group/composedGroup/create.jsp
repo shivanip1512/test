@@ -2,7 +2,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext"%>
 
 <cti:msg var="pageTitle" key="yukon.web.deviceGroups.composedGroup.pageTitle"/>
 <cti:msg var="nameLabelText" key="yukon.web.deviceGroups.composedGroup.nameLabel"/>

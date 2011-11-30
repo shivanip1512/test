@@ -31,7 +31,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -85,10 +85,10 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class AddGroupIdInfoAndDisableCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
-            public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
+            public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
                 
                 String groupId = ((Integer)((StoredDeviceGroup)deviceGroup).getId()).toString();
-                ExtTreeNode.addToNodeInfo(node, "groupId", groupId);
+                JsTreeNode.addToNodeInfo(node, "groupId", groupId);
                 
                 if (currentGroups.contains(deviceGroup)) {
                     node.setAttribute("disabled", true);
@@ -96,7 +96,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             }
         }
         
-        ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", new AddGroupIdInfoAndDisableCurrentGroups());
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", new AddGroupIdInfoAndDisableCurrentGroups());
         
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();

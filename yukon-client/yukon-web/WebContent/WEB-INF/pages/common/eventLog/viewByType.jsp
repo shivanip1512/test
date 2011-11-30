@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="filterValue" tagdir="/WEB-INF/tags/filterValue" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -83,14 +83,14 @@
                 <cti:msg2 var="cancel" key=".cancel"/>
                 <cti:msg2 var="noEventLogSelected" key=".noEventLogSelected"/>
                                                             
-                <ext:popupTree id="eventCategoryEditorTree"
-                               treeCss="/JavaScript/extjs_cannon/resources/css/eventType-tree.css"
-                               treeAttributes="{}"
+                <jsTree:popupTree id="eventCategoryEditorTree"
+                               treeCss="/WebConfig/yukon/styles/lib/dynatree/eventType.css"
                                triggerElement="showPopupButton"
                                dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
                                title="${selectEventLog}"
                                width="432"
-                               height="600" />
+                               height="600"
+                               treeCallbacks="{onActivate: TreeHelper.redirect_node_data_href_onActivate}" />
 
             </td>    
         </tr>

@@ -3,7 +3,7 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <cti:standardPage title="Groups Home" module="amr">
 <cti:standardMenu menuSelection="devicegroups|home"/>
@@ -66,7 +66,6 @@
         }
         
         function submitMoveGroupForm() {
-        
             $('moveGroupForm').submit();
         }
         
@@ -139,15 +138,16 @@
                     "${fn:escapeXml(group.fullName)}"
                 </jsp:attribute>
             </c:set>
-            
-            <ext:nodeValueRedirectingInlineTree name="groupName"
+                                                
+            <jsTree:nodeValueRedirectingInlineTree name="groupName"
                                                 hrefBase="/spring/group/editor/home"
                                                 otherHrefParameters=""
                                                 id="deviceGroupEditorTree"
                                                 dataJson="${allGroupsDataJson}"
                                                 width="432"
                                                 height="600"
-                                                highlightNodePath="${extSelectedNodePath}" />
+                                                highlightNodePath="${extSelectedNodePath}"
+                                                includeControlBar="true" />
                                 
         </tags:boxContainer>
     </div>
@@ -233,7 +233,7 @@
                         
                         <%-- MOVE --%>
                         <div>
-                        <cti:link id="moveGroupLink" class="lame" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
+                        <cti:link id="moveGroupLink" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
                         
                         <form id="moveGroupForm" action="/spring/group/editor/moveGroup" method="post">
                             
@@ -244,7 +244,7 @@
                             
                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                             
-                            <ext:nodeValueSelectingPopupTree    fieldId="parentGroupName"
+                            <jsTree:nodeValueSelectingPopupTree    fieldId="parentGroupName"
                                                                 fieldName="parentGroupName"
                                                                 nodeValueName="groupName"
                                                                 submitButtonText="${moveGroupPopupSubmitButtonText}"
@@ -252,13 +252,13 @@
                                                                 submitCallback="submitMoveGroupForm();"
                                                                 
                                                                 id="groupsEditorMoveGroupTree"
-                                                                treeAttributes="{}"
                                                                 triggerElement="moveGroupLink"
                                                                 dataJson="${moveGroupDataJson}"
                                                                 title="${moveGroupPopupTitle}"
                                                                 width="432"
                                                                 height="600"
-                                                                noSelectionAlertText="${noGroupSelectedAlertText}" />
+                                                                noSelectionAlertText="${noGroupSelectedAlertText}"
+                                                                includeControlBar="true" />
                         </form>
                         </div>
                         </div>
@@ -381,7 +381,7 @@
                         
                         <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                         
-                        <ext:nodeValueSelectingPopupTree    fieldId="copyContentsToGroupName"
+                        <jsTree:nodeValueSelectingPopupTree    fieldId="copyContentsToGroupName"
                                                             fieldName="copyContentsToGroupName"
                                                             nodeValueName="groupName"
                                                             submitButtonText="${copyContentsPopupSubmitText}"
@@ -389,13 +389,13 @@
                                                             submitCallback="submitCopyContentsToGroupForm();"
                                                             
                                                             id="copyContentsToGroupTree"
-                                                            treeAttributes="{}"
                                                             triggerElement="copyContentsToGroupLink"
                                                             dataJson="${copyGroupDataJson}"
                                                             title="${copyContentsPopupTitle}"
                                                             width="432"
                                                             height="600"
-                                                            noSelectionAlertText="${noGroupSelectedAlertText}" />
+                                                            noSelectionAlertText="${noGroupSelectedAlertText}"
+                                                            includeControlBar="true" />
                     </form>
                     </div>
                     </div>

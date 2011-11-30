@@ -1,7 +1,7 @@
 package com.cannontech.web.common.events;
 
 import com.cannontech.web.group.NodeAttributeSettingCallback;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 public class HighlightSelectedEventLogNodeAttributeSettingCallback 
                    implements NodeAttributeSettingCallback<String> {
@@ -14,9 +14,12 @@ public class HighlightSelectedEventLogNodeAttributeSettingCallback
 	}
 	
 	@Override
-	public void setAdditionalAttributes(ExtTreeNode node, String eventType) {
+	public void setAdditionalAttributes(JsTreeNode node, String eventType) {
         if (this.selectedEventType.equals(eventType)) {
+            
+            //DEPRECATED - cls no longer needed w/ JsTree
             node.setAttribute("cls", "highlightNode");
+            
             extSelectedNodePath = node.getNodePath();
         }
     }

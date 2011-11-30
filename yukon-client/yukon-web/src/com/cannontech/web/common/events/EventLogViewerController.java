@@ -73,7 +73,7 @@ import com.cannontech.web.input.EventLogColumnTypePropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -406,7 +406,7 @@ public class EventLogViewerController {
         
         HighlightSelectedEventLogNodeAttributeSettingCallback callback = 
             new HighlightSelectedEventLogNodeAttributeSettingCallback(StringUtils.defaultString(eventLogType, ""));
-        ExtTreeNode allGroupsRoot = 
+        JsTreeNode allGroupsRoot = 
             new EventLogTreeUtils().makeEventCategoryExtTree(everythingHierarchy, callback);
 
         // selected node Ext path

@@ -41,7 +41,7 @@ import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 @Controller
 @RequestMapping("/composedGroup/*")
@@ -134,7 +134,7 @@ public class ComposedGroupController {
         
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
-        ExtTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
+        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
         
         JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
         String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();

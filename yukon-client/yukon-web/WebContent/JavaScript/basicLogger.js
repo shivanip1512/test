@@ -28,6 +28,54 @@
  *  
  */
 
+/**
+ * Profiler - A singleton for profiling functions in the browser.
+ * 
+ * To use:
+ * Start profiling by inserting a Profiler.start() call in your code
+ * Stop profiling by adding a Profiler.stop() call in your code.  Upon stopping the profile, a message
+ * will be logged to the debug console with the time taken in ms.
+ * 
+ * Caveats:
+ * Only 1 profile may be running at a given time. Multiple calls to Profiler.start() with out a subsequent
+ * Profiler.stop() call will not restart the timer.  Only the first call to Profiler.start() is registered.
+ * 
+ * Imagine the following scenario:
+ * 
+ *      for(var i=0; i<one_billion; i++){
+ *          Profiler.start();
+ *          ...
+ *      }
+ *      Profiler.stop();
+ *      
+ * This is functionally equivalent to putting the start() call BEFORE the for loop.
+ * 
+ */
+var Profiler = new function(){
+    this.start_time = null;
+    
+    this.start = function(msg){
+        if(!this.start_time){
+            if(msg){
+                debug(msg);
+            }
+            this.start_time = new Date();
+            return true;
+        }
+        return false;
+    };
+    
+    this.stop = function(msg){
+        if(this.start_time){
+            debug((new Date() - this.start_time) + "ms " + msg);
+            delete this.start_time;
+            this.callee = "";
+            return true;
+        }
+        return false;
+    }
+};
+
 if (typeof(_logger) == 'undefined') {
     var _logger = {
         _debugRowCount : 0,

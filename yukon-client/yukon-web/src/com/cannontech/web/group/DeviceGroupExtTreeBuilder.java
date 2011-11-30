@@ -9,18 +9,18 @@ import java.util.Map;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.util.ExtTreeBuilderUtil;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 public class DeviceGroupExtTreeBuilder {
     
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     
-    public ExtTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
+    public JsTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
         
         DeviceGroup deviceGroup = dgh.getGroup();
         
         // setup node basics
-        ExtTreeNode node = new ExtTreeNode();
+        JsTreeNode node = new JsTreeNode();
         
         // node id
         String nodeId = ExtTreeBuilderUtil.createUniqueNodeId(deviceGroup.getFullName(), nodeIdHistory);
@@ -37,7 +37,7 @@ public class DeviceGroupExtTreeBuilder {
         DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName, "javascript:void(0);");
         
         // add group name to the list of items in the node's "info" attribute
-        ExtTreeNode.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
+        JsTreeNode.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
@@ -50,7 +50,7 @@ public class DeviceGroupExtTreeBuilder {
         }
         
         // leaf attribute should only be set after possible child groups have been added
-        ExtTreeNode.setLeaf(node);
+        JsTreeNode.setLeaf(node);
         
         return node;
     }

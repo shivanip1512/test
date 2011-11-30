@@ -3,7 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage title="Group Processing" module="amr">
@@ -56,15 +56,16 @@
             <div class="largeBoldLabel">Group:</div>
             
             <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${param.groupName}" selectedNodePathVar="selectedNodePath"/>
-            <ext:nodeValueSelectingInlineTree   fieldId="groupName" 
+            <jsTree:nodeValueSelectingInlineTree   fieldId="groupName" 
                                                 fieldName="groupName"
                                                 nodeValueName="groupName" 
                                                 multiSelect="false"
                                                 id="selectGroupTree" 
                                                 dataJson="${dataJson}" 
                                                 width="500"
-                                                height="400" treeAttributes="{'border':true}"
-                                                highlightNodePath="${selectedNodePath}" />
+                                                height="400" 
+                                                highlightNodePath="${selectedNodePath}"
+                                                includeControlBar="true"/>
                                                 
             <%-- EMAIL --%>
             <div class="largeBoldLabel">Email Address (optional):</div>

@@ -16,7 +16,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.HighlightSelectedGroupNodeAttributeSettingCallback;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 @Configurable("deviceGroupHierarchyJsonPrototype")
 public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
@@ -44,7 +44,7 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         	nodeCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
         }
         
-        ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, rootName, nodeCallback);
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, rootName, nodeCallback);
         JSONObject jsonObj = new JSONObject(root.toMap());
         
         String extSelectedNodePath = null;

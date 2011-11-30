@@ -1,7 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <c:set var="tree_id" value="deviceGroupWidgetTreePopup" />
 
@@ -14,7 +14,7 @@
     
 </script>
 
-<div id="currentGroups scrollingContainer">
+<div id="currentGroups" class="scrollingContainer">
     <jsp:include page="/WEB-INF/pages/widget/deviceGroupWidget/currentGroups.jsp" />
 </div>
 
@@ -24,21 +24,20 @@
     <div class="actionArea">
         <cti:button nameKey="groupTree" type="button" id="showPopupButton"/>
     </div>
-
-    <ext:multiNodeValueSelectingPopupTree fieldId="groupIds"
+                                          
+    <jsTree:multiNodeValueSelectingPopupTree fieldId="groupIds"
                                           fieldName="groupIds"
                                           nodeValueName="groupId"
                                           submitButton=".groupTree.submitButtonText"
                                           cancelButton=".groupTree.closeButtonText"
                                           submitCallback="commitGroupIds();"
                                           id="deviceGroupWidgetPopupTree"
-                                          treeAttributes="{}"
                                           triggerElement="showPopupButton"
                                           dataJson="${groupDataJson}"
                                           title=".groupTree.label"
                                           width="432"
                                           height="600"
-                                          noSelectionAlert="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+                                          noSelectionAlert="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />                                      
 </cti:checkProperty>
 </cti:checkRole>
                                                     

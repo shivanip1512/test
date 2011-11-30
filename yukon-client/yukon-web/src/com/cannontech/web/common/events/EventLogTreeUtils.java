@@ -8,25 +8,25 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventCategoryHierarchy;
 import com.cannontech.util.ExtTreeBuilderUtil;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 public class EventLogTreeUtils {
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     private NodeAttributeSettingCallback<String> nodeCallback;
 
-    public ExtTreeNode makeEventCategoryExtTree(EventCategoryHierarchy elh, NodeAttributeSettingCallback<String> nodeCallback) {
+    public JsTreeNode makeEventCategoryExtTree(EventCategoryHierarchy elh, NodeAttributeSettingCallback<String> nodeCallback) {
     
         this.nodeCallback = nodeCallback;
         return doMakeEventCategoryExtTree(elh, "");
     }
     
-    public ExtTreeNode doMakeEventCategoryExtTree(EventCategoryHierarchy elh, String parentNodeId) {
+    public JsTreeNode doMakeEventCategoryExtTree(EventCategoryHierarchy elh, String parentNodeId) {
         
         EventCategory eventCategory = elh.getEventCategory();
         List<String> eventLogTypes = elh.getEventLogTypes();
         
         // setup node basics
-        ExtTreeNode node = new ExtTreeNode();
+        JsTreeNode node = new JsTreeNode();
         
         // node id
         String nodeId = ExtTreeBuilderUtil.createUniqueNodeId(eventCategory.getName(), nodeIdHistory);
@@ -43,13 +43,13 @@ public class EventLogTreeUtils {
         
         // Build up event log type node
         for (String eventLogType : eventLogTypes) {
-            ExtTreeNode child = setupEventLogTypeNode(eventCategory, nodePath, eventLogType);
+            JsTreeNode child = setupEventLogTypeNode(eventCategory, nodePath, eventLogType);
             node.addChild(child);
         }
         
         // recursively add child groups
         for (EventCategoryHierarchy e : elh.getChildEventCategoryHierarchyList()) {
-            ExtTreeNode child = doMakeEventCategoryExtTree(e, nodePath);
+            JsTreeNode child = doMakeEventCategoryExtTree(e, nodePath);
             node.addChild(child);
         }
         
@@ -64,10 +64,10 @@ public class EventLogTreeUtils {
      * @param eventLogType
      * @return
      */
-    private ExtTreeNode setupEventLogTypeNode(EventCategory eventCategory,
+    private JsTreeNode setupEventLogTypeNode(EventCategory eventCategory,
                                                      String parentNodeId,
                                                      String eventLogType) {
-        ExtTreeNode node = new ExtTreeNode();
+        JsTreeNode node = new JsTreeNode();
         
         // node id
         String fullEventLogTypeName = eventCategory.getFullName() + "." + eventLogType;

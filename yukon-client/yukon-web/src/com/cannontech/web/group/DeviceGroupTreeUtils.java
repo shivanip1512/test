@@ -11,18 +11,18 @@ import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupPredicateEnum;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 public class DeviceGroupTreeUtils {
 
-    public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
+    public static JsTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
     
         DeviceGroupExtTreeBuilder builder = new DeviceGroupExtTreeBuilder();
         
         return builder.doMakeDeviceGroupExtTree(dgh, rootName, nodeCallback, "");
     }
     
-    public static void setupNodeAttributes(ExtTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href) {
+    public static void setupNodeAttributes(JsTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href) {
         
         // set id
         node.setAttribute("id", nodeId);

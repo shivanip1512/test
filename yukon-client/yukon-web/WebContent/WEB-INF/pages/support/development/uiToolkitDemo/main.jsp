@@ -104,74 +104,116 @@ document.observe("dom:loaded", function() {
 });
 </script>
 
-    <table class="example">
-    <tr>
-        <th>Focus An Input on Page Load</th>
-        <th>Relevant Markup</th>
-    </tr>
-    <tr>
-        <td>
-            <label>Something Important:</label><input type="text" name="important" class="f_focus"/>
-        </td>
-        <td>
-            Add the <b>f_focus</b> class to the input.
-        <br/>
-        <br/>
-            <pre>
+<cti:button nameKey="edit" />
+<cti:button nameKey="edit" styleClass="icon edit"/>
+<cti:button nameKey="edit" styleClass="edit"/>
+<cti:button nameKey="edit" styleClass="icon edit"/>
+
+
+    <ul class="f_tabs">
+        <li>Inputs</li>
+        <li>Blocking</li>
+        <li>Tabs</li>
+        <li>Formatting</li>
+    </ul>
+
+<!-- INPUTS -->
+    <div class="f_tabbed">
+        <div class="f_tab">
+            <table class="example">
+                <tr>
+                    <th>Focus An Input on Page Load</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td><label>Something Important:</label><input type="text" name="important"
+                        class="f_focus" /></td>
+                    <td>Add the <b>f_focus</b> class to the input. <br /> <br /> <pre>
 &lt;input type="text" name="something" class="f_focus"/&gt;
-            </pre>
-        </td>
-    </tr>
-    <tr>
-        <th>Blocking</th>
-        <th>Relevant Markup</th>
-    </tr>
-    <tr>
-        <td>
-        <button name="button1" value="A" class="f_blocker">Block Page</button>
-        <br/>
-        <br/>
-        <small>In this example, hit the 'ESC' key to unblock the page.</small>
-        </td>
-        <td>
-        Add the <b>f_blocker</b> class to the tag/button.
-        <br/>
-        <br/>
-        <pre>
-&lt;button type="submit" name="button1" value="who cares?" class="f_blocker"&gt;standard&lt;/button&gt;
+            </pre></td>
+                </tr>
+                <tr>
+                    <th>Enable/Disable Input Groups</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td><label for="enabled">Enabled?</label><input type="checkbox"
+                        name="enabled" class="f_toggle" /> <br /> <br />
+                        <div class="f_toggle box">
+                            <label for="name">Name:</label><input type="text" name="name" /> <br />
+                            <br /> <label for="group">Group:</label><select name="group">
+                                <option>Select One</option>
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                            </select> <br /> <br /> <label for="cool">Cool?</label><input type="checkbox"
+                                name="cool"> <br /> <br /> <label for="notes">Notes:</label>
+                            <textarea name="notes"></textarea>
+                            <br /> <br />
+                            <button name="save">Save</button>
+                        </div> <br /> <br /> <label for="enabled2">Edit</label><input type="checkbox"
+                        name="enabled2" class="f_toggle" checked="checked" /> <br /> <br />
+                        <div class="f_toggle box">
+                            <label for="address">Address:</label><input type="text" name="address" />
+                            <br /> <br /> <label for="City">City:</label><input type="text"
+                                name="City" /> <br /> <br />
+                            <button name="save">Save</button>
+                            <button name="save">Delete</button>
+                        </div>
+                    </td>
+                    <td>Works on page load and clicking a checkbox. <br /> Add the <b>f_toggle</b>
+                        class to the checkbox input.<br />Then wrap the inputs you want to be
+                        toggled in a div with a <b>f_toggle</b> class. <br /> <br /> <pre>
+&lt;input type="checkbox" name="enabled" class="f_toggle"/&gt;
+
+&lt;div class="f_toggle"&gt;
+    ...INPUTS HERE...
+&lt;/div&gt;
+        </pre> <br /> <br /> Will disable the following: <pre>
+input
+select
+textarea
+button
         </pre>
-        <br/>
-        <br/>
-        To clear this blocked page you must create your own event handler as such:
-        <br/>
-        <br/>
-        <pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+<!-- BLOCKING -->
+        <div class="f_tab">
+            <table class="example">
+                <tr>
+                    <th>Blocking</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td>
+                        <button name="button1" value="A" class="f_blocker">Block Page</button> <br />
+                        <br /> <small>In this example, hit the 'ESC' key to unblock the
+                            page.</small></td>
+                    <td>Add the <b>f_blocker</b> class to the tag/button. <br /> <br /> <pre>
+&lt;button type="submit" name="button1" value="who cares?" class="f_blocker"&gt;standard&lt;/button&gt;
+        </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
+                        <br /> <br /> <pre>
 $("myCloseButton").observe('click', function(){
     Yukon.ui.unblockPage();
 });
-        </pre>
-        
-    </td>
-    </tr>
-    <tr>
-        <td>
-        <div class="blockThis box" style="border: solid 1px #ccc; background: white; padding: 10px 20px;"/>
-            <span class="info">In this example, clicking the block button will block only this white box.</span>
-            Dynamic content is so cool.
-            <br/>
-            <br/>
-            <button name="button2" value="B" class="blockElement">Block Element</button>
-        </div>
-        </td>
-        <td>
-        Here we block just a specific element on the page.  This functionality requires a bit of setup.
-        <br/>You must explicitly tell the library to block and unblock and element.
-        <br/>
-        <br/>In this example, we have a click handler on the <em>Block Element</em> button. The
-        <br/>function for the handler looks like this:
-        <br/>
-        <br/>
-        <pre>
+        </pre></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="blockThis box"
+                            style="border: solid 1px #ccc; background: white; padding: 10px 20px;" />
+                        <span class="info">In this example, clicking the block button will
+                            block only this white box.</span> Dynamic content is so cool. <br /> <br />
+                        <button name="button2" value="B" class="blockElement">Block Element</button>
+                        </div></td>
+                    <td>Here we block just a specific element on the page. This functionality
+                        requires a bit of setup. <br />You must explicitly tell the library to
+                        block and unblock and element. <br /> <br />In this example, we have a
+                        click handler on the <em>Block Element</em> button. The <br />function for
+                        the handler looks like this: <br /> <br /> <pre>
 $("blockTheWhiteContainer").observe('click', function(elem){
     ...
     var elem = $(&lt;THE_ELEMENT_I_WANT_TO_BLOCK&gt;);
@@ -179,198 +221,76 @@ $("blockTheWhiteContainer").observe('click', function(elem){
     Yukon.ui.blockElement({element:elem, opacity:0.5});
     ...
 });
-        </pre>
-        <br/>
-        Similarly, we need to tell the library to unblock the element:
-        <pre>
+        </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre>
 ...
 var elem = $(&lt;THE_SAME_ELEMENT_YOU_CHOOSE_TO_BLOCK&gt;);
 ...
 Yukon.ui.unblockElement({element:elem});
 ...
-        </pre>
-        </td>
-    </tr>
-    
-    
-    
-    
-    <tr>
-        <th>Phone Number Formatting</th>
-        <th>Relevant Markup</th>
-    </tr>
-    <tr>
-        <td>
-            <label>Phone 1:</label><input type="text" name="phone1" class="f_formatPhone"/>
-        </td>
-        <td>
-            Add the <b>f_formatPhone</b> class to the tag/button.
-        <br/>
-        <br/>
-            <pre>
-                &lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
-            </pre>
-        </td>
-    </tr>
-    <tr>
-        <th>Enable/Disable Input Groups</th>
-        <th>Relevant Markup</th>
-    </tr>
-    <tr>
-        <td>
-            <label for="enabled">Enabled?</label><input type="checkbox" name="enabled" class="f_toggle"/>
-            <br/>
-            <br/>
-            <div class="f_toggle box">
-                <label for="name">Name:</label><input type="text" name="name"/>
-                <br/>
-                <br/>
-                <label for="group">Group:</label><select name="group">
-                    <option>Select One</option>
-                    <option>A</option>
-                    <option>B</option>
-                    <option>C</option>
-                </select>
-                <br/>
-                <br/>
-                <label for="cool">Cool?</label><input type="checkbox" name="cool">
-                <br/>
-                <br/>
-                <label for="notes">Notes:</label><textarea name="notes"></textarea>
-                <br/> 
-                <br/>
-                <button name="save">Save</button>
-            </div>
-            <br/>
-            <br/>
-            <label for="enabled2">Edit</label><input type="checkbox" name="enabled2" class="f_toggle" checked="checked"/>
-            <br/>
-            <br/>
-            <div class="f_toggle box">
-                <label for="address">Address:</label><input type="text" name="address"/>
-                <br/>
-                <br/>
-                <label for="City">City:</label><input type="text" name="City"/>
-                <br/>
-                <br/>
-                <button name="save">Save</button>
-                <button name="save">Delete</button>
-            </div>
-        </td>
-        <td>
-        Works on page load and clicking a checkbox.
-        <br/>
-        Add the <b>f_toggle</b> class to the checkbox input.<br/>Then wrap the inputs you want to be toggled
-        in a div with a <b>f_toggle</b> class.
-        <br/>
-                <br/>
-        <pre>
-&lt;input type="checkbox" name="enabled" class="f_toggle"/&gt;
+        </pre></td>
+                </tr>
+            </table>
+        </div>
 
-&lt;div class="f_toggle"&gt;
-    ...INPUTS HERE...
-&lt;/div&gt;
-        </pre>
-        <br/>
-        <br/>
-        Will disable the following: <pre>
-input
-select
-textarea
-button
-        </pre>
-        </td>
-    </tr>
-    <tr>
-        <th>Client Side Tabs</th>
-        <th>Relevant Markup</th>
-    </tr>
-    <tr>
-    <td style="width:300px;">
-    
-    <div class="box white">
-        <ul class="f_tabs">
-            <li>
-                Tab 1
-            </li>
-            <li>
-                Tab 2
-            </li>
-            <li>
-                Tab 3
-            </li>
-            <li>
-                Tab 4
-            </li>
-        </ul>
-        
-        <div class="f_tabbed">
-            <div class="f_tab">
-                The contents of Tab 1
-                <br><br>
-                Blah, blah, blah
-            </div>
-            
-            <div class="f_tab">
-                The contents of Tab 2 is better.
-                <br><br>
-                Foo, foo, foo
-            </div>
-            
-            <div class="f_tab">
-                The contents of Tab 3 is the best!
-                
-            </div>
-        </div>
-    </div>
-    
-    <br>
-    <br>
-    
-    <div class="box gradient">
-        <ul class="f_tabs">
-            <li>
-                Tab A
-            </li>
-            <li>
-                Tab B
-            </li>
-            <li>
-                Tab C
-            </li>
-        </ul>
-        
-        <div class="f_tabbed">
-            <div class="outline_red" style="margin: 20px 0;">
-                See, tabs can actually be somewhat disjointed!
-            </div>
-            <div class="f_tab">
-                The contents of Tab A
-                <br>
-                <br>
-                testing, 1,2...3
-            </div>
-            
-            <div class="f_tab">
-                The contents of Tab B is cool.
-            </div>
-            
-            <div class="f_tab">
-                The contents of Tab C is radical!
-                <br>
-                <br>
-                C as in Cat, or Cake.
-            </div>
-        </div>
-    </div>
-    
-    </td>
-    <td>
-     Works on page load.  By default the first tab will be selected with no effort from you.
-        <br>
-        <br>
-        Your markup must be structured such that the tab controls and tabs container are siblings of each other.  The tab controls must look like such:
-        <pre>
+<!-- TABS -->
+        <div class="f_tab">
+            <table class="example">
+                <tr>
+                    <th>Client Side Tabs</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td style="width: 300px;">
+
+                        <div class="box white">
+                            <ul class="f_tabs">
+                                <li>Tab 1</li>
+                                <li>Tab 2</li>
+                                <li>Tab 3</li>
+                                <li>Missing Tab</li>
+                            </ul>
+
+                            <div class="f_tabbed">
+                                <div class="f_tab">
+                                    The contents of Tab 1 <br> <br> Blah, blah, blah
+                                </div>
+
+                                <div class="f_tab">
+                                    The contents of Tab 2 is better. <br> <br> Foo, foo,
+                                    foo
+                                </div>
+
+                                <div class="f_tab">The contents of Tab 3 is the best!</div>
+                            </div>
+                        </div> <br> <br>
+
+                        <div class="box gradient">
+                            <ul class="f_tabs">
+                                <li>Tab A</li>
+                                <li>Tab B</li>
+                                <li>Tab C</li>
+                            </ul>
+
+                            <div class="f_tabbed">
+                                <div class="outline_red" style="margin: 20px 0;">See, tabs can
+                                    actually be somewhat disjointed!</div>
+                                <div class="f_tab">
+                                    The contents of Tab A <br> <br> testing, 1,2...3
+                                </div>
+
+                                <div class="f_tab">The contents of Tab B is cool.</div>
+
+                                <div class="f_tab">
+                                    The contents of Tab C is radical! <br> <br> C as in
+                                    Cat, or Cake.
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Works on page load. By default the first tab will be selected with no
+                        effort from you. <br> <br> Your markup must be structured such
+                        that the tab controls and tabs container are siblings of each other. The tab
+                        controls must look like such: <pre>
 &lt;ul class="f_tabs"&gt;
     &lt;li&gt;Tab 1&lt;/li&gt;
     &lt;li&gt;Tab 2&lt;/li&gt;
@@ -395,12 +315,99 @@ button
         Tab n contents
     &lt;/div&gt;
 &lt;/div&gt;        
-        </pre>
+        </pre> The tab controls must be an unordered list with the <b>ul</b> taking the class name <b>f_tabs</b>.
+                        The actual tabbed content need not be directly next to the tabs but must be
+                        in a container with the class name <b>f_tabbed</b>. The actual contents of
+                        each tab must be children of the <b>f_tabbed</b> container and themselves
+                        have a class of <b>f_tab</b>. <br> <br> Any out of bounds tab
+                        control will simply not function. Similarly, any out of bounds tab content
+                        will never be displayed.
+                </tr>
+            </table>
+        </div>
         
-        The tab controls must be an unordered list with the <b>ul</b> taking the class name <b>f_tabs</b>.  The actual tabbed content need not be directly next to the tabs but must be in a container with the class name <b>f_tabbed</b>. The actual contents of each tab must be children of the <b>f_tabbed</b> container and themselves have a class of <b>f_tab</b>.
-        <br>
-        <br>
-        Any out of bounds tab control will simply not function.  Similarly, any out of bounds tab content will never be displayed.
-    </tr>
-</table>
+<!-- FORMATTING -->
+        <div class="f_tab">
+            <table class="example">
+                <tr>
+                    <th>Phone Number Formatting</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td><label>Phone 1:</label><input type="text" name="phone1"
+                        class="f_formatPhone" />
+                    </td>
+                    <td>Add the <b>f_formatPhone</b> class to the tag/button. <br /> <br /> <pre>
+                &lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
+            </pre>
+                    </td>
+                </tr>
+                
+<script type="text/javascript">
+Protoplasm.use('datepicker').transform('input.f_datePicker').transform('input.f_dateTimePicker', {timePicker: true});
+Protoplasm.use('timepicker').transform('input.f_timePicker');
+</script>
+                
+                <tr>
+                    <th>DateTime Formatting Demo 1</th>
+                    <th>Widget and direct input</th>
+                </tr>
+                
+                <tr>
+                    <td><label>Date:</label><input type="text" name="date1" id="formatDateTimeDemo1a" class="f_datePicker" value="1967-07-30 23:45"/></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Date & Time:</label><input type="text" id="formatDateTimeDemo1b" name="date2" class="f_dateTimePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Time:</label><input type="text" id="formatDateTimeDemo1c" name="date3" class="f_timePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <th>DateTime Formatting Demo 2</th>
+                    <th>Click only</th>
+                </tr>
+                
+                <tr>
+                    <td><label>Date:</label><input type="hidden" name="date1" class="f_datePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Date & Time:</label><input type="hidden" name="date2" class="f_dateTimePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Time:</label><input type="hidden" name="date3" class="f_timePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <th>DateTime Formatting Demo 3</th>
+                    <th>Scroll and nudging support</th>
+                </tr>
+                
+                <tr>
+                    <td><label>Date:</label><input type="text" name="date1" class="f_datePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Date & Time:</label><input type="text" name="date2" class="f_dateTimePicker" /></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Time:</label><input type="text" name="date3" class="f_timePicker" /></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </cti:standardPage>

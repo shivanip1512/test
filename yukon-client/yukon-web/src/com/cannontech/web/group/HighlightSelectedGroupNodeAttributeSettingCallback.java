@@ -1,7 +1,7 @@
 package com.cannontech.web.group;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsTreeNode;
 
 public class HighlightSelectedGroupNodeAttributeSettingCallback implements NodeAttributeSettingCallback<DeviceGroup> {
 
@@ -14,9 +14,12 @@ public class HighlightSelectedGroupNodeAttributeSettingCallback implements NodeA
 	}
 	
 	@Override
-	public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
+	public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
         if (this.selectedDeviceGroup != null && this.selectedDeviceGroup.getFullName().equals(deviceGroup.getFullName())) {
+            
+            //DEPRECATED - cls no longer needed w/ jsTree
             node.setAttribute("cls", "highlightNode");
+            
             extSelectedNodePath = node.getNodePath();
         }
     }

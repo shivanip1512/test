@@ -28,6 +28,7 @@ public enum JsLibrary {
     JQUERY_FORM("/JavaScript/lib/jQuery/plugins/form/jquery.form.js"),
     JQUERY_UI("/JavaScript/lib/jQuery/plugins/jQueryUI/jquery-ui-1.8.16.custom.min.js"),
     JSTREE("/JavaScript/lib/jQuery/plugins/jsTree/jquery.jstree.js"),
+    JSTREE_HELPERS("/JavaScript/lib/jQuery/plugins/jsTree/jsTreeHelper.js"),
     SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo-1.4.2-min.js"),
 
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),

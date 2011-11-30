@@ -1,7 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.home.pageTitle"/>

@@ -6,10 +6,11 @@
 <%@ attribute name="showSelectedDevicesIcon" required="false" type="java.lang.String"%> <%-- will make the group name a link that when clicked bring you to group editor for group --%>
 <%@ attribute name="submitCallback" required="false" type="java.lang.String"%> <%-- optional additional function to call when group is picked --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext"%>
+
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
 
 <cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
 
@@ -122,7 +123,7 @@
 </c:if>
 
 <%-- PICKER TREE TAG --%>	
-<ext:nodeValueSelectingPopupTree fieldId="${fieldName}"
+<jsTree:nodeValueSelectingPopupTree fieldId="${fieldName}"
                                 fieldName="${fieldName}"
                                 fieldValue="${pageScope.fieldValue}"
                                 nodeValueName="groupName"
@@ -131,9 +132,9 @@
                                 submitCallback="setSelectedGroupName_${uniqueId}();${pageScope.submitCallback}"
                                 
                                 id="selectGroupTree_${uniqueId}"
-                                treeAttributes="{}"
                                 triggerElement="chooseGroupIcon_${uniqueId}"
                                 dataJson="${dataJson}"
                                 title="${pickerTitleText}"
                                 width="432"
-                                height="600" />
+                                height="600"
+                                includeControlBar="true" />
