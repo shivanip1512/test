@@ -174,7 +174,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		
 		Integer parentColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.PARENT);
 		if (parentColumn != null && !StringUtils.isBlank(line[parentColumn])) {
-			data.setMapLocationId(line[parentColumn]);
+			data.setParent(line[parentColumn]);
 		}
 		
 		return data;
