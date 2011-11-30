@@ -34,7 +34,8 @@ public class PaoStore {
 	private String displayName;
 	private String displayGroup;
 	private String changeGroup;
-	private Map<PointIdentifier, Point> points = new HashMap<PointIdentifier, Point>();
+	private Map<PointIdentifier, Point> points = new HashMap<PointIdentifier, Point>(); // Non-calculated points
+	private Map<PointIdentifier, Point> calcPoints = new HashMap<PointIdentifier, Point>(); // calculated points
 	private Map<String, Command> commands = new HashMap<String, Command>();
 	private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
 	private Map<String, Tag> tags = new HashMap<String, Tag>();
@@ -77,6 +78,7 @@ public class PaoStore {
 		this.applyDisplayGroup(inheritedPao.getDisplayGroup());
 		this.applyChangeGroup(inheritedPao.getChangeGroup());
 		this.applyPoints(inheritedPao.getEnabledPoints());
+		this.applyPoints(inheritedPao.getEnabledCalcPoints());
 		this.applyCommands(inheritedPao.getEnabledCommands());
 		this.applyAttributes(inheritedPao.getEnabledAttributes());
 		this.applyTags(inheritedPao.getTags());
@@ -133,11 +135,24 @@ public class PaoStore {
 		for (Point inheritedPoint : points) {
 			
 			PointIdentifier id = new PointIdentifier(PointType.getForString(inheritedPoint.getType()), inheritedPoint.getOffset());
-			Point exisitngPoint = this.points.get(id);
+			Point exisitngPoint = null;
 			
-			if (exisitngPoint == null) {
-				this.points.put(id, inheritedPoint);
-				continue;
+			// Just Calculated Points
+			if (inheritedPoint.getCalculation() != null) {
+			    exisitngPoint = this.calcPoints.get(id);
+			    
+			    if (exisitngPoint == null) {
+			        this.calcPoints.put(id, inheritedPoint);
+			        continue;
+			    }
+			} else {
+			    // All Points
+			    exisitngPoint = this.points.get(id);
+			    
+			    if (exisitngPoint == null) {
+			        this.points.put(id, inheritedPoint);
+			        continue;
+			    }
 			}
 				
 			// point was marked as disabled by child, leave it be
@@ -254,6 +269,17 @@ public class PaoStore {
 			}
 		}
 		return enabledPoints;
+	}
+	public List<Point> getEnabledCalcPoints() {
+	    
+	    List<Point> enabledPoints = new ArrayList<Point>();
+	    for (PointIdentifier id : this.calcPoints.keySet()) {
+	        Point point = this.calcPoints.get(id);
+	        if (point.getEnabled()) {
+	            enabledPoints.add(point);
+	        }
+	    }
+	    return enabledPoints;
 	}
 	public List<Command> getEnabledCommands() {
 

@@ -25,10 +25,10 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
 
     private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestListenerBase.class);
 
-    @Autowired protected DynamicDataSource dynamicDataSource;
-    @Autowired protected RfnMeterReadService rfnMeterReadService;
-    @Autowired protected RfnArchiveRequestService rfnArchiveRequestService;
-    @Autowired private RfnMeterLookupService rfnMeterLookupService;
+    protected DynamicDataSource dynamicDataSource;
+    protected RfnMeterReadService rfnMeterReadService;
+    protected RfnArchiveRequestService rfnArchiveRequestService;
+    private RfnMeterLookupService rfnMeterLookupService;
 
     protected JmsTemplate jmsTemplate;
 
@@ -147,4 +147,23 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
         jmsTemplate.setDeliveryPersistent(false);
     }
 
+    @Autowired
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
+    
+    @Autowired
+    public void setRfnArchiveRequestService(RfnArchiveRequestService rfnArchiveRequestService) {
+        this.rfnArchiveRequestService = rfnArchiveRequestService;
+    }
+    
+    @Autowired
+    public void setRfnMeterLookupService(RfnMeterLookupService rfnMeterLookupService) {
+        this.rfnMeterLookupService = rfnMeterLookupService;
+    }
+    
+    @Autowired
+    public void setRfnMeterReadService(RfnMeterReadService rfnMeterReadService) {
+        this.rfnMeterReadService = rfnMeterReadService;
+    }
 }

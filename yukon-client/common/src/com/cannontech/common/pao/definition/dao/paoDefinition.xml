@@ -4551,14 +4551,22 @@
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
-<!--             Will uncomment when support is added to this file for CalcAnalog Points (coming soon) -->
-<!--             <point type="CalcAnalog" offset="24"> -->
-<!--                 <init>true</init> -->
-<!--                 <name>Total Outage Count</name> -->
-<!--                 <multiplier value="1.0"/> -->
-<!--                 <unitofmeasure value="Counts"/> -->
-<!--                 <decimalplaces value="0"/> -->
-<!--             </point> -->
+            <point type="CalcAnalog" offset="0">
+                <init>true</init>
+                <name>Total Outage Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+                <calculation>
+                    <updateType>On First Change</updateType>
+                    <component>
+                        <basicCalcLookup point="Blink Count" />
+                    </component>
+                    <component>
+                        <basicCalcLookup point="Outage Count" />
+                    </component>
+                </calculation>
+            </point>
             <point type="Analog" offset="100">
                 <init>true</init>
                 <name>Outages</name>
@@ -5006,10 +5014,9 @@
             <attribute name="USAGE">
             	<basicLookup point="Delivered kWh" />
 			</attribute>
-<!--             Will uncomment when support is added to this file for CalcAnalog Points (coming soon) -->
-<!--             <attribute name="BLINK_COUNT"> -->
-<!--                 <basicLookup point="Total Outage Count" /> -->
-<!--             </attribute> -->
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Total Outage Count" />
+            </attribute>
             <attribute name="RFN_BLINK_COUNT">
                 <basicLookup point="Blink Count" />
             </attribute>

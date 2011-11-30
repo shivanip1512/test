@@ -25,6 +25,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private ControlType controlType = ControlType.NONE;
     private PointArchiveType pointArchiveType = PointArchiveType.NONE;
     private PointArchiveInterval pointArchiveInterval = PointArchiveInterval.ZERO;
+    private CalcPointBase calcPoint = null;
     
     public PointTemplate(PointType type, int offset) {
         pointIdentifier = new PointIdentifier(type, offset);
@@ -150,6 +151,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
 		this.pointArchiveInterval = pointArchiveInterval;
 	}
     
+    public CalcPointBase getCalcPoint() {
+        return calcPoint;
+    }
+
+    public void setCalcPoint(CalcPointBase calcPoint) {
+        this.calcPoint = calcPoint;
+    }
+
     public int compareTo(PointTemplate o) {
         
         if (o == null) {

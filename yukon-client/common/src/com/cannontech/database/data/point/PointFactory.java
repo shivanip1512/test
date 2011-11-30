@@ -2,8 +2,11 @@ package com.cannontech.database.data.point;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.definition.model.CalcPointBase;
+import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
@@ -15,6 +18,7 @@ import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
@@ -418,7 +422,7 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name, int s
     
 }
 
-public static PointBase createCalculatedPoint(Integer paoId, String name, int stateGroupId){
+public static PointBase createCalculatedPoint(Integer paoId, String name, int stateGroupId, int uom, int decimalPlaces, CalcPointBase calcPoint) {
     PointBase point = createPoint(PointTypes.CALCULATED_POINT);
     
     point = PointFactory.createNewPoint(    
@@ -431,11 +435,11 @@ public static PointBase createCalculatedPoint(Integer paoId, String name, int st
     
     point.getPoint().setStateGroupID(stateGroupId);			//new Integer (StateGroupUtils.STATEGROUP_ANALOG));
     PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
-                                      new Integer (PointUnits.UOMID_UNDEF),
-                                      new Integer(PointUnit.DEFAULT_DECIMAL_PLACES),
-                                      new Double(0.0),
-                                      new Double(0.0),
-                                      new Integer (0));
+                                      new Integer(uom),
+                                      new Integer(decimalPlaces),
+                                      new Double(CtiUtilities.INVALID_MAX_DOUBLE),
+                                      new Double(CtiUtilities.INVALID_MIN_DOUBLE),
+                                      new Integer(0));
     
     ((ScalarPoint)point).setPointUnit(punit);
                                                                            
@@ -443,12 +447,35 @@ public static PointBase createCalculatedPoint(Integer paoId, String name, int st
     //Calculated Point consists of CalcBase and CalcPointBaseline
     CalcBase calcBase = new CalcBase();
     calcBase.setPointID(point.getPoint().getPointID());
-    calcBase.setUpdateType(PointTypes.UPDATE_FIRST_CHANGE);
-    calcBase.setPeriodicRate(new Integer (1));
+    
+    if (calcPoint != null) {
+        if (calcPoint.getUpdateType() != null) {
+            calcBase.setUpdateType(calcPoint.getUpdateType());
+        }
+        if (calcPoint.getPeriodicRate() >= 1) {
+            calcBase.setPeriodicRate(calcPoint.getPeriodicRate());
+        } else {
+            calcBase.setPeriodicRate(new Integer (1));
+        }
+    } else {
+        calcBase.setUpdateType(PointTypes.UPDATE_FIRST_CHANGE);
+        calcBase.setPeriodicRate(new Integer (1));
+    }
     
     ((CalculatedPoint)point).setCalcBase(calcBase);    
     ((CalculatedPoint) point).setBaselineAssigned(false);
     
+    int order = 1;
+    Vector<CalcComponent> calcComponents = new Vector<CalcComponent>();
+    for (CalcPointComponent calcPointComponent: calcPoint.getComponents()) {
+        Integer pointId = point.getPoint().getPointID();
+        String componentType = calcPointComponent.getType();
+        int componentPointID = calcPointComponent.getPointId();
+        String operation = calcPointComponent.getOperation();
+        
+        calcComponents.add(new CalcComponent( pointId, order++, componentType, componentPointID, operation, 0.0, "(none)" ) );                
+    }
+    ((CalculatedPoint) point).setCalcComponentVector(calcComponents);
     
     return point;
 }

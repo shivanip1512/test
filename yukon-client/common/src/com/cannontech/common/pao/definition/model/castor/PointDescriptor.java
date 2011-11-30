@@ -395,6 +395,39 @@ public class PointDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
+        //-- _calculation
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.Calculation.class, "_calculation", "calculation", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Point target = (Point) object;
+                return target.getCalculation();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Point target = (Point) object;
+                    target.setCalculation( (com.cannontech.common.pao.definition.model.castor.Calculation) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new com.cannontech.common.pao.definition.model.castor.Calculation();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _calculation
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     } //-- com.cannontech.common.pao.definition.model.castor.PointDescriptor()
 
 

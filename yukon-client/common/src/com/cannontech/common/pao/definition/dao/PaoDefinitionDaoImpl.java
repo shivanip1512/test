@@ -52,6 +52,8 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
+import com.cannontech.common.pao.definition.model.CalcPointBase;
+import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
@@ -60,9 +62,12 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.castor.Archive;
+import com.cannontech.common.pao.definition.model.castor.BasicCalcLookup;
 import com.cannontech.common.pao.definition.model.castor.BasicLookup;
+import com.cannontech.common.pao.definition.model.castor.Calculation;
 import com.cannontech.common.pao.definition.model.castor.Cmd;
 import com.cannontech.common.pao.definition.model.castor.Command;
+import com.cannontech.common.pao.definition.model.castor.Component;
 import com.cannontech.common.pao.definition.model.castor.MappedLookup;
 import com.cannontech.common.pao.definition.model.castor.Pao;
 import com.cannontech.common.pao.definition.model.castor.PaoDefinitions;
@@ -124,6 +129,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Multimap<PaoType, Attribute> paoTypeAttributesMultiMap = null;
     private SetMultimap<PaoType, PointTemplate> paoAllPointTemplateMap = null;
     private SetMultimap<PaoType, PointTemplate> paoInitPointTemplateMap = null;
+    private SetMultimap<PaoType, PointTemplate> paoAllCalcPointTemplateMap = null;
+    private SetMultimap<PaoType, PointTemplate> paoInitCalcPointTemplateMap = null;
     private BiMap<PaoType, PaoDefinition> paoTypeMap = null;
     private ListMultimap<String, PaoDefinition> paoDisplayGroupMap = null;
     private SetMultimap<String, PaoDefinition> changeGroupPaosMap = null;
@@ -229,10 +236,22 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         Set<PointTemplate> templates = this.paoAllPointTemplateMap.get(paoType);
         return Collections.unmodifiableSet(templates);
     }
+    
+    @Override
+    public Set<PointTemplate> getAllCalcPointTemplates(PaoType paoType) {
+        Set<PointTemplate> templates = this.paoAllCalcPointTemplateMap.get(paoType);
+        return Collections.unmodifiableSet(templates);
+    }
 
     @Override
     public Set<PointTemplate> getInitPointTemplates(PaoType paoType) {
         Set<PointTemplate> templates = this.paoInitPointTemplateMap.get(paoType);
+        return Collections.unmodifiableSet(templates);
+    }
+    
+    @Override
+    public Set<PointTemplate> getInitCalcPointTemplates(PaoType paoType) {
+        Set<PointTemplate> templates = this.paoInitCalcPointTemplateMap.get(paoType);
         return Collections.unmodifiableSet(templates);
     }
     
@@ -460,7 +479,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
         this.paoTypeMap = EnumHashBiMap.create(PaoType.class);
         this.paoAllPointTemplateMap = HashMultimap.create();
+        this.paoAllCalcPointTemplateMap = HashMultimap.create();
         this.paoInitPointTemplateMap = HashMultimap.create();
+        this.paoInitCalcPointTemplateMap = HashMultimap.create();
         this.paoDisplayGroupMap = LinkedListMultimap.create();
         this.changeGroupPaosMap = HashMultimap.create();
         this.paoAttributeAttrDefinitionMap = Maps.newEnumMap(PaoType.class);
@@ -665,7 +686,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             this.paoDisplayGroupMap.put(group, paoDefinition);
         }
 
-        // Add pao points
+        // Add pao points (non-calculated)
         Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
 
         List<Point> points = pao.getEnabledPoints();
@@ -675,6 +696,22 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
             if (point.getInit()) {
             	this.paoInitPointTemplateMap.put(paoType, template);
+            }
+            
+            if (pointNameTemplateMap.containsKey(template.getName())) {
+                throw new RuntimeException("Point name: " + template.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - point names must be unique within a pao type");
+            }
+            pointNameTemplateMap.put(template.getName(), template);
+        }
+
+        // Add pao points (calculated)
+        List<Point> calcPoints = pao.getEnabledCalcPoints();
+        for (Point point : calcPoints) {
+            PointTemplate template = this.createCalcPointTemplate(point, pointNameTemplateMap);
+            this.paoAllCalcPointTemplateMap.put(paoType, template);
+            
+            if (point.getInit()) {
+                this.paoInitCalcPointTemplateMap.put(paoType, template);
             }
             
             if (pointNameTemplateMap.containsKey(template.getName())) {
@@ -906,6 +943,39 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         template.setInitialState(initialState);
         
         return template;
+    }
+    
+    private PointTemplate createCalcPointTemplate(Point point, Map<String, PointTemplate> pointNameTemplateMap) {
+        PointTemplate pointTemplate = createPointTemplate(point);
+
+        Calculation calculation = point.getCalculation();
+        if (calculation == null) {
+            return null;
+        }
+        
+        int periodicRate = calculation.getPeriodicRate();
+        boolean forceQualityNormal = calculation.getForceQualityNormal();
+        String updateType = calculation.getUpdateType();
+        CalcPointBase calcPoint = new CalcPointBase(updateType, periodicRate, forceQualityNormal);
+        
+        List<CalcPointComponent> calcPointComponents = Lists.newArrayList();
+        Component[] components = calculation.getComponent();
+        for (Component component : components) {
+            String componentType = component.getComponentType();
+            String operator = component.getOperator();
+            BasicCalcLookup lookup = component.getBasicCalcLookup();
+            PointTemplate componentPointTemplate = pointNameTemplateMap.get(lookup.getPoint());
+            if (componentPointTemplate == null) {
+                throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + ":");
+            }
+            
+            CalcPointComponent calcPointComponent = new CalcPointComponent(lookup.getPoint(), componentType, operator);
+            calcPointComponents.add(calcPointComponent);
+        }
+
+        calcPoint.setComponents(calcPointComponents);
+        pointTemplate.setCalcPoint(calcPoint);
+        return pointTemplate;
     }
     
     @Autowired

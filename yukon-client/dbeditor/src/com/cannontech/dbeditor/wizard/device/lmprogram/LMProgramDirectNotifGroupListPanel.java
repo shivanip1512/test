@@ -200,7 +200,8 @@ public Object getValue(Object o)
                                                PointUnit.DEFAULT_DECIMAL_PLACES,
                                                ControlType.NONE,
                                                PointArchiveType.NONE,
-                                               PointArchiveInterval.ZERO);
+                                               PointArchiveInterval.ZERO,
+                                               null);
 
         SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
         persistant.addOwnerDBPersistent(program);

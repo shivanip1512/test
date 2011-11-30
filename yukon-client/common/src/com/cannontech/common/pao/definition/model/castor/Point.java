@@ -78,6 +78,11 @@ public class Point implements java.io.Serializable {
      */
     private com.cannontech.common.pao.definition.model.castor.PointChoice _pointChoice;
 
+    /**
+     * Field _calculation
+     */
+    private com.cannontech.common.pao.definition.model.castor.Calculation _calculation;
+
 
       //----------------/
      //- Constructors -/
@@ -104,6 +109,17 @@ public class Point implements java.io.Serializable {
     {
         return this._archive;
     } //-- com.cannontech.common.pao.definition.model.castor.Archive getArchive() 
+
+    /**
+     * Returns the value of field 'calculation'.
+     * 
+     * @return Calculation
+     * @return the value of field 'calculation'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.Calculation getCalculation()
+    {
+        return this._calculation;
+    } //-- com.cannontech.common.pao.definition.model.castor.Calculation getCalculation() 
 
     /**
      * Returns the value of field 'controltype'.
@@ -248,6 +264,16 @@ public class Point implements java.io.Serializable {
     {
         this._archive = archive;
     } //-- void setArchive(com.cannontech.common.pao.definition.model.castor.Archive) 
+
+    /**
+     * Sets the value of field 'calculation'.
+     * 
+     * @param calculation the value of field 'calculation'.
+     */
+    public void setCalculation(com.cannontech.common.pao.definition.model.castor.Calculation calculation)
+    {
+        this._calculation = calculation;
+    } //-- void setCalculation(com.cannontech.common.pao.definition.model.castor.Calculation) 
 
     /**
      * Sets the value of field 'controltype'.

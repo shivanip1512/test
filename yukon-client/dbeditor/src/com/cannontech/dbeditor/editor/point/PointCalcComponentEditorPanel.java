@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.editor.point;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.DaoFactory;
@@ -1033,11 +1034,11 @@ public Object getValue(Object val)
 
 	Integer pointID = calcPoint.getPoint().getPointID();
 	com.cannontech.database.db.point.calculation.CalcComponent newCalcComponent = null;
-	java.util.Vector calcComponentsVector = null;
+	Vector<CalcComponent> calcComponentsVector = null;
 
 	if (getComponentsTable().getRowCount() > 0)
 	{
-		calcComponentsVector = new java.util.Vector();
+		calcComponentsVector = new Vector<CalcComponent>();
 		String type = null;
 		Object operand = null;
 		String operation = null;

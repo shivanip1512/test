@@ -124,6 +124,28 @@
 	                            </xs:complexType>
 	                        </xs:element>
 	                    </xs:choice>
+                        <xs:element name="calculation" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="forceQualityNormal" minOccurs="0" type="xs:boolean" default="false" />
+                                    <xs:element name="periodicRate" minOccurs="0" type="xs:integer" default="1" />
+                                    <xs:element name="updateType" minOccurs="0" type="xs:string" default="On First Change" />
+                                    <xs:element name="component" minOccurs="2" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="componentType" minOccurs="0" type="xs:string" default="Operation" />
+                                                <xs:element name="operator" minOccurs="0" type="xs:string" default="+" />
+                                                <xs:element name="basicCalcLookup" maxOccurs="1">
+                                                    <xs:complexType>
+                                                        <xs:attribute name="point" type="xs:string" use="required" />
+                                                    </xs:complexType>
+                                                </xs:element>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
 	                </xs:sequence>
 	                <xs:attributeGroup ref="pointAttributes" />
 	            </xs:complexType>

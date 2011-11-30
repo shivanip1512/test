@@ -27,7 +27,7 @@ public class RfnAlarmArchiveRequestListener extends RfnArchiveRequestListenerBas
     private static final Logger log = YukonLogManager.getLogger(RfnAlarmArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.rr.obj.amr.rfn.AlarmArchiveResponse";
 
-    @Autowired private RfnMeterEventService rfnMeterEventService;
+    private RfnMeterEventService rfnMeterEventService;
 
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
@@ -97,4 +97,8 @@ public class RfnAlarmArchiveRequestListener extends RfnArchiveRequestListenerBas
         return processedAlarmArchiveRequest.get();
     }
 
+    @Autowired
+    public void setRfnMeterEventService(RfnMeterEventService rfnMeterEventService) {
+        this.rfnMeterEventService = rfnMeterEventService;
+    }
 }

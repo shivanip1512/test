@@ -1,5 +1,7 @@
 package com.cannontech.database.db.point.calculation;
 
+import java.util.Vector;
+
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -92,7 +94,7 @@ public static boolean deleteCalcComponents(Integer pointID, java.sql.Connection 
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public static java.util.Vector getCalcComponents(Integer pointID){
+public static Vector<CalcComponent> getCalcComponents(Integer pointID){
 
 	return getCalcComponents( pointID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 }
@@ -101,9 +103,9 @@ public static java.util.Vector getCalcComponents(Integer pointID){
  * @return com.cannontech.database.db.device.DeviceScanRate[]
  * @param deviceID java.lang.Integer
  */
-public static java.util.Vector getCalcComponents(Integer pointID, String databaseAlias)
+public static Vector<CalcComponent> getCalcComponents(Integer pointID, String databaseAlias)
 {
-	java.util.Vector returnVector = null;
+	Vector<CalcComponent> returnVector = null;
 	Integer componentOrder = null;
 	String componentType = null;
 	Integer componentPointID = null;
@@ -133,7 +135,7 @@ public static java.util.Vector getCalcComponents(Integer pointID, String databas
 			pstmt.setInt( 1, pointID.intValue() );
 			
 			rset = pstmt.executeQuery();
-			returnVector = new java.util.Vector(5); //rset.getFetchSize()
+			returnVector = new Vector<CalcComponent>(5);
 	
 			while( rset.next() )
 			{

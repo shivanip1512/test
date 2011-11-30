@@ -2,6 +2,7 @@ package com.cannontech.common.pao.service.impl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,14 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.collect.Sets;
 
 public class PaoCreationHelper {
 
@@ -69,13 +73,39 @@ public class PaoCreationHelper {
     public void applyPoints(int paoId, List<PointBase> pointsToCreate) {
     	MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
-
-        for (PointBase point : pointsToCreate) {
+        Set<PointBase> calculatedPoints = Sets.newHashSet();
         
+        // Non-calculated points
+        for (PointBase point : pointsToCreate) {
+            if (point instanceof CalculatedPoint == false) {
+                int nextPointId = pointDao.getNextPointId();
+                point.setPointID(nextPointId);
+                point.getPoint().setPaoID(paoId);
+                
+                newPoints.add(point);
+            } else {
+                calculatedPoints.add(point);
+            }
+        }
+        
+        // Calculated points
+        for (PointBase point : calculatedPoints) {
             int nextPointId = pointDao.getNextPointId();
             point.setPointID(nextPointId);
             point.getPoint().setPaoID(paoId);
             
+            CalculatedPoint calcPoint = (CalculatedPoint) point;
+            for (CalcComponent calcComponent: calcPoint.getCalcComponentVector()) {
+                Integer componentPointID = calcComponent.getComponentPointID();
+                if (componentPointID == null) continue;
+                
+                LitePoint litePoint = pointDao.getLitePoint(componentPointID);
+                String pointName = litePoint.getPointName();
+                PointBase pointBase = getPointWithName(pointsToCreate, pointName);
+                if (pointBase == null) continue;
+                
+                calcComponent.setComponentPointID(pointBase.getPoint().getPointID());
+            }
             newPoints.add(point);
         }
         
@@ -85,6 +115,15 @@ public class PaoCreationHelper {
     
     public void applyPoints(YukonPao pao, List<PointBase> pointsToCreate) {
         applyPoints(pao.getPaoIdentifier().getPaoId(), pointsToCreate);
+    }
+    
+    private PointBase getPointWithName(List<PointBase> pointsToCreate, String pointName) {
+        for (PointBase pointBase : pointsToCreate) {
+            if (pointBase.getPoint().getPointName().equals(pointName)) {
+                return pointBase;
+            }
+        }
+        return null;
     }
     
     @Autowired

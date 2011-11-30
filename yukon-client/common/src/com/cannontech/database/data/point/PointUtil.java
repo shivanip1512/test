@@ -68,7 +68,7 @@ public class PointUtil {
            break;
            
        case PointTypes.CALCULATED_POINT:
-           point = PointFactory.createCalculatedPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
+           point = PointFactory.createCalculatedPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG, PointUnits.UOMID_UNDEF, PointUnit.DEFAULT_DECIMAL_PLACES, null);
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            

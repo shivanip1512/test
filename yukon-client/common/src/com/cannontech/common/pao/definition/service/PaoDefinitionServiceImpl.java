@@ -7,17 +7,21 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.util.MapUtil;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.point.Point;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
@@ -49,19 +53,62 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     public List<PointBase> createDefaultPointsForPao(YukonPao pao) {
 
         List<PointBase> pointList = new ArrayList<PointBase>();
+        
+        // Non-calculated points
         Set<PointTemplate> pointTemplates = paoDefinitionDao.getInitPointTemplates(pao.getPaoIdentifier().getPaoType());
         for (PointTemplate template : pointTemplates) {
+            pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
+        }
+        
+        // Calculated points
+        Set<PointTemplate> calcPointTemplates = paoDefinitionDao.getInitCalcPointTemplates(pao.getPaoIdentifier().getPaoType());
+        for (PointTemplate template : calcPointTemplates) {
+            if (template.getCalcPoint() != null && !CollectionUtils.isEmpty(template.getCalcPoint().getComponents())) {
+                for (CalcPointComponent component: template.getCalcPoint().getComponents()) {
+                    Integer pointId = getPointIdFromPaoWithName(pointList, component.getPointName());
+                    if (pointId == null) {
+                        throw new NotFoundException("Point with name " + component.getPointName() + " not found on YukonPao " + pao);
+                    }
+                    component.setPointId(pointId);
+                }
+            }
             pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
         }
 
         return pointList;
     }
+    
+    private Integer getPointIdFromPaoWithName(List<PointBase> pointList, String pointName) {
+        for (PointBase pointBase : pointList) {
+            Point point = pointBase.getPoint();
+            if (point.getPointName().equals(pointName)) {
+                return point.getPointID();
+            }
+        }
+        return null;
+    }
 
     public List<PointBase> createAllPointsForPao(YukonPao pao) {
 
+        // Non-calculated points
         List<PointBase> pointList = new ArrayList<PointBase>();
         Set<PointTemplate> pointTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
         for (PointTemplate template : pointTemplates) {
+            pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
+        }
+        
+        // Calculated points (requires above points to first be created)
+        Set<PointTemplate> calcPointTemplates = paoDefinitionDao.getAllCalcPointTemplates(pao.getPaoIdentifier().getPaoType());
+        for (PointTemplate template : calcPointTemplates) {
+            if (template.getCalcPoint() != null && !CollectionUtils.isEmpty(template.getCalcPoint().getComponents())) {
+                for (CalcPointComponent component: template.getCalcPoint().getComponents()) {
+                    Integer pointId = getPointIdFromPaoWithName(pointList, component.getPointName());
+                    if (pointId == null) {
+                        throw new NotFoundException("Point with name " + component.getPointName() + " not found on YukonPao " + pao);
+                    }
+                    component.setPointId(pointId);
+                }
+            }
             pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
         }
 

@@ -3,6 +3,8 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Vector;
+
 import com.cannontech.database.db.point.DynamicCalcHistorical;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -10,7 +12,7 @@ import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 
 public class CalculatedPoint extends ScalarPoint {
 	private CalcBase calcBase = null;
-	private java.util.Vector calcComponentVector = null;
+	private Vector<CalcComponent> calcComponentVector = null;
 	private CalcPointBaseline calcBaselinePoint = null;
 	private boolean baselineAssigned = false;
 /**
@@ -112,10 +114,10 @@ public CalcBase getCalcBaseDefaults()
  * This method was created in VisualAge.
  * @return java.util.Vector
  */
-public java.util.Vector getCalcComponentVector() {
+public Vector<CalcComponent> getCalcComponentVector() {
 
 	if( calcComponentVector == null )
-		calcComponentVector = new java.util.Vector();
+		calcComponentVector = new Vector<CalcComponent>();
 	
 	return calcComponentVector;
 }
@@ -158,7 +160,7 @@ public void setCalcBase(CalcBase newValue) {
  * This method was created in VisualAge.
  * @param newValue java.util.Vector
  */
-public void setCalcComponentVector(java.util.Vector newValue) {
+public void setCalcComponentVector(Vector<CalcComponent> newValue) {
 	this.calcComponentVector = newValue;
 }
 /**
