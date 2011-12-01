@@ -35,11 +35,11 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
-
-    private @Autowired YukonJdbcTemplate yukonJdbcTemplate;
-    private @Autowired PaoDao paoDao;
-    private @Autowired AttributeService attributeService;
-    private @Autowired PaoCreationHelper paoCreationHelper;
+    
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private PaoDao paoDao;
+    private AttributeService attributeService;
+    private PaoCreationHelper paoCreationHelper;
 
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
@@ -270,5 +270,25 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         DeviceAddressFields addressFields = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
 
         return addressFields;
+    }
+    
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+    
+    @Autowired
+    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
     }
 }
