@@ -5,7 +5,7 @@ import com.cannontech.database.SqlUtils;
 /**
  * This type was created in VisualAge.
  */
-
+@Deprecated
 public class FDRInterface extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer interfaceID = null;

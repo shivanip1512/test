@@ -3,7 +3,7 @@ package com.cannontech.database.db.point.fdr;
 /**
  * This type was created in VisualAge.
  */
-
+@Deprecated
 public class FDRInterfaceOption extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer interfaceID = null;

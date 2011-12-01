@@ -23,7 +23,6 @@ public class FdrTranslation {
 	protected Map<String,String> parameterMap;
 	
 	public FdrTranslation() {
-		super();
 		parameterMap = new HashMap<String,String>();
 	}
 	
@@ -51,12 +50,21 @@ public class FdrTranslation {
 		this.fdrInterfaceType = interfaceType;
 	}
 
+	/**
+	 * This getter is hiding the complexity of what to put in the Destination column in the database.
+	 * 
+	 * It requires fdrInterfaceType and paramaterMap to be not null and populated.
+	 * 
+	 * @return
+	 */
 	public String getDestination() {
-		return destination;
-	}
-
-	public void setDestination(String destination) {
-		this.destination = destination;
+	    if (fdrInterfaceType.isDestinationInOptions()) {
+	        FdrInterfaceOption destinationOption = fdrInterfaceType.getDestinationOption();	        
+	        String value = parameterMap.get(destinationOption.getOptionLabel());
+	        return value;
+	    } else {
+	        return fdrInterfaceType.name();    
+	    }
 	}
 
 	public String getTranslation() {

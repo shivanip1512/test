@@ -2,7 +2,8 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -70,9 +71,6 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
             	String interfacetype = rs.getString("interfacetype");
             	fdrTranslation.setInterfaceType(FdrInterfaceType.valueOf(interfacetype));
             	
-            	String destination = rs.getString("destination");
-            	fdrTranslation.setDestination(destination);
-            	
             	String translation = rs.getString("translation");
             	fdrTranslation.setTranslation(translation);
             	Map<String,String> parameterMap = fdrTranslation.getParameterMap();
@@ -103,7 +101,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         int rowsAffected = yukonJdbcTemplate.update(insertSql, trans.getPointId(),
                                                      trans.getDirection().toString(),
                                                      trans.getFdrInterfaceType().toString(),
-                                                     trans.getDestination().toString(),
+                                                     trans.getDestination(),
                                                      trans.getTranslation()
                                                      );
         boolean result = (rowsAffected == 1);

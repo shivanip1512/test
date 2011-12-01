@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
  * Creation date: (5/22/2001 4:24:30 PM)
  * @author: 
  */
+@Deprecated
 public class FDRInterface extends com.cannontech.database.db.DBPersistent
 {
 	private com.cannontech.database.db.point.fdr.FDRInterface fdrInterface = null;

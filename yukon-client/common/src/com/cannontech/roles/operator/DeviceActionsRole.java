@@ -32,4 +32,6 @@ public interface DeviceActionsRole {
     public static final int ASSIGN_CONFIG = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 10; // -21310
     /** Access to Archived Data Analysis */
     public static final int ARCHIVED_DATA_ANALYSIS = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 11; // -21311
+    /** Access to Fdr Translation Manager */
+    public static final int FDR_TRANSLATION_MANAGER = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 12; // -21312
 }

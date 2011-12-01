@@ -51,14 +51,13 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     private final String REMOVE = "REMOVE";
     
     private final String ACTION = "ACTION";
-    private final String DESTINATION = "DESTINATION";
     private final String DEVICE_NAME = "DEVICE_NAME";
     private final String DEVICE_TYPE = "DEVICE_TYPE";
     private final String POINT_NAME = "POINT_NAME";
     private final String DIRECTION = "DIRECTION";
     private final String POINTTYPE = "POINTTYPE";
     
-    private final int DEFAULT_COLS_FOR_EXPORT = 5;
+    private final int DEFAULT_COLS_FOR_EXPORT = 4;
     private final String[] defaultImportColumnHeaders = {ACTION, DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION};
     
     @Override
@@ -76,7 +75,6 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
         list.add(DEVICE_TYPE);
         list.add(POINT_NAME);
         list.add(DIRECTION);
-        list.add(DESTINATION);
     }
     
     @Override
@@ -85,8 +83,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
             || header.equals(DEVICE_NAME) 
             || header.equals(DEVICE_TYPE) 
             || header.equals(POINT_NAME) 
-            || header.equals(DIRECTION)
-            || header.equals(DESTINATION);
+            || header.equals(DIRECTION);
     }
     
     @Override
@@ -168,12 +165,10 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
             String deviceType = pao.getPaoType().getPaoTypeName();
             String pointName = point.getPointName();
             String direction = translation.getDirection().toString();
-            String destination = translation.getDestination();
             dataGrid[i+1][0] = deviceName;
             dataGrid[i+1][1] = deviceType;
             dataGrid[i+1][2] = pointName;
             dataGrid[i+1][3] = direction;
-            dataGrid[i+1][4] = destination;
             
             //Iterate through interface-specific columns
             for(int j = DEFAULT_COLS_FOR_EXPORT; j < dataGrid[0].length; j++) {
@@ -232,7 +227,6 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 String pointName = null;
                 String direction = null;
                 String action = null;
-                String destination = null;
                 
                 FDRInterface fdrInterface = null;
                 List<FDRInterfaceOption> interfaceOptions = Lists.newArrayList();
@@ -257,8 +251,6 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                         direction = columnValue;
                     } else if(header.equals(ACTION)) {
                         action = columnValue;
-                    } else if(header.equals(DESTINATION)) {
-                        destination = columnValue;
                     } else {
                         //interface-specific column
                         //if interface hasn't been determined yet, parse column name to get it
@@ -303,25 +295,8 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     }
                 }
                 
-                
-                //TODO: This section needs a closer look
-                FdrInterfaceType interfaceType = FdrInterfaceType.valueOf(fdrInterface.toString());//TODO is this right?
-                String destinationType = null;
-                
                 //make sure all required columns are filled or fail
                 String missingColumn = null;
-                if(fdrInterface.getFdrInterface().hasDestination()) {
-                    if(destination == null) {
-                        missingColumn = DESTINATION;
-                    } else {
-                        //Validate Destination by Interface Type?
-                        destinationType = destination;
-                    }
-                } else {
-                    //if destination is not required for this interface, just use the interface type string
-                    destinationType = interfaceType.toString();
-                }
-                /// end TODO closer look
                 
                 if(deviceName == null){
                     missingColumn = DEVICE_NAME;
@@ -358,18 +333,24 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.pointNotFound", pointName, deviceName);
                     throw new ProcessingException(error);
                 }
-                //TODO deal with send/receive for control
+
                 FdrDirection fdrDirection = FdrDirection.valueOf(direction);
                 
-                String translationString = "";
-                for(int i = 0; i < interfaceOptions.size(); i++) {
-                    translationString += interfaceOptions.get(i).getOptionLabel() + ":" + interfaceOptionValues[i] + ";";
-                }
-                translationString += "POINTTYPE:" + point.getPointTypeEnum().toString() + ";";
+                
+                //I feel like we need to know this a lot higher in this method.
+                FdrInterfaceType interfaceType = FdrInterfaceType.valueOf(fdrInterface.toString());//TODO is this right?
                 
                 //build translation
                 FdrTranslation translation = new FdrTranslation();
-                translation.setDestination(destination);
+
+                Map<String, String> parameterMap = translation.getParameterMap();
+                String translationString = "";
+                for(int i = 0; i < interfaceOptions.size(); i++) {
+                    translationString += interfaceOptions.get(i).getOptionLabel() + ":" + interfaceOptionValues[i] + ";";
+                    parameterMap.put(interfaceOptions.get(i).getOptionLabel(), interfaceOptionValues[i]);
+                }
+                translationString += "POINTTYPE:" + point.getPointTypeEnum().toString() + ";";
+
                 translation.setTranslation(translationString);
                 translation.setDirection(fdrDirection);
                 translation.setPointId(point.getPointID());

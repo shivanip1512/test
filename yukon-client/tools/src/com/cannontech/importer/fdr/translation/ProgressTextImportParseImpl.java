@@ -77,7 +77,6 @@ public class ProgressTextImportParseImpl  implements TranslationParse {
         
         //Create Translation
         FdrTranslation trans = base.getTranslation();
-        trans.setDestination(FdrInterfaceType.TEXTIMPORT.toString());
         trans.setDirection(FdrDirection.Receive);
         trans.setInterfaceType(FdrInterfaceType.TEXTIMPORT);
         trans.setTranslation("Point ID:" + parseValue + ";DrivePath:;Filename:;POINTTYPE:" + type + ";");

@@ -73,16 +73,21 @@
                 </td>
                 <td>Create a collection of meters to perform actions upon.</td>
             </tr>
-            
+
+            <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
             <tr>
                 <td>
-                    <form id="manageFdrTranslationsForm" method="post" action="/spring/bulk/fdrTranslationManager/home">
-                        <input type="button" id="massChangeTypeButton" value="Manage FDR Translations" onclick="$('manageFdrTranslationsForm').submit();" style="width:170px;"/>
+                    <form id="manageFdrTranslationsForm" method="post"
+                        action="/spring/bulk/fdrTranslationManager/home">
+                        <input type="button" id="massChangeTypeButton"
+                            value="Manage FDR Translations"
+                            onclick="$('manageFdrTranslationsForm').submit();"
+                            style="width: 170px;" />
                     </form>
                 </td>
                 <td>Import, export or delete FDR translations.</td>
             </tr>
-            
+            </cti:checkProperty>
         </table>
         
     </tags:boxContainer>

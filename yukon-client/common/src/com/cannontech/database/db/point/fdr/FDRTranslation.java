@@ -6,7 +6,7 @@ import com.cannontech.database.data.fdr.FDRInterface;
 /**
  * This type was created in VisualAge.
  */
-
+@Deprecated
 public class FDRTranslation extends com.cannontech.database.db.DBPersistent {
 	private Integer pointID = null;
 	private String directionType = null;
