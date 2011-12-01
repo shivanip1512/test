@@ -167,6 +167,12 @@ create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
 );
 /*  End YUK-10254  */
 
+/* Start YUK-10433 */
+INSERT INTO StateGroup VALUES( -16, 'Event Status', 'Status');
+INSERT INTO State      VALUES( -16, 0, 'Cleared', 0, 6, 0);
+INSERT INTO State      VALUES( -16, 1, 'Active',  1, 6, 0);
+/*  End YUK-10433  */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

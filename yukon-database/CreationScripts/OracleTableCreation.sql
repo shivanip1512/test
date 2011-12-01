@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/1/2011 12:40:02 PM                        */
+/* Created on:     12/1/2011 1:29:20 PM                         */
 /*==============================================================*/
 
 
@@ -7086,6 +7086,8 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-16, 0, 'Cleared', 0, 6, 0);
+INSERT INTO State VALUES(-16, 1, 'Active', 1, 6, 0);
 INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
 INSERT INTO State VALUES(-15, 1, 'Very Poor', 1, 6, 0); 
 INSERT INTO State VALUES(-15, 2, 'Ok', 10, 6, 0); 
@@ -7191,6 +7193,7 @@ create table StateGroup  (
    constraint SYS_C0013128 primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-16, 'Event Status', 'Status');
 INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status'); 
 INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
 INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
