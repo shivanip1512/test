@@ -595,12 +595,7 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                             else if(5 < rssi && rssi <= 9) bars = 2;
                                             else if(0 < rssi && rssi <= 5) bars = 1;
 
-                                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_RSSI, bars, NormalQuality, StatusPointType);
-                                            point_list.push_back((CtiPointDataMsg*)pdm->replicateMessage());
-                                            pdm->setMillis(10); // Reset the value to allow new alarms.
-                                            pdm->setValue(0.0);
-                                            point_list.push_back(pdm);
-
+                                            point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Status_RSSI, bars, NormalQuality, StatusPointType));
                                             point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_RSSI, rssi, NormalQuality, AnalogPointType));
                                             point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_BER, ber, NormalQuality, AnalogPointType));
                                         }
@@ -1119,9 +1114,6 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                         else if(0 < rssi && rssi <= 5) bars = 1;
 
                                         pdm = CTIDBG_new CtiPointDataMsg(GVARx_Status_RSSI, bars, NormalQuality, StatusPointType);
-                                        point_list.push_back((CtiPointDataMsg*)pdm->replicateMessage());
-                                        pdm->setMillis(10);
-                                        pdm->setValue(0);
                                         point_list.push_back(pdm);
 
                                         pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_BER, ber, NormalQuality, AnalogPointType);
