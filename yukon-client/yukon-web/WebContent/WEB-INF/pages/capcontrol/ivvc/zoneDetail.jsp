@@ -91,11 +91,16 @@
 
                     // Add menus
                     var bankName = row.down('button[id^="bankName"]');
-                    bankName.observe('click', function(event) {getCommandMenu(bankId, event)});
+                    bankName.observe('click', function(event) {
+                        getCommandMenu(bankId, event);
+                        return false;
+                    });
 
                     var bankState = row.down('a[id^="capbankState"]');
-                    bankState.addClassName('actsAsAnchor');
-                    bankState.observe('click', function(event) {getMenuFromURL('/spring/capcontrol/menu/capBankState?id=' + bankId, event)});
+                    bankState.observe('click', function(event) {
+                        getMenuFromURL('/spring/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
+                        return false;
+                    });
                 });
             }
         });
@@ -555,7 +560,7 @@
 		                    <td>
                                 <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
                                 <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
-                                    <a id="capbankState_${bankId}">
+                                    <a id="capbankState_${bankId}" href="#null">
                                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
                                     </a>
                                 </cti:capBankStateColor>
