@@ -708,7 +708,7 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
     return result;
 }
 
-CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(CtiFDRDestination destination) const
+CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(const CtiFDRDestination destination) const
 {
     // Port match needs to happen for ValmetMulti.
     int destPort = atoi(destination.getTranslationValue("Port").c_str());

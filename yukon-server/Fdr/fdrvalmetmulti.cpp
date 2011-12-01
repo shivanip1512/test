@@ -136,7 +136,7 @@ int CtiFDR_ValmetMulti::readConfig()
         dout << CtiTime() << " Valmet running in " + string(isInterfaceInDebugMode() ? "debug" : "normal") + " mode" << endl;
     }
 
-    return TRUE;
+    return true;
 }
 
 void CtiFDR_ValmetMulti::signalReloadList()

@@ -81,7 +81,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         ConnectionList  _connectionList;
         CtiMutex _connectionListMutex;
-        CtiFDRClientServerConnection* findConnectionForDestination(CtiFDRDestination destination) const;
+        CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
 
         SOCKET _listenerSocket;
         unsigned short _portNumber;
