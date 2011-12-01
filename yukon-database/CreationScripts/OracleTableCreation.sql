@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/30/2011 1:47:00 PM                        */
+/* Created on:     12/1/2011 12:40:02 PM                        */
 /*==============================================================*/
 
 
@@ -6777,9 +6777,9 @@ create table RAWPOINTHISTORY  (
 );
 
 /*==============================================================*/
-/* Index: Index_PointId                                         */
+/* Index: Index_PointID                                         */
 /*==============================================================*/
-create index Index_PointId on RAWPOINTHISTORY (
+create index Index_PointID on RAWPOINTHISTORY (
    POINTID ASC
 );
 
@@ -6791,9 +6791,9 @@ create index Indx_TimeStamp on RAWPOINTHISTORY (
 );
 
 /*==============================================================*/
-/* Index: Indx_RwPtHisPtIdTst                                   */
+/* Index: Indx_RwPtHisPtIDTst                                   */
 /*==============================================================*/
-create index Indx_RwPtHisPtIdTst on RAWPOINTHISTORY (
+create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
    POINTID ASC,
    TIMESTAMP ASC
 );
