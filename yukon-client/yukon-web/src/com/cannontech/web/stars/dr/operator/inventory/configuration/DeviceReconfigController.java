@@ -66,7 +66,7 @@ public class DeviceReconfigController {
         }
     }
 
-    @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/setup", method=RequestMethod.GET)
+    @RequestMapping(value="/operator/inventory/deviceReconfig/setup", method=RequestMethod.GET)
     public void setup(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         DeviceReconfigOptions deviceReconfigOptions = new DeviceReconfigOptions();
@@ -83,7 +83,7 @@ public class DeviceReconfigController {
         modelMap.addAttribute("schedules", schedules);
     }
     
-    @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/save", method=RequestMethod.POST)
+    @RequestMapping(value="/operator/inventory/deviceReconfig/save", method=RequestMethod.POST)
     public String save(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, BindingResult bindingResult, 
                        HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
 
@@ -96,7 +96,7 @@ public class DeviceReconfigController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupModelMap(request, modelMap, userContext);
-            return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
+            return "operator/inventory/deviceReconfig/setup.jsp";
         }
 
         try {
@@ -106,7 +106,7 @@ public class DeviceReconfigController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupModelMap(request, modelMap, userContext);
-            return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
+            return "operator/inventory/deviceReconfig/setup.jsp";
         }
         
         /* Log Event */
@@ -117,26 +117,26 @@ public class DeviceReconfigController {
         return "redirect:../home";
     }
     
-    @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/save", method=RequestMethod.POST, params="cancelButton")
+    @RequestMapping(value="/operator/inventory/deviceReconfig/save", method=RequestMethod.POST, params="cancelButton")
     public String cancel(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, HttpServletRequest request, ModelMap modelMap) 
         throws ServletRequestBindingException {
 
         inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
         
-        return "redirect:/spring/stars/operator/inventory/inventoryOperations/inventoryActions";
+        return "redirect:/spring/stars/operator/inventory/inventoryActions";
     }
     
-    @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/status", method=RequestMethod.GET)
+    @RequestMapping(value="/operator/inventory/deviceReconfig/status", method=RequestMethod.GET)
     public String status(HttpServletRequest request, ModelMap modelMap, int taskId) throws ServletRequestBindingException {
         
         InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
         modelMap.addAttribute("task", task);
         modelMap.addAttribute("taskName", task.getTaskName());
         
-        return "operator/inventory/inventoryOperations/deviceReconfig/status.jsp";
+        return "operator/inventory/deviceReconfig/status.jsp";
     }
     
-    @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/newOperation", method=RequestMethod.GET)
+    @RequestMapping(value="/operator/inventory/deviceReconfig/newOperation", method=RequestMethod.GET)
     public String newOperation(HttpServletRequest request, ModelMap modelMap, int taskId, String type, YukonUserContext userContext) {
         
         InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
@@ -158,7 +158,7 @@ public class DeviceReconfigController {
         InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), descriptionHint);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         
-        return "redirect:/spring/stars/operator/inventory/inventoryOperations/inventoryActions";
+        return "redirect:/spring/stars/operator/inventory/inventoryActions";
     }
     
     @RequestMapping(value="/operator/inventory/inventoryActions/deviceReconfig/delete", method=RequestMethod.POST)
@@ -166,7 +166,7 @@ public class DeviceReconfigController {
         InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
         inventoryConfigTaskDao.delete(taskId);
         inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
-        return "redirect:/spring/stars/operator/inventory/inventoryOperations/home";
+        return "redirect:/spring/stars/operator/inventory/home";
     }
     
     @Autowired

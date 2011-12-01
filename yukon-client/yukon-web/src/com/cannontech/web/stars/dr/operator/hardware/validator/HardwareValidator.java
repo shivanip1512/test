@@ -16,41 +16,41 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 
-public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
+public class HardwareValidator extends SimpleValidator<Hardware> {
     
     private InventoryBaseDao inventoryBaseDao;
     private PaoDao paoDao;
     private HardwareTypeExtensionService hardwareTypeExtensionService;
     
-    public HardwareDtoValidator() {
-    	super(HardwareDto.class);
+    public HardwareValidator() {
+    	super(Hardware.class);
     }
 
     @Override
-    public void doValidation(HardwareDto hardwareDto, Errors errors) {
-        HardwareType hardwareType = hardwareDto.getHardwareType();
+    public void doValidation(Hardware hardware, Errors errors) {
+        HardwareType hardwareType = hardware.getHardwareType();
 
         /* Set the type for */
-        hardwareDto.setHardwareType(hardwareType);
+        hardware.setHardwareType(hardwareType);
         
         //This will validate any hardware extensions. Ex. Zigbee devices
-        hardwareTypeExtensionService.validateDevice(hardwareDto, errors);
+        hardwareTypeExtensionService.validateDevice(hardware, errors);
         
         /* Serial Number */
         if (!hardwareType.isMeter()) {  /* Check serial numbers for switches and tstats */
-            if (StringUtils.isBlank(hardwareDto.getSerialNumber())) {
+            if (StringUtils.isBlank(hardware.getSerialNumber())) {
                 errors.rejectValue("serialNumber", "yukon.web.error.required");
             } else {
                 if (hardwareType.isSwitch() && hardwareType.isTwoWay()) {
                     /* This is a two way lcr so the serial number can only have numeric chars and must be a valid integer. */
-                    if (!StringUtils.isNumeric(hardwareDto.getSerialNumber())) {
+                    if (!StringUtils.isNumeric(hardware.getSerialNumber())) {
                         errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
                     } else {
                        try {
-                           Integer.parseInt(hardwareDto.getSerialNumber());
+                           Integer.parseInt(hardware.getSerialNumber());
                        } catch(NumberFormatException e) {
                            errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.tooLong.twoWay");
                        }
@@ -58,40 +58,40 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                 } else {
                     /* Not a two way device so serial number should only contain alpha numeric characters and
                      * be less than 30 characters long. */
-                    if (!StringUtils.isAlphanumeric(hardwareDto.getSerialNumber())) {
+                    if (!StringUtils.isAlphanumeric(hardware.getSerialNumber())) {
                         errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
                     } else {
-                        YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", hardwareDto.getSerialNumber(), 30);
+                        YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", hardware.getSerialNumber(), 30);
                     } 
                 }
             }
         } else if (hardwareType == HardwareType.NON_YUKON_METER) {
             /* Meter Number */
-            if (StringUtils.isBlank(hardwareDto.getMeterNumber())) {
+            if (StringUtils.isBlank(hardware.getMeterNumber())) {
                 errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterProfile.error.required");
             } else {
-                YukonValidationUtils.checkExceedsMaxLength(errors, "meterNumber", hardwareDto.getMeterNumber(), 30);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "meterNumber", hardware.getMeterNumber(), 30);
             }
         }
         
         /* Device Label */
-        if (StringUtils.isNotBlank(hardwareDto.getDisplayLabel())) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "displayLabel", hardwareDto.getDisplayLabel(), 60);
+        if (StringUtils.isNotBlank(hardware.getDisplayLabel())) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "displayLabel", hardware.getDisplayLabel(), 60);
         }
         
         /* Alternate Tracking Number */
-        if (StringUtils.isNotBlank(hardwareDto.getAltTrackingNumber())) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "altTrackingNumber", hardwareDto.getAltTrackingNumber(), 40);
+        if (StringUtils.isNotBlank(hardware.getAltTrackingNumber())) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "altTrackingNumber", hardware.getAltTrackingNumber(), 40);
         }
         
         /* Device Info Notes */
-        if (StringUtils.isNotBlank(hardwareDto.getDeviceNotes())) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "deviceNotes", hardwareDto.getDeviceNotes(), 500);
+        if (StringUtils.isNotBlank(hardware.getDeviceNotes())) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "deviceNotes", hardware.getDeviceNotes(), 500);
         }
         
         /* Install Notes */
-        if (StringUtils.isNotBlank(hardwareDto.getInstallNotes())) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "installNotes", hardwareDto.getInstallNotes(), 500);
+        if (StringUtils.isNotBlank(hardware.getInstallNotes())) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "installNotes", hardware.getInstallNotes(), 500);
         }
         
         /* Two Way LCR's */
@@ -99,17 +99,17 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                 && hardwareType.isTwoWay() 
                 && !hardwareType.isZigbee()) {
             
-            if (!hardwareDto.isCreatingNewTwoWayDevice()) {
+            if (!hardware.isCreatingNewTwoWayDevice()) {
                 /* Using the picker to choose a two way device */
                 
                 /* If they have not picked a device for this two way inventory, reject this device id */
-                if (hardwareDto.getDeviceId() <= 0) {
+                if (hardware.getDeviceId() <= 0) {
                     errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalid");
                 } else {
                 
                     try {
                         /* If this device no longer exists, reject this device id. */
-                        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(hardwareDto.getDeviceId());
+                        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(hardware.getDeviceId());
                         PaoType paoType = pao.getPaoIdentifier().getPaoType();
                         
                         if(!DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
@@ -118,15 +118,15 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                         }
                         
                         /* Device can only be used by one lcr at a time */
-                        List<InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(hardwareDto.getDeviceId());
+                        List<InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(hardware.getDeviceId());
                         if (!matchedInventory.isEmpty()) {
-                            if (hardwareDto.getInventoryId() == null) {
+                            if (hardware.getInventoryId() == null) {
                                 /* Creating a two way lcr and the two way device is already in use */
                                 String unavailableDeviceName = pao.getPaoName();
                                 errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
                             } else {
                                 /* Updating a two way lcr, see if the inventory for this device is us */
-                                InventoryBase inventory = inventoryBaseDao.getById(hardwareDto.getInventoryId());
+                                InventoryBase inventory = inventoryBaseDao.getById(hardware.getInventoryId());
                                 /* If something is using this device and it's not this inventory reject this device id */
                                 if (matchedInventory.size() != 0 && matchedInventory.get(0).getDeviceId() != inventory.getDeviceId()) {
                                     String unavailableDeviceName = pao.getPaoName();
@@ -137,7 +137,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                         
                         /* The device's address must match the LCR's serial number */
                         try {
-                            int serial = Integer.valueOf(hardwareDto.getSerialNumber());
+                            int serial = Integer.valueOf(hardware.getSerialNumber());
                             if (pao.getAddress() != serial) {
                                 errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.addressMismatch", new String[] {pao.getPaoName()}, null);
                             }
@@ -150,8 +150,8 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                 }
             } else {
                 /* They are creating a new two way device and should have supplied a valid pao name */
-                if (StringUtils.isNotBlank(hardwareDto.getTwoWayDeviceName())) {
-                    if (!paoDao.isNameAvailable(hardwareDto.getTwoWayDeviceName(), PaoType.LCR3102)) {
+                if (StringUtils.isNotBlank(hardware.getTwoWayDeviceName())) {
+                    if (!paoDao.isNameAvailable(hardware.getTwoWayDeviceName(), PaoType.LCR3102)) {
                         errors.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unavailable");
                     }
                 } else {

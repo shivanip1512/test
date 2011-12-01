@@ -3,7 +3,7 @@ package com.cannontech.web.support.development.database.objects;
 import java.util.List;
 
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.google.common.collect.Lists;
 
 public class DevStarsHardware {
@@ -12,7 +12,7 @@ public class DevStarsHardware {
     private int numPerAccount = 1;
     private int numExtra = 10;
     private List<DevHardwareType> hardwareTypes = getAllHardwareTypes();
-    private List<HardwareDto> hardware = Lists.newArrayList();
+    private List<Hardware> hardware = Lists.newArrayList();
 
     public int getSerialNumMin() {
         return serialNumMin;
@@ -38,10 +38,10 @@ public class DevStarsHardware {
     public void setNumExtra(int numExtra) {
         this.numExtra = numExtra;
     }
-    public List<HardwareDto> getHardware() {
+    public List<Hardware> getHardware() {
         return hardware;
     }
-    public void setHardware(List<HardwareDto> hardware) {
+    public void setHardware(List<Hardware> hardware) {
         this.hardware = hardware;
     }
     public List<DevHardwareType> getHardwareTypes() {

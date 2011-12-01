@@ -375,7 +375,7 @@
                 <table class="compactResultsTable hardwareListTable">
                     <tr>
                         <th class="name"><i:inline key=".serialNumber"/></th>
-                        <th class="type"><i:inline key=".switches.displayType"/></th>
+                        <th class="type"><i:inline key=".displayType.SWITCH"/></th>
                         <th class="label"><i:inline key=".label"/></th>
                         <th class="actions"><i:inline key=".actions"/></th>
                     </tr>
@@ -457,7 +457,7 @@
                 <table class="compactResultsTable hardwareListTable">
                     <tr>
                         <th class="name"><i:inline key=".serialNumber"/></th>
-                        <th class="type"><i:inline key=".thermostats.displayType"/></th>
+                        <th class="type"><i:inline key=".displayType.THERMOSTAT"/></th>
                         <th class="label"><i:inline key=".label"/></th>
                         <th class="actions"><i:inline key=".actions"/></th>
                     </tr>
@@ -573,7 +573,7 @@
                             </c:choose>
                         </th>
                         <c:if test="${not starsMeters}">
-                            <th class="type"><i:inline key=".meters.displayType"/></th>
+                            <th class="type"><i:inline key=".displayType.METER"/></th>
                         </c:if>
                         <th class="label"><i:inline key=".label"/></th>
                         <c:if test="${not starsMeters}">
@@ -680,7 +680,7 @@
                 <table class="compactResultsTable hardwareListTable">
                     <tr>
                         <th class="name"><i:inline key=".displayName"/></th>
-                        <th class="type"><i:inline key=".gateways.displayType"/></th>
+                        <th class="type"><i:inline key=".displayType.GATEWAY"/></th>
                         <th class="label"><i:inline key=".gateways.commStatus"/></th>
                         <th class="actions"><i:inline key=".actions"/></th>
                     </tr>

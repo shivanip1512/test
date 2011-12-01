@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.thirdparty.digi.model.GatewayDto;
 import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceDto;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -38,11 +38,11 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     @Override
-    public GatewayDto createGatewayDto(DigiGateway digiGateway, HardwareDto hardwareDto) {
+    public GatewayDto createGatewayDto(DigiGateway digiGateway, Hardware hardware) {
         GatewayDto gatewayDto = new GatewayDto();
         
-        gatewayDto.setSerialNumber(hardwareDto.getSerialNumber());
-        gatewayDto.setGatewayType(hardwareDto.getDisplayType());
+        gatewayDto.setSerialNumber(hardware.getSerialNumber());
+        gatewayDto.setGatewayType(hardware.getDisplayType());
         
         gatewayDto.setMacAddress(digiGateway.getMacAddress());
         gatewayDto.setDigiId(digiGateway.getDigiId());

@@ -7,10 +7,15 @@ div.historyContainer {
     max-height: 112px;
     overflow: auto;
     overflow-x: hidden;
+    min-width: 280px;
 }
 
 tr.notesRow td.value {
     max-width: 300px;
+}
+
+table.hardwareTable td.first {
+    min-width: 400px;
 }
 
 table.hardwareListTable th.name,

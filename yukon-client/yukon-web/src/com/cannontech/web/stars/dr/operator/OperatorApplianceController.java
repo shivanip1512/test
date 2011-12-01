@@ -34,7 +34,7 @@ import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -237,8 +237,8 @@ public class OperatorApplianceController {
 
         // Hardware Summary
         if (inventoryId > 0) {
-            HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, ecId, accountId);
-            model.addAttribute("hardware", hardwareDto);
+            Hardware hardware = hardwareUiService.getHardware(inventoryId);
+            model.addAttribute("hardware", hardware);
         }
 
         setupApplianceEditModelMap(fragment, model, context, applianceId);

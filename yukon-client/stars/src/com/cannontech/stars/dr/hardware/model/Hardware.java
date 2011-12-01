@@ -9,7 +9,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.LazyList;
 
-public class HardwareDto {
+public class Hardware {
+    
     private Integer inventoryId;
     private Integer deviceId = 0;
     private int energyCompanyId;

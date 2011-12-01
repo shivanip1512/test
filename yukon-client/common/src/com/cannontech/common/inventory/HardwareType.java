@@ -74,6 +74,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     private static ImmutableSet<HardwareType> zigbeeTypes;
     private static ImmutableSet<HardwareType> zigbeeEndpointTypes;
+    private static ImmutableSet<HardwareType> validForChangeType;
     static {
         Builder<HardwareType> builder = ImmutableSet.builder();
         builder.add(UTILITY_PRO_ZIGBEE);
@@ -83,6 +84,26 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         
         builder.add(DIGI_GATEWAY);
         zigbeeTypes = builder.build();
+        
+        Builder<HardwareType> validForChangeTypeBuilder = ImmutableSet.builder();
+        validForChangeTypeBuilder.add(LCR_6600_EXPRESSCOM);
+        validForChangeTypeBuilder.add(LCR_6200_EXPRESSCOM);
+        validForChangeTypeBuilder.add(LCR_5000_EXPRESSCOM);
+        validForChangeTypeBuilder.add(LCR_5000_VERSACOM);
+        validForChangeTypeBuilder.add(LCR_4000);
+        validForChangeTypeBuilder.add(LCR_3000);
+        validForChangeTypeBuilder.add(LCR_2000);
+        validForChangeTypeBuilder.add(LCR_1000);
+        validForChangeTypeBuilder.add(SA_205);
+        validForChangeTypeBuilder.add(SA_305);
+        validForChangeTypeBuilder.add(SA_SIMPLE);
+        validForChangeTypeBuilder.add(EXPRESSSTAT);
+        validForChangeTypeBuilder.add(COMMERCIAL_EXPRESSSTAT);
+        validForChangeTypeBuilder.add(EXPRESSSTAT_HEAT_PUMP);
+        validForChangeTypeBuilder.add(UTILITY_PRO);
+        validForChangeTypeBuilder.add(UTILITY_PRO_G2);
+        validForChangeTypeBuilder.add(UTILITY_PRO_G3);
+        validForChangeType = validForChangeTypeBuilder.build();
     }
     
     //TODO Drop booleans and turn these into sets as well?
@@ -182,6 +203,14 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
 
     public boolean isZigbeeEndpoint() {
         return zigbeeEndpointTypes.contains(this);
+    }
+    
+    public boolean isValidForChangeType() {
+        return validForChangeType.contains(this);
+    }
+    
+    public static Set<HardwareType> getValidForChangeTypeSet() {
+        return validForChangeType;
     }
 
     /**

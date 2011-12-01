@@ -104,7 +104,7 @@ public class DeleteInventory {
 				" (InventoryId = " + inventoryId + ", AccountId = " + accountId + ") ");
 
 		try {
-			hardwareService.deleteHardware(new SystemUserContext(), true, inventoryId, accountId);
+			hardwareService.deleteHardware(new SystemUserContext(), true, inventoryId);
 
 			log.info("Deleted the inventory " + liteInventoryBase.getDeviceLabel() + 
 					" (InventoryId = " + inventoryId + ", AccountId = " + accountId + ") ");

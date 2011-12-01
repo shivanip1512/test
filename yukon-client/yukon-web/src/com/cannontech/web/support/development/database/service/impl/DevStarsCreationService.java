@@ -13,7 +13,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.HardwareHistory;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -83,101 +83,101 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     private void createHardware(DevStars devStars, DevHardwareType devHardwareType, int accountId, int inventoryIdIterator) {
         checkIsCancelled();
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
-        HardwareDto hardwareDto = getHardwareDto(devHardwareType, energyCompany, inventoryIdIterator);
-        if (!canAddStarsHardware(devStars, hardwareDto)) {
+        Hardware hardware = getHardwareDto(devHardwareType, energyCompany, inventoryIdIterator);
+        if (!canAddStarsHardware(devStars, hardware)) {
             devStars.incrementFailureCount();
             return;
         }
         try {
-            hardwareUiService.createHardware(hardwareDto, accountId, energyCompany.getUser());
+            hardwareUiService.createHardware(hardware, accountId, energyCompany.getUser());
             devStars.incrementSuccessCount();
             if (accountId == 0) {
-                log.info("STARS Hardware added: " + hardwareDto.getDisplayName() + " to warehouse");
+                log.info("STARS Hardware added: " + hardware.getDisplayName() + " to warehouse");
             } else {
-                log.info("STARS Hardware added: " + hardwareDto.getDisplayName() + " to accountId: " + accountId);
+                log.info("STARS Hardware added: " + hardware.getDisplayName() + " to accountId: " + accountId);
             }
         } catch (ObjectInOtherEnergyCompanyException e) {
             // We should have caught this already in canAddStarsHardware, but createHardware requires it
-            log.info("Hardware Object " + hardwareDto.getDisplayName() + " is in another energy company.");
+            log.info("Hardware Object " + hardware.getDisplayName() + " is in another energy company.");
         } catch (RuntimeException e) {
             log.info(e.getMessage());
             devStars.incrementFailureCount();
         }
     }
     
-    private HardwareDto getHardwareDto(DevHardwareType devHardwareType, LiteStarsEnergyCompany energyCompany, int inventoryId) {
+    private Hardware getHardwareDto(DevHardwareType devHardwareType, LiteStarsEnergyCompany energyCompany, int inventoryId) {
         String inventoryIdIteratorString = String.valueOf(inventoryId);
         HardwareType hardwareType = devHardwareType.getHardwareType();
-        HardwareDto hardwareDto = new HardwareDto();
-        hardwareDto.setInventoryId(inventoryId);
-        hardwareDto.setDeviceId(0);
+        Hardware hardware = new Hardware();
+        hardware.setInventoryId(inventoryId);
+        hardware.setDeviceId(0);
         String hardwareName = devHardwareType.getHardwareType().name() + " " + inventoryIdIteratorString;
-        hardwareDto.setDisplayName(hardwareName);
-        hardwareDto.setDisplayLabel(hardwareName);
-        hardwareDto.setDisplayType(hardwareName);
-        hardwareDto.setSerialNumber(inventoryIdIteratorString);
-        hardwareDto.setDeviceNotes("Device Notes for inventoryId: " + inventoryIdIteratorString);
+        hardware.setDisplayName(hardwareName);
+        hardware.setDisplayLabel(hardwareName);
+        hardware.setDisplayType(hardwareName);
+        hardware.setSerialNumber(inventoryIdIteratorString);
+        hardware.setDeviceNotes("Device Notes for inventoryId: " + inventoryIdIteratorString);
         /* Non-ZigBee two way LCR fields */
         if (hardwareType.isTwoWay() && !hardwareType.isZigbee()) {
-            hardwareDto.setTwoWayDeviceName(hardwareType + " " + inventoryIdIteratorString);
-            hardwareDto.setCreatingNewTwoWayDevice(true);
+            hardware.setTwoWayDeviceName(hardwareType + " " + inventoryIdIteratorString);
+            hardware.setCreatingNewTwoWayDevice(true);
         }
         String ccuName = DevCCU.SIM_711.getName();
         Integer routeId = paoDao.getRouteIdForRouteName(ccuName);
         if (routeId == null) {
             throw new RuntimeException("Couldn't find route with name " + ccuName);
         }
-        hardwareDto.setRouteId(routeId);
-        hardwareDto.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
-        hardwareDto.setHardwareType(hardwareType);
+        hardware.setRouteId(routeId);
+        hardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        hardware.setHardwareType(hardwareType);
         YukonListEntry typeEntry = energyCompany.getYukonListEntry(hardwareType.getDefinitionId());
-        hardwareDto.setHardwareTypeEntryId(typeEntry.getEntryID());
-        hardwareDto.setDisplayType(hardwareType.name());
-        hardwareDto.setCategoryName("Category");
-        hardwareDto.setAltTrackingNumber("4");
+        hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
+        hardware.setDisplayType(hardwareType.name());
+        hardware.setCategoryName("Category");
+        hardware.setAltTrackingNumber("4");
 //            private Integer voltageEntryId;
-        hardwareDto.setFieldInstallDate(new Date());
+        hardware.setFieldInstallDate(new Date());
 //            private Date fieldReceiveDate;
 //            private Date fieldRemoveDate;
 //            private Integer serviceCompanyId;
 //            private Integer warehouseId;
-        hardwareDto.setInstallNotes("Install notes: This hardware went in super easy.");
+        hardware.setInstallNotes("Install notes: This hardware went in super easy.");
 //            private Integer deviceStatusEntryId;
 //            private Integer originalDeviceStatusEntryId;
         HardwareHistory hardwareHistory = new HardwareHistory();
         hardwareHistory.setAction("Install performed.");
         hardwareHistory.setDate(new Date());
-        hardwareDto.setHardwareHistory(Lists.newArrayList(hardwareHistory));
+        hardware.setHardwareHistory(Lists.newArrayList(hardwareHistory));
         
         /* Non-ZigBee two way LCR fields */
         if (hardwareType.isTwoWay() && !hardwareType.isZigbee()) {
-            hardwareDto.setCreatingNewTwoWayDevice(true);
+            hardware.setCreatingNewTwoWayDevice(true);
         }
-        return hardwareDto;
+        return hardware;
     }
     
-    private boolean canAddStarsHardware(DevStars devStars, HardwareDto hardwareDto) {
-        int serialNum = Integer.valueOf(hardwareDto.getSerialNumber());
+    private boolean canAddStarsHardware(DevStars devStars, Hardware hardware) {
+        int serialNum = Integer.valueOf(hardware.getSerialNumber());
         if (serialNum >= devStars.getDevStarsHardware().getSerialNumMax()) {
-            log.info("Hardware Object " + hardwareDto.getDisplayName() + " cannot be added. Max of "
+            log.info("Hardware Object " + hardware.getDisplayName() + " cannot be added. Max of "
                      + devStars.getDevStarsHardware().getSerialNumMax() + " reached.");
             return false;
         }
         // check energy company
-        boolean isSerialNumInUse = hardwareUiService.isSerialNumberInEC(hardwareDto);
+        boolean isSerialNumInUse = hardwareUiService.isSerialNumberInEC(hardware);
         if (isSerialNumInUse) {
-            log.info("Hardware Object " + hardwareDto.getDisplayName() + " already exists in the database assigned to ec: "
-                     + hardwareDto.getEnergyCompanyId());
+            log.info("Hardware Object " + hardware.getDisplayName() + " already exists in the database assigned to ec: "
+                     + hardware.getEnergyCompanyId());
             return false;
         }
         // check warehouse
         try {
-            starsInventoryBaseDao.getByInventoryId(hardwareDto.getInventoryId());
+            starsInventoryBaseDao.getByInventoryId(hardware.getInventoryId());
         } catch (NotFoundException e) {
             return true;
         }
         
-        log.info("Hardware Object " + hardwareDto.getDisplayName() + " already exists in the database (warehouse).");
+        log.info("Hardware Object " + hardware.getDisplayName() + " already exists in the database (warehouse).");
         return false;
     }
     

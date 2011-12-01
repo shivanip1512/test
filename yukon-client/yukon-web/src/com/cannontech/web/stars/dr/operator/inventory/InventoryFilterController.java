@@ -69,7 +69,7 @@ import com.google.common.collect.Sets;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
-@RequestMapping(value = "/operator/inventory/inventoryOperations/*")
+@RequestMapping(value = "/operator/inventory/*")
 public class InventoryFilterController {
     
     private ApplianceCategoryDao applianceCategoryDao;
@@ -92,7 +92,7 @@ public class InventoryFilterController {
         FilterModel filterModel = new FilterModel();
         setupFilterSelectionModelMap(modelMap, userContext);
         modelMap.addAttribute("filterModel", filterModel);
-        return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+        return "operator/inventory/setupFilterRules.jsp";
     }
     
     /* Add Filter Rule */
@@ -112,7 +112,7 @@ public class InventoryFilterController {
         filterModel.getFilterRules().add(newRule);
 
         setupFilterSelectionModelMap(modelMap, userContext);
-        return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+        return "operator/inventory/setupFilterRules.jsp";
     }
     
     /* Cancel */
@@ -131,7 +131,7 @@ public class InventoryFilterController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupFilterSelectionModelMap(modelMap, userContext);
-            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+            return "operator/inventory/setupFilterRules.jsp";
         }
         
         Set<InventoryIdentifier> inventory = null;
@@ -144,13 +144,13 @@ public class InventoryFilterController {
         } catch (InvalidSerialNumberRangeDataException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.invalidSerialNumbers"));
             setupFilterSelectionModelMap(modelMap, userContext);
-            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+            return "operator/inventory/setupFilterRules.jsp";
         }
         
         if(inventory.isEmpty()) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.noInventory"));
             setupFilterSelectionModelMap(modelMap, userContext);
-            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+            return "operator/inventory/setupFilterRules.jsp";
         }
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -168,7 +168,7 @@ public class InventoryFilterController {
                               ModelMap modelMap, YukonUserContext userContext, int removeRule) {
         filterModel.getFilterRules().remove(removeRule);
         setupFilterSelectionModelMap(modelMap, userContext);
-        return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+        return "operator/inventory/setupFilterRules.jsp";
     }
     
     public void setupFilterSelectionModelMap(ModelMap modelMap, YukonUserContext userContext) {

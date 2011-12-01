@@ -37,6 +37,7 @@ import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
@@ -52,7 +53,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.HardwareHistory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
@@ -82,57 +83,60 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     private HardwareTypeExtensionService hardwareTypeExtensionService;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     private InventoryDao inventoryDao;
+    private @Autowired ECMappingDao ecMappingDao;
     
     @Override
-    public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
-        HardwareDto hardwareDto = new HardwareDto();
-        hardwareDto.setInventoryId(inventoryId);
-        hardwareDto.setEnergyCompanyId(energyCompanyId);
+    public Hardware getHardware(int inventoryId) {
+        int ecId = ecMappingDao.getEnergyCompanyIdForInventoryId(inventoryId);
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        Hardware hardware = new Hardware();
+        hardware.setInventoryId(inventoryId);
+        hardware.setEnergyCompanyId(ecId);
+        
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         
         /* Set Hardware Basics */
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         
         int categoryId = liteInventoryBase.getCategoryID();
         YukonListEntry categoryNameYLE = yukonListDao.getYukonListEntry(categoryId);
-        hardwareDto.setCategoryName(categoryNameYLE.getEntryText());
+        hardware.setCategoryName(categoryNameYLE.getEntryText());
         
-        hardwareDto.setDeviceId(liteInventoryBase.getDeviceID());
-        hardwareDto.setDisplayLabel(liteInventoryBase.getDeviceLabel());
-        hardwareDto.setAltTrackingNumber(liteInventoryBase.getAlternateTrackingNumber());
-        hardwareDto.setVoltageEntryId(liteInventoryBase.getVoltageID());
+        hardware.setDeviceId(liteInventoryBase.getDeviceID());
+        hardware.setDisplayLabel(liteInventoryBase.getDeviceLabel());
+        hardware.setAltTrackingNumber(liteInventoryBase.getAlternateTrackingNumber());
+        hardware.setVoltageEntryId(liteInventoryBase.getVoltageID());
         
         /* For some reason some (not real) dates were saved with a time of 19:00 instead of 18:00. */
         Instant beginningOfJavaTime = new Instant(0).plus(Duration.standardDays(1));
         Instant installDT = new Instant(liteInventoryBase.getInstallDate());
         if (installDT.isAfter(beginningOfJavaTime)){
-            hardwareDto.setFieldInstallDate(installDT.toDate());
+            hardware.setFieldInstallDate(installDT.toDate());
         } else {
-            hardwareDto.setFieldInstallDate(null);
+            hardware.setFieldInstallDate(null);
         }
         
         Instant receiveDT = new Instant(liteInventoryBase.getReceiveDate());
         if (receiveDT.isAfter(beginningOfJavaTime)){
-            hardwareDto.setFieldReceiveDate(receiveDT.toDate());
+            hardware.setFieldReceiveDate(receiveDT.toDate());
         } else {
-            hardwareDto.setFieldReceiveDate(null);
+            hardware.setFieldReceiveDate(null);
         }
         
         Instant removeDT = new Instant(liteInventoryBase.getRemoveDate());
         if (removeDT.isAfter(beginningOfJavaTime)){
-            hardwareDto.setFieldRemoveDate(removeDT.toDate());
+            hardware.setFieldRemoveDate(removeDT.toDate());
         } else {
-            hardwareDto.setFieldRemoveDate(null);
+            hardware.setFieldRemoveDate(null);
         }
         
-        hardwareDto.setDeviceNotes(liteInventoryBase.getNotes());
-        hardwareDto.setDeviceStatusEntryId(liteInventoryBase.getCurrentStateID());
-        hardwareDto.setOriginalDeviceStatusEntryId(liteInventoryBase.getCurrentStateID());
-        hardwareDto.setServiceCompanyId(liteInventoryBase.getInstallationCompanyID());
+        hardware.setDeviceNotes(liteInventoryBase.getNotes());
+        hardware.setDeviceStatusEntryId(liteInventoryBase.getCurrentStateID());
+        hardware.setOriginalDeviceStatusEntryId(liteInventoryBase.getCurrentStateID());
+        hardware.setServiceCompanyId(liteInventoryBase.getInstallationCompanyID());
         
         Warehouse warehouse = warehouseDao.findWarehouseForInventoryId(inventoryId);
-        hardwareDto.setWarehouseId(warehouse == null ? 0 : warehouse.getWarehouseID());
+        hardware.setWarehouseId(warehouse == null ? 0 : warehouse.getWarehouseID());
         
         List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());
         String installNotes = null;
@@ -146,7 +150,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 break;
             }
         }
-        hardwareDto.setInstallNotes(installNotes);
+        hardware.setInstallNotes(installNotes);
         
         /* Set Hardware Details based on type(Switch, Thermostat, or MCT */
         YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(categoryId);
@@ -154,91 +158,100 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         if (hardwareCategory == InventoryCategory.MCT) {
             /* Hardware is an MCT */
-            hardwareDto.setHardwareType(HardwareType.YUKON_METER);
+            hardware.setHardwareType(HardwareType.YUKON_METER);
             
             if (liteInventoryBase.getDeviceID() > 0) {
                 /* The device id has been set to a real MCT. */
                 YukonPao pao = paoDao.getYukonPao(liteInventoryBase.getDeviceID());
                 DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(pao);
-                hardwareDto.setDisplayType(displayablePao.getPaoIdentifier().getPaoType().getPaoTypeName());
-                hardwareDto.setDisplayName(displayablePao.getName());
+                String paoType = displayablePao.getPaoIdentifier().getPaoType().getPaoTypeName();
+                hardware.setDisplayType(paoType);
+                String paoName = displayablePao.getName();
+                hardware.setDisplayName(paoType + " " + paoName);
             } else {
                 /* Not attached to a real MCT yet. Use label for name if you can */
                 /* and use the MCT list enty of the energy company as the device type. */
                 YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
-                hardwareDto.setDisplayType(mctDeviceType.getEntryText());
-                if(StringUtils.isNotBlank(liteInventoryBase.getDeviceLabel())){
-                    hardwareDto.setDisplayName(liteInventoryBase.getDeviceLabel());
+                hardware.setDisplayType(mctDeviceType.getEntryText());
+                if (StringUtils.isNotBlank(liteInventoryBase.getDeviceLabel())) {
+                    hardware.setDisplayName(liteInventoryBase.getDeviceLabel());
                 }
             }
         } else if (hardwareCategory == InventoryCategory.NON_YUKON_METER) {
             LiteMeterHardwareBase liteMeterHardwareBase = (LiteMeterHardwareBase) liteInventoryBase;
             /* Hardware is an meter but being handle by stars instead of being a yukon mct (pao) */
-            hardwareDto.setMeterNumber(liteMeterHardwareBase.getMeterNumber());
-            hardwareDto.setDisplayName(liteMeterHardwareBase.getMeterNumber());
-            hardwareDto.setHardwareTypeEntryId(liteMeterHardwareBase.getMeterTypeID());
+            String meterNumber = liteMeterHardwareBase.getMeterNumber();
+            hardware.setMeterNumber(meterNumber);
+            hardware.setHardwareTypeEntryId(liteMeterHardwareBase.getMeterTypeID());
             
             YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(liteMeterHardwareBase.getMeterTypeID());
             HardwareType hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
-            hardwareDto.setHardwareType(hardwareType);
+            hardware.setHardwareType(hardwareType);
             
             YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
-            hardwareDto.setDisplayType(mctDeviceType.getEntryText());
+            String deviceType = mctDeviceType.getEntryText();
+            hardware.setDisplayName(deviceType + " " + meterNumber);
+            hardware.setDisplayType(deviceType);
             
             List<Integer> assignedIds = starsInventoryBaseDao.getSwitchAssignmentsForMeter(inventoryId);
             
-            for (SwitchAssignment assignement : getSwitchAssignments(assignedIds, accountId)) {
-                hardwareDto.getSwitchAssignments().add(assignement);
+            int accountId = inventoryDao.getAccountIdForInventory(inventoryId);
+            if (accountId > 0) {
+                for (SwitchAssignment assignement : getSwitchAssignments(assignedIds, accountId)) {
+                    hardware.getSwitchAssignments().add(assignement);
+                }
             }
             
         } else {
             /* Must be a switch or thermostat. */
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
             
-            hardwareDto.setHardwareTypeEntryId(lmHardwareBase.getLMHarewareTypeId());
+            hardware.setHardwareTypeEntryId(lmHardwareBase.getLMHarewareTypeId());
             
             YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
             HardwareType hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
-            hardwareDto.setHardwareType(hardwareType);
+            hardware.setHardwareType(hardwareType);
             
             YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
-            hardwareDto.setDisplayType(deviceTypeEntry.getEntryText());
-            hardwareDto.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
-            hardwareDto.setDisplayName(lmHardwareBase.getManufacturerSerialNumber());
-            hardwareDto.setRouteId(lmHardwareBase.getRouteId());
+            String deviceType = deviceTypeEntry.getEntryText();
+            hardware.setDisplayType(deviceType);
+            String serialNumber = lmHardwareBase.getManufacturerSerialNumber();
+            hardware.setSerialNumber(serialNumber);
+            hardware.setDisplayName(deviceType + " " + serialNumber);
+            hardware.setRouteId(lmHardwareBase.getRouteId());
             
             /* Two Way LCR's */
             if (hardwareType.isSwitch() && hardwareCategory == InventoryCategory.TWO_WAY_RECEIVER) {
                 if (liteInventoryBase.getDeviceID() > 0){
                     YukonPao pao = paoDao.getYukonPao(liteInventoryBase.getDeviceID());
                     DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(pao);
-                    hardwareDto.setTwoWayDeviceName(displayablePao.getName());
+                    hardware.setTwoWayDeviceName(displayablePao.getName());
                 }
             }
             
-            hardwareTypeExtensionService.retrieveDevice(hardwareDto);
+            hardwareTypeExtensionService.retrieveDevice(hardware);
             
         }
         
-        return hardwareDto;
+        return hardware;
     }
     
     @Override
-    public ListMultimap<HardwareClass, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId) {
-        ListMultimap<HardwareClass, HardwareDto> hardwareMap = ArrayListMultimap.create();
+    public ListMultimap<HardwareClass, Hardware> getHardwareMapForAccount(int accountId) {
+        ListMultimap<HardwareClass, Hardware> hardwareMap = ArrayListMultimap.create();
         
         List<Integer> inventoryIds = inventoryBaseDao.getInventoryIdsByAccountId(accountId);
         for (int inventoryId : inventoryIds) {
-            HardwareDto hardwareDto = getHardwareDto(inventoryId, energyCompanyId, accountId);
-            HardwareType hardwareType = hardwareDto.getHardwareType();
+            Hardware hardware = getHardware(inventoryId);
+            HardwareType hardwareType = hardware.getHardwareType();
             if (hardwareType.isMeter()) {
-                hardwareMap.put(HardwareClass.METER, hardwareDto);
+                hardwareMap.put(HardwareClass.METER, hardware);
             } else if (hardwareType.isThermostat()) {
-                hardwareMap.put(HardwareClass.THERMOSTAT, hardwareDto);
+                hardwareMap.put(HardwareClass.THERMOSTAT, hardware);
             } else if (hardwareType.isGateway()) {
-                hardwareMap.put(HardwareClass.GATEWAY, hardwareDto);
+                hardwareMap.put(HardwareClass.GATEWAY, hardware);
             } else {
-                hardwareMap.put(HardwareClass.SWITCH, hardwareDto);
+                hardwareMap.put(HardwareClass.SWITCH, hardware);
             }
         }
         
@@ -283,84 +296,92 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     
     @Override
     @Transactional
-    public boolean updateHardware(LiteYukonUser user, HardwareDto hardwareDto) 
+    public boolean updateHardware(LiteYukonUser user, Hardware hardware) 
     throws ObjectInOtherEnergyCompanyException {
-        LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(hardwareDto.getInventoryId());
-        setInventoryFieldsFromDto(liteInventoryBase, hardwareDto);
+        LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(hardware.getInventoryId());
+        setInventoryFieldsFromDto(liteInventoryBase, hardware);
+        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(hardware.getInventoryId());
         
-        checkSerialNumber(hardwareDto);
+        checkSerialNumber(hardware);
         
-        HardwareType hardwareType = hardwareDto.getHardwareType();
+        HardwareType hardwareType = hardware.getHardwareType();
         if (hardwareType.isMeter()) {
             if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
-                starsInventoryBaseDao.saveInventoryBase(liteInventoryBase, hardwareDto.getEnergyCompanyId());
+                starsInventoryBaseDao.saveInventoryBase(liteInventoryBase, ec.getEnergyCompanyId());
             } else if (hardwareType.getInventoryCategory() == InventoryCategory.NON_YUKON_METER) {
                 /* Update MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = (LiteMeterHardwareBase)liteInventoryBase;
-                meterHardwareBase.setMeterNumber(hardwareDto.getMeterNumber());
-                starsInventoryBaseDao.saveMeterHardware(meterHardwareBase, hardwareDto.getEnergyCompanyId());
+                meterHardwareBase.setMeterNumber(hardware.getMeterNumber());
+                starsInventoryBaseDao.saveMeterHardware(meterHardwareBase, ec.getEnergyCompanyId());
                 
                 /* Update LMHardwareToMeterMapping */
                 List<Integer> assignedSwitches = Lists.newArrayList();
-                for (SwitchAssignment assignment : hardwareDto.getSwitchAssignments()) {
+                for (SwitchAssignment assignment : hardware.getSwitchAssignments()) {
                     if (assignment.isAssigned()) {
                         assignedSwitches.add(assignment.getInventoryId());
                     }
                 }
-                starsInventoryBaseDao.saveSwitchAssignments(hardwareDto.getInventoryId(), assignedSwitches);
+                starsInventoryBaseDao.saveSwitchAssignments(hardware.getInventoryId(), assignedSwitches);
             }
         } else {
             LiteStarsLMHardware lmHardware = (LiteStarsLMHardware)liteInventoryBase;
             
+            /* Update Type/Category */
+            YukonListEntry typeEntry = yukonListDao.getYukonListEntry(hardwareType.getDefinitionId(), ec);
+            // The Inventory Category list only exists on the default energy company.
+            YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(hardwareType.getInventoryCategory().getDefinitionId(), starsDatabaseCache.getDefaultEnergyCompany());
+            lmHardware.setLmHardwareTypeID(typeEntry.getEntryID());
+            lmHardware.setCategoryID(categoryEntry.getEntryID());
+            
             /* Update Route */
-            lmHardware.setRouteID(hardwareDto.getRouteId());
+            lmHardware.setRouteID(hardware.getRouteId());
             
             /* Update Serial Number */
-            lmHardware.setManufacturerSerialNumber(hardwareDto.getSerialNumber());
+            lmHardware.setManufacturerSerialNumber(hardware.getSerialNumber());
             
             /* Create two-way device if need be */
-            if (hardwareDto.isCreatingNewTwoWayDevice()) {
-                SimpleDevice device = createTwoWayDevice(user, hardwareDto.getInventoryId(), hardwareDto.getTwoWayDeviceName());
+            if (hardware.isCreatingNewTwoWayDevice()) {
+                SimpleDevice device = createTwoWayDevice(user, hardware.getInventoryId(), hardware.getTwoWayDeviceName());
                 lmHardware.setDeviceID(device.getDeviceId());
             }
-            starsInventoryBaseDao.saveLmHardware(lmHardware, hardwareDto.getEnergyCompanyId());
+            starsInventoryBaseDao.saveLmHardware(lmHardware, ec.getEnergyCompanyId());
             
             
             /* Log Serial Number Change */
-            if (!hardwareDto.getSerialNumber().equals(lmHardware.getManufacturerSerialNumber())) {
-                hardwareEventLogService.serialNumberChanged(user, lmHardware.getManufacturerSerialNumber(), hardwareDto.getSerialNumber());
+            if (!hardware.getSerialNumber().equals(lmHardware.getManufacturerSerialNumber())) {
+                hardwareEventLogService.serialNumberChanged(user, lmHardware.getManufacturerSerialNumber(), hardware.getSerialNumber());
             }
             
         }
         
         /* Update warehouse mapping */
-        if (hardwareDto.getWarehouseId() != null) {
-            warehouseDao.moveInventoryToAnotherWarehouse(hardwareDto.getInventoryId(), hardwareDto.getWarehouseId());
+        if (hardware.getWarehouseId() != null) {
+            warehouseDao.moveInventoryToAnotherWarehouse(hardware.getInventoryId(), hardware.getWarehouseId());
         }
         
         /* Update the installation notes */
-        if (hardwareDto.getInstallNotes() != null) {
+        if (hardware.getInstallNotes() != null) {
             List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());
             for (LiteLMHardwareEvent event : events) {
                 YukonListEntry entry = yukonListDao.getYukonListEntry(event.getActionID());
                 if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
                     /* The list of events is retrieved newest to oldest 
                      * so the first install in the list will be the most recent */
-                    Date installDate = hardwareDto.getFieldInstallDate() == null ? new Date(event.getEventDateTime()) : hardwareDto.getFieldInstallDate();
-                    lmCustomerEventBaseDao.updateNotesForEvent(event.getEventID(), installDate, SqlUtils.convertStringToDbValue(hardwareDto.getInstallNotes()));
+                    Date installDate = hardware.getFieldInstallDate() == null ? new Date(event.getEventDateTime()) : hardware.getFieldInstallDate();
+                    lmCustomerEventBaseDao.updateNotesForEvent(event.getEventID(), installDate, SqlUtils.convertStringToDbValue(hardware.getInstallNotes()));
                 }
             }
         }
         
         //Pass to the Service to handle any extensions for the hardwaretype
-        hardwareTypeExtensionService.updateDevice(hardwareDto);
+        hardwareTypeExtensionService.updateDevice(hardware);
         
         // Log hardware update
-        hardwareEventLogService.hardwareUpdated(user, hardwareDto.getSerialNumber());
+        hardwareEventLogService.hardwareUpdated(user, hardware.getSerialNumber());
         
         /* Tell controller to spawn event for device status change if necessary */
-        if (hardwareDto.getOriginalDeviceStatusEntryId() != null) {
-            if (liteInventoryBase.getCurrentStateID() != hardwareDto.getOriginalDeviceStatusEntryId()){
+        if (hardware.getOriginalDeviceStatusEntryId() != null) {
+            if (liteInventoryBase.getCurrentStateID() != hardware.getOriginalDeviceStatusEntryId()){
                 return true;
             }
         }
@@ -395,28 +416,28 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     
     @Override
     @Transactional
-    public int createHardware(HardwareDto hardwareDto, int accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
+    public int createHardware(Hardware hardware, int accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         int inventoryId;
         String deviceLabel;
         
-        checkSerialNumber(hardwareDto);
+        checkSerialNumber(hardware);
         
         HardwareType hardwareType;
-        if (hardwareDto.getHardwareTypeEntryId() > 0){
-            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(hardwareDto.getHardwareTypeEntryId());
+        if (hardware.getHardwareTypeEntryId() > 0){
+            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(hardware.getHardwareTypeEntryId());
             hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
         } else {
             /* This will be a real yukon MCT, they don't have a type coming from a yukon list entry. */
             hardwareType = HardwareType.YUKON_METER;
         }
-        hardwareDto.setHardwareType(hardwareType);
+        hardware.setHardwareType(hardwareType);
         
         if (hardwareType.isMeter()) {
             if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
                 /* InventoryBase */
-                LiteInventoryBase inventoryBase = getInventory(hardwareDto, accountId, energyCompany);
+                LiteInventoryBase inventoryBase = getInventory(hardware, accountId, energyCompany);
                 
                 inventoryId = starsInventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
                 
@@ -426,13 +447,13 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 deviceLabel = inventoryBase.getDeviceLabel();
             } else {
                 /* MeterHardwareBase */
-                LiteMeterHardwareBase meterHardwareBase = getMeterHardware(hardwareDto, accountId, energyCompany); 
+                LiteMeterHardwareBase meterHardwareBase = getMeterHardware(hardware, accountId, energyCompany); 
                 
-                inventoryId = starsInventoryBaseDao.saveMeterHardware(meterHardwareBase, hardwareDto.getEnergyCompanyId()).getInventoryID();
+                inventoryId = starsInventoryBaseDao.saveMeterHardware(meterHardwareBase, hardware.getEnergyCompanyId()).getInventoryID();
                 
                 /* Update LMHardwareToMeterMapping */
                 List<Integer> assignedSwitches = Lists.newArrayList();
-                for (SwitchAssignment assignment : hardwareDto.getSwitchAssignments()) {
+                for (SwitchAssignment assignment : hardware.getSwitchAssignments()) {
                     if (assignment.isAssigned()) {
                         assignedSwitches.add(assignment.getInventoryId());
                     }
@@ -444,12 +465,12 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             }
         } else {
             /* LMHardwareBase and InventoryBase */
-            LiteStarsLMHardware lmHardware = getLmHardware(hardwareDto, accountId, energyCompany); 
+            LiteStarsLMHardware lmHardware = getLmHardware(hardware, accountId, energyCompany); 
             inventoryId = starsInventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyId()).getInventoryID();
             
             /* Create two-way device if need be */
-            if (hardwareDto.isCreatingNewTwoWayDevice()) {
-                SimpleDevice device = createTwoWayDevice(user, inventoryId, hardwareDto.getTwoWayDeviceName());
+            if (hardware.isCreatingNewTwoWayDevice()) {
+                SimpleDevice device = createTwoWayDevice(user, inventoryId, hardware.getTwoWayDeviceName());
                 lmHardware.setDeviceID(device.getDeviceId());
                 starsInventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, device.getDeviceId());
             }
@@ -469,10 +490,10 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         }
         
         // This is set now for the ZigbeeDeviceService
-        hardwareDto.setInventoryId(inventoryId);
+        hardware.setInventoryId(inventoryId);
         
         // Pass to the Zigbee Service to handle any Zigbee specifics required
-        hardwareTypeExtensionService.createDevice(hardwareDto);
+        hardwareTypeExtensionService.createDevice(hardware);
         
         // Log hardware creation
         hardwareEventLogService.hardwareCreated(user, deviceLabel);
@@ -521,12 +542,12 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             
         } catch (NotFoundException nfe) {
             /* This meter has never been added to a stars account before.  Add it to InventoryBase */
-            HardwareDto hardwareDto = new HardwareDto();
-            hardwareDto.setDeviceId(meterId);
-            hardwareDto.setFieldInstallDate(new Date());
-            hardwareDto.setHardwareTypeEntryId(HardwareType.YUKON_METER.getDefinitionId());
+            Hardware hardware = new Hardware();
+            hardware.setDeviceId(meterId);
+            hardware.setFieldInstallDate(new Date());
+            hardware.setHardwareTypeEntryId(HardwareType.YUKON_METER.getDefinitionId());
             try {
-                createHardware(hardwareDto, accountId, user);
+                createHardware(hardware, accountId, user);
             } catch (ObjectInOtherEnergyCompanyException e) {/* Ignore */}
         }
         
@@ -599,18 +620,18 @@ public class HardwareUiServiceImpl implements HardwareUiService {
      * @throws StarsDeviceSerialNumberAlreadyExistsException
      * @throws ObjectInOtherEnergyCompanyException
      */
-    public void checkSerialNumber(HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException {
-        LiteInventoryBase possibleDuplicate = starsSearchDao.searchLMHardwareBySerialNumber(hardwareDto.getSerialNumber(), hardwareDto.getEnergyCompanyId());
+    public void checkSerialNumber(Hardware hardware) throws ObjectInOtherEnergyCompanyException {
+        LiteInventoryBase possibleDuplicate = starsSearchDao.searchLMHardwareBySerialNumber(hardware.getSerialNumber(), hardware.getEnergyCompanyId());
         if (possibleDuplicate != null 
-                && ((hardwareDto.getInventoryId() == null) || (hardwareDto.getInventoryId() != possibleDuplicate.getInventoryID()))) {
+                && ((hardware.getInventoryId() == null) || (hardware.getInventoryId() != possibleDuplicate.getInventoryID()))) {
             throw new StarsDeviceSerialNumberAlreadyExistsException();
         }
     }
     
     @Override
-    public boolean isSerialNumberInEC(HardwareDto hardwareDto) {
+    public boolean isSerialNumberInEC(Hardware hardware) {
         try {
-            checkSerialNumber(hardwareDto);
+            checkSerialNumber(hardware);
         } catch (ObjectInOtherEnergyCompanyException e) {
             return true;
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
@@ -619,60 +640,60 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return false;
     }
     
-    private LiteStarsLMHardware getLmHardware(HardwareDto hardwareDto, int accountId, LiteStarsEnergyCompany energyCompany) {
+    private LiteStarsLMHardware getLmHardware(Hardware hardware, int accountId, LiteStarsEnergyCompany energyCompany) {
         LiteStarsLMHardware lmHardware = new LiteStarsLMHardware();
         lmHardware.setAccountID(accountId);
         
         /* InventoryBase fields */
-        int categoryId = getCategoryIdForTypeId(hardwareDto.getHardwareTypeEntryId(), energyCompany);
+        int categoryId = getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
         lmHardware.setCategoryID(categoryId);
         lmHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         /* InventoryBase fields from Dto*/
-        setInventoryFieldsFromDto(lmHardware, hardwareDto);
+        setInventoryFieldsFromDto(lmHardware, hardware);
 
         /* LMHardwareBase Fields */
-        lmHardware.setManufacturerSerialNumber(hardwareDto.getSerialNumber());
-        lmHardware.setLmHardwareTypeID(hardwareDto.getHardwareTypeEntryId());
+        lmHardware.setManufacturerSerialNumber(hardware.getSerialNumber());
+        lmHardware.setLmHardwareTypeID(hardware.getHardwareTypeEntryId());
         
-        if (!hardwareDto.getHardwareType().isGateway()) {
-            lmHardware.setRouteID(hardwareDto.getRouteId());
+        if (!hardware.getHardwareType().isGateway()) {
+            lmHardware.setRouteID(hardware.getRouteId());
         }
         
         return lmHardware;
     }
     
-    private LiteMeterHardwareBase getMeterHardware(HardwareDto hardwareDto, int accountId, LiteStarsEnergyCompany energyCompany) {
+    private LiteMeterHardwareBase getMeterHardware(Hardware hardware, int accountId, LiteStarsEnergyCompany energyCompany) {
         LiteMeterHardwareBase meterHardware = new LiteMeterHardwareBase();
         meterHardware.setAccountID(accountId);
         
         /* InventoryBase fields */
-        int categoryId = getCategoryIdForTypeId(hardwareDto.getHardwareTypeEntryId(), energyCompany);
+        int categoryId = getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
         meterHardware.setCategoryID(categoryId);
         meterHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         /* InventoryBase fields from Dto*/
-        setInventoryFieldsFromDto(meterHardware, hardwareDto);
+        setInventoryFieldsFromDto(meterHardware, hardware);
 
         /* LMHardwareBase Fields */
-        meterHardware.setMeterNumber(hardwareDto.getMeterNumber());
+        meterHardware.setMeterNumber(hardware.getMeterNumber());
         YukonListEntry typeEntry = energyCompany.getYukonListEntry(HardwareType.NON_YUKON_METER.getDefinitionId());
         meterHardware.setMeterTypeID(typeEntry.getEntryID());
 
         return meterHardware;
     }
     
-    private LiteInventoryBase getInventory(HardwareDto hardwareDto, int accountId, LiteStarsEnergyCompany energyCompany) {
+    private LiteInventoryBase getInventory(Hardware hardware, int accountId, LiteStarsEnergyCompany energyCompany) {
         LiteInventoryBase liteInventoryBase = new LiteInventoryBase();
         liteInventoryBase.setAccountID(accountId);
         
         /* InventoryBase fields */
-        int categoryId = getCategoryIdForTypeId(hardwareDto.getHardwareTypeEntryId(), energyCompany);
+        int categoryId = getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
         liteInventoryBase.setCategoryID(categoryId);
         liteInventoryBase.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         /* InventoryBase fields from Dto*/
-        setInventoryFieldsFromDto(liteInventoryBase, hardwareDto);
+        setInventoryFieldsFromDto(liteInventoryBase, hardware);
         
         return liteInventoryBase;
     }
@@ -680,38 +701,38 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     /**
      * Populates LiteInventoryBase with update fields of the HardwareDto object.
      */
-    private void setInventoryFieldsFromDto(LiteInventoryBase liteInventoryBase, HardwareDto hardwareDto) {
-        liteInventoryBase.setDeviceLabel(hardwareDto.getDisplayLabel());
-        liteInventoryBase.setAlternateTrackingNumber(hardwareDto.getAltTrackingNumber());
+    private void setInventoryFieldsFromDto(LiteInventoryBase liteInventoryBase, Hardware hardware) {
+        liteInventoryBase.setDeviceLabel(hardware.getDisplayLabel());
+        liteInventoryBase.setAlternateTrackingNumber(hardware.getAltTrackingNumber());
         
-        if (hardwareDto.getVoltageEntryId() != null) {
-            liteInventoryBase.setVoltageID(hardwareDto.getVoltageEntryId());
+        if (hardware.getVoltageEntryId() != null) {
+            liteInventoryBase.setVoltageID(hardware.getVoltageEntryId());
         }
         
-        if (hardwareDto.getFieldInstallDate() != null) {
-            liteInventoryBase.setInstallDate(hardwareDto.getFieldInstallDate().getTime());
+        if (hardware.getFieldInstallDate() != null) {
+            liteInventoryBase.setInstallDate(hardware.getFieldInstallDate().getTime());
         }
         
-        if (hardwareDto.getFieldReceiveDate() != null) {
-            liteInventoryBase.setReceiveDate(hardwareDto.getFieldReceiveDate().getTime());
+        if (hardware.getFieldReceiveDate() != null) {
+            liteInventoryBase.setReceiveDate(hardware.getFieldReceiveDate().getTime());
         }
         
-        if (hardwareDto.getFieldRemoveDate() != null) {
-            liteInventoryBase.setRemoveDate(hardwareDto.getFieldRemoveDate().getTime());
+        if (hardware.getFieldRemoveDate() != null) {
+            liteInventoryBase.setRemoveDate(hardware.getFieldRemoveDate().getTime());
         }
         
-        liteInventoryBase.setNotes(hardwareDto.getDeviceNotes());
+        liteInventoryBase.setNotes(hardware.getDeviceNotes());
         
-        if (hardwareDto.getDeviceStatusEntryId() != null) {
-            liteInventoryBase.setCurrentStateID(hardwareDto.getDeviceStatusEntryId());
+        if (hardware.getDeviceStatusEntryId() != null) {
+            liteInventoryBase.setCurrentStateID(hardware.getDeviceStatusEntryId());
         }
         
-        if (hardwareDto.getServiceCompanyId() != null) {
-            liteInventoryBase.setInstallationCompanyID(hardwareDto.getServiceCompanyId());
+        if (hardware.getServiceCompanyId() != null) {
+            liteInventoryBase.setInstallationCompanyID(hardware.getServiceCompanyId());
         }
         
-        if (hardwareDto.getDeviceId() != null) {
-            liteInventoryBase.setDeviceID(hardwareDto.getDeviceId());
+        if (hardware.getDeviceId() != null) {
+            liteInventoryBase.setDeviceID(hardware.getDeviceId());
         }
     }
     

@@ -1,0 +1,67 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<tags:boxContainer2 nameKey="deviceStatusHistory">
+    <c:choose>
+        <c:when test="${empty deviceStatusHistory}">
+            <i:inline key=".deviceStatusHistory.none"/>
+        </c:when>
+        <c:otherwise>
+            <div class="historyContainer">
+                <table class="compactResultsTable history">
+                    <thead>
+                        <tr>
+                            <th class="nonwrapping"><i:inline key=".deviceStatusHistory.event"/></th>
+                            <th class="nonwrapping"><i:inline key=".deviceStatusHistory.userName"/></th>
+                            <th class="nonwrapping"><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="event" items="${deviceStatusHistory}">
+                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                <td class="nonwrapping lastColumn"><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</tags:boxContainer2>
+    
+<br>
+
+<tags:boxContainer2 nameKey="hardwareHistory">
+    <c:choose>
+        <c:when test="${empty hardwareHistory}">
+            <i:inline key=".hardwareHistory.none"/>
+        </c:when>
+        <c:otherwise>
+            <div class="historyContainer">
+                <tags:alternateRowReset/>
+                <table class="compactResultsTable history">
+                    <thead>
+                        <tr>
+                            <th class="nonwrapping"><i:inline key=".hardwareHistory.date"/></th>
+                            <th class="nonwrapping"><i:inline key=".hardwareHistory.action"/></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                    <c:forEach var="event" items="${hardwareHistory}">
+                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                            <td class="nonwrapping"><cti:formatDate value="${event.date}" type="BOTH"/></td>
+                            <td class="nonwrapping lastColumn"><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</tags:boxContainer2>

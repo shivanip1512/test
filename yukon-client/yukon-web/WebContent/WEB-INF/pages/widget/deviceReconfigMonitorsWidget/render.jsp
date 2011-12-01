@@ -26,7 +26,7 @@
         
             <c:forEach var="task" items="${tasks}">
                 
-                <cti:url value="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/status" var="statusUrl">
+                <cti:url value="/spring/stars/operator/inventory/deviceReconfig/status" var="statusUrl">
                     <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
                 </cti:url>
                 

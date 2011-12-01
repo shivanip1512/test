@@ -22,6 +22,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 
 @Controller
+@RequestMapping("/operator/inventory/uploadFile")
 @CheckRole(YukonRole.INVENTORY)
 public class FileUploadCollectionHelper {
     
@@ -29,8 +30,8 @@ public class FileUploadCollectionHelper {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/uploadFile")
-    public String fileUploadHelper(HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
+    @RequestMapping
+    public String fileUpload(HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
         
         try {
             InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
@@ -45,7 +46,7 @@ public class FileUploadCollectionHelper {
             String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryOperations.fileUploadTitle");
             modelMap.addAttribute("fileUploadTitle", title);
             
-            return "operator/inventory/inventoryOperations/home.jsp";
+            return "operator/inventory/home.jsp";
         }
         
         return "redirect:inventoryActions";

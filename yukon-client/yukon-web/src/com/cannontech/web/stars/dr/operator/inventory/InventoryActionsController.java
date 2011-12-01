@@ -31,18 +31,18 @@ public class InventoryActionsController {
     private InventoryDao inventoryDao;
 
     /* Inventory Actions */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/inventoryActions", method=RequestMethod.GET)
+    @RequestMapping(value = "/operator/inventory/inventoryActions", method=RequestMethod.GET)
     public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
         modelMap.addAttribute("inventoryCollection", yukonCollection);
         modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
         
-        return "operator/inventory/inventoryOperations/inventoryActions.jsp";
+        return "operator/inventory/inventoryActions.jsp";
     }
     
     /* Inventory Collection Popup Table */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/selectedInventoryTable", method=RequestMethod.GET)
+    @RequestMapping(value = "/operator/inventory/selectedInventoryTable", method=RequestMethod.GET)
     public String selectedInventoryTable(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException, CollectionCreationException {
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
@@ -65,7 +65,7 @@ public class InventoryActionsController {
         }
         modelMap.addAttribute("inventoryInfoList", inventoryInfoList);
         
-        return "operator/inventory/inventoryOperations/selectedInventoryPopup.jsp";
+        return "operator/inventory/selectedInventoryPopup.jsp";
     }
     
     @Autowired

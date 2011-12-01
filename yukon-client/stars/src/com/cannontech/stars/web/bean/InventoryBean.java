@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
@@ -104,9 +105,11 @@ public class InventoryBean {
     public final static ImmutableMap<Integer, Boolean> unsupportedDeviceTypes;
     static {
         Builder<Integer, Boolean> builder = ImmutableMap.builder();
-        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, true);
-        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, true);
-        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, true);
+        builder.put(HardwareType.NON_YUKON_METER.getDefinitionId(), true);
+        builder.put(HardwareType.DIGI_GATEWAY.getDefinitionId(), true);
+        builder.put(HardwareType.UTILITY_PRO_ZIGBEE.getDefinitionId(), true);
+        builder.put(HardwareType.LCR_6200_ZIGBEE.getDefinitionId(), true);
+        builder.put(HardwareType.LCR_6600_ZIGBEE.getDefinitionId(), true);
         unsupportedDeviceTypes = builder.build();
     }
 

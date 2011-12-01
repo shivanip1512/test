@@ -35,5 +35,6 @@ public enum DataType {
     ARCHIVE_DATA_ANALYSIS_LP_READ,
     DEVELOPMENT,
     FDR_TRANSLATION_IMPORT,
+    INVENTORY_TASK,
     ;
 }

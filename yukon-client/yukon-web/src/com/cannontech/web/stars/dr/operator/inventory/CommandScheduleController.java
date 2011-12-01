@@ -46,7 +46,7 @@ public class CommandScheduleController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* Command Schedule Edit/Creation page */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/commandSchedule", method = RequestMethod.GET)
+    @RequestMapping(value = "/operator/inventory/commandSchedule", method = RequestMethod.GET)
     public String commandSchedule(ModelMap modelMap, YukonUserContext userContext, Integer scheduleId) {
         CommandScheduleWrapper schedule = new CommandScheduleWrapper();
         CommandSchedule commandSchedule = new CommandSchedule();
@@ -68,10 +68,10 @@ public class CommandScheduleController {
         modelMap.addAttribute("cronExpressionTagState", cronExpressionTagState);
         modelMap.addAttribute("schedule", schedule);
         
-        return "operator/inventory/inventoryOperations/commandSchedule.jsp";
+        return "operator/inventory/commandSchedule.jsp";
     }
 
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/updateSchedule", method = RequestMethod.POST, params={"!delete","!cancel"})
+    @RequestMapping(value = "/operator/inventory/updateSchedule", method = RequestMethod.POST, params={"!delete","!cancel"})
     public String updateSchedule(@ModelAttribute("schedule") CommandScheduleWrapper schedule, BindingResult bindingResult,
                                  ModelMap modelMap, 
                                  YukonUserContext userContext,
@@ -97,7 +97,7 @@ public class CommandScheduleController {
                 modelMap.addAttribute("mode", PageEditMode.CREATE);
             }
             
-            return "operator/inventory/inventoryOperations/commandSchedule.jsp";
+            return "operator/inventory/commandSchedule.jsp";
         }
         
         /* Set Cron */
@@ -127,7 +127,7 @@ public class CommandScheduleController {
         return "redirect:home";
     }
     
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/updateSchedule", method = RequestMethod.POST, params="cancel")
+    @RequestMapping(value = "/operator/inventory/updateSchedule", method = RequestMethod.POST, params="cancel")
     public String cancel(@ModelAttribute("schedule") CommandScheduleWrapper schedule, BindingResult bindingResult,
                                  ModelMap modelMap, 
                                  YukonUserContext userContext,
@@ -137,7 +137,7 @@ public class CommandScheduleController {
         return "redirect:home";
     }
     
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/updateSchedule", method = RequestMethod.POST, params="delete")
+    @RequestMapping(value = "/operator/inventory/updateSchedule", method = RequestMethod.POST, params="delete")
     public String delete(@ModelAttribute("schedule") CommandScheduleWrapper schedule, BindingResult bindingResult,
                                  ModelMap modelMap, 
                                  YukonUserContext userContext,

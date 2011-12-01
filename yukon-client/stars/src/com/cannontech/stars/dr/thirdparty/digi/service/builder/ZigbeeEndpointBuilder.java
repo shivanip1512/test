@@ -22,7 +22,7 @@ import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndpointFields;
@@ -61,24 +61,24 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Override
-    public void retrieveDevice(HardwareDto hardwareDto) {
-        ZigbeeEndpoint zigbeeEndPoint = zigbeeDeviceDao.getZigbeeEndPoint(hardwareDto.getDeviceId()); 
+    public void retrieveDevice(Hardware hardware) {
+        ZigbeeEndpoint zigbeeEndPoint = zigbeeDeviceDao.getZigbeeEndPoint(hardware.getDeviceId()); 
         
-        hardwareDto.setInstallCode(zigbeeEndPoint.getInstallCode());
-        hardwareDto.setMacAddress(zigbeeEndPoint.getMacAddress());
-        hardwareDto.setDestinationEndPointId(zigbeeEndPoint.getDestinationEndPointId());
-        hardwareDto.setNodeId(zigbeeEndPoint.getNodeId());
+        hardware.setInstallCode(zigbeeEndPoint.getInstallCode());
+        hardware.setMacAddress(zigbeeEndPoint.getMacAddress());
+        hardware.setDestinationEndPointId(zigbeeEndPoint.getDestinationEndPointId());
+        hardware.setNodeId(zigbeeEndPoint.getNodeId());
         
         LitePoint linkPt = attributeService.getPointForAttribute(zigbeeEndPoint, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-        hardwareDto.setCommissionedId(linkPt.getLiteID());
+        hardware.setCommissionedId(linkPt.getLiteID());
         
-        hardwareDto.setGatewayId(zigbeeEndPoint.getGatewayId());
+        hardware.setGatewayId(zigbeeEndPoint.getGatewayId());
     }
     
     @Override
-    public void validateDevice(HardwareDto hardwareDto, Errors errors) {
+    public void validateDevice(Hardware hardware, Errors errors) {
         /* Install Code */
-        String installCode = hardwareDto.getInstallCode();
+        String installCode = hardware.getInstallCode();
         if (StringUtils.isBlank(installCode)) {
             errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isInstallCode(installCode)){
@@ -86,7 +86,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         }
         
         /* MAC Address*/
-        String macAddress = hardwareDto.getMacAddress();
+        String macAddress = hardware.getMacAddress();
         if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isInstallCode(macAddress)) {
@@ -97,13 +97,13 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Override
-    public void createDevice(HardwareDto hardwareDto) {
+    public void createDevice(Hardware hardware) {
         //Build up all the fields for inserting a Zigbee End Point.
         //Serial Number is unique, using that as the PaoName
-        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardware.getSerialNumber());
         
-        ZigbeeEndpointFields tStatFields = new ZigbeeEndpointFields(hardwareDto.getInstallCode(),
-                                                                        hardwareDto.getMacAddress(),
+        ZigbeeEndpointFields tStatFields = new ZigbeeEndpointFields(hardware.getInstallCode(),
+                                                                        hardware.getMacAddress(),
                                                                         1,/*Constant place holder until Firmware change*/
                                                                         0/*Constant place holder until Firmware change*/);
 
@@ -118,29 +118,29 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
         
         //Update the Stars table with the device id
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), 
+        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
                                                                                  paoIdentifier.getPaoId());
     }
 
     @Override
-    public void updateDevice(HardwareDto hardwareDto) {
+    public void updateDevice(Hardware hardware) {
         ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardwareDto.getSerialNumber()));
+        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardware.getSerialNumber()));
         paoFields.put(DeviceFields.class, new DeviceFields());
         
-        ZigbeeEndpointFields zbFields = new ZigbeeEndpointFields(hardwareDto.getInstallCode(), 
-                                                                 hardwareDto.getMacAddress(), 
-                                                                 hardwareDto.getDestinationEndPointId(), 
-                                                                 hardwareDto.getNodeId());
+        ZigbeeEndpointFields zbFields = new ZigbeeEndpointFields(hardware.getInstallCode(), 
+                                                                 hardware.getMacAddress(), 
+                                                                 hardware.getDestinationEndPointId(), 
+                                                                 hardware.getNodeId());
         
         paoFields.put(ZigbeeEndpointFields.class, zbFields);
         
         PaoTemplate template = new PaoTemplate(PaoType.ZIGBEE_ENDPOINT, paoFields);
         
-        paoCreationService.updatePao(hardwareDto.getDeviceId(), template);
+        paoCreationService.updatePao(hardware.getDeviceId(), template);
         
-        gatewayDeviceDao.updateDeviceToGatewayAssignment(hardwareDto.getDeviceId(), hardwareDto.getGatewayId());
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
+        gatewayDeviceDao.updateDeviceToGatewayAssignment(hardware.getDeviceId(), hardware.getGatewayId());
+        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
         
         return;
     }

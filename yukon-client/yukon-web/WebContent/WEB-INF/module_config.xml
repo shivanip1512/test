@@ -121,7 +121,7 @@
             <requireRoleProperty value="PURCHASING_ACCESS" />
           </option>
           <option name="deviceReconfig">
-            <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+            <link>/spring/stars/operator/inventory/home</link>
             <requireRoleProperty value="DEVICE_RECONFIG" />
           </option>
 
@@ -1581,17 +1581,7 @@
                     </options>
                 </option>
                 <option name="inventory">
-                    <options>
-                        <option name="home">
-                            <!-- Future home of old stars inventory page: <link>/spring/stars/operator/inventory/home</link>-->
-                            <requireRoleProperty value="DEVICE_RECONFIG" />
-                            <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
-                        </option>
-                        <option name="inventoryOperations">
-                            <requireRoleProperty value="DEVICE_RECONFIG" />
-                            <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
-                        </option>
-                    </options>
+                    <link>/spring/stars/operator/inventory/home</link>
                 </option>
             </options>
         </menu>
@@ -1862,44 +1852,68 @@
                     </page>
                 </pages>
             </page>
-            <page name="inventory" type="BASIC">
-                <menu>inventory|home</menu>
-                <!-- Future home of old stars inventory page: <link>/spring/stars/operator/inventory/home</link>-->
-                <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+            <page name="inventory.home" type="BLANK">
+                <menu>inventory|</menu>
+                <link>/spring/stars/operator/inventory/home</link>
                 <pages>
-                    <page name="inventoryOperations" type="BASIC">
-                        <menu>inventory|inventoryOperations</menu>
-                        <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+                    <page name="inventory.list" type="BASIC">
+                        <menu>inventory|</menu>
+                    </page>
+                    <page name="inventory.VIEW" type="DETAIL">
+                        <labelArgument>${displayName}</labelArgument>
+                        <menu>inventory|</menu>
                         <pages>
-                            <page name="zbProblemDevices" type="BASIC">
-                                <menu>inventory|inventoryOperations</menu>
-                            </page>
-                            <page name="filterSelection" type="DETAIL">
-                                <menu>inventory|inventoryOperations</menu>
-                                <link>/spring/stars/operator/inventory/inventoryOperations/setupFilterRules</link>
-                            </page>
-                            <page name="commandSchedule.CREATE" type="BASIC">
-                                <menu>inventory|inventoryOperations</menu>
+                            <page name="inventory.EDIT" type="DETAIL_CHILD">
                                 <labelArgument>${displayName}</labelArgument>
+                                <menu>inventory|</menu>
                             </page>
-                            <page name="commandSchedule.EDIT" type="DETAIL">
-                                <menu>inventory|inventoryOperations</menu>
-                                <labelArgument>${displayName}</labelArgument>
-                            </page>
-                            <page name="inventoryActions" type="DETAIL">
-                                <menu>inventory|inventoryOperations</menu>
-                                <link>/spring/stars/operator/inventory/inventoryOperations/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
-                                <pages>
-                                    <page name="deviceReconfig" type="BASIC">
-                                        <menu>inventory|inventoryOperations</menu>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="deviceReconfigStatus" type="DETAIL_CHILD">
-                                <menu>inventory|inventoryOperations</menu>
-                                <labelArgument>${taskName}</labelArgument>
+                            <page name="inventory.CREATE" type="BASIC">
+                                <menu>inventory|</menu>
                             </page>
                         </pages>
+                    </page>
+                    <page name="zbProblemDevices" type="BASIC">
+                        <menu>inventory|</menu>
+                    </page>
+                    <page name="filterSelection" type="DETAIL">
+                        <menu>inventory|</menu>
+                        <link>/spring/stars/operator/inventory/setupFilterRules</link>
+                    </page>
+                    <page name="commandSchedule.CREATE" type="BASIC">
+                        <menu>inventory|</menu>
+                        <labelArgument>${displayName}</labelArgument>
+                    </page>
+                    <page name="commandSchedule.EDIT" type="DETAIL">
+                        <menu>inventory|</menu>
+                        <labelArgument>${displayName}</labelArgument>
+                    </page>
+                    <page name="inventoryActions" type="DETAIL">
+                        <menu>inventory|</menu>
+                        <link>/spring/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
+                        <pages>
+                            <page name="deviceReconfig" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
+                            <page name="deleteInventory" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
+                            <page name="changeType" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
+                            <page name="changeStatus" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
+                            <page name="changeServiceCompany" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
+                            <page name="changeWarehouse" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="deviceReconfigStatus" type="DETAIL_CHILD">
+                        <menu>inventory|</menu>
+                        <labelArgument>${taskName}</labelArgument>
                     </page>
                 </pages>
             </page>

@@ -207,7 +207,7 @@
         <!-- Currently there is only one, Device Reconfig -->
 	    <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
 	        <tags:sectionLink>
-	        	<a href="/spring/stars/operator/inventory/inventoryOperations/home">Inventory Operations</a>
+	        	<a href="/spring/stars/operator/inventory/home">Inventory Operations</a>
 	        </tags:sectionLink>
 	    </cti:checkRolesAndProperties>
 	     

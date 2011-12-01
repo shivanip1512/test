@@ -16,7 +16,7 @@ import com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.service.impl.HardwareUiServiceImpl;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.google.common.collect.ListMultimap;
@@ -34,10 +34,10 @@ public class HardwareServiceTest {
         
     	hardwareUiService = new HardwareUiServiceImpl() {
            @Override
-           public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
-               HardwareDto dto = new HardwareDto();
+           public Hardware getHardware(int inventoryId) {
+               Hardware dto = new Hardware();
                dto.setInventoryId(inventoryId);
-               dto.setEnergyCompanyId(energyCompanyId);
+               dto.setEnergyCompanyId(0);
                dto.setHardwareType(HardwareType.values()[inventoryId]);
                return dto;
            }
@@ -72,13 +72,13 @@ public class HardwareServiceTest {
     @Test
     public void testGetHardwareMapForAccount() {
         
-        ListMultimap<HardwareClass, HardwareDto> map = hardwareUiService.getHardwareMapForAccount(0, 0);
+        ListMultimap<HardwareClass, Hardware> map = hardwareUiService.getHardwareMapForAccount(0);
         Assert.assertNotNull(map);
         Assert.assertTrue("Map should not be empty", !map.isEmpty());
         
-        List<HardwareDto> switches = map.get(HardwareClass.SWITCH);
-        List<HardwareDto> thermostats = map.get(HardwareClass.THERMOSTAT);
-        List<HardwareDto> meters = map.get(HardwareClass.METER);
+        List<Hardware> switches = map.get(HardwareClass.SWITCH);
+        List<Hardware> thermostats = map.get(HardwareClass.THERMOSTAT);
+        List<Hardware> meters = map.get(HardwareClass.METER);
         
         Assert.assertEquals(switches.size(), HardwareType.getForClass(HardwareClass.SWITCH).size());
         Assert.assertEquals(thermostats.size(), HardwareType.getForClass(HardwareClass.THERMOSTAT).size());
@@ -88,7 +88,7 @@ public class HardwareServiceTest {
     
     @Test
     public void testCheckSerialNumber() {
-        HardwareDto possibleDuplicate = new HardwareDto();
+        Hardware possibleDuplicate = new Hardware();
         possibleDuplicate.setInventoryId(1);
         
         boolean foundDuplicate = false;

@@ -18,23 +18,36 @@ a img {
     background-color: white;
 }
 
-td.removeColumn, th.removeColumn {
-	text-align:center !important;
+td.enabledColumn, 
+th.enabledColumn,
+td.removeColumn, 
+th.removeColumn {
+	text-align: right !important;
 }
 
-td.enabledColumn, th.enabledColumn {
-	text-align: right !important;
+td.removeColumn button,
+td.enabledColumn button {
+    float: right !important;
 }
 
 h2 { /*Page Header*/
   margin: 0;
 }
 
+table.twoColumnLayout.split  {
+    width: 100%;
+}
+table.twoColumnLayout.split td.first {
+    width: 50%;
+}
 table.twoColumnLayout td.first,
 table.twoColumnLayout td.last {
     vertical-align: top;
 }
 
+table.twoColumnLayout.split td.last {
+    padding-left: 0;
+}
 table.twoColumnLayout td.last {
     padding-left: 30px;
 }

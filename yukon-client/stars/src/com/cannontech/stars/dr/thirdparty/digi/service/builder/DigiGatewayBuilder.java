@@ -24,7 +24,7 @@ import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.DigiGatewayFields;
 import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeGatewayFields;
@@ -48,21 +48,21 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     private ZigbeeWebService zigbeeWebService;
     
     @Override
-    public void retrieveDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = gatewayDeviceDao.getDigiGateway(hardwareDto.getDeviceId());
+    public void retrieveDevice(Hardware hardware) {
+        DigiGateway digiGateway = gatewayDeviceDao.getDigiGateway(hardware.getDeviceId());
         
-        hardwareDto.setMacAddress(digiGateway.getMacAddress());
-        hardwareDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
+        hardware.setMacAddress(digiGateway.getMacAddress());
+        hardware.setFirmwareVersion(digiGateway.getFirmwareVersion());
         
         LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-        hardwareDto.setCommissionedId(linkPt.getLiteID());
+        hardware.setCommissionedId(linkPt.getLiteID());
     }
     
     @Override
-    public void validateDevice(HardwareDto hardwareDto, Errors errors) {
+    public void validateDevice(Hardware hardware, Errors errors) {
 
         /* MAC Address*/
-        String macAddress = hardwareDto.getMacAddress();
+        String macAddress = hardware.getMacAddress();
         if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isMacAddress(macAddress)) {
@@ -71,11 +71,11 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Override
-    public void createDevice(HardwareDto hardwareDto) {
+    public void createDevice(Hardware hardware) {
         //Build up all the fields for inserting a digiGateway.
-        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
-        DigiGatewayFields digiGatewayFields = buildDigiGatewayFields(hardwareDto);
-        ZigbeeGatewayFields zigbeeGatewayFields = buildZigbeeGatewayFields(hardwareDto);
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardware.getSerialNumber());
+        DigiGatewayFields digiGatewayFields = buildDigiGatewayFields(hardware);
+        ZigbeeGatewayFields zigbeeGatewayFields = buildZigbeeGatewayFields(hardware);
         
         //Build Template and call Pao Creation Service
         ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
@@ -89,7 +89,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
         
         //Update the Stars table with the device id
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), 
+        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
                                                                                  paoIdentifier.getPaoId());
     }
 
@@ -141,35 +141,35 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     }
 
     @Override
-    public void updateDevice(HardwareDto hardwareDto) {
+    public void updateDevice(Hardware hardware) {
         ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardwareDto.getSerialNumber()));
+        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardware.getSerialNumber()));
         paoFields.put(DeviceFields.class, new DeviceFields());
-        paoFields.put(DigiGatewayFields.class, buildDigiGatewayFields(hardwareDto));
-        paoFields.put(ZigbeeGatewayFields.class, buildZigbeeGatewayFields(hardwareDto));
+        paoFields.put(DigiGatewayFields.class, buildDigiGatewayFields(hardware));
+        paoFields.put(ZigbeeGatewayFields.class, buildZigbeeGatewayFields(hardware));
         
         PaoTemplate template = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);
         
-        paoCreationService.updatePao(hardwareDto.getDeviceId(), template);
+        paoCreationService.updatePao(hardware.getDeviceId(), template);
         
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
+        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
     }
 
-    private DigiGatewayFields buildDigiGatewayFields(HardwareDto hardwareDto) {
+    private DigiGatewayFields buildDigiGatewayFields(Hardware hardware) {
         DigiGatewayFields fields = new DigiGatewayFields();
 
         //The DigiId is set later after we commission the device on Digi
         //Default to the value in hardwareDto
-        fields.setDigiId(hardwareDto.getCommissionedId());
+        fields.setDigiId(hardware.getCommissionedId());
         
         return fields;
     }    
     
-    private ZigbeeGatewayFields buildZigbeeGatewayFields(HardwareDto hardwareDto) {
+    private ZigbeeGatewayFields buildZigbeeGatewayFields(Hardware hardware) {
     	ZigbeeGatewayFields fields = new ZigbeeGatewayFields();
     	
-    	fields.setFirmwareVersion(hardwareDto.getFirmwareVersion());
-    	fields.setMacAddress(hardwareDto.getMacAddress());
+    	fields.setFirmwareVersion(hardware.getFirmwareVersion());
+    	fields.setMacAddress(hardware.getMacAddress());
     	
     	return fields;
     }

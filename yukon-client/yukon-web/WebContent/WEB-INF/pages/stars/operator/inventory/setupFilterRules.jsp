@@ -24,7 +24,7 @@
     
     <tags:simpleDialog id="addRuleDialog" styleClass="smallSimplePopup"/>
     
-    <form:form id="selectionForm" commandName="filterModel" action="/spring/stars/operator/inventory/inventoryOperations/applyFilter" method="post">
+    <form:form id="selectionForm" commandName="filterModel" action="/spring/stars/operator/inventory/applyFilter" method="post">
         <input type="hidden" name="removeRule" id="removeRule">
         
         <tags:nameValueContainer2>

@@ -40,7 +40,7 @@ public class LiteInventoryBase extends LiteBase {
 	private String deviceLabel = null;
     private int currentStateID = CtiUtilities.NONE_ZERO_ID;
     
-    private Integer energyCompanyId;
+    private int energyCompanyId;
 	
 	// Extended fields
 	private int deviceStatus = CtiUtilities.NONE_ZERO_ID;

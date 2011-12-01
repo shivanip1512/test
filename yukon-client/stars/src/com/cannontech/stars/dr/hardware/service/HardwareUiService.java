@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.HardwareHistory;
 import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -21,13 +21,13 @@ public interface HardwareUiService {
     /**
      * Returns a HarwareDto for the given hardware id.
      */
-    public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId);
+    public Hardware getHardware(int inventoryId);
 
     /**
      * Updates hardware and returns true if the state of the hardware changed
      * to spawn an event.
      */
-    public boolean updateHardware(LiteYukonUser user, HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException;
+    public boolean updateHardware(LiteYukonUser user, Hardware hardware) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * Creates and returns a SimpleDevice for an LCR-3102 with the given device name
@@ -44,7 +44,7 @@ public interface HardwareUiService {
      * where the key LMHardwareClass.METER is for the list of meters, LMHardwareClass.THERMOSTAT
      * for the list of thermostats and LMHardwareClass.SWITCH for the list of switches.
      */
-    public ListMultimap<HardwareClass, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId);
+    public ListMultimap<HardwareClass, Hardware> getHardwareMapForAccount(int accountId);
 
     /**
      * Checks that the inventory items are assigned to the account and throws a NotAuthorizedExcpetion
@@ -56,7 +56,7 @@ public interface HardwareUiService {
      * Creates hardware based on hardwareDto settings and returns
      * the resulting inventoryId.
      */
-    public int createHardware(HardwareDto hardwareDto, int accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
+    public int createHardware(Hardware hardware, int accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * Adds a device to an acccount.  If fromAccount is true, removes it from it's
@@ -89,5 +89,6 @@ public interface HardwareUiService {
      * @throws StarsDeviceSerialNumberAlreadyExistsException
      * @throws ObjectInOtherEnergyCompanyException
      */
-    public boolean isSerialNumberInEC(HardwareDto hardwareDto);
+    public boolean isSerialNumberInEC(Hardware hardware);
+
 }

@@ -9,7 +9,7 @@
     <tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
-    <c:set var="action" value="/spring/stars/operator/inventory/inventoryOperations/updateSchedule"/>
+    <c:set var="action" value="/spring/stars/operator/inventory/updateSchedule"/>
     <cti:msg2 var="confirmDeleteTitle" key=".confirmDeleteTitle"/>
     
     <form:form id="updateForm" commandName="schedule" action="${action}">

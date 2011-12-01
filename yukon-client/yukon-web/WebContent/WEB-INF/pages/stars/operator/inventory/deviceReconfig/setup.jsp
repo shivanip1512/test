@@ -9,11 +9,10 @@
 <cti:standardPage module="operator" page="deviceReconfig">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
-    
     <cti:dataGrid cols="2" tableClasses="deviceReconfigLayout">
         <cti:dataGridCell>
         <tags:boxContainer2 nameKey="setupContainer" hideEnabled="false">
-            <form:form id="saveForm" commandName="deviceReconfigOptions" action="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/save" method="post">
+            <form:form id="saveForm" commandName="deviceReconfigOptions" action="/spring/stars/operator/inventory/deviceReconfig/save" method="post">
                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
             
                 <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>

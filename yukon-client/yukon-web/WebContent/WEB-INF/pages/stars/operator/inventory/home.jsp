@@ -6,9 +6,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="action" value="/spring/stars/operator/inventory/inventoryOperations/setupFilterRules"/>
+<cti:url var="action" value="/spring/stars/operator/inventory/setupFilterRules"/>
 
-<cti:standardPage module="operator" page="inventoryOperations">
+<cti:standardPage module="operator" page="inventory.home">
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
@@ -41,7 +41,7 @@
                         <%-- INVENTORY PICKER--%>
                         <tr>
                             <td class="button top">
-                                <form id="selectByInventoryPickerForm" action="/spring/stars/operator/inventory/inventoryOperations/inventoryActions" method="get">
+                                <form id="selectByInventoryPickerForm" action="/spring/stars/operator/inventory/inventoryActions" method="get">
                                     <input type="hidden" name="collectionType" value="idList"/>
                                     <input type="hidden" name="idList.ids" id="inventoryIds"/>
                                     <tags:pickerDialog type="lmHardwareBasePicker" extraArgs="${energyCompanyId}" id="inventoryPicker" multiSelectMode="true" 
@@ -55,7 +55,7 @@
                         <%-- INVENTORY FILTER --%>
                         <tr>
                             <td class="button middle">
-                                <form id="selectByFilterForm" action="/spring/stars/operator/inventory/inventoryOperations/setupFilterRules" method="get">
+                                <form id="selectByFilterForm" action="/spring/stars/operator/inventory/setupFilterRules" method="get">
                                     <cti:button nameKey="selectFilterButton" type="submit" styleClass="buttonGroup" name="filterButton"/>
                                 </form>
                             </td>
@@ -68,7 +68,7 @@
                             <td class="button">
                                 <cti:button nameKey="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
                                 <tags:simplePopup id="fileUploadPopup" title="${fileUploadTitle}" styleClass="mediumSimplePopup">
-                                    <cti:url var="submitUrl" value="/spring/stars/operator/inventory/inventoryOperations/uploadFile"/>
+                                    <cti:url var="submitUrl" value="/spring/stars/operator/inventory/uploadFile"/>
                                     <form method="post" action="${submitUrl}" enctype="multipart/form-data">
                                         <tags:nameValueContainer2>
                                             <tags:nameValue2 nameKey=".fileLabel">
@@ -92,23 +92,40 @@
                 </tags:boxContainer2>
                 
                 <br>
-                    
+                
                 <%-- DEVICE RECONFIG MONITORS WIDGET --%>
                 <tags:widget bean="deviceReconfigMonitorsWidget"/>
+                
+                <br>
+                
+                <%-- COMMAND SCHEDULE WIDGET --%>
+                <tags:widget bean="commandScheduleWidget" />
             
             </cti:dataGridCell>
             
             <%-- RIGHT SIDE COLUMN --%>
             <cti:dataGridCell>
             
-                <%-- COMMAND SCHEDULE WIDGET --%>
-                <tags:widget bean="commandScheduleWidget" />
+                <%--SEARCH --%>
+                <%@ include file="search.jsp" %>
                 
+                <tags:boxContainer2 nameKey="actions">
+                    <cti:checkRolesAndProperties value="INVENTORY_CREATE_HARDWARE">
+                        <a href=""><i:inline key=".addHardware"/></a><br>
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="SN_ADD_RANGE">
+                        <a href=""><i:inline key=".addHardwareByRange"/></a><br>
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="INVENTORY_CREATE_HARDWARE">
+                        <a href=""><i:inline key=".addMeter"/></a>
+                    </cti:checkRolesAndProperties>
+                </tags:boxContainer2>
+                    
                 <c:if test="${showLinks}">
                     <br>
                     
                     <tags:boxContainer2 nameKey="links">
-                        <cti:link href="/spring/stars/operator/inventory/zbProblemDevices/view" key="yukon.web.modules.operator.inventoryOperations.zbProblemDevices"/>
+                        <a href="/spring/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>
                     </tags:boxContainer2>
                 </c:if>
                 

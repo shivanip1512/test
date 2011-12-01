@@ -4,7 +4,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 
 /**
  * This Service is designed to allow us to separate out HardwareType specific operations 
@@ -14,15 +14,15 @@ public interface HardwareTypeExtensionService {
     
     /**
      * Call to create any extra data the ExtensionService will then be responsible for.
-     * @param hardwareDto
+     * @param hardware
      */
-    public void createDevice(HardwareDto hardwareDto);
+    public void createDevice(Hardware hardware);
     
     /**
      * Call to update any extra data the ExtensionService is responsible for. 
-     * @param hardwareDto
+     * @param hardware
      */
-    public void updateDevice(HardwareDto hardwareDto);
+    public void updateDevice(Hardware hardware);
     
     /**
      * Handles any cleanup before we call delete.
@@ -47,14 +47,14 @@ public interface HardwareTypeExtensionService {
     
     /**
      * Fill in any extra parameters.
-     * @param hardwareDto
+     * @param hardware
      */
-    public void retrieveDevice(HardwareDto hardwareDto);
+    public void retrieveDevice(Hardware hardware);
     
     /**
      * Validate the specialized fields of the hardwareDto.
-     * @param hardwareDto
+     * @param hardware
      */
-    public void validateDevice(HardwareDto hardwareDto, Errors errors);
+    public void validateDevice(Hardware hardware, Errors errors);
     
 }

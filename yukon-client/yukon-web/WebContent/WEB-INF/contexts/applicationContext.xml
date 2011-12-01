@@ -823,6 +823,9 @@
                 <entry key="FDR_TRANSLATION_IMPORT">
                     <ref local="fdrTranslationImportBackingService"/>
                 </entry>
+                <entry key="INVENTORY_TASK">
+                    <ref local="inventoryTaskBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -1329,6 +1332,11 @@
 
     <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
     	<property name="yukonListDao" ref="yukonListDao"/>
+    </bean>
+    
+    <bean id="yukonListEntryForDefinitionTagPrototype" class="com.cannontech.web.taglib.YukonListEntryForDefinitionTag">
+    	<property name="yukonListDao" ref="yukonListDao"/>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
     
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
@@ -1923,7 +1931,7 @@
     <bean id="zoneDtoHelper" class="com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper"/>
 	<bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl"/>
     
-    <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>
+    <bean id="hardwareValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator"/>
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
     
@@ -1934,8 +1942,29 @@
         <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="resultsCache" ref="accountImportResultsCache" />
     </bean>
+    
+    <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
+    <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">
+        <property name="objectFormattingService" ref="objectFormattingService" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
+    <bean id="changeWarehouseHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehouseHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
+    <bean id="changeServiceCompanyHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
+    <bean id="changeDeviceStatusHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
+    <bean id="changeTypeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeTypeHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
+    <bean id="deleteInventoryHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInventoryHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
 
-    <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>    
+    <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>
     
     <bean id="warehouseService" class="com.cannontech.web.admin.energyCompany.warehouse.service.impl.WarehouseServiceImpl"/>
     <bean id="serviceCompanyService" class="com.cannontech.web.admin.energyCompany.serviceCompany.service.impl.ServiceCompanyServiceImpl"/>

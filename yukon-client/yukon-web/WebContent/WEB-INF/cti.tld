@@ -1124,6 +1124,30 @@
   		<description>Yukon List Entry Id</description>
 	</attribute>
   </tag>
+
+  <tag>
+  	<name>yukonListEntryForDefinition</name>
+  	<tag-class>com.cannontech.web.taglib.YukonListEntryForDefinitionTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>var where YukonListEntry EntryText will be placed (optional)</description>
+	</attribute>
+ 	<attribute>
+ 		<name>definitionId</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>The yukon definition id.</description>
+	</attribute>
+ 	<attribute>
+ 		<name>energyCompanyId</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>The energy company id.</description>
+	</attribute>
+  </tag>
   
   <tag>
     <name>verifyRolesAndProperties</name>

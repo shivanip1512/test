@@ -1,0 +1,241 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<script type="text/javascript">
+YEvent.observeSelectorClick('#newButton', function(event) {
+    $('twoWayPickerContainer').hide();
+    $('newTwoWayDeviceContainer').show();
+    var deviceNameInput = $('twoWayDeviceName');
+    deviceNameInput.value = '';
+    deviceNameInput.focus();
+    $('creatingNewTwoWayDevice').value = true;
+});
+
+YEvent.observeSelectorClick('#chooseButton', function(event) {
+    $('twoWayPickerContainer').show();
+    $('newTwoWayDeviceContainer').hide();
+    $('creatingNewTwoWayDevice').value = false;
+});
+
+function updateServiceCompanyInfo() {
+    var url = '/spring/stars/operator/hardware/serviceCompanyInfo';
+    var serviceCompanyId = 
+
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+            $F('serviceCompanyId');
+        </cti:displayForPageEditModes>
+
+        <cti:displayForPageEditModes modes="VIEW">
+            ${hardware.serviceCompanyId};
+        </cti:displayForPageEditModes>
+        
+    if (serviceCompanyId > 0) {
+        var params = {'serviceCompanyId' : serviceCompanyId};
+        new Ajax.Updater('serviceCompanyContainer', url, {method: 'get', evalScripts: true, parameters: params});
+    } else {
+        $('serviceCompanyContainer').innerHTML = '';
+    }
+}
+
+Event.observe(window, 'load', updateServiceCompanyInfo);
+</script>
+<cti:dataGridCell>
+        
+    <form:form id="updateForm" commandName="hardware" action="${action}">
+    
+        <input type="hidden" name="accountId" value="${accountId}">
+        <input type="hidden" name="inventoryId" value="${inventoryId}">
+        <form:hidden path="energyCompanyId"/>
+        <form:hidden path="displayType"/>
+        <form:hidden path="displayName"/>
+        <form:hidden path="hardwareType"/>
+        <form:hidden path="hardwareTypeEntryId"/>
+        <form:hidden path="originalDeviceStatusEntryId"/>
+        <form:hidden path="nodeId"/>
+        <form:hidden path="destinationEndPointId"/>
+        <c:if test="${not showTwoWay}">
+            <form:hidden path="deviceId"/>
+        </c:if>
+    
+        <%-- DEVICE INFO --%>
+        <tags:formElementContainer nameKey="deviceInfoSection">
+            
+            <tags:nameValueContainer2>
+            
+                <tags:nameValue2 nameKey="${displayTypeKey}">
+                    <spring:escapeBody htmlEscape="true">${hardware.displayType}</spring:escapeBody>
+                </tags:nameValue2>
+                
+                <%-- For switchs and tstat's, show serial number, otherwise device name --%>
+                <c:choose>
+                    <c:when test="${showSerialNumber}">
+                        <c:choose>
+                        
+                            <c:when test="${serialNumberEditable}">
+                                <tags:inputNameValue nameKey=".serialNumber" path="serialNumber"></tags:inputNameValue>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <tags:nameValue2 nameKey=".serialNumber">
+                                    <form:hidden path="serialNumber"/>
+                                    <spring:escapeBody htmlEscape="true">${hardware.serialNumber}</spring:escapeBody>
+                                </tags:nameValue2>
+                            </c:otherwise>
+                            
+                        </c:choose>
+                    </c:when>
+                    
+                    <c:otherwise>
+                        <cti:displayForPageEditModes modes="EDIT,VIEW">
+                            <tags:nameValue2 nameKey=".displayName"><spring:escapeBody htmlEscape="true">${hardware.displayName}</spring:escapeBody></tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                    </c:otherwise>
+                    
+                </c:choose>
+                
+                <c:if test="${showInstallCode}">
+                    <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false" maxlength="23" size="25"/>
+                </c:if>
+                
+                <c:if test="${showMacAddress}">
+                    <tags:inputNameValue nameKey=".macAddress" path="macAddress" maxlength="23" size="25"/>
+                </c:if>
+                
+                <c:if test="${showFirmwareVersion}">
+                    <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"></tags:inputNameValue>
+                </c:if>
+                
+                <tags:inputNameValue nameKey=".label" path="displayLabel"/>
+                
+                <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber"/>
+                
+                <c:if test="${showVoltage}">
+                    <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>
+                </c:if>
+                
+                <tags:nameValue2 nameKey=".fieldInstallDate">
+                    <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="fieldInstallDate" springInput="true"></tags:dateInputCalendar>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".fieldReceiveDate">
+                    <tags:dateInputCalendar fieldName="fieldReceiveDate" fieldValue="fieldReceiveDate" springInput="true"></tags:dateInputCalendar>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".fieldRemoveDate">
+                    <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="fieldRemoveDate" springInput="true"></tags:dateInputCalendar>
+                </tags:nameValue2>
+                
+                <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="notesRow"/>
+                
+                <c:if test="${showGateway}">
+                    
+                    <tags:nameValue2 nameKey=".gateway">
+                        <c:if test="${mode == 'VIEW' and hardware.gatewayId != null}">
+                            <cti:url value="/spring/stars/operator/hardware/view" var="viewUrl">
+                                <cti:param name="inventoryId" value="${gatewayInventoryId}"/>
+                                <cti:param name="accountId" value="${accountId}"/>
+                            </cti:url>
+                            <a href="${viewUrl}">
+                        </c:if>
+                        
+                        <tags:selectWithItems path="gatewayId" items="${gateways}" itemValue="paoId" itemLabel="name" 
+                                defaultItemValue="" defaultItemLabel="${none}"/>
+                    </tags:nameValue2>
+                    
+                    <c:if test="${mode == 'VIEW' and hardware.gatewayId != null}">
+                        </a>
+                    </c:if>
+                </c:if>
+                
+                <c:if test="${showRoute}">
+                    <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
+                </c:if>
+                
+                <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="${none}"/>
+                
+                <c:if test="${showTwoWay}">
+                    <%-- Two Way LCR's Yukon Device --%>
+                    <tags:nameValue2 nameKey=".twoWayDevice" rowClass="pickerRow">
+                        <form:hidden path="creatingNewTwoWayDevice" id="creatingNewTwoWayDevice"/>
+    
+                        <div id="twoWayPickerContainer" <c:if test="${hardware.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
+                            
+                            <tags:pickerDialog type="twoWayLcrPicker" 
+                                    id="twoWayLcrPicker" 
+                                    linkType="selection" 
+                                    immediateSelectMode="true"
+                                    destinationFieldName="deviceId" 
+                                    selectionProperty="paoName" 
+                                    initialId="${hardware.deviceId}" 
+                                    viewOnlyMode="${mode == 'VIEW'}"/>
+                                
+                            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                <cti:button nameKey="new" id="newButton"/>
+                            </cti:displayForPageEditModes><form:errors path="deviceId" cssClass="errorMessage"/>
+                            
+                        </div>
+                        
+                        <div id="newTwoWayDeviceContainer" <c:if test="${!hardware.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
+                            <spring:bind path="twoWayDeviceName">
+                                <c:if test="${status.error}"><c:set var="inputToClass" value="error"/></c:if>
+                                <form:input path="twoWayDeviceName" id="twoWayDeviceName"  cssClass="${inputToClass}"/>
+                                <cti:button nameKey="choose" id="chooseButton"/>
+                                <c:if test="${status.error}">
+                                    <br>
+                                    <form:errors path="twoWayDeviceName" cssClass="errorMessage"/>
+                                </c:if>
+                            </spring:bind>
+                        </div>
+                    </tags:nameValue2>
+                
+                </c:if>
+                    
+            </tags:nameValueContainer2>
+        
+        </tags:formElementContainer>
+        
+        <%--SERVICE AND STORAGE --%>
+        <tags:formElementContainer nameKey="serviceAndStorageSection">
+        
+            <tags:nameValueContainer2>
+                    
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <tags:selectNameValue nameKey=".serviceCompany" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
+                        items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
+                </cti:displayForPageEditModes>
+                
+                <tags:nameValue2 nameKey=".serviceCompanyInfo">
+                    <div id="serviceCompanyContainer"></div>
+                </tags:nameValue2>
+                
+                <cti:displayForPageEditModes modes="EDIT,VIEW">
+                    <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
+                </cti:displayForPageEditModes>
+                
+                <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="notesRow"/>
+                
+            </tags:nameValueContainer2>
+            
+        </tags:formElementContainer>
+        
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <cti:checkRolesAndProperties value="${editingRoleProperty}">
+                <cti:button nameKey="save" type="submit" name="save"/>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="${editingRoleProperty}">
+                <cti:displayForPageEditModes modes="EDIT">
+                    <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                    <cti:button nameKey="cancel" type="submit" name="cancel"/>
+                </cti:displayForPageEditModes>
+            </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+        
+    </form:form>
+    
+</cti:dataGridCell>

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -28,16 +29,19 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.PagingExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -47,6 +51,7 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.stars.InventorySearchResult;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -60,6 +65,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
@@ -71,18 +77,19 @@ import com.google.common.collect.Maps;
  */
 public class InventoryDaoImpl implements InventoryDao {
 
-    private ECMappingDao ecMappingDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private LMHardwareEventDao hardwareEventDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
+    private @Autowired ECMappingDao ecMappingDao;
+    private @Autowired YukonEnergyCompanyService yukonEnergyCompanyService;
+    private @Autowired LMHardwareEventDao hardwareEventDao;
+    private @Autowired StarsDatabaseCache starsDatabaseCache;
+    private @Autowired YukonJdbcTemplate yukonJdbcTemplate;
+    private @Autowired InventoryIdentifierMapper inventoryIdentifierMapper;
+    private @Autowired YukonListDao yukonListDao;
+    private @Autowired PaoDefinitionDao paoDefinitionDao;
+    private @Autowired AccountEventLogService accountEventLogService;
+    private @Autowired CustomerAccountDao customerAccountDao;
+    
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
-    private InventoryIdentifierMapper inventoryIdentifierMapper;
-    private YukonListDao yukonListDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private AccountEventLogService accountEventLogService;
-    private CustomerAccountDao customerAccountDao;
+    private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
 
     @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
@@ -612,54 +619,141 @@ public class InventoryDaoImpl implements InventoryDao {
         return getYukonInventory(inventoryId).getHardwareType();
     }
     
-    // DI Setters
-    @Autowired
-    public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
-        this.yukonJdbcTemplate = jdbcTemplate;
-    }
+    @SuppressWarnings("unchecked")
+    @Override
+    public SearchResult<InventorySearchResult> search(InventorySearch inventorySearch, 
+                                                      Collection<Integer> ecIds, 
+                                                      int start, 
+                                                      int pageCount, 
+                                                      final boolean starsMeters) {
+        
+        final boolean usePhone = StringUtils.isNotBlank(inventorySearch.getPhoneNumber());
+        final boolean useWorkOrder = StringUtils.isNotBlank(inventorySearch.getWorkOrderNumber());
+        
+        SearchResult<InventorySearchResult> results = new SearchResult<InventorySearchResult>();
+        
+        SqlStatementBuilder selectCount = new SqlStatementBuilder();
+        selectCount.append("SELECT COUNT(*)");
+        
+        SqlStatementBuilder selectData = new SqlStatementBuilder();
+        selectData.append("SELECT IB.InventoryId,");
+        selectData.append(  "IB.DeviceId,");
+        selectData.append(  "LMHB.ManufacturerSerialNumber,");
+        if (starsMeters) {
+            selectData.append(  "MHB.MeterNumber,");
+        } else {
+            selectData.append(  "DMG.MeterNumber,");
+        }
+        selectData.append(  "IM.EnergyCompanyId,");
+        selectData.append(  "EC.Name EnergyCompanyName,");
+        selectData.append(  "LMHB.LMHardwareTypeID,");
+        if (starsMeters) {
+            selectData.append(  "MHB.MeterTypeID,");
+        } else {
+            selectData.append(  "YPO.Type,");
+        }
+        selectData.append(  "IB.DeviceLabel,");
+        selectData.append(  "CA.AccountId,");
+        selectData.append(  "CA.AccountNumber,");
+        selectData.append(  "CON.ContLastName,");
+        if (usePhone) {
+            selectData.append(  "CN.Notification,");
+        }
+        if (useWorkOrder) {
+            selectData.append(  "WOB.OrderNumber,");
+        }
+        selectData.append(  "IB.AlternateTrackingNumber");
 
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("FROM InventoryBase IB");
+        sql.append(  "JOIN ECToInventoryMapping IM on IM.InventoryID = IB.InventoryID");
+        sql.append(  "JOIN EnergyCompany EC on EC.EnergyCompanyID = IM.EnergyCompanyID");
+        sql.append(  "LEFT JOIN LMHardwareBase LMHB on LMHB.InventoryID = IB.InventoryID");
+        if (starsMeters) {
+            sql.append(  "LEFT JOIN MeterHardwareBase MHB on MHB.InventoryID = IB.InventoryID");
+        } else {
+            sql.append(  "LEFT JOIN YukonPAObject YPO on YPO.PAObjectId = IB.DeviceID");
+            sql.append(  "LEFT JOIN DeviceMeterGroup DMG on DMG.DeviceId = IB.DeviceID");
+        }
+        sql.append(  "JOIN CustomerAccount CA on CA.AccountID = IB.AccountID");
+        sql.append(  "JOIN AccountSite ACS on ACS.AccountSiteID = CA.AccountSiteID");
+        sql.append(  "JOIN Customer CUS on CA.CustomerID = CUS.CustomerID");
+        sql.append(  "JOIN Contact CON on CON.ContactID = CUS.PrimaryContactID");
+        if (usePhone) {
+            sql.append(  "JOIN ContactNotification CN ON CN.ContactID = CON.ContactID AND CN.NotificationCategoryID = 5");
+        }
+        if (useWorkOrder) {
+            sql.append(  "JOIN WorkOrderBase WOB on WOB.AccountID = CA.AccountID");
+        }
+        sql.append("WHERE");
+        
+        // Where clause
+        SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
+        whereClause.add(new SqlStatementBuilder("IM.EnergyCompanyId").in(ecIds));
+        if (StringUtils.isNotBlank(inventorySearch.getSerialNumber())) {
+            whereClause.add(new SqlStatementBuilder("LMHB.ManufacturerSerialNumber").startsWith(inventorySearch.getSerialNumber()));
+        }
+        if (StringUtils.isNotBlank(inventorySearch.getMeterNumber())) {
+            if (starsMeters) {
+                whereClause.add(new SqlStatementBuilder("MHB.MeterNumber").startsWith(inventorySearch.getMeterNumber()));
+            } else {
+                whereClause.add(new SqlStatementBuilder("DMG.MeterNumber").startsWith(inventorySearch.getMeterNumber()));
+            }
+        }
+        if (StringUtils.isNotBlank(inventorySearch.getAccountNumber())) {
+            whereClause.add(new SqlStatementBuilder("CA.AccountNumber").startsWith(inventorySearch.getAccountNumber()));
+        }
+        if (usePhone) {
+            whereClause.add(new SqlStatementBuilder("CN.Notification").startsWith(inventorySearch.getPhoneNumber()));//TODO FORMAT PN
+        }
+        if (StringUtils.isNotBlank(inventorySearch.getLastName())) {
+            whereClause.add(new SqlStatementBuilder("CON.ContLastName").startsWith(inventorySearch.getLastName()));
+        }
+        if (useWorkOrder) {
+            whereClause.add(new SqlStatementBuilder("WOB.OrderNumber").startsWith(inventorySearch.getWorkOrderNumber()));
+        }
+        if (StringUtils.isNotBlank(inventorySearch.getAltTrackingNumber())) {
+            whereClause.add(new SqlStatementBuilder("IB.AlternateTrackingNumber").startsWith(inventorySearch.getAltTrackingNumber()));
+        }
+        sql.append(whereClause);
+        
+        int total = yukonJdbcTemplate.queryForInt(selectCount.append(sql));
+        
+        YukonRowMapper<InventorySearchResult> mapper = new YukonRowMapper<InventorySearchResult>() {
+            @Override
+            public InventorySearchResult mapRow(YukonResultSet rs) throws SQLException {
+                InventorySearchResult result = new InventorySearchResult();
+                InventoryIdentifier identifier = getYukonInventory(rs.getInt("InventoryId"));
+                result.setIdentifier(identifier);
+                result.setDeviceId(rs.getInt("DeviceId"));
+                result.setAccountId(rs.getInt("AccountId"));
+                result.setAccountNumber(rs.getString("AccountNumber"));
+                result.setAltTrackingNumber(rs.getString("AlternateTrackingNumber"));
+                result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+                result.setEnergyCompanyName(rs.getString("EnergyCompanyName"));
+                result.setLabel(rs.getString("DeviceLabel"));
+                result.setLastName(rs.getString("ContLastName"));
+                if (usePhone) result.setPhoneNumber(rs.getString("Notification"));
+                if (identifier.getHardwareType().isMeter()) {
+                    result.setSerialNumber(rs.getString("MeterNumber"));
+                    if (!starsMeters) {
+                        result.setPaoType(rs.getEnum("Type", PaoType.class));
+                    }
+                } else {
+                    result.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                }
+                if (useWorkOrder) result.setWorkOrderNumber(rs.getString("OrderNumber"));
+                
+                return result;
+            }
+        };
+        PagingExtractor<InventorySearchResult> extractor = new PagingExtractor<InventorySearchResult>(start, pageCount, mapper);
+        List<InventorySearchResult> resultList = (List<InventorySearchResult>) yukonJdbcTemplate.query(selectData.append(sql), extractor);
+        
+        results.setResultList(resultList);
+        results.setBounds(start, pageCount, total);
+        
+        return results;
     }
     
-    @Autowired
-    public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
-        this.hardwareEventDao = hardwareEventDao;
-    }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setInventoryIdentifierMapper(InventoryIdentifierMapper inventoryIdentifierMapper) {
-        this.inventoryIdentifierMapper = inventoryIdentifierMapper;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
 }

@@ -9,12 +9,12 @@
 <cti:standardPage module="operator" page="deviceReconfigStatus">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-    <cti:url var="newOperationFailed" value="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/newOperation">
+    <cti:url var="newOperationFailed" value="/spring/stars/operator/inventory/deviceReconfig/newOperation">
         <cti:param name="type" value="FAIL"/>
         <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>
     
-    <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/newOperation">
+    <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/deviceReconfig/newOperation">
         <cti:param name="type" value="SUCCESS"/>
         <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>

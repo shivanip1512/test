@@ -9,7 +9,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -18,22 +18,22 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     private ImmutableMap<HardwareType,HardwareTypeExtensionProvider> builderMap = ImmutableMap.of();
     
     @Override
-    public void createDevice(HardwareDto hardwareDto) {
-        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(hardwareDto.getHardwareType());
+    public void createDevice(Hardware hardware) {
+        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(hardware.getHardwareType());
         
         if (hardwareBuilder == null) return;
 
-        hardwareBuilder.createDevice(hardwareDto);
+        hardwareBuilder.createDevice(hardware);
         
     }
     
     @Override
-    public void updateDevice(HardwareDto hardwareDto) {
-        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(hardwareDto.getHardwareType());
+    public void updateDevice(Hardware hardware) {
+        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(hardware.getHardwareType());
         
         if (hardwareBuilder == null) return;
         
-        hardwareBuilder.updateDevice(hardwareDto);
+        hardwareBuilder.updateDevice(hardware);
     }
     
     @Override
@@ -64,21 +64,21 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     }
     
     @Override
-    public void retrieveDevice(HardwareDto hardwareDto) {
-        HardwareTypeExtensionProvider provider = builderMap.get(hardwareDto.getHardwareType());
+    public void retrieveDevice(Hardware hardware) {
+        HardwareTypeExtensionProvider provider = builderMap.get(hardware.getHardwareType());
         
         if (provider == null) return;
         
-        provider.retrieveDevice(hardwareDto);
+        provider.retrieveDevice(hardware);
     }
     
     @Override
-    public void validateDevice(HardwareDto hardwareDto, Errors errors) {
-        HardwareTypeExtensionProvider provider = builderMap.get(hardwareDto.getHardwareType());
+    public void validateDevice(Hardware hardware, Errors errors) {
+        HardwareTypeExtensionProvider provider = builderMap.get(hardware.getHardwareType());
         
         if (provider == null) return;
         
-        provider.validateDevice(hardwareDto,errors);
+        provider.validateDevice(hardware,errors);
     }
     
     @Autowired
