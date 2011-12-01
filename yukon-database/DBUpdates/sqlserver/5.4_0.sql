@@ -176,6 +176,10 @@ INSERT INTO State      VALUES( -16, 0, 'Cleared', 0, 6, 0);
 INSERT INTO State      VALUES( -16, 1, 'Active',  1, 6, 0);
 /*  End YUK-10433  */
 
+/* Start YUK-10479 */
+INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager in Bulk Operations');
+/*  End YUK-10479  */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
