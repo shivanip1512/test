@@ -88,6 +88,11 @@
             if (${hasControlRole}) {
                 $$('tr[id^="tr_cap"]').each(function (row) {
                     var bankId = row.id.split('_')[2];
+
+                    // Add menus
+                    var bankName = row.down('button[id^="bankName"]');
+                    bankName.observe('click', function(event) {getCommandMenu(bankId, event)});
+
                     var bankState = row.down('a[id^="capbankState"]');
                     bankState.addClassName('actsAsAnchor');
                     bankState.observe('click', function(event) {getMenuFromURL('/spring/capcontrol/menu/capBankState?id=' + bankId, event)});
@@ -521,17 +526,26 @@
 		            <c:forEach var="capBank" items="${capBankList}">
                         <c:set var="bankId" value="${capBank.capBankDevice.ccId}"/>
 		                <tr id="tr_cap_${bankId}" class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-		                    <td>
+		                    <td class="nw">
 		                    	<c:if test="${capBank.notAssignedToZone}">
                                     <span class="strongWarningMessage">*</span>
                                 </c:if>
-                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${capBank.controlDevice.liteID}">
-    		                    	<spring:escapeBody htmlEscape="true">
-                                        ${capBank.controlDevice.paoName}
-                                    </spring:escapeBody>
-                                </a>
+                                <%-- CBC Actions --%>
+                                <c:choose>
+                                    <c:when test="${capBank.controlDevice.liteID != 0}">
+                                        <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${capBank.controlDevice.liteID}">
+            		                    	<spring:escapeBody htmlEscape="true">
+                                                ${capBank.controlDevice.paoName}
+                                            </spring:escapeBody>
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i:inline key=".capBanks.noCbc"/>
+                                    </c:otherwise>
+                                </c:choose>
 		                    </td>
 		                    <td>
+                                <cti:button id="bankName_${bankId}" nameKey="capBanks.bankCommands" renderMode="image"/>
                                 <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}">
                                     <spring:escapeBody htmlEscape="true">
                                         ${capBank.capBankDevice.ccName}

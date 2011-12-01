@@ -5,8 +5,8 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
-<c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
+<c:url var="cog" value="/WebConfig/yukon/Icons/cog_go.gif"/>
+<c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_go_over.gif"/>
 
 <%-- ERROR --%>
 <c:if test="${not empty statusPointMonitorsWidgetError}">
