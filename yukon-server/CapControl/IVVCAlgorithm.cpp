@@ -706,7 +706,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
                                                           _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100.0 ) );
     }
 
-    result = checkForStaleData( request, timeNow, 1.0, RequiredRequestType, "Required" );
+    result = checkForStaleData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
 
     if ( result.first != DataStatus_Good )
     {
@@ -905,7 +905,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
     if (busWattPointId > 0)
     {
-        pointRequests.insert( PointRequest(busWattPointId, RequiredRequestType) );
+        pointRequests.insert( PointRequest(busWattPointId, BusPowerRequestType) );
     }
     else
     {
@@ -922,7 +922,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     {
         if (ID > 0)
         {
-            pointRequests.insert( PointRequest(ID, RequiredRequestType) );
+            pointRequests.insert( PointRequest(ID, BusPowerRequestType) );
         }
         else
         {
@@ -1249,24 +1249,60 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     //calculate current power factor of the bus
 
     // Can't get here if these IDs don't exist
-    long wattPointID = subbus->getCurrentWattLoadPointId();
+    long    wattPointID = subbus->getCurrentWattLoadPointId();
+    double  wattValue = 0.0;
+
     PointValueMap::iterator iter = pointValues.find(wattPointID);
 
-    // if not found default to 0 -- this shouldn't happen now that watt point is required to be in the point request and up to date
-    double wattValue = ( iter != pointValues.end() ) ? iter->second.value : 0.0;
-    pointValues.erase(wattPointID);
+    if ( iter != pointValues.end() )
+    {
+        wattValue = iter->second.value;
+        pointValues.erase(wattPointID);
+    }
+    else    // this should never happen but if it does -- reset the state machine and bail out.
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
 
-    double varValue = 0.0;
+            dout << CtiTime() << " - IVVC: " << subbus->getPaoName()
+                 << " - Missing Watt point response.  Aborting analysis." << std::endl;
+        }
+
+        state->setState(IVVCState::IVVC_WAIT);
+        state->setCommsRetryCount(0);
+
+        return true;
+    }
 
     PointIdList pointIds = subbus->getCurrentVarLoadPoints();
+    double      varValue = 0.0;
+
     for each (long pointId in pointIds)
     {
         iter = pointValues.find(pointId);
 
-        // if not found default to 0 -- this shouldn't happen now that var points are required to be in the point request and up to date
-        varValue += ( iter != pointValues.end() ) ? iter->second.value : 0.0;
-        pointValues.erase(pointId);
-    }//At this point we have removed the var and watt points. Only volt points remain.
+        if ( iter != pointValues.end() )
+        {
+            varValue += iter->second.value;
+            pointValues.erase(pointId);
+        }
+        else    // this should never happen but if it does -- reset the state machine and bail out.
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - IVVC: " << subbus->getPaoName()
+                     << " - Missing Var point response.  Aborting analysis." << std::endl;
+            }
+
+            state->setState(IVVCState::IVVC_WAIT);
+            state->setCommsRetryCount(0);
+
+            return true;
+        }
+    }
+
+    // At this point we have removed the var and watt points. Only volt points remain.
 
     double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
 
