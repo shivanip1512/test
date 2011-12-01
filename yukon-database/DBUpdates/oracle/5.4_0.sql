@@ -169,13 +169,34 @@ create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
 
 /* Start YUK-10433 */
 INSERT INTO StateGroup VALUES( -16, 'Event Status', 'Status');
-INSERT INTO State      VALUES( -16, 0, 'Cleared', 0, 6, 0);
-INSERT INTO State      VALUES( -16, 1, 'Active',  1, 6, 0);
+INSERT INTO State VALUES( -16, 0, 'Cleared', 0, 6, 0);
+INSERT INTO State VALUES( -16, 1, 'Active',  1, 6, 0);
 /*  End YUK-10433  */
 
 /* Start YUK-10479 */
-INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager in Bulk Operations');
+INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
 /*  End YUK-10479  */
+
+/* Start YUK-10466 */
+INSERT INTO StateGroup VALUES(-17, 'Last Control', 'Status');
+INSERT INTO State VALUES(-17, 0, 'Manual', 0, 6, 0);
+INSERT INTO State VALUES(-17, 1, 'SCADA Override', 1, 6, 0);
+INSERT INTO State VALUES(-17, 2, 'Fault Current', 2, 6, 0);
+INSERT INTO State VALUES(-17, 3, 'Emergency Voltage', 3, 6, 0);
+INSERT INTO State VALUES(-17, 4, 'Time ONOFF', 4, 6, 0);
+INSERT INTO State VALUES(-17, 5, 'OVUV Control', 5, 6, 0);
+INSERT INTO State VALUES(-17, 6, 'VAR', 7, 6, 0);
+INSERT INTO State VALUES(-17, 7, 'Analog 1', 8, 6, 0);
+INSERT INTO State VALUES(-17, 8, 'Analog 2', 1, 6, 0);
+INSERT INTO State VALUES(-17, 9, 'Analog 3', 2, 6, 0);
+INSERT INTO State VALUES(-17, 10, 'Analog 4', 3, 6, 0);
+INSERT INTO State VALUES(-17, 11, 'Analog 5', 4, 6, 0);
+INSERT INTO State VALUES(-17, 12, 'Analog 6', 5, 6, 0);
+INSERT INTO State VALUES(-17, 13, 'Temp', 7, 6, 0);
+INSERT INTO State VALUES(-17, 14, 'Remote', 8, 6, 0);
+INSERT INTO State VALUES(-17, 15, 'Time', 1, 6, 0);
+INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
+/*  End YUK-10466  */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

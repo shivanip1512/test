@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/1/2011 2:25:25 PM                         */
+/* Created on:     12/1/2011 4:01:05 PM                         */
 /*==============================================================*/
 
 
@@ -7086,6 +7086,23 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-17, 0, 'Manual', 0, 6, 0);
+INSERT INTO State VALUES(-17, 1, 'SCADA Override', 1, 6, 0);
+INSERT INTO State VALUES(-17, 2, 'Fault Current', 2, 6, 0);
+INSERT INTO State VALUES(-17, 3, 'Emergency Voltage', 3, 6, 0);
+INSERT INTO State VALUES(-17, 4, 'Time ONOFF', 4, 6, 0);
+INSERT INTO State VALUES(-17, 5, 'OVUV Control', 5, 6, 0);
+INSERT INTO State VALUES(-17, 6, 'VAR', 7, 6, 0);
+INSERT INTO State VALUES(-17, 7, 'Analog 1', 8, 6, 0);
+INSERT INTO State VALUES(-17, 8, 'Analog 2', 1, 6, 0);
+INSERT INTO State VALUES(-17, 9, 'Analog 3', 2, 6, 0);
+INSERT INTO State VALUES(-17, 10, 'Analog 4', 3, 6, 0);
+INSERT INTO State VALUES(-17, 11, 'Analog 5', 4, 6, 0);
+INSERT INTO State VALUES(-17, 12, 'Analog 6', 5, 6, 0);
+INSERT INTO State VALUES(-17, 13, 'Temp', 7, 6, 0);
+INSERT INTO State VALUES(-17, 14, 'Remote', 8, 6, 0);
+INSERT INTO State VALUES(-17, 15, 'Time', 1, 6, 0);
+INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
 INSERT INTO State VALUES(-16, 0, 'Cleared', 0, 6, 0);
 INSERT INTO State VALUES(-16, 1, 'Active', 1, 6, 0);
 INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
@@ -7193,6 +7210,7 @@ create table StateGroup  (
    constraint SYS_C0013128 primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-17, 'Last Control', 'Status');
 INSERT INTO StateGroup VALUES(-16, 'Event Status', 'Status');
 INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status'); 
 INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
@@ -9064,7 +9082,7 @@ INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Update/Remove Points','fa
 INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','Controls access to Send Config and Read Config collection actions.');
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true','Controls access to Archived Data Analysis collection action.');
-INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager in Bulk Operations');
+INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');
