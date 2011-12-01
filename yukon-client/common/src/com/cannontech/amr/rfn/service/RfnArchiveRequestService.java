@@ -7,18 +7,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.endpoint.IgnoredTemplateException;
-import com.cannontech.amr.rfn.message.archive.RfnMeterArchiveStartupNotification;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.clientutils.YukonLogManager;
@@ -40,15 +37,15 @@ import com.google.common.collect.MapMaker;
 public class RfnArchiveRequestService {
     private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestService.class);
 
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private DeviceCreationService deviceCreationService;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private RfnMeterDao rfnMeterDao;
-    @Autowired private TransactionTemplate transactionTemplate;
-    @Autowired private RfnMeteringEventLogService rfnMeteringEventLogService;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    // @Autowired resources
+    private ConfigurationSource configurationSource;
+    private DeviceCreationService deviceCreationService;
+    private DeviceDao deviceDao;
+    private RfnMeterDao rfnMeterDao;
+    private TransactionTemplate transactionTemplate;
+    private RfnMeteringEventLogService rfnMeteringEventLogService;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
 
-    private JmsTemplate jmsTemplate;
     private String meterTemplatePrefix;
     private Map<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
@@ -89,8 +86,6 @@ public class RfnArchiveRequestService {
         queueSize = configurationSource.getInteger("RFN_METER_DATA_WORKER_QUEUE_SIZE", 500);
         
         meterTemplatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
-        RfnMeterArchiveStartupNotification response = new RfnMeterArchiveStartupNotification();
-        jmsTemplate.convertAndSend("yukon.notif.obj.amr.rfn.MeterArchiveStartupNotification", response);
     }
     
     public RfnMeter createMeter(final RfnMeterIdentifier meterIdentifier) {
@@ -165,13 +160,6 @@ public class RfnArchiveRequestService {
         return queueSize;
     }
     
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
-    
     @ManagedAttribute
     public String getUnkownTempaltes() {
         return unknownTemplatesEncountered.entrySet().toString();
@@ -190,5 +178,40 @@ public class RfnArchiveRequestService {
     @ManagedAttribute
     public int getProcessedArchiveRequest() {
         return processedArchiveRequest.get();
+    }
+    
+    @Autowired
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
+    }
+    
+    @Autowired
+    public void setDeviceCreationService(DeviceCreationService deviceCreationService) {
+        this.deviceCreationService = deviceCreationService;
+    }
+    
+    @Autowired
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+    
+    @Autowired
+    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
+        this.rfnMeterDao = rfnMeterDao;
+    }
+    
+    @Autowired
+    public void setRfnMeteringEventLogService(RfnMeteringEventLogService rfnMeteringEventLogService) {
+        this.rfnMeteringEventLogService = rfnMeteringEventLogService;
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 }

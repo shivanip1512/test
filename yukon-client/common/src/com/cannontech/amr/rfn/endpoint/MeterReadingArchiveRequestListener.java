@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.rfn.message.archive.RfnMeterArchiveStartupNotification;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveResponse;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -61,6 +62,11 @@ public class MeterReadingArchiveRequestListener extends RfnArchiveRequestListene
             worker.start();
         }
         workers = workerBuilder.build();
+        
+        // This message is signifying that we are ready to archive meter reads, events & alarms
+        // (we only need to send this message once... so we are doing it for no particular reason in this listener)
+        RfnMeterArchiveStartupNotification response = new RfnMeterArchiveStartupNotification();
+        jmsTemplate.convertAndSend("yukon.notif.obj.amr.rfn.MeterArchiveStartupNotification", response);
     }
     
     @PreDestroy
