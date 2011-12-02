@@ -844,6 +844,8 @@ void CtiCapController::controlLoop()
                         {
                             CtiCCExecutorFactory::createExecutor((CtiMessage *) temp[i])->execute();
                         }
+                        multiCapMsg->clear();
+                        delete multiCapMsg;
                         multiCapMsg = new CtiMultiMsg();
                     }
                 }

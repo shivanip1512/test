@@ -55,7 +55,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         {
             init();
 
-            _command = (CapControlCommand*)command;
+            _command = command;
             _itemId = command->getItemId();
         };
 

@@ -58,11 +58,6 @@ void ItemCommand::saveGuts(RWvostream& oStream) const
 
     oStream << _itemId;
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Oh gawd!"<< endl;
-    }
-
     return;
 }
 
