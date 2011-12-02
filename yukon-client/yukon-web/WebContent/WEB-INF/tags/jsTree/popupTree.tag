@@ -3,16 +3,10 @@
 <%@ taglib prefix="cti"     uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="jsTree"  tagdir="/WEB-INF/tags/jsTree" %>
 
-<%-- <cti:includeScript link="JSTREE" force="true"/> --%>
-<cti:includeScript link="SCROLLTO" force="true"/>
-
 <c:choose>
     <c:when test="${not empty treeCss}"><cti:includeCss link="${treeCss}"/></c:when>
     <c:otherwise><cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/></c:otherwise>
 </c:choose>
-
-<cti:includeScript link="/JavaScript/lib/jQuery/plugins/dynatree/jquery.dynatree.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
 
 <%-- BASICS --%>
 <%-- id will be the internal id of the tree, also will be name of dom elememt to access tree in jsp --%>
@@ -101,5 +95,4 @@
              jQuery(document.getElementById("window_${id}")).dialog('open');
         });
     });
-    var oh_s = ${dataJson};
 </script>

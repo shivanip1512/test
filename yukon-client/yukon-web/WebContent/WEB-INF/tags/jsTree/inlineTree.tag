@@ -1,12 +1,11 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<cti:includeScript link="JSTREE" force="true"/>
-<cti:includeScript link="SCROLLTO" force="true"/>
-<cti:includeScript link="JSTREE_HELPERS" force="true"/>
+<cti:includeScript link="JQUERY_COOKIE" force="true"/>
+<cti:includeScript link="JQUERY_SCROLLTO" force="true"/>
+<cti:includeScript link="JQUERY_TREE" force="true"/>
+<cti:includeScript link="JQUERY_TREE_HELPERS" force="true"/>
 
-<cti:includeScript link="/JavaScript/lib/jQuery/plugins/cookie/jquery.cookie.js"/>
-<cti:includeScript link="/JavaScript/lib/jQuery/plugins/dynatree/jquery.dynatree.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
 
 <c:choose>
@@ -70,24 +69,28 @@
     jQuery(document).ready(function(){
         
         //dataJson
-        <c:if test="${not empty pageScope.dataJson}">
-            var data = ${pageScope.dataJson};
-            clean(data);
-        </c:if>
+        <c:choose>
+            <c:when test="${not empty pageScope.dataJson}">
+                var data = ${pageScope.dataJson};
+                clean(data);
+            </c:when>
+            
+            <c:otherwise >
+            var data = {};
+            </c:otherwise>
+        </c:choose>
         
-        <c:if test="${empty pageScope.dataJson}">
-        var data = {};
-        </c:if>
-        
-        <c:if test="${not empty highlightNodePath}">
-            var highlight = "${highlightNodePath}".split("/");
-            var open = highlight[highlight.length-2];
-            var initially_select = highlight[highlight.length-1];
-        </c:if>
-        
-        <c:if test="${empty highlightNodePath}">
-            var initially_select = null;
-        </c:if>
+        <c:choose>
+            <c:when test="${not empty highlightNodePath}">
+                var highlight = "${highlightNodePath}".split("/");
+                var open = highlight[highlight.length-2];
+                var initially_select = highlight[highlight.length-1];
+            </c:when>
+            
+            <c:otherwise>
+                var initially_select = null;
+            </c:otherwise>
+       </c:choose>
         
         var args = {
             children: data,
@@ -100,14 +103,15 @@
                 
             },
             
-            <c:if test="${not empty multiSelect and multiSelect}">
-            selectMode: 2,
-            </c:if>
-            
-            <c:if test="${not multiSelect}">
-            selectMode: 1,
-            </c:if>
-            
+            <c:choose>
+                <c:when test="${not empty multiSelect and multiSelect}">
+                selectMode: 2,
+                </c:when>
+                
+                <c:otherwise>
+                selectMode: 1,
+                </c:otherwise>
+            </c:choose>
 //             persist: true, //keep the tree in the last opened state
 //             cookieId: "${pageScope.divId}",
             checkbox: false,
