@@ -2,9 +2,9 @@ package com.cannontech.simplereport;
 
 public class ColumnInfo {
 
-    private String columnName;
-    private Integer columnWidth;
-    private String columnAlignment;
+    private String label;
+    private Integer width;
+    private String align;
     private Integer columnWidthPercentage;
     
     public ColumnInfo() {
@@ -12,25 +12,25 @@ public class ColumnInfo {
 
     public ColumnInfo(String columnName, Integer columnWidth, String columnAlignment) {
         
-        this.columnName = columnName;
-        this.columnWidth = columnWidth;
-        this.columnAlignment = columnAlignment;
+        this.label = columnName;
+        this.width = columnWidth;
+        this.align = columnAlignment;
     }
     
     public void calculateColumnWidthPercentage(Integer totalWidth) {
-        setColumnWidthPercentage(Math.round((columnWidth / (float)totalWidth) * 100));
+        setColumnWidthPercentage(Math.round((width / (float)totalWidth) * 100));
     }
     
     
-    public String getColumnName() {
-        return columnName;
+    public String getLabel() {
+        return label;
     }
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
+    public void setLabel(String columnName) {
+        this.label = columnName;
     }
-    public String getColumnId() {
+    public String getName() {
         
-        String columnId = this.columnName.replaceAll("/", "");
+        String columnId = this.label.replaceAll("/", "");
         // Strip out '\'
         columnId = columnId.replaceAll("\\\\", "");
         columnId = columnId.replaceAll("&", "");
@@ -44,17 +44,17 @@ public class ColumnInfo {
 
         return returnString;
     }
-    public int getColumnWidth() {
-        return columnWidth;
+    public int getWidth() {
+        return width;
     }
-    public void setColumnWidth(int columnWidth) {
-        this.columnWidth = columnWidth;
+    public void setWidth(int columnWidth) {
+        this.width = columnWidth;
     }
-    public String getColumnAlignment() {
-        return columnAlignment;
+    public String getAlign() {
+        return align;
     }
-    public void setColumnAlignment(String columnAlignment) {
-        this.columnAlignment = columnAlignment;
+    public void setAlign(String columnAlignment) {
+        this.align = columnAlignment;
     }
     public Integer getColumnWidthPercentage() {
         return columnWidthPercentage;

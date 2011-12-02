@@ -1,7 +1,0 @@
-@import url('tree.css');
-
-
-/* to set the backgroud color without ext overrriding you with a style it applies later*/
-.highlightNode {
-    background-color:yellow !important;
-}

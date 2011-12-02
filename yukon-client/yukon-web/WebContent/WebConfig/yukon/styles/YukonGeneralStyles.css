@@ -1467,6 +1467,18 @@ select:focus {
     cursor: not-allowed;
 }
 
+.ui-icon.excel{
+    background-image: url("/WebConfig/yukon/Icons/excel.gif") !important;
+}
+
+.ui-icon.pdf{
+    background-image: url("/WebConfig/yukon/Icons/pdf.gif") !important;
+}
+
+.ui-icon.refresh{
+    background-image: url("/WebConfig/yukon/Icons/table_refresh.gif") !important; 
+}
+
 .ex_large_icon {
     padding-top: 64px;
     width: 64px;
@@ -1668,4 +1680,13 @@ div.scrollingContainer {
 
 input.working {
     background: transparent url("../Icons/working_throbber.gif") right top no-repeat;
+}
+
+.ui-jqgrid-view .ui-button {
+    border: none !important;
+}
+
+/* grid alternating rows */
+tr.ui-priority-secondary {
+    background: #fff;
 }

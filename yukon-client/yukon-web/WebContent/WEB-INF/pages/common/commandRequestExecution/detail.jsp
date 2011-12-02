@@ -41,10 +41,6 @@
         
     </cti:breadCrumbs>
     
-    <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
-	<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
-	<cti:includeScript link="/JavaScript/extjs_cannon/extGridHelper.js"/>
-	<cti:includeScript link="/JavaScript/extjs_cannon/extGridMaker.js"/>
 	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
     <script type="text/javascript">

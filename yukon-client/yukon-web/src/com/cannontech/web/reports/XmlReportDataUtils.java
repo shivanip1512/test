@@ -23,7 +23,7 @@ public class XmlReportDataUtils {
             Iterator<ColumnInfo> infoIterator = columnInfo.iterator();
             for (String columnData : columnList) {
                 ColumnInfo info = infoIterator.next();
-                Element column = new Element(info.getColumnId());
+                Element column = new Element(info.getName());
                 column.addContent(columnData);
                 row.addContent(column);
             }

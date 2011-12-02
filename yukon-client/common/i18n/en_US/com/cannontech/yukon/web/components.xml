@@ -233,6 +233,11 @@
     
     <entry key="yukon.web.components.button.pdf.imageUrl">/WebConfig/yukon/Icons/pdf.gif</entry>
     <entry key="yukon.web.components.button.pdf.label">Export to PDF</entry>
+    
+    <entry key="yukon.web.components.jQbutton.csv.label">CSV</entry>
+    <entry key="yukon.web.components.jQbutton.pdf.label">PDF</entry>
+    <entry key="yukon.web.components.jQbutton.refresh.label">Refresh</entry>
+    <entry key="yukon.web.components.jQbutton.export.label">Export:</entry>
 
     <entry key="yukon.web.components.button.up.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
     <entry key="yukon.web.components.button.up.hoverUrl">/WebConfig/yukon/Icons/green_arrow_up_over.gif</entry>

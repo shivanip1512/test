@@ -30,7 +30,7 @@ public class JsonReportDataUtils {
             Iterator<ColumnInfo> infoIterator = columnInfo.iterator();
             for (String columnData : columnList) {
                 ColumnInfo info = infoIterator.next();
-                rowData.put(info.getColumnId(), columnData);
+                rowData.put(info.getName(), columnData);
             }
             rows.add(rowData);
         }

@@ -231,19 +231,19 @@ public class SimpleReportServiceImpl implements SimpleReportService {
             ColumnInfo ci = new ColumnInfo();
 
             // column name
-            ci.setColumnName(bodyColumns[i].getColumnName());
+            ci.setLabel(bodyColumns[i].getColumnName());
 
             // column width
             int width = bodyColumns[i].getWidth();
             totalWidth += width;
-            ci.setColumnWidth(width);
+            ci.setWidth(width);
 
             // column alignment
             String align = "left";
             if(bodyColumns[i].getHorizontalAlignment() != null) {
                 align = elementAlignmentToHtmlAlignment(bodyColumns[i].getHorizontalAlignment());
             }
-            ci.setColumnAlignment(align);
+            ci.setAlign(align);
 
             columnInfo.add(ci);
         }

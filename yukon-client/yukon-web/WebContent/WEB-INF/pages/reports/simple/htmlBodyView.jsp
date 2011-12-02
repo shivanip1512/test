@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="jqGrid" tagdir="/WEB-INF/tags/jqGrid" %>
 
 <%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
@@ -49,9 +50,17 @@
 
 <c:choose>
 
-	<%-- EXT REPORT TABLE --%>
+	<%-- jqGrid REPORT TABLE --%>
 	<c:when test="${!pureHtml}">
-		<tags:extReportGrid title="${reportTitle}" height="${height}" width="${width}" columnInfo="${columnInfo}" dataUrl="${dataUrl}" csvUrl="${csvUrl}" pdfUrl="${pdfUrl}" showLoadMask="${showLoadMask}" refreshRate="${refreshRate}" />
+		<jqGrid:reportGrid title="${reportTitle}" 
+            height="${height}" 
+            width="${width}" 
+            columnInfo="${columnInfo}" 
+            dataUrl="${dataUrl}" 
+            csvUrl="${csvUrl}" 
+            pdfUrl="${pdfUrl}" 
+            showLoadMask="${showLoadMask}" 
+            refreshRate="${refreshRate}" />
 	</c:when>
 	
 	<%-- PURE HTML REPORT TABLE --%>

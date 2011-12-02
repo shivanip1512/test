@@ -29,21 +29,30 @@ function processCommanderReplacement(paramIdx, originalCmd, cmd, cmdField) {
     
         var displayParam = params[paramIdx].replace(/'/g, '').replace(/"/g, '').replace('?', '');
         
-        Ext.Msg.prompt('Enter value for command parameter', displayParam, function(btn, text){
-            
-            if (btn == 'ok'){
-                replacement = text;
-                
-                cmd = cmd.replace(params[paramIdx], replacement);
-                $(cmdField).value = cmd;
-                
-                // try next replacements
-                processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
+        jQuery("#commanderPrompterConfirm label").text(displayParam);
+        jQuery("#commanderPrompterConfirm").dialog({
+            resizable: false,
+            modal: true,
+            title: jQuery("#commanderPrompterConfirm").attr('title'), 
+            buttons: {
+                "Ok": function() {
+                    jQuery( this ).dialog( "close" );
+
+                    replacement = jQuery( this ).find("input:text").val();
+                    cmd = cmd.replace(params[paramIdx], replacement);
+                    jQuery(document.getElementById(cmdField)).val(cmd);
+                    
+                    // try next replacements
+                    processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
+                },
+                Cancel: function() {
+                    jQuery( this ).find("input:text").val("");
+                    jQuery( this ).dialog( "close" );
+                    //the EXT version of this tried to populate an undefined field.  Pretty sure this
+                    //is what was meant, but I leave the following in as this makes more sense to me.
+                    //jQuery(document.getElementById(cmdField)).val(originalCmd);
+                }
             }
-            else {
-                $(cmdEl).value = originalCmd;
-            }
-            
         });
     }
     else {

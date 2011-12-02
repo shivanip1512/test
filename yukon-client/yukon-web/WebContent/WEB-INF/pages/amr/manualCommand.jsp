@@ -78,4 +78,9 @@
     
     </tags:widgetContainer>
     
+    <div id="commanderPrompterConfirm" class="dn" title="Enter value for command parameter">
+        <label>::REPLACED AT RUNTIME::</label>
+        <input type="text"/>
+    </div>
+    
 </cti:standardPage>		
