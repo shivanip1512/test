@@ -326,7 +326,7 @@
                     <span class="strongMessage"><i:inline key=".noIvvcMessage"/></span>
                     <span></span>
                 </div>
-                <cti:dataUpdaterCallback function="ivvcAnalysisMessageRecieved(['div#ivvcAnalysisMsg'])" initialize="false" value="CAPCONTROL/${subBusId}/IVVC_ANALYSIS_MESSAGE" />
+                <cti:dataUpdaterCallback function="ivvcAnalysisMessageRecieved(['div#ivvcAnalysisMsg'])" initialize="true" value="CAPCONTROL/${subBusId}/IVVC_ANALYSIS_MESSAGE" />
             </tags:boxContainer2>
 		</cti:dataGridCell>
 	</cti:dataGrid>

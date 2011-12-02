@@ -86,8 +86,8 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.title">Voltage Profile</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.title">Delete Zone</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.message">Are you sure you want to delete zone {0}?</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.ivvcAnalysisContainer.title">Ivvc Analysis Message</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.noIvvcMessage">No ivvc analysis has been performed.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.ivvcAnalysisContainer.title">IVVC Analysis Message</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.noIvvcMessage">No IVVC analysis has been performed.</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario.unknown">unknown</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario1">{0} - IVVC Analysis: Stale Data Encountered for {1}. Received updates for {2}% of Required CBC Voltage Points. Minimum was {3}%.</entry>

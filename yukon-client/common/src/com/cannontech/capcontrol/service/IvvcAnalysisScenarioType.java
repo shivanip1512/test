@@ -19,8 +19,7 @@ public enum IvvcAnalysisScenarioType {
     EXECUTED_NO_TAP_NEEDED(4),
     EXECUTED_CAPBANK_OP_CLOSE(5),
     EXECUTED_CAPBANK_OP_OPEN(5),
-    EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR(6),
-    EXECUTED_CAPBANK_OP_OPCOUNT_EXCEEDED_LIMIT(7);
+    EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR(6);
     
     private int formatType;
     
@@ -43,7 +42,6 @@ public enum IvvcAnalysisScenarioType {
         builder.put(13, EXECUTED_CAPBANK_OP_CLOSE);
         builder.put(14, EXECUTED_CAPBANK_OP_OPEN);
         builder.put(15, EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR);
-        builder.put(16, EXECUTED_CAPBANK_OP_OPCOUNT_EXCEEDED_LIMIT);
         
         scenarioIdMap = builder.build();
     }

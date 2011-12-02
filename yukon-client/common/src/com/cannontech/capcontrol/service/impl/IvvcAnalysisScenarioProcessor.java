@@ -165,19 +165,6 @@ public class IvvcAnalysisScenarioProcessor {
                 return msg;
             }
         };
-        IvvcAnalysisScenarioMsgFormatter timeStampFormatter = new IvvcAnalysisScenarioMsgFormatter() {
-            @Override
-            public int getFormatTypeId() {
-                return 7;
-            }
-            @Override
-            public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
-                String dateTimeString = getTimeStamp(message.getTimeStamp(), userContext);
-                
-                String msg = getMessageWithScenarioIdAndArgs(message.getScenarioId(), userContext, dateTimeString);
-                return msg;
-            }
-        };
 
         Builder<Integer, IvvcAnalysisScenarioMsgFormatter> builder = ImmutableMap.builder();
         builder.put(subBusTwoFloatFormatter.getFormatTypeId(), subBusTwoFloatFormatter);
@@ -186,7 +173,6 @@ public class IvvcAnalysisScenarioProcessor {
         builder.put(subBusFormatter.getFormatTypeId(), subBusFormatter);
         builder.put(subBusCcObjectFormatter.getFormatTypeId(), subBusCcObjectFormatter);
         builder.put(intCcObjectFormatter.getFormatTypeId(), intCcObjectFormatter);
-        builder.put(timeStampFormatter.getFormatTypeId(), timeStampFormatter);
         formattersMap = builder.build();
     }
     
