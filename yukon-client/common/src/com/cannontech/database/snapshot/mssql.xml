@@ -535,6 +535,27 @@
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
+            <string>Indx_RwPtHisTstPtId</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <no-comparator/>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>RAWPOINTHISTORY</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>TIMESTAMP</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>RAWPOINTHISTORY</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>POINTID</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>Indx_RwPtHisTstPtId</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>Indx_RwPtHisPtIDTst</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -7732,30 +7753,30 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSUBSTA_CAPCONTR</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubstSubBusList_CCSub</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubStationID</i__columnName>
             <i__foreignColumnName>SubstationID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSUBSTATION</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNAMICC_REFERENCE_CAPCONTR</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCSub_CCSub</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubStationID</i__columnName>
             <i__foreignColumnName>SubstationID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSUBSTATION</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSUBARE_CAPSUBAREAASSGN</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubAreaAssign_CCSubst</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubstationBusID</i__columnName>
             <i__foreignColumnName>SubstationID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSUBSTATION</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -10344,12 +10365,12 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DynCCSpecA_CapContSpecA</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCSpecial_CCSpecialArea</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>AreaID</i__columnName>
             <i__foreignColumnName>AreaID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSPECIALAREA</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -14804,21 +14825,21 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSUBSTA_REFERENCE_CAPCONTR</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubstSubBusList_CCSubBus</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubStationBusID</i__columnName>
             <i__foreignColumnName>SubstationBusID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSUBSTATIONBUS</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSubBs_DySubBs</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCSubBus_CCSubBus</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubstationBusID</i__columnName>
             <i__foreignColumnName>SubstationBusID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSUBSTATIONBUS</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -14831,12 +14852,12 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSub_CCFeed</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeederSubAssign_CCSubBus</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubStationBusID</i__columnName>
             <i__foreignColumnName>SubstationBusID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLSUBSTATIONBUS</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
@@ -29134,12 +29155,12 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CpBnk_DynCpBnk</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCCapBank_CapBank</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CapBankID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>CAPBANK</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -29170,12 +29191,12 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CB_CCFeedLst</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeederBankList_CapBank</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DeviceID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>CAPBANK</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -40666,12 +40687,12 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0015139</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynDeviceScanData_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -44451,21 +44472,21 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSUBARE_REFERENCE_CAPCONTR</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubAreaAssignment_CCArea</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>AreaID</i__columnName>
             <i__foreignColumnName>AreaID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLAREA</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_ccarea_Dynccarea</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCArea_CCArea</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>AreaID</i__columnName>
             <i__foreignColumnName>AreaID</i__foreignColumnName>
             <i__foreignTableName>CAPCONTROLAREA</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
@@ -53693,12 +53714,12 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNAMICC_REFERENCE_YUKONPAO</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCOpStats_YukonPAObject</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PAObjectID</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
             <i__foreignTableName>YukonPAObject</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -59066,30 +59087,30 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCFeed_DyFeed</i__foreignKeyName>
+            <i__foreignKeyName>FK_DynCCFeeder_CCFeeder</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>FeederID</i__columnName>
             <i__foreignColumnName>FeederID</i__foreignColumnName>
             <i__foreignTableName>CapControlFeeder</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCFeed_CCBnk</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeederBankList_CCFeeder</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>FeederID</i__columnName>
             <i__foreignColumnName>FeederID</i__foreignColumnName>
             <i__foreignTableName>CapControlFeeder</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCFeed_CCFass</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeederSubAssign_CCFeeder</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>FeederID</i__columnName>
             <i__foreignColumnName>FeederID</i__foreignColumnName>
             <i__foreignTableName>CapControlFeeder</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
