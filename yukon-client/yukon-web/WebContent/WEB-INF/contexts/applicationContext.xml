@@ -437,9 +437,9 @@
             <value>USAGE</value>
             <value>PEAK_DEMAND</value>
             <value>DEMAND</value>
-            <value>VOLTAGE_A</value>
-            <value>VOLTAGE_B</value>
-            <value>VOLTAGE_C</value>
+            <value>VOLTAGE_PHASE_A</value>
+            <value>VOLTAGE_PHASE_B</value>
+            <value>VOLTAGE_PHASE_C</value>
           </list>
         </property>
         <property name="previousReadingsAttributeToShow">

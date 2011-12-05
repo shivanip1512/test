@@ -17,17 +17,17 @@
                 <c:when test="${threePhaseVoltage && threePhaseCurrent}">
                     <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltageAndCurrent"/>
                     <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
-                                 attributes="VOLTAGE_A,VOLTAGE_B,VOLTAGE_C,CURRENT_A,CURRENT_B,CURRENT_C"/>
+                                 attributes="VOLTAGE_PHASE_A,VOLTAGE_PHASE_B,VOLTAGE_PHASE_C,CURRENT_PHASE_A,CURRENT_PHASE_B,CURRENT_PHASE_C"/>
                 </c:when>
                 <c:when test="${not threePhaseVoltage && threePhaseCurrent}">
                     <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.current"/>
                     <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
-                                 attributes="CURRENT_A,CURRENT_B,CURRENT_C"/>
+                                 attributes="CURRENT_PHASE_A,CURRENT_PHASE_B,CURRENT_PHASE_C"/>
                 </c:when>
                 <c:when test="${threePhaseVoltage && not threePhaseCurrent}">
                     <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltage"/>
                     <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
-                                 attributes="VOLTAGE_A,VOLTAGE_B,VOLTAGE_C"/>
+                                 attributes="VOLTAGE_PHASE_A,VOLTAGE_PHASE_B,VOLTAGE_PHASE_C"/>
                 </c:when>
                 <c:otherwise>
                     <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltage"/>

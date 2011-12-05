@@ -942,13 +942,13 @@
         	</command>
         </commands>
         <attributes>
-            <attribute name="CURRENT_A">
+            <attribute name="CURRENT_PHASE_A">
                 <basicLookup point="Phase A Current"/>
             </attribute>
-            <attribute name="CURRENT_B">
+            <attribute name="CURRENT_PHASE_B">
                 <basicLookup point="Phase B Current"/>
             </attribute>
-            <attribute name="CURRENT_C">
+            <attribute name="CURRENT_PHASE_C">
                 <basicLookup point="Phase C Current"/>
             </attribute>
         </attributes>
@@ -1339,13 +1339,13 @@
             </command>
         </commands>
         <attributes>
-            <attribute name="VOLTAGE_A">
+            <attribute name="VOLTAGE_PHASE_A">
                 <basicLookup point="Voltage Phase A" />
             </attribute>
-            <attribute name="VOLTAGE_B">
+            <attribute name="VOLTAGE_PHASE_B">
                 <basicLookup point="Voltage Phase B" />
             </attribute>
-            <attribute name="VOLTAGE_C">
+            <attribute name="VOLTAGE_PHASE_C">
                 <basicLookup point="Voltage Phase C" />
             </attribute>
         </attributes>
