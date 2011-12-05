@@ -17,10 +17,10 @@
 				<td class="widgetColumnCell" valign="top">
 				    <ct:widget bean="meterInformationWidget" />
 
-                    <c:if test="${singlePhaseVoltageSupported}">
+                    <c:if test="${not threePhaseVoltageSuported && not threePhaseCurrentSupported}">
 					   <ct:widget bean="meterReadingsWidget" />
                     </c:if>
-                    <c:if test="${threePhaseVoltageSuported || threePhaseCurrentSupported}">
+                    <c:if test="${not singlePhaseVoltage && (threePhaseVoltageSuported || threePhaseCurrentSupported)}">
                        <ct:widget bean="polyphaseMeterReadingsWidget" />
                     </c:if>
 
