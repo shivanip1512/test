@@ -201,4 +201,5 @@ INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
-/**************************************************************/ 
+/**************************************************************/
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '04-DEC-2011', 'Latest Update', 0 );
