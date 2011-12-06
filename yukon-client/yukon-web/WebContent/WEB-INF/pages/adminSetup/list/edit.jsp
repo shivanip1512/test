@@ -20,7 +20,7 @@
 
 <script type="text/javascript">
 
-function typeChanged(event){
+function typeChanged(event) {
     var selectElem = event.currentTarget;
     if (selectElem.selectedIndex != -1) {
         var textElems = jQuery("#"+ selectElem.id.replace('definitionId', 'text').replace("[", "\\[").replace("]", "\\]").replace(".", "\\."));
@@ -30,7 +30,7 @@ function typeChanged(event){
     }
 }
 
-jQuery(document).ready(function(){
+jQuery(document).ready(function() {
    jQuery('select[name^=entries]').live('change', typeChanged);
 });
 </script>

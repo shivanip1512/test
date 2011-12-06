@@ -54,7 +54,7 @@ jQuery(document).ready(function() {
     function moveQuestionFunc(direction) {
         return function(event) {
             var surveyQuestionId = jQuery(event.target).closest('tr').attr('questionId');
-            window.location = '${moveQuestionUrl}?direction=' + direction +
+            location.href = '${moveQuestionUrl}?direction=' + direction +
                     '&surveyQuestionId=' + surveyQuestionId;
         };
     }
