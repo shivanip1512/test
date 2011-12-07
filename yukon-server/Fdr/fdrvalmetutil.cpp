@@ -2,6 +2,7 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "fdrvalmetutil.h"
+#include "cparms.h"
 
 using std::string;
 namespace Fdr {
