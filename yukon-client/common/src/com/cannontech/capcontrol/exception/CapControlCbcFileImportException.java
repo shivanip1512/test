@@ -6,6 +6,12 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
 
+/**
+ * This exception is thrown when the user uses the Cap Control File Importer to
+ * import a CBC file. If the CSV file that is submitted is missing required 
+ * columns, this error is thrown with a description and a collection of the 
+ * columns that are missing.
+ */
 public class CapControlCbcFileImportException extends CapControlFileImporterException {
 	
 	private Collection<CapControlImporterCbcCsvField> columns;

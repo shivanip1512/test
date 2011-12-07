@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.service.providers.fields;
+package com.cannontech.capcontrol.dao.providers.fields;
 
 import com.cannontech.common.pao.service.PaoTemplatePart;
 

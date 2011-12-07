@@ -6,6 +6,7 @@ import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
+import com.cannontech.core.dao.NotFoundException;
 
 public interface CapControlImportService {
 
@@ -23,7 +24,7 @@ public interface CapControlImportService {
      * required fields) and is not an exception that should be caught. There is nothing 
      * the end user can do to fix this problem.
      */
-	public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results);
+	public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException;
 	
 	/**
 	 * Attempts to create a CBC from a template using user specified data.
@@ -39,7 +40,7 @@ public interface CapControlImportService {
      * required fields) and is not an exception that should be caught. There is nothing 
      * the end user can do to fix this problem.
 	 */
-	public void createCbcFromTemplate(CbcImportData cbcImportData, List<CbcImportResult> results);
+	public void createCbcFromTemplate(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException;
 	
 	/**
 	 * Attempts to update a previously created CBC object using user specified data.
@@ -50,7 +51,7 @@ public interface CapControlImportService {
      * @throws NotFoundException if the user specified a CapBank name as a parent that
      * does not exist in the database.
      */
-	public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results);
+	public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException;
 	
 	/**
 	 * Attempts to remove a previously created CBC object using user specified data. 
@@ -80,7 +81,7 @@ public interface CapControlImportService {
      * required fields) and is not an exception that should be caught. There is nothing 
      * the end user can do to fix this problem.
 	 */
-	public void createHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results);
+	public void createHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results) throws NotFoundException;
 	
 	/**
 	 * Attempts to update a previously created Cap Control hierarchy object using user
@@ -92,7 +93,7 @@ public interface CapControlImportService {
      * @throws NotFoundException if the user specified a parent name that does not exist 
      * in the database.
 	 */
-	public void updateHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results);
+	public void updateHierarchyObject(HierarchyImportData hierarchyImportData, List<HierarchyImportResult> results) throws NotFoundException;
 	
 	/**
      * Attempts to remove a previously created Cap Control hierarchy object using user

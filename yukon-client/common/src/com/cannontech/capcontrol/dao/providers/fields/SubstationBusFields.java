@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.dao.providers.fields;
 
 import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.database.YNBoolean;
 
 public class SubstationBusFields implements PaoTemplatePart {
     private int currentVarLoadPointId = 0;
@@ -9,13 +10,13 @@ public class SubstationBusFields implements PaoTemplatePart {
     private int currentVoltLoadPointId = 0;
     private int altSubId = 0;
     private int switchPointId = 0;
-    private String dualBusEnabled = "N";
-    private String multiMonitorControl = "N";
-    private String usePhaseData = "N";
     private int phaseB = 0;
     private int phaseC = 0;
-    private String controlFlag = "N";
     private int voltReductionPointId = 0;
+    private YNBoolean controlFlag = YNBoolean.NO;
+    private YNBoolean dualBusEnabled = YNBoolean.NO;
+    private YNBoolean multiMonitorControl = YNBoolean.NO;
+    private YNBoolean usePhaseData = YNBoolean.NO;
     
     private int disableBusPointId = 0;
 
@@ -67,27 +68,27 @@ public class SubstationBusFields implements PaoTemplatePart {
 		this.switchPointId = switchPointId;
 	}
 
-	public String getDualBusEnabled() {
+	public YNBoolean getDualBusEnabled() {
 		return dualBusEnabled;
 	}
 
-	public void setDualBusEnabled(String dualBusEnabled) {
+	public void setDualBusEnabled(YNBoolean dualBusEnabled) {
 		this.dualBusEnabled = dualBusEnabled;
 	}
 
-	public String getMultiMonitorControl() {
+	public YNBoolean getMultiMonitorControl() {
 		return multiMonitorControl;
 	}
 
-	public void setMultiMonitorControl(String multiMonitorControl) {
+	public void setMultiMonitorControl(YNBoolean multiMonitorControl) {
 		this.multiMonitorControl = multiMonitorControl;
 	}
 
-	public String getUsePhaseData() {
+	public YNBoolean getUsePhaseData() {
 		return usePhaseData;
 	}
 
-	public void setUsePhaseData(String usePhaseData) {
+	public void setUsePhaseData(YNBoolean usePhaseData) {
 		this.usePhaseData = usePhaseData;
 	}
 
@@ -107,11 +108,11 @@ public class SubstationBusFields implements PaoTemplatePart {
 		this.phaseC = phaseC;
 	}
 
-	public String getControlFlag() {
+	public YNBoolean getControlFlag() {
 		return controlFlag;
 	}
 
-	public void setControlFlag(String controlFlag) {
+	public void setControlFlag(YNBoolean controlFlag) {
 		this.controlFlag = controlFlag;
 	}
 

@@ -8,7 +8,6 @@ import com.cannontech.common.pao.service.PaoTypeProvider;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectFields> {
@@ -55,7 +54,7 @@ public class YukonPaObjectProvider implements PaoTypeProvider<YukonPaObjectField
         params.addValue("Type", paoIdentifier.getPaoType());
         params.addValue("PaoName", fields.getName());
         params.addValue("Description", fields.getDescription());
-        params.addValue("DisableFlag", YNBoolean.valueOf(fields.isDisabled()));
+        params.addValue("DisableFlag", fields.isDisabled());
         params.addValue("PaoStatistics", fields.getStatistics());
     }
     

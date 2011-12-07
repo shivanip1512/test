@@ -13,7 +13,6 @@
     <bean class="com.cannontech.common.pao.service.providers.YukonPaObjectProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.YukonDeviceProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.DeviceAddressProvider"/>
-    <bean class="com.cannontech.common.pao.service.providers.DeviceCbcProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.DeviceDirectCommSettingsProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.DeviceScanRateProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.DeviceWindowProvider"/>

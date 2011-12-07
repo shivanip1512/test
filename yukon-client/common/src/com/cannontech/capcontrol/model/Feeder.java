@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.YNBoolean;
 
 public class Feeder {
 	
@@ -11,14 +12,13 @@ public class Feeder {
 	private PaoIdentifier paoIdentifier;
 	private int currentVarLoadPointId = CtiUtilities.NONE_ZERO_ID;
     private int currentWattLoadPointId = CtiUtilities.NONE_ZERO_ID;
-    private String mapLocationId = "0";
     private int currentVoltLoadPointId = CtiUtilities.NONE_ZERO_ID;
-    private String multiMonitorControl = "N";
-    private String usePhaseData = "N";
     private int phaseb = CtiUtilities.NONE_ZERO_ID;
     private int phasec = CtiUtilities.NONE_ZERO_ID;
-    private String controlFlag = "N";
-    private boolean disabled = false;
+    private String mapLocationId = "0";
+    private YNBoolean multiMonitorControl = YNBoolean.NO;
+    private YNBoolean usePhaseData = YNBoolean.NO;
+    private YNBoolean controlFlag = YNBoolean.NO;
     
     public Feeder(PaoIdentifier paoIdentifier) {
     	this.paoIdentifier = paoIdentifier;
@@ -35,16 +35,7 @@ public class Feeder {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	
-	public boolean getDisabled() {
-        return disabled;
-    }
-    
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-    
+	}    
 	public int getCurrentVarLoadPointId() {
         return currentVarLoadPointId;
     }
@@ -78,10 +69,10 @@ public class Feeder {
     public void setMapLocationId(String mapLocationId) {
         this.mapLocationId = mapLocationId;
     }
-    public String getMultiMonitorControl() {
+    public YNBoolean getMultiMonitorControl() {
         return multiMonitorControl;
     }
-    public void setMultiMonitorControl(String multiMonitorControl) {
+    public void setMultiMonitorControl(YNBoolean multiMonitorControl) {
         this.multiMonitorControl = multiMonitorControl;
     }
     public int getPhaseb() {
@@ -96,16 +87,16 @@ public class Feeder {
     public void setPhasec(int phasec) {
         this.phasec = phasec;
     }
-    public String getUsePhaseData() {
+    public YNBoolean getUsePhaseData() {
         return usePhaseData;
     }
-    public void setUsePhaseData(String usePhaseData) {
+    public void setUsePhaseData(YNBoolean usePhaseData) {
         this.usePhaseData = usePhaseData;
     }
-    public String getControlFlag() {
+    public YNBoolean getControlFlag() {
 		return controlFlag;
 	}
-	public void setControlFlag(String controlFlag) {
+	public void setControlFlag(YNBoolean controlFlag) {
 		this.controlFlag = controlFlag;
 	}
 
@@ -120,7 +111,6 @@ public class Feeder {
 		result = prime * result + currentWattLoadPointId;
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + (disabled ? 1231 : 1237);
 		result = prime * result
 				+ ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
 		result = prime
@@ -161,8 +151,6 @@ public class Feeder {
 			if (other.description != null)
 				return false;
 		} else if (!description.equals(other.description))
-			return false;
-		if (disabled != other.disabled)
 			return false;
 		if (mapLocationId == null) {
 			if (other.mapLocationId != null)

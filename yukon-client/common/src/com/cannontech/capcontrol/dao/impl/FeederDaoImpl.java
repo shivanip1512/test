@@ -21,9 +21,9 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.util.Validator;
 
 public class FeederDaoImpl implements FeederDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
@@ -44,17 +44,14 @@ public class FeederDaoImpl implements FeederDao {
             feeder.setCurrentWattLoadPointId(rs.getInt("CurrentWattLoadPointID"));
             feeder.setMapLocationId(rs.getString("MapLocationID"));
             feeder.setCurrentVoltLoadPointId(rs.getInt("CurrentVoltLoadPointID"));
-            String data = rs.getString("MultiMonitorControl");
-            Validator.isNotNull(data);
-            feeder.setMultiMonitorControl(data);
-            data = rs.getString("usephasedata");
-            Validator.isNotNull(data);
-            feeder.setUsePhaseData(data);
+            YNBoolean multiMonitorControl = YNBoolean.valueOf(rs.getString("MultiMonitorControl"));
+            feeder.setMultiMonitorControl(multiMonitorControl);
+            YNBoolean usePhaseData = YNBoolean.valueOf(rs.getString("usephasedata"));
+            feeder.setUsePhaseData(usePhaseData);
             feeder.setPhaseb(rs.getInt("phaseb"));
             feeder.setPhasec(rs.getInt("phasec"));
-            data = rs.getString("ControlFlag");
-            Validator.isNotNull(data);
-            feeder.setControlFlag(data);
+            YNBoolean controlFlag = YNBoolean.valueOf(rs.getString("ControlFlag"));
+            feeder.setControlFlag(controlFlag);
             return feeder;
         }
     };

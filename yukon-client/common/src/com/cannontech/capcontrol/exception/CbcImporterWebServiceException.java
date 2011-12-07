@@ -2,6 +2,12 @@ package com.cannontech.capcontrol.exception;
 
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
 
+/**
+ * This exception is thrown in the Cap Control web service import for CBC imports
+ * that have an unsuccessful outcome. It is thrown when the user submits a request
+ * with invalid/unsupported data in the web service request (i.e. invalid CBC type
+ * or import action.)
+ */
 public class CbcImporterWebServiceException extends CapControlImportException {
 
 	private CbcImportResultType resultType;

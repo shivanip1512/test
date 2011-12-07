@@ -28,6 +28,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -174,8 +175,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
             public DeviceFields mapRow(YukonResultSet rs) throws SQLException {
                 DeviceFields deviceFields = new DeviceFields();
 
-                deviceFields.setAlarmInhibit(rs.getString("AlarmInhibit"));
-                deviceFields.setControlInhibit(rs.getString("ControlInhibit"));
+                deviceFields.setAlarmInhibit(YNBoolean.valueOf(rs.getString("AlarmInhibit")));
+                deviceFields.setControlInhibit(YNBoolean.valueOf(rs.getString("ControlInhibit")));
 
                 return deviceFields;
             }

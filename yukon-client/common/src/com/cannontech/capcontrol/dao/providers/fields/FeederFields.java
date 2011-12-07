@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.dao.providers.fields;
 
 import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.database.YNBoolean;
 
 public class FeederFields implements PaoTemplatePart {
 	private int currentVarLoadPointId = 0;
@@ -9,9 +10,9 @@ public class FeederFields implements PaoTemplatePart {
 	private int phaseB = 0;
 	private int phaseC = 0;
 	private String mapLocationId = "0";
-	private String multiMonitorControl = "N";
-	private String usePhaseData = "N";
-	private String controlFlag = "N";
+	private YNBoolean multiMonitorControl = YNBoolean.NO;
+	private YNBoolean usePhaseData = YNBoolean.NO;
+	private YNBoolean controlFlag = YNBoolean.NO;
 	
 	public int getCurrentVarLoadPointId() {
 		return currentVarLoadPointId;
@@ -61,27 +62,27 @@ public class FeederFields implements PaoTemplatePart {
 		this.mapLocationId = mapLocationId;
 	}
 	
-	public String getMultiMonitorControl() {
+	public YNBoolean getMultiMonitorControl() {
 		return multiMonitorControl;
 	}
 	
-	public void setMultiMonitorControl(String multiMonitorControl) {
+	public void setMultiMonitorControl(YNBoolean multiMonitorControl) {
 		this.multiMonitorControl = multiMonitorControl;
 	}
 	
-	public String getUsePhaseData() {
+	public YNBoolean getUsePhaseData() {
 		return usePhaseData;
 	}
 	
-	public void setUsePhaseData(String usePhaseData) {
+	public void setUsePhaseData(YNBoolean usePhaseData) {
 		this.usePhaseData = usePhaseData;
 	}
 	
-	public String getControlFlag() {
+	public YNBoolean getControlFlag() {
 		return controlFlag;
 	}
 	
-	public void setControlFlag(String controlFlag) {
+	public void setControlFlag(YNBoolean controlFlag) {
 		this.controlFlag = controlFlag;
 	}
 }

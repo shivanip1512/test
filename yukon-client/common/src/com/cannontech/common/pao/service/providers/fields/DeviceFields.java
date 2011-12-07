@@ -1,24 +1,25 @@
 package com.cannontech.common.pao.service.providers.fields;
 
 import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.database.YNBoolean;
 
 public class DeviceFields implements PaoTemplatePart {
-	private String alarmInhibit = "N";
-	private String controlInhibit = "N";
+	private YNBoolean alarmInhibit = YNBoolean.NO;
+	private YNBoolean controlInhibit = YNBoolean.NO;
 	
-	public String getAlarmInhibit() {
+	public YNBoolean getAlarmInhibit() {
 		return alarmInhibit;
 	}
 	
-	public void setAlarmInhibit(String alarmInhibit) {
+	public void setAlarmInhibit(YNBoolean alarmInhibit) {
 		this.alarmInhibit = alarmInhibit;
 	}
 	
-	public String getControlInhibit() {
+	public YNBoolean getControlInhibit() {
 		return controlInhibit;
 	}
 	
-	public void setControlInhibit(String controlInhibit) {
+	public void setControlInhibit(YNBoolean controlInhibit) {
 		this.controlInhibit = controlInhibit;
 	}
 }

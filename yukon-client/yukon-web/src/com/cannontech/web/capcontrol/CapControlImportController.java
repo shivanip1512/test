@@ -123,7 +123,7 @@ public class CapControlImportController {
     					break;
     			}
 		    } catch (NotFoundException e) {
-		        log.debug(e);
+		        log.warn(e);
 	            cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_PARENT));
 		    }
 		}

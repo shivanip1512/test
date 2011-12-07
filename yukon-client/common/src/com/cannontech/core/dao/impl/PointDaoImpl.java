@@ -494,7 +494,7 @@ public final class PointDaoImpl implements PointDao {
             PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
             
             try {
-                dbPersistentDao.performDBChange(pointBase, TransactionType.RETRIEVE);
+                dbPersistentDao.retrieveDBPersistent(pointBase);
                 points.add(pointBase);
             }
             catch (PersistenceException e) {

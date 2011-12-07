@@ -1198,7 +1198,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		    }
 		} else if (getDbPersistent() instanceof CapBank) {
 		    try{
-		        parentID = capbankDao.getParentFeederId(itemId);
+		        parentID = capbankDao.getParentFeederIdentifier(itemId).getPaoId();
             }catch( EmptyResultDataAccessException e ){
                 //do nothing
             }

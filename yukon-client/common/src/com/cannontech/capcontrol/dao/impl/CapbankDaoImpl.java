@@ -129,14 +129,17 @@ public class CapbankDaoImpl implements CapbankDao {
     /**
      * This method returns the Feeder ID that owns the given cap bank ID.
      */
-    public int getParentFeederId(int capBankID) throws EmptyResultDataAccessException {
+    @Override
+    public PaoIdentifier getParentFeederIdentifier(int capBankID) throws EmptyResultDataAccessException {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
     	sql.append("SELECT FeederID");
     	sql.append("FROM CCFeederBankList");
     	sql.append("WHERE DeviceID").eq(capBankID);
     	
-        return yukonJdbcTemplate.queryForInt(sql);
+        int feederId = yukonJdbcTemplate.queryForInt(sql);
+        
+        return new PaoIdentifier(feederId, PaoType.CAP_CONTROL_FEEDER);
     }   
     
     public boolean isSwitchedBank( Integer paoID ){

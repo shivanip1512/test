@@ -200,7 +200,7 @@ public class CapBankEditorForm extends DBEditorForm {
     private void setDefaultFeederLimits(CapBank capBank, CapBankMonitorPointParams monitorPoint) {
         int fdrId = 0;
         try {
-            fdrId = dao.getParentFeederId(capBank.getPAObjectID().intValue());
+            fdrId = dao.getParentFeederIdentifier(capBank.getPAObjectID().intValue()).getPaoId();
         }
         catch( EmptyResultDataAccessException e) {
             CTILogger.debug("Feeder " + capBank.getPAObjectID().intValue() + " not found. Capbank may be orphaned.");

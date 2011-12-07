@@ -145,6 +145,15 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         paoCreationHelper.processDbChange(paoIdentifier, DbChangeType.DELETE);
     }
 
+    /**
+     * This method checks to see if the template contains the fields required for creation
+     * by the provider and then uses the fields data to call the creation method on the 
+     * provider.
+     * @param <T> the {@link PaoTemplatePart} (fields object)
+     * @param paoTemplate the {@link PaoTemplate} holding the {@link PaoType} and fields objects.
+     * @param paoIdentifier the {@link PaoIdentifier} containing the new Pao's PaoId.
+     * @param paoTypeProvider the {@link PaoTypeProvider} responsible for creating the new Pao.
+     */
     private <T extends PaoTemplatePart> void callProviderCreation(PaoTemplate paoTemplate, PaoIdentifier paoIdentifier,
                      PaoTypeProvider<T> paoTypeProvider) {
     	// loop through list, grabbing provider for each and invoking handle method
@@ -157,6 +166,14 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         }
     }
 
+    /**
+     * This method checks to see if the template contains the fields required for updating the pao
+     * and then uses the fields data to call the update method on the provider.
+     * @param <T> the {@link PaoTemplatePart} (fields object)
+     * @param paoTemplate the {@link PaoTemplate} holding the {@link PaoType} and fields objects.
+     * @param paoIdentifier the {@link PaoIdentifier} containing the Pao's PaoId.
+     * @param paoTypeProvider the {@link PaoTypeProvider} responsible for updating the Pao.
+     */
     private <T extends PaoTemplatePart> void callProviderUpdate(int paoId, PaoTemplate paoTemplate, PaoTypeProvider<T> paoTypeProvider) {
     	// loop through list, grabbing provider for each and invoking handle method
     	PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoTemplate.getPaoType());
@@ -168,7 +185,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
     		          "information for updating PAO with Type: " +
               		  paoTemplate.getPaoType().getDbString());
     	}
-}
+    }
     
     @Autowired
     public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {

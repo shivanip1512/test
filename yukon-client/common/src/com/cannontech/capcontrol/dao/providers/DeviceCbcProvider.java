@@ -1,11 +1,11 @@
-package com.cannontech.common.pao.service.providers;
+package com.cannontech.capcontrol.dao.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.dao.providers.fields.DeviceCbcFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoProviderTable;
 import com.cannontech.common.pao.service.PaoTypeProvider;
-import com.cannontech.common.pao.service.providers.fields.DeviceCbcFields;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;

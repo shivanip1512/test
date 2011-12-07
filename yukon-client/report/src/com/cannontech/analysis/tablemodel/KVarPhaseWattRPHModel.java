@@ -66,7 +66,7 @@ public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHM
         
         if(capControlCache.isSubBus(targetId)) {
         	SubBus subBus_cache = capControlCache.getSubBus(targetId);
-        	SubstationBus subBus_dao = substationBusDao.finSubBusdById(targetId);
+        	SubstationBus subBus_dao = substationBusDao.findSubBusdById(targetId);
         	
         	phaseAPointId = subBus_cache.getCurrentVarLoadPointID();
         	phaseBPointId = subBus_dao.getPhaseb();

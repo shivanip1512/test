@@ -4,13 +4,12 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -23,7 +22,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ClassToInstanceMap;
@@ -37,7 +35,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
 
     public VoltageRegulator() {
         super();
-        setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
+        setPAOCategory( PaoCategory.CAPCONTROL.getDbString() );
         setPAOClass( PaoClass.CAPCONTROL.getDbString() );
     }
 

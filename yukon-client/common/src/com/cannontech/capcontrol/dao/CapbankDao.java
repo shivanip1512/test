@@ -34,10 +34,10 @@ public interface CapbankDao {
     public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
     
     /**
-     * This method returns the Feeder ID that owns the given cap bank ID.
+     * This method returns the PaoIdentifier of the Feeder that owns the given cap bank ID.
      * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
      */
-    public int getParentFeederId( int capBankID )  throws EmptyResultDataAccessException;
+    public PaoIdentifier getParentFeederIdentifier( int capBankID )  throws EmptyResultDataAccessException;
     
     /**
      * Returns whether or not the cap bank is switched.

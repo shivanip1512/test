@@ -21,6 +21,7 @@ import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.dao.providers.fields.AreaFields;
 import com.cannontech.capcontrol.dao.providers.fields.CapBankFields;
 import com.cannontech.capcontrol.dao.providers.fields.CapbankAdditionalFields;
+import com.cannontech.capcontrol.dao.providers.fields.DeviceCbcFields;
 import com.cannontech.capcontrol.dao.providers.fields.FeederFields;
 import com.cannontech.capcontrol.dao.providers.fields.SpecialAreaFields;
 import com.cannontech.capcontrol.dao.providers.fields.SubstationBusFields;
@@ -34,14 +35,15 @@ import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.pao.service.providers.fields.DeviceAddressFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceCbcFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceDirectCommSettingsFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceScanRateFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceWindowFields;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
@@ -193,7 +195,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPaObjectFields yukonPaObjectFields =
             new YukonPaObjectFields(hierarchyImportData.getName());
         yukonPaObjectFields.setDescription(hierarchyImportData.getDescription());
-        yukonPaObjectFields.setDisabled(hierarchyImportData.isDisabled());
+        yukonPaObjectFields.setDisabled(YNBoolean.valueOf(hierarchyImportData.isDisabled()));
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
 
         PaoTemplate paoTemplate = new PaoTemplate(hierarchyImportData.getPaoType(), paoFields);
@@ -257,7 +259,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
     @Override
     @Transactional
-    public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
+    public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao != null) {
             // We were told to add a device that already exists. This is an error!
@@ -289,7 +291,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
     @Override
     @Transactional
-    public void createCbcFromTemplate(CbcImportData cbcImportData, List<CbcImportResult> results) {
+    public void createCbcFromTemplate(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException {
         YukonPao templatePao = retrieveCbcPao(cbcImportData.getTemplateName());
         if (templatePao == null) {
             // The template didn't exist.
@@ -332,7 +334,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
     @Override
     @Transactional
-    public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results) {
+    public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao == null) {
             // We were told to update a device that doesn't exist. This is an error!
@@ -385,7 +387,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Override
     @Transactional
     public void createHierarchyObject(HierarchyImportData hierarchyImportData,
-                                      List<HierarchyImportResult> results) {
+                                      List<HierarchyImportResult> results) throws NotFoundException {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
         if (pao != null) {
             // We were told to add an object that already exists. This is an error!
@@ -412,7 +414,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Override
     @Transactional
     public void updateHierarchyObject(HierarchyImportData hierarchyImportData,
-                                      List<HierarchyImportResult> results) {
+                                      List<HierarchyImportResult> results) throws NotFoundException {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
         if (pao == null) {
             // We were told to remove an object that doesn't exist. This is an error!
@@ -458,11 +460,11 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                                               HierarchyImportResultType.SUCCESS));
     };
 
-    private int getParentId(String parentName, PaoType paoType) {
+    private int getParentId(String parentName, PaoType paoType) throws NotFoundException {
         return getParentId(parentName, paoType.getPaoCategory(), paoType.getPaoClass());
     }
     
-    private int getParentId(String parentName, PaoCategory paoCategory, PaoClass paoClass) {
+    private int getParentId(String parentName, PaoCategory paoCategory, PaoClass paoClass) throws NotFoundException {
         YukonPao parentPao = paoDao.getYukonPao(parentName, paoCategory, paoClass);
         return parentPao.getPaoIdentifier().getPaoId();
     }

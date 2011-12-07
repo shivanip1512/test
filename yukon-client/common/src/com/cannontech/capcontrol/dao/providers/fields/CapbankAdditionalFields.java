@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 
 public class CapbankAdditionalFields implements PaoTemplatePart {
@@ -21,11 +22,11 @@ public class CapbankAdditionalFields implements PaoTemplatePart {
 	private String commMedium = CtiUtilities.STRING_NONE;
 	private String driveDirections = CtiUtilities.STRING_NONE;
 	private String potentialTransformer = CtiUtilities.STRING_NONE;
-	private String maintenanceRequired = "N";
-	private String otherComments = CtiUtilities.STRING_NONE;
 	private String opTeamComments = CtiUtilities.STRING_NONE;
-	private String extAntenna = "N";
 	private String antennaType = CtiUtilities.STRING_NONE;
+	private String otherComments = CtiUtilities.STRING_NONE;
+	private YNBoolean extAntenna = YNBoolean.NO;
+	private YNBoolean maintenanceRequired = YNBoolean.NO;
 	
 	public int getMaintenanceAreaId() {
 		return maintenanceAreaId;
@@ -131,11 +132,11 @@ public class CapbankAdditionalFields implements PaoTemplatePart {
 		this.potentialTransformer = potentialTransformer;
 	}
 
-	public String getMaintenanceRequired() {
+	public YNBoolean getMaintenanceRequired() {
 		return maintenanceRequired;
 	}
 
-	public void setMaintenanceRequired(String maintenanceRequired) {
+	public void setMaintenanceRequired(YNBoolean maintenanceRequired) {
 		this.maintenanceRequired = maintenanceRequired;
 	}
 
@@ -155,11 +156,11 @@ public class CapbankAdditionalFields implements PaoTemplatePart {
 		this.opTeamComments = opTeamComments;
 	}
 
-	public String getExtAntenna() {
+	public YNBoolean getExtAntenna() {
 		return extAntenna;
 	}
 
-	public void setExtAntenna(String extAntenna) {
+	public void setExtAntenna(YNBoolean extAntenna) {
 		this.extAntenna = extAntenna;
 	}
 

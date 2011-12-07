@@ -39,6 +39,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -129,9 +130,9 @@ public final class PaoDaoImpl implements PaoDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, Type");
         sql.append("FROM YukonPAObject");
-        sql.append("WHERE PAOName").eq(paoName);
+        sql.append("WHERE PaoName").eq(paoName);
         sql.append("   AND Category").eq(paoCategory);
-        sql.append("   AND PAOClass").eq(paoClass);
+        sql.append("   AND PaoClass").eq(paoClass);
         
         YukonPao pao = yukonJdbcTemplate.queryForObject(sql, yukonPaoRowMapper);
         
@@ -766,7 +767,7 @@ public final class PaoDaoImpl implements PaoDao {
 			public YukonPaObjectFields mapRow(YukonResultSet rs) throws SQLException {
 				YukonPaObjectFields paObjectFields = new YukonPaObjectFields(null); // Set name after?
 				
-				boolean disabled = rs.getString("DisableFlag") == "N" ? true : false;
+				YNBoolean disabled = YNBoolean.valueOf(rs.getString("DisableFlag"));
 						
 				paObjectFields.setDisabled(disabled);
 				paObjectFields.setDescription(rs.getString("Description"));

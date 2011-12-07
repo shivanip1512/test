@@ -3,6 +3,7 @@ package com.cannontech.capcontrol.dao.providers.fields;
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.YNBoolean;
 
 public class CapBankFields implements PaoTemplatePart {
 
@@ -16,7 +17,7 @@ public class CapBankFields implements PaoTemplatePart {
     private String controllerType = CtiUtilities.STRING_NONE;
     private String switchManufacturer = CtiUtilities.STRING_NONE;
     private String mapLocationId = "0";
-    private String maxOpDisable = "N";
+    private YNBoolean maxOpDisable = YNBoolean.NO;
     
     public BankOpState getOperationalState() {
 		return operationalState;
@@ -98,11 +99,11 @@ public class CapBankFields implements PaoTemplatePart {
 		this.maxDailyOps = maxDailyOps;
 	}
 
-	public String getMaxOpDisable() {
+	public YNBoolean getMaxOpDisable() {
 		return maxOpDisable;
 	}
 
-	public void setMaxOpDisable(String maxOpDisable) {
+	public void setMaxOpDisable(YNBoolean maxOpDisable) {
 		this.maxOpDisable = maxOpDisable;
 	}
 }

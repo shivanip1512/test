@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.dao.providers.fields.AreaFields;
 import com.cannontech.capcontrol.dao.providers.fields.CapBankFields;
 import com.cannontech.capcontrol.dao.providers.fields.CapbankAdditionalFields;
+import com.cannontech.capcontrol.dao.providers.fields.DeviceCbcFields;
 import com.cannontech.capcontrol.dao.providers.fields.FeederFields;
 import com.cannontech.capcontrol.dao.providers.fields.SpecialAreaFields;
 import com.cannontech.capcontrol.dao.providers.fields.SubstationBusFields;
@@ -18,7 +19,6 @@ import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.pao.service.providers.fields.DeviceAddressFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceCbcFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceDirectCommSettingsFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceScanRateFields;
@@ -82,6 +82,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
     
     @Override
+    @Transactional
 	public PaoIdentifier createCapControlObject(PaoType paoType, String name) {
         PaoIdentifier pao = null;
         switch(paoType) {
@@ -144,7 +145,6 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         return paoCreationService.createPao(paoTemplate);
 	}
 	
-    @Transactional
 	private PaoIdentifier createRegulator(PaoType paoType, String name) {
 		YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(name);
 	    VoltageRegulatorFields voltageRegulatorFields = new VoltageRegulatorFields(0,0);
