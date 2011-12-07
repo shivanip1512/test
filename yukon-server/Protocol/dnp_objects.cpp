@@ -110,12 +110,11 @@ CtiPointDataMsg *Object::getPoint( const TimeCTO *cto ) const
 
 
 ObjectBlock::ObjectBlock() :
-    _restoring(true),
-    _valid(false),
     _group(0),
     _variation(0),
     _qualifier(0),
-    _start(0)
+    _start(0),
+    _unsolicited(false)
 {
 }
 
@@ -137,9 +136,9 @@ ObjectBlock::ObjectBlock( QualifierType type, int group, int variation )
 
 void ObjectBlock::init( QualifierType type, int group, int variation )
 {
-    _restoring = false;
     _group     = group;
     _variation = variation;
+    _unsolicited = false;
 
     switch( type )
     {
@@ -151,7 +150,6 @@ void ObjectBlock::init( QualifierType type, int group, int variation )
         case NoIndex_ShortQty:
         {
             _qualifier = type;
-            _valid     = true;
 
             break;
         }
@@ -167,7 +165,6 @@ void ObjectBlock::init( QualifierType type, int group, int variation )
             }
 
             _qualifier = type;
-            _valid     = false;
 
             break;
         }
@@ -190,6 +187,12 @@ int ObjectBlock::getGroup(void) const
 int ObjectBlock::getVariation(void) const
 {
     return _variation;
+}
+
+
+void ObjectBlock::setUnsolicited()
+{
+    _unsolicited = true;
 }
 
 
@@ -875,6 +878,11 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
                     {
                         pMsg->setTime(CtiTime(arrival->getSeconds()));
                         pMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
+                    }
+
+                    if( _unsolicited )
+                    {
+                        pMsg->setTags(TAG_POINT_DATA_UNSOLICITED);
                     }
 
                     points.push_back(pMsg);

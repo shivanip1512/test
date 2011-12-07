@@ -306,7 +306,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
             {
                 ptr->Function = htons (SINGLE_SOCKET_VALUE);
                 strcpy(ptr->Value.Name,valmetPortId.PointName.c_str());
-                ptr->Value.Quality = YukonToForeignQuality (point.getQuality());
+                ptr->Value.Quality = YukonToForeignQuality (point.getQuality(), point.isUnsolicited());
                 ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point.getValue());
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -365,7 +365,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                 {
                     ptr->Function = htons (SINGLE_SOCKET_STATUS);
                     strcpy (ptr->Value.Name,valmetPortId.PointName.c_str());
-                    ptr->Status.Quality = YukonToForeignQuality (point.getQuality());
+                    ptr->Status.Quality = YukonToForeignQuality (point.getQuality(), point.isUnsolicited());
 
                     // check for validity of the status, we only have open or closed for Valmet
                     if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))

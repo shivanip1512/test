@@ -62,8 +62,7 @@ class ObjectBlock
     enum QualifierType;
 
 private:
-    bool _restoring,
-         _valid;
+    bool _unsolicited;
 
     int  _group,
          _variation,
@@ -115,6 +114,8 @@ public:
 
     int getGroup( void )     const;
     int getVariation( void ) const;
+
+    void setUnsolicited();
 
     bool addObject( const Object *object );
     bool addObjectIndex( const Object *object, int index );

@@ -156,6 +156,11 @@ void ApplicationLayer::processInput( void )
 
         processed += tmpOB->restore(&(_response.buf[processed]), _response.buf_len - processed);
 
+        if( _response.func_code == ResponseUnsolicited )
+        {
+            tmpOB->setUnsolicited();
+        }
+
         _in_object_blocks.push(tmpOB);
     }
 }

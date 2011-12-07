@@ -29,12 +29,13 @@ USHORT ForeignToYukonQuality (USHORT aQuality)
     return(Quality);
 }
 
-USHORT YukonToForeignQuality (USHORT aQuality)
+USHORT YukonToForeignQuality (USHORT aQuality, bool unsolicited)
 {
     USHORT Quality = VALMET_NORMAL;
 
-    /* Test for the various CTI Qualities and translate to Valmet */
-    if (aQuality == NonUpdatedQuality)
+    if(unsolicited && gConfigParms.isTrue("FDR_VALMET_SEND_UNSOLICITED_QUALITY", true))
+        Quality = VALMET_UNSOLICITED;
+    else if (aQuality == NonUpdatedQuality)
         Quality = VALMET_PLUGGED;
     else if (aQuality == InvalidQuality)
         Quality = VALMET_PLUGGED;
@@ -42,7 +43,7 @@ USHORT YukonToForeignQuality (USHORT aQuality)
         Quality = VALMET_MANUALENTRY;
     else if (aQuality == AbnormalQuality)
         Quality = VALMET_PLUGGED;
-    if (aQuality == UnintializedQuality)
+    else if (aQuality == UnintializedQuality)
         Quality = VALMET_PLUGGED;
 
     return htons (Quality);
@@ -65,7 +66,7 @@ USHORT YukonToForeignQuality (USHORT aQuality)
      else if (quality == VALMET_OUTOFSCAN)
          retString = "VALMET_OUTOFSCAN";
      else
-     {    
+     {
          retString = "UNDEFINED - 0x";
          CHAR buf[20];
          retString += string (itoa (quality,buf,16));

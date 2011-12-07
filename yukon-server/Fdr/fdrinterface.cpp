@@ -1591,6 +1591,7 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
         point->setValue (aMessage->getValue());
         point->setQuality (aMessage->getQuality());
         point->setLastTimeStamp(aMessage->getTime());
+        point->setUnsolicited(aMessage->getTags() & TAG_POINT_DATA_UNSOLICITED);
         foundFlag=true;
     }
     return foundFlag;

@@ -17,6 +17,7 @@ CtiFDRPoint::CtiFDRPoint( long pointID)
     iPointOffset(-1),
     iPaoID(-1),
     iControllable(false),
+    iUnsolicited(false),
     iMultiplier(1.0),
     iOffset(0.0),
     iPointType (InvalidPointType),
@@ -64,6 +65,7 @@ CtiFDRPoint& CtiFDRPoint::operator=( const CtiFDRPoint &other )
         iLastTimeStamp = other.getLastTimeStamp();
         iPointType = other.getPointType();
         iControllable = other.isControllable();
+        iUnsolicited = other.isUnsolicited();
         iDestinationList = other.getDestinationList();
         iValue = other.getValue();
         iQuality = other.getQuality();
@@ -152,6 +154,17 @@ unsigned CtiFDRPoint::getQuality( void ) const
 CtiFDRPoint &  CtiFDRPoint::setQuality( const unsigned aQuality )
 {
     iQuality = aQuality;
+    return *this;
+}
+
+bool CtiFDRPoint::isUnsolicited( void ) const
+{
+    return iUnsolicited;
+}
+
+CtiFDRPoint &  CtiFDRPoint::setUnsolicited( const bool unsolicited )
+{
+    iUnsolicited = unsolicited;
     return *this;
 }
 

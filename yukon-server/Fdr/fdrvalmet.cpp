@@ -315,7 +315,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                 {
                     ptr->Function = htons (SINGLE_SOCKET_VALUE);
                             strcpy (ptr->Value.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
-                    ptr->Value.Quality = YukonToForeignQuality (aPoint.getQuality());
+                    ptr->Value.Quality = YukonToForeignQuality (aPoint.getQuality(), aPoint.isUnsolicited());
                     ptr->Value.LongValue = htonieeef (aPoint.getValue());
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -374,7 +374,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     {
                         ptr->Function = htons (SINGLE_SOCKET_STATUS);
                         strcpy (ptr->Value.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
-                        ptr->Status.Quality = YukonToForeignQuality (aPoint.getQuality());
+                        ptr->Status.Quality = YukonToForeignQuality (aPoint.getQuality(), aPoint.isUnsolicited());
 
                         // check for validity of the status, we only have open or closed for Valmet
                         if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))

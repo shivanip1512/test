@@ -20,6 +20,7 @@ namespace Valmet {
 #define VALMET_UNREASONABLE     0x0004
 #define VALMET_MANUALENTRY      0x0008
 #define VALMET_OUTOFSCAN        0x0010
+#define VALMET_UNSOLICITED      0x0020
 
 /*
 NOTE:  All data limit violations will be handled by the receiving system
@@ -92,7 +93,7 @@ CtiTime       ForeignToYukonTime (PCHAR aTime, int timeStampReasonability, bool 
 std::string   ForeignQualityToString(USHORT quality);
 
 std::string   YukonToForeignTime (CtiTime aTimeStamp);
-USHORT        YukonToForeignQuality (USHORT aQuality);
+USHORT        YukonToForeignQuality (USHORT aQuality, bool unsolicited);
 USHORT        YukonToForeignStatus (int aStatus);
 
 }

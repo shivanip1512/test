@@ -36,25 +36,28 @@ public:
 
 
     // getters and setters
-    long                getPointID( void ) const;
+    long           getPointID( void ) const;
     CtiFDRPoint &  setPointID(const long aPointID);
 
-    double              getMultiplier( void ) const;
+    double         getMultiplier( void ) const;
     CtiFDRPoint &  setMultiplier( const double aMultiplier );
 
-    double              getValue( void ) const;
+    double         getValue( void ) const;
     CtiFDRPoint &  setValue( const double aValue );
 
-    double              getOffset( void ) const;
+    double         getOffset( void ) const;
     CtiFDRPoint &  setOffset( const double aOffset );
 
-    unsigned              getQuality( void ) const;
+    unsigned       getQuality( void ) const;
     CtiFDRPoint &  setQuality( const unsigned aQuality );
 
-    bool                isControllable( void ) const;
+    bool           isUnsolicited( void ) const;
+    CtiFDRPoint &  setUnsolicited( const bool unsolicited );
+
+    bool           isControllable( void ) const;
     CtiFDRPoint &  setControllable( const bool aFlag=true );
 
-    CtiTime              getLastTimeStamp ( void ) const;
+    CtiTime        getLastTimeStamp ( void ) const;
     CtiFDRPoint &  setLastTimeStamp ( const CtiTime & aTime );
 
     CtiPointType_t getPointType() const;
@@ -80,6 +83,7 @@ private:
         CtiPointType_t              iPointType;
         DestinationList             iDestinationList;
         bool                        iControllable;
+        bool                        iUnsolicited;
         double                      iValue;
         unsigned                    iQuality;
 

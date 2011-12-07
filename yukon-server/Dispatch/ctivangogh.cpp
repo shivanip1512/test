@@ -2514,40 +2514,15 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiServer::ptr_type &Conn, const
 {
     BOOL bStatus = FALSE;
 
-    #if 1
-    if(Msg.getTags() & TAG_POINT_DO_NOT_ROUTE)
+    if( ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(Msg.getType()))
     {
-        bStatus = FALSE;
-    }
-    else // if( !(Msg.getTags() & TAG_POINT_LOAD_PROFILE_DATA) )  // Load profile does not go through the system.
-    {
-        if( ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(Msg.getType()))
-        {
             bStatus = TRUE;
-        }
-        else
-        {
-            bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getId());
-        }
     }
-    #else
+    else
+    {
+        bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getId());
+    }
 
-    if( !(Msg.getTags() & TAG_POINT_LOAD_PROFILE_DATA) )  // Load profile does not go through the system.
-    {
-        if( Conn.isRegForChangeType(Msg.getType()))
-        {
-            bStatus = TRUE;
-        }
-        else
-        {
-            bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getId());
-        }
-    }
-    else if( Conn.getLoadProfile() )    // Connection cares about load profile data.
-    {
-        bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getId());   // Is this a point he cares about..
-    }
-    #endif
     return bStatus;
 }
 

@@ -836,8 +836,6 @@ bool CtiDeviceBase::isTAP() const
 
     if(getType() == TYPE_TAPTERM ||
        getType() == TYPE_WCTP ||
-       getType() == TYPE_TAPTERM_EMAIL ||
-       getType() == TYPE_TAPTERM_TESCOM ||
        getType() == TYPE_SNPP )
     {
         bret = true;

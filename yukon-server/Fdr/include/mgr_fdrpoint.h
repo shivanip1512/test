@@ -52,24 +52,6 @@ class IM_EX_FDRBASE CtiFDRManager
         //Encapsulated functions:
         size_t entries();
     protected:
-        static const CHAR * TBLNAME_FDRTRANSLATION;
-        static const CHAR * COLNAME_FDRTRANSLATION;
-        static const CHAR * COLNAME_FDRDESTINATION;
-        static const CHAR * COLNAME_FDR_POINTID;
-        static const CHAR * COLNAME_FDRINTERFACETYPE;
-        static const CHAR * COLNAME_FDRDIRECTIONTYPE;
-
-        static const CHAR * TBLNAME_PTANALOG;
-        static const CHAR * TBLNAME_PTACCUM;
-        static const CHAR * COLNAME_PTANALOG_MULT;
-        static const CHAR * COLNAME_PTANALOG_OFFSET;
-        static const CHAR * COLNAME_PTANALOG_POINTID;
-
-        static const CHAR * TBLNAME_PTBASE;
-        static const CHAR * COLNAME_PTBASE_POINTTYPE;
-        static const CHAR * COLNAME_PTBASE_PAOBJECTID;
-        static const CHAR * COLNAME_PTBASE_POINTID;
-
 
     private:
         bool getPointsFromDB(const std::stringstream &ss, std::map<long,CtiFDRPointSPtr >& fdrPtrMap);
