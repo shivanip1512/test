@@ -51,7 +51,7 @@
 #define TAG_INVALID_LODESTAR_READING         0x00000080        // Lodestar Reading Invalid **000009**
 
 #define TAG_POINT_DATA_TIMESTAMP_VALID       0x00000100        // This point data message's timestamp comes from the device! (SOE data)
-#define TAG_POINT_DO_NOT_ROUTE               0x00000200        // This point data message will not be routed to clinets of dispatch
+#define TAG_POINT_DATA_UNSOLICITED           0x00000200        // This point data message was an unsolicited report from a device
 #define TAG_POINT_MOA_REPORT                 0x00000400        // This point data message is the result of a registration
 #define TAG_POINT_DELAYED_UPDATE             0x00000800        // Dispatch delay this point data until the time specified in the message!
 
