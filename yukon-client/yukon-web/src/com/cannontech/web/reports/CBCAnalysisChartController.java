@@ -103,7 +103,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     			if(capControlCache.isSubBus(targetId)) {
     				
     	    		SubBus subBus_cache = capControlCache.getSubBus(targetId);
-    	    		SubstationBus subBus_dao = substationBusDao.findSubBusdById(targetId);
+    	    		SubstationBus subBus_dao = substationBusDao.findSubBusById(targetId);
     	    		
     	    		if ("Y".equalsIgnoreCase(subBus_dao.getUsephasedata())) {
     	    			

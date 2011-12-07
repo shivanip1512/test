@@ -67,7 +67,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         }
     };
 
-    public SubstationBus findSubBusdById(int id){
+    public SubstationBus findSubBusById(int id){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT YP.PAOName, SubstationBusID, CurrentVarLoadPointID, CurrentWattLoadPointID,");

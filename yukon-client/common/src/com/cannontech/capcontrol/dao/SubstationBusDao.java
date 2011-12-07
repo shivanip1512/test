@@ -15,7 +15,7 @@ public interface SubstationBusDao {
      * @param id the paoId of the {@link SubstationBus}
      * @return {@link SubstationBus} specified.
      */
-    public SubstationBus findSubBusdById(int id);
+    public SubstationBus findSubBusById(int id);
     
     /**
      * This method returns a list of integers representing the {@link SubstationBus} objects
