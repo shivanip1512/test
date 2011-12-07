@@ -729,13 +729,48 @@ bool isMCT(INT type)
         case TYPEMCT310IDL:
         case TYPEMCT360:
         case TYPEMCT370:
-        case TYPEMCT410:
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:
         case TYPEMCT420CL:
         case TYPEMCT420CLD:
         case TYPEMCT420FL:
         case TYPEMCT420FLD:
         case TYPEMCT430:
         case TYPEMCT470:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool isMct410(INT type)
+{
+    switch(type)
+    {
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool isMct420(INT type)
+{
+    switch(type)
+    {
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
         {
             return true;
         }

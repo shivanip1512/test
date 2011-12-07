@@ -13,12 +13,14 @@ using std::list;
 
 struct test_Mct410Device : Mct410Device
 {
-    test_Mct410Device()
+protected:
+    test_Mct410Device(int type, const string &name)
     {
-        setType(TYPEMCT410);
-        _name = "Test MCT-410";
+        setType(type);
+        _name = name;
     }
 
+public:
     typedef Mct410Device::point_info point_info;
 
     using MctDevice::getOperation;
@@ -43,9 +45,33 @@ struct test_Mct410Device : Mct410Device
     }
 };
 
+struct test_Mct410IconDevice : test_Mct410Device
+{
+    test_Mct410IconDevice() :
+        test_Mct410Device(TYPEMCT410IL, "Test MCT-410iL")
+    {
+    }
+};
+
+struct test_Mct410CentronDevice : test_Mct410Device
+{
+    test_Mct410CentronDevice() :
+        test_Mct410Device(TYPEMCT410CL, "Test MCT-410cL")
+    {
+    }
+};
+
+struct test_Mct410FocusDevice : test_Mct410Device
+{
+    test_Mct410FocusDevice() :
+        test_Mct410Device(TYPEMCT410FL, "Test MCT-410fL")
+    {
+    }
+};
+
 BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 {
-    test_Mct410Device dev;
+    test_Mct410IconDevice dev;
 
     const unsigned char *none = 0;
 
@@ -72,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
         {{0x01, 0x11},  none, 273,   1},
         {{0x01, 0x11}, &odd,  272,   1}};
 
-    test_Mct410Device::point_info pi;
+    test_Mct410IconDevice::point_info pi;
 
     pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[0].value);
@@ -118,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 {
-    test_Mct410Device dev;
+    test_Mct410IconDevice dev;
 
     INMESS im;
 
@@ -188,7 +214,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 
 struct command_execution_environment
 {
-    test_Mct410Device    mct410;
+    test_Mct410IconDevice    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om;
@@ -297,7 +323,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
+        BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_display)
@@ -313,7 +339,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
+        BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_test)
@@ -329,7 +355,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
+        BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid test duration \"3\"" , errorMsg->ResultString() );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
@@ -345,7 +371,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
+        BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid test duration \"3\"" , errorMsg->ResultString() );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds)
@@ -361,7 +387,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-        BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid transformer ratio (400)" , errorMsg->ResultString() );
+        BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid transformer ratio (400)" , errorMsg->ResultString() );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
@@ -556,7 +582,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
 
         result_type operator()(const test_case_type &tc)
         {
-            test_Mct410Device mct410;
+            test_Mct410IconDevice mct410;
 
             DSTRUCT DSt;
 
@@ -594,12 +620,12 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectDemandLimitConfig)
                             "Disconnect demand threshold: 0.200 kW\n"}
     };
 
-    BOOST_CHECK_EQUAL(tc[0].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[0].config, tc[0].demand_threshold));
-    BOOST_CHECK_EQUAL(tc[1].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[1].config, tc[1].demand_threshold));
-    BOOST_CHECK_EQUAL(tc[2].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[2].config, tc[2].demand_threshold));
-    BOOST_CHECK_EQUAL(tc[3].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[3].config, tc[3].demand_threshold));
-    BOOST_CHECK_EQUAL(tc[4].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[4].config, tc[4].demand_threshold));
-    BOOST_CHECK_EQUAL(tc[5].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[5].config, tc[5].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[0].expected, test_Mct410IconDevice::decodeDisconnectDemandLimitConfig(tc[0].config, tc[0].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[1].expected, test_Mct410IconDevice::decodeDisconnectDemandLimitConfig(tc[1].config, tc[1].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[2].expected, test_Mct410IconDevice::decodeDisconnectDemandLimitConfig(tc[2].config, tc[2].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[3].expected, test_Mct410IconDevice::decodeDisconnectDemandLimitConfig(tc[3].config, tc[3].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[4].expected, test_Mct410IconDevice::decodeDisconnectDemandLimitConfig(tc[4].config, tc[4].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[5].expected, test_Mct410IconDevice::decodeDisconnectDemandLimitConfig(tc[5].config, tc[5].demand_threshold));
 }
 
 
@@ -645,26 +671,26 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectCyclingConfig)
         {0x18,        3, 4, "Disconnect cycling mode disabled\n"}
     };
 
-    BOOST_CHECK_EQUAL(tc[ 0].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 0].config, tc[ 0].disconnect_minutes, tc[ 0].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 1].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 1].config, tc[ 1].disconnect_minutes, tc[ 1].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 2].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 2].config, tc[ 2].disconnect_minutes, tc[ 2].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 3].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 3].config, tc[ 3].disconnect_minutes, tc[ 3].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 4].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 4].config, tc[ 4].disconnect_minutes, tc[ 4].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 5].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 5].config, tc[ 5].disconnect_minutes, tc[ 5].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 6].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 6].config, tc[ 6].disconnect_minutes, tc[ 6].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 7].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 7].config, tc[ 7].disconnect_minutes, tc[ 7].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 8].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 8].config, tc[ 8].disconnect_minutes, tc[ 8].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[ 9].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 9].config, tc[ 9].disconnect_minutes, tc[ 9].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[10].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[10].config, tc[10].disconnect_minutes, tc[10].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[11].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[11].config, tc[11].disconnect_minutes, tc[11].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[12].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[12].config, tc[12].disconnect_minutes, tc[12].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[13].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[13].config, tc[13].disconnect_minutes, tc[13].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[14].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[14].config, tc[14].disconnect_minutes, tc[14].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[15].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[15].config, tc[15].disconnect_minutes, tc[15].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[16].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[16].config, tc[16].disconnect_minutes, tc[16].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[17].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[17].config, tc[17].disconnect_minutes, tc[17].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[18].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[18].config, tc[18].disconnect_minutes, tc[18].connect_minutes));
-    BOOST_CHECK_EQUAL(tc[19].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[19].config, tc[19].disconnect_minutes, tc[19].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 0].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 0].config, tc[ 0].disconnect_minutes, tc[ 0].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 1].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 1].config, tc[ 1].disconnect_minutes, tc[ 1].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 2].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 2].config, tc[ 2].disconnect_minutes, tc[ 2].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 3].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 3].config, tc[ 3].disconnect_minutes, tc[ 3].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 4].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 4].config, tc[ 4].disconnect_minutes, tc[ 4].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 5].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 5].config, tc[ 5].disconnect_minutes, tc[ 5].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 6].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 6].config, tc[ 6].disconnect_minutes, tc[ 6].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 7].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 7].config, tc[ 7].disconnect_minutes, tc[ 7].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 8].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 8].config, tc[ 8].disconnect_minutes, tc[ 8].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 9].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[ 9].config, tc[ 9].disconnect_minutes, tc[ 9].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[10].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[10].config, tc[10].disconnect_minutes, tc[10].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[11].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[11].config, tc[11].disconnect_minutes, tc[11].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[12].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[12].config, tc[12].disconnect_minutes, tc[12].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[13].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[13].config, tc[13].disconnect_minutes, tc[13].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[14].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[14].config, tc[14].disconnect_minutes, tc[14].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[15].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[15].config, tc[15].disconnect_minutes, tc[15].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[16].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[16].config, tc[16].disconnect_minutes, tc[16].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[17].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[17].config, tc[17].disconnect_minutes, tc[17].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[18].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[18].config, tc[18].disconnect_minutes, tc[18].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[19].expected, test_Mct410IconDevice::decodeDisconnectCyclingConfig(tc[19].config, tc[19].disconnect_minutes, tc[19].connect_minutes));
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
@@ -785,7 +811,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
 
             DSt.Length      = tc.dst_length;
 
-            test_Mct410Device mct410;
+            test_Mct410IconDevice mct410;
 
             mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, tc.sspec_revision);
 
@@ -808,103 +834,138 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_canDailyReadDateAlias)
 {
     //  test case 1/31 (aliases to 5/31 from 6/01 to 7/30)
     //    we don't need to check dates prior to 6/01, since it's not possible to request 5/31 before then
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  6, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  7, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate(30,  7, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  6, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  7, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate(30,  7, 2001)));
 
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate(31,  7, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  8, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 2,  8, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate(31,  7, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  8, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 2,  8, 2001)));
 
     //  test case 11/29 (aliases to 3/29 from 3/30 to 5/28)
     //    we don't need to check dates prior to 3/30, since it's not possible to request 3/29 before then
     //  non-leap-year case
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(30,  3, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(28,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(30,  3, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  4, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(28,  5, 2001)));
 
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(29,  5, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  6, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(29,  5, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  6, 2001)));
 
     //  leap-year case
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(30,  3, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  4, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  5, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(28,  5, 2004)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(30,  3, 2004)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  4, 2004)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  5, 2004)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(28,  5, 2004)));
 
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(29,  5, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  6, 2004)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(29,  5, 2004)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  6, 2004)));
 
     //  test case 11/30 (aliases to 3/30 from 3/31 to 5/29)
     //    we don't need to check dates prior to 3/31, since it's not possible to request 3/30 before then
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(31,  3, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(30,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(27,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(28,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(29,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(31,  3, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  4, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  4, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(30,  4, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(27,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(28,  5, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(29,  5, 2001)));
 
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(30,  5, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(31,  5, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  6, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  6, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(30,  5, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(31,  5, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  6, 2001)));
+    BOOST_CHECK( ! test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  6, 2001)));
 
     //  test case 8/31 (aliases to 12/31 from 1/1 to 3/31)
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  1, 2002)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  2, 2002)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  3, 2002)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate(31,  3, 2002)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  1, 2002)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  2, 2002)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  3, 2002)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate(31,  3, 2002)));
 
     //  test case 3/31 (aliases to 7/31 from 8/1 to 10/31)
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  8, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  9, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1, 10, 2001)));
-    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate(31, 10, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  8, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  9, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1, 10, 2001)));
+    BOOST_CHECK(test_Mct410IconDevice::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate(31, 10, 2001)));
 }
 
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_getUsageReportDelay)
 {
-    const test_Mct410Device mct;
+    {
+        const test_Mct410IconDevice mct;
 
-    //  Calculation is 10s + intervals/day * days * 1ms
+        //  Calculation is 10s + intervals/day * days * 1ms
 
-    //  24 * 12 *  1 * 0.001 = 0.288s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 10);
+        //  24 * 12 *  1 * 0.001 = 0.288s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 10);
 
-    //  24 * 12 * 30 * 0.001 = 8.640s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  30), 18);
+        //  24 * 12 * 30 * 0.001 = 8.640s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  30), 18);
 
-    //  24 * 12 * 60 * 0.001 = 17.280s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  60), 27);
+        //  24 * 12 * 60 * 0.001 = 17.280s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  60), 27);
 
-    //  24 *  6 *  1 * 0.001 = 0.144s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,   1), 10);
+        //  24 *  6 *  1 * 0.001 = 0.144s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,   1), 10);
 
-    //  24 *  6 * 30 * 0.001 = 4.320s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  30), 14);
+        //  24 *  6 * 30 * 0.001 = 4.320s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  30), 14);
 
-    //  24 *  6 * 60 * 0.001 = 8.640s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  60), 18);
+        //  24 *  6 * 60 * 0.001 = 8.640s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  60), 18);
 
-    //  24 *  1 *  1 * 0.001 = 0.024s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600,  1), 10);
+        //  24 *  1 *  1 * 0.001 = 0.024s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600,  1), 10);
 
-    //  24 *  1 * 30 * 0.001 = 0.720s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 30), 10);
+        //  24 *  1 * 30 * 0.001 = 0.720s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 30), 10);
 
-    //  24 *  1 * 60 * 0.001 = 1.440s
-    BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 60), 11);
+        //  24 *  1 * 60 * 0.001 = 1.440s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 60), 11);
+    }
+
+    {
+        const test_Mct410FocusDevice mct;
+
+        //  Calculation is 10s + intervals/day * days * 2ms
+
+        //  24 * 12 *  1 * 0.002 = 0.576s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,   1), 10);
+
+        //  24 * 12 * 30 * 0.002 = 17.280s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  30), 27);
+
+        //  24 * 12 * 60 * 0.002 = 34.560s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(300,  60), 44);
+
+        //  24 *  6 *  1 * 0.002 = 0.288s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,   1), 10);
+
+        //  24 *  6 * 30 * 0.002 = 8.640s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  30), 18);
+
+        //  24 *  6 * 60 * 0.002 = 17.280s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(600,  60), 27);
+
+        //  24 *  1 *  1 * 0.002 = 0.048s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600,  1), 10);
+
+        //  24 *  1 * 30 * 0.002 = 1.440s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 30), 11);
+
+        //  24 *  1 * 60 * 0.002 = 2.880s
+        BOOST_CHECK_EQUAL(mct.getUsageReportDelay(3600, 60), 12);
+    }
 }
 
 
 struct getOperation_helper
 {
-    test_Mct410Device mct;
+    test_Mct410IconDevice mct;
     BSTRUCT BSt;
 };
 

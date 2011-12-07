@@ -712,7 +712,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                 {
                     rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice());
 
-                    if( deviceType != TYPEMCT410 )
+                    if( !isMct410(deviceType) )
                     {
                         rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
 
@@ -1546,7 +1546,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
                 {
                     tmpDevice = getDeviceByID(*paoid_itr);
 
-                    if( tmpDevice && (tmpDevice->getType() == TYPEMCT410 || tmpDevice->getType() == TYPEMCT420FL) )
+                    if( tmpDevice && (isMct410(tmpDevice->getType()) || tmpDevice->getType() == TYPEMCT420FL) )
                     {
                         boost::static_pointer_cast<Mct410Device>(tmpDevice)->setDisconnectAddress(0);
                     }

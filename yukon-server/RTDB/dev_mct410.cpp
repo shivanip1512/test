@@ -1381,8 +1381,18 @@ bool Mct410Device::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS 
 
 unsigned Mct410Device::getUsageReportDelay(const unsigned interval_length, const unsigned days) const
 {
-    const int fixed_delay    = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10);
-    const int variable_delay = (86400 / interval_length) * days / 1000;  //  1 ms per interval
+    const int fixed_delay = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10);
+
+    int variable_delay = (86400 / interval_length) * days;  //  calculate the number of intervals
+
+    if( getType() == TYPEMCT410FL )
+    {
+        variable_delay /= 500;   //  500 intervals/second (2 ms per interval) for the Focus
+    }
+    else
+    {
+        variable_delay /= 1000;  //  1000 intervals/second (1 ms per interval) for the other meters
+    }
 
     return fixed_delay + variable_delay;
 }

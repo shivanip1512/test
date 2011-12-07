@@ -124,6 +124,8 @@ IM_EX_CTIBASE LONG  OutMessageCount();
 IM_EX_CTIBASE bool  isLCU(INT type);
 IM_EX_CTIBASE bool  isION(INT type);
 IM_EX_CTIBASE bool  isMCT(INT type);
+IM_EX_CTIBASE bool  isMct410(INT type);
+IM_EX_CTIBASE bool  isMct420(INT type);
 IM_EX_CTIBASE bool  isExpresscomGroup(INT Type);
 IM_EX_CTIBASE bool  isRepeater(INT Type);
 

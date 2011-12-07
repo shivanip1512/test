@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include <iostream>
-#include <fstream>
 
 #include <process.h>
 
@@ -17,7 +16,6 @@
 #include <vector>
 
 #include <rw/thr/thrfunc.h>
-#include <rw/toolpro/winsock.h>
 
 #include "color.h"
 #include "cparms.h"
@@ -72,17 +70,6 @@
 #include "database_reader.h"
 #include "database_connection.h"
 #include "dev_ccu721.h"
-
-#define DO_PORTERINTERFACETHREAD       1
-#define DO_DISPATCHTHREAD              1
-#define DO_VCONFIGTHREAD               1
-#define DO_PORTERCONNECTIONTHREAD      1
-#define DO_TIMESYNCTHREAD              1
-#define DO_FILLERTHREAD                1
-#define DO_PORTSHARING                 1
-#define DO_VERIFICATIONTHREAD          1
-
-#define DOUT_OUT TRUE
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
@@ -711,16 +698,6 @@ void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
     }
 }
 
-bool findCCU711(const long key, const CtiDeviceSPtr &devsptr, void *ptr)
-{
-    bool bStatus = false;
-
-    if( devsptr->getType() == TYPE_CCU711 )
-    {
-        bStatus = true;
-    }
-    return bStatus;
-}
 
 INT PorterMainFunction (INT argc, CHAR **argv)
 {
@@ -832,24 +809,15 @@ INT PorterMainFunction (INT argc, CHAR **argv)
      * This thread manages connections to iMacs and other RWCollectable message senders
      * This guy is the PIL
      */
-    if(DO_PORTERINTERFACETHREAD)
-    {
-        _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
-        _pilThread.start();
-    }
+    _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
+    _pilThread.start();
 
-    if(DO_DISPATCHTHREAD)
-    {
-        _dispThread = rwMakeThreadFunction( DispatchMsgHandlerThread, (void*)NULL );
-        _dispThread.start();
-    }
+    _dispThread = rwMakeThreadFunction( DispatchMsgHandlerThread, (void*)NULL );
+    _dispThread.start();
 
     /* Start the time sync thread */
-    if(DO_TIMESYNCTHREAD)
-    {
-        _tsyncThread = rwMakeThreadFunction( TimeSyncThread, (void*)NULL );
-        _tsyncThread.start();
-    }
+    _tsyncThread = rwMakeThreadFunction( TimeSyncThread, (void*)NULL );
+    _tsyncThread.start();
 
     _statisticsThread = rwMakeThreadFunction( Cti::Porter::StatisticsThread, (void*)NULL );
     _statisticsThread.start();
@@ -868,10 +836,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     try
     {
         PortManager.apply( applyPortVerify, NULL );
-        if(DO_PORTSHARING)
-        {
-            PortManager.apply( applyPortShares, NULL );
-        }
+
+        PortManager.apply( applyPortShares, NULL );
     }
     catch(...)
     {
@@ -881,31 +847,24 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
 
     /* all of the port threads are started so now start first socket connection handler */
-    if(DO_PORTERCONNECTIONTHREAD)
-    {
-        _connThread = rwMakeThreadFunction( PorterConnectionThread, (void*)NULL );
-        _connThread.start();
-    }
+    _connThread = rwMakeThreadFunction( PorterConnectionThread, (void*)NULL );
+    _connThread.start();
 
 
     /* Check if we need to start the filler thread */
     if(gConfigParms.isOpt("PORTER_START_FILLERTHREAD") && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_FILLERTHREAD").c_str())))
     {
-        if(DO_FILLERTHREAD)  /* go ahead and start the thread passing the variable */
-        {
-            _fillerThread = rwMakeThreadFunction( FillerThread, (void*)NULL );
-            _fillerThread.start();
-        }
+        /* go ahead and start the thread passing the variable */
+        _fillerThread = rwMakeThreadFunction( FillerThread, (void*)NULL );
+        _fillerThread.start();
     }
 
     /* Check if we need to start the versacom config thread */
     if( !((gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD")).empty()) && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD").c_str())))
     {
-        if(DO_VCONFIGTHREAD) /* go ahead and start the thread passing the variable */
-        {
-            _vconfThread = rwMakeThreadFunction( VConfigThread, (void*)NULL );
-            _vconfThread.start();
-        }
+        /* go ahead and start the thread passing the variable */
+        _vconfThread = rwMakeThreadFunction( VConfigThread, (void*)NULL );
+        _vconfThread.start();
     }
 
     _sysMsgThread.start();
@@ -1857,11 +1816,8 @@ void KickPIL()
 
     // AND RESTART
 
-    if(DO_PORTERINTERFACETHREAD)
-    {
-        _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
-        _pilThread.start();
-    }
+    _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
+    _pilThread.start();
 
     return;
 }

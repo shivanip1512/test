@@ -25,7 +25,10 @@
 #define TYPEMCT310IDL                        71
 #define TYPEMCT360                           75
 #define TYPEMCT370                           80
-#define TYPEMCT410                           85
+#define TYPEMCT410CL                         82
+#define TYPEMCT410FL                         83
+#define TYPEMCT410GL                         84
+#define TYPEMCT410IL                         85
 #define TYPEMCT420CL                         86
 #define TYPEMCT420CLD                        87
 #define TYPEMCT420FL                         88
@@ -61,13 +64,6 @@
 #define TYPERFN410FL                         310
 #define TYPERFN410FX                         311
 #define TYPERFN410FD                         312
-
-#define TYPE_DAS08                           500
-#define TYPE_EVWATCH                         600
-#define TYPEDCISENTRY                        600
-#define TYPEDCISENTRY4                       600
-#define TYPEDCISENTRY5                       610
-#define TYPEAIEMM341                         700   /* American Innovations, Ltd. Meter */
 
    /* Substation device identifiers */
 #define TYPE_CCU700                          1000

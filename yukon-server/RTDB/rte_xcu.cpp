@@ -221,8 +221,6 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
             case TYPE_TAPTERM:
             case TYPE_TNPP:
                 {
-                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
-
                     /* Calculate the length */
                     Length                              = VSt.Nibbles +  2;
 

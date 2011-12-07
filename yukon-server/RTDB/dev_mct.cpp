@@ -152,8 +152,6 @@ bool MctDevice::sspecIsValid( int sspec )
     mct_sspec.insert(make_pair(TYPEMCT370,    1008));  //
     mct_sspec.insert(make_pair(TYPEMCT370,    1009));  //
 
-    //mct_sspec.insert(make_pair(TYPEMCT410,   XXXX));  //  add this later when it's necessary
-
     reported = make_pair(getType(), sspec);
 
     if( mct_sspec.find(reported) != mct_sspec.end() )
@@ -982,35 +980,23 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
 
                 case ScanRateLoadProfile:
                 {
-                    switch( getType() )
+                    if( isMct410(getType()) || isMct420(getType()) )
                     {
-                        case TYPEMCT410:
-                        case TYPEMCT420CL:
-                        case TYPEMCT420CLD:
-                        case TYPEMCT420FL:
-                        case TYPEMCT420FLD:
+                        int channel = parse.getiValue("loadprofile_channel", 0);
+
+                        if( channel )
                         {
-                            int channel = parse.getiValue("loadprofile_channel", 0);
-
-                            if( channel )
-                            {
-                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
-                            }
-
-                            break;
+                            insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                         }
-
-                        default:
+                    }
+                    else
+                    {
+                        for( i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
                         {
-                            for( i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
+                            if( getLoadProfile()->isChannelValid(i) )
                             {
-                                if( getLoadProfile()->isChannelValid(i) )
-                                {
-                                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
-                                }
+                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                             }
-
-                            break;
                         }
                     }
 
@@ -1291,9 +1277,8 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
 
         if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
             getType() == TYPEMCT360 || getType() == TYPEMCT370 ||
-            getType() == TYPEMCT410 ||
-            getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD ||
-            getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD )
+            isMct410(getType()) ||
+            isMct420(getType()) )
         {
             //  if pulse input 3 isn't defined
             if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
@@ -1358,9 +1343,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
         {
             channels = Mct31xDevice::ChannelCount;
         }
-        else if( getType() == TYPEMCT410 ||
-                 getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD ||
-                 getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD )
+        else if( isMct410(getType()) || isMct420(getType()) )
         {
             channels = Mct410Device::ChannelCount;
         }
@@ -1371,9 +1354,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
 
         //  "getvalue kwh" is the short-form request for the MCT-410;  "getvalue usage" is the long form.
         //    I don't like this type-specific code in the base class...  but I also don't want to add a virtual function for just this.
-        if( (getType() == TYPEMCT410 ||
-             getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD ||
-             getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD) && parse.getFlags() & CMD_FLAG_GV_KWH )
+        if( (isMct410(getType()) || isMct420(getType())) && parse.getFlags() & CMD_FLAG_GV_KWH )
         {
             OutMessage->Buffer.BSt.Length -= 6;
         }
@@ -1777,14 +1758,14 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
         function = EmetconProtocol::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() != TYPEMCT410 && getType() != TYPEMCT420CL && getType() != TYPEMCT420CLD && getType() != TYPEMCT420FL && getType() != TYPEMCT420FLD && getType() != TYPEMCT470 && getType() != TYPEMCT430 )
+        if( !isMct410(getType()) && !isMct420(getType()) && getType() != TYPEMCT470 && getType() != TYPEMCT430 )
         {
             OutMessage->Buffer.BSt.Message[0] = 0;
             OutMessage->Buffer.BSt.Message[1] = 0;
             OutMessage->Buffer.BSt.Message[2] = 0;
         }
     }
-    else if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS && (getType() == TYPEMCT410 || getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD || getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD) )
+    else if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS && (isMct410(getType()) || isMct420(getType())) )
     {
         function = EmetconProtocol::PutStatus_ResetAlarms;
         found = getOperation(function, OutMessage->Buffer.BSt);
@@ -2406,7 +2387,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
             function = EmetconProtocol::PutConfig_Intervals;
             found = getOperation(function, OutMessage->Buffer.BSt);
 
-            if( getType() == TYPEMCT410 || getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD || getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD )
+            if( isMct410(getType()) || isMct420(getType()) )
             {
                 OutMessage->Buffer.BSt.Message[0] = getLoadProfile()->getLastIntervalDemandRate() / 60;
                 OutMessage->Buffer.BSt.Message[1] = getLoadProfile()->getLoadProfileDemandRate()  / 60;
@@ -2492,7 +2473,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                     }
                 }
                 else*/
-                if( getType() != TYPEMCT410 && getType() != TYPEMCT420CL && getType() != TYPEMCT420CLD && getType() != TYPEMCT420FL && getType() != TYPEMCT420FLD )
+                if( !isMct410(getType()) && !isMct420(getType()) )
                 {
                     intervallength *= 4;  //  all else are in multiples of 15 seconds
                 }
@@ -2701,7 +2682,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         function = EmetconProtocol::Control_Connect;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() == TYPEMCT410 || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
+        if( isMct410(getType()) || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
         {
             //  the 410 requires some dead time to transmit to its disconnect base
             dead_air = true;
@@ -2716,7 +2697,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         function = EmetconProtocol::Control_Disconnect;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() == TYPEMCT410 || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
+        if( isMct410(getType()) || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
         {
             //  allow some dead time for the meter to transmit to its disconnect base
             dead_air = true;
@@ -3229,7 +3210,10 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
 
                 break;
             }
-            case TYPEMCT410:
+            case TYPEMCT410CL:
+            case TYPEMCT410FL:
+            case TYPEMCT410GL:
+            case TYPEMCT410IL:
             //case TYPEMCT420CL:  //  the MCT-420CL does not support the disconnect collar
             case TYPEMCT420CLD:
             case TYPEMCT420FL:
@@ -3888,10 +3872,6 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
             break;
         }
 
-        //case TYPEDCT501
-        //case TYPEMCT410
-        //case TYPE_REPEATER900
-        //case TYPE_REPEATER800
         default:
         {
             {

@@ -185,7 +185,10 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT360:
         case TYPEMCT370:        NewDevice = CTIDBG_new Mct31xDevice;     break;
 
-        case TYPEMCT410:        NewDevice = CTIDBG_new Mct410Device;     break;
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:      NewDevice = CTIDBG_new Mct410Device;     break;
 
         case TYPEMCT420CL:
         case TYPEMCT420CLD:
@@ -435,7 +438,10 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
     case TYPEMCT260:
     case TYPEMCT310IL:
     case TYPEMCT318L:
-    case TYPEMCT410:
+    case TYPEMCT410CL:
+    case TYPEMCT410FL:
+    case TYPEMCT410GL:
+    case TYPEMCT410IL:
     case TYPEMCT420CL:
     case TYPEMCT420CLD:
     case TYPEMCT420FL:
