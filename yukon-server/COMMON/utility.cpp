@@ -2223,37 +2223,6 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
 }
 
 
-/*
-#define TAG_DISABLE_POINT_BY_POINT           0x00000001        // point/device out of service.
-#define TAG_DISABLE_ALARM_BY_POINT           0x00000002        // point/device will not cause alarms.
-#define TAG_DISABLE_CONTROL_BY_POINT         0x00000004        // point/device cannot be controled.
-
-#define TAG_DISABLE_DEVICE_BY_DEVICE         0x00000010        // point/device out of service.
-#define TAG_DISABLE_ALARM_BY_DEVICE          0x00000020        // point/device will not cause alarms.
-#define TAG_DISABLE_CONTROL_BY_DEVICE        0x00000040        // point/device cannot be controled.
-
-#define TAG_POINT_MOA_REPORT                 0x00000400        // This point data message is the result of a registration
-#define TAG_POINT_DELAYED_UPDATE             0x00000800        // Dispatch delay this point data until the time specified in the message!
-
-#define TAG_POINT_FORCE_UPDATE               0x00001000        // Dispatch will no matter what copy this into his RT memory
-#define TAG_POINT_MUST_ARCHIVE               0x00002000        // This data will archive no matter how the point is set up
-#define TAG_POINT_MAY_BE_EXEMPTED            0x00004000        // This data may be exempted from propagation if the value element has not changed
-#define TAG_POINT_LOAD_PROFILE_DATA          0x00008000        // This data will archive to raw point history
-
-#define TAG_MANUAL                           0x00010000        // Point was set manually by a client.. this affects quality.
-#define TAG_EXTERNALVALUE                    0x00020000        // setByExternalApp           = 0x08, Another application set this value!
-#define TAG_CONTROL_SELECTED                 0x00040000        // This control point is selected by a client for control
-#define TAG_CONTROL_PENDING                  0x00080000        // This control has been executed and a change is pending
-
-#define TAG_REPORT_MSG_TO_ALARM_CLIENTS      0x01000000        // This Message should be reported to any alarm clients in the world
-
-#define TAG_ATTRIB_CONTROL_AVAILABLE         0x10000000        // This status point can also be controlled
-#define TAG_ATTRIB_PSEUDO                    0x20000000        // Device/point is not real.
-#define TAG_UNACKNOWLEDGED_ALARM             0x40000000        // Alarm State has not been acknowledged.
-#define TAG_ACTIVE_ALARM                     0x80000000        // Alarm State is active now.
-
- */
-
 string explainTags(const unsigned tags)
 {
     int i;
@@ -2302,6 +2271,18 @@ string explainTags(const unsigned tags)
                 {
                     if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_CONTROL_BY_DEVICE";
+                    break;
+                }
+            case TAG_POINT_DATA_TIMESTAMP_VALID:
+                {
+                    if(!str.empty()) str += " | ";
+                    str += "TAG_POINT_DATA_TIMESTAMP_VALID";
+                    break;
+                }
+            case TAG_POINT_DATA_UNSOLICITED:
+                {
+                    if(!str.empty()) str += " | ";
+                    str += "TAG_POINT_DATA_UNSOLICITED";
                     break;
                 }
             case TAG_POINT_MOA_REPORT:
