@@ -300,13 +300,13 @@ public class MockAccountEventLogService implements AccountEventLogService{
     @Override
     public void thermostatScheduleDeleteAttemptedByOperator(LiteYukonUser yukonUser,
                                                             String accountNumber,
-                                                            String serialNumber, String scheduleName) {
+                                                            String scheduleName) {
     }
 
     @Override
     public void thermostatScheduleDeleteAttemptedByConsumer(LiteYukonUser yukonUser,
                                                             String accountNumber,
-                                                            String serialNumber, String scheduleName) {
+                                                            String scheduleName) {
     }
 
     @Override

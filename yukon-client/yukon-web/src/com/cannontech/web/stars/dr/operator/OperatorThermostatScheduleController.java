@@ -301,11 +301,8 @@ public class OperatorThermostatScheduleController {
 		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
 
 		AccountThermostatSchedule schedule = accountThermostatScheduleDao.getById(scheduleId);
-        for (int thermostatId : thermostatIdList) {
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-            accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user,
-                fragment.getAccountNumber(), thermostat.getSerialNumber(), schedule.getScheduleName());
-        }
+        accountEventLogService.thermostatScheduleDeleteAttemptedByOperator(user,
+            fragment.getAccountNumber(), schedule.getScheduleName());
 		accountThermostatScheduleDao.deleteById(scheduleId);
 		
 		MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.schedules.scheduleDeleted", schedule.getScheduleName());
