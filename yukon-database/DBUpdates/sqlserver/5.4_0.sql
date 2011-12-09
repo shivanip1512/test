@@ -12,138 +12,138 @@ VALUES (18, 'CymDISTMessageListener',
 /* Start YUK-10175 */
 /***** Dynamic Cap Control Table Cascades *****/
 ALTER TABLE DynamicCCArea
-    DROP CONSTRAINT FK_ccarea_Dynccarea
+    DROP CONSTRAINT FK_ccarea_Dynccarea;
 GO
 ALTER TABLE DynamicCCFeeder
-    DROP CONSTRAINT FK_CCFeed_DyFeed
+    DROP CONSTRAINT FK_CCFeed_DyFeed;
 GO
 ALTER TABLE DynamicCCCapBank
-    DROP CONSTRAINT FK_CpBnk_DynCpBnk
+    DROP CONSTRAINT FK_CpBnk_DynCpBnk;
 GO
 ALTER TABLE DynamicCCSpecialArea
-    DROP CONSTRAINT FK_DynCCSpecA_CapContSpecA
+    DROP CONSTRAINT FK_DynCCSpecA_CapContSpecA;
 GO
 ALTER TABLE DynamicCCSubstation
-    DROP CONSTRAINT FK_DYNAMICC_REFERENCE_CAPCONTR
+    DROP CONSTRAINT FK_DYNAMICC_REFERENCE_CAPCONTR;
 GO
 ALTER TABLE DynamicCCSubstationBus
-    DROP CONSTRAINT FK_CCSubBs_DySubBs
+    DROP CONSTRAINT FK_CCSubBs_DySubBs;
 GO
 ALTER TABLE DynamicCCOperationStatistics
-    DROP CONSTRAINT FK_DYNAMICC_REFERENCE_YUKONPAO
+    DROP CONSTRAINT FK_DYNAMICC_REFERENCE_YUKONPAO;
 GO
 ALTER TABLE DynamicDeviceScanData 
-    DROP CONSTRAINT SYS_C0015139
+    DROP CONSTRAINT SYS_C0015139;
 GO
 ALTER TABLE CCSubAreaAssignment
-    DROP CONSTRAINT FK_CCSUBARE_REFERENCE_CAPCONTR
+    DROP CONSTRAINT FK_CCSUBARE_REFERENCE_CAPCONTR;
 GO
 ALTER TABLE CCSubAreaAssignment
-    DROP CONSTRAINT FK_CCSUBARE_CAPSUBAREAASSGN
+    DROP CONSTRAINT FK_CCSUBARE_CAPSUBAREAASSGN;
 GO
 ALTER TABLE CCSubstationSubBusList
-    DROP CONSTRAINT FK_CCSUBSTA_REFERENCE_CAPCONTR
+    DROP CONSTRAINT FK_CCSUBSTA_REFERENCE_CAPCONTR;
 GO
 ALTER TABLE CCSubstationSubBusList
-    DROP CONSTRAINT FK_CCSUBSTA_CAPCONTR
+    DROP CONSTRAINT FK_CCSUBSTA_CAPCONTR;
 GO
 ALTER TABLE CCFeederSubAssignment
-    DROP CONSTRAINT FK_CCFeed_CCFass
+    DROP CONSTRAINT FK_CCFeed_CCFass;
 GO
 ALTER TABLE CCFeederSubAssignment
-    DROP CONSTRAINT FK_CCSub_CCFeed
+    DROP CONSTRAINT FK_CCSub_CCFeed;
 GO
 ALTER TABLE CCFeederBankList
-    DROP CONSTRAINT FK_CCFeed_CCBnk
+    DROP CONSTRAINT FK_CCFeed_CCBnk;
 GO
 ALTER TABLE CCFeederBankList
-    DROP CONSTRAINT FK_CB_CCFeedLst
+    DROP CONSTRAINT FK_CB_CCFeedLst;
 GO
 
 ALTER TABLE DynamicCCArea
     ADD CONSTRAINT FK_DynCCArea_CCArea foreign key (AreaId)
         REFERENCES CapControlArea (AreaId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE DynamicCCFeeder
     ADD CONSTRAINT FK_DynCCFeeder_CCFeeder foreign key (FeederId)
         REFERENCES CapControlFeeder (FeederId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE DynamicCCCapBank
     ADD CONSTRAINT FK_DynCCCapBank_CapBank foreign key (CapBankId)
         REFERENCES CAPBANK (DeviceId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE DynamicCCSpecialArea
     ADD CONSTRAINT FK_DynCCSpecial_CCSpecialArea foreign key (AreaId)
         REFERENCES CAPCONTROLSPECIALAREA (AreaId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE DynamicCCSubstation
     ADD CONSTRAINT FK_DynCCSubst_CCSubst foreign key (SubStationId)
         REFERENCES CAPCONTROLSUBSTATION (SubstationId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE DynamicCCSubstationBus
     ADD CONSTRAINT FK_DynCCSubBus_CCSubBus foreign key (SubstationBusId)
         REFERENCES CAPCONTROLSUBSTATIONBUS (SubstationBusId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 /***** Other Cascades *****/
 ALTER TABLE DynamicCCOperationStatistics
     ADD CONSTRAINT FK_DynCCOpStats_YukonPAObject foreign key (PAObjectId)
         REFERENCES YukonPAObject (PAObjectId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE DynamicDeviceScanData 
     ADD CONSTRAINT FK_DynDeviceScanData FOREIGN KEY (DeviceId) 
         REFERENCES Device (DeviceId) 
-        ON DELETE CASCADE 
+        ON DELETE CASCADE;
 GO
 /***** CCSubAreaAssignment *****/
 ALTER TABLE CCSubAreaAssignment
     ADD CONSTRAINT FK_CCSubAreaAssignment_CCArea foreign key (AreaId)
         REFERENCES CAPCONTROLAREA (AreaId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE CCSubAreaAssignment
     ADD CONSTRAINT FK_CCSubAreaAssign_CCSubst foreign key (SubstationBusId)
         REFERENCES CAPCONTROLSUBSTATION (SubstationId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 /***** CCSubstationSubBusList *****/
 ALTER TABLE CCSubstationSubBusList
     ADD CONSTRAINT FK_CCSubstSubBusList_CCSub foreign key (SubstationId)
         REFERENCES CAPCONTROLSUBSTATION (SubstationId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE CCSubstationSubBusList
     ADD CONSTRAINT FK_CCSubstSubBusList_CCSubBus foreign key (SubstationBusId)
         REFERENCES CAPCONTROLSUBSTATIONBUS (SubstationBusId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 /***** CCFeederSubAssignment *****/
 ALTER TABLE CCFeederSubAssignment
     ADD CONSTRAINT FK_CCFeederSubAssign_CCSubBus foreign key (SubStationBusId)
         REFERENCES CAPCONTROLSUBSTATIONBUS (SubstationBusId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE CCFeederSubAssignment
     ADD CONSTRAINT FK_CCFeederSubAssign_CCFeeder foreign key (FeederId)
         REFERENCES CapControlFeeder (FeederId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 /***** CCFeederBankList *****/
 ALTER TABLE CCFeederBankList
     ADD CONSTRAINT FK_CCFeederBankList_CCFeeder foreign key (FeederId)
         REFERENCES CapControlFeeder (FeederId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 ALTER TABLE CCFeederBankList
     ADD CONSTRAINT FK_CCFeederBankList_CapBank foreign key (DeviceId)
         REFERENCES CAPBANK (DeviceId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 GO
 /*  End YUK-10175  */
 
