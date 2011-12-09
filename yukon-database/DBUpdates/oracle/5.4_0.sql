@@ -148,14 +148,12 @@ ALTER TABLE CCFeederBankList
 /* Start YUK-10249 */
 DELETE FROM DeviceTypeCommand WHERE DeviceType = 'MCT-410iLE';
 DELETE FROM DeviceTypeCommand WHERE DeviceType = 'MCT-410 kWh Only';
-DELETE FROM DeviceTypeCommand WHERE (DeviceCommandId = -393 
-                                     AND CommandId   = -108 
-                                     AND DeviceType  = 'MCT-410IL');
+DELETE FROM DeviceTypeCommand WHERE DeviceCommandId = -393 AND CommandId   = -108 AND DeviceType  = 'MCT-410IL';
 /*  End YUK-10249  */
 
 /* Start YUK-10463 */
-INSERT INTO FDRInterface       VALUES (29, 'VALMETMULTI', 'Send,Send for control,Receive,Receive for control,Receive for Analog Output', 't' );
-INSERT INTO FDRInterfaceOption VALUES (29, 'Point', 1, 'Text', '(none)' );
+INSERT INTO FDRInterface VALUES (29, 'VALMETMULTI', 'Send,Send for control,Receive,Receive for control,Receive for Analog Output', 't');
+INSERT INTO FDRInterfaceOption VALUES (29, 'Point', 1, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES (29, 'Destination/Source', 2, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES (29, 'Port', 3, 'Text', '(none)');
 /*  End YUK-10463  */
@@ -174,7 +172,7 @@ INSERT INTO State VALUES (-16, 1, 'Active',  1, 6, 0);
 /*  End YUK-10433  */
 
 /* Start YUK-10479 */
-INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
+INSERT INTO YukonRoleProperty VALUES (-21312, -213, 'Manage FDR Translations', 'false', 'Controls access to FDR Translation Manager bulk operation.');
 /*  End YUK-10479  */
 
 /* Start YUK-10466 */
