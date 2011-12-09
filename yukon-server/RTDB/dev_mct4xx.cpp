@@ -1745,8 +1745,8 @@ INT Mct4xxDevice::executePutValue(CtiRequestMsg *pReq,
     }
 
     return nRet;
-
 }
+
 
 int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                            CtiRequestMsg *pReq,
@@ -1764,7 +1764,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
         if(!partsList.empty())
         {
             ret = NoError;
-            CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
+            CtiRequestMsg tempReq(*pReq);
 
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -1777,12 +1777,12 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
             OutMessage->Sequence = Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
             OutMessage->Request.RouteID   = getRouteID();
 
-            for(ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
+            for each( const char *configPart in partsList)
             {
-                if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
+                if( configPart != PutConfigPart_all)  //  preventing infinite loop
                 {
                     string tempString = "putconfig install ";
-                    tempString += *tempItr;
+                    tempString += configPart;
                     if( parse.isKeyValid("force") )
                     {
                         tempString += " force";
@@ -1791,27 +1791,38 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                     {
                         tempString += " verify";
                     }
-                    tempReq->setCommandString(tempString);
-                    tempReq->setConnectionHandle(pReq->getConnectionHandle());
+                    tempReq.setCommandString(tempString);
+                    tempReq.setConnectionHandle(pReq->getConnectionHandle());
 
-                    CtiCommandParser parseSingle(tempReq->CommandString());
-                    executePutConfigSingle(tempReq, parseSingle, OutMessage, vgList, retList, outList,readsOnly);
+                    CtiCommandParser parseSingle(tempReq.CommandString());
+                    executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly);
                 }
-            }
-
-            if(tempReq!=NULL)
-            {
-                delete tempReq;
-                tempReq = NULL;
             }
         }
 
-        // Setting the expect more bits on all the return messages to true.
-        // This used to happen elsewhere in PORTER/PIL and no longer happens.
-        // If this is not done, the webservice will think the first message is the last message and ignore the rest.
-        for (CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); itr++)
+        bool seen_expect_more = false;
+
+        //  Set ExpectMore on all messages but the last.
+        for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
         {
-            ((CtiReturnMsg*)*itr)->setExpectMore(true);
+            //  Save the element so we can modify the iterator freely
+            CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
+
+            //  Increment the iterator, which allows us to make sure the current element is NOT the last element.
+            if( ++itr != retList.end() )
+            {
+                seen_expect_more |= retMsg->ExpectMore();
+
+                retMsg->setExpectMore(true);
+            }
+        }
+
+        //  Only set ExpectMore on the last message if we've seen it on any of the others.
+        if( seen_expect_more )
+        {
+            CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(retList.back());
+
+            retMsg->setExpectMore(true);
         }
     }
     else
@@ -1946,7 +1957,10 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                 OutMessage->Request.SOE,
                                 CtiMultiMsg_vec( ));
 
-        retMsg->setExpectMore(true);
+        if( nRet )
+        {
+            retMsg->setExpectMore(true);
+        }
 
         retList.push_back( retMsg );
     }
