@@ -23,6 +23,9 @@
             }
             
             $('deviceIds').value = ids;
+            if ('${blockOnSubmit}') {
+            	Yukon.ui.blockPage();
+            }
             $('selectDevicesForm').submit();
             return true;
         }
