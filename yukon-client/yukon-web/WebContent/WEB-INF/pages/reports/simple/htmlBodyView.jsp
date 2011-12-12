@@ -71,7 +71,7 @@
 		    <!-- header -->
 		    <tr>
 		        <c:forEach var="ci" items="${columnInfo}">
-		            <th style="text-align:${ci.columnAlignment};width:${ci.columnWidthPercentage}%">${ci.columnName}</th>
+		            <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%">${ci.label}</th>
 		        </c:forEach>
 		    </tr>
 		    

@@ -2,6 +2,7 @@
 <%@ attribute name="action" required="true" type="java.lang.String"%>
 <%@ attribute name="groupDataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="pickerType" required="true" type="java.lang.String"%>
+<%@ attribute name="blockOnSubmit" required="false" type="java.lang.Boolean"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -31,6 +32,9 @@
             if ($('group.name').value == '') {
                 alert('${noGroupSelectedAlertText}');
                 return false;
+            }
+            if ('${blockOnSubmit}') {
+            	Yukon.ui.blockPage();
             }
             $('selectDevicesByGroupForm').submit();
         }

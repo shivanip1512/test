@@ -428,6 +428,15 @@
                         </page>
                     </pages>
                 </page>
+		        <page name="rfnEventsReport.selectDevices" type="BASIC">
+		            <menu>meters</menu>
+					<link>/spring/amr/rfnEventsReport/selectDevices</link>
+					<pages>
+		                <page name="rfnEventsReport.report" type="DETAIL">
+		                    <menu>meters</menu>
+		                </page>
+                	</pages>
+		        </page>
             </pages>
         </page>
         <page name="analysis.home" type="BASIC">

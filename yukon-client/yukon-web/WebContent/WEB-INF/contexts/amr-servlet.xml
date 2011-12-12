@@ -10,6 +10,8 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+    <context:component-scan base-package="com.cannontech.web.amr"/>
+
 	<bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="order" value="1"/>
     </bean>
@@ -26,7 +28,6 @@
                 <prop key="/reports/*">AMRReportsController</prop>
                 <prop key="/outageProcessing/monitorEditor/*">OutageMonitorEditorController</prop>
                 <prop key="/outageProcessing/process/*">OutageProcessingController</prop>
-                <prop key="/phaseDetect/*">PhaseDetectController</prop>
             </props>
         </property>
     </bean>
@@ -118,24 +119,6 @@
     </bean>
     
     <!-- OUTAGE PROCESSING -->
-    <bean id="OutageMonitorEditorController" class="com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController">
-    </bean>
-    
-    <bean id="OutageProcessingController" class="com.cannontech.web.amr.outageProcessing.OutageProcessingController">
-    </bean>
-    
-    <!-- TAMPER FLAG PROCESSING -->
-    <bean class="com.cannontech.web.amr.tamperFlagProcessing.TamperFlagEditorController" />
-    
-    <bean class="com.cannontech.web.amr.tamperFlagProcessing.TamperFlagProcessingController" />
-    
-    <!-- STATUS POINT PROCESSING -->
-    <bean class="com.cannontech.web.amr.statusPointMonitoring.StatusPointMonitorController" />
-    
-    <!-- PORTER RESPONSE MONITOR -->
-    <bean class="com.cannontech.web.amr.porterResponseMonitor.PorterResponseMonitorController" />
-
-    <!-- PHASE DETECTION -->
-    <bean id="PhaseDetectController" class="com.cannontech.web.amr.phaseDetect.PhaseDetectController"/>
-
+    <bean id="OutageMonitorEditorController" class="com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController"/>
+    <bean id="OutageProcessingController" class="com.cannontech.web.amr.outageProcessing.OutageProcessingController"/>
 </beans>

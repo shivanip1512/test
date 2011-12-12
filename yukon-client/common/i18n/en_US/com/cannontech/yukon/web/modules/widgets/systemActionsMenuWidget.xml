@@ -3,4 +3,5 @@
 <properties>
     <entry key="yukon.web.widgets.systemActionsMenuWidget.phaseDetect">Phase Detect</entry>
     <entry key="yukon.web.widgets.systemActionsMenuWidget.archiveDataAnalysis">Archive Data Analysis</entry>
+    <entry key="yukon.web.widgets.systemActionsMenuWidget.rfnEventsReport">Rfn Events Report</entry>
 </properties>

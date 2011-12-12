@@ -168,6 +168,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateSettings</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/outageProcessing</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/phaseDetect</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/rfnEventsReport</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/tamperFlagProcessing</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/statusPointMonitoring</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitor</value>

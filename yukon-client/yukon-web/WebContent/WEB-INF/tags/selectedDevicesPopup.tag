@@ -44,7 +44,8 @@
         title="${warning}" 
         src="${mag}" 
         onmouseover="javascript:this.src='${magOver}'" 
-        onmouseout="javascript:this.src='${mag}'">
+        onmouseout="javascript:this.src='${mag}'"
+        class="cp">
 <tags:simplePopup id="${id}" title="${popupTitle}">
     <div style="height:300px;overflow:auto;">
     <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>
