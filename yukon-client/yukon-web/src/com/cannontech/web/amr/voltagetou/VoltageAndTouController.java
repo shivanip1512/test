@@ -33,9 +33,9 @@ public class VoltageAndTouController extends MultiActionController {
 		int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
 		SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 		boolean threePhaseVoltage = paoDefinitionDao.isTagSupported(device.getDeviceType(), 
-                                                                    PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE);
+                                                                    PaoTag.THREE_PHASE_VOLTAGE);
 		boolean threePhaseCurrent = paoDefinitionDao.isTagSupported(device.getDeviceType(),
-		                                                            PaoTag.SUPPORTS_THREE_PHASE_CURRENT);
+		                                                            PaoTag.THREE_PHASE_CURRENT);
 		mav.addObject("deviceId", deviceId);
         mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
 		mav.addObject("threePhaseVoltage", threePhaseVoltage);

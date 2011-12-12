@@ -222,9 +222,9 @@ public class MeterController extends MultiActionController {
         
         boolean singlePhaseVoltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
         boolean threePhaseVoltageSuported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
-                                                                            PaoTag.SUPPORTS_THREE_PHASE_VOLTAGE);                                                                     
+                                                                            PaoTag.THREE_PHASE_VOLTAGE);                                                                     
         boolean threePhaseCurrentSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
-                                                                             PaoTag.SUPPORTS_THREE_PHASE_CURRENT);
+                                                                             PaoTag.THREE_PHASE_CURRENT);
         mav.addObject("singlePhaseVoltageSupported", singlePhaseVoltageSupported);
         mav.addObject("threePhaseVoltageSuported", threePhaseVoltageSuported);
         mav.addObject("threePhaseCurrentSupported", threePhaseCurrentSupported);
@@ -236,7 +236,7 @@ public class MeterController extends MultiActionController {
             mav.addObject("isRFMesh", true);
         }
         
-        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.SUPPORTS_RFN_EVENTS)) {
+        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
             mav.addObject("rfnEventsSupported", true);
         }
         

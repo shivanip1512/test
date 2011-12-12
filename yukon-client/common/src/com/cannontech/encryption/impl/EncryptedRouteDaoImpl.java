@@ -30,7 +30,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     @Override
     public List<EncryptedRoute> getAllEncryptedRoutes() {
         
-        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.SUPPORTS_ROUTE_ENCRYPTION);
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.ROUTE_ENCRYPTION);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT paobjectid, paoname, type");

@@ -66,31 +66,31 @@
         </tags>
     </pao>
     
-    <pao id="SUPPORTS_ROUTE_ENCRYPTION"  abstract="true">
+    <pao id="ROUTE_ENCRYPTION"  abstract="true">
         <tags>
-            <tag name="SUPPORTS_ROUTE_ENCRYPTION"/>
+            <tag name="ROUTE_ENCRYPTION"/>
         </tags>
     </pao>
     
-    <pao id="SUPPORTS_RFN_EVENTS"  abstract="true">
+    <pao id="RFN_EVENTS"  abstract="true">
         <tags>
-            <tag name="SUPPORTS_RFN_EVENTS"/>
+            <tag name="RFN_EVENTS"/>
         </tags>
     </pao>
 
-    <pao id="ROUTE_WCTP_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+    <pao id="ROUTE_WCTP_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>WCTP Terminal Route</displayName>
     </pao>
 
-    <pao id="ROUTE_SNPP_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+    <pao id="ROUTE_SNPP_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>SNPP Terminal Route</displayName>
     </pao>
 
-    <pao id="ROUTE_TAP_PAGING" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+    <pao id="ROUTE_TAP_PAGING" inherits="ROUTE_ENCRYPTION">
         <displayName>Tap Paging</displayName>
     </pao>
 
-    <pao id="ROUTE_RDS_TERMINAL" inherits="SUPPORTS_ROUTE_ENCRYPTION">
+    <pao id="ROUTE_RDS_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>RDS Terminal Route</displayName>
     </pao>
     
@@ -104,14 +104,14 @@
             <tag name="MCT_300_SERIES"/>
         </tags>
     </pao>
-    <pao id="SUPPORTS_THREE_PHASE_VOLTAGE"  abstract="true">
+    <pao id="THREE_PHASE_VOLTAGE"  abstract="true">
         <tags>
-            <tag name="SUPPORTS_THREE_PHASE_VOLTAGE"/>
+            <tag name="THREE_PHASE_VOLTAGE"/>
         </tags>
     </pao>
-    <pao id="SUPPORTS_THREE_PHASE_CURRENT"  abstract="true">
+    <pao id="THREE_PHASE_CURRENT"  abstract="true">
         <tags>
-            <tag name="SUPPORTS_THREE_PHASE_CURRENT"/>
+            <tag name="THREE_PHASE_CURRENT"/>
         </tags>
     </pao>
 
@@ -900,7 +900,7 @@
     </pao>
     
     <!-- MCT 4XX POLYPHASE BASE -->
-    <pao id="MCT_4XX_POLYPHASE_BASE" abstract="true" inherits="SUPPORTS_THREE_PHASE_CURRENT">
+    <pao id="MCT_4XX_POLYPHASE_BASE" abstract="true" inherits="THREE_PHASE_CURRENT">
 		<points>
             <point type="Analog" offset="44">
             	<init>false</init>
@@ -1307,7 +1307,7 @@
         </tags>
    </pao>
    
-   <pao id="MCT_430_S_BASE" abstract="true" inherits="MCT_430_BASE, MCT_4XX_POLYPHASE_BASE, SUPPORTS_THREE_PHASE_VOLTAGE">
+   <pao id="MCT_430_S_BASE" abstract="true" inherits="MCT_430_BASE, MCT_4XX_POLYPHASE_BASE, THREE_PHASE_VOLTAGE">
 		<points>
 			<point type="Analog" offset="41">
                 <name>Voltage Phase A</name>
@@ -4491,7 +4491,7 @@
         <displayName>SIXNET</displayName>
 	</pao>
 	
-	<pao id="RFN_ELECTRIC_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, SUPPORTS_RFN_EVENTS, SUPPORTS_OUTAGE_TAG">
+	<pao id="RFN_ELECTRIC_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
@@ -5365,7 +5365,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN_THREE_PHASE_VOLTAGE" abstract="true" inherits="SUPPORTS_THREE_PHASE_VOLTAGE">
+    <pao id="RFN_THREE_PHASE_VOLTAGE" abstract="true" inherits="THREE_PHASE_VOLTAGE">
         <points>
             <point type="Analog" offset="70">
                 <init>true</init>

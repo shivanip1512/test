@@ -45,11 +45,11 @@ public enum PaoTag {
 	DUMMY_LONG_TAG("for internal testing", longType()),  // can be removed when we add a real tag that uses long
 	WATER_METER_DETAIL_DISPLAYABLE("Water Detail Displayable"),
 	DB_EDITOR_INCOMPATIBLE("Not Displayable in Database Editor"),   // Excludes devices from DeviceTreeModel.java, hiding them in DB Editor and Commander
-	SUPPORTS_ROUTE_ENCRYPTION("Supports Route Encryption"),
-	SUPPORTS_THREE_PHASE_VOLTAGE("Supports Three Phase Voltage"),
-	SUPPORTS_THREE_PHASE_CURRENT("Supports Three Phase Current"),
+	ROUTE_ENCRYPTION("Supports Route Encryption"),
+	THREE_PHASE_VOLTAGE("Supports Three Phase Voltage"),
+	THREE_PHASE_CURRENT("Supports Three Phase Current"),
 	PAO_CREATION_SERVICE("PAO Creation Service Compatible", stringType()),
-	SUPPORTS_RFN_EVENTS("Supports Rfn Events"),
+	RFN_EVENTS("Supports Rfn Events"),
 	;
 
 	private final String description;
