@@ -84,6 +84,7 @@ public class PointDataInjectionController {
         pointData.setTime(dateTime.toDate());
         pointData.setPointQuality(quality);
         pointData.setValue(value);
+        pointData.setType(pointDao.getLitePoint(pointId).getLiteType());
         
         if (forceArchive != null && forceArchive.equals("on")) {
         	pointData.setTagsPointMustArchive(true);
