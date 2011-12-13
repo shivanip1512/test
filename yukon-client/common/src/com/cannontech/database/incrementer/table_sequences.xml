@@ -270,5 +270,14 @@
       <sequence name="archiveDataAnalysisSlot">
         <table name="ArchiveDataAnalysisSlot" identitycolumn="SlotId"/>
       </sequence>
+      <sequence name="archiveValuesExportFormat">
+        <table name="ArchiveValuesExportFormat" identitycolumn="FormatID"/>
+      </sequence>
+      <sequence name="archiveValuesExportAttribute">
+        <table name="ArchiveValuesExportAttribute" identitycolumn="AttributeID"/>
+      </sequence>
+      <sequence name="archiveValuesExportField">
+        <table name="ArchiveValuesExportField" identitycolumn="FieldID"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

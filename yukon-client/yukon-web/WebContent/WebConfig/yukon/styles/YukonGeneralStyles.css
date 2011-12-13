@@ -90,6 +90,10 @@ div.simplePopup {
   top: 15%;
 }
 
+div.secondLevelPopup {
+    z-index: 101;
+}
+
 div.simplePopup div.content, .popupScrollArea {
   overflow-y: auto;
   overflow-x: hidden;

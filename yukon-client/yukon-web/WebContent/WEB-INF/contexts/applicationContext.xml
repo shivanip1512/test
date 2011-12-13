@@ -1978,4 +1978,11 @@
     <bean id="devStarsCreationService" class="com.cannontech.web.support.development.database.service.impl.DevStarsCreationService"/>
 
     <bean id="devBackingService" class="com.cannontech.web.updater.development.DevBackingService"/>
+
+    <bean id="archiveValuesExportFormatDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFormatDaoImpl"/>
+    <bean id="exportFormatValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator"/>
+    <bean id="archiveValuesExportAttributeDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportAttributeDaoImpl"/>
+    <bean id="exportAttributeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator"/>
+    <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>
+    <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
 </beans>

@@ -439,6 +439,18 @@
 		        </page>
             </pages>
         </page>
+        <page name="archivedValueExporter.VIEW" type="BASIC">
+            <menu></menu>
+            <link>/spring/amr/archivedValuesExporter/view</link>
+                <pages>
+                    <page name="archivedValueExporter.EDIT" type="BASIC">
+                        <menu></menu>
+                    </page>
+                    <page name="archivedValueExporter.CREATE" type="BASIC">
+                        <menu></menu>
+                    </page>
+                </pages>
+        </page>
         <page name="analysis.home" type="BASIC">
             <menu></menu>
             <pages>
