@@ -8,7 +8,7 @@ import com.roguewave.vsj.CollectableStreamer;
 
 public class NotifServerConnection extends ClientConnection
 {	
-	public NotifServerConnection( Socket socket_, NotifMsgHandler handler ) 
+	public NotifServerConnection( Socket socket_, NotificationMessageHandler handler ) 
 	{
 		super( socket_ );
 		addMessageListener( handler );

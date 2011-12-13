@@ -1,42 +1,44 @@
 package com.cannontech.notif.outputs;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
-public abstract class GenericEmailHandler extends OutputHandler {
-
-    GenericEmailHandler(String type) {
-        super(type);
-    }
-
-    public void handleNotification(NotificationBuilder notifFormatter,
-            Contactable contact) {
+public abstract class GenericEmailHandler implements OutputHandler {
+    private static final Logger log = YukonLogManager.getLogger(GenericEmailHandler.class);
+    
+    @Override
+    public abstract NotifType getType();
+    
+    @Override
+    public void handleNotification(NotificationBuilder notifFormatter, Contactable contact) {
+        
         boolean atLeastOneSucceeded = false;
+        
         try {
-            CTILogger.debug("Using " + notifFormatter + " for " + contact);
-            List emailList = contact.getNotifications(getTypeChecker());
-            if (emailList.size() == 0) {
-                CTILogger.debug("Unable to " + getNotificationMethod() + " notification for " + contact 
+            log.debug("Using " + notifFormatter + " for " + contact);
+            List<LiteContactNotification> emailList = contact.getNotifications(getTypeChecker());
+            
+            if (emailList.isEmpty()) {
+                log.debug("Unable to " + getNotificationMethod() + " notification for " + contact 
                                + ", no addresses exist.");
                 return;
             }
 
             Notification notif = notifFormatter.buildNotification(contact);
-            CTILogger.debug("Built " + notif + " with builder and contact");
+            log.debug("Built " + notif + " with builder and contact");
 
-            NotificationTransformer transformer = 
-                new NotificationTransformer(contact.getEnergyCompany(), getType());
+            NotificationTransformer transformer =  new NotificationTransformer(contact.getEnergyCompany(), getType().getOldName());
             Element outXml = transformer.transform(notif).getRootElement();
 
             String emailSubject = outXml.getChildTextNormalize("subject");
@@ -44,7 +46,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
             String from = outXml.getChildText("from");
             
             if (emailBody == null || emailSubject == null) {
-                CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
+                log.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
                                + ", XML output did not contain subject and body.");
                 return;
             }
@@ -58,29 +60,31 @@ public abstract class GenericEmailHandler extends OutputHandler {
                 emailMsg.setFrom(from);
             }
 
-            for (Iterator iter = emailList.iterator(); iter.hasNext();) {
+            for (LiteContactNotification emailNotif : emailList) {
                 boolean success = false;
-                LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
                 String emailTo = emailNotif.getNotification();
+                
                 // Set the recipient of the email message and attempt to send.
                 // The try/catch here prevents a single bad address from
                 // preventing other addresses in the contact from being tried.
+                
                 try {
                     emailMsg.setRecipient(emailTo);
                     emailMsg.send();
                     atLeastOneSucceeded = true;
                     success = true;
-                    CTILogger.debug("Sent \"" + emailSubject + "\" to " + emailTo);
+                    log.debug("Sent \"" + emailSubject + "\" to " + emailTo);
                 } catch (MessagingException e) {
-                    CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
+                    log.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
                                    + " to address " + emailTo + ".",
                                    e);
                 }
+                
                 notifFormatter.logIndividualNotification(emailNotif, contact, getNotificationMethod(), success);
             }
             
         } catch (Exception e) {
-            CTILogger.error("Unable to " + getNotificationMethod() + " notification " 
+            log.error("Unable to " + getNotificationMethod() + " notification " 
                             + notifFormatter + " to " + contact + ".",
                             e);
         } finally {
@@ -89,6 +93,8 @@ public abstract class GenericEmailHandler extends OutputHandler {
     }
 
     public abstract NotificationTypeChecker getTypeChecker();
+    
+    @Override
     public abstract NotifType getNotificationMethod();
 
 }

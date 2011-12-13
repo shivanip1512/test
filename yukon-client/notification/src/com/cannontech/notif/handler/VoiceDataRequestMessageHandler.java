@@ -5,10 +5,10 @@ import java.io.StringWriter;
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.notif.VoiceDataRequestMsg;
-import com.cannontech.message.notif.VoiceDataResponseMsg;
+import com.cannontech.message.notif.*;
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Message;
@@ -18,26 +18,26 @@ import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.notif.voice.Call;
 
-public class VoiceDataRequestMessageHandler extends MessageHandler {
+public class VoiceDataRequestMessageHandler implements MessageHandler {
     
-    private final VoiceHandler _voiceHandler;
+    private @Autowired VoiceHandler voiceHandler;
 
-    public VoiceDataRequestMessageHandler(VoiceHandler handler) {
-        _voiceHandler = handler;
-        
-    }
-
-    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
-        if (!ServerRequestHelper.isPayloadInstanceOf(msg_, VoiceDataRequestMsg.class)) {
-            return false;
+    @Override
+    public boolean supportsMessageType(Message message) {
+        if (ServerRequestHelper.isPayloadInstanceOf(message, VoiceDataRequestMsg.class)) {
+            return true;
         }
-        ServerRequestMsg req = (ServerRequestMsg) msg_;
+        return false;
+    }
+    
+    @Override
+    public void handleMessage(NotifServerConnection connection,  Message message) {
+        ServerRequestMsg req = (ServerRequestMsg) message;
         VoiceDataRequestMsg reqMsg = (VoiceDataRequestMsg) req.getPayload();
         ServerResponseMsg responseMsg = req.createResponseMsg();
         
-        
         try {
-            Call call = _voiceHandler.getCall(reqMsg.callToken);
+            Call call = voiceHandler.getCall(reqMsg.callToken);
             Notification notif = call.getMessage();
             Document xmlDoc = notif.getDocument();
 
@@ -60,7 +60,6 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
         }
 
         connection.write(responseMsg);
-        return true;
     }
 
 }

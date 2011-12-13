@@ -16,16 +16,28 @@ public class StandardEmailHandler extends GenericEmailHandler {
         };
     };
 
-    public StandardEmailHandler() {
-        super("email");
-    }
-
     public NotificationTypeChecker getTypeChecker() {
         return checker;
     }
 
+    @Override
     public NotifType getNotificationMethod() {
         return NotifType.EMAIL;
+    }
+
+    @Override
+    public NotifType getType() {
+        return NotifType.EMAIL;
+    }
+
+    @Override
+    public void startup() {
+        //No op
+    }
+
+    @Override
+    public void shutdown() {
+        //No op
     }
 
 }

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.notif.voice.*;
 
@@ -17,16 +16,38 @@ import com.cannontech.notif.voice.*;
  *  Handles all outgoing voice queries and responses.
  * 
  */
-public class VoiceHandler extends OutputHandler {
-    private Logger log = YukonLogManager.getLogger(VoiceHandler.class);
+public class VoiceHandler implements OutputHandler {
+    private static final Logger log = YukonLogManager.getLogger(VoiceHandler.class);
     
-    private NotificationQueue queue;
+    private @Autowired NotificationQueue notificationQueue;
     private boolean acceptNewNotifications = false;
-    
-    public VoiceHandler(ClientConnection dispatchConnection) {
-        super("voice");
+
+    @Override
+    public NotifType getNotificationMethod() {
+        return NotifType.VOICE;
     }
     
+    @Override
+    public NotifType getType() {
+        return NotifType.VOICE;
+    }
+
+    @Override
+    public void startup() {
+        acceptNewNotifications = true;
+    }
+
+    @Override
+    public void shutdown() {
+        // First, stop accepting new notifications. 
+        acceptNewNotifications  = false;
+        
+        // Finally, shutdown the call pool. This call will block until
+        // all calls have completed.
+        notificationQueue.shutdown();
+    }
+    
+    @Override
     public void handleNotification(final NotificationBuilder notifBuilder, final Contactable contact) {
         if (!acceptNewNotifications) {
             // I could throw an exception here, but what would the caller do???
@@ -60,46 +81,23 @@ public class VoiceHandler extends OutputHandler {
             });
             
             // Add the notification to the queue.
-            queue.add(singleNotification);
+            notificationQueue.add(singleNotification);
             
         } catch (Exception e) {
             log.error("Unable to handle voice notification for " + contact, e);
             notifBuilder.notificationComplete(contact, getNotificationMethod(), false);
         }
     }
-
-    public void startup() {
-        acceptNewNotifications = true;
-    }
-
-    public void shutdown() {
-        // First, stop accepting new notifications. 
-        acceptNewNotifications  = false;
-        
-        // Finally, shutdown the call pool. This call will block until
-        // all calls have completed.
-        queue.shutdown();
-        
-    }
     
     public Call getCall(String token) throws UnknownCallTokenException {
-        Call call = queue.getCall(token);
+        Call call = notificationQueue.getCall(token);
         return call;
-    }
-
-    public NotifType getNotificationMethod() {
-        return NotifType.VOICE;
-    }
-    
-    @Autowired
-    public void setQueue(NotificationQueue queue) {
-        this.queue = queue;
     }
 
 	public void callStatus(String token, NotifCallEvent status) {
 	    log.debug("received " + status + " for " + token);
         try {
-            Call call = queue.getCall(token);
+            Call call = notificationQueue.getCall(token);
             switch (status) {
             case DISCONNECT:
                 call.handleDisconnect();
@@ -120,5 +118,4 @@ public class VoiceHandler extends OutputHandler {
             log.warn("Unable to complete call (token=" + token + ", status=" + status + ")", e);
         }
 	}
-    
 }

@@ -4,9 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
-
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
@@ -19,20 +16,20 @@ import com.cannontech.notif.server.NotifServerConnection;
 /**
  * 
  */
-public class LoadManagementMessageHandler extends NotifHandler {
-    private Logger log = YukonLogManager.getLogger(LoadManagementMessageHandler.class);
-
+public class LoadManagementMessageHandler extends NotifHandler implements MessageHandler {
     private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
-    
-    public LoadManagementMessageHandler(OutputHandlerHelper helper) {
-        super(helper);
-    }
 
-    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
-        if (!(msg_ instanceof NotifLMControlMsg)) {
-            return false;
+    @Override
+    public boolean supportsMessageType(Message message) {
+        if (message instanceof NotifLMControlMsg) {
+            return true;
         }
+        return false;
+    }
+    
+    @Override
+    public void handleMessage(NotifServerConnection connection,  Message msg_) {
         final NotifLMControlMsg msg = (NotifLMControlMsg) msg_;
         
         long durationMillis = msg.stopTime.getTime() - msg.startTime.getTime();
@@ -121,7 +118,6 @@ public class LoadManagementMessageHandler extends NotifHandler {
             
             outputNotification(notifFormatter, notificationGroup);
         }
-        return true;
     }
 
 }

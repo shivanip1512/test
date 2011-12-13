@@ -2,6 +2,8 @@ package com.cannontech.notif.handler;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.cc.dao.*;
 import com.cannontech.cc.model.*;
 import com.cannontech.clientutils.CTILogger;
@@ -13,28 +15,30 @@ import com.cannontech.message.notif.CurtailmentEventMsg;
 import com.cannontech.notif.outputs.*;
 
 public class CurtailmentEventScheduler extends EventScheduler {
-    private CurtailmentEventDao curtailmentEventDao;
-    private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
-    private CurtailmentEventNotifDao curtailmentEventNotifDao;
-
-    public CurtailmentEventScheduler(OutputHandlerHelper helper) {
-        super(helper);
-    }
-    
+    private @Autowired CurtailmentEventDao curtailmentEventDao;
+    private @Autowired CurtailmentEventParticipantDao curtailmentEventParticipantDao;
+    private @Autowired CurtailmentEventNotifDao curtailmentEventNotifDao;
+        
     public boolean deleteEventNotification(CurtailmentEvent event, boolean deleteStart, boolean deleteStop) {
         boolean startCancelled = true;
+        
         if (deleteStart) {
             startCancelled = attemptDeleteNotification(event, NotificationReason.STARTING);
         }
+        
         boolean stopCancelled = true;
+        
         if (deleteStop && startCancelled) {
             stopCancelled = attemptDeleteNotification(event, NotificationReason.STOPPING);
         }
+        
         boolean success = startCancelled && stopCancelled;
+        
         if (!success) {
             CTILogger.error("Potential error while deleting eonomic notifications (startCancelled="
                             + startCancelled + ", stopCancelled=" + stopCancelled + ")");
         }
+        
         return success;
     }
     
@@ -163,23 +167,7 @@ public class CurtailmentEventScheduler extends EventScheduler {
                 return "Curtailment Event " + event.getDisplayName() + " " + eventNotif.getReason() + " Notification";
             }
         };
+        
         return notifBuilder;
     }
-    
-    
-    public void setCurtailmentEventDao(CurtailmentEventDao curtailmentEventDao) {
-        this.curtailmentEventDao = curtailmentEventDao;
-    }
-
-    public void setCurtailmentEventNotifDao(CurtailmentEventNotifDao curtailmentEventNotifDao) {
-        this.curtailmentEventNotifDao = curtailmentEventNotifDao;
-    }
-
-    public void setCurtailmentEventParticipantDao(
-                                                  CurtailmentEventParticipantDao curtailmentEventParticipantDao) {
-        this.curtailmentEventParticipantDao = curtailmentEventParticipantDao;
-    }
-
-
-
 }

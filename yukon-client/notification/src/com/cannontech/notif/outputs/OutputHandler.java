@@ -2,31 +2,15 @@ package com.cannontech.notif.outputs;
 
 import com.cannontech.database.data.notification.NotifType;
 
+public interface OutputHandler {
 
+    public NotifType getType();
 
-/**
- * 
- */
-public abstract class OutputHandler {
-
-    private String _type;
-
-    OutputHandler(String type) {
-        _type = type;
-    }
-
-    public abstract void handleNotification(NotificationBuilder notif,
-            Contactable contact);
-
-    public String getType() {
-        return _type;
-    }
+    public void handleNotification(NotificationBuilder notif, Contactable contact);
     
-    public void startup() {};
-    public void shutdown() {}
-
-    public abstract NotifType getNotificationMethod();
+    public NotifType getNotificationMethod();
     
+    public void startup();
     
-
+    public void shutdown();
 }

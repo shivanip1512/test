@@ -3,223 +3,196 @@ package com.cannontech.notif.server;
 import java.io.IOException;
 import java.net.*;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.RoleDao;
-import com.cannontech.message.util.Message;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.MBeanUtil;
 
 /**
- * @author rneuharth
- *
  * The server used for accepting and creating notification messages.
- *
+ * 
  */
 public class NotificationServer implements Runnable, NotificationServerMBean
 {
-	// The port the web server listens on
-	private int port = 1515;
+    private static final Logger log = YukonLogManager.getLogger(NotificationServer.class);
 
-	// The interface to bind to
-	private InetAddress bindAddress;
+    // The port the web server listens on
+    private int port = 1515;
 
-	// The serverSocket listen queue depth
-	private int backlog = 50;
+    // The interface to bind to
+    private InetAddress bindAddress;
 
-	// The servers listening socket
-	private ServerSocket server = null;
+    // The serverSocket listen queue depth
+    private int backlog = 50;
 
-	// The thread accept any incoming connections
-	private Thread acceptThread = null;
-	
-	// Total number of connections to the server made
-	private long connsMade = 0;
+    // The servers listening socket
+    private ServerSocket server = null;
 
-    private NotifMsgHandler _msgHandler;
+    // The thread accept any incoming connections
+    private Thread acceptThread = null;
 
-    private OutputHandlerHelper _outputHelper;
-    
-    private RoleDao roleDao;
+    private @Autowired NotificationMessageHandler messageHandler;
+    private @Autowired OutputHandlerHelper outputHelper;
+    private @Autowired RolePropertyDao rolePropertyDao;
 
-	public NotificationServer() {
-	}
-
-	public int getBacklog() {
-		return backlog;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setBacklog(int i) {
-		if( i <= 0 ) {
-            i = 50;
-        }
-		backlog = i;
-	}
-
-	public void setPort(int i) {
-		port = i;
-	}
-
-	public String getBindAddress() {
-		String address = null;
-		if( bindAddress != null ) {
-            address = bindAddress.getHostAddress();
-        }
-
-		return address;
-	}
-
-	public void setBindAddress(String host) {
-		try {
-			if (host != null) {
-                bindAddress = InetAddress.getByName(host);
-            }
-		} catch(UnknownHostException e) {
-			String msg = "Invalid host address specified: " + host;
-			CTILogger.error( msg, e );
-		}
-	}
-
-	/**
+    /**
      * Start the notification server.
      * If this fails with an exception, no threads will have been started.
-	 * @throws IOException
-	 */
-	public void start() {
+     * 
+     * @throws IOException
+     */
+    public void start() {
         try {
-            setBindAddress(roleDao.getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
-            setPort(Integer.parseInt(roleDao.getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT)));        
-            
+
+            String bindAddress = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NOTIFICATION_HOST, null);
+            String port = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NOTIFICATION_PORT, null);
+
+            setBindAddress(bindAddress);
+            setPort(Integer.parseInt(port));
+
             server = new ServerSocket(getPort(), getBacklog(), null);
 
             // start output handlers
-            _outputHelper.startup();
+            outputHelper.startup();
 
             acceptThread = new Thread(this, "NotifListener");
             acceptThread.start();
 
-            CTILogger.info("Started Notification server: " + server);
+            log.info("Started Notification server: " + server);
         } catch (Exception e) {
             try {
                 if (server != null) {
                     server.close();
                 }
-            } catch (IOException e1) {}
+            } catch (IOException e1) {
+                // No op
+            }
+            
+            
             throw new RuntimeException(e);
         }
 
     }
 
-
-	/**
+    /**
      * Shutdown the notification server
      */
-	public void stop() {
-		try {
-	
+    public void stop() {
+        try {
+
             if (server != null) {
                 ServerSocket temp = server;
                 server = null;
                 temp.close();
             }
-            
+
             // shutdown voice handler
-            _outputHelper.shutdown();
-		} catch (Exception e) {}
-        
-        CTILogger.info("Stopped Notification server: " + server);
+            outputHelper.shutdown();
+        } catch (Exception e) {}
 
-	}
+        log.info("Stopped Notification server: " + server);
 
-	public boolean isRunning() {
-		return server != null;
-	}
+    }
 
-	/** 
-	 * Listen threads entry point. Here we accept a client connection
-	 */
-	public void run() {
-		for( ;; )
-		{
-			// Return if the server has been stopped
-			if (server == null) {
+    public boolean isRunning() {
+        return server != null;
+    }
+
+    /**
+     * Listen threads entry point. Here we accept a client connection
+     */
+    public void run() {
+        for (;;)
+        {
+            // Return if the server has been stopped
+            if (server == null) {
                 return;
             }
 
-
-			// Accept a connection
-			Socket socket = null;
-			try {
-				socket = server.accept();
-				connsMade++;
-			} catch (IOException e) {
-				// If the server is not null meaning we were not stopped report the error
-				if( server != null ) {
-                    CTILogger.error("Failed to accept connection", e);
+            // Accept a connection
+            Socket socket = null;
+            try {
+                socket = server.accept();
+            } catch (IOException e) {
+                // If the server is not null meaning we were not stopped report the error
+                if (server != null) {
+                    log.error("Failed to accept connection", e);
                 }
 
-				server = null;
-				return;
-			}
+                server = null;
+                return;
+            }
 
-	
-			//we have a connection, pass it off to another thread to process it
-			try {
-				//start handling the message here
-				NotifServerConnection conn = new NotifServerConnection( socket, _msgHandler );
+            // we have a connection, pass it off to another thread to process it
+            try {
+                // start handling the message here
+                NotifServerConnection conn = new NotifServerConnection(socket, messageHandler);
 
-				conn.connectWithoutWait(); //passes control to another thread
-			} catch (Exception ex) {
-				CTILogger.error( "error handling socket connection", ex );
-			}
-		}
-				 
-	}
-	
-	public static void main( String[] argsv ) {
-	    try {
-	        System.setProperty("cti.app.name", "Notification-Server");
-	        CTILogger.info("Starting notification server from main method");
+                conn.connectWithoutWait(); // passes control to another thread
+            } catch (Exception ex) {
+                log.error("error handling socket connection", ex);
+            }
+        }
+    }
+
+    public static void main(String[] argsv) {
+        try {
+            System.setProperty("cti.app.name", "Notification-Server");
+            log.info("Starting notification server from main method");
             YukonSpringHook.setDefaultContext(YukonSpringHook.NOTIFICATION_BEAN_FACTORY_KEY);
-	        NotificationServer ns = (NotificationServer)YukonSpringHook.getBean("notificationServer");
 
-	        MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
+            NotificationServer ns = (NotificationServer) YukonSpringHook.getBean("notificationServer");
 
-	        ns.start();
-	    }
-	    catch( Throwable t )
-	    {
-	        CTILogger.error("There was an error starting up the Notification Server", t);
-	    }
-	}
+            MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
 
-    public void testInjectMessage(Message msg) {
-        _msgHandler.testHandleMessage(msg);
+            ns.start();
+        } catch (Throwable t) {
+            log.error("There was an error starting up the Notification Server", t);
+        }
     }
 
-    public NotifMsgHandler getMsgHandler() {
-        return _msgHandler;
+    public int getBacklog() {
+        return backlog;
     }
 
-    public void setMsgHandler(NotifMsgHandler msgHandler) {
-        _msgHandler = msgHandler;
+    public void setBacklog(int i) {
+        if (i <= 0) {
+            i = 50;
+        }
+        backlog = i;
     }
 
-    public OutputHandlerHelper getOutputHelper() {
-        return _outputHelper;
+    public int getPort() {
+        return port;
     }
 
-    public void setOutputHelper(OutputHandlerHelper outputHelper) {
-        _outputHelper = outputHelper;
+    public void setPort(int i) {
+        port = i;
     }
 
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public String getBindAddress() {
+        String address = null;
+        if (bindAddress != null) {
+            address = bindAddress.getHostAddress();
+        }
+
+        return address;
+    }
+
+    public void setBindAddress(String host) {
+        try {
+            if (host != null) {
+                bindAddress = InetAddress.getByName(host);
+            }
+        } catch (UnknownHostException e) {
+            String msg = "Invalid host address specified: " + host;
+            log.error(msg, e);
+        }
     }
 
 }

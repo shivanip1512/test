@@ -4,9 +4,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.EventNotif;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -15,26 +18,27 @@ import com.cannontech.notif.outputs.*;
 
 public abstract class EventScheduler {
 
+    private static final Logger log = YukonLogManager.getLogger(EventScheduler.class);
+    
     static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
     
     protected Timer timer = new Timer(getClass().getSimpleName(), true);
-    final OutputHandlerHelper _helper;
+
+    private @Autowired OutputHandlerHelper outputHandlerHelper;
 
     private class DoScheduledTask extends TimerTask {
         @Override
         public void run() {
             try {
-            doScheduledNotifs();
+                doScheduledNotifs();
             } catch (Exception e) {
-                CTILogger.error("There was an uncaught exception while running timer task", e);
+                log.error("There was an uncaught exception while running timer task", e);
             }
         }
     };
 
-    public EventScheduler(OutputHandlerHelper helper) {
-        super();
-        _helper = helper;
+    public EventScheduler() {
         // this is the just-in-case timer, it will start about 30 seconds after
         // startup and check every five minutes after that
         double extraPeriod = Math.random() * 2;
@@ -47,13 +51,13 @@ public abstract class EventScheduler {
     protected void doScheduledNotifs() {
         List<? extends EventNotif> notifsPending;
         synchronized (this) {
-            CTILogger.debug("Starting doScheduledNotifs for " + getClass().getSimpleName());
+            log.debug("Starting doScheduledNotifs for " + getClass().getSimpleName());
             notifsPending = getScheduledNotifs();
             
-            CTILogger.debug("Found " + notifsPending.size() + " for " + getClass().getSimpleName());
+            log.debug("Found " + notifsPending.size() + " for " + getClass().getSimpleName());
         
             for (EventNotif notif : notifsPending) {
-                CTILogger.debug("Starting " + notif + " processing for " + notif.getCustomer().getCompanyName());
+                log.debug("Starting " + notif + " processing for " + notif.getCustomer().getCompanyName());
                 try {
                     notif.setState(NotificationState.PENDING);
                     updateNotif(notif);
@@ -63,13 +67,13 @@ public abstract class EventScheduler {
                     Contactable contactable = new SingleNotifContactable(cc, notif.getNotifType());
                     
                     NotificationBuilder builder = createBuilder(notif);
-                    _helper.handleNotification(builder, contactable);
+                    outputHandlerHelper.handleNotification(builder, contactable);
                 } catch (Exception e) {
-                    CTILogger.error("Unable to process notification", e);
+                    log.error("Unable to process notification", e);
                     notif.setState(NotificationState.FAILED);
                     updateNotif(notif);
                 }
-                CTILogger.debug("Finished " + notif + " processing for " + notif.getCustomer().getCompanyName());
+                log.debug("Finished " + notif + " processing for " + notif.getCustomer().getCompanyName());
             }
         }
     }

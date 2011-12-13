@@ -5,10 +5,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.notification.NotifType;
 
 public class SmsEmailHandler extends GenericEmailHandler {
-
-    public SmsEmailHandler() {
-        super("sms");
-    }
     
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
         public boolean validNotifcationType(int notificationCategoryId) {
@@ -24,4 +20,18 @@ public class SmsEmailHandler extends GenericEmailHandler {
         return NotifType.SMS;
     }
 
+    @Override
+    public NotifType getType() {
+        return NotifType.SMS;
+    }
+
+    @Override
+    public void startup() {
+        //No op
+    }
+
+    @Override
+    public void shutdown() {
+        //No op
+    }
 }

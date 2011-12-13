@@ -1,5 +1,7 @@
 package com.cannontech.notif.handler;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventPricing;
@@ -11,26 +13,30 @@ import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.*;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public class EconomicEventMessageHandler extends MessageHandler {
-    private final EconomicEventScheduler _scheduler;
-    private EconomicEventDao economicEventDao;
-    
-    public EconomicEventMessageHandler(EconomicEventScheduler scheduler) {
-        _scheduler = scheduler;
+public class EconomicEventMessageHandler implements MessageHandler {
+    private @Autowired EconomicEventScheduler economicEventScheduler;
+    private @Autowired EconomicEventDao economicEventDao;
+ 
+    @Override
+    public boolean supportsMessageType(Message message) {
+        if (message instanceof EconomicEventMsg 
+            || ServerRequestHelper.isPayloadInstanceOf(message, EconomicEventDeleteMsg.class)) {
+            
+            return true;
+        }
+        return false;
     }
-
-    public boolean handleMessage(NotifServerConnection connection, Message msg_) {
+    
+    @Override
+    public void handleMessage(NotifServerConnection connection, Message msg_) {
         if (msg_ instanceof EconomicEventMsg) {
             EconomicEventMsg msg = (EconomicEventMsg) msg_;
             handleEconomicMessage(msg);
-            return true;
+
         } else if (ServerRequestHelper.isPayloadInstanceOf(msg_, EconomicEventDeleteMsg.class)) {
             ServerRequestMsg reqMsg = (ServerRequestMsg) msg_;
             ServerResponseMsg responseMsg = handleEventDeleteMessage(reqMsg);
             connection.write(responseMsg);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -39,7 +45,7 @@ public class EconomicEventMessageHandler extends MessageHandler {
         Integer economicEventId = reqPayload.economicEventId;
         final EconomicEvent economicEvent = 
             economicEventDao.getForId(economicEventId);
-        Boolean success = _scheduler.deleteEventNotification(economicEvent, 
+        Boolean success = economicEventScheduler.deleteEventNotification(economicEvent, 
                                                              reqPayload.deleteStart, 
                                                              reqPayload.deleteStop);
         CollectableBoolean respPayload = new CollectableBoolean(success);
@@ -57,28 +63,19 @@ public class EconomicEventMessageHandler extends MessageHandler {
         
         switch (msg.action) {
         case STARTING:
-            _scheduler.eventCreationNotification(economicEvent);
+            economicEventScheduler.eventCreationNotification(economicEvent);
             break;
         case CANCELING:
-            _scheduler.eventCancellationNotification(economicEvent);
+            economicEventScheduler.eventCancellationNotification(economicEvent);
             break;
         case REVISING:
-            _scheduler.eventRevisionNotification(economicEventPricing);
+            economicEventScheduler.eventRevisionNotification(economicEventPricing);
             break;
         case EXTENDING:
-            _scheduler.eventExtensionNotification(economicEvent);
+            economicEventScheduler.eventExtensionNotification(economicEvent);
             break;
         default:
             CTILogger.error("Unknown action: " + msg.action);
         }
-    }
-
-    public EconomicEventDao getEconomicEventDao() {
-        return economicEventDao;
-    }
-
-    public void setEconomicEventDao(EconomicEventDao economicEventDao) {
-        this.economicEventDao = economicEventDao;
-    }
-    
+    }    
 }

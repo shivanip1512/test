@@ -2,6 +2,8 @@ package com.cannontech.notif.handler;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.*;
@@ -15,14 +17,9 @@ import com.cannontech.enums.NotificationState;
 import com.cannontech.notif.outputs.*;
 
 public class EconomicEventScheduler extends EventScheduler {
-    private EconomicEventNotifDao economicEventNotifDao;
-    private EconomicEventParticipantDao economicEventParticipantDao;
-    private EconomicService economicService;
-    
-
-    public EconomicEventScheduler(OutputHandlerHelper helper) {
-        super(helper);
-    }
+    private @Autowired EconomicEventNotifDao economicEventNotifDao;
+    private @Autowired EconomicEventParticipantDao economicEventParticipantDao;
+    private @Autowired EconomicService economicService;
     
     public void eventCreationNotification(EconomicEvent event) {
         List<EconomicEventParticipant> participants = economicEventParticipantDao.getForEvent(event);
@@ -206,21 +203,4 @@ public class EconomicEventScheduler extends EventScheduler {
     protected void updateNotif(EventNotif notif) {
         economicEventNotifDao.save((EconomicEventNotif) notif);
     }
-
-    public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {
-        this.economicEventNotifDao = economicEventNotifDao;
-    }
-
-    public void setEconomicEventParticipantDao(EconomicEventParticipantDao economicEventParticipantDao) {
-        this.economicEventParticipantDao = economicEventParticipantDao;
-    }
-
-    public EconomicService getEconomicService() {
-        return economicService;
-    }
-
-    public void setEconomicService(EconomicService economicService) {
-        this.economicService = economicService;
-    }
-
 }

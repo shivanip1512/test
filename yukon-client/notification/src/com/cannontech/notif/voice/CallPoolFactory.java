@@ -9,9 +9,9 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class CallPoolFactory {
-    private RolePropertyDao rolePropertyDao;
-    private YukonUserDao yukonUserDao;
-    private UrlDialerFactory urlDialerFactory;
+    private @Autowired RolePropertyDao rolePropertyDao;
+    private @Autowired YukonUserDao yukonUserDao;
+    private @Autowired UrlDialerFactory urlDialerFactory;
     
     public CallPool createCallPool(LiteEnergyCompany energyCompany) {
         CallPool callPool = new CallPool();
@@ -29,21 +29,6 @@ public class CallPoolFactory {
         callPool.initialize();
         
         return callPool;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setUrlDialerFactory(UrlDialerFactory urlDialerFactory) {
-        this.urlDialerFactory = urlDialerFactory;
     }
 
 }

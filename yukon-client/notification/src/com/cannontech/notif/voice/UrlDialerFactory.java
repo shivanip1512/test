@@ -25,17 +25,16 @@ import com.google.common.collect.Maps;
 
 
 public class UrlDialerFactory implements DialerFactory {
-    private RolePropertyDao rolePropertyDao;
-    private YukonUserDao yukonUserDao;
-    private ConfigurationSource configurationSource;
+    private @Autowired RolePropertyDao rolePropertyDao;
+    private @Autowired YukonUserDao yukonUserDao;
+    private @Autowired ConfigurationSource configurationSource;
     
-    private Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);
+    private static final Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);
 
     @Override
     public Dialer createDialer(LiteEnergyCompany energyCompany) {
         final LiteYukonUser ecUser = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
 
-        
         int retryCount = configurationSource.getInteger("IVR_URL_DIALER_RETRY_COUNT", 3);
         int retryDelayMs = configurationSource.getInteger("IVR_URL_DIALER_RETRY_DELAY_MS", 4000);
         int postCallSleepMs = configurationSource.getInteger("IVR_URL_DIALER_POST_CALL_SLEEP_MS", 4000);
@@ -120,20 +119,5 @@ public class UrlDialerFactory implements DialerFactory {
             }
             
         };
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
     }
 }

@@ -1,112 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-  <bean id="notificationServer" class="com.cannontech.notif.server.NotificationServer">
-    <property name="msgHandler" ref="notificationMessageHandler"/>
-    <property name="outputHelper" ref="notificationOutputHandlerHelper"/>
-    <property name="roleDao" ref="roleDao"/>
-  </bean>
-  
-  <bean id="notificationOutputHandlerHelper" class="com.cannontech.notif.outputs.OutputHandlerHelper">
-    <constructor-arg>
-      <list>
-        <ref bean="voiceHandler"/>
-        <ref bean="emailHandler"/>
-        <ref bean="smsHandler"/>
-      </list>
-    </constructor-arg>
-  </bean>
-  
-  <bean id="voiceHandler" class="com.cannontech.notif.outputs.VoiceHandler">
-    <constructor-arg ref="dispatchConnection"/>
-  </bean>
-  
-  <bean id="notificationQueue" class="com.cannontech.notif.voice.NotificationQueue" scope="prototype"/>
-  <bean id="callPoolFactory" class="com.cannontech.notif.voice.CallPoolFactory"/>
-  <bean id="urlDialerFactory" class="com.cannontech.notif.voice.UrlDialerFactory"/>
-  
-  <bean id="emailHandler" class="com.cannontech.notif.outputs.StandardEmailHandler">
-  </bean>
-  
-  <bean id="smsHandler" class="com.cannontech.notif.outputs.SmsEmailHandler">
-  </bean>
-          
-  <bean id="notificationMessageHandler" class="com.cannontech.notif.server.NotifMsgHandler">
-    <property name="handlers">
-      <list>
-        <ref bean="loadManagementMessageHandler"/>
-        <ref bean="alarmMessageHandler"/>
-        <ref bean="completedMessageHandler"/>
-        <ref bean="voiceDataRequestMessageHandler"/>
-        <ref bean="curtailmentEventMessageHandler"/>
-        <ref bean="economicEventMessageHandler"/>
-        <ref bean="notifEmailMessageHandler"/>
-        <ref bean="customerEmailMessageHandler"/>
-        <ref bean="programActionMessageHandler"/>
-      </list>
-    </property>
-  </bean>
-  
-  <bean id="loadManagementMessageHandler" class="com.cannontech.notif.handler.LoadManagementMessageHandler">
-    <constructor-arg ref="notificationOutputHandlerHelper"/>
-  </bean>
-  
-  <bean id="alarmMessageHandler" class="com.cannontech.notif.handler.AlarmMessageHandler">
-    <constructor-arg ref="notificationOutputHandlerHelper"/>
-    <property name="pointFormattingService" ref="pointFormattingService"/>
-  </bean>
-  
-  <bean id="completedMessageHandler" class="com.cannontech.notif.handler.CompletedMessageHandler">
-    <constructor-arg ref="voiceHandler"/>
-  </bean>
-  
-  <bean id="voiceDataRequestMessageHandler" class="com.cannontech.notif.handler.VoiceDataRequestMessageHandler">
-    <constructor-arg ref="voiceHandler"/>
-  </bean>
-  
-  <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler"
-         autowire="byType">
-    <constructor-arg ref="curtailmentEventScheduler"/>
-  </bean>
-  
-  <bean id="economicEventMessageHandler" class="com.cannontech.notif.handler.EconomicEventMessageHandler"
-         autowire="byType">
-    <constructor-arg ref="economicEventScheduler"/>
-  </bean>
-  
-  <bean id="notifEmailMessageHandler" class="com.cannontech.notif.handler.NotifEmailMessageHandler"
-         autowire="byType">
-  </bean>
-  
-  <bean id="customerEmailMessageHandler" class="com.cannontech.notif.handler.CustomerEmailMessageHandler"
-         autowire="byType">
-  </bean>
-  
-  <bean id="programActionMessageHandler" class="com.cannontech.notif.handler.ProgramActionMessageHandler"
-         autowire="byType">
-     <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
-          <ref bean="notificationOutputHandlerHelper" />
-      </constructor-arg>
-  </bean>
-  
-  <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler" abstract="false" scope="singleton" autowire="byType">
-      <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
-          <ref bean="notificationOutputHandlerHelper" />
-      </constructor-arg>
-  </bean>
-  
-  <bean id="curtailmentEventScheduler" class="com.cannontech.notif.handler.CurtailmentEventScheduler" abstract="false" scope="singleton" autowire="byType">
-      <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
-          <ref bean="notificationOutputHandlerHelper" />
-      </constructor-arg>
-  </bean>
+    <bean id="notificationServer" class="com.cannontech.notif.server.NotificationServer" />
+
+    <bean id="standardEmailHandler" class="com.cannontech.notif.outputs.StandardEmailHandler" />
+    <bean id="smsEmailHandler" class="com.cannontech.notif.outputs.SmsEmailHandler" />
+    <bean id="voiceHandler" class="com.cannontech.notif.outputs.VoiceHandler" />
+
+    <bean id="outputHandlerHelper" class="com.cannontech.notif.outputs.OutputHandlerHelper" />
+
+    <bean id="notificationQueue" class="com.cannontech.notif.voice.NotificationQueue" scope="prototype" />
+    <bean id="callPoolFactory" class="com.cannontech.notif.voice.CallPoolFactory" />
+    <bean id="urlDialerFactory" class="com.cannontech.notif.voice.UrlDialerFactory" />
+
+    <bean id="notificationMessageHandler" class="com.cannontech.notif.server.NotificationMessageHandler" />
+
+    <bean id="loadManagementMessageHandler" class="com.cannontech.notif.handler.LoadManagementMessageHandler"/>
+
+    <bean id="alarmMessageHandler" class="com.cannontech.notif.handler.AlarmMessageHandler"/>
+
+    <bean id="completedMessageHandler" class="com.cannontech.notif.handler.CompletedMessageHandler"/>
+
+    <bean id="voiceDataRequestMessageHandler" class="com.cannontech.notif.handler.VoiceDataRequestMessageHandler"/>
+
+    <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler" autowire="byType"/>
+
+    <bean id="economicEventMessageHandler" class="com.cannontech.notif.handler.EconomicEventMessageHandler" />
+
+    <bean id="notifEmailMessageHandler" class="com.cannontech.notif.handler.NotifEmailMessageHandler" autowire="byType"/>
+
+    <bean id="customerEmailMessageHandler" class="com.cannontech.notif.handler.CustomerEmailMessageHandler"/>
+
+    <bean id="programActionMessageHandler" class="com.cannontech.notif.handler.ProgramActionMessageHandler"/>
+
+    <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler"
+        abstract="false" scope="singleton" autowire="byType"/>
+
+    <bean id="curtailmentEventScheduler" class="com.cannontech.notif.handler.CurtailmentEventScheduler"
+        abstract="false" scope="singleton" autowire="byType"/>
 </beans>

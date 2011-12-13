@@ -7,7 +7,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
@@ -26,20 +26,22 @@ import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.user.YukonUserContext;
 
-public class AlarmMessageHandler extends NotifHandler {
-    private Logger log = YukonLogManager.getLogger(AlarmMessageHandler.class);
-    private PointFormattingService pointFormattingService;
+public class AlarmMessageHandler extends NotifHandler implements MessageHandler {
+    private static Logger log = YukonLogManager.getLogger(AlarmMessageHandler.class);
     
-    public AlarmMessageHandler(OutputHandlerHelper helper) {
-        super(helper);
-    }
-
-    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
-        if (!(msg_ instanceof NotifAlarmMsg)) {
-            return false;
+    private @Autowired PointFormattingService pointFormattingService;
+    
+    @Override
+    public boolean supportsMessageType(Message message) {
+        if (message instanceof NotifAlarmMsg) {
+            return true;
         }
-        NotifAlarmMsg msg = (NotifAlarmMsg) msg_;
-        
+        return false;
+    }
+    
+    @Override
+    public void handleMessage(NotifServerConnection connection,  Message message) {
+        NotifAlarmMsg msg = (NotifAlarmMsg) message;
 
         for (int i = 0; i < msg.notifGroupIds.length; i++) {
             int notifGroupId = msg.notifGroupIds[i];
@@ -48,7 +50,6 @@ public class AlarmMessageHandler extends NotifHandler {
             NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
             outputNotification(notifFormatter, liteNotifGroup);
         }
-        return true;
     }
 
     private NotificationBuilder createNotificationBuilder(NotifAlarmMsg _msg, 
@@ -176,11 +177,4 @@ public class AlarmMessageHandler extends NotifHandler {
         }
         
     }
-    
-    @Required
-    public void setPointFormattingService(PointFormattingService pointFormattingService) {
-        this.pointFormattingService = pointFormattingService;
-    }
-
-
 }

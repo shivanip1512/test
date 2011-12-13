@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramNotificationGroupDao;
@@ -22,23 +23,25 @@ import com.cannontech.notif.server.NotifServerConnection;
 /**
  * 
  */
-public class ProgramActionMessageHandler extends NotifHandler {
-    private ProgramNotificationGroupDao programNotificationGroupDao;
-    private ProgramDao programDao;
-    private CustomerDao customerDao;
+public class ProgramActionMessageHandler extends NotifHandler implements MessageHandler {
+    private @Autowired ProgramNotificationGroupDao programNotificationGroupDao;
+    private @Autowired ProgramDao programDao;
+    private @Autowired CustomerDao customerDao;
 
     private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
-    
-    public ProgramActionMessageHandler(OutputHandlerHelper helper) {
-        super(helper);
+
+    @Override
+    public boolean supportsMessageType(Message message) {
+        if (message instanceof ProgramActionMsg) {
+            return true;
+        }
+        return false;
     }
 
-    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
-        if (!(msg_ instanceof ProgramActionMsg)) {
-            return false;
-        }
-        final ProgramActionMsg msg = (ProgramActionMsg) msg_;
+    @Override
+    public void handleMessage(NotifServerConnection connection,  Message message) {
+        final ProgramActionMsg msg = (ProgramActionMsg) message;
         
         CTILogger.info("Got into the ProgramActionMessageHandler");
         
@@ -116,19 +119,5 @@ public class ProgramActionMessageHandler extends NotifHandler {
         for(LiteNotificationGroup lng : notificationGroupsForProgram) {
             outputNotification(notifFormatter, lng);
         }
-        return true;
     }
-
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-
-    public void setProgramNotificationGroupDao(ProgramNotificationGroupDao programNotificationGroupDao) {
-        this.programNotificationGroupDao = programNotificationGroupDao;
-    }
-
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-
 }

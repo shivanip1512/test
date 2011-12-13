@@ -3,15 +3,16 @@ package com.cannontech.notif.handler;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public abstract class MessageHandler {
+public interface MessageHandler {
 
     /**
      * Overriding functions should process the Message, produce a Notification
      * object and a LiteNotificationGroup object, and call handleNotification().
+     * 
      * @param connection 
-     * @param msg_
-     * @return true if processing should stop
+     * @param message
      */
-    public abstract boolean handleMessage(NotifServerConnection connection, Message msg_);
+    public void handleMessage(NotifServerConnection connection, Message message);
 
+    public boolean supportsMessageType(Message message);
 }

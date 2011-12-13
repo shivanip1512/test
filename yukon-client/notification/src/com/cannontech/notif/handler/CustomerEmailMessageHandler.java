@@ -4,7 +4,9 @@ import java.util.*;
 
 import javax.mail.MessagingException;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -15,18 +17,27 @@ import com.cannontech.notif.outputs.StandardEmailHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
-public class CustomerEmailMessageHandler extends MessageHandler {
+public class CustomerEmailMessageHandler implements MessageHandler {
+    
+    private static final Logger log = YukonLogManager.getLogger(CustomerEmailMessageHandler.class);
+    
     public static final Set<Integer> EMAIL_NOTIFICATION_TYPES = new HashSet<Integer>(1);
     
     static {
         EMAIL_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL));
     }
 
-    public boolean handleMessage(NotifServerConnection connection, Message msg_) {
-        if (!(msg_ instanceof NotifCustomerEmailMsg)) {
-            return false;
+    @Override
+    public boolean supportsMessageType(Message message) {
+        if (message instanceof NotifCustomerEmailMsg) {
+            return true;
         }
-        final NotifCustomerEmailMsg msg = (NotifCustomerEmailMsg) msg_;
+        return false;
+    }
+    
+    @Override
+    public void handleMessage(NotifServerConnection connection, Message message) {
+        final NotifCustomerEmailMsg msg = (NotifCustomerEmailMsg) message;
         
         ContactableCustomer customer = new ContactableCustomer(DaoFactory.getCustomerDao().getLiteCICustomer(msg.getCustomerID()));
         
@@ -43,14 +54,12 @@ public class CustomerEmailMessageHandler extends MessageHandler {
                     emailMsg.setRecipient(emailTo);
                     emailMsg.send();
                 } catch (MessagingException e) {
-                    CTILogger.warn("Unable to email message for " + customer + " to address " + emailTo + ".", e);
+                    log.warn("Unable to email message for " + customer + " to address " + emailTo + ".", e);
                 }
 
             }
         } catch (MessagingException e) {
-            CTILogger.error("Unable to email message '" + msg.getSubject() + "' to " + customer + ".", e );
+            log.error("Unable to email message '" + msg.getSubject() + "' to " + customer + ".", e );
         }
-        return true;
     }
-
 }

@@ -19,7 +19,8 @@ public class NotificationQueue implements NotificationQueueMBean {
     private boolean _shutdown = false;
     private Map<LiteEnergyCompany, CallPool> _poolMap = new TreeMap<LiteEnergyCompany, CallPool>();
     private int _notificationsProcessed = 0;
-    private CallPoolFactory callPoolFactory;
+    
+    private @Autowired CallPoolFactory callPoolFactory;
     
     public NotificationQueue() {
         //MBeanUtil.tryRegisterMBean("name=NotificationCallQueue", this);
@@ -105,11 +106,6 @@ public class NotificationQueue implements NotificationQueueMBean {
 
     public int getCallsProcessed() {
         return _notificationsProcessed;
-    }
-    
-    @Autowired
-    public void setCallPoolFactory(CallPoolFactory callPoolFactory) {
-        this.callPoolFactory = callPoolFactory;
     }
 
 }
