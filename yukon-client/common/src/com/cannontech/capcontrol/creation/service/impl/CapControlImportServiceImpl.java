@@ -405,7 +405,10 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         String parentName = hierarchyImportData.getParent();
         if (parentName != null) {
             int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
-            createHierarchyParentLink(hierarchyImportData, parentId, childId, results);
+            if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
+                // Invalid child type or parent type. We don't have a success here.
+                return;
+            }
         }
 
         results.add(new HierarchyImportResult(hierarchyImportData, HierarchyImportResultType.SUCCESS));
@@ -433,7 +436,10 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         String parentName = hierarchyImportData.getParent();
         if (parentName != null) {
             int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
-            createHierarchyParentLink(hierarchyImportData, parentId, childId, results);
+            if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
+                // Invalid child type or parent type. We don't have a success here.
+                return;
+            }
         }
 
         results.add(new HierarchyImportResult(hierarchyImportData,
@@ -459,6 +465,26 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         results.add(new HierarchyImportResult(hierarchyImportData,
                                               HierarchyImportResultType.SUCCESS));
     };
+    
+    private boolean parentTypeIsValid(int childId, int parentId) {
+        PaoType parentType = paoDao.getYukonPao(parentId).getPaoIdentifier().getPaoType();
+        PaoType childType  = paoDao.getYukonPao(childId).getPaoIdentifier().getPaoType();
+        
+        switch (childType) {
+        case CAP_CONTROL_AREA:
+            return true;
+        case CAP_CONTROL_SUBSTATION:
+            return (parentType == PaoType.CAP_CONTROL_AREA);
+        case CAP_CONTROL_SUBBUS:
+            return (parentType == PaoType.CAP_CONTROL_SUBSTATION);
+        case CAP_CONTROL_FEEDER:
+            return (parentType == PaoType.CAP_CONTROL_SUBBUS);
+        case CAPBANK:
+            return (parentType == PaoType.CAP_CONTROL_FEEDER);
+        default:
+            return false;
+        }
+    }
 
     private int getParentId(String parentName, PaoType paoType) throws NotFoundException {
         return getParentId(parentName, paoType.getPaoCategory(), paoType.getPaoClass());
@@ -483,30 +509,32 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         return paoDao.findYukonPao(name, PaoCategory.DEVICE, PaoClass.CAPCONTROL);
     }
 
-    private void createHierarchyParentLink(HierarchyImportData hierarchyImportData, int parentId,
+    private boolean createHierarchyParentLink(HierarchyImportData hierarchyImportData, int parentId,
                                            int childId,
                                            List<HierarchyImportResult> results) {
+        if(!parentTypeIsValid(childId, parentId)) {
+            results.add(new HierarchyImportResult(hierarchyImportData,
+                                                  HierarchyImportResultType.INVALID_PARENT));
+            return false;
+        }
+        
         switch (hierarchyImportData.getPaoType()) {
         case CAP_CONTROL_AREA:
         case CAP_CONTROL_SPECIAL_AREA:
             // We don't want to do anything here, areas don't have parents
-            break;
+            return true;
         case CAP_CONTROL_SUBSTATION:
-            substationDao.assignSubstation(parentId, childId);
-            break;
+            return substationDao.assignSubstation(parentId, childId);
         case CAP_CONTROL_SUBBUS:
-            substationBusDao.assignSubstationBus(parentId, childId);
-            break;
+            return substationBusDao.assignSubstationBus(parentId, childId);
         case CAP_CONTROL_FEEDER:
-            feederDao.assignFeeder(parentId, childId);
-            break;
+            return feederDao.assignFeeder(parentId, childId);
         case CAPBANK:
-            capbankDao.assignCapbank(parentId, childId);
-            break;
+            return capbankDao.assignCapbank(parentId, childId);
         default:
             results.add(new HierarchyImportResult(hierarchyImportData,
                                                   HierarchyImportResultType.INVALID_TYPE));
-            return;
+            return false;
         }
     }
     
