@@ -24,6 +24,7 @@ import com.cannontech.common.pao.service.providers.fields.DeviceFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceScanRateFields;
 import com.cannontech.common.pao.service.providers.fields.DeviceWindowFields;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
+import com.cannontech.database.YNBoolean;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
 
@@ -113,13 +114,14 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
 		
 		// Create and set-up the YukonPaObjectFields
-		paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(name));
+		YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(name);
 		
 		switch (paoType) {
 		case CAP_CONTROL_AREA:
 			paoFields.put(AreaFields.class, new AreaFields());
 			break;
 		case CAP_CONTROL_SPECIAL_AREA:
+		    yukonPaObjectFields.setDisabled(YNBoolean.YES); // Special Areas are disabled by default.
 			paoFields.put(SpecialAreaFields.class, new SpecialAreaFields());
 			break;
 		case CAP_CONTROL_SUBSTATION:
@@ -137,8 +139,10 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 			paoFields.put(CapbankAdditionalFields.class, new CapbankAdditionalFields());
 			break;	
 		default:
-			throw new IllegalArgumentException("Import of hierarchy object " + name + " failed. Unknown type: " + paoType.getDbString());
+			throw new IllegalArgumentException("Creation of hierarchy object " + name + " failed. Unknown type: " + paoType.getDbString());
 		}
+		
+		paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
 		
         PaoTemplate paoTemplate = new PaoTemplate(paoType, paoFields);
         
