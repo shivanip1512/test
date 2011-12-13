@@ -3,6 +3,7 @@ package com.cannontech.thirdparty.digi.dao;
 import java.util.List;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
@@ -67,4 +68,8 @@ public interface GatewayDeviceDao {
      * @return
      */
     public List<Integer> getLMGroupIdByDeviceId(int endPointId);
+    
+    public void updateDigiId(PaoIdentifier paoIdentifier, int digiId);
+    
+    public void updateFirmwareVersion(PaoIdentifier paoIdentifier, String firmwareVersion);
 }

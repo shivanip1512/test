@@ -33,7 +33,7 @@ public class FeederProvider implements PaoTypeProvider<FeederFields> {
         params.addValue("CurrentVarLoadPointID", fields.getCurrentVarLoadPointId());
         params.addValue("CurrentWattLoadPointID", fields.getCurrentWattLoadPointId());
         params.addValue("MapLocationID", fields.getMapLocationId());
-        params.addValue("CurrentVoltLoadPointID", fields.getcurrentVoltLoadPointId());
+        params.addValue("CurrentVoltLoadPointID", fields.getCurrentVoltLoadPointId());
         params.addValue("MultiMonitorControl", fields.getMultiMonitorControl());
         params.addValue("UsePhaseData", fields.getUsePhaseData());
         params.addValue("PhaseB", fields.getPhaseB());
@@ -51,7 +51,7 @@ public class FeederProvider implements PaoTypeProvider<FeederFields> {
         params.addValue("CurrentVarLoadPointID", fields.getCurrentVarLoadPointId());
         params.addValue("CurrentWattLoadPointID", fields.getCurrentWattLoadPointId());
         params.addValue("MapLocationID", fields.getMapLocationId());
-        params.addValue("CurrentVoltLoadPointID", fields.getcurrentVoltLoadPointId());
+        params.addValue("CurrentVoltLoadPointID", fields.getCurrentVoltLoadPointId());
         params.addValue("MultiMonitorControl", fields.getMultiMonitorControl());
         params.addValue("UsePhaseData", fields.getUsePhaseData());
         params.addValue("PhaseB", fields.getPhaseB());

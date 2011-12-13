@@ -30,11 +30,11 @@ public class FeederFields implements PaoTemplatePart {
 		this.currentWattLoadPointId = currentWattLoadPointId;
 	}
 	
-	public int getcurrentVoltLoadPointId() {
+	public int getCurrentVoltLoadPointId() {
 		return currentVoltLoadPointId;
 	}
 	
-	public void setcurrentVoltLoadPointId(int currentVoltLoadPointId) {
+	public void setCurrentVoltLoadPointId(int currentVoltLoadPointId) {
 		this.currentVoltLoadPointId = currentVoltLoadPointId;
 	}
 	

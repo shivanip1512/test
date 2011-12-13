@@ -11,6 +11,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -174,6 +175,18 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+    
+    @Override
+    public void updateNodeId(PaoIdentifier paoIdentifier, int nodeId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update("ZBEndPoint");
+        params.addValue("NodeId", nodeId);
+        
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
     }
     
     @Autowired

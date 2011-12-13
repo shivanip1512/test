@@ -20,14 +20,8 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
-import com.cannontech.common.pao.service.PaoCreationService;
-import com.cannontech.common.pao.service.PaoTemplate;
-import com.cannontech.common.pao.service.PaoTemplatePart;
-import com.cannontech.common.pao.service.providers.fields.DeviceFields;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TimeUtil;
@@ -40,11 +34,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.dao.provider.fields.DigiGatewayFields;
-import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeEndpointFields;
-import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeGatewayFields;
 import com.cannontech.thirdparty.digi.model.DeviceCore;
-import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.digi.model.FileData;
 import com.cannontech.thirdparty.digi.model.XbeeCore;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
@@ -54,10 +44,8 @@ import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
 import com.cannontech.thirdparty.service.ZigbeeServiceHelper;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
-import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.MutableClassToInstanceMap;
 
 public class DigiResponseHandler {
   
@@ -68,8 +56,6 @@ public class DigiResponseHandler {
     private ZigbeeControlEventDao zigbeeControlEventDao;
     private ZigbeeServiceHelper zigbeeServiceHelper;
     private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
-    
-    private PaoCreationService paoCreationService;
     
     private AttributeDynamicDataSource attributeDynamicDataSource;
     
@@ -237,25 +223,6 @@ public class DigiResponseHandler {
         
         throw new UnsupportedDataTypeException("Unsupported XML file type returned from iDigi.");
     }
-    
-    public PaoTemplate getDigiGatewayTemplate(DigiGateway digiGateway) {
-        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(digiGateway.getName()));
-        paoFields.put(DeviceFields.class, new DeviceFields());
-
-        DigiGatewayFields digiFields = new DigiGatewayFields();
-        digiFields.setDigiId(digiGateway.getDigiId());
-        paoFields.put(DigiGatewayFields.class, digiFields);
-        
-        ZigbeeGatewayFields zbFields = new ZigbeeGatewayFields();
-        zbFields.setFirmwareVersion(digiGateway.getFirmwareVersion());
-        zbFields.setMacAddress(digiGateway.getMacAddress());
-        paoFields.put(ZigbeeGatewayFields.class, zbFields);
-        
-        PaoTemplate template = new PaoTemplate(digiGateway.getPaoIdentifier().getPaoType(), paoFields);
-        
-        return template;
-    }
 
     /**
      * Parse for the connection status of the gateway contained in source.
@@ -272,12 +239,10 @@ public class DigiResponseHandler {
         
         Map<PaoIdentifier,ZigbeePingResponse> pingResponses = Maps.newHashMap();
         for (DeviceCore core : cores) {
-            DigiGateway digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());        
-            digiGateway.setDigiId(core.getDevId());
-            digiGateway.setFirmwareVersion(core.getDevFirmware());
+            ZigbeeDevice digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());
             
-            PaoTemplate paoTemplate = getDigiGatewayTemplate(digiGateway);
-            paoCreationService.updatePao(digiGateway.getPaoId(), paoTemplate);
+            gatewayDeviceDao.updateDigiId(digiGateway.getPaoIdentifier(), core.getDevId());
+            gatewayDeviceDao.updateFirmwareVersion(digiGateway.getPaoIdentifier(), core.getDevFirmware());
 
             Commissioned state;
             
@@ -409,8 +374,8 @@ public class DigiResponseHandler {
                     int nodeId = Integer.parseInt(m.group(1), 16);
                     
                     utilPro.setNodeId(nodeId);
-                    PaoTemplate template = buildPaoTemplate(utilPro);
-                    paoCreationService.updatePao(utilPro.getPaoIdentifier().getPaoId(), template);
+                    
+                    zigbeeDeviceDao.updateNodeId(utilPro.getPaoIdentifier(), nodeId);
                 } else {
                     log.warn("NodeId was not in the reponse.");
                 }
@@ -436,22 +401,6 @@ public class DigiResponseHandler {
         }
         
         log.debug("No device detected in Message. No actions to performed");
-    }
-    
-    private PaoTemplate buildPaoTemplate(ZigbeeEndpoint endpoint) {
-        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(endpoint.getName()));
-        paoFields.put(DeviceFields.class, new DeviceFields());
-        
-        ZigbeeEndpointFields zbFields = new ZigbeeEndpointFields(endpoint.getInstallCode(), 
-                                                                 endpoint.getMacAddress(), 
-                                                                 endpoint.getDestinationEndPointId(), 
-                                                                 endpoint.getNodeId());
-        paoFields.put(ZigbeeEndpointFields.class, zbFields);
-        
-        PaoTemplate template = new PaoTemplate(PaoType.ZIGBEE_ENDPOINT, paoFields);
-        
-        return template;
     }
     
     private void processReportEventStatus(String xmlData) {
@@ -694,10 +643,5 @@ public class DigiResponseHandler {
     @Autowired
     public void setAttributeDynamicDataSource(AttributeDynamicDataSource attributeDynamicDataSource) {
         this.attributeDynamicDataSource = attributeDynamicDataSource;
-    }
-    
-    @Autowired
-    public void setPaoCreationService(PaoCreationService paoCreationService) {
-        this.paoCreationService = paoCreationService;
     }
 }

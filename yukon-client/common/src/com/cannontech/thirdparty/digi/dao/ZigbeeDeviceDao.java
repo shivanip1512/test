@@ -2,6 +2,7 @@ package com.cannontech.thirdparty.digi.dao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 
@@ -26,4 +27,5 @@ public interface ZigbeeDeviceDao {
     
     public Integer findGatewayIdForInventory(int inventoryId);
     
+    public void updateNodeId(PaoIdentifier paoIdentifier, int nodeId);
 }

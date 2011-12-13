@@ -20,8 +20,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.service.PaoCreationService;
-import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -57,7 +55,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     private DigiResponseHandler digiResponseHandler;
     private ConfigurationSource configurationSource;
     private ZigbeeServiceHelper zigbeeServiceHelper;
-    private PaoCreationService paoCreationService;
     
     private JmsTemplate jmsTemplate;
     
@@ -79,9 +76,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     public void installGateway(int gatewayId) {
         log.debug("Install Gateway Start");
         
-        DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
-        
-        PaoTemplate paoTemplate = digiResponseHandler.getDigiGatewayTemplate(digiGateway);
+        DigiGateway digiGateway = gatewayDeviceDao.getDigiGateway(gatewayId);
         
         try{
             Integer digiId = commissionNewConnectPort(digiGateway.getMacAddress());
@@ -91,14 +86,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
                                                       BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                       Commissioned.DISCONNECTED);
             
-            //Update the database with the DigiId we got assigned.
-            digiGateway.setDigiId(digiId);
-            paoCreationService.updatePao(digiGateway.getPaoId(), paoTemplate);
+            gatewayDeviceDao.updateDigiId(digiGateway.getPaoIdentifier(), digiId);
+            
             log.debug("Install Gateway End");
         } catch (RuntimeException e) {
             log.error("Install Gateway End With Exceptions");
             throw e;
-        } finally {
         }
     }
     
@@ -523,10 +516,5 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(false);
-    }
-    
-    @Autowired
-    public void setPaoCreationService(PaoCreationService paoCreationService) {
-        this.paoCreationService = paoCreationService;
     }
 }

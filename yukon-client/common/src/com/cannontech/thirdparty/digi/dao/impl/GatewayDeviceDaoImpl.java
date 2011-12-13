@@ -14,6 +14,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -258,6 +259,30 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
         return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+    }
+    
+    @Override
+    public void updateDigiId(PaoIdentifier paoIdentifier, int digiId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update("DigiGateway");
+        params.addValue("DigiId", digiId);
+        
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+    
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void updateFirmwareVersion(PaoIdentifier paoIdentifier, String firmwareVersion) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink params = sql.update("ZBGateway");
+        params.addValue("FirmwareVersion", firmwareVersion);
+        
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+    
+        yukonJdbcTemplate.update(sql);
     }
     
     @Autowired
