@@ -7,10 +7,12 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import org.apache.myfaces.shared_impl.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.TranslationImportCallbackResult;
@@ -32,14 +34,16 @@ import com.cannontech.database.data.fdr.FDRInterface;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.fdr.FDRInterfaceOption;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.web.bulk.model.FdrInterfaceDisplayable;
 import com.cannontech.web.bulk.service.FdrTranslationManagerService;
+import com.cannontech.web.exceptions.ImportFileFormatException;
 import com.google.common.collect.Lists;
 
 public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerService {
+    private Logger log = YukonLogManager.getLogger(FdrTranslationManagerServiceImpl.class);
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     private BulkProcessor bulkProcessor = null;
@@ -47,15 +51,15 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     private PointDao pointDao;
     private FdrTranslationDao fdrTranslationDao;
     
-    private final String ADD = "ADD";
-    private final String REMOVE = "REMOVE";
+    private static final String ADD = "ADD";
+    private static final String REMOVE = "REMOVE";
     
-    private final String ACTION = "ACTION";
-    private final String DEVICE_NAME = "DEVICE_NAME";
-    private final String DEVICE_TYPE = "DEVICE_TYPE";
-    private final String POINT_NAME = "POINT_NAME";
-    private final String DIRECTION = "DIRECTION";
-    private final String POINTTYPE = "POINTTYPE";
+    private static final String ACTION = "ACTION";
+    private static final String DEVICE_NAME = "DEVICE_NAME";
+    private static final String DEVICE_TYPE = "DEVICE_TYPE";
+    private static final String POINT_NAME = "POINT_NAME";
+    private static final String DIRECTION = "DIRECTION";
+    private static final String POINTTYPE = "POINTTYPE";
     
     private final int DEFAULT_COLS_FOR_EXPORT = 4;
     private final String[] defaultImportColumnHeaders = {ACTION, DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION};
@@ -89,7 +93,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     @Override
     public String startImport(List<String> headers, List<Integer> columnsToIgnore, List<String[]> fileLines, YukonUserContext userContext) {
         SingleProcessor<String[]> translationProcessor = getTranslationProcessor(headers, columnsToIgnore, userContext);
-        String resultsId = startProcessor(fileLines, headers, translationProcessor);
+        String resultsId = startProcessor(fileLines, headers, translationProcessor, userContext);
         
         return resultsId;
     }
@@ -145,8 +149,11 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 String interfaceName = translation.getFdrInterfaceType().toString();
                 Set<String> thisTranslationColumns = translation.getParameterMap().keySet();
                 for(String unformattedColumnHeader : thisTranslationColumns) {
-                    String formattedColumnHeader = formatOptionForColumnHeader(unformattedColumnHeader, interfaceName);
-                    headers.add(formattedColumnHeader);
+                    //do not add POINTTYPE to import files
+                    if(!unformattedColumnHeader.equals(POINTTYPE)) {
+                        String formattedColumnHeader = formatOptionForColumnHeader(unformattedColumnHeader, interfaceName);
+                        headers.add(formattedColumnHeader);
+                    }
                 }
             }
         }
@@ -164,7 +171,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
             String deviceName = pao.getPaoName();
             String deviceType = pao.getPaoType().getPaoTypeName();
             String pointName = point.getPointName();
-            String direction = translation.getDirection().toString();
+            String direction = translation.getDirection().getValue();
             dataGrid[i+1][0] = deviceName;
             dataGrid[i+1][1] = deviceType;
             dataGrid[i+1][2] = pointName;
@@ -177,7 +184,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 boolean matchFound = false;
                 for(Map.Entry<String, String> option : translation.getParameterMap().entrySet()) {
                     String translationPart = formatOptionForColumnHeader(option.getKey(), translationName);
-                    if(translationPart.equals(formattedColumnHeader)) { //TODO: is ignoreCase needed?
+                    if(translationPart.equals(formattedColumnHeader)) {
                         dataGrid[i+1][j] = option.getValue();
                         matchFound = true;
                     }
@@ -201,18 +208,97 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
         return null;
     }
     
-    private String startProcessor(List<String[]> fileLines, List<String> headers, Processor<String[]> processor) {
+    @Override
+    public List<String> cleanAndValidateHeaders(String[] inputHeaders) throws ImportFileFormatException {
+        List<String> outputHeaders = Lists.newArrayList();
+        
+        for(String inputHeader : inputHeaders) {
+            String noWhiteSpaceHeaderToAdd = StringUtils.deleteWhitespace(inputHeader);
+            if(outputHeaders.contains(noWhiteSpaceHeaderToAdd)) {
+                ImportFileFormatException exception =  new ImportFileFormatException("Duplicate column header: " + noWhiteSpaceHeaderToAdd);
+                exception.setHeaderName(noWhiteSpaceHeaderToAdd);
+                throw exception;
+            } else {
+                outputHeaders.add(noWhiteSpaceHeaderToAdd);
+            }
+        }
+        
+        return outputHeaders;
+    }
+    
+    @Override
+    public FdrImportFileInterfaceInfo getInterfaceInfo(List<String> headers, boolean ignoreInvalidColumns) throws ImportFileFormatException {
+        FdrImportFileInterfaceInfo interfaceInfo = new FdrImportFileInterfaceInfo();
+        
+        FDRInterface[] allFdrInterfaces = com.cannontech.database.db.point.fdr.FDRInterface.getALLFDRInterfaces();
+        List<FDRInterface> allFdrInterfacesList = Lists.newArrayList(allFdrInterfaces);
+        
+        for(String header : headers) {
+            boolean headerMatchFound = false;
+            
+            for(FDRInterface fdrInterface : allFdrInterfacesList) {
+                if(matchesDefaultColumn(header)) {
+                    //Default column. Move on to the next header.
+                    headerMatchFound = true;
+                    break;
+                } else if(header.startsWith(fdrInterface.toString() + "_")) {
+                    if(interfaceInfo.getInterfaces().contains(fdrInterface)) {
+                        //Interface found, but already added. Move on to the next header.
+                        headerMatchFound = true;
+                        break;
+                    } else {
+                        interfaceInfo.addInterface(fdrInterface);
+                        headerMatchFound = true;
+                        break;
+                    }
+                }
+            }
+            if(!headerMatchFound) {
+                //Header doesn't match any interface and isn't a default
+                if(ignoreInvalidColumns) {
+                    int colIndex = headers.indexOf(header);
+                    interfaceInfo.addColumnToIgnore(colIndex);
+                    log.warn("FDR Translation Import ignoring column \"" + header + "\" - not a recognized default or interface-specific column.");
+                } else {
+                    ImportFileFormatException exception = new ImportFileFormatException("Column header \"" + header + "\" doesn't match any interface and isn't a default header.");
+                    exception.setHeaderName(header);
+                    throw exception;
+                }
+            }
+        }
+        return interfaceInfo;
+    }
+    
+    @Override
+    public void validateInterfaceHeadersPresent(FdrImportFileInterfaceInfo interfaceInfo, List<String> headers) throws ImportFileFormatException {
+        for(FDRInterface fdrInterface : interfaceInfo.getInterfaces()) {
+            String interfaceName = fdrInterface.toString();
+            //a. Get list of all columns required for each interface
+            List<FDRInterfaceOption> options = fdrInterface.getInterfaceOptionList();
+            //b. Check headers for all columns for each interface
+            for(FDRInterfaceOption option : options) {
+                String formattedOption = formatOptionForColumnHeader(option.getOptionLabel(), interfaceName);
+                if(!headers.contains(formattedOption)) {
+                    ImportFileFormatException exception = new ImportFileFormatException("Missing column header \"" + formattedOption + "\" for interface \"" + interfaceName);
+                    exception.setHeaderName(formattedOption);
+                    exception.setInterfaceName(interfaceName);
+                    throw exception;
+                }
+            }
+        }
+    }
+    
+    private String startProcessor(List<String[]> fileLines, List<String> headers, Processor<String[]> processor, YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        TranslationImportCallbackResult callbackResult = new TranslationImportCallbackResult(resultsId, headers, fileLines);
+        TranslationImportCallbackResult callbackResult = new TranslationImportCallbackResult(resultsId, headers, fileLines, messageSourceAccessor);
         bpRecentResultsCache.addResult(resultsId, callbackResult);
         
-        //TODO remove? ObjectMapper<String[], String[]> mapper = new PassThroughMapper<String[]>();
         bulkProcessor.backgroundBulkProcess(fileLines.iterator(), processor, callbackResult);
         
         return resultsId;
     }
     
-    //TODO break out processor into its own class
     private SingleProcessor<String[]> getTranslationProcessor(final List<String> headers, final List<Integer> columnsToIgnore, final YukonUserContext userContext) {
         FDRInterface[] allFdrInterfaces = com.cannontech.database.db.point.fdr.FDRInterface.getALLFDRInterfaces();
         final List<FDRInterface> allFdrInterfacesList = Lists.newArrayList(allFdrInterfaces);
@@ -270,13 +356,6 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                             }
                         }
                         
-                        //Quick check to for ####_POINTTYPE column
-                        if (header.equals(fdrInterface.toString() + "_" + POINTTYPE)) {
-                            //skip point type!
-                            continue;
-                        }
-                        
-                        
                         //find an option that matches
                         boolean foundMatch = false;
                         for(int j = 0; j < interfaceOptions.size(); j++) {
@@ -333,12 +412,15 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.pointNotFound", pointName, deviceName);
                     throw new ProcessingException(error);
                 }
-
-                FdrDirection fdrDirection = FdrDirection.valueOf(direction);
                 
                 
-                //I feel like we need to know this a lot higher in this method.
-                FdrInterfaceType interfaceType = FdrInterfaceType.valueOf(fdrInterface.toString());//TODO is this right?
+                FdrDirection fdrDirection = FdrDirection.getEnum(direction);
+                if(fdrDirection == null) {
+                    String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.invalidDirection", direction);
+                    throw new ProcessingException(error);
+                }
+                
+                FdrInterfaceType interfaceType = FdrInterfaceType.valueOf(fdrInterface.toString());
                 
                 //build translation
                 FdrTranslation translation = new FdrTranslation();

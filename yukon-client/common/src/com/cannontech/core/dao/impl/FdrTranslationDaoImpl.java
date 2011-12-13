@@ -7,71 +7,33 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.FdrTranslationDao;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class FdrTranslationDaoImpl implements FdrTranslationDao {
-
-    private static final String insertSql;
-    private static final String selectAllSql;
-    private static final String selectByPointIdAndTypeSql;
-    private static final String selectByPaoIdAndTypeSql;    
-    private static final String selectByTypeSql;
-    private static final String selectByTypeAndTranslationSql;
-    private static final String deleteSql;
-    
     private static final ParameterizedRowMapper<FdrTranslation> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
-                
-        insertSql = "INSERT INTO fdrtranslation " +
-        		"(pointid,directiontype,interfacetype,destination,translation) " +
-        		"VALUES (?,?,?,?,?)";
-        
-        selectAllSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation";
-        
-        selectByPointIdAndTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
-        	+ " WHERE pointid = ? AND interfacetype = ?";
-        
-        selectByPaoIdAndTypeSql = "SELECT FDRT.pointid, FDRT.directiontype, FDRT.interfacetype, FDRT.destination, FDRT.translation " 
-                                + "FROM FDRTranslation FDRT, Point P " 
-                                + "WHERE FDRT.pointId = P.pointId "
-                                + "AND FDRT.interfaceType = ? "
-                                + "AND P.PAOBjectID = ? ";
-        
-        selectByTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
-        	+ " WHERE interfacetype = ?";
-        
-        selectByTypeAndTranslationSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
-        	+ " WHERE InterfaceType = ? and Translation = ?";
-        
-        deleteSql = "DELETE FROM fdrtranslation "
-                  + "WHERE pointId = ? "
-                  + "AND directionType = ? "
-                  + "AND interfaceType = ? "
-                  + "AND destination = ? "
-                  + "AND translation = ? ";
-        
         rowMapper = new ParameterizedRowMapper<FdrTranslation>() {
             public FdrTranslation mapRow(ResultSet rs, int rowNum) throws SQLException {
             	
             	FdrTranslation fdrTranslation = new FdrTranslation();
             	fdrTranslation.setPointId(rs.getInt("PointID"));
             	
-            	String direction = rs.getString("directiontype");
+            	String direction = rs.getString("DirectionType");
             	fdrTranslation.setDirection(FdrDirection.getEnum(direction));
             	
-            	String interfacetype = rs.getString("interfacetype");
+            	String interfacetype = rs.getString("InterfaceType");
             	fdrTranslation.setInterfaceType(FdrInterfaceType.valueOf(interfacetype));
             	
-            	String translation = rs.getString("translation");
+            	String translation = rs.getString("Translation");
             	fdrTranslation.setTranslation(translation);
             	Map<String,String> parameterMap = fdrTranslation.getParameterMap();
 
@@ -91,58 +53,85 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         };
     }
     
+    public boolean add(FdrTranslation translation) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto("FdrTranslation");
+        sink.addValue("PointId", translation.getPointId());
+        sink.addValue("DirectionType", translation.getDirection().getValue());
+        sink.addValue("InterfaceType", translation.getFdrInterfaceType().toString());
+        sink.addValue("Destination", translation.getDestination());
+        sink.addValue("Translation", translation.getTranslation());
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
+        
+        return rowsAffected == 1;
+    }
+    
+	public FdrTranslation getByPointIdAndType(int pointId, FdrInterfaceType type) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+    	sql.append("FROM FdrTranslation");
+    	sql.append("WHERE PointId").eq(pointId);
+    	sql.append(  "AND InterfaceType").eq(type);
+
+	    return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+	}
+    
+    public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT FDRT.PointId, FDRT.DirectionType, FDRT.InterfaceType, FDRT.Translation");
+        sql.append("FROM FdrTranslation FDRT, Point P");
+        sql.append("WHERE FDRT.PointId = P.PointId");
+        sql.append(  "AND FDRT.InterfaceType").eq(type.toString());
+        sql.append(  "AND P.PAObjectId").eq(paoId);
+        
+        return yukonJdbcTemplate.query(sql, rowMapper);        
+    }
+    
+	public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+    	sql.append("FROM FdrTranslation");
+    	sql.append("WHERE InterfaceType").eq(type.toString());
+	    
+    	return yukonJdbcTemplate.query(sql, rowMapper);
+	}
+    
+	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+    	sql.append("FROM FdrTranslation");
+    	sql.append("WHERE InterfaceType").eq(type.toString());
+    	sql.append(  "AND Translation").eq(translation);
+	    
+    	return yukonJdbcTemplate.query(sql, rowMapper);
+	}
+    
+    public List<FdrTranslation> getAllTranslations() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+        sql.append("FROM FdrTranslation");
+        sql.append("ORDER BY InterfaceType");
+        
+        return yukonJdbcTemplate.query(sql, rowMapper);
+    }
+    
+    public boolean delete(FdrTranslation translation) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM FdrTranslation");
+        sql.append("WHERE PointId").eq(translation.getPointId());
+        sql.append(  "AND DirectionType").eq(translation.getDirection().toString());
+        sql.append(  "AND InterfaceType").eq(translation.getFdrInterfaceType().toString());
+        sql.append(  "AND Destination").eq(translation.getDestination());
+        sql.append(  "AND Translation").eq(translation.getTranslation());
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
+        
+        return rowsAffected == 1;
+    }
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean add(FdrTranslation trans) {
-        int rowsAffected = yukonJdbcTemplate.update(insertSql, trans.getPointId(),
-                                                     trans.getDirection().toString(),
-                                                     trans.getFdrInterfaceType().toString(),
-                                                     trans.getDestination(),
-                                                     trans.getTranslation()
-                                                     );
-        boolean result = (rowsAffected == 1);
-        return result;
-    }
-    
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-	public FdrTranslation getByPointIdAndType(int id, FdrInterfaceType type) {
-    	return yukonJdbcTemplate.queryForObject(selectByPointIdAndTypeSql, rowMapper, id, type.toString());
-	}
-    
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-    public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type) {
-        return yukonJdbcTemplate.query(selectByPaoIdAndTypeSql, rowMapper, type.toString(), paoId);        
-    }
-    
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-	public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
-    	return yukonJdbcTemplate.query(selectByTypeSql, rowMapper, type.toString() );
-	}
-    
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
-    	return yukonJdbcTemplate.query(selectByTypeAndTranslationSql, rowMapper, type.toString(), translation );
-	}
-    
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-    public List<FdrTranslation> getAllTranslations() {
-        return yukonJdbcTemplate.query(selectAllSql, rowMapper);
-    }
-    
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-    public boolean delete(FdrTranslation translation) {
-        int rowsAffected = yukonJdbcTemplate.update(deleteSql,
-                                                     translation.getPointId(),
-                                                     translation.getDirection().toString(),
-                                                     translation.getFdrInterfaceType().toString(),
-                                                     translation.getDestination(),
-                                                     translation.getTranslation()
-                                                     );
-        boolean result = (rowsAffected == 1);
-        return result;
     }
 }

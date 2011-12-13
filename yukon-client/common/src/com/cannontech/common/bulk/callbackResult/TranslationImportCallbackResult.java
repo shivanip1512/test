@@ -4,20 +4,30 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.google.common.collect.Lists;
 
 public class TranslationImportCallbackResult extends CollectingBulkProcessorCallback<String[], String[]>  implements BackgroundProcessResultHolder {
-    protected BackgroundProcessTypeEnum backgroundProcessType;
-    protected String resultsId = "";
-    protected int totalItems = 0;
+    private BackgroundProcessTypeEnum backgroundProcessType;
+    private String resultsId = "";
+    private int totalItems = 0;
     
     private List<String> headers = Lists.newArrayList();
     private List<String[]> importRows = Lists.newArrayList();
     private List<Integer> failedRows = Lists.newArrayList();
     private List<String> log = Lists.newArrayList();;
     private int logIndex = 0;
+    private MessageSourceAccessor messageSourceAccessor;
     
-    public TranslationImportCallbackResult(BackgroundProcessTypeEnum backgroundProcessType, String resultsId, int totalItems) {
+    public TranslationImportCallbackResult(String resultsId, List<String> headers, List<String[]> importRows, MessageSourceAccessor messageSourceAccessor) {
+        this(BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION, resultsId, importRows.size(), messageSourceAccessor);
+        this.headers = headers;
+        this.importRows = importRows;
+        this.backgroundProcessType = BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION;
+        this.messageSourceAccessor = messageSourceAccessor;
+    }
+    
+    public TranslationImportCallbackResult(BackgroundProcessTypeEnum backgroundProcessType, String resultsId, int totalItems, MessageSourceAccessor messageSourceAccessor) {
         this.backgroundProcessType = backgroundProcessType;
         this.resultsId = resultsId;
         this.totalItems = totalItems;
@@ -56,27 +66,17 @@ public class TranslationImportCallbackResult extends CollectingBulkProcessorCall
         return totalItems;
     }
     
-    //////////
-    
-    public TranslationImportCallbackResult(String resultsId, List<String> headers, List<String[]> importRows) {
-        this(BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION, resultsId, importRows.size());
-        this.headers = headers;
-        this.importRows = importRows;
-        this.backgroundProcessType = BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION;
-    }
-    
     @Override
     public void processedObject(int rowNumber, String[] row) {
         super.processedObject(rowNumber, row);
-        //TODO: improve, i18n
-        log.add("Operation successful.");
+        String logString = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.operationSuccessful", rowNumber+1);
+        log.add(logString);
     }
     
     @Override
     public void receivedProcessingException(int rowNumber, String[] row, ProcessorCallbackException exception) {
         super.receivedProcessingException(rowNumber, row, exception);
-        //TODO improve, i18n
-        String logString = "Operation failed. " + exception.getMessage();
+        String logString = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.operationFailed", rowNumber+1, exception.getMessage());
         log.add(logString);
         failedRows.add(rowNumber);
     }
@@ -111,11 +111,22 @@ public class TranslationImportCallbackResult extends CollectingBulkProcessorCall
         return false;
     }
     
+    /**
+     * Resets the log index to zero, so getNextLogLine() and
+     * getNewLogLines() will return values starting at the beginning
+     * of the list next time they are called.
+     */
     public boolean resetLog() {
         logIndex = 0;
         return true;
     }
     
+    /**
+     * Returns a single log line per call, remembering the current 
+     * position in the log for subsequent calls. Call resetLog() to reset
+     * the index and begin returning lines from the beginning of the log
+     * again. 
+     */
     public String getNextLogLine() {
         String logLine = null;
         try {
@@ -126,6 +137,25 @@ public class TranslationImportCallbackResult extends CollectingBulkProcessorCall
         }
         
         return logLine;
+    }
+    
+    /**
+     * Returns all unread log lines in a List, based on the position
+     * of the log index. Call resetLog() to reset the index and begin
+     * returning lines from the beginning of the log again.
+     */
+    public List<String> getNewLogLines() {
+        List<String> logLines = Lists.newArrayList();
+        String logLine = getNextLogLine();
+        while(logLine != null) {
+            logLines.add(logLine);
+            logLine = getNextLogLine();
+        }
+        return logLines;
+    }
+    
+    public int getLogIndex() {
+        return logIndex;
     }
     
     public List<String[]> getImportRows() {

@@ -1,46 +1,52 @@
 package com.cannontech.common.fdr;
 
-import com.cannontech.common.i18n.DisplayableEnum;
+import java.util.Comparator;
 
-public enum FdrInterfaceType implements DisplayableEnum {
-    INET(1, FdrInterfaceOption.INET_DESTINATION_SOURCE),
-    ACS(2, null),
-    VALMET(3, null),
-    CYGNET(4, null),
-    STEC(5, null),
-    RCCS(6, FdrInterfaceOption.RCCS_DESTINATION_SOURCE),
-    TRISTATE(7, null),
-    RDEX(8, FdrInterfaceOption.RDEX_DESTINATION_SOURCE),
-    SYSTEM(9, null),
-    DSM2IMPORT(10, null),
-    TELEGYR(11, null),
-    TEXTIMPORT(12, null),
-    TEXTEXPORT(13, null),
-    EMPTY(14, null),
-    EMPTY2(15, null),
-    LODESTAR_STD(16, null),
-    LODESTAR_ENH(17, null),
-    DSM2FILEIN(18, null),
-    XA21LM(19, null),
-    BEPC(20, null),
-    PI(21, null),
-    LIVEDATA(22, null),
-    ACSMULTI(23, FdrInterfaceOption.ACSMULTI_DESTINATION_SOURCE),
-    WABASH(24, null),
-    TRISTATESUB(25, null),
-    OPC(26, null),
-    MULTISPEAK_LM(27, null),
-    DNPSLAVE(28, FdrInterfaceOption.DNPSLAVE_DESTINATION_SOURCE),
-    VALMETMULTI(29, FdrInterfaceOption.VALMETMULTI_DESTINATION_SOURCE);
+public enum FdrInterfaceType {
+    INET(1, true, FdrInterfaceOption.INET_DESTINATION_SOURCE),
+    ACS(2, true, null),
+    VALMET(3, true, null),
+    CYGNET(4, true, null),
+    STEC(5, true, null),
+    RCCS(6, true, FdrInterfaceOption.RCCS_DESTINATION_SOURCE),
+    TRISTATE(7, true, null),
+    RDEX(8, true, FdrInterfaceOption.RDEX_DESTINATION_SOURCE),
+    SYSTEM(9, true, null),
+    DSM2IMPORT(10, true, null),
+    TELEGYR(11, true, null),
+    TEXTIMPORT(12, true, null),
+    TEXTEXPORT(13, true, null),
+    EMPTY(14, false, null),
+    EMPTY2(15, false, null),
+    LODESTAR_STD(16, true, null),
+    LODESTAR_ENH(17, true, null),
+    DSM2FILEIN(18, true, null),
+    XA21LM(19, true, null),
+    BEPC(20, true, null),
+    PI(21, true, null),
+    LIVEDATA(22, true, null),
+    ACSMULTI(23, true, FdrInterfaceOption.ACSMULTI_DESTINATION_SOURCE),
+    WABASH(24, true, null),
+    TRISTATESUB(25, true, null),
+    OPC(26, true, null),
+    MULTISPEAK_LM(27, true, null),
+    DNPSLAVE(28, true, FdrInterfaceOption.DNPSLAVE_DESTINATION_SOURCE),
+    VALMETMULTI(29, true, FdrInterfaceOption.VALMETMULTI_DESTINATION_SOURCE);
 
-    private final String keyPrefix = "yukon.web.modules.amr.fdrTranslationManagement.interfaces.";
-
+    private boolean display;
     private int pos;
     //This or the lack of this indicates a special case where the Destination field is utilized instead of defaulted.
     private final FdrInterfaceOption destinationOption;
-
-    FdrInterfaceType(int pos, FdrInterfaceOption destinationOption) {
+    //This comparator is designed to let us sort FdrInterfaceTypes by name, rather than natural enum order
+    private static Comparator<FdrInterfaceType> alphabeticalComparator = new Comparator<FdrInterfaceType>() {
+        public int compare(FdrInterfaceType typeOne, FdrInterfaceType typeTwo) {
+            return typeOne.name().compareTo(typeTwo.name());
+        }
+    };
+    
+    FdrInterfaceType(int pos, boolean display, FdrInterfaceOption destinationOption) {
         this.pos = pos;
+        this.display = display;
         this.destinationOption = destinationOption;
     }
 
@@ -56,7 +62,14 @@ public enum FdrInterfaceType implements DisplayableEnum {
     public boolean isDestinationInOptions() {
         return destinationOption != null;
     }
-
+    
+    /**
+     * Returns false if the interface should not be displayed in UI lists, etc.
+     */
+    public boolean isDisplayed() {
+        return display;
+    }
+    
     public FdrInterfaceOption getDestinationOption() {
         return destinationOption;
     }
@@ -69,9 +82,13 @@ public enum FdrInterfaceType implements DisplayableEnum {
         }
         return null;
     }
-
-    @Override
-    public String getFormatKey() {
-        return keyPrefix + name();
+    
+    /**
+     * Returns an FdrInterfaceType comparator that sorts alphabetically by the name
+     * of the interface type.
+     */
+    public static Comparator<FdrInterfaceType> getAlphabeticalComparator() {
+        return alphabeticalComparator;
     }
+
 }

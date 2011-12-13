@@ -1,9 +1,10 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<cti:url var="updateUrl" value="/spring/bulk/fdrTranslationManager/updateLog">
+    <cti:param name="resultId" value="${resultId}" />
+</cti:url>
 
 <cti:standardPage module="amr" page="fdrTranslationManagement.import">
     <cti:breadCrumbs>
@@ -17,6 +18,13 @@
         <%-- fdr translation import --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.import.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
+    
+    <cti:includeScript link="/JavaScript/fdrImportLogger.js"/>
+    <script>
+        jQuery(document).ready(function(){
+            initiateLogUpdate("${updateUrl}", 1);
+        });
+    </script>
     
     <tags:boxContainer2  nameKey="mainBox">
         <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
@@ -33,7 +41,7 @@
         </div>
         <br>
         <tags:boxContainer2 nameKey="importLogBox">
-            <div style="height: 200px; overflow: auto;">
+            <div id="logDiv" style="height: 200px; overflow: auto;">
             </div>
         </tags:boxContainer2>
         <br>
@@ -46,5 +54,4 @@
         </div>
         <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['downloadFailedSection'], true)" initialize="true" value="FDR_TRANSLATION_IMPORT/${resultId}/IS_COMPLETE_WITH_FAILURES" />
     </tags:boxContainer2>
-       
 </cti:standardPage>

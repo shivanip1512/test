@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.web.bulk.model.FdrInterfaceDisplayable;
+import com.cannontech.web.exceptions.ImportFileFormatException;
 
 public interface FdrTranslationManagerService {
     
@@ -58,9 +60,27 @@ public interface FdrTranslationManagerService {
     public String checkForMissingDefaultImportHeaders(List<String> headers);
     
     /**
-     * Move all the validation junk in controller to this
+     * Removes whitespace from headers array, makes sure that there are no duplicates, and returns them
+     * as a List<String>.
      */
-    //public SomeReturnObject validateHeaders();
+    public List<String> cleanAndValidateHeaders(String[] inputHeaders) throws ImportFileFormatException;
+    
+    /**
+     * Iterates over import file headers and confirms that they're legitimate default or
+     * interface-specific headers. If ignoreInvalidColumns is false, any invalid headers will cause
+     * an ImportFileFormatException.
+     * @return An FdrImportFileInterfaceInfo object, which contains a list of all the FDRInterfaces
+     * to whom these headers belong, and a list of column numbers to be ignored due to invalid
+     * headers.
+     */
+    public FdrImportFileInterfaceInfo getInterfaceInfo(List<String> headers, boolean ignoreInvalidColumns) throws ImportFileFormatException;
+    
+    /**
+     * Ensures that the list of headers contains every header required for the interfaces in the 
+     * FdrImportFileInterfaceInfo. If a header is missing, a ImportFileFormatException is thrown,
+     * containing the missing header name and the interface it belongs to.
+     */
+    public void validateInterfaceHeadersPresent(FdrImportFileInterfaceInfo interfaceInfo, List<String> headers) throws ImportFileFormatException;
     
     /**
      * Takes headers, ignored columns and rows of import file and begins import.

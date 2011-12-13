@@ -30,9 +30,10 @@
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointName">POINT_NAME</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointNameDescription">A point on the specified Yukon device.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.direction">DIRECTION</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.directionDescription">"Send", "Send for control","Receive" or "Receive for control".</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.directionDescription">"Send", "Send for control","Receive", "Receive for control" or "Receive for Analog Output".</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsText">Each interface requires additional columns. Select an interface to see required columns and download a sample file.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsHeader">Columns</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.sampleFileLink">Download a sample file</entry>
     
     <!-- FDR TRANSLATION IMPORT -->
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.import.pageName">FDR Translation Import</entry>
@@ -56,41 +57,14 @@
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.unableToInsert">Unable to insert translation - a conflicting translation exists on this point.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.unableToRemove">Unable to remove translation - no matching translation found.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDestination">"{0}" is not a valid destination.</entry>
-    
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.deviceNotFound">Import Error: Device not found.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.missingAnyColumn">Import Error: Missing a column.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidAction">Import Error: Invalid Action.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDirection">"{0}" is not a valid direction.</entry>
     
-    <!-- FDR INTERFACE KEYS -->
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.INET">INET</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.ACS">ACS</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.VALMET">VALMET</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.CYGNET">CYGNET</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.STEC">STEC</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.RCCS">RCCS</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TRISTATE">TRISTATE</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.SYSTEM">SYSTEM</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.DSM2IMPORT">DMS2IMPORT</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TELEGYR">TELEGYR</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TEXTIMPORT">TEXTIMPORT</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TEXTEXPORT">TEXTEXPORT</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.EMPTY">EMPTY</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.EMPTY2">EMPTY2</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.LODESTAR_STD">LODESTAR_STD</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.LODESTAR_ENH">LODESTAR_ENH</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.DSM2FILEIN">DMS2FILEIN</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.XA21LM">XA21LM</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.BEPC">BEPC</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.PI">PI</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.LIVEDATA">LIVEDATA</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.ACSMULTI">ACSMULTI</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.WABASH">WABASH</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.TRISTATESUB">TRISTATESUB</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.OPC">OPC</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.MULTISPEAK_LM">MULTISPEAK_LM</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.DNPSLAVE">DNPSLAVE</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.RDEX">RDEX</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaces.VALMETMULTI">VALMETMULTI</entry>
+    <!-- IMPORT LOG MESSAGES -->
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.operationSuccessful">Line {0}: Operation successful.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.operationFailed">Line {0}: Operation failed. {1}</entry>
     
     <!-- COLUMN DESCRIPTIONS -->
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.columns.optionText">Select one option: </entry>
