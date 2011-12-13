@@ -14,8 +14,6 @@ import org.apache.lucene.util.Version;
  */
 public class YukonObjectSearchAnalyzer extends Analyzer {
 
-    private static Version LUCENE_VERSION = Version.LUCENE_34;
-
     public YukonObjectSearchAnalyzer() {
         super();
     }
@@ -24,14 +22,14 @@ public class YukonObjectSearchAnalyzer extends Analyzer {
     public TokenStream tokenStream(String fieldName, Reader reader) {
         
         TokenStream stream =
-            new CharTokenizer(LUCENE_VERSION, reader) {
+            new CharTokenizer(Version.LUCENE_34, reader) {
                 @Override
                 protected boolean isTokenChar(int c) {
                     return PrefixTokenizer.isTokenChar(c);
                 }
             };
             
-        stream = new LowerCaseFilter(LUCENE_VERSION, stream);
+        stream = new LowerCaseFilter(Version.LUCENE_34, stream);
         return stream;
     }
 }

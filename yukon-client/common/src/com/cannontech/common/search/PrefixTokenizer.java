@@ -44,15 +44,12 @@ public class PrefixTokenizer extends Tokenizer {
      * satisfy this predicate.  Characters for which this is false are used to
      * define token boundaries and are not included in tokens. */
     protected static boolean isTokenChar(int c) {
-        switch(c)
-        {
-            case '_': case '-':
-            case '(': case ')':
-            case '/': case ' ':
-                return false;
-            default:
-                return true;
-        }
+        return !((Character.isWhitespace(c)) || 
+                (c == '_') || 
+                (c == '-') || 
+                (c == '(') ||
+                (c == ')') ||
+                (c == '/'));
     }
     
     @Override

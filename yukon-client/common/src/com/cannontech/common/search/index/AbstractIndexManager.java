@@ -73,7 +73,6 @@ public abstract class AbstractIndexManager implements IndexManager {
     protected JdbcOperations jdbcTemplate = null;
 
     // All indexes will be written to: {yukon home}/cache/{index name}/index
-    private Version luceneVersion = Version.LUCENE_34;
     private Directory indexLocation = null;
     private File versionFile = null;
     private String version = null;
@@ -660,7 +659,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     }
     
     protected IndexWriterConfig getIndexWriterConfig() {
-        IndexWriterConfig writerConfig = new IndexWriterConfig(luceneVersion, getAnalyzer());
+        IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, getAnalyzer());
         writerConfig.setMaxBufferedDocs(maxBufferedDocs);
         return writerConfig;
     }
