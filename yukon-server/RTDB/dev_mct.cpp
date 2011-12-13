@@ -1745,32 +1745,19 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
 {
     bool  found = false;
     INT   nRet = NoError;
-    int   intervallength;
-    string temp;
-    CtiTime NowTime;
-    CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
-    OUTMESS *tmpOutMess;
+    BSTRUCT &BSt = OutMessage->Buffer.BSt;
 
     INT function = -1;
 
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
         function = EmetconProtocol::PutStatus_Reset;
-        found = getOperation(function, OutMessage->Buffer.BSt);
+        found = getOperation(function, BSt);
 
-        if( !isMct410(getType()) && !isMct420(getType()) && getType() != TYPEMCT470 && getType() != TYPEMCT430 )
-        {
-            OutMessage->Buffer.BSt.Message[0] = 0;
-            OutMessage->Buffer.BSt.Message[1] = 0;
-            OutMessage->Buffer.BSt.Message[2] = 0;
-        }
-    }
-    else if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS && (isMct410(getType()) || isMct420(getType())) )
-    {
-        function = EmetconProtocol::PutStatus_ResetAlarms;
-        found = getOperation(function, OutMessage->Buffer.BSt);
-        OutMessage->Buffer.BSt.Message[0] = 0;
-        OutMessage->Buffer.BSt.Message[1] = 0;
+        unsigned char *begin = BSt.Message;
+        unsigned char *end   = BSt.Message + std::min<USHORT>(BSt.Length, BSTRUCT::MessageLength_Max);
+
+        std::fill(begin, end,  0);
     }
     else if( parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
     {
@@ -1849,39 +1836,21 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
        //  fix/ach this, it's ugly
        if( OutMessage->Buffer.BSt.Function == 0x06 )  //  easiest way to tell it's an MCT3xx
        {
-           tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
+           OUTMESS *tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
-           if( tmpOutMess != NULL )
-           {
-               //  reset power fail
-               tmpOutMess->Buffer.BSt.Function = 0x50;
-               tmpOutMess->Buffer.BSt.Length   =    0;
+           //  reset power fail
+           tmpOutMess->Buffer.BSt.Function = 0x50;
+           tmpOutMess->Buffer.BSt.Length   =    0;
 
-               outList.push_back(tmpOutMess);
-           }
-           else
-           {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unable to allocate OUTMESS for MCT3XX powerfail reset" << endl;
-           }
+           outList.push_back(tmpOutMess);
 
            tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
-           if( tmpOutMess != NULL )
-           {
-               //  reset encoder error
-               tmpOutMess->Buffer.BSt.Function = 0x58;
-               tmpOutMess->Buffer.BSt.Length   =    0;
+           //  reset encoder error
+           tmpOutMess->Buffer.BSt.Function = 0x58;
+           tmpOutMess->Buffer.BSt.Length   =    0;
 
-               outList.push_back(tmpOutMess);
-           }
-           else
-           {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unable to allocate OUTMESS for MCT3XX encoder error reset" << endl;
-           }
+           outList.push_back(tmpOutMess);
        }
 
        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);

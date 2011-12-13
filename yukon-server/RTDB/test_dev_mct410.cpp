@@ -31,6 +31,7 @@ public:
     using Mct410Device::extractDynamicPaoInfo;
     using Mct410Device::executeGetConfig;
     using Mct410Device::executePutConfig;
+    using Mct410Device::executePutStatus;
 
     using Mct410Device::decodeDisconnectStatus;
     using Mct410Device::decodeDisconnectConfig;
@@ -464,6 +465,19 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_putstatus_reset)
+    {
+        CtiCommandParser parse( "putstatus reset alarms" );
+
+        BOOST_CHECK_EQUAL( NoError , mct410.executePutStatus(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x08);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Message[0], 0x00);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Message[1], 0x00);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
