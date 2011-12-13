@@ -2079,6 +2079,11 @@ void CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int en
     }
 }
 
+unsigned CtiDeviceSingle::intervalsPerDay(unsigned intervalLength)
+{
+    return 86400 / intervalLength;
+}
+
 /*
     Use this predicate to identify globally addressable devices who are trying
     to scan at their corresponding global address.  This is a no-no.

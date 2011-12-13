@@ -85,6 +85,8 @@ protected:
 
     virtual Cti::Protocol::Interface *getProtocol();
 
+    static unsigned intervalsPerDay(unsigned intervalLength);
+
     bool isDeviceAddressGlobal();
 
     virtual CtiTime getDeviceDawnOfTime()          const   { return CtiTime(CtiTime::neg_infin); }

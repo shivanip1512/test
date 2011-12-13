@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_writer.h"
@@ -589,8 +588,6 @@ INT OverrideOutMessagePriority(OUTMESS *Out, INT priority)
 //#define  NOGDI
 //#define  NOIME
 
-#define  VERIFY_RET_VAL( arg )  { int nRet = arg; if( nRet ) return nRet; }
-
 
 void identifyProject(const compileinfo_t &Info)
 {
@@ -686,97 +683,6 @@ INT convertHumanFormAddressToVersacom(INT address)
     }
 
     return num;
-}
-
-bool isION(INT type)
-{
-    bool isit = false;
-
-    switch(type)
-    {
-        case TYPE_ION7330:
-        case TYPE_ION7700:
-        case TYPE_ION8300:
-        {
-            isit = true;
-        }
-    }
-
-    return isit;
-}
-
-bool isMCT(INT type)
-{
-    switch(type)
-    {
-        case TYPELMT2:
-        case TYPEDCT501:
-        case TYPEMCT210:
-        case TYPEMCT212:
-        case TYPEMCT213:
-        case TYPEMCT224:
-        case TYPEMCT226:
-        case TYPEMCT240:
-        case TYPEMCT242:
-        case TYPEMCT248:
-        case TYPEMCT250:
-        case TYPEMCT260:
-        case TYPEMCT310:
-        case TYPEMCT310ID:
-        case TYPEMCT318:
-        case TYPEMCT310IL:
-        case TYPEMCT318L:
-        case TYPEMCT310IDL:
-        case TYPEMCT360:
-        case TYPEMCT370:
-        case TYPEMCT410CL:
-        case TYPEMCT410FL:
-        case TYPEMCT410GL:
-        case TYPEMCT410IL:
-        case TYPEMCT420CL:
-        case TYPEMCT420CLD:
-        case TYPEMCT420FL:
-        case TYPEMCT420FLD:
-        case TYPEMCT430:
-        case TYPEMCT470:
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool isMct410(INT type)
-{
-    switch(type)
-    {
-        case TYPEMCT410CL:
-        case TYPEMCT410FL:
-        case TYPEMCT410GL:
-        case TYPEMCT410IL:
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool isMct420(INT type)
-{
-    switch(type)
-    {
-        case TYPEMCT420CL:
-        case TYPEMCT420CLD:
-        case TYPEMCT420FL:
-        case TYPEMCT420FLD:
-        {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 bool isLCU(INT type)

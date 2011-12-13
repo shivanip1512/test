@@ -2206,7 +2206,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
 
                                 // increment interval and reset if necessary
                                 setCurrentLPInterval (getCurrentLPInterval() + 1);
-                                if (getCurrentLPInterval() >= (86400 / localLP->configuration.intervalLength*60))
+                                if (getCurrentLPInterval() >= intervalsPerDay(localLP->configuration.intervalLength*60))
                                 {
                                     setCurrentLPInterval (0);
                                 }
@@ -2290,7 +2290,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
 
                         // increment interval and reset if necessary
                         setCurrentLPInterval (getCurrentLPInterval() + 1);
-                        if (getCurrentLPInterval() >= (86400 / localLP->configuration.intervalLength*60))
+                        if (getCurrentLPInterval() >= intervalsPerDay(localLP->configuration.intervalLength*60))
                         {
                             setCurrentLPInterval (0);
                         }

@@ -3701,6 +3701,38 @@ bool MctDevice::isLoadProfile( int type )
 }
 
 
+bool MctDevice::isMct410(int type)
+{
+    switch(type)
+    {
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MctDevice::isMct420(int type)
+{
+    switch(type)
+    {
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool MctDevice::hasVariableDemandRate( int type, int sspec )
 {
     bool retVal = true;

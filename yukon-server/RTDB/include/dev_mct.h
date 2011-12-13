@@ -229,6 +229,9 @@ public:
 
     virtual CtiTime adjustNextScanTime( const INT scanType=ScanRateGeneral );
 
+    static bool isMct410( int type );
+    static bool isMct420( int type );
+
     //  scanner-side functions
     //  to be overridden by the 24x, 310, and 318
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );

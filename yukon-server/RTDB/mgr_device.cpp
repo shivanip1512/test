@@ -655,6 +655,8 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
 
 void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LONG deviceType)
 {
+    using Devices::MctDevice;
+
     bool rowFound = false;
 
     try
@@ -712,7 +714,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                 {
                     rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice());
 
-                    if( !isMct410(deviceType) )
+                    if( !MctDevice::isMct410(deviceType) )
                     {
                         rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
 
@@ -1102,6 +1104,64 @@ void CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 }
 
 
+bool CtiDeviceManager::isMct(int type)
+{
+    switch(type)
+    {
+        case TYPELMT2:
+        case TYPEDCT501:
+        case TYPEMCT210:
+        case TYPEMCT212:
+        case TYPEMCT213:
+        case TYPEMCT224:
+        case TYPEMCT226:
+        case TYPEMCT240:
+        case TYPEMCT242:
+        case TYPEMCT248:
+        case TYPEMCT250:
+        case TYPEMCT260:
+        case TYPEMCT310:
+        case TYPEMCT310ID:
+        case TYPEMCT318:
+        case TYPEMCT310IL:
+        case TYPEMCT318L:
+        case TYPEMCT310IDL:
+        case TYPEMCT360:
+        case TYPEMCT370:
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
+        case TYPEMCT430:
+        case TYPEMCT470:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool CtiDeviceManager::isIon(int type)
+{
+    switch(type)
+    {
+        case TYPE_ION7330:
+        case TYPE_ION7700:
+        case TYPE_ION8300:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
@@ -1248,7 +1308,7 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
 
             CtiDeviceSPtr pTempCtiDevice = getDeviceByID(tmpDeviceID);
 
-            if(pTempCtiDevice && isION(pTempCtiDevice->getType()))
+            if(pTempCtiDevice && isIon(pTempCtiDevice->getType()))
             {
                 boost::static_pointer_cast<CtiDeviceION>(pTempCtiDevice)->setMeterGroupData(tmpMeterNumber);
             }
@@ -1505,6 +1565,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 
         if(rdr.isValid())
         {
+            using Cti::Devices::MctDevice;
             using Cti::Devices::Mct410Device;
             using Cti::Devices::Mct410DeviceSPtr;
 
@@ -1546,7 +1607,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
                 {
                     tmpDevice = getDeviceByID(*paoid_itr);
 
-                    if( tmpDevice && (isMct410(tmpDevice->getType()) || tmpDevice->getType() == TYPEMCT420FL) )
+                    if( tmpDevice && (MctDevice::isMct410(tmpDevice->getType()) || tmpDevice->getType() == TYPEMCT420FL) )
                     {
                         boost::static_pointer_cast<Mct410Device>(tmpDevice)->setDisconnectAddress(0);
                     }
@@ -1732,13 +1793,13 @@ void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, in
         refreshMacroSubdevices(paoids);
     }
 
-    if( !type || isION(type) )
+    if( !type || isIon(type) )
     {
         Timing::DebugTimer timer("loading ION meter groups");
         refreshIONMeterGroups(paoids);
     }
 
-    if( !type || isMCT(type) )
+    if( !type || isMct(type) )
     {
         Timing::DebugTimer timer("loading MCT configs");
         refreshMCTConfigs(paoids);

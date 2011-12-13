@@ -54,6 +54,9 @@ private:
 
     bool loadDeviceType(Cti::Database::id_set &paoids, const std::string &device_name, const CtiDeviceBase &device, std::string type=std::string(), const bool include_type=true);
 
+    static bool isMct(int type);
+    static bool isIon(int type);
+
     void refreshExclusions     (Cti::Database::id_set &paoids);
     void refreshIONMeterGroups (Cti::Database::id_set &paoids);
     void refreshMacroSubdevices(Cti::Database::id_set &paoids);

@@ -830,7 +830,7 @@ bool Mct470Device::requestChannelConfig(unsigned channel, OUTMESS *OutMessage, O
 unsigned Mct470Device::getUsageReportDelay(const unsigned interval_length, const unsigned days) const
 {
     const int fixed_delay    = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10);
-    const int variable_delay = (86400 / interval_length) * days / 1000;  //  1 ms per interval
+    const int variable_delay = intervalsPerDay(interval_length) * days / 1000;  //  1 ms per interval
 
     return fixed_delay + variable_delay;
 }
