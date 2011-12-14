@@ -135,7 +135,7 @@
                                             <xs:sequence>
                                                 <xs:element name="componentType" minOccurs="0" type="xs:string" default="Operation" />
                                                 <xs:element name="operator" minOccurs="0" type="xs:string" default="+" />
-                                                <xs:element name="basicCalcLookup" maxOccurs="1">
+                                                <xs:element name="basicLookup" maxOccurs="1">
                                                     <xs:complexType>
                                                         <xs:attribute name="point" type="xs:string" use="required" />
                                                     </xs:complexType>

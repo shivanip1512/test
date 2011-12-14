@@ -142,7 +142,7 @@ public class ComponentDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         }
         desc.setValidator(fieldValidator);
         //-- _basicCalcLookup
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.BasicCalcLookup.class, "_basicCalcLookup", "basicCalcLookup", org.exolab.castor.xml.NodeType.Element);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.BasicCalcLookup.class, "_basicCalcLookup", "basicLookup", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException

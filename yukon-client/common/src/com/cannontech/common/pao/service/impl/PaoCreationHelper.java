@@ -2,11 +2,15 @@ package com.cannontech.common.pao.service.impl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
@@ -22,10 +26,12 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class PaoCreationHelper {
 
+    private final Logger log = YukonLogManager.getLogger(PaoCreationHelper.class);
     private DBPersistentDao dbPersistentDao;
     private PaoDefinitionService paoDefinitionService;
     private PointDao pointDao;
@@ -74,6 +80,7 @@ public class PaoCreationHelper {
     	MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
         Set<PointBase> calculatedPoints = Sets.newHashSet();
+        Map<String, Integer> nonCalcPointLookupMap = Maps.newHashMap();
         
         // Non-calculated points
         for (PointBase point : pointsToCreate) {
@@ -82,6 +89,7 @@ public class PaoCreationHelper {
                 point.setPointID(nextPointId);
                 point.getPoint().setPaoID(paoId);
                 
+                nonCalcPointLookupMap.put(StringUtils.lowerCase(point.getPoint().getPointName()), nextPointId);
                 newPoints.add(point);
             } else {
                 calculatedPoints.add(point);
@@ -101,10 +109,19 @@ public class PaoCreationHelper {
                 
                 LitePoint litePoint = pointDao.getLitePoint(componentPointID);
                 String pointName = litePoint.getPointName();
-                PointBase pointBase = getPointWithName(pointsToCreate, pointName);
-                if (pointBase == null) continue;
                 
-                calcComponent.setComponentPointID(pointBase.getPoint().getPointID());
+                // Find the pointId that our CalcComponent pointName references
+                // (We are assuming here that pointName is referencing a point on the same device.
+                // If it is referencing a point on a different device, that specific CalcComponent
+                // will not be included in the point. The Calculated point itself will still be created, 
+                // since we are still adding the point to newPoints below.)
+                Integer pointId = nonCalcPointLookupMap.get(StringUtils.lowerCase(pointName));
+                if (pointId == null) {
+                    log.warn("Could not find point with name \"" + pointName + "\". Continuing with insertion.");
+                    continue;
+                }
+                
+                calcComponent.setComponentPointID(pointId);
             }
             newPoints.add(point);
         }
@@ -115,15 +132,6 @@ public class PaoCreationHelper {
     
     public void applyPoints(YukonPao pao, List<PointBase> pointsToCreate) {
         applyPoints(pao.getPaoIdentifier().getPaoId(), pointsToCreate);
-    }
-    
-    private PointBase getPointWithName(List<PointBase> pointsToCreate, String pointName) {
-        for (PointBase pointBase : pointsToCreate) {
-            if (pointBase.getPoint().getPointName().equals(pointName)) {
-                return pointBase;
-            }
-        }
-        return null;
     }
     
     @Autowired

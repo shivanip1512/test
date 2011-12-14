@@ -48,7 +48,7 @@ public class Calculation implements java.io.Serializable {
     /**
      * Field _updateType
      */
-    private java.lang.String _updateType = "Constant";
+    private java.lang.String _updateType = "On First Change";
 
     /**
      * Field _componentList
@@ -63,7 +63,7 @@ public class Calculation implements java.io.Serializable {
     public Calculation() 
      {
         super();
-        setUpdateType("Constant");
+        setUpdateType("On First Change");
         _componentList = new ArrayList();
     } //-- com.cannontech.common.pao.definition.model.castor.Calculation()
 

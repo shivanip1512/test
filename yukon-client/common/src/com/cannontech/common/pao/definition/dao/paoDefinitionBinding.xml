@@ -1,0 +1,8 @@
+<binding>
+
+	<!-- This is here so we can use the same "basicLookup" element as attributes in our paoDefinition.xml file -->
+	<elementBinding name="complexType:pointsType/point/calculation/component/basicLookup">
+		<java-class name="BasicCalcLookup"/>
+	</elementBinding>
+
+</binding>

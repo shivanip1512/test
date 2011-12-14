@@ -4,39 +4,30 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 public class CalcPointComponent {
 
-    private int pointId;
-    private String pointName;
-    private String type = CalcComponentTypes.OPERATION_COMP_TYPE;
+    private PointIdentifier pointIdentifier;
+    private String calcComponentType = CalcComponentTypes.OPERATION_COMP_TYPE;
     private String operation = CalcComponentTypes.ADDITION_OPERATION;
 
-    public CalcPointComponent(String pointName, String type, String operation) {
-        this.pointName = pointName;
-        this.type = type;
+    public CalcPointComponent(PointIdentifier pointIdentifier, String calcComponentType, String operation) {
+        this.pointIdentifier = pointIdentifier;
+        this.calcComponentType = calcComponentType;
         this.operation = operation;
     }
 
-    public int getPointId() {
-        return pointId;
+    public PointIdentifier getPointIdentifier() {
+        return pointIdentifier;
     }
 
-    public void setPointId(int pointId) {
-        this.pointId = pointId;
+    public void setPointIdentifier(PointIdentifier pointIdentifier) {
+        this.pointIdentifier = pointIdentifier;
     }
 
-    public String getPointName() {
-        return pointName;
+    public String getCalcComponentType() {
+        return calcComponentType;
     }
 
-    public void setPointName(String pointName) {
-        this.pointName = pointName;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setCalcComponentType(String calcComponentType) {
+        this.calcComponentType = calcComponentType;
     }
 
     public String getOperation() {

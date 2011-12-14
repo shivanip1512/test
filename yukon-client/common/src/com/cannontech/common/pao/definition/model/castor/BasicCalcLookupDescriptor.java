@@ -56,7 +56,7 @@ public class BasicCalcLookupDescriptor extends org.exolab.castor.xml.util.XMLCla
     public BasicCalcLookupDescriptor() 
      {
         super();
-        xmlName = "basicCalcLookup";
+        xmlName = "basicLookup";
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;

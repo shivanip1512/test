@@ -4551,22 +4551,6 @@
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="CalcAnalog" offset="0">
-                <init>true</init>
-                <name>Total Outage Count</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="0"/>
-                <calculation>
-                    <updateType>On First Change</updateType>
-                    <component>
-                        <basicCalcLookup point="Blink Count" />
-                    </component>
-                    <component>
-                        <basicCalcLookup point="Outage Count" />
-                    </component>
-                </calculation>
-            </point>
             <point type="Analog" offset="100">
                 <init>true</init>
                 <name>Outages</name>
@@ -5009,6 +4993,22 @@
                <stategroup value="Event Status"/>
             </point>
 
+            <point type="CalcAnalog" offset="0">
+                <init>true</init>
+                <name>Total Outage Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+                <calculation>
+                    <updateType>On First Change</updateType>
+                    <component>
+                        <basicLookup point="Blink Count" />
+                    </component>
+                    <component>
+                        <basicLookup point="Outage Count" />
+                    </component>
+                </calculation>
+            </point>
         </points>
         <attributes>
             <attribute name="USAGE">

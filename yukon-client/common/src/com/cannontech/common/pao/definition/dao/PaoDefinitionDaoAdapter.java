@@ -41,11 +41,6 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 	}
 	
 	@Override
-	public Set<PointTemplate> getAllCalcPointTemplates(PaoType paoType) {
-	    throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
 	public Set<PointTemplate> getAllPointTemplates(
 			PaoDefinition paoDefiniton) {
 		throw new UnsupportedOperationException("not implemented");
@@ -93,11 +88,6 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 		throw new UnsupportedOperationException("not implemented");
 	}
 	
-	@Override
-	public Set<PointTemplate> getInitCalcPointTemplates(PaoType paoType) {
-	    throw new UnsupportedOperationException("not implemented");
-	}
-
 	@Override
 	public Set<PointTemplate> getInitPointTemplates(
 			PaoDefinition newDefinition) {

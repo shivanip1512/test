@@ -45,13 +45,6 @@ public interface PaoDefinitionDao {
     public abstract Set<PointTemplate> getAllPointTemplates(PaoType paoType);
     
     /**
-     * Method to get all of the calc point templates for a given pao
-     * @param pao - Pao to get point templates for
-     * @return An unmodifiable set of all point templates for the pao
-     */
-    public abstract Set<PointTemplate> getAllCalcPointTemplates(PaoType paoType);
-
-    /**
      * Method to get all of the point templates for a given pao definition
      * @param paoDefiniton - Pao definition to get point templates for
      * @return A unmodifiable set of all point templates for the pao
@@ -67,15 +60,6 @@ public interface PaoDefinitionDao {
      */
     public abstract Set<PointTemplate> getInitPointTemplates(PaoType paoType);
     
-    /**
-     * Method to get all of the calc point templates for a given pao that should
-     * be initialized
-     * @param pao - Pao to get point templates for
-     * @return A unmodifiable set of all point templates for the pao that should be
-     *         initialized
-     */
-    public abstract Set<PointTemplate> getInitCalcPointTemplates(PaoType paoType);
-
     /**
      * Method to get all of the point templates for a given pao definition
      * that should be initialized

@@ -4,13 +4,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.definition.model.CalcPointBase;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
+import com.cannontech.common.pao.definition.model.CalcPointInfo;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -26,6 +31,8 @@ import com.cannontech.database.db.state.StateGroupUtils;
  */
 public final class PointFactory {
 public static final String PTNAME_TAG = "Tag Point";
+
+private static PointDao pointDao;
 
 /**
  * This method was created in VisualAge.
@@ -422,20 +429,26 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name, int s
     
 }
 
-public static PointBase createCalculatedPoint(Integer paoId, String name, int stateGroupId, int uom, int decimalPlaces, CalcPointBase calcPoint) {
+public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId) {
+    return createCalculatedPoint(paoIdentifier, name, stateGroupId, PointUnits.UOMID_UNDEF, PointUnit.DEFAULT_DECIMAL_PLACES, null);
+}
+
+/**
+ * This method only supports creating calculated points that contain inner CalcPointComponent's that reference their own pao
+ */
+public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId, int unitOfMeasure, int decimalPlaces, CalcPointInfo calcPoint) {
     PointBase point = createPoint(PointTypes.CALCULATED_POINT);
     
-    point = PointFactory.createNewPoint(    
-                                        point.getPoint().getPointID(),
+    point = PointFactory.createNewPoint(point.getPoint().getPointID(),
                                         PointTypes.CALCULATED_POINT,
                                         name,
-                                        paoId,
+                                        paoIdentifier.getPaoId(),
                                         new Integer (TypeBase.POINT_OFFSET)
                                          );
     
-    point.getPoint().setStateGroupID(stateGroupId);			//new Integer (StateGroupUtils.STATEGROUP_ANALOG));
+    point.getPoint().setStateGroupID(stateGroupId);
     PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
-                                      new Integer(uom),
+                                      new Integer(unitOfMeasure),
                                       new Integer(decimalPlaces),
                                       new Double(CtiUtilities.INVALID_MAX_DOUBLE),
                                       new Double(CtiUtilities.INVALID_MIN_DOUBLE),
@@ -465,17 +478,24 @@ public static PointBase createCalculatedPoint(Integer paoId, String name, int st
     ((CalculatedPoint)point).setCalcBase(calcBase);    
     ((CalculatedPoint) point).setBaselineAssigned(false);
     
-    int order = 1;
-    Vector<CalcComponent> calcComponents = new Vector<CalcComponent>();
-    for (CalcPointComponent calcPointComponent: calcPoint.getComponents()) {
-        Integer pointId = point.getPoint().getPointID();
-        String componentType = calcPointComponent.getType();
-        int componentPointID = calcPointComponent.getPointId();
-        String operation = calcPointComponent.getOperation();
-        
-        calcComponents.add(new CalcComponent( pointId, order++, componentType, componentPointID, operation, 0.0, "(none)" ) );                
+    if (calcPoint != null) {
+        int order = 1;
+        Vector<CalcComponent> calcComponents = new Vector<CalcComponent>();
+        for (CalcPointComponent calcPointComponent: calcPoint.getComponents()) {
+            Integer pointId = point.getPoint().getPointID();
+            
+            // We are assuming here that our calculated pointIdentifier is referencing the current paoIdentifier
+            // So basically this method does not support handling calculated points that reference pao's other than itself
+            PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(paoIdentifier, calcPointComponent.getPointIdentifier());
+            int componentPointId = pointDao.getPointId(paoPointIdentifier);
+            
+            String componentType = calcPointComponent.getCalcComponentType();
+            String operation = calcPointComponent.getOperation();
+            
+            calcComponents.add(new CalcComponent( pointId, order++, componentType, componentPointId, operation, 0.0, "(none)" ) );                
+        }
+        ((CalculatedPoint) point).setCalcComponentVector(calcComponents);
     }
-    ((CalculatedPoint) point).setCalcComponentVector(calcComponents);
     
     return point;
 }
@@ -519,10 +539,11 @@ public static synchronized void addPoint(PointBase point) {
         } catch (SQLException e) {
             CTILogger.error(e);
         }
-
-
-    
 }
 
+@Autowired
+public void setPointDao(PointDao pointDao) {
+    this.pointDao = pointDao;
+}
 
 }

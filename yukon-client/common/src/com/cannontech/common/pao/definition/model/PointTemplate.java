@@ -25,7 +25,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private ControlType controlType = ControlType.NONE;
     private PointArchiveType pointArchiveType = PointArchiveType.NONE;
     private PointArchiveInterval pointArchiveInterval = PointArchiveInterval.ZERO;
-    private CalcPointBase calcPoint = null;
+    private CalcPointInfo calcPointInfo = null;
     
     public PointTemplate(PointType type, int offset) {
         pointIdentifier = new PointIdentifier(type, offset);
@@ -151,12 +151,12 @@ public class PointTemplate implements Comparable<PointTemplate> {
 		this.pointArchiveInterval = pointArchiveInterval;
 	}
     
-    public CalcPointBase getCalcPoint() {
-        return calcPoint;
+    public CalcPointInfo getCalcPointInfo() {
+        return calcPointInfo;
     }
 
-    public void setCalcPoint(CalcPointBase calcPoint) {
-        this.calcPoint = calcPoint;
+    public void setCalcPointInfo(CalcPointInfo calcPointInfo) {
+        this.calcPointInfo = calcPointInfo;
     }
 
     public int compareTo(PointTemplate o) {
@@ -172,10 +172,20 @@ public class PointTemplate implements Comparable<PointTemplate> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier
-                .hashCode());
+        result = prime * result + ((calcPointInfo == null) ? 0 : calcPointInfo.hashCode());
+        result = prime * result + ((controlType == null) ? 0 : controlType.hashCode());
+        result = prime * result + decimalPlaces;
+        result = prime * result + initialState;
+        long temp;
+        temp = Double.doubleToLongBits(multiplier);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result =
+            prime * result + ((pointArchiveInterval == null) ? 0 : pointArchiveInterval.hashCode());
+        result = prime * result + ((pointArchiveType == null) ? 0 : pointArchiveType.hashCode());
+        result = prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier.hashCode());
+        result = prime * result + stateGroupId;
+        result = prime * result + unitOfMeasure;
         return result;
     }
 
@@ -187,28 +197,37 @@ public class PointTemplate implements Comparable<PointTemplate> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final PointTemplate other = (PointTemplate) obj;
-        if (pointIdentifier == null) {
-            if (other.pointIdentifier != null)
+        PointTemplate other = (PointTemplate) obj;
+        if (calcPointInfo == null) {
+            if (other.calcPointInfo != null)
                 return false;
-        } else if (!pointIdentifier.equals(other.pointIdentifier))
+        } else if (!calcPointInfo.equals(other.calcPointInfo))
+            return false;
+        if (controlType != other.controlType)
+            return false;
+        if (decimalPlaces != other.decimalPlaces)
+            return false;
+        if (initialState != other.initialState)
+            return false;
+        if (Double.doubleToLongBits(multiplier) != Double.doubleToLongBits(other.multiplier))
             return false;
         if (name == null) {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (multiplier != other.multiplier)
-        	return false;
-        if (unitOfMeasure != other.unitOfMeasure)
-        	return false;
-        if (stateGroupId != other.stateGroupId)
-        	return false;
-        if (controlType != other.controlType)
+        if (pointArchiveInterval != other.pointArchiveInterval)
             return false;
         if (pointArchiveType != other.pointArchiveType)
             return false;
-        if (pointArchiveInterval != other.pointArchiveInterval)
+        if (pointIdentifier == null) {
+            if (other.pointIdentifier != null)
+                return false;
+        } else if (!pointIdentifier.equals(other.pointIdentifier))
+            return false;
+        if (stateGroupId != other.stateGroupId)
+            return false;
+        if (unitOfMeasure != other.unitOfMeasure)
             return false;
         return true;
     }
