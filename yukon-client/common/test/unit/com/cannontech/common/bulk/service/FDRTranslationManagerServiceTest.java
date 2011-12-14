@@ -101,15 +101,5 @@ public class FDRTranslationManagerServiceTest {
         String[] array = {"similar", "SIMILAR"};
         List<String> output = service.cleanAndValidateHeaders(array); //should throw exception
     }
-    
-    /*
-     * getFilteredTranslationList
-     * getAllInterfaceDisplayables
-     * addHeadersFromTranslations
-     * populateExportArray
-     * validateInterfaceHeadersPresent
-     * 
-     * getInterfaceInfo
-     * 
-     */
+
 }
