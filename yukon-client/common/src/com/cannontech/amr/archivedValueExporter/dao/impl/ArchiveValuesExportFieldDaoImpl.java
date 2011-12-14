@@ -77,7 +77,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             String roundingMode = SqlUtils.convertStringToDbValue(field.getRoundingMode());
             String missingAttributeValue = SqlUtils.convertStringToDbValue(field.getMissingAttributeValue());
             //String multiplierRemovedFlag =YNBoolean.valueOf(field.isMultiplierRemovedFlag()).getDatabaseRepresentation().toString();
-            DatabaseRepresentationSource ynBoolean = (DatabaseRepresentationSource)YNBoolean.valueOf(field.isMultiplierRemovedFlag());
+            DatabaseRepresentationSource ynBoolean = YNBoolean.valueOf(field.isMultiplierRemovedFlag());
             String multiplierRemovedFlag = ynBoolean.getDatabaseRepresentation().toString();
             batchArgs.add(new Object[] {fieldId,formatId,fieldType,attributeID, attributeField, pattern, maxLength, padChar, padSide, roundingMode, missingAttributeValue, multiplierRemovedFlag });
         }
@@ -141,7 +141,8 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     field.setPadSide(SqlUtils.convertDbValueToString(rs, "PadSide"));
                     field.setRoundingMode(SqlUtils.convertDbValueToString(rs, "RoundingMode"));
                     field.setMissingAttributeValue(SqlUtils.convertDbValueToString(rs, "MissingAttributeValue"));
-                    if(YNBoolean.YES.getDatabaseRepresentation().equals(SqlUtils.convertDbValueToString(rs, "MultiplierRemovedFlag"))){
+                    DatabaseRepresentationSource yes = YNBoolean.YES;
+                    if(yes.getDatabaseRepresentation().equals(SqlUtils.convertDbValueToString(rs, "MultiplierRemovedFlag"))){
                         field.setMultiplierRemovedFlag(true);
                     }
                     return field;
