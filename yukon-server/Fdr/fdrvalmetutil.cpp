@@ -30,21 +30,22 @@ USHORT ForeignToYukonQuality (USHORT aQuality)
     return(Quality);
 }
 
-USHORT YukonToForeignQuality (USHORT aQuality, bool unsolicited)
+USHORT YukonToForeignQuality (const CtiFDRPoint &p)
 {
+    const unsigned YukonQuality = p.getQuality();
     USHORT Quality = VALMET_NORMAL;
 
-    if(unsolicited && gConfigParms.isTrue("FDR_VALMET_SEND_UNSOLICITED_QUALITY", true))
+    if(p.isUnsolicited() && gConfigParms.isTrue("FDR_VALMET_SEND_UNSOLICITED_QUALITY", true))
         Quality = VALMET_UNSOLICITED;
-    else if (aQuality == NonUpdatedQuality)
+    else if (YukonQuality == NonUpdatedQuality)
         Quality = VALMET_PLUGGED;
-    else if (aQuality == InvalidQuality)
+    else if (YukonQuality == InvalidQuality)
         Quality = VALMET_PLUGGED;
-    else if (aQuality == ManualQuality)
+    else if (YukonQuality == ManualQuality)
         Quality = VALMET_MANUALENTRY;
-    else if (aQuality == AbnormalQuality)
+    else if (YukonQuality == AbnormalQuality)
         Quality = VALMET_PLUGGED;
-    else if (aQuality == UnintializedQuality)
+    else if (YukonQuality == UnintializedQuality)
         Quality = VALMET_PLUGGED;
 
     return htons (Quality);

@@ -129,7 +129,7 @@ int CtiFDR_ValmetMulti::readConfig()
         dout << CtiTime() << " Valmet Multi send rate " << getOutboundSendRate() << endl;
         dout << CtiTime() << " Valmet Multi send interval " << getOutboundSendInterval() << " second(s) " << endl;
         dout << CtiTime() << " Valmet Multi max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet Multi link timeout " << getLinkTimeout() << " second(s) " << endl;        
+        dout << CtiTime() << " Valmet Multi link timeout " << getLinkTimeout() << " second(s) " << endl;
         dout << CtiTime() << " Valmet Multi force scan pointname " << _sendAllPointsPointName << endl;
         dout << CtiTime() << " Valmet Multi scan device compare string " << _scanDevicePointName << endl;
         dout << CtiTime() << " Valmet time sync will " + string(shouldUpdatePCTime() ? "" : "not ") + "reset PC clock" << endl;
@@ -158,10 +158,10 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
     for each(const CtiFDRDestination &pointDestination in translationPoint->getDestinationList())
     {
         foundPoint = true;
- 
+
         string pointName = pointDestination.getTranslationValue("Point");
         string portNumber = pointDestination.getTranslationValue("Port");
-        
+
         if (portNumber.empty() || pointName.empty())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -306,7 +306,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
             {
                 ptr->Function = htons (SINGLE_SOCKET_VALUE);
                 strcpy(ptr->Value.Name,valmetPortId.PointName.c_str());
-                ptr->Value.Quality = YukonToForeignQuality (point.getQuality(), point.isUnsolicited());
+                ptr->Value.Quality = YukonToForeignQuality (point);
                 ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point.getValue());
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -365,7 +365,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                 {
                     ptr->Function = htons (SINGLE_SOCKET_STATUS);
                     strcpy (ptr->Value.Name,valmetPortId.PointName.c_str());
-                    ptr->Status.Quality = YukonToForeignQuality (point.getQuality(), point.isUnsolicited());
+                    ptr->Status.Quality = YukonToForeignQuality (point);
 
                     // check for validity of the status, we only have open or closed for Valmet
                     if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))
@@ -607,7 +607,7 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
     //flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
     CtiFDRPointSPtr point = findFdrPointInPointList(translationName);
 
-    if (point) 
+    if (point)
     {
         if ((point->getPointType() == AnalogPointType) ||
             (point->getPointType() == PulseAccumulatorPointType) ||
@@ -619,7 +619,7 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
             value = CtiFDRSocketInterface::ntohieeef (data->Value.LongValue);
             value *= point->getMultiplier();
             value += point->getOffset();
-    
+
             timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
             if (timestamp == PASTDATE)
             {
@@ -628,7 +628,7 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
                 }
-    
+
                 desc = getInterfaceName() + " analog point received with an invalid timestamp ";
                 desc += string (data->TimeStamp);
                 _snprintf(action,60,"%s for pointID %d",
@@ -650,11 +650,11 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
                                                 quality,
                                                 point->getPointType());
                 pData->setTime(timestamp);
-        
+
                 // consumes a delete memory
                 queueMessageToDispatch(pData);
-                
-    
+
+
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -680,7 +680,7 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
             retVal = !NORMAL;
         }
     }
-    else 
+    else
     {
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
@@ -720,7 +720,7 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
         {
             // assign last stuff
             quality = ForeignToYukonQuality (data->Status.Quality);
-    
+
             value = ForeignToYukonStatus (data->Status.Value);
             timestamp = ForeignToYukonTime (data->TimeStamp, getTimestampReasonabilityWindow());
             if (timestamp == PASTDATE)
@@ -730,7 +730,7 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
                 }
-    
+
                 desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
                 _snprintf(action,60,"%s for pointID %d",
                           translationName.c_str(),
@@ -744,12 +744,12 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
                                             value,
                                             quality,
                                             StatusPointType);
-    
+
                 pData->setTime(timestamp);
-    
+
                 // consumes a delete memory
                 queueMessageToDispatch(pData);
-    
+
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -770,7 +770,7 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
                     {
                         dout << " new state: " << value;
                     }
-    
+
                     dout <<" from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
                 }
             }
@@ -814,7 +814,7 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
 int CtiFDR_ValmetMulti::processScanMessage(CHAR *aData)
 {
     ValmetExtendedInterface_t  *data = (ValmetExtendedInterface_t*)aData;
-    string  translationName(data->ForceScan.Name); 
+    string  translationName(data->ForceScan.Name);
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -840,7 +840,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
     int retVal = NORMAL, quality = NormalQuality;
     CtiPointDataMsg *pData;
     ValmetExtendedInterface_t *data = (ValmetExtendedInterface_t*)aData;
-    USHORT value = ntohs(data->Control.Value);        
+    USHORT value = ntohs(data->Control.Value);
     CtiTime timestamp;
     string desc;
     CHAR action[60];
@@ -856,7 +856,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
         {
             int controlState=INVALID;
             controlState = ForeignToYukonStatus (data->Control.Value);
-    
+
             if ((controlState != OPENED) && (controlState != CLOSED))
             {
                 {
@@ -876,7 +876,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
             {
                 // build the command message and send the control
                 CtiCommandMsg *cmdMsg = NULL;
-                if (stringContainsIgnoreCase(translationName, _scanDevicePointName)) 
+                if (stringContainsIgnoreCase(translationName, _scanDevicePointName))
                 {
                     if (controlState == CLOSED)
                     {
@@ -895,7 +895,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
                 {
                     sendMessageToDispatch(cmdMsg);
                 }
-    
+
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -907,9 +907,9 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
         }
         else if (point->getPointType() == AnalogPointType)
         {
-            double dValue = CtiFDRSocketInterface::ntohieeef(data->Control.LongValue);    
-            if (point->getPointOffset() == 10001) 
-            {    
+            double dValue = CtiFDRSocketInterface::ntohieeef(data->Control.LongValue);
+            if (point->getPointOffset() == 10001)
+            {
                 int controlState=INVALID;
                 controlState = ForeignToYukonStatus (data->Control.Value);
                 dValue = ForeignToYukonStatus (data->Control.Value);

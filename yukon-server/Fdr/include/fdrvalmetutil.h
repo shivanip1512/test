@@ -27,8 +27,8 @@ NOTE:  All data limit violations will be handled by the receiving system
 */
 #pragma pack(push, valmet_packing, 1)
 
-template<unsigned int nameLength> 
-struct ValmetInterface 
+template<unsigned int nameLength>
+struct ValmetInterface
 {
     USHORT Function;
     CHAR TimeStamp[18];
@@ -83,7 +83,7 @@ enum {  Valmet_Invalid = 0,
         Valmet_Closed=2,
         Valmet_Indeterminate=3};
 
-typedef ValmetInterface<16> ValmetInterface_t; 
+typedef ValmetInterface<16> ValmetInterface_t;
 typedef ValmetInterface<32> ValmetExtendedInterface_t;
 
 
@@ -93,7 +93,7 @@ CtiTime       ForeignToYukonTime (PCHAR aTime, int timeStampReasonability, bool 
 std::string   ForeignQualityToString(USHORT quality);
 
 std::string   YukonToForeignTime (CtiTime aTimeStamp);
-USHORT        YukonToForeignQuality (USHORT aQuality, bool unsolicited);
+USHORT        YukonToForeignQuality (const CtiFDRPoint &p);
 USHORT        YukonToForeignStatus (int aStatus);
 
 }

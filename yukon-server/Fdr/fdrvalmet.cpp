@@ -205,7 +205,7 @@ int CtiFDR_Valmet::readConfig()
         dout << CtiTime() << " Valmet send rate " << getOutboundSendRate() << endl;
         dout << CtiTime() << " Valmet send interval " << getOutboundSendInterval() << " second(s) " << endl;
         dout << CtiTime() << " Valmet max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;        
+        dout << CtiTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;
         dout << CtiTime() << " Valmet force scan pointname " << sendAllPointsPointName << endl;
         dout << CtiTime() << " Valmet scan device compare string " << scanDevicePointName << endl;
 
@@ -315,7 +315,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                 {
                     ptr->Function = htons (SINGLE_SOCKET_VALUE);
                             strcpy (ptr->Value.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
-                    ptr->Value.Quality = YukonToForeignQuality (aPoint.getQuality(), aPoint.isUnsolicited());
+                    ptr->Value.Quality = YukonToForeignQuality (aPoint);
                     ptr->Value.LongValue = htonieeef (aPoint.getValue());
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -374,7 +374,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     {
                         ptr->Function = htons (SINGLE_SOCKET_STATUS);
                         strcpy (ptr->Value.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
-                        ptr->Status.Quality = YukonToForeignQuality (aPoint.getQuality(), aPoint.isUnsolicited());
+                        ptr->Status.Quality = YukonToForeignQuality (aPoint);
 
                         // check for validity of the status, we only have open or closed for Valmet
                         if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
@@ -661,10 +661,10 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
                                             quality,
                                             point->getPointType());
             pData->setTime(timestamp);
-    
+
             // consumes a delete memory
             queueMessageToDispatch(pData);
-            
+
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
@@ -847,7 +847,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 int CtiFDR_Valmet::processScanMessage(CHAR *aData)
 {
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
-    string  translationName(data->ForceScan.Name); 
+    string  translationName(data->ForceScan.Name);
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -875,7 +875,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
     string           translationName;
     int                 quality =NormalQuality;
-    USHORT              value = ntohs(data->Control.Value);        
+    USHORT              value = ntohs(data->Control.Value);
     CtiTime              timestamp;
     CtiFDRPointSPtr         point;
 
@@ -903,7 +903,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         {
             int controlState=INVALID;
             controlState = ForeignToYukonStatus (data->Control.Value);
-    
+
             if ((controlState != OPENED) && (controlState != CLOSED))
             {
                 {
@@ -923,7 +923,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
             {
                 // build the command message and send the control
                 CtiCommandMsg *cmdMsg = NULL;
-                if (stringContainsIgnoreCase(translationName, scanDevicePointName)) 
+                if (stringContainsIgnoreCase(translationName, scanDevicePointName))
                 {
                     if (controlState == CLOSED)
                     {
@@ -942,7 +942,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                 {
                     sendMessageToDispatch(cmdMsg);
                 }
-    
+
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -954,9 +954,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         }
         else if (point->getPointType() == AnalogPointType)
         {
-            double dValue = ntohieeef(data->Control.LongValue);    
-            if (point->getPointOffset() == 10001) 
-            {    
+            double dValue = ntohieeef(data->Control.LongValue);
+            if (point->getPointOffset() == 10001)
+            {
                 int controlState=INVALID;
                 controlState = ForeignToYukonStatus (data->Control.Value);
                 dValue = ForeignToYukonStatus (data->Control.Value);
@@ -1046,15 +1046,15 @@ void CtiFDR_Valmet::updatePointQualitiesOnDevice(PointQuality_t quality, long pa
         CtiFDRManager* mgrPtr = getSendToList().getPointList();
         CtiFDRManager::readerLock guard(mgrPtr->getLock());
         CtiFDRPointSPtr point;
-    
+
         CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
         CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
-    
+
         for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
         {
             // find the point id
             point = (*myIterator).second;
-    
+
             if (point->getPaoID() == paoId && !point->isCommStatus() && point->getQuality() != quality)
             {
                 CtiPointDataMsg* localMsg = new CtiPointDataMsg (point->getPointID(), point->getValue(), quality, point->getPointType());
