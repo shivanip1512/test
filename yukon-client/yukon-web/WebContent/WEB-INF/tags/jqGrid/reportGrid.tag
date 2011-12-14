@@ -52,12 +52,12 @@
 <div class="dn">
     <div id="${gridId}_toolbar_buttons">
         <div class="fl">
-            <a href="#" class="refresh" data-grid-id="${gridId}"><i:inline key="yukon.web.components.jQbutton.refresh.label" /></a>
+            <a href="#" class="refresh" data-grid-id="${gridId}"><i:inline key="components.refresh" /></a>
         </div>
         <div class="fr">
-            <i:inline key="yukon.web.components.jQbutton.export.label"/>
-            <a class="excel" href="${cti:escapeJavaScript(csvUrl)}"><i:inline key="yukon.web.components.jQbutton.csv.label"/></a>
-            <a class="pdf" href="${cti:escapeJavaScript(pdfUrl)}"><i:inline key="yukon.web.components.jQbutton.pdf.label"/></a>
+            <i:inline key="components.export"/>
+            <a class="excel" href="${cti:escapeJavaScript(csvUrl)}"><i:inline key="components.csv"/></a>
+            <a class="pdf" href="${cti:escapeJavaScript(pdfUrl)}"><i:inline key="components.pdf"/></a>
         </div>
     </div>
 </div>
