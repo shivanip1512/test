@@ -19,7 +19,7 @@ public class TabbedContentSelectorContentTag extends YukonTagSupport {
         parent.addTab(selectorName, id, initiallySelected);
         
         // tab content
-		getJspContext().getOut().println("<div id=\"" + id + "\" class=\"x-hide-display\">");
+		getJspContext().getOut().println("<div id=\"" + id + "\">");
         getJspBody().invoke(getJspContext().getOut());
 		getJspContext().getOut().println("</div>");
         

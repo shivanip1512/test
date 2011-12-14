@@ -19,7 +19,6 @@ function loadCommanderCommand(selectEl, cmdField) {
 
 
 // prompt for a replacement for the parameter
-// Ext.Msg.prompt is asynchronous... the callback will trigger the next replacement
 // replacements will stop when no more parameters exist
 function processCommanderReplacement(paramIdx, originalCmd, cmd, cmdField) {
 
