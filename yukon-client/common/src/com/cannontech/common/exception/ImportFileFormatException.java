@@ -1,4 +1,4 @@
-package com.cannontech.web.exceptions;
+package com.cannontech.common.exception;
 
 public class ImportFileFormatException extends Exception {
     String headerName;

@@ -1,12 +1,12 @@
-package com.cannontech.web.bulk.service;
+package com.cannontech.common.bulk.service;
 
 import java.util.List;
 
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.bulk.model.FdrImportFileInterfaceInfo;
-import com.cannontech.web.bulk.model.FdrInterfaceDisplayable;
-import com.cannontech.web.exceptions.ImportFileFormatException;
+import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
+import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
+import com.cannontech.common.exception.ImportFileFormatException;
 
 public interface FdrTranslationManagerService {
     

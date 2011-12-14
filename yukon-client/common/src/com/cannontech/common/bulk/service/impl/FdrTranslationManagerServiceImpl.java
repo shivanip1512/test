@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.service.impl;
+package com.cannontech.common.bulk.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.TranslationImportCallbackResult;
+import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
+import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
+import com.cannontech.common.bulk.service.FdrTranslationManagerService;
+import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
@@ -36,10 +40,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.fdr.FDRInterfaceOption;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.bulk.model.FdrImportFileInterfaceInfo;
-import com.cannontech.web.bulk.model.FdrInterfaceDisplayable;
-import com.cannontech.web.bulk.service.FdrTranslationManagerService;
-import com.cannontech.web.exceptions.ImportFileFormatException;
 import com.google.common.collect.Lists;
 
 public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerService {
@@ -59,6 +59,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     private static final String DEVICE_TYPE = "DEVICE_TYPE";
     private static final String POINT_NAME = "POINT_NAME";
     private static final String DIRECTION = "DIRECTION";
+    
     private static final String POINTTYPE = "POINTTYPE";
     
     private final int DEFAULT_COLS_FOR_EXPORT = 4;
@@ -213,7 +214,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
         List<String> outputHeaders = Lists.newArrayList();
         
         for(String inputHeader : inputHeaders) {
-            String noWhiteSpaceHeaderToAdd = StringUtils.deleteWhitespace(inputHeader);
+            String noWhiteSpaceHeaderToAdd = StringUtils.deleteWhitespace(inputHeader).toUpperCase();
             if(outputHeaders.contains(noWhiteSpaceHeaderToAdd)) {
                 ImportFileFormatException exception =  new ImportFileFormatException("Duplicate column header: " + noWhiteSpaceHeaderToAdd);
                 exception.setHeaderName(noWhiteSpaceHeaderToAdd);
