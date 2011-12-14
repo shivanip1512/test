@@ -14,15 +14,44 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 
 public class ExportPreviewFormatter {
     public static String defaultDecimalFormat = "#####.00";
+    public static String meterNumber = "Meter123456";
+    public static String deviceName = "Meter";
+    public static String dlcAddress = "DLC Address";
+    public static String rfManufacturer = "Manufacturer";
+    public static String rfModel = "Model";
+    public static String rfSerialNumber = "SerialNumber1234";
     public static Double testValue = new Double("123456789");
     
+    // This method is for demo purposes, I will replace it with final version after I generate a report.
     public static String format(ExportFormat format) {
         StringBuilder preview = new StringBuilder();
         if (format != null) {
             String value = "";
             preview.append(processHeader(format));
-            for (ExportField field : format.getFields()) {
-                if (field.getFieldType().equals(FieldType.PLAIN_TEXT)) {
+            for (int i = 0; i < format.getFields().size();i++) {
+                ExportField field =  format.getFields().get(i);
+                if (field.getFieldType().equals(FieldType.METER_NUMBER)) {
+                    value = processValueString(field, meterNumber);
+                }
+                else if (field.getFieldType().equals(FieldType.DEVICE_NAME)) {
+                    value = processValueString(field, deviceName);
+                }
+                else if (field.getFieldType().equals(FieldType.PLAIN_TEXT)) {
+                    value = processValueString(field, field.getPattern());
+                }
+                else if (field.getFieldType().equals(FieldType.DLC_ADDRESS)) {
+                    value = processValueString(field, dlcAddress );
+                }
+                else if (field.getFieldType().equals(FieldType.RF_MANUFACTURER)) {
+                    value = processValueString(field, rfManufacturer);
+                }
+                else if (field.getFieldType().equals(FieldType.RF_MODEL)) {
+                    value = processValueString(field, rfModel);
+                }
+                else if (field.getFieldType().equals(FieldType.RF_SERIAL_NUMBER)) {
+                    value = processValueString(field, rfSerialNumber );
+                }
+                else if (field.getFieldType().equals(FieldType.PLAIN_TEXT)) {
                     value = processValueString(field, field.getPattern());
                 }
                 else if (field.getFieldType().equals(FieldType.ATTRIBUTE)) {
@@ -42,8 +71,11 @@ public class ExportPreviewFormatter {
                 } else {
                     value = processValueString(field, field.getPattern());
                 }
+                preview.append(value);
+                if(i != format.getFields().size() - 1){
+                    preview.append(format.getDelimiter());
+                }
             }
-            preview.append(value);
             preview.append(processFooter(format));
         }
         return preview.toString().replaceAll("\r\n", "<BR>");
@@ -58,7 +90,7 @@ public class ExportPreviewFormatter {
         if(field.getMaxLength() > 0) {
             int neededPadSize = field.getMaxLength() - valueString.length();
             if (neededPadSize > 0) {
-                if (!field.getPadChar().equalsIgnoreCase("")){
+                if (field.getPadChar() != null && !field.getPadChar().equalsIgnoreCase("")){
                     // This generates the padding string that will be added to
                     // the beginning/end of the string.
                     String paddedStr = "";
@@ -78,9 +110,6 @@ public class ExportPreviewFormatter {
                 int desiredStartPos = - neededPadSize;
                 valueString = valueString.substring(desiredStartPos,valueString.length());
             }
-        }
-        if(valueString == null){
-            valueString = "";
         }
         return valueString;
     }

@@ -13,6 +13,7 @@ public class ExportFormatHelper {
         bean.setExportField(new ExportField());
         bean.setRowIndex(-1);
         bean.setSelectedFieldId(0);
-        bean.getExportField().setMissingAttributeValue("Leave Blank");        
+        bean.getExportField().setMissingAttributeValue("Leave Blank"); 
+        bean.getExportField().setPattern("");
     }
 }
