@@ -26,17 +26,14 @@ import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.user.YukonUserContext;
 
-public class AlarmMessageHandler extends NotifHandler implements MessageHandler {
+public class AlarmMessageHandler extends NotifHandler implements MessageHandler<NotifAlarmMsg> {
     private static Logger log = YukonLogManager.getLogger(AlarmMessageHandler.class);
     
     private @Autowired PointFormattingService pointFormattingService;
     
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (message instanceof NotifAlarmMsg) {
-            return true;
-        }
-        return false;
+    public Class<NotifAlarmMsg> getSupportedMessageType() {
+        return NotifAlarmMsg.class;
     }
     
     @Override

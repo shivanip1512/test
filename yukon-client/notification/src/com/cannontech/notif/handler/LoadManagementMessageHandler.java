@@ -16,16 +16,13 @@ import com.cannontech.notif.server.NotifServerConnection;
 /**
  * 
  */
-public class LoadManagementMessageHandler extends NotifHandler implements MessageHandler {
+public class LoadManagementMessageHandler extends NotifHandler implements MessageHandler<NotifLMControlMsg> {
     private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
 
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (message instanceof NotifLMControlMsg) {
-            return true;
-        }
-        return false;
+    public Class<NotifLMControlMsg> getSupportedMessageType() {
+        return NotifLMControlMsg.class;
     }
     
     @Override

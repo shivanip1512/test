@@ -16,15 +16,12 @@ import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
-public class NotifEmailMessageHandler implements MessageHandler {
-    private Logger log = YukonLogManager.getLogger(NotifEmailMessageHandler.class);
+public class NotifEmailMessageHandler implements MessageHandler<NotifEmailMsg> {
+    private static final Logger log = YukonLogManager.getLogger(NotifEmailMessageHandler.class);
 
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (message instanceof NotifEmailMsg) {
-            return true;
-        }
-        return false;
+    public Class<NotifEmailMsg> getSupportedMessageType() {
+        return NotifEmailMsg.class;
     }
 
     @Override

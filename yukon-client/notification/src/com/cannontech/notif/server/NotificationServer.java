@@ -73,7 +73,6 @@ public class NotificationServer implements Runnable, NotificationServerMBean
                 // No op
             }
             
-            
             throw new RuntimeException(e);
         }
 

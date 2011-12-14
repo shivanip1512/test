@@ -5,12 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.model.Program;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.*;
@@ -23,7 +24,10 @@ import com.cannontech.notif.server.NotifServerConnection;
 /**
  * 
  */
-public class ProgramActionMessageHandler extends NotifHandler implements MessageHandler {
+public class ProgramActionMessageHandler extends NotifHandler implements MessageHandler<ProgramActionMsg> {
+    
+    private static final Logger log = YukonLogManager.getLogger(NotifEmailMessageHandler.class);
+    
     private @Autowired ProgramNotificationGroupDao programNotificationGroupDao;
     private @Autowired ProgramDao programDao;
     private @Autowired CustomerDao customerDao;
@@ -32,18 +36,15 @@ public class ProgramActionMessageHandler extends NotifHandler implements Message
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
 
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (message instanceof ProgramActionMsg) {
-            return true;
-        }
-        return false;
+    public Class<ProgramActionMsg> getSupportedMessageType() {
+        return ProgramActionMsg.class;
     }
 
     @Override
     public void handleMessage(NotifServerConnection connection,  Message message) {
         final ProgramActionMsg msg = (ProgramActionMsg) message;
         
-        CTILogger.info("Got into the ProgramActionMessageHandler");
+        log.info("Got into the ProgramActionMessageHandler");
         
         long durationMillis = msg.stopTime.getTime() - msg.startTime.getTime();
         long durationMinutes = durationMillis / 1000 / 60;

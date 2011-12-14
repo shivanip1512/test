@@ -12,8 +12,7 @@ public class OutputHandlerHelper {
     public void handleNotification(NotificationBuilder notif, List<Contactable> contactableList) {
         for (Iterator<Contactable> iter = contactableList.iterator(); iter.hasNext();) {
             Contactable contact = iter.next();
-            for (Iterator<OutputHandler> i = outputHandlers.iterator(); i.hasNext();) {
-                OutputHandler handler = i.next();
+            for (OutputHandler handler : outputHandlers) {
                 if (contact.supportsNotificationMethod(handler.getNotificationMethod())) {
                     handler.handleNotification(notif, contact);
                 }

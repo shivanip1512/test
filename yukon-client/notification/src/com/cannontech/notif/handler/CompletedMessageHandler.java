@@ -7,16 +7,13 @@ import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public class CompletedMessageHandler implements MessageHandler {
+public class CompletedMessageHandler implements MessageHandler<NotifCompletedMsg> {
 
     private @Autowired VoiceHandler voiceHandler;
 
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (message instanceof NotifCompletedMsg) {
-            return true;
-        }
-        return false;
+    public Class<NotifCompletedMsg> getSupportedMessageType() {
+        return NotifCompletedMsg.class;
     }
 
     @Override

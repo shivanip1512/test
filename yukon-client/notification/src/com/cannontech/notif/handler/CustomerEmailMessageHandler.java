@@ -17,7 +17,7 @@ import com.cannontech.notif.outputs.StandardEmailHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
-public class CustomerEmailMessageHandler implements MessageHandler {
+public class CustomerEmailMessageHandler implements MessageHandler<NotifCustomerEmailMsg> {
     
     private static final Logger log = YukonLogManager.getLogger(CustomerEmailMessageHandler.class);
     
@@ -28,11 +28,8 @@ public class CustomerEmailMessageHandler implements MessageHandler {
     }
 
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (message instanceof NotifCustomerEmailMsg) {
-            return true;
-        }
-        return false;
+    public Class<NotifCustomerEmailMsg> getSupportedMessageType() {
+        return NotifCustomerEmailMsg.class;
     }
     
     @Override

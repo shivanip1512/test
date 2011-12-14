@@ -8,26 +8,23 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.notif.*;
+import com.cannontech.message.notif.VoiceDataRequestMsg;
+import com.cannontech.message.notif.VoiceDataResponseMsg;
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Message;
-import com.cannontech.message.util.ServerRequestHelper;
 import com.cannontech.notif.outputs.Notification;
 import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.notif.voice.Call;
 
-public class VoiceDataRequestMessageHandler implements MessageHandler {
+public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataRequestMsg> {
     
     private @Autowired VoiceHandler voiceHandler;
 
     @Override
-    public boolean supportsMessageType(Message message) {
-        if (ServerRequestHelper.isPayloadInstanceOf(message, VoiceDataRequestMsg.class)) {
-            return true;
-        }
-        return false;
+    public Class<VoiceDataRequestMsg> getSupportedMessageType() {
+        return VoiceDataRequestMsg.class;
     }
     
     @Override

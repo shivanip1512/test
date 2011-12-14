@@ -19,23 +19,15 @@
     <bean id="urlDialerFactory" class="com.cannontech.notif.voice.UrlDialerFactory" />
 
     <bean id="notificationMessageHandler" class="com.cannontech.notif.server.NotificationMessageHandler" />
-
     <bean id="loadManagementMessageHandler" class="com.cannontech.notif.handler.LoadManagementMessageHandler"/>
-
     <bean id="alarmMessageHandler" class="com.cannontech.notif.handler.AlarmMessageHandler"/>
-
     <bean id="completedMessageHandler" class="com.cannontech.notif.handler.CompletedMessageHandler"/>
-
     <bean id="voiceDataRequestMessageHandler" class="com.cannontech.notif.handler.VoiceDataRequestMessageHandler"/>
-
-    <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler" autowire="byType"/>
-
+    <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler"/>
+    <bean id="curtailmentEventDeleteMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventDeleteMessageHandler"/>
     <bean id="economicEventMessageHandler" class="com.cannontech.notif.handler.EconomicEventMessageHandler" />
-
     <bean id="notifEmailMessageHandler" class="com.cannontech.notif.handler.NotifEmailMessageHandler" autowire="byType"/>
-
     <bean id="customerEmailMessageHandler" class="com.cannontech.notif.handler.CustomerEmailMessageHandler"/>
-
     <bean id="programActionMessageHandler" class="com.cannontech.notif.handler.ProgramActionMessageHandler"/>
 
     <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler"
