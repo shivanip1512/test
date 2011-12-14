@@ -78,7 +78,7 @@ public class InventoryController {
     public String home(ModelMap model, YukonUserContext context) {
         
         LiteYukonUser user = context.getYukonUser();
-        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_RECONFIG, user);
+        rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
         
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());

@@ -122,7 +122,6 @@
           </option>
           <option name="deviceReconfig">
             <link>/spring/stars/operator/inventory/home</link>
-            <requireRoleProperty value="DEVICE_RECONFIG" />
           </option>
 
         </options>

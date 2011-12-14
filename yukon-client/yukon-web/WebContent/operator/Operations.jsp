@@ -210,13 +210,9 @@
                     </tags:sectionLink>
                 </cti:checkProperty>
 
-                <!-- This should be an OR'd (seperated by commas) list of roles/properties of features on the inventory operations page. -->
-                <!-- Currently there is only one, Device Reconfig -->
-                <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
-                    <tags:sectionLink>
-                        <a href="/spring/stars/operator/inventory/inventoryOperations/home">Inventory Operations</a>
-                    </tags:sectionLink>
-                </cti:checkRolesAndProperties>
+                <tags:sectionLink>
+                    <a href="/spring/stars/operator/inventory/home">Inventory Operations</a>
+                </tags:sectionLink>
 
                 <!-- Hardware search form -->
                 <cti:checkRolesAndProperties value="INVENTORY_SEARCH">
