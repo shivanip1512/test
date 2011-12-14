@@ -14,7 +14,7 @@
         <link rel="stylesheet" type="text/css"
             href="/WebConfig/yukon/styles/YukonGeneralStyles.css">
         <link rel="stylesheet"
-            href="/WebConfig/yukon/styles/loginStyles.css"
+            href="/WebConfig/yukon/styles/shared/loginStyles.css"
             type="text/css">
         
        

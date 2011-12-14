@@ -1,5 +1,7 @@
+
+
 input, input:active, input:hover {
-    outline: none;  //Thank IE for this rule
+    outline: none;  /* Thank IE for this rule */
 }
 
 a img {

@@ -9,9 +9,9 @@
 
     <cti:includeScript link="/JavaScript/temperature.js"/>
     <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/StarsConsumerStyles.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/thermostat.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
     
     <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius" htmlEscape="false" />
     <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit" htmlEscape="false" />

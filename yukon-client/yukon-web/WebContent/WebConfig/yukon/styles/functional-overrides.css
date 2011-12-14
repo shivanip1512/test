@@ -1,0 +1,66 @@
+/* http://www.w3.org/TR/REC-CSS2/sample.html */
+/* This style sheet describes the typical formatting of all HTML 4.0 ([HTML40]) elements based on extensive research into current UA practice. */
+/* Developers are encouraged to use it as a default style sheet in their implementations. */
+
+table {display:table;border-collapse:separate;border-spacing:none}
+tbody {display:table-row-group}
+tr{display:table-row}
+td {display:table-cell;vertical-align:top}
+
+/* layout basics */
+.fr { float:right; }
+.fl { float:left; }
+.fn {float:none;}
+
+.dn { display: none; }
+.di { display: inline; }
+.db, .box { display:block; }
+.dib { display:inline-block; }
+
+.oh, .box { overflow:hidden; }
+.pr, .box { position: relative; }
+
+.pf { position: fixed; }
+
+.bn { border:none; border-style:none; }
+
+.self_clear:after {content:"."; display:block; height:0px; overflow:hidden; line-height:0; clear:both; visibility:hidden;}
+.self_clear,.box,.db,.z1{zoom:1}
+.zN {zoom:normal}
+.cl{clear:left}
+.cr{clear:right}
+.clear{clear:both}
+.self_clear,.box,.db,.pr,.fl,.fr,.z1{position:relative}
+
+.pa{position:absolute}
+.T0{top:0px}
+.R0{right:0px}
+.B0{bottom:0px}
+.L0{left:0px}
+.P0{padding:0px}
+.box,.oh{overflow:hidden}
+.oa{overflow:auto}
+.ov{overflow:visible}
+.self_clear,.box,.db{display:block}
+.tal{text-align:left}
+.tac{text-align:center}
+.tar{text-align:right}
+h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
+.fwn{font-weight:normal}
+.nw{white-space: nowrap}
+.wsn{white-space: normal}
+
+.vat {vertical-align:top;}
+.vam {vertical-align:middle;}
+.vab {vertical-align:bottom;}
+
+.vh {visibility:hidden;} /* when you want to hide, but still flow */
+.vv {visibility:visible;}
+
+.scroll_y {
+    overflow-y: auto;
+}
+
+.scroll_x {
+    overflow-x: auto;
+}

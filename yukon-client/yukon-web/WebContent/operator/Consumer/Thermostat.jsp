@@ -39,7 +39,7 @@
       <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
       <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
       <link rel="stylesheet" href="../../WebConfig/yukon/styles/StandardStyles.css" type="text/css">
-      <link rel="stylesheet" href="../../WebConfig/yukon/styles/StarsConsumerStyles.css" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" type="text/css">
   </head>
   
   <body class="Background" leftmargin="0" topmargin="0" onload="init()">

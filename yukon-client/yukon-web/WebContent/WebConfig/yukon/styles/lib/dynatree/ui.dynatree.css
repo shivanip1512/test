@@ -3,8 +3,9 @@
  */
 ul.dynatree-container
 {
-	font-family: tahoma, arial, helvetica;
-	font-size: 10pt; /* font size should not be too big */
+/* 	font-family: tahoma, arial, helvetica; */
+/* 	font-size: 10pt; font size should not be too big - dynatree default */
+	font-size: 11px;
 	white-space: nowrap;
 	padding: 3px;
 	margin: 0; /* issue 201 */
@@ -286,12 +287,13 @@ ul.dynatree-container a:hover
 
 span.dynatree-node a
 {
-	font-size: 10pt; /* required for IE, quirks mode */
+/* 	font-size: 10pt; required for IE, quirks mode */
+	font-size: 11px;
 	display: inline-block; /* Better alignment, when title contains <br> */
 /*	vertical-align: top;*/
 	padding-left: 3px;
 	padding-right: 3px; /* Otherwise italic font will be outside bounds */
-	/*	line-height: 16px; /* should be the same as img height, in case 16 px */
+	line-height: 17px; /* should be the same as img height, in case 16 px */
 }
 span.dynatree-folder a
 {
@@ -325,7 +327,7 @@ span.dynatree-active a
 	color: white !important; @ IE6
 }
 
-span.dynatree-selected {
+span.dynatree-selected .dynatree-title {
     background-color:yellow !important;
     color: black !important;
 }
@@ -455,16 +457,16 @@ ul.dynatree-container .found a { color: blue !important; }
 
 /* YUKON STYLES */
 .inlineTree {
-    margin-bottom: 10px;
+/*     margin-bottom: 10px; */
     border: solid 1px #ccc;
+}
+
+.inlineTree.bn, .popupTree {
+    border: none;
 }
 
 .inlineTree .treeCanvas {
     background: white;
-}
-
-.popupTree .treeCanvas {
-    border: none;
 }
 
 span.disabled a {
@@ -474,11 +476,29 @@ span.disabled a {
 .tree_helper_controls {
     background: #efefef;
     border-bottom: 1px dotted #ccc;
-    padding: 5px 10px;
+    padding: 2px 10px;
     overflow:hidden;
     font-size: 12px;
 }
 
 .tree_helper_controls a {
-    margin-right: 10px;
+    margin: 3px 4px 0 0;
+}
+
+.tree_helper_controls .open_all, .tree_helper_controls .close_all {
+    width: 16px;
+    height: 1px;
+    padding-top: 15px;
+    float: left;
+    overflow:hidden;
+    background-position: left top;
+    background-color: transparent;
+}
+
+.tree_helper_controls .open_all {
+    background-image: url('tree/expand.png');
+}
+
+.tree_helper_controls .close_all {
+    background-image: url('tree/collapse.png');
 }

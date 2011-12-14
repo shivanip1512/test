@@ -720,7 +720,7 @@
         </option>
       </options>
     </menu>
-    <css file="/WebConfig/yukon/styles/StarsConsumerStyles.css" />
+    <css file="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" />
     <script file="/JavaScript/hideReveal.js" />
   </module>
 
@@ -1236,7 +1236,7 @@
 
     <module name="adminSetup">
         <skin name="STANDARD" />
-        <css file="/WebConfig/yukon/styles/admin/adminSetup.css"/>
+        <css file="/WebConfig/yukon/styles/admin/admin-setup.css"/>
         <menu>
             <options>
                 <option name="energyCompanySetup">

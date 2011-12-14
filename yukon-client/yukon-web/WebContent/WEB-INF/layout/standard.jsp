@@ -11,15 +11,17 @@
         <title>${pageDetail.pageTitle}</title>           
         <!-- Layout CSS files -->
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/reset.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/BaseStyles.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/ext-all.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/xtheme-gray.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/reset.css"/>" >
+        
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukonUIToolkit/yukonUiToolkit.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/jQuery/yukon/jquery-ui-1.8.16.custom.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.8.16.custom.css"/>" >
+        
+        
+        <%-- Include functional-overrides.css last so that, you know, they actually override.  cascade! --%>
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>" >
 
         <!-- Module CSS files from module_config.xml -->
         <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >

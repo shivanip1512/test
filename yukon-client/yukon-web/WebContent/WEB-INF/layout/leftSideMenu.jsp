@@ -11,7 +11,7 @@
         <!-- Layout CSS files -->
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/LeftMenuStyles.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/consumer/LeftMenuStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>" >
         
         <!-- Module CSS files from module_config.xml -->
