@@ -84,7 +84,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     
     @Override
     @Transactional
-	public PaoIdentifier createCapControlObject(PaoType paoType, String name) {
+	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled) {
         PaoIdentifier pao = null;
         switch(paoType) {
 
@@ -94,13 +94,13 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             case CAP_CONTROL_SUBBUS :
             case CAP_CONTROL_FEEDER :
             case CAPBANK :
-            	pao = createHierarchyObject(paoType, name);
+            	pao = createHierarchyObject(paoType, name, disabled);
                 break;
                 
             case LOAD_TAP_CHANGER:
             case GANG_OPERATED:
             case PHASE_OPERATED:
-                pao = createRegulator(paoType, name);
+                pao = createRegulator(paoType, name, disabled);
                 break;
                 
             default:
@@ -110,18 +110,19 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         return pao;
     }
 	
-	private PaoIdentifier createHierarchyObject(PaoType paoType, String name) {
+	private PaoIdentifier createHierarchyObject(PaoType paoType, String name, boolean disabled) {
 		ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
 		
 		// Create and set-up the YukonPaObjectFields
 		YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(name);
+		yukonPaObjectFields.setDisabled(YNBoolean.valueOf(disabled));
+		paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
 		
 		switch (paoType) {
 		case CAP_CONTROL_AREA:
 			paoFields.put(AreaFields.class, new AreaFields());
 			break;
 		case CAP_CONTROL_SPECIAL_AREA:
-		    yukonPaObjectFields.setDisabled(YNBoolean.YES); // Special Areas are disabled by default.
 			paoFields.put(SpecialAreaFields.class, new SpecialAreaFields());
 			break;
 		case CAP_CONTROL_SUBSTATION:
@@ -142,15 +143,14 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 			throw new IllegalArgumentException("Creation of hierarchy object " + name + " failed. Unknown type: " + paoType.getDbString());
 		}
 		
-		paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
-		
         PaoTemplate paoTemplate = new PaoTemplate(paoType, paoFields);
         
         return paoCreationService.createPao(paoTemplate);
 	}
 	
-	private PaoIdentifier createRegulator(PaoType paoType, String name) {
+	private PaoIdentifier createRegulator(PaoType paoType, String name, boolean disabled) {
 		YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(name);
+		yukonPaObjectFields.setDisabled(YNBoolean.valueOf(disabled));
 	    VoltageRegulatorFields voltageRegulatorFields = new VoltageRegulatorFields(0,0);
 
 	    ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();

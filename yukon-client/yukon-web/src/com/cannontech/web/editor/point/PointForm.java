@@ -323,10 +323,11 @@ public class PointForm extends DBEditorForm
         int pointType = getWizData().getPointType().intValue();
         String name = getWizData().getName();
         Integer paoId = getWizData().getParentId();
+        boolean disabled = getWizData().getDisabled();
         
         try {
             fcsMessage.setDetail("Database add was SUCCESSFUL");
-            PointBase point = PointUtil.createPoint(pointType, name, paoId);    
+            PointBase point = PointUtil.createPoint(pointType, name, paoId, disabled);    
             initItem( point.getPoint().getPointID().intValue() );
             CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
             capControlForm.getPointTreeForm().resetPointList();

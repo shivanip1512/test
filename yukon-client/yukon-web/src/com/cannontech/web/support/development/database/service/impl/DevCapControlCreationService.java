@@ -85,7 +85,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
                 devCapControl.incrementFailureCount();
                 return;
             }
-            capControlCreationService.createCapControlObject(paoType, name);
+            capControlCreationService.createCapControlObject(paoType, name, false);
             devCapControl.incrementSuccessCount();
             log.info("CapControl object with name " + name + " created.");
         } catch(RuntimeException e) {

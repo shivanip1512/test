@@ -1013,7 +1013,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         String cbcName = cbcWizard.getName();
                         int cbcPortId = cbcWizard.getPortID();
                         PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId);
-                        PaoIdentifier capbank = capControlCreationService.createCapControlObject(paoType, name);
+                        PaoIdentifier capbank = capControlCreationService.createCapControlObject(paoType, name, disabled);
                         int controllerId = controller.getPaoId();
                         int tempItemId = capbank.getPaoId();
                         capbankControllerDao.assignController(tempItemId, controllerId);
@@ -1023,7 +1023,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 	    PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId);
                 	    itemId = item.getPaoId();
                     } else {
-                        PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name);
+                        PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name, disabled);
                         itemId = item.getPaoId();
                     }
                 }

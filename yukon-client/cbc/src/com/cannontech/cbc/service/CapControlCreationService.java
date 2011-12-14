@@ -11,7 +11,7 @@ public interface CapControlCreationService {
 	 * @param name the name of the capcontrol object
 	 * @return the PaoIdentifier representing the newly created object.
 	 */
-	public PaoIdentifier createCapControlObject(PaoType paoType, String name);
+	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled);
 	
 	/**
 	 * Creates a new CBC object with the specified information

@@ -5,6 +5,7 @@
 package com.cannontech.database.data.point;
 
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -25,66 +26,72 @@ import com.cannontech.message.dispatch.message.DbChangeType;
  */
 public class PointUtil {
 
-    public static PointBase createPoint(int type, String name, Integer paoId) throws TransactionException {
+    public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled) 
+        throws TransactionException {
        MultiDBPersistent dbPersistentVector = new MultiDBPersistent(); 
        PointBase point = new PointBase();
+       
+       // Service flag of 'Y' means disabled, 'N' means enabled.
+       char disabledChar = disabled ? CtiUtilities.trueChar : CtiUtilities.falseChar;
        int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId, type);
-	switch (type){
-       case PointTypes.ANALOG_POINT:
-           point =  PointFactory.createPoint(PointTypes.ANALOG_POINT);
-           point =  PointFactory.createAnalogPoint(name,
-                                                                      paoId,
-                                                                      point.getPoint().getPointID(),
-                                                                      validPointOffset,
-                                                                      PointUnits.UOMID_VOLTS,
-                                                                      1.0, 
-                                                                      StateGroupUtils.STATEGROUP_ANALOG,
-                                                                      PointUnit.DEFAULT_DECIMAL_PLACES,
-                                                                      PointArchiveType.NONE,
-                                                                      PointArchiveInterval.ZERO);
-           dbPersistentVector.getDBPersistentVector().add(point);
-           break;
-       case PointTypes.STATUS_POINT:
-           point = PointFactory.createBankStatusPt(paoId);
-           point.getPoint().setPointName(name);
-           point.getPoint().setPointOffset( new Integer ( validPointOffset) );
-           dbPersistentVector.getDBPersistentVector().add(point);
-           break;
-           
-       case PointTypes.DEMAND_ACCUMULATOR_POINT:
-           point = PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
-           point = PointFactory.createDmdAccumPoint(name, 
-                                                    paoId, 
-                                                                      point.getPoint().getPointID(),
-                                                                      TypeBase.POINT_OFFSET, 
-                                                                      PointUnits.UOMID_UNDEF, 
-                                                                      0.1, 
-                                                                      StateGroupUtils.STATEGROUP_ANALOG,
-                                                                      PointUnit.DEFAULT_DECIMAL_PLACES,
-                                                                      PointArchiveType.NONE,
-                                                                      PointArchiveInterval.ZERO);
-           
-           dbPersistentVector.getDBPersistentVector().add(point);
-           break;
-           
-       case PointTypes.CALCULATED_POINT:
-           point = PointFactory.createCalculatedPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG, PointUnits.UOMID_UNDEF, PointUnit.DEFAULT_DECIMAL_PLACES, null);
-           dbPersistentVector.getDBPersistentVector().add(point);
-           break;
-           
-       case PointTypes.CALCULATED_STATUS_POINT:
-           point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
-           dbPersistentVector.getDBPersistentVector().add(point); 
-           break;
-           
-        default: 
-            throw new Error("PointUtil::createPoint - Unrecognized point type");
-       }
        
-       
-       PointUtil.insertIntoDB(dbPersistentVector);
-       
-       return point;
+       switch (type){
+            case PointTypes.ANALOG_POINT:
+                point =  PointFactory.createAnalogPoint(name,
+                                                        paoId,
+                                                        point.getPoint().getPointID(),
+                                                        validPointOffset,
+                                                        PointUnits.UOMID_VOLTS,
+                                                        1.0, 
+                                                        StateGroupUtils.STATEGROUP_ANALOG,
+                                                        PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                        PointArchiveType.NONE,
+                                                        PointArchiveInterval.ZERO);
+                point.getPoint().setServiceFlag(disabledChar);
+                break;
+            case PointTypes.STATUS_POINT:
+                point = PointFactory.createBankStatusPt(paoId);
+                point.getPoint().setPointName(name);
+                point.getPoint().setPointOffset( new Integer ( validPointOffset) );
+                break;
+           
+            case PointTypes.DEMAND_ACCUMULATOR_POINT:
+                point = PointFactory.createDmdAccumPoint(name, 
+                                                         paoId, 
+                                                         point.getPoint().getPointID(),
+                                                         TypeBase.POINT_OFFSET, 
+                                                         PointUnits.UOMID_UNDEF, 
+                                                         0.1, 
+                                                         StateGroupUtils.STATEGROUP_ANALOG,
+                                                         PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                         PointArchiveType.NONE,
+                                                         PointArchiveInterval.ZERO);
+           
+                break;
+           
+            case PointTypes.CALCULATED_POINT:
+                point = PointFactory.createCalculatedPoint(paoId, 
+                                                           name, 
+                                                           StateGroupUtils.STATEGROUP_ANALOG, 
+                                                           PointUnits.UOMID_UNDEF, 
+                                                           PointUnit.DEFAULT_DECIMAL_PLACES, 
+                                                           null);
+                break;
+           
+            case PointTypes.CALCULATED_STATUS_POINT:
+                point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
+                break;
+           
+            default: 
+                throw new Error("PointUtil::createPoint - Unrecognized point type");
+        }
+
+	    point.getPoint().setServiceFlag(disabledChar);
+	
+	    dbPersistentVector.getDBPersistentVector().add(point);
+	    PointUtil.insertIntoDB(dbPersistentVector);
+   
+	    return point;
     }
 
     public static void insertIntoDB(DBPersistent pointVector) throws TransactionException {
