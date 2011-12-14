@@ -5,10 +5,11 @@ import com.cannontech.user.YukonUserContext;
 
 public interface IvvcAnalysisScenarioMsgFormatter {
 
+    public IvvcAnalysisFormatType getFormatType();
+
     /**
-     * Refers to int IvvcAnalysisScenarioType.formatType
+     * Returns an html-injected string ready to be displayed on the web
      */
-    public int getFormatTypeId();
     public String format(IvvcAnalysisMessage message, YukonUserContext userContext);
 
 }

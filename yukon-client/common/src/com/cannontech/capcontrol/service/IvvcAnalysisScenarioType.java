@@ -5,23 +5,23 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum IvvcAnalysisScenarioType {
 
-    ABORTED_CBC_COMMS_RATIO_STALE(1),
-    ABORTED_REG_COMMS_RATIO_STALE(1),
-    ABORTED_ADDITIONAL_VOLTAGE_POINTS_COMMS_RATIO_STALE(1),
-    ABORTED_ADDITIONAL_REQUIRED_POINTS_COMMS_RATIO_STALE(1),
-    ABORTED_CBC_COMMS_RATIO_INCOMPLETE(1),
-    ABORTED_REG_COMMS_RATIO_INCOMPLETE(1),
-    ABORTED_ADDITIONAL_VOLTAGE_POINTS_COMMS_RATIO_INCOMPLETE(1),
-    ABORTED_ADDITIONAL_REQUIRED_POINTS_COMMS_RATIO_INCOMPLETE(1),
-    EXECUTED_TAP_RAISE(2),
-    EXECUTED_TAP_LOWER(2),
-    EXECUTED_NO_TAP_MIN_PERIOD(3),
-    EXECUTED_NO_TAP_NEEDED(4),
-    EXECUTED_CAPBANK_OP_CLOSE(5),
-    EXECUTED_CAPBANK_OP_OPEN(5),
-    EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR(6);
+    ABORTED_CBC_COMMS_RATIO_STALE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_REG_COMMS_RATIO_STALE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_ADDITIONAL_VOLTAGE_POINTS_COMMS_RATIO_STALE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_ADDITIONAL_REQUIRED_POINTS_COMMS_RATIO_STALE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_CBC_COMMS_RATIO_INCOMPLETE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_REG_COMMS_RATIO_INCOMPLETE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_ADDITIONAL_VOLTAGE_POINTS_COMMS_RATIO_INCOMPLETE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    ABORTED_ADDITIONAL_REQUIRED_POINTS_COMMS_RATIO_INCOMPLETE(IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT),
+    EXECUTED_TAP_RAISE(IvvcAnalysisFormatType.SUBBUS_ID_REG_ID),
+    EXECUTED_TAP_LOWER(IvvcAnalysisFormatType.SUBBUS_ID_REG_ID),
+    EXECUTED_NO_TAP_MIN_PERIOD(IvvcAnalysisFormatType.SUBBUS_ID_INT),
+    EXECUTED_NO_TAP_NEEDED(IvvcAnalysisFormatType.SUBBUS_ID),
+    EXECUTED_CAPBANK_OP_CLOSE(IvvcAnalysisFormatType.SUBBUS_ID_CC_PAO_ID),
+    EXECUTED_CAPBANK_OP_OPEN(IvvcAnalysisFormatType.SUBBUS_ID_CC_PAO_ID),
+    EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR(IvvcAnalysisFormatType.INT_CC_ID);
     
-    private int formatType;
+    private IvvcAnalysisFormatType formatType;
     
     private static ImmutableMap<Integer, IvvcAnalysisScenarioType> scenarioIdMap;
     static {
@@ -46,11 +46,11 @@ public enum IvvcAnalysisScenarioType {
         scenarioIdMap = builder.build();
     }
 
-    private IvvcAnalysisScenarioType(int formatType) {
+    private IvvcAnalysisScenarioType(IvvcAnalysisFormatType formatType) {
         this.formatType = formatType;
     }
 
-    public int getFormatType() {
+    public IvvcAnalysisFormatType getFormatType() {
         return formatType;
     }
 

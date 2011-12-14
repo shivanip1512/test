@@ -14,6 +14,7 @@ import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.message.IvvcAnalysisMessage;
 import com.cannontech.capcontrol.model.Zone;
+import com.cannontech.capcontrol.service.IvvcAnalysisFormatType;
 import com.cannontech.capcontrol.service.IvvcAnalysisScenarioMsgFormatter;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
@@ -35,14 +36,14 @@ public class IvvcAnalysisScenarioProcessor {
     private PaoLoadingService paoLoadingService;
     private ZoneDao zoneDao;
 
-    private ImmutableMap<Integer, IvvcAnalysisScenarioMsgFormatter> formattersMap;
+    private ImmutableMap<IvvcAnalysisFormatType, IvvcAnalysisScenarioMsgFormatter> formattersMap;
     
     @PostConstruct
     public void init() {
         IvvcAnalysisScenarioMsgFormatter subBusTwoFloatFormatter = new IvvcAnalysisScenarioMsgFormatter() {
             @Override
-            public int getFormatTypeId() {
-                return 1;
+            public IvvcAnalysisFormatType getFormatType() {
+                return IvvcAnalysisFormatType.SUBBUSID_FLOAT_FLOAT;
             }
             @Override
             public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
@@ -61,8 +62,8 @@ public class IvvcAnalysisScenarioProcessor {
         };
         IvvcAnalysisScenarioMsgFormatter subBusCcObjectZoneFormatter = new IvvcAnalysisScenarioMsgFormatter() {
             @Override
-            public int getFormatTypeId() {
-                return 2;
+            public IvvcAnalysisFormatType getFormatType() {
+                return IvvcAnalysisFormatType.SUBBUS_ID_REG_ID;
             }
             @Override
             public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
@@ -92,8 +93,8 @@ public class IvvcAnalysisScenarioProcessor {
         };
         IvvcAnalysisScenarioMsgFormatter subBusIntFormatter = new IvvcAnalysisScenarioMsgFormatter() {
             @Override
-            public int getFormatTypeId() {
-                return 3;
+            public IvvcAnalysisFormatType getFormatType() {
+                return IvvcAnalysisFormatType.SUBBUS_ID_INT;
             }
             @Override
             public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
@@ -111,8 +112,8 @@ public class IvvcAnalysisScenarioProcessor {
         };
         IvvcAnalysisScenarioMsgFormatter subBusFormatter = new IvvcAnalysisScenarioMsgFormatter() {
             @Override
-            public int getFormatTypeId() {
-                return 4;
+            public IvvcAnalysisFormatType getFormatType() {
+                return IvvcAnalysisFormatType.SUBBUS_ID;
             }
             @Override
             public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
@@ -128,8 +129,8 @@ public class IvvcAnalysisScenarioProcessor {
         };
         IvvcAnalysisScenarioMsgFormatter subBusCcObjectFormatter = new IvvcAnalysisScenarioMsgFormatter() {
             @Override
-            public int getFormatTypeId() {
-                return 5;
+            public IvvcAnalysisFormatType getFormatType() {
+                return IvvcAnalysisFormatType.SUBBUS_ID_CC_PAO_ID;
             }
             @Override
             public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
@@ -148,8 +149,8 @@ public class IvvcAnalysisScenarioProcessor {
         };
         IvvcAnalysisScenarioMsgFormatter intCcObjectFormatter = new IvvcAnalysisScenarioMsgFormatter() {
             @Override
-            public int getFormatTypeId() {
-                return 6;
+            public IvvcAnalysisFormatType getFormatType() {
+                return IvvcAnalysisFormatType.INT_CC_ID;
             }
             @Override
             public String format(IvvcAnalysisMessage message, YukonUserContext userContext) {
@@ -166,13 +167,13 @@ public class IvvcAnalysisScenarioProcessor {
             }
         };
 
-        Builder<Integer, IvvcAnalysisScenarioMsgFormatter> builder = ImmutableMap.builder();
-        builder.put(subBusTwoFloatFormatter.getFormatTypeId(), subBusTwoFloatFormatter);
-        builder.put(subBusCcObjectZoneFormatter.getFormatTypeId(), subBusCcObjectZoneFormatter);
-        builder.put(subBusIntFormatter.getFormatTypeId(), subBusIntFormatter);
-        builder.put(subBusFormatter.getFormatTypeId(), subBusFormatter);
-        builder.put(subBusCcObjectFormatter.getFormatTypeId(), subBusCcObjectFormatter);
-        builder.put(intCcObjectFormatter.getFormatTypeId(), intCcObjectFormatter);
+        Builder<IvvcAnalysisFormatType, IvvcAnalysisScenarioMsgFormatter> builder = ImmutableMap.builder();
+        builder.put(subBusTwoFloatFormatter.getFormatType(), subBusTwoFloatFormatter);
+        builder.put(subBusCcObjectZoneFormatter.getFormatType(), subBusCcObjectZoneFormatter);
+        builder.put(subBusIntFormatter.getFormatType(), subBusIntFormatter);
+        builder.put(subBusFormatter.getFormatType(), subBusFormatter);
+        builder.put(subBusCcObjectFormatter.getFormatType(), subBusCcObjectFormatter);
+        builder.put(intCcObjectFormatter.getFormatType(), intCcObjectFormatter);
         formattersMap = builder.build();
     }
     
