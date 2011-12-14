@@ -28,10 +28,10 @@
     
     <!-- Device Collections -->
     <entry key="yukon.common.device.bulk.bulkAction.collection.addressRange">address range {0,number,#} - {1,number,#}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.group">device group {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.group">Device Group {0}</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.group.temporary">temporary collection</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.group.temporaryWithHint">devices from {0}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.idList">individually selected devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.idList">Individually Selected Devices</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter">{0}</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter.all">all Devices</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis">Archive Data Analysis</entry>
@@ -113,9 +113,9 @@
     <entry key="yukon.common.device.bulk.collectionActions.readConfigDescription">Reads device configuration settings from the devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigLabel">Verify Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigDescription">Verify settings between the device and the assigned configuration.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Archived Value Data</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Archived Value Data</entry> 
     <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription">Export Archived Value Data</entry>
-    
+     
     <!-- DEVICE COLLECTION REPORT -->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
@@ -164,6 +164,7 @@
     <!-- SELECTED DEVICES POPUP selectedDevices.jsp -->
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel">Devices Selected</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.count">Device Count: {0}</entry>
+    <entry key="yukon.common.device.bulk.selectedDevicesPopup.deviceCount">Device Count</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle">Selected Devices</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.warning">View names of selected devices.</entry>
     
