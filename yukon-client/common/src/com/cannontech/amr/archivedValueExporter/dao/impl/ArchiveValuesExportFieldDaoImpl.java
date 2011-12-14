@@ -76,7 +76,6 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             String padSide = SqlUtils.convertStringToDbValue(field.getPadSide());
             String roundingMode = SqlUtils.convertStringToDbValue(field.getRoundingMode());
             String missingAttributeValue = SqlUtils.convertStringToDbValue(field.getMissingAttributeValue());
-            //String multiplierRemovedFlag =YNBoolean.valueOf(field.isMultiplierRemovedFlag()).getDatabaseRepresentation().toString();
             DatabaseRepresentationSource ynBoolean = YNBoolean.valueOf(field.isMultiplierRemovedFlag());
             String multiplierRemovedFlag = ynBoolean.getDatabaseRepresentation().toString();
             batchArgs.add(new Object[] {fieldId,formatId,fieldType,attributeID, attributeField, pattern, maxLength, padChar, padSide, roundingMode, missingAttributeValue, multiplierRemovedFlag });
