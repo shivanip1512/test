@@ -30,7 +30,7 @@
 	        
 	        jQuery('#filterForm, #csvForm').submit(function() {
 	        	var attrNames = '';
-		    	jQuery("#selectDeviceGRoupNameTreeDiv_eventTree").dynatree("getSelectedNodes").each(function(node) {
+		    	jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
 		    		if (ignoreTitle(node.data.title) === false) {
 		    			attrNames += node.data.title + ",";
 		    		}
@@ -48,7 +48,7 @@
 	    
 	    function updateEventTypesNum() {
 	    	var numSelected = 0;
-	    	jQuery("#selectDeviceGRoupNameTreeDiv_eventTree").dynatree("getSelectedNodes").each(function(node) {
+	    	jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
 	    		if (ignoreTitle(node.data.title) === false) {
 	    			numSelected++;
 	    		}
@@ -122,7 +122,7 @@
 		    	                    {title: outageTitle, isFolder: true, children: outageNodes},
 		    	                    {title: meteringTitle, isFolder: true, children: meteringNodes}]}];
 	    	
-	    	jQuery("#selectDeviceGRoupNameTreeDiv_eventTree").dynatree({
+	    	jQuery("#eventTree").dynatree({
 	    		checkbox: true,
 	    		selectMode: 3,
 	    		children: treeChildren
@@ -256,7 +256,6 @@
 				<jsTree:inlineTree id="eventTree"
 	                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
 	                treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
-	                divId="selectDeviceGRoupNameTreeDiv_eventTree"
 	                width="500"
 	                height="300"
 	                includeControlBar="true" />
