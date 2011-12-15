@@ -3,17 +3,7 @@
 <%@ taglib prefix="cti"     uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="jsTree"  tagdir="/WEB-INF/tags/jsTree" %>
 
-<c:choose>
-    <c:when test="${not empty treeCss}"><cti:includeCss link="${treeCss}"/></c:when>
-    <c:otherwise><cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/></c:otherwise>
-</c:choose>
-
-<%-- BASICS --%>
-<%-- id will be the internal id of the tree, also will be name of dom elememt to access tree in jsp --%>
-<%-- treeCss allows you to customize the styling of the tree's icons, etc --%>
-<%-- create a new css file under /JavaScript/extjs_cannon/resources/css/ that overrides styles you want --%>
-<%-- treeAttributes should be convertable to a js hash and contains any configs to override default tree panel configs --%>
-<%-- triggerElement is the id of the page (button, link, etc) whose 'click' signal will trigger the popup to open --%>
+<%-- Passthrough to inlineTree --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="treeCss" required="false" type="java.lang.String"%>
 <%@ attribute name="treeParameters" required="false" type="java.lang.String"%>
@@ -22,9 +12,6 @@
 <%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-
-<%-- STATIC JSON --%>
-<%-- json should be a dictionary starting with attributes of the root node (root node is supplied by you!) --%>
 <%@ attribute name="dataJson" required="false" type="java.lang.String"%>
 
 <%-- POPUP WINDOW SETUP --%>
@@ -40,8 +27,23 @@
 <%@ attribute name="windowAttributes" required="false" type="java.lang.String"%>
 <%@ attribute name="buttonsList" required="false" type="java.lang.String"%>
 
+<c:choose>
+    <c:when test="${!empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:when>
+    <c:otherwise><cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/></c:otherwise>
+</c:choose>
 
-
+<c:if test="${!empty pageScope.id}">
+    <c:set var="id" value="${pageScope.id}"/>
+</c:if>
+<c:if test="${!empty pageScope.title}">
+    <c:set var="title" value="${pageScope.title}"/>
+</c:if>
+<c:if test="${!empty pageScope.windowAttributes}">
+    <c:set var="windowAttributes" value="${pageScope.windowAttributes}"/>
+</c:if>
+<c:if test="${!empty pageScope.buttonsList}">
+    <c:set var="buttonsList" value="${pageScope.buttonsList}"/>
+</c:if>
 
 <div class="dn">
     <!-- Hide the contents of this window. clicking the button will be MAGIC! -->
@@ -70,15 +72,15 @@
     
     jQuery(document).ready(function(){
         
-        <c:if test="${not empty buttonsList}">
+        <c:if test="${!empty buttonsList}">
         var buttons = ${buttonsList}; 
         </c:if>
         
         <c:if test="${empty buttonsList}">
         var buttons = [];
         </c:if>
-
-        window_${id} = jQuery(document.getElementById("window_${id}")).dialog({
+        
+        var args = {
                 modal: true,
                 width: ${width} + 16,
                 <c:if test="${not empty pageScope.title}">
@@ -88,7 +90,16 @@
                 resizable: false,
                 autoOpen: false,
                 draggable: false
-            });
+            };
+        
+        <c:if test="${!empty windowAttributes}">
+        var parameters = ${windowAttributes};
+        for(key in parameters){
+            args[key] = parameters[key];
+        }
+        </c:if>
+
+        window_${id} = jQuery(document.getElementById("window_${id}")).dialog(args);
 
         //click a button, get the window
         jQuery(document.getElementById("${triggerElement}")).click(function(){
