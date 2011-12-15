@@ -13,14 +13,15 @@ import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.enums.Phase;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
@@ -39,30 +40,30 @@ public class BusViewController {
     private StrategyDao strategyDao;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
     private PointDao pointDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping
-    public String detail(ModelMap model, LiteYukonUser user, Boolean isSpecialArea, int subBusId) {
-        setupDetails(model, user, isSpecialArea, subBusId);
+    public String detail(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
+        setupDetails(model, userContext, isSpecialArea, subBusId);
         return "ivvc/busView.jsp";
     }
     
-    private void setupDetails(ModelMap model, LiteYukonUser user, Boolean isSpecialArea, int subBusId) {
+    private void setupDetails(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
         if(isSpecialArea == null) {
             isSpecialArea = false;
         }
         model.addAttribute("isSpecialArea",isSpecialArea);
-        model.addAttribute("title", "IVVC SubBus View");
         model.addAttribute("subBusId", subBusId);
         
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
         model.addAttribute("hasEditingRole",hasEditingRole);
         
         List<LitePoint> allSubBusPoints = pointDao.getLitePointsByPaObjectId(subBusId);
         model.addAttribute("allSubBusPoints", allSubBusPoints);
         
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(userContext.getYukonUser());
         
-        setupBreadCrumbs(model,cache,subBusId,isSpecialArea);
+        setupBreadCrumbs(model, cache, subBusId, isSpecialArea, userContext);
         setupZoneList(model,cache,subBusId);
         setupStrategyDetails(model,cache,subBusId);
 
@@ -95,7 +96,7 @@ public class BusViewController {
         model.addAttribute("strategySettings",strategy.getTargetSettings());
     }
     
-    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, boolean isSpecialArea) {
+    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, boolean isSpecialArea, YukonUserContext userContext) {
         StreamableCapObject subBus = cache.getSubBus(subBusId);
         SubStation station = cache.getSubstation(subBus.getParentID());
         
@@ -110,6 +111,10 @@ public class BusViewController {
         String areaName = area.getCcName();
         String substationName = station.getCcName();
         String subBusName = subBus.getCcName();
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String pageTitle = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.busView.pageTitleText", subBusName);
+        model.addAttribute("title", pageTitle);
         
         model.addAttribute("areaId", area.getCcId());
         model.addAttribute("areaName", areaName);
@@ -161,5 +166,10 @@ public class BusViewController {
     @Autowired
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }
