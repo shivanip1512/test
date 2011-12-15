@@ -670,39 +670,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             this.paoDisplayGroupMap.put(group, paoDefinition);
         }
 
-        // Add pao points (non-calculated)
         Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
 
-        List<Point> points = pao.getEnabledPoints();
-        for (Point point : points) {
-            PointTemplate template = this.createPointTemplate(point);
-            this.paoAllPointTemplateMap.put(paoType, template);
-
-            if (point.getInit()) {
-            	this.paoInitPointTemplateMap.put(paoType, template);
-            }
-            
-            if (pointNameTemplateMap.containsKey(template.getName())) {
-                throw new RuntimeException("Point name: " + template.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - point names must be unique within a pao type");
-            }
-            pointNameTemplateMap.put(template.getName(), template);
-        }
+        // Add pao points (non-calculated)
+        populatePointMapsWithNonCalcPoints(pao, paoType, pointNameTemplateMap, javaConstant);
 
         // Add pao points (calculated)
-        List<Point> calcPoints = pao.getEnabledCalcPoints();
-        for (Point point : calcPoints) {
-            PointTemplate template = this.createCalcPointTemplate(point, pointNameTemplateMap);
-            this.paoAllPointTemplateMap.put(paoType, template);
-            
-            if (point.getInit()) {
-                this.paoInitPointTemplateMap.put(paoType, template);
-            }
-            
-            if (pointNameTemplateMap.containsKey(template.getName())) {
-                throw new RuntimeException("Point name: " + template.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - point names must be unique within a pao type");
-            }
-            pointNameTemplateMap.put(template.getName(), template);
-        }
+        populatePointMapsWithCalcPoints(pao, paoType, pointNameTemplateMap, javaConstant);
         
         // Add pao attributes
         Map<Attribute, AttributeDefinition> attributeMap = new HashMap<Attribute, AttributeDefinition>();
@@ -745,6 +719,40 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         if( paoDefinition.isCreatable()) {
             this.creatablePaoDefinitions.add(paoDefinition);
         }
+    }
+    
+    private void populatePointMapsWithNonCalcPoints(PaoStore pao, PaoType paoType, Map<String, PointTemplate> pointNameTemplateMap,
+                                                 String javaConstant) {
+        List<Point> points = pao.getEnabledPoints();
+        for (Point point : points) {
+            PointTemplate template = this.createPointTemplate(point);
+            addPointTemplateToMaps(paoType, point, template, pointNameTemplateMap, javaConstant);
+        }
+    }
+    
+    private void populatePointMapsWithCalcPoints(PaoStore pao, PaoType paoType,
+                                                 Map<String, PointTemplate> pointNameTemplateMap,
+                                                 String javaConstant) {
+        List<Point> points = pao.getEnabledCalcPoints();
+        for (Point point : points) {
+            PointTemplate template = this.createCalcPointTemplate(point, pointNameTemplateMap);
+            addPointTemplateToMaps(paoType, point, template, pointNameTemplateMap, javaConstant);
+        }
+    }
+    
+    private void addPointTemplateToMaps(PaoType paoType, Point point, PointTemplate template,
+                                        Map<String, PointTemplate> pointNameTemplateMap,
+                                        String javaConstant) {
+        this.paoAllPointTemplateMap.put(paoType, template);
+        
+        if (point.getInit()) {
+            this.paoInitPointTemplateMap.put(paoType, template);
+        }
+        
+        if (pointNameTemplateMap.containsKey(template.getName())) {
+            throw new RuntimeException("Point name: " + template.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - point names must be unique within a pao type");
+        }
+        pointNameTemplateMap.put(template.getName(), template);
     }
 
     /**
