@@ -942,6 +942,9 @@
         	</command>
         </commands>
         <attributes>
+            <attribute name="NEUTRAL_CURRENT">
+                <basicLookup point="Neutral Current"/>
+            </attribute>
             <attribute name="CURRENT_PHASE_A">
                 <basicLookup point="Phase A Current"/>
             </attribute>

@@ -217,18 +217,17 @@ public class MeterController extends MultiActionController {
         boolean peakReportSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PEAK_REPORT);
         mav.addObject("peakReportSupported", peakReportSupported);
 
-        boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
-        mav.addObject("isMCT4XX", isMCT4XX);
-        
+        boolean threePhaseVoltageOrCurrentSupported = (paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
+                                                                                      PaoTag.THREE_PHASE_VOLTAGE) ||
+                                                       paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
+                                                                                      PaoTag.THREE_PHASE_CURRENT));
+        mav.addObject("threePhaseVoltageOrCurrentSupported", threePhaseVoltageOrCurrentSupported);
+
         boolean singlePhaseVoltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
-        boolean threePhaseVoltageSuported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
-                                                                            PaoTag.THREE_PHASE_VOLTAGE);                                                                     
-        boolean threePhaseCurrentSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), 
-                                                                             PaoTag.THREE_PHASE_CURRENT);
-        mav.addObject("singlePhaseVoltageSupported", singlePhaseVoltageSupported);
-        mav.addObject("threePhaseVoltageSuported", threePhaseVoltageSuported);
-        mav.addObject("threePhaseCurrentSupported", threePhaseCurrentSupported);
-        
+        boolean showVoltageAndTou = DeviceTypesFuncs.isMCT4XX(device.getType())
+                && (singlePhaseVoltageSupported || threePhaseVoltageOrCurrentSupported);
+        mav.addObject("showVoltageAndTou", showVoltageAndTou);
+
         boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
         mav.addObject("configSupported", configSupported);
         

@@ -14,6 +14,7 @@ public enum BuiltInAttribute implements Attribute {
     BLINK_COUNT("Blink Count"), 
     CONNECTION_STATUS("Connection Status"),
     CONTROL_POINT("Control Point"),
+    NEUTRAL_CURRENT("Current (Neutral)"),
     CURRENT_PHASE_A("Current (Phase A)"),
     CURRENT_PHASE_B("Current (Phase B)"),
     CURRENT_PHASE_C("Current (Phase C)"),

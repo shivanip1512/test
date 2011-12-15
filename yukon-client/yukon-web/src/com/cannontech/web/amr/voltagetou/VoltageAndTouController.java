@@ -32,14 +32,14 @@ public class VoltageAndTouController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("voltageAndTou.jsp");
 		int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
 		SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-		boolean threePhaseVoltage = paoDefinitionDao.isTagSupported(device.getDeviceType(), 
-                                                                    PaoTag.THREE_PHASE_VOLTAGE);
-		boolean threePhaseCurrent = paoDefinitionDao.isTagSupported(device.getDeviceType(),
-		                                                            PaoTag.THREE_PHASE_CURRENT);
+	 
+        boolean threePhaseVoltageOrCurrentSupported = (paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
+                                                                                       PaoTag.THREE_PHASE_VOLTAGE) ||
+                                                       paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
+                                                                                       PaoTag.THREE_PHASE_CURRENT));
+        mav.addObject("threePhaseVoltageOrCurrentSupported", threePhaseVoltageOrCurrentSupported);
 		mav.addObject("deviceId", deviceId);
         mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-		mav.addObject("threePhaseVoltage", threePhaseVoltage);
-		mav.addObject("threePhaseCurrent", threePhaseCurrent);
 		
 		// Schedules
 		List<LiteTOUSchedule> schedules = databaseCache.getAllTOUSchedules();

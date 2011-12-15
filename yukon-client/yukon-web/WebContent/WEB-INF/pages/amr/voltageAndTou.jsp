@@ -14,20 +14,10 @@
         <%-- VOLTAGE --%>
         <tags:widgetContainer deviceId="${deviceId}">
             <c:choose>
-                <c:when test="${threePhaseVoltage && threePhaseCurrent}">
+                <c:when test="${threePhaseVoltageOrCurrentSupported}">
                     <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltageAndCurrent"/>
                     <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
-                                 attributes="VOLTAGE_PHASE_A,VOLTAGE_PHASE_B,VOLTAGE_PHASE_C,CURRENT_PHASE_A,CURRENT_PHASE_B,CURRENT_PHASE_C"/>
-                </c:when>
-                <c:when test="${not threePhaseVoltage && threePhaseCurrent}">
-                    <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.current"/>
-                    <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
-                                 attributes="CURRENT_PHASE_A,CURRENT_PHASE_B,CURRENT_PHASE_C"/>
-                </c:when>
-                <c:when test="${threePhaseVoltage && not threePhaseCurrent}">
-                    <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltage"/>
-                    <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" 
-                                 attributes="VOLTAGE_PHASE_A,VOLTAGE_PHASE_B,VOLTAGE_PHASE_C"/>
+                                 attributes="VOLTAGE_PHASE_A,VOLTAGE_PHASE_B,VOLTAGE_PHASE_C,CURRENT_PHASE_A,CURRENT_PHASE_B,CURRENT_PHASE_C,NEUTRAL_CURRENT"/>
                 </c:when>
                 <c:otherwise>
                     <cti:msg2 var="widgetTitle" key=".touSimpleAttributeWidgetTitle.voltage"/>
