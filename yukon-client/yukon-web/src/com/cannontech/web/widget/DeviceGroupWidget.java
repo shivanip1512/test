@@ -96,7 +96,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             }
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", new AddGroupIdInfoAndDisableCurrentGroups());
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, "Groups", new AddGroupIdInfoAndDisableCurrentGroups());
         
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();

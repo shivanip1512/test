@@ -2,7 +2,7 @@ package com.cannontech.util;
 
 import java.util.Map;
 
-public class ExtTreeBuilderUtil {
+public class JsTreeBuilderUtil {
     
     
     public static String createUniqueNodeId(String nodeName, Map<String, Integer> nodeIdHistory) {

@@ -53,30 +53,26 @@ public class JsTreeNode {
     public Map<String, Object> toMap() {
         
         Map<String, Object> map = new HashMap<String, Object>();
-        
         map.putAll(getAttributes());
         
-        Map<String, Object> attr = new HashMap<String, Object>();
-        Map<String, Object> data = new HashMap<String, Object>();
-        Map<String, Object> metadata = new HashMap<String, Object>();
-        
-        attr.put("id", map.get("id"));
-        data.put("title", map.get("text"));
-        data.put("icon", map.get("iconCls") + " yukon");
-        metadata.put("id", map.get("id"));
-        
-        if (map.keySet().contains("info")) {
-            metadata.put("groupName", ((Map<String, String>)map.get("info")).get("groupName"));
+        //currently using dynatree which is documented here:
+        //http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html#h4.2.1
+        map.put("title", map.get("text"));
+        map.put("key", map.get("id"));
+        map.put("addClass", map.get("iconCls") + " yukon");
+        if(map.keySet().contains("disabled") && map.get("disabled").toString().equals("true")){
+            map.put("addClass", map.get("addClass") + " disabled");
+            map.put("unselectable", true);
         }
         
-        map.put("attr", attr);
-        map.put("data", data);
-        map.put("metadata", metadata);
+        if (map.keySet().contains("info")) {
+            ((Map<String, Object>)map.get("info")).put("id", map.get("id"));
+            map.put("metadata", map.get("info"));
+        }
         
         List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
         for (JsTreeNode c : getChildren()) {
             children.add(c.toMap());
-            
         }
         map.put("children", children);
         

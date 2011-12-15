@@ -407,10 +407,10 @@ public class EventLogViewerController {
         HighlightSelectedEventLogNodeAttributeSettingCallback callback = 
             new HighlightSelectedEventLogNodeAttributeSettingCallback(StringUtils.defaultString(eventLogType, ""));
         JsTreeNode allGroupsRoot = 
-            new EventLogTreeUtils().makeEventCategoryExtTree(everythingHierarchy, callback);
+            new EventLogTreeUtils().makeEventCategoryJsTree(everythingHierarchy, callback);
 
         // selected node Ext path
-        String extSelectedNodePath = callback.getExtSelectedNodePath();
+        String extSelectedNodePath = callback.getjsTreeSelectedNodePath();
         model.addAttribute("extSelectedNodePath", extSelectedNodePath);
         
         JSONObject allGroupsJsonObj = new JSONObject(allGroupsRoot.toMap());

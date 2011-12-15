@@ -31,7 +31,7 @@
         var sel = jQuery(document.getElementById("${fieldId}")).html("");
         
         // add selected
-        var selected = jQuery("#selectDeviceGRoupNameTreeDiv_${id}").dynatree("getSelectedNodes");
+        var selected = jQuery("#${id}").dynatree("getSelectedNodes");
         
         for(var i=0; i<selected.length; i++){
             var newOpt = document.createElement('option');
@@ -77,10 +77,9 @@
                     to deal with. --%>
 <jsTree:inlineTree  id="${id}"
                     treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
-                    treeCallbacks="{onActivate:recordNameValue_${id}}"
+                    treeParameters="{onActivate:recordNameValue_${id}}"
                     dataJson="${dataJson}"
                     multiSelect="${pageScope.multiSelect}"
-                    divId="selectDeviceGRoupNameTreeDiv_${id}"
                     width="${width}"
                     height="${height}"
                     highlightNodePath="${pageScope.highlightNodePath}"

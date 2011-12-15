@@ -90,7 +90,7 @@
                                title="${selectEventLog}"
                                width="432"
                                height="600"
-                               treeCallbacks="{onActivate: TreeHelper.redirect_node_data_href_onActivate}" />
+                               treeParameters="{onActivate: TreeHelper.redirect_node_data_href_onActivate}" />
 
             </td>    
         </tr>

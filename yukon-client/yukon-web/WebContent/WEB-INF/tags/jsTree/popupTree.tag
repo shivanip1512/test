@@ -16,21 +16,12 @@
 <%-- triggerElement is the id of the page (button, link, etc) whose 'click' signal will trigger the popup to open --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="treeCss" required="false" type="java.lang.String"%>
-<%@ attribute name="treeCallbacks" required="false" type="java.lang.String"%>
+<%@ attribute name="treeParameters" required="false" type="java.lang.String"%>
 <%@ attribute name="triggerElement" required="true" type="java.lang.String"%>
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-
-<%-- ASYNC JSON --%>
-<%-- json should be a list of children of the root node (root node is created in javascript with rootAttributes!) --%>
-<%-- Use baseParams to append parameters to your dataUrl, baseParams should be a array dictionary as a string --%>
-<%-- Since you'll be creating the root node in js, things like it's text, href, disable need to be set using rootAttributes parameter --%>
-<%-- rootAttributes is used to configure the root node, since it should not come async json --%>
-<%@ attribute name="dataUrl" required="false" type="java.lang.String"%>
-<%@ attribute name="baseParams" required="false" type="java.lang.String"%>
-<%@ attribute name="rootAttributes" required="false" type="java.lang.String"%>
 
 <%-- STATIC JSON --%>
 <%-- json should be a dictionary starting with attributes of the root node (root node is supplied by you!) --%>
@@ -49,14 +40,20 @@
 <%@ attribute name="windowAttributes" required="false" type="java.lang.String"%>
 <%@ attribute name="buttonsList" required="false" type="java.lang.String"%>
 
+
+
+
 <div class="dn">
     <!-- Hide the contents of this window. clicking the button will be MAGIC! -->
     <div id="window_${id}">
         <div class="some_contents">
-            <jsTree:inlineTree id="${id}" treeCss="${treeCss}" treeCallbacks="${treeCallbacks}"
-                 highlightNodePath="${highlightNodePath}" dataUrl="${dataUrl}"
-                 baseParams="${baseParams}" rootAttributes="${rootAttributes}" dataJson="${dataJson}"
-                 divId="selectDeviceGRoupNameTreeDiv_${id}" width="${width}" height="${height}"
+            <jsTree:inlineTree id="${id}"
+                 treeCss="${treeCss}"
+                 treeParameters="${treeParameters}"
+                 highlightNodePath="${highlightNodePath}"
+                 dataJson="${dataJson}"
+                 width="${width}"
+                 height="${height}"
                  includeControlBar="${includeControlBar}"
                  styleClass="${styleClass} popupTree"
                  multiSelect="${multiSelect}" />
@@ -83,7 +80,10 @@
 
         window_${id} = jQuery(document.getElementById("window_${id}")).dialog({
                 modal: true,
-                width: ${width} + 30,
+                width: ${width} + 16,
+                <c:if test="${not empty pageScope.title}">
+                title: "${title}",
+                </c:if>
                 buttons: buttons,
                 resizable: false,
                 autoOpen: false,

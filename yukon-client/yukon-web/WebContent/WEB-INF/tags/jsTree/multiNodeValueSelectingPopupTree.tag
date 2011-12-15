@@ -37,7 +37,7 @@
     // set the hidden var with our selected node values concatenated
     // then call submit callback that will do whatever application specific function t wants with the values
     function setNodeValues_${id}() {
-        var selectedNodes = jQuery(document.getElementById("selectDeviceGRoupNameTreeDiv_${id}")).dynatree("getSelectedNodes");
+        var selectedNodes = jQuery(document.getElementById("${id}")).dynatree("getSelectedNodes");
         var nodeValues = [];
         
         for(var i=0; i<selectedNodes.length; i++){

@@ -8,14 +8,14 @@ import java.util.Map;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.util.ExtTreeBuilderUtil;
+import com.cannontech.util.JsTreeBuilderUtil;
 import com.cannontech.web.util.JsTreeNode;
 
-public class DeviceGroupExtTreeBuilder {
+public class DeviceGroupJsTreeBuilder {
     
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     
-    public JsTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
+    public JsTreeNode doMakeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
         
         DeviceGroup deviceGroup = dgh.getGroup();
         
@@ -23,7 +23,7 @@ public class DeviceGroupExtTreeBuilder {
         JsTreeNode node = new JsTreeNode();
         
         // node id
-        String nodeId = ExtTreeBuilderUtil.createUniqueNodeId(deviceGroup.getFullName(), nodeIdHistory);
+        String nodeId = JsTreeBuilderUtil.createUniqueNodeId(deviceGroup.getFullName(), nodeIdHistory);
         if (rootName != null) {
         	nodeId = rootName;
         }
@@ -41,7 +41,7 @@ public class DeviceGroupExtTreeBuilder {
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(doMakeDeviceGroupExtTree(d, null, nodeCallback, nodePath));
+            node.addChild(doMakeDeviceGroupJsTree(d, null, nodeCallback, nodePath));
         }
         
         // run special callback to set specific attributes if provided

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventCategoryHierarchy;
-import com.cannontech.util.ExtTreeBuilderUtil;
+import com.cannontech.util.JsTreeBuilderUtil;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
 
@@ -14,13 +14,13 @@ public class EventLogTreeUtils {
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     private NodeAttributeSettingCallback<String> nodeCallback;
 
-    public JsTreeNode makeEventCategoryExtTree(EventCategoryHierarchy elh, NodeAttributeSettingCallback<String> nodeCallback) {
+    public JsTreeNode makeEventCategoryJsTree(EventCategoryHierarchy elh, NodeAttributeSettingCallback<String> nodeCallback) {
     
         this.nodeCallback = nodeCallback;
-        return doMakeEventCategoryExtTree(elh, "");
+        return doMakeEventCategoryJsTree(elh, "");
     }
     
-    public JsTreeNode doMakeEventCategoryExtTree(EventCategoryHierarchy elh, String parentNodeId) {
+    public JsTreeNode doMakeEventCategoryJsTree(EventCategoryHierarchy elh, String parentNodeId) {
         
         EventCategory eventCategory = elh.getEventCategory();
         List<String> eventLogTypes = elh.getEventLogTypes();
@@ -29,7 +29,7 @@ public class EventLogTreeUtils {
         JsTreeNode node = new JsTreeNode();
         
         // node id
-        String nodeId = ExtTreeBuilderUtil.createUniqueNodeId(eventCategory.getName(), nodeIdHistory);
+        String nodeId = JsTreeBuilderUtil.createUniqueNodeId(eventCategory.getName(), nodeIdHistory);
         
         // node path
         // this is the path that Ext uses organize the tree, it can be used in Ext js code to perform certain functions
@@ -49,7 +49,7 @@ public class EventLogTreeUtils {
         
         // recursively add child groups
         for (EventCategoryHierarchy e : elh.getChildEventCategoryHierarchyList()) {
-            JsTreeNode child = doMakeEventCategoryExtTree(e, nodePath);
+            JsTreeNode child = doMakeEventCategoryJsTree(e, nodePath);
             node.addChild(child);
         }
         
@@ -71,7 +71,7 @@ public class EventLogTreeUtils {
         
         // node id
         String fullEventLogTypeName = eventCategory.getFullName() + "." + eventLogType;
-        String eventLogNodeId = ExtTreeBuilderUtil.createUniqueNodeId(eventLogType, nodeIdHistory);
+        String eventLogNodeId = JsTreeBuilderUtil.createUniqueNodeId(eventLogType, nodeIdHistory);
         
         // node path - this is the path that Ext uses organize the tree, 
         // it can be used in Ext js code to perform certain functions

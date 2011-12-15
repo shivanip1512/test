@@ -134,7 +134,7 @@ public class ComposedGroupController {
         
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
-        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
+        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, "Groups", null);
         
         JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
         String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();
@@ -142,27 +142,6 @@ public class ComposedGroupController {
         
         return "composedGroup/create.jsp";
     }
-    
-//    @ModelAttribute("chooseGroupTreeJson")
-//    public String chooseGroupTreeJson(String groupName) {
-//        
-//        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
-//        
-//        // tree json
-//        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
-//        predicates.add(new NonHiddenDeviceGroupPredicate());
-//        predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(group));
-//        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
-//        
-//        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-//        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
-//        ExtTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
-//        
-//        JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
-//        String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();
-//        
-//        return chooseGroupTreeJson;
-//    }
     
     @SuppressWarnings("unchecked")
     private List<DisplayableComposedGroup> getGroupsFromPage(HttpServletRequest request) throws ServletRequestBindingException, NotFoundException {

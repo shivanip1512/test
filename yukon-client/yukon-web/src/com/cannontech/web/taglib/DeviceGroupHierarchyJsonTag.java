@@ -44,12 +44,12 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         	nodeCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, rootName, nodeCallback);
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);
         JSONObject jsonObj = new JSONObject(root.toMap());
         
         String extSelectedNodePath = null;
         if (nodeCallback != null) {
-        	extSelectedNodePath = nodeCallback.getExtSelectedNodePath();
+        	extSelectedNodePath = nodeCallback.getJsTreeSelectedNodePath();
         	if (!StringUtils.isBlank(selectedNodePathVar)) {
         		this.getJspContext().setAttribute(selectedNodePathVar, extSelectedNodePath);
         	}

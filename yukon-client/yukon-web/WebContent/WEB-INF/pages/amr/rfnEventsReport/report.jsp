@@ -255,7 +255,7 @@
 				
 				<jsTree:inlineTree id="eventTree"
 	                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
-	                treeCallbacks="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
+	                treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
 	                divId="selectDeviceGRoupNameTreeDiv_eventTree"
 	                width="500"
 	                height="300"

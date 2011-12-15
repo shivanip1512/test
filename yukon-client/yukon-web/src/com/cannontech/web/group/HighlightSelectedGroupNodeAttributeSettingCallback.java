@@ -6,7 +6,7 @@ import com.cannontech.web.util.JsTreeNode;
 public class HighlightSelectedGroupNodeAttributeSettingCallback implements NodeAttributeSettingCallback<DeviceGroup> {
 
 	private DeviceGroup selectedDeviceGroup;
-	private String extSelectedNodePath;
+	private String jsTreeSelectedNodePath;
 	
 	public HighlightSelectedGroupNodeAttributeSettingCallback(DeviceGroup selectedDeviceGroup) {
 		
@@ -16,15 +16,11 @@ public class HighlightSelectedGroupNodeAttributeSettingCallback implements NodeA
 	@Override
 	public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
         if (this.selectedDeviceGroup != null && this.selectedDeviceGroup.getFullName().equals(deviceGroup.getFullName())) {
-            
-            //DEPRECATED - cls no longer needed w/ jsTree
-            node.setAttribute("cls", "highlightNode");
-            
-            extSelectedNodePath = node.getNodePath();
+            jsTreeSelectedNodePath = node.getNodePath();
         }
     }
 	
-	public String getExtSelectedNodePath() {
-		return extSelectedNodePath;
+	public String getJsTreeSelectedNodePath() {
+		return jsTreeSelectedNodePath;
 	}
 }

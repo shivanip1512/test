@@ -15,11 +15,11 @@ import com.cannontech.web.util.JsTreeNode;
 
 public class DeviceGroupTreeUtils {
 
-    public static JsTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
+    public static JsTreeNode makeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
     
-        DeviceGroupExtTreeBuilder builder = new DeviceGroupExtTreeBuilder();
+        DeviceGroupJsTreeBuilder builder = new DeviceGroupJsTreeBuilder();
         
-        return builder.doMakeDeviceGroupExtTree(dgh, rootName, nodeCallback, "");
+        return builder.doMakeDeviceGroupJsTree(dgh, rootName, nodeCallback, "");
     }
     
     public static void setupNodeAttributes(JsTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href) {
