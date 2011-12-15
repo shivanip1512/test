@@ -32,19 +32,6 @@
     <c:otherwise><cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/></c:otherwise>
 </c:choose>
 
-<c:if test="${!empty pageScope.id}">
-    <c:set var="id" value="${pageScope.id}"/>
-</c:if>
-<c:if test="${!empty pageScope.title}">
-    <c:set var="title" value="${pageScope.title}"/>
-</c:if>
-<c:if test="${!empty pageScope.windowAttributes}">
-    <c:set var="windowAttributes" value="${pageScope.windowAttributes}"/>
-</c:if>
-<c:if test="${!empty pageScope.buttonsList}">
-    <c:set var="buttonsList" value="${pageScope.buttonsList}"/>
-</c:if>
-
 <div class="dn">
     <!-- Hide the contents of this window. clicking the button will be MAGIC! -->
     <div id="window_${id}">
@@ -72,11 +59,11 @@
     
     jQuery(document).ready(function(){
         
-        <c:if test="${!empty buttonsList}">
+        <c:if test="${!empty pageScope.buttonsList}">
         var buttons = ${buttonsList}; 
         </c:if>
         
-        <c:if test="${empty buttonsList}">
+        <c:if test="${empty pageScope.buttonsList}">
         var buttons = [];
         </c:if>
         
@@ -92,7 +79,7 @@
                 draggable: false
             };
         
-        <c:if test="${!empty windowAttributes}">
+        <c:if test="${!empty pageScope.windowAttributes}">
         var parameters = ${windowAttributes};
         for(key in parameters){
             args[key] = parameters[key];
