@@ -147,7 +147,13 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                                                    List<HierarchyImportResult> results) {
         ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
 
-        String mapLocationId = hierarchyImportData.getMapLocationId();
+        /* The default value for the MapLocationId in all Fields objects is "0". We 
+         * want to use the default if our data has a null value. Perhaps in the year 
+         * 2000 there will be a fancier way to do this, like a public static variable
+         * and/or method that will give us the default value from the Fields object.
+         */
+        String dataLocationId = hierarchyImportData.getMapLocationId();
+        String mapLocationId = (dataLocationId != null) ? dataLocationId : "0";
 
         switch (hierarchyImportData.getPaoType()) {
         case CAP_CONTROL_AREA:
@@ -192,10 +198,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         }
 
         // Create and set-up the YukonPaObjectFields
-        YukonPaObjectFields yukonPaObjectFields =
-            new YukonPaObjectFields(hierarchyImportData.getName());
-        yukonPaObjectFields.setDescription(hierarchyImportData.getDescription());
-        yukonPaObjectFields.setDisabled(YNBoolean.valueOf(hierarchyImportData.isDisabled()));
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hierarchyImportData.getName());
+        
+        // We don't want to attempt to write null values to the database!
+        if (hierarchyImportData.getDescription() != null) {
+            yukonPaObjectFields.setDescription(hierarchyImportData.getDescription());
+        }
+        
+        if (hierarchyImportData.isDisabled() != null) {
+            yukonPaObjectFields.setDisabled(YNBoolean.valueOf(hierarchyImportData.isDisabled()));
+        }
+        
         paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
 
         PaoTemplate paoTemplate = new PaoTemplate(hierarchyImportData.getPaoType(), paoFields);

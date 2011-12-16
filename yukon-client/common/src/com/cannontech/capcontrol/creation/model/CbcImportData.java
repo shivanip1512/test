@@ -5,32 +5,45 @@ import com.cannontech.common.pao.PaoType;
 public class CbcImportData {
 	
 	private String templateName;
-	private String cbcName;
-	private PaoType cbcType;
+	private final String cbcName;
+	private final PaoType cbcType;
 	private String capBankName;
-	private String commChannel;
+	private final String commChannel;
 	private String scanEnabled;
-	private int cbcSerialNumber;
-	private int masterAddress;
-	private int slaveAddress;
+	private final int cbcSerialNumber;
+	private final int masterAddress;
+	private final int slaveAddress;
 	private int scanInterval;
 	private int altInterval;
-	private ImportAction importAction;
+	private final ImportAction importAction;
+	
+	public CbcImportData(String cbcName, ImportAction importAction, PaoType cbcType, String commChannel, 
+	                     int cbcSerialNumber, int masterAddress, int slaveAddress) {
+	    this.cbcName = cbcName;
+	    this.cbcType = cbcType;
+	    this.commChannel = commChannel;
+	    this.cbcSerialNumber = cbcSerialNumber;
+	    this.masterAddress = masterAddress;
+	    this.slaveAddress = slaveAddress;
+	    this.importAction = importAction;
+	}
+	
+	/**
+	 * This method is a workaround for the strict constructor of the CbcImportData object.
+	 * Since removes require only a name, this calls the constructor with dummy data.
+	 * @param name
+	 * @return a removal-ready CbcImportData object.
+	 */
+	public static CbcImportData createRemovalImportData(String name) {
+	    return new CbcImportData(name, ImportAction.REMOVE, null, null, 0, 0, 0);
+	}
 	
 	public String getCbcName() {
 		return cbcName;
 	}
 	
-	public void setCbcName(String cbcName) {
-		this.cbcName = cbcName;
-	}
-	
 	public PaoType getCbcType() {
 		return cbcType;
-	}
-	
-	public void setCbcType(PaoType cbcType) {
-		this.cbcType = cbcType;
 	}
 	
 	public String getCapBankName() {
@@ -45,32 +58,16 @@ public class CbcImportData {
 		return commChannel;
 	}
 	
-	public void setCommChannel(String commChannel) {
-		this.commChannel = commChannel;
-	}
-	
 	public int getCbcSerialNumber() {
 		return cbcSerialNumber;
-	}
-	
-	public void setCbcSerialNumber(int cbcSerialNumber) {
-		this.cbcSerialNumber = cbcSerialNumber;
 	}
 	
 	public int getMasterAddress() {
 		return masterAddress;
 	}
 	
-	public void setMasterAddress(int masterAddress) {
-		this.masterAddress = masterAddress;
-	}
-	
 	public int getSlaveAddress() {
 		return slaveAddress;
-	}
-	
-	public void setSlaveAddress(int slaveAddress) {
-		this.slaveAddress = slaveAddress;
 	}
 	
 	public int getScanInterval() {
@@ -99,10 +96,6 @@ public class CbcImportData {
 	
 	public ImportAction getImportAction() {
 		return importAction;
-	}
-	
-	public void setImportAction(ImportAction importAction) {
-		this.importAction = importAction;
 	}
 	
 	public boolean isTemplate() {

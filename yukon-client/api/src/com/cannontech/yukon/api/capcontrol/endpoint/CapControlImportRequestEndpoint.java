@@ -7,7 +7,7 @@ import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
@@ -41,7 +41,6 @@ public class CapControlImportRequestEndpoint {
 	
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
-    @Transactional
 	@PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="capControlImportRequest")
 	public Element invoke(Element capControlImportRequest, LiteYukonUser user) {
 		XmlVersionUtils.verifyYukonMessageVersion(capControlImportRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -55,17 +54,22 @@ public class CapControlImportRequestEndpoint {
 		Element hierarchyList = createHierarchyResponseElement(hierarchyResults);
 		Element cbcList = createCbcResponseElement(cbcResults);
 		
-		response.addContent(hierarchyList);
-		response.addContent(cbcList);
+		if (hierarchyList != null) {
+		    response.addContent(hierarchyList);
+		}
+		
+		if (cbcList != null) {
+		    response.addContent(cbcList);
+		}
 		
 		return response;
 	}
 	
 	private Element createHierarchyResponseElement(List<HierarchyImportResult> results) {
-		if (results.isEmpty()) {
-			return null;
-		}
-		
+	    if (CollectionUtils.isEmpty(results)) {
+	        return null;
+	    }
+	    
 		Element hierarchyRepsonse = new Element("hierarchyResponseList");
 		
 		for (HierarchyImportResult result : results) {
@@ -93,11 +97,11 @@ public class CapControlImportRequestEndpoint {
 		return hierarchyRepsonse;
 	}
 	
-	private Element createCbcResponseElement(List<CbcImportResult> results) {
-		if (results.isEmpty()) {
-			return null;
-		}
-		
+	private Element createCbcResponseElement(List<CbcImportResult> results) {	
+	    if (CollectionUtils.isEmpty(results)) {
+	        return null;
+	    }
+	    
 		Element cbcResponse = new Element("cbcResponseList");
 		
 		for (CbcImportResult result : results) {
@@ -155,11 +159,7 @@ public class CapControlImportRequestEndpoint {
 	
 	private List<CbcImportResult> performCbcImport(SimpleXPathTemplate requestTemplate) {
 		List<Node> cbcNodes = requestTemplate.evaluateAsNodeList("/y:capControlImportRequest/y:cbcList/y:cbc");
-		
-		if (cbcNodes.isEmpty()) {
-			return null;
-		}
-		
+
 		List<CbcImportResult> results = Lists.newArrayList();
 		
 		processCbcImport(cbcNodes, results);
@@ -210,11 +210,7 @@ public class CapControlImportRequestEndpoint {
 	
 	private List<HierarchyImportResult> performHierarchyImport(SimpleXPathTemplate requestTemplate) {
 		List<Node> hierarchyList = requestTemplate.evaluateAsNodeList("/y:capControlImportRequest/y:hierarchyList/y:*");
-		
-		if (hierarchyList.isEmpty()) {
-			return null;
-		}
-		
+
 		List<HierarchyImportResult> results = Lists.newArrayList();
 		
 		processHierarchyImport(hierarchyList, results);
@@ -262,7 +258,8 @@ public class CapControlImportRequestEndpoint {
 	
 	private CbcImportData createCbcImportData(Node cbcNode) {
 		final String missingText = "Cbc XML import is missing required element: ";
-		CbcImportData cbcImportData = new CbcImportData();
+		PaoType paoType;
+		ImportAction importAction;
 
 		SimpleXPathTemplate cbcTemplate = YukonXml.getXPathTemplateForNode(cbcNode);
 		
@@ -271,7 +268,6 @@ public class CapControlImportRequestEndpoint {
 		if (cbcName == null) {
 			throw new CapControlImportException(missingText + "'name'");
 		}
-		cbcImportData.setCbcName(cbcName);
 		
 		String cbcType = cbcTemplate.evaluateAsString("y:type");
 		if (cbcType == null) {
@@ -280,8 +276,7 @@ public class CapControlImportRequestEndpoint {
 		
 		// Will throw if cbcType is invalid.
 		try {
-			PaoType paoType = PaoType.getForDbString(cbcType);
-			cbcImportData.setCbcType(paoType);
+		    paoType = PaoType.getForDbString(cbcType);
 		} catch (IllegalArgumentException e) {
 			throw new CbcImporterWebServiceException(CbcImportResultType.INVALID_TYPE);
 		}
@@ -290,37 +285,41 @@ public class CapControlImportRequestEndpoint {
 		if (serialNumber == null) {
 			throw new CapControlImportException(missingText + "'serialNumber");
 		}
-		cbcImportData.setCbcSerialNumber(serialNumber);
 		
 		Integer masterAddress = cbcTemplate.evaluateAsInt("y:masterAddress");
 		if (masterAddress == null) {
 			throw new CapControlImportException(missingText + "'masterAddress'");
 		}
-		cbcImportData.setMasterAddress(masterAddress);
 		
 		Integer slaveAddress = cbcTemplate.evaluateAsInt("y:slaveAddress");
 		if (slaveAddress == null) {
 			throw new CapControlImportException(missingText + "'slaveAddress'");
 		}
-		cbcImportData.setSlaveAddress(slaveAddress);
 		
 		String commChannel = cbcTemplate.evaluateAsString("y:commChannel");
 		if (commChannel == null) {
 			throw new CapControlImportException(missingText + "'commChannel'");
 		}
-		cbcImportData.setCommChannel(commChannel);
 		
-		String importAction = cbcTemplate.evaluateAsString("@action");
-		if (importAction == null) {
+		String importActionStr = cbcTemplate.evaluateAsString("@action");
+		if (importActionStr == null) {
 			throw new CapControlImportException(missingText + "'importAction'");
 		}
 		
 		try {
-			ImportAction action = ImportAction.getForDbString(importAction);
-			cbcImportData.setImportAction(action);
+			importAction = ImportAction.getForDbString(importActionStr);
 		} catch (IllegalArgumentException e) {
 			throw new CbcImporterWebServiceException(CbcImportResultType.INVALID_IMPORT_ACTION);
 		}
+		
+		// If we got to this point, we have all required data with no errors.
+		CbcImportData cbcImportData = new CbcImportData(cbcName,
+		                                                importAction,
+		                                                paoType, 
+		                                                commChannel, 
+		                                                serialNumber.intValue(), 
+		                                                masterAddress.intValue(), 
+		                                                slaveAddress.intValue());
 		
 		// Not required. Check for nulls.
 		String templateName = cbcTemplate.evaluateAsString("y:templateName");
@@ -353,7 +352,8 @@ public class CapControlImportRequestEndpoint {
 	
 	private HierarchyImportData createHierarchyImportData(Node hierarchyNode) throws CapControlImportException {
 		final String missingText = "Hierarchy XML import is missing required element: ";
-		HierarchyImportData data = new HierarchyImportData();
+		PaoType paoType;
+		ImportAction importAction;
 		
 		SimpleXPathTemplate hierarchyTemplate = YukonXml.getXPathTemplateForNode(hierarchyNode);
 		
@@ -362,31 +362,33 @@ public class CapControlImportRequestEndpoint {
 		if (name == null) {
 			throw new CapControlImportException(missingText + "'name'");
 		}
-		data.setName(name);
 		
-		String paoType = hierarchyNode.getNodeName();
-		if (paoType == null) { // Weird, but check just in case...
+		String paoTypeStr = hierarchyNode.getNodeName();
+		if (paoTypeStr == null) { // Weird, but check just in case...
 			throw new CapControlImportException(missingText + "'type'");
 		}
 		
 		// This will throw an IllegalArgumentException if the type was invalid.
 		try {
-			data.setPaoType(CapControlXmlImport.getPaoTypeForXmlString(paoType));
+			paoType = CapControlXmlImport.getPaoTypeForXmlString(paoTypeStr);
 		} catch (IllegalArgumentException e) {
 			throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_TYPE);
 		}
 		
-		String importAction = hierarchyTemplate.evaluateAsString("@action");
-		if (importAction == null) {
+		String importActionStr = hierarchyTemplate.evaluateAsString("@action");
+		if (importActionStr == null) {
 			throw new CapControlImportException(missingText + "'importAction'");
 		}
 		
 		// This will throw an IllegalArgumentException as well.
 		try {
-			data.setImportAction(ImportAction.getForDbString(importAction));
+			importAction = ImportAction.getForDbString(importActionStr);
 		} catch (IllegalArgumentException e) {
 			throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_IMPORT_ACTION);
 		}
+
+		// We have all required data. Let's make the HierarchyImportData object.
+		HierarchyImportData data = new HierarchyImportData(paoType, name, importAction);
 		
 		// Not required. Check for nulls.
 		String parent = hierarchyTemplate.evaluateAsString("y:parent");
