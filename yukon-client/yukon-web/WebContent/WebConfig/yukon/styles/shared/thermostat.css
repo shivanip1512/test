@@ -301,19 +301,19 @@ li.current .helper {
 }
 
 a.edit {
-	background: transparent url(../Icons/edit.gif) top left no-repeat;
+	background: transparent url(../../Icons/edit.gif) top left no-repeat;
 }
 
 a.send {
-	background: transparent url(../Icons/lightning_go.gif) top left no-repeat;
+	background: transparent url(../../Icons/lightning_go.gif) top left no-repeat;
 }
 
 a.save {
-	background: transparent url(../Icons/accept.gif) top left no-repeat;
+	background: transparent url(../../Icons/accept.gif) top left no-repeat;
 }
 
 a.cancel {
-	background: transparent url(../Icons/cancel.gif) left top no-repeat;
+	background: transparent url(../../Icons/cancel.gif) left top no-repeat;
 }
 
 a.default {
@@ -342,7 +342,7 @@ a.default {
 .slider .handle {
     height: 20px;
     width: 20px;
-    background: transparent url(../Icons/slider-handle.png) top left no-repeat;
+    background: transparent url(../../Icons/slider-handle.png) top left no-repeat;
     margin-top: -10px;
 }
 
@@ -433,7 +433,7 @@ a.default {
 }
 
 .manualThermostat .mode.selected, .manualThermostat .state.selected {
-    background: transparent url(../Icons/triangle-right.gif) 5px 3px no-repeat;
+    background: transparent url(../../Icons/triangle-right.gif) 5px 3px no-repeat;
 }
 
 .manualThermostat .temperature {
