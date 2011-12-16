@@ -81,23 +81,26 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
             String errorHtmlReason = "";
             
             boolean haveSpecificReason = false;
+            final String errorReasonStr = "Error Reason (" + returnStatus + "):";
+            
             if (returnStatus > 0) {
                 
                 DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(returnStatus);
                 if (deviceErrorDescription != null) {
                     
                     haveSpecificReason = true;
-                    String porter = deviceErrorDescription.getPorter();
+                    // Try to use the actual resultString if not empty, otherwise default to deviceErrorTranslator.porter message
+                    String porter = StringUtils.defaultIfEmpty(resultString, deviceErrorDescription.getPorter());
                     String description = deviceErrorDescription.getDescription();
-                    
-                    errorReason += "Error Reason:\n" + porter + ": " + description;
-                    errorHtmlReason += "Error Reason:<br/>" + porter + ": " + description;
+
+                    errorReason += errorReasonStr + "\n" + porter + ": " + description;
+                    errorHtmlReason += errorReasonStr + "<br/>" + porter + ": " + description;
                 }
             }
             
             if (!haveSpecificReason && !StringUtils.isBlank(resultString)){
-                errorReason += "Error Reason:\n" + resultString;
-                errorHtmlReason += "Error Reason:<br/>" + resultString;
+                errorReason += errorReasonStr + "\n" + resultString;
+                errorHtmlReason += errorReasonStr + "<br/>" + resultString;
             }
             
             Map<String, Object> extraData = new HashMap<String, Object>();
