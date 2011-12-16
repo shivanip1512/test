@@ -35,7 +35,7 @@
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
         <tags:deviceSelection action="/spring/bulk/deviceSelectionGetDevices"
             groupDataJson="${groupDataJson}"
-            pickerType="meterPicker"/>
+            pickerType="devicePicker"/>
     
     </tags:boxContainer>
     
