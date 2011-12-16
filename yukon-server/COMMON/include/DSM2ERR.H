@@ -130,7 +130,7 @@ IM_EX_CTIBASE std::string FormatError(USHORT Error);
 #define READTIMEOUT_TXT "Timeout Reading from Port"
 #define READTIMEOUT_TYPE ERRTYPECOMM
 #define BADSEQUENCE     32
-#define BADSEQUENCE_TXT "Sequence Reject Frame Received... Sequencing Ajusted"
+#define BADSEQUENCE_TXT "Sequence Reject Frame Received... Sequencing Adjusted"
 #define BADSEQUENCE_TYPE ERRTYPECOMM
 #define FRAMEERR        33
 #define FRAMEERR_TXT    "Framing Error"
@@ -220,7 +220,7 @@ IM_EX_CTIBASE std::string FormatError(USHORT Error);
 #define QUEUE_WRITE_TXT "Error Writing Queue"
 #define QUEUE_WRITE_TYPE ERRTYPESYSTEM
 #define MEMORY          63
-#define MEMORY_TXT      "Error Alocating or Manipulating Memory"
+#define MEMORY_TXT      "Error Allocating or Manipulating Memory"
 #define MEMORY_TYPE     ERRTYPESYSTEM
 #define SEMAPHORE       64
 #define SEMAPHORE_TXT   "Error Handling Semaphore"
@@ -283,7 +283,7 @@ IM_EX_CTIBASE std::string FormatError(USHORT Error);
 #define PORTINHIBITED_TXT       "Communications Attempted Over Inhibited Port"
 #define PORTINHIBITED_TYPE      ERRTYPESYSTEM
 #define ACCUMSNOTSUPPORTED      84
-#define ACCUMSNOTSUPPORTED_TXT  "Device Does Not Support Accumulaors"
+#define ACCUMSNOTSUPPORTED_TXT  "Device Does Not Support Accumulators"
 #define ACCUMSNOTSUPPORTED_TYPE ERRTYPESYSTEM
 #define DEVICEINHIBITED         85
 #define DEVICEINHIBITED_TXT     "Operation Attempted on Inhibited Device"

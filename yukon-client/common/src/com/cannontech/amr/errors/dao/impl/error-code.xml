@@ -265,11 +265,11 @@
 
 <error code="32">
 	<category>Bulk Communications</category> 
-	<porter>Sequence Reject Frame Received... Sequencing Ajusted</porter>
+	<porter>Sequence Reject Frame Received... Sequencing Adjusted</porter>
     <description>The response's sequence number does not match what was expected by the master station.</description>
       <troubleshooting>
       This is a bulk communications error that is typically associated with invalid timing parameter's set at the master station.  Another possible cause is a field visit to the CCU
-      resulting in local communications being used.  Upon setting the communcations back to internal, the master station may receive this error on the first request due internal bookkeeping mismatches.  The
+      resulting in local communications being used.  Upon setting the communications back to internal, the master station may receive this error on the first request due internal bookkeeping mismatches.  The
       master station will automatically recovery from this internal mismatch.
       <ul>
           <li>Attempt the command again</li>
@@ -313,7 +313,7 @@
 <error code="34">
 	<category>Bulk Communications</category> 
 	<porter>Bad CRC on Message</porter>
-    <description>Checksum verifcation failed on response from the targeted device.</description>
+    <description>Checksum verification failed on response from the targeted device.</description>
         <troubleshooting>
       This is a bulk communications error caused by an incomplete or corrupted response. 
      <ul>
@@ -528,7 +528,7 @@
 	<porter>Error Dialing Up Remote</porter>
     <description>The master station was unable to communicate with the targeted device due to communication failure.</description>
         <troubleshooting>
-        This is a bulk communications error typically associated with a failure to initialize the modem for dialup.  
+        This is a bulk communications error typically associated with a failure to initialize the modem for dial-up.  
         <ul>
            <li>Attempt the command again</li>
            <li>Verify the modem is functioning properly</li>
@@ -542,7 +542,7 @@
 	<porter>Wrong Unique Address Received</porter>
     <description>The CCU heard a response from a device other than the one it was targeting.</description>
         <troubleshooting>
-      This is a powerline carrier error that is typically associated either crosstalk or is preceeded by a bulk communication error such as a timeout.
+      This is a powerline carrier error that is typically associated either crosstalk or is preceded by a bulk communication error such as a timeout.
       <ul>
             <li>Attempt the command again</li>
             <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
@@ -600,7 +600,7 @@
 	<porter>Address Does Not Match Expected Value</porter>
     <description>The CCU heard a response from a device other than the one it was targeting.</description>
         <troubleshooting>
-      This is a powerline carrier error that is typically associated either crosstalk or is preceeded by a bulk communication error such as a timeout.
+      This is a powerline carrier error that is typically associated either crosstalk or is preceded by a bulk communication error such as a timeout.
       <ul>
             <li>Attempt the command again</li>
             <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
@@ -627,8 +627,8 @@
 	<porter>Missing Required Configuration Entry</porter>
     <description>The device was unable to complete the requested command.</description>
         <troubleshooting>
-      This is a yukon system error that is associated with using mct device configuration information.  The error is 
-      returned when the mct device does not have configuration information stored already in the database.  An attempt 
+      This is a Yukon system error that is associated with using MCT device configuration information.  The error is 
+      returned when the MCT device does not have configuration information stored already in the database.  An attempt 
       to retrieve the configuration information should be should be made.
      <ul>
      <li>Attempt the command again</li>
