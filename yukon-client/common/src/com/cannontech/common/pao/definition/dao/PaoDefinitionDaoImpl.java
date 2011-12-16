@@ -902,9 +902,24 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
         int initialState =  StateGroupUtils.DEFAULT_STATE;
+        String stateGroupName = null;
+        String initialStateStr = null;
+        boolean stateGroupSet = false;
+        
         if (point.getPointChoice().getStategroup() != null) {
-
-            String stateGroupName = point.getPointChoice().getStategroup().getValue();
+            stateGroupSet = true;
+            stateGroupName = point.getPointChoice().getStategroup().getValue();
+            initialStateStr = point.getPointChoice().getStategroup().getInitialState();
+        }
+        
+        if(point.getPointChoice().getPointChoiceSequence() != null &&
+           point.getPointChoice().getPointChoiceSequence().getAnalogstategroup() != null) {
+            stateGroupSet = true;
+            stateGroupName = point.getPointChoice().getPointChoiceSequence().getAnalogstategroup().getValue();
+            initialStateStr = point.getPointChoice().getPointChoiceSequence().getAnalogstategroup().getInitialState();
+        }
+        
+        if(stateGroupSet) {
             LiteStateGroup stateGroup = null;
             try {
                 stateGroup = stateDao.getLiteStateGroup(stateGroupName);
@@ -914,7 +929,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             }
             stateGroupId = stateGroup.getStateGroupID();
             
-            String initialStateStr = point.getPointChoice().getStategroup().getInitialState();
             if (initialStateStr != null) {
                 List<LiteState> states = stateGroup.getStatesList();
                 boolean notFound = true;
@@ -931,6 +945,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 }
             }
         }
+        
         template.setStateGroupId(stateGroupId);
         template.setInitialState(initialState);
         

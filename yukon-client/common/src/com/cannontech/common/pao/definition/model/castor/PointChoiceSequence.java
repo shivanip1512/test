@@ -48,6 +48,11 @@ public class PointChoiceSequence implements java.io.Serializable {
      */
     private com.cannontech.common.pao.definition.model.castor.Decimalplaces _decimalplaces;
 
+    /**
+     * Field _analogstategroup
+     */
+    private com.cannontech.common.pao.definition.model.castor.Analogstategroup _analogstategroup;
+
 
       //----------------/
      //- Constructors -/
@@ -62,6 +67,17 @@ public class PointChoiceSequence implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'analogstategroup'.
+     * 
+     * @return Analogstategroup
+     * @return the value of field 'analogstategroup'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.Analogstategroup getAnalogstategroup()
+    {
+        return this._analogstategroup;
+    } //-- com.cannontech.common.pao.definition.model.castor.Analogstategroup getAnalogstategroup() 
 
     /**
      * Returns the value of field 'decimalplaces'.
@@ -141,6 +157,16 @@ public class PointChoiceSequence implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'analogstategroup'.
+     * 
+     * @param analogstategroup the value of field 'analogstategroup'
+     */
+    public void setAnalogstategroup(com.cannontech.common.pao.definition.model.castor.Analogstategroup analogstategroup)
+    {
+        this._analogstategroup = analogstategroup;
+    } //-- void setAnalogstategroup(com.cannontech.common.pao.definition.model.castor.Analogstategroup) 
 
     /**
      * Sets the value of field 'decimalplaces'.

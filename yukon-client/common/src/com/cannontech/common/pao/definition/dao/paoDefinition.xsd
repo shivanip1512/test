@@ -116,6 +116,12 @@
 	                                    <xs:attribute name="value" type="xs:integer" use="required" />
 	                                </xs:complexType>
 	                            </xs:element>
+                                <xs:element name="analogstategroup" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:attribute name="value" type="xs:string" use="required" />
+                                        <xs:attribute name="initialState" type="xs:string" />
+                                    </xs:complexType>
+                                </xs:element>
 	                        </xs:sequence>
 	                        <xs:element name="stategroup">
 	                            <xs:complexType>

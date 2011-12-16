@@ -6775,6 +6775,7 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
+                <analogstategroup value="Last Control"/>
             </point>
             <point type="Analog" offset="5">
                 <init>true</init>
