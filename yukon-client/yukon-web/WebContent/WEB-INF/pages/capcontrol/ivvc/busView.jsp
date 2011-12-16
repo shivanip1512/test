@@ -76,7 +76,7 @@
     <cti:standardMenu/>
     
     <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
-    	<cti:param name="areaId" value="${areaId}"/>
+    	<cti:param name="bc_areaId" value="${areaId}"/>
     	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
     </cti:url>
     
