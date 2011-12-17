@@ -63,12 +63,16 @@ public class OperatorThermostatManualController {
         ThermostatManualEvent event;
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdsList.get(0));
         
+        //The selected thermostats should all be of the same (or at least compatible) types.  The page
+        //itself operates under the context of a single interface even when multiple thermostats are
+        //selected so we need to have a single thermostat model passed to the UI.
+        Integer inventoryId = thermostatIdsList.get(0);
+        modelMap.addAttribute("thermostat", thermostat);
+        modelMap.addAttribute("inventoryId", inventoryId);
+        
         // single thermostat
         if (thermostatIdsList.size() == 1) {
-            Integer inventoryId = thermostatIdsList.get(0);
             event = customerEventDao.getLastManualEvent(inventoryId);
-        	modelMap.addAttribute("thermostat", thermostat);
-        	modelMap.addAttribute("inventoryId", inventoryId);
             modelMap.addAttribute("pageNameSuffix", "single");
         // multiple thermostats
         } else {
