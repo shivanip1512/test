@@ -131,6 +131,9 @@ public class AccountServiceImpl implements AccountService {
         if(StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
+        } else if (accountNumber.length() > 40) {	// if not blank, check it is within 40 character db size limit 
+            log.error("Account " + accountNumber + " could not be added: The provided account number exceeds maximum length of 40.");
+            throw new InvalidAccountNumberException("The provided account number exceeds maximum length of 40.");
         }
         
         // Checks to see if the account number is already being used.
