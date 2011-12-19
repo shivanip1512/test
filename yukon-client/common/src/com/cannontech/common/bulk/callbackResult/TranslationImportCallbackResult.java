@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 public class TranslationImportCallbackResult extends CollectingBulkProcessorCallback<String[], String[]>  implements BackgroundProcessResultHolder {
     private BackgroundProcessTypeEnum backgroundProcessType;
     private String resultsId = "";
-    private int totalItems = 0;
     
     private List<String> headers = Lists.newArrayList();
     private List<String[]> importRows = Lists.newArrayList();
@@ -20,17 +19,11 @@ public class TranslationImportCallbackResult extends CollectingBulkProcessorCall
     private MessageSourceAccessor messageSourceAccessor;
     
     public TranslationImportCallbackResult(String resultsId, List<String> headers, List<String[]> importRows, MessageSourceAccessor messageSourceAccessor) {
-        this(BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION, resultsId, importRows.size(), messageSourceAccessor);
         this.headers = headers;
         this.importRows = importRows;
         this.backgroundProcessType = BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION;
         this.messageSourceAccessor = messageSourceAccessor;
-    }
-    
-    public TranslationImportCallbackResult(BackgroundProcessTypeEnum backgroundProcessType, String resultsId, int totalItems, MessageSourceAccessor messageSourceAccessor) {
-        this.backgroundProcessType = backgroundProcessType;
         this.resultsId = resultsId;
-        this.totalItems = totalItems;
     }
     
     public List<String> getHeaders() {
@@ -44,26 +37,13 @@ public class TranslationImportCallbackResult extends CollectingBulkProcessorCall
     public List<String> getLog() {
         return log;
     }
-    
-    public void setBackgroundProcessType(BackgroundProcessTypeEnum backgroundProcessType) {
-        this.backgroundProcessType = backgroundProcessType;
-    }
+
     public BackgroundProcessTypeEnum getBackgroundProcessType() {
         return backgroundProcessType;
     }
     
-    public void setResultsId(String resultsId) {
-        this.resultsId = resultsId;
-    }
-    public String getResultsId() {
-        return resultsId;
-    }
-    
-    public void setTotalItems(int totalItems) {
-        this.totalItems = totalItems;
-    }
     public int getTotalItems() {
-        return totalItems;
+        return importRows.size();
     }
     
     @Override

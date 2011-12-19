@@ -262,7 +262,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     	List<FdrTranslation> fdrTranslations =  fdrTranslationDao.getByInterfaceTypeAndTranslation(FdrInterfaceType.MULTISPEAK_LM, translationStr);
     	if (!fdrTranslations.isEmpty()) {
 	    	for (FdrTranslation fdrTranslation : fdrTranslations) {
-				if( fdrTranslation.getDirection() == FdrDirection.Receive) {
+				if( fdrTranslation.getDirection() == FdrDirection.RECEIVE) {
 					PointData pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
 					simplePointAccessDao.writePointData(pointData);
 					CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");

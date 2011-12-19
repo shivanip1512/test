@@ -56,7 +56,7 @@ public class FdrTranslationManagerController {
         model.addAttribute("displayableInterfaces", displayables);
         
         FdrInterfaceType[] interfaceTypes = FdrInterfaceType.values();
-        Arrays.sort(interfaceTypes, FdrInterfaceType.getAlphabeticalComparator());
+        Arrays.sort(interfaceTypes, FdrInterfaceType.alphabeticalComparator);
         
         model.addAttribute("interfaceTypes", interfaceTypes);
         
@@ -144,10 +144,10 @@ public class FdrTranslationManagerController {
         }
         
         //Check for all default headers
-        String missingHeader = fdrTranslationManagerService.checkForMissingDefaultImportHeaders(headers);
-        if(missingHeader != null) {
+        String missingHeaders = fdrTranslationManagerService.checkForMissingDefaultImportHeaders(headers);
+        if(missingHeaders != null) {
             //Error - missing default header
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.defaultHeaderMissing", missingHeader);
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.defaultHeaderMissing", missingHeaders);
             flashScope.setError(errorMsg);
             return "redirect:home";
         }

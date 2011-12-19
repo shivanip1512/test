@@ -12,11 +12,6 @@ public class FdrImportFileInterfaceInfo {
     public FdrImportFileInterfaceInfo() {
     }
     
-    public FdrImportFileInterfaceInfo(List<FDRInterface> interfacesInFile, List<Integer> columnsToIgnore) {
-        this.interfacesInFile = interfacesInFile;
-        this.columnsToIgnore = columnsToIgnore;
-    }
-    
     public List<FDRInterface> getInterfaces() {
         return interfacesInFile;
     }

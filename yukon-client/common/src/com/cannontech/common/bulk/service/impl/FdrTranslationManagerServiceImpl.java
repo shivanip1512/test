@@ -62,8 +62,13 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     
     private static final String POINTTYPE = "POINTTYPE";
     
-    private final int DEFAULT_COLS_FOR_EXPORT = 4;
-    private final String[] defaultImportColumnHeaders = {ACTION, DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION};
+    private static final int DEVICE_NAME_COL = 0;
+    private static final int DEVICE_TYPE_COL = 1;
+    private static final int POINT_NAME_COL = 2;
+    private static final int DIRECTION_COL = 3;
+    private static final int DEFAULT_COLS_FOR_EXPORT = 4;
+    
+    private static final String[] defaultImportColumnHeaders = {ACTION, DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION};
     
     @Override
     public String formatOptionForColumnHeader(String optionString, String interfaceName) {
@@ -173,10 +178,10 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
             String deviceType = pao.getPaoType().getPaoTypeName();
             String pointName = point.getPointName();
             String direction = translation.getDirection().getValue();
-            dataGrid[i+1][0] = deviceName;
-            dataGrid[i+1][1] = deviceType;
-            dataGrid[i+1][2] = pointName;
-            dataGrid[i+1][3] = direction;
+            dataGrid[i+1][DEVICE_NAME_COL] = deviceName;
+            dataGrid[i+1][DEVICE_TYPE_COL] = deviceType;
+            dataGrid[i+1][POINT_NAME_COL] = pointName;
+            dataGrid[i+1][DIRECTION_COL] = direction;
             
             //Iterate through interface-specific columns
             for(int j = DEFAULT_COLS_FOR_EXPORT; j < dataGrid[0].length; j++) {
@@ -201,12 +206,17 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     
     @Override
     public String checkForMissingDefaultImportHeaders(List<String> headers) {
+        String returnValue = null;
         for(String defaultHeader : defaultImportColumnHeaders) {
             if(!headers.contains(defaultHeader)) {
-                return defaultHeader;
+                if(returnValue != null) {
+                    returnValue += ", " + defaultHeader;
+                } else {
+                    returnValue = defaultHeader;
+                }
             }
         }
-        return null;
+        return returnValue;
     }
     
     @Override

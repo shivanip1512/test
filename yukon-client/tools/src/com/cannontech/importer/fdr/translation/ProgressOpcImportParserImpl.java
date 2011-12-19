@@ -76,7 +76,7 @@ public class ProgressOpcImportParserImpl implements TranslationParse {
         
         //Create Translation
         FdrTranslation trans = base.getTranslation();
-        trans.setDirection(FdrDirection.Receive);
+        trans.setDirection(FdrDirection.RECEIVE);
         trans.setInterfaceType(FdrInterfaceType.OPC);
         
         String serverName = token1.nextToken();

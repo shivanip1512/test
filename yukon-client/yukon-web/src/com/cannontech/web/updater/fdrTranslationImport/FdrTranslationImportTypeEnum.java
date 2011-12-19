@@ -73,11 +73,11 @@ public enum FdrTranslationImportTypeEnum {
     
     private ResultAccessor<TranslationImportCallbackResult> importResultValueAccessor;
     
-    FdrTranslationImportTypeEnum(ResultAccessor<TranslationImportCallbackResult> importResultValueAccessor) {
+    private FdrTranslationImportTypeEnum(ResultAccessor<TranslationImportCallbackResult> importResultValueAccessor) {
         this.importResultValueAccessor = importResultValueAccessor;
     }
     
     public Object getValue(TranslationImportCallbackResult callback) {
-        return this.importResultValueAccessor.getValue(callback);
+        return importResultValueAccessor.getValue(callback);
     }
 }

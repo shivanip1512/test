@@ -2,7 +2,9 @@ package com.cannontech.common.fdr;
 
 import java.util.Comparator;
 
-public enum FdrInterfaceType {
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum FdrInterfaceType implements DatabaseRepresentationSource {
     INET(1, true, FdrInterfaceOption.INET_DESTINATION_SOURCE),
     ACS(2, true, null),
     VALMET(3, true, null),
@@ -38,7 +40,7 @@ public enum FdrInterfaceType {
     //This or the lack of this indicates a special case where the Destination field is utilized instead of defaulted.
     private final FdrInterfaceOption destinationOption;
     //This comparator is designed to let us sort FdrInterfaceTypes by name, rather than natural enum order
-    private static Comparator<FdrInterfaceType> alphabeticalComparator = new Comparator<FdrInterfaceType>() {
+    public static final Comparator<FdrInterfaceType> alphabeticalComparator = new Comparator<FdrInterfaceType>() {
         public int compare(FdrInterfaceType typeOne, FdrInterfaceType typeTwo) {
             return typeOne.name().compareTo(typeTwo.name());
         }
@@ -83,12 +85,7 @@ public enum FdrInterfaceType {
         return null;
     }
     
-    /**
-     * Returns an FdrInterfaceType comparator that sorts alphabetically by the name
-     * of the interface type.
-     */
-    public static Comparator<FdrInterfaceType> getAlphabeticalComparator() {
-        return alphabeticalComparator;
+    public Object getDatabaseRepresentation() {
+        return this.toString();
     }
-
 }

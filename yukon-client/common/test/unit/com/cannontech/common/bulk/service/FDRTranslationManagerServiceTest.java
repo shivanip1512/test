@@ -74,11 +74,14 @@ public class FDRTranslationManagerServiceTest {
         List<String> directionMissingList = Lists.newArrayList(directionMissingArray);
         String[] directionMissingArray2 = {"DEVICE_NAME", "DEVICE_TYPE", "ACTION", "POINT_NAME"};
         List<String> directionMissingList2 = Lists.newArrayList(directionMissingArray2);
+        String[] actionDirectionMissingArray = {"DEVICE_NAME", "DEVICE_TYPE", "POINT_NAME"};
+        List<String> actionDirectionMissingList = Lists.newArrayList(actionDirectionMissingArray);
         
         Assert.assertNull(service.checkForMissingDefaultImportHeaders(allList));
         Assert.assertEquals("ACTION", service.checkForMissingDefaultImportHeaders(actionMissingList));
         Assert.assertEquals("DIRECTION", service.checkForMissingDefaultImportHeaders(directionMissingList));
         Assert.assertEquals("DIRECTION", service.checkForMissingDefaultImportHeaders(directionMissingList2));
+        Assert.assertEquals("ACTION, DIRECTION", service.checkForMissingDefaultImportHeaders(actionDirectionMissingList));
     }
     
     @Test

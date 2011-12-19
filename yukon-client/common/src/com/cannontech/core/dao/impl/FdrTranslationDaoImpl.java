@@ -120,8 +120,8 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM FdrTranslation");
         sql.append("WHERE PointId").eq(translation.getPointId());
-        sql.append(  "AND DirectionType").eq(translation.getDirection().toString());
-        sql.append(  "AND InterfaceType").eq(translation.getFdrInterfaceType().toString());
+        sql.append(  "AND DirectionType").eq(translation.getDirection());
+        sql.append(  "AND InterfaceType").eq(translation.getFdrInterfaceType().getDatabaseRepresentation());
         sql.append(  "AND Destination").eq(translation.getDestination());
         sql.append(  "AND Translation").eq(translation.getTranslation());
         

@@ -896,31 +896,22 @@
     </bean>
     
     <bean id="routeLocateBackingService" class="com.cannontech.web.updater.routeLocate.RouteLocateBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="resultsCache" ref="routeLocateResultsCache" />
     </bean>
     
     <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
     </bean>
     
     <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="recentResultsCache" ref="recentResultsCache" />
     </bean>
     
-    <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService" />
-    </bean>
+    <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService"/>
     
-    <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService"/>
-    </bean>
+    <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService"/>
     
-    <bean id="fdrTranslationImportBackingService" class="com.cannontech.web.updater.fdrTranslationImport.FdrTranslationImportBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService"/>
-    </bean>
+    <bean id="fdrTranslationImportBackingService" class="com.cannontech.web.updater.fdrTranslationImport.FdrTranslationImportBackingService"/>
     
     <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
     <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
@@ -1939,13 +1930,11 @@
     <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
     <bean id="accountImportBackingService" class="com.cannontech.web.updater.dr.AccountImportBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="resultsCache" ref="accountImportResultsCache" />
     </bean>
     
     <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">
-        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="resultsCache" ref="inventoryTaskResultsCache" />
     </bean>
     <bean id="changeWarehouseHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehouseHelper">

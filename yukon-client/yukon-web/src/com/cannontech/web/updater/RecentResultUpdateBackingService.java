@@ -1,6 +1,7 @@
 package com.cannontech.web.updater;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -26,7 +27,7 @@ public abstract class RecentResultUpdateBackingService implements UpdateBackingS
         
     }
 
-    @Required
+    @Autowired
     public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
         this.objectFormattingService = objectFormattingService;
     }

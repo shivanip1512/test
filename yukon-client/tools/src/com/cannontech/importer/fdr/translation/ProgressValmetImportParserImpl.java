@@ -55,7 +55,7 @@ public class ProgressValmetImportParserImpl  implements TranslationParse {
                 
                 //Create Translation
                 FdrTranslation trans = base.getTranslation();
-                trans.setDirection(FdrDirection.Receive);
+                trans.setDirection(FdrDirection.RECEIVE);
                 trans.setInterfaceType(FdrInterfaceType.VALMET);
                 trans.setTranslation("Point:" + valmetPointId + ";POINTTYPE:" + type + ";");
                 

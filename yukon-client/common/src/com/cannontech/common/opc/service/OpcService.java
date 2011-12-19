@@ -151,7 +151,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 	private synchronized void processFdrTranslation(FdrTranslation fdr) {
 		FdrDirection direction = fdr.getDirection();
 
-		if( direction == FdrDirection.Receive || direction == FdrDirection.Send) {
+		if( direction == FdrDirection.RECEIVE || direction == FdrDirection.SEND) {
 			log.debug(" Add Item call");
 			processOpcTranslation(fdr);
 		} else {
@@ -213,9 +213,9 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 		YukonOpcConnection conn = getConnection(server,serverAddress);
 		
 		YukonOpcItem item = null;
-		if (fdr.getDirection() == FdrDirection.Receive) {
+		if (fdr.getDirection() == FdrDirection.RECEIVE) {
 			item = conn.addReceiveItem(groupName,itemName,point.getPointID(),point.getPointType(),multiplier,offset);
-		} else if (fdr.getDirection() == FdrDirection.Send) {
+		} else if (fdr.getDirection() == FdrDirection.SEND) {
 			item = conn.addSendItem(groupName,itemName,point.getPointID(),point.getPointType(),multiplier,offset);
 		}
 		
