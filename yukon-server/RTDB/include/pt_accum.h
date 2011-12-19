@@ -14,6 +14,8 @@ class IM_EX_PNTDB CtiPointAccumulator : public CtiPointNumeric
 {
 private:
 
+   friend class Test_CtiPointAccumulator;
+
    CtiTablePointAccumulator         _pointAccumulator;
    CtiTablePointAccumulatorHistory  *_pointHistory;
 
@@ -155,5 +157,15 @@ public:
    }
 
 };
+
+
+class IM_EX_PNTDB Test_CtiPointAccumulator : public CtiPointAccumulator
+{
+public:
+    void setPointOffset( int  offset   )  {  _pointBase.setPointOffset(offset);   }
+    void setID         ( long id       )  {  _pointBase.setID(id);                }
+    void setDeviceID   ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
+};
+
 
 typedef boost::shared_ptr< CtiPointAccumulator > CtiPointAccumulatorSPtr;

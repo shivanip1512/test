@@ -138,14 +138,12 @@ BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
                               "Disconnect cycling mode disabled\n"},
     };
 
-    const unsigned count = sizeof(test_cases) / sizeof(*test_cases);
+    std::vector<std::string> expected, results;
 
-    struct my_test
+    for each( const test_case &tc in test_cases )
     {
-        typedef test_case test_case_type;
-        typedef string    result_type;
+        expected.push_back(tc.expected);
 
-        result_type operator()(const test_case_type &tc)
         {
             DSTRUCT DSt;
 
@@ -169,19 +167,16 @@ BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
             mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 40);
             mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, tc.config_byte);
 
-            return mct420.decodeDisconnectConfig(DSt);
+            results.push_back(mct420.decodeDisconnectConfig(DSt));
         }
-    };
+    }
 
-    Cti::TestRunner<my_test> tr(test_cases, test_cases + count);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(tr.expected_begin(), tr.expected_end(),
-                                  tr.results_begin(),  tr.results_end());
-
+    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(),
+                                  results.begin(),  results.end());
 }
 
 
-BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
+BOOST_AUTO_TEST_CASE(test_dev_mct420_decodeDisconnectStatus)
 {
     struct test_case
     {
@@ -208,14 +203,12 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
                           "Disconnect load limit count: 126\n"},
     };
 
-    const unsigned count = sizeof(test_cases) / sizeof(*test_cases);
+    std::vector<std::string> expected, results;
 
-    struct my_test
+    for each( const test_case &tc in test_cases )
     {
-        typedef test_case test_case_type;
-        typedef string    result_type;
+        expected.push_back(tc.expected);
 
-        result_type operator()(const test_case_type &tc)
         {
             test_Mct420CL mct420;
 
@@ -225,14 +218,12 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
             DSt.Message[1] = tc.dst_message_1;
             DSt.Message[8] = tc.dst_message_8;
 
-            return mct420.decodeDisconnectStatus(DSt);
+            results.push_back(mct420.decodeDisconnectStatus(DSt));
         }
-    };
+    }
 
-    Cti::TestRunner<my_test> tr(test_cases, test_cases + count);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(tr.expected_begin(), tr.expected_end(),
-                                  tr.results_begin(),  tr.results_end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(),
+                                  results.begin(),  results.end());
 }
 
 

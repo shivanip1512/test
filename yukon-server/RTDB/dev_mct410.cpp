@@ -3322,15 +3322,8 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
         bool expectMore = false;
 
         const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
-        CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
+        CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
@@ -3362,7 +3355,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                unsigned base_reading = 0;
+                boost::optional<unsigned> base_reading;
                 unsigned channel = 0;
 
                 //  I process the multi-day values in reverse from how I want to return them,
@@ -3397,7 +3390,17 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 
                         if( base_reading && reading.quality != InvalidQuality )
                         {
-                            reading.value = base_reading -= reading.value;
+                            if( *base_reading < reading.value )
+                            {
+                                base_reading = 0;
+                                reading.value = 0;
+                                reading.quality = OverflowQuality;
+                                reading.description = "Underflow";
+                            }
+                            else
+                            {
+                                reading.value = *base_reading -= reading.value;
+                            }
                         }
                     }
 

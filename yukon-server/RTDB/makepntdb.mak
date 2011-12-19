@@ -2163,7 +2163,11 @@ encryption_oneway_message.obj:	precompiled.h encryption_cbcrbt.h \
 		dlldefs.h encryption_cmac.h encryption_oneway.h \
 		encryption_oneway_message.h CtiTime.h mutex.h logger.h \
 		thread.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
-		types.h numstr.h CtiPCPtrQueue.h
+		types.h numstr.h CtiPCPtrQueue.h CParms.h rwutil.h yukon.h \
+		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		configkey.h configval.h
 id_devdll.obj:	precompiled.h id_devdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
 id_pntdll.obj:	precompiled.h id_pntdll.h utility.h ctitime.h dlldefs.h \

@@ -959,7 +959,8 @@ fdrscadahelper.obj:	precompiled.h msg_cmd.h message.h ctitime.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
 		dnp_object_time.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h
+		dnp_datalink_packet.h dnp_object_binaryoutput.h \
+		fdrvalmetmulti.h
 fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		fdrsocketserver.h queues.h cticalls.h os2_2w32.h types.h \
 		fdrclientserverconnection.h serverconnection.h fdrinterface.h \
@@ -1179,18 +1180,47 @@ fdrtristatesub.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h \
 		readers_writer_lock.h critical_section.h fdrpoint.h \
 		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
 		msg_cmd.h ctidate.h
-fdrvalmet.obj:  precompiled.h ctitime.h ctidate.h utility.h cparms.h \
-                msg_multi.h msg_ptreg.h msg_cmd.h message.h msg_reg.h \
-                msg_pdata.h msg_signal.h connection.h pointtypes.h dllbase.h \
-                logger.h guard.h fdrsocketinterface.h fdrpointlist.h \
-                fdrsinglesocket.h fdrsocketlayer.h fdrvalmet.h \
-                fdrvalmetutil.h
-fdrvalmetmulti.obj:     precompiled.h ctitime.h ctidate.h utility.h \
-                cparms.h msg_multi.h msg_ptreg.h msg_cmd.h message.h \
-                msg_reg.h msg_pdata.h msg_signal.h connection.h pointtypes.h \
-                dllbase.h logger.h guard.h fdrsocketinterface.h \
-                fdrscadahelper.h fdrvalmetmulti.h
-fdrvalmetutil.obj:      precompiled.h ctitime.h ctidate.h fdrvalmetutil.h
+fdrvalmet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h logger.h \
+		thread.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h cparms.h rwutil.h \
+		yukon.h ctidbgmem.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
+		optional.h sema.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h configkey.h configval.h msg_multi.h collectable.h \
+		msg_pdata.h pointdefs.h pointtypes.h message.h msg_ptreg.h \
+		msg_cmd.h msg_reg.h msg_signal.h connection.h exchange.h \
+		string_utility.h queue.h fdrsocketinterface.h fdrinterface.h \
+		msg_dbchg.h mgr_fdrpoint.h smartmap.h readers_writer_lock.h \
+		critical_section.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
+		fdrsocketlayer.h fdrsocketconnection.h fdrvalmet.h \
+		fdrvalmetutil.h
+fdrvalmetmulti.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
+		logger.h thread.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		cparms.h rwutil.h yukon.h ctidbgmem.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h \
+		words.h optional.h sema.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h configkey.h configval.h msg_multi.h \
+		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h connection.h \
+		exchange.h string_utility.h queue.h fdrsocketinterface.h \
+		fdrinterface.h msg_dbchg.h mgr_fdrpoint.h smartmap.h \
+		readers_writer_lock.h critical_section.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		fdrscadahelper.h fdrvalmetmulti.h fdrscadaserver.h \
+		fdrsocketserver.h fdrclientserverconnection.h \
+		serverconnection.h fdrvalmetutil.h
+fdrvalmetutil.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
+		logger.h thread.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		fdrvalmetutil.h pointdefs.h fdrpointlist.h mgr_fdrpoint.h \
+		smartmap.h boostutil.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		ctidbgmem.h netports.h dsm2err.h words.h optional.h \
+		readers_writer_lock.h critical_section.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h rwutil.h \
+		database_connection.h dbaccess.h sema.h database_reader.h \
+		row_reader.h boost_time.h cparms.h configkey.h configval.h
 fdrwabash.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \

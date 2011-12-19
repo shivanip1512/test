@@ -379,9 +379,10 @@ test_timeperiod.obj:	timeperiod.h dlldefs.h ctitime.h ctidate.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h
 test_utility.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
-		cticalls.h os2_2w32.h types.h numstr.h dsm2.h cticonnect.h \
-		yukon.h ctidbgmem.h netports.h mutex.h guard.h dsm2err.h \
-		words.h optional.h devicetypes.h
+		cticalls.h os2_2w32.h types.h numstr.h ctidate.h logger.h \
+		thread.h mutex.h guard.h CtiPCPtrQueue.h dsm2.h cticonnect.h \
+		yukon.h ctidbgmem.h netports.h dsm2err.h words.h optional.h \
+		devicetypes.h
 tfexec.obj:	precompiled.h tfexec.h
 thread.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
