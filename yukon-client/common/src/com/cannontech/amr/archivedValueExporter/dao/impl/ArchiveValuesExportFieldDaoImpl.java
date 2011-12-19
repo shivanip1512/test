@@ -37,11 +37,11 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
     @Override
     @Transactional
     public List<ExportField> create(List<ExportField> fields) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ");
-        sb.append(TABLE_NAME);
-        sb.append(" (FieldID,FormatID,FieldType,AttributeID,AttributeField,Pattern,MaxLength,PadChar,PadSide,RoundingMode,MissingAttributeValue,MultiplierRemovedFlag) ");
-        sb.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO ");
+        sql.append(TABLE_NAME);
+        sql.append(" (FieldID,FormatID,FieldType,AttributeID,AttributeField,Pattern,MaxLength,PadChar,PadSide,RoundingMode,MissingAttributeValue,MultiplierRemovedFlag) ");
+        sql.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ");
         List<Object[]> batchArgs = Lists.newArrayList();
         for (ExportField field : fields) {
             int fieldId = nextValueHelper.getNextValue(TABLE_NAME);
@@ -65,7 +65,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             String multiplierRemovedFlag = ynBoolean.getDatabaseRepresentation().toString();
             batchArgs.add(new Object[] {fieldId,formatId,fieldType,attributeID, attributeField, pattern, maxLength, padChar, padSide, roundingMode, missingAttributeValue, multiplierRemovedFlag });
         }
-        yukonJdbcTemplate.batchUpdate(sb.toString(), batchArgs);
+        yukonJdbcTemplate.batchUpdate(sql.toString(), batchArgs);
         return fields;
     }
     

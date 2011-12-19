@@ -4,6 +4,7 @@ public enum FieldType {
     METER_NUMBER("Meter Number"),
     DEVICE_NAME("Device Name"),
     DLC_ADDRESS("DLC Address"),
+    ROUTE("Route"),
     RF_MANUFACTURER("RF Manufacturer"),
     RF_MODEL("RF Model"),
     RF_SERIAL_NUMBER("RF Serial Number"),

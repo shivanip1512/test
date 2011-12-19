@@ -16,6 +16,7 @@ public class ExportPreviewFormatter {
     public static String defaultDecimalFormat = "#####.00";
     public static String meterNumber = "Meter123456";
     public static String deviceName = "Meter";
+    public static String route = "Route";
     public static String dlcAddress = "DLC Address";
     public static String rfManufacturer = "Manufacturer";
     public static String rfModel = "Model";
@@ -35,6 +36,9 @@ public class ExportPreviewFormatter {
                 }
                 else if (field.getFieldType().equals(FieldType.DEVICE_NAME)) {
                     value = ExportValueFormatter.formatValue(field, deviceName);
+                }
+                else if (field.getFieldType().equals(FieldType.ROUTE)) {
+                    value = ExportValueFormatter.formatValue(field, route);
                 }
                 else if (field.getFieldType().equals(FieldType.PLAIN_TEXT)) {
                     value = ExportValueFormatter.formatValue(field, field.getPattern());

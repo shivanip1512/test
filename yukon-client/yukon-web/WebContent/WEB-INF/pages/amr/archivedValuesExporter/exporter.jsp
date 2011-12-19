@@ -251,11 +251,11 @@
                         <tags:input id="timestampPattern" path="exportField.pattern" size="10" maxlength="30" inputClass="Custom" />
                         <a href="javascript:void(0);" onClick="showPopup('timestampHelper');"> <cti:img nameKey="helpTimestampPattern" styleClass="hoverableImage" /> </a>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".fieldSize" rowClass="METER_NUMBER DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_TIMESTAMP">
+                    <tags:nameValue2 nameKey=".fieldSize" rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_TIMESTAMP">
                         <tags:input id="exportField.maxLength" path="exportField.maxLength" size="5" maxlength="5" />
                         <i:inline key=".fieldSizeMax" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".padding" rowClass="METER_NUMBER DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE">
+                    <tags:nameValue2 nameKey=".padding" rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE">
                         <form:select id="padSideSelect" path="exportField.padSide" data-selection="#padSideSelect" data-field-to-display="#padCharSelectFields">
                             <option value="" <c:if test="${backingBean.exportField.padSide  !=  'Left' && backingBean.exportField.padSide != 'Right'}">selected="selected" </c:if>>
                                 <i:inline key=".none" />
@@ -289,7 +289,7 @@
             <tags:sectionContainer2 nameKey="otherOptions" styleClass="f_renderFields">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".unsupportedField"
-                        rowClass="METER_NUMBER DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_U_OF_M">
+                        rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_U_OF_M">
                         <select id="unsupportedFieldSelect" data-selection="#unsupportedFieldSelect" data-field-to-display="#fixedValue">
                             <option value="Leave Blank"
                                 <c:if test="${backingBean.exportField.missingAttributeValue == 'Leave Blank'}">selected="selected" </c:if>>

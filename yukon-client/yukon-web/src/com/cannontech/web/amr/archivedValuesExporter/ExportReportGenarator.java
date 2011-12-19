@@ -54,6 +54,8 @@ public class ExportReportGenarator {
             value = meter.getAddress();
         } else if (field.getFieldType().equals(FieldType.PLAIN_TEXT)) {
             value = field.getPattern();
+        } else if (field.getFieldType().equals(FieldType.ROUTE)) {
+            value = meter.getRoute();
         } else if (field.getFieldType().equals(FieldType.RF_MANUFACTURER)) {
 
         } else if (field.getFieldType().equals(FieldType.RF_MODEL)) {
