@@ -45,13 +45,13 @@
 <!-- Account -->
     <!-- Account -->
     <entry key="yukon.common.events.stars.account.accountCreationAttemptedThroughAccountImporter"> The user {1} is attempting to created a new account {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.stars.account.accountCreationAttemptedThroughAPI"> The user {1} is attempting to created a new account {2}.  They are attempting this through the Api.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateCreationAttemptedThroughApi"> The user {1} is attempting to create a new account {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.account.accountCreationAttemptedThroughApi"> The user {1} is attempting to created a new account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdateCreationAttemptedThroughApi"> The user {1} is attempting to create a new account {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.account.accountDeletionAttemptedThroughAccountImporter"> The user {1} is attempting to delete the account {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.stars.account.accountDeletionAttemptedThroughAPI"> The user {1} is attempting to delete the account {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.account.accountDeletionAttemptedThroughApi"> The user {1} is attempting to delete the account {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.account.accountDeletionAttemptedByOperator"> The user {1} is attempting to delete the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.accountUpdateAttemptedThroughAccountImporter"> The user {1} is attempting to update the account {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateAttemptedThroughAPI"> The user {1} is attempting to update the account {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdateAttemptedThroughApi"> The user {1} is attempting to update the account {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.account.accountUpdateAttemptedByOperator"> The user {1} is attempting to update the account {2}.  They are attempting this through the operator pages.</entry>
 
     <!-- Account Service Level -->
@@ -84,21 +84,21 @@
     <entry key="yukon.common.events.stars.account.enrollment.enrollmentModificationAttemptedByOperator">The user {1} is attempting to modify enrollments for the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedByOperator">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedByConsumer">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedThroughAPI">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedThroughApi">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedByOperator">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedByConsumer">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedThroughAPI">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedThroughApi">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
 
     <!-- Account Enrollment Service Level -->
     <entry key="yukon.common.events.stars.account.enrollment.deviceEnrolled">The device {3} was enrolled in the program {4} and the load group {5} for the account {2} by {1}</entry>
     <entry key="yukon.common.events.stars.account.enrollment.deviceUnenrolled">The device {3} was unenrolled from the program {4} and the load group {5} for the account {2} by {1}</entry>
 
     <!-- Opt Outs -->
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttemptedThroughAPI">The user {1} is attempting to reduce the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttemptedThroughApi">The user {1} is attempting to reduce the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreaseAttemptedByOperator">The user {1} is attempting to increase the opt out limit for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttemptedByOperator">The user {1} is attempting to increase the opt out limit for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttemptedByOperator">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttemptedThroughAPI">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttemptedThroughApi">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutResendAttemptedByOperator">The user {1} is attempting to resend an opt out command for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByOperator">The user {1} is attempting to opt out the device {3} on the account {2} for the {11}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByOperator.11">Opt Out Start Date</entry>
@@ -193,10 +193,10 @@
     <entry key="yukon.common.events.hardware.assigningHardwareAttemptedByOperator">The user {1} is attempting to assign the hardware {3} to the account {2}.</entry>
     <entry key="yukon.common.events.hardware.hardwareAdditionAttemptedThroughApi">The user {1} is attempting to add the device {3} to the account {2}.</entry>
     <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedByOperator">The user {1} is attempting to update the device {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughAccountImporter">The user {1} is attempting to update the device {2} on the account {3}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughAccountImporter">The user {1} is attempting to update the device {2} on the account {3}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.hardware.hardwareDeletionAttemptedByOperator">The user {1} is attempting to delete the device {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.hardware.hardwareRemovalAttemptedThroughAccountImporter">The user {1} is attempting to delete the device {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughApi">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through the api.</entry>
+    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughApi">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through the API.</entry>
     
     <!-- Hardware Service Level -->
     <entry key="yukon.common.events.hardware.hardwareCreated">The user {1} has created the device {2}.</entry>
@@ -335,25 +335,25 @@
     <entry key="yukon.common.events.stars.warehouse.deleteWarehouse">The warehouse {1} has been deleted.</entry>
 
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByOperator">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByOperator">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByOperator">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByOperator">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByOperator">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByOperator">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByOperator">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the API.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByOperator">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the API.</entry>
 
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOuts">The user {1} canceled all the opt outs in the system.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgram">The user {1} canceled all the opt outs for the program {2}.</entry>
