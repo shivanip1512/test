@@ -442,13 +442,17 @@
             <menu></menu>
             <link>/spring/amr/archivedValuesExporter/view</link>
                 <pages>
-                    <page name="archivedValueExporter.EDIT" type="BASIC">
+                    <page name="archivedValueExporter.EDIT" type="DETAIL">
                         <menu></menu>
                     </page>
-                    <page name="archivedValueExporter.CREATE" type="BASIC">
+                    <page name="archivedValueExporter.CREATE" type="DETAIL">
                         <menu></menu>
                     </page>
                 </pages>
+                <page name="archivedValueExporter.selectDevices" type="BASIC">
+                    <menu></menu>
+                    <link>/spring/amr/archivedValueExporter/selectDevices</link>
+                </page>
         </page>
         <page name="analysis.home" type="BASIC">
             <menu></menu>

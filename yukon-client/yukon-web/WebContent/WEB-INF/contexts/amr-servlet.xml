@@ -28,7 +28,6 @@
                 <prop key="/reports/*">AMRReportsController</prop>
                 <prop key="/outageProcessing/monitorEditor/*">OutageMonitorEditorController</prop>
                 <prop key="/outageProcessing/process/*">OutageProcessingController</prop>
-                <prop key="/archivedValuesExporter/*">ArchivedValuesExporterController</prop>
             </props>
         </property>
     </bean>
@@ -119,7 +118,7 @@
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
-    <bean id="ArchivedValuesExporterController" class="com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterController"/>
+<!--     <bean id="ArchivedValuesExporterController" class="com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterController"/> -->
     
     <!-- OUTAGE PROCESSING -->
     <bean id="OutageMonitorEditorController" class="com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController"/>

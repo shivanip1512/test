@@ -8,15 +8,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFieldDao;
+import com.cannontech.amr.archivedValueExporter.model.AttributeField;
+import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
-import com.cannontech.amr.archivedValueExporter.model.DataSelection;
-import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -29,34 +28,20 @@ import com.google.common.collect.Lists;
 
 public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportFieldDao {
     
-    public static final String TABLE_NAME = "ArchiveValuesExportField";
-    
-    private static String insertSql = getInsertSql();
-    private static String removeByFormatIdSql = getRemoveByFormatIdSql();
-    
+    public static final String TABLE_NAME = "ArchiveValuesExportField";    
     private final ParameterizedRowMapper<ExportField> rowMapper = createRowMapper();
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
     
-    private static String getInsertSql() {
+    @Autowired YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired NextValueHelper nextValueHelper;
+    
+    @Override
+    @Transactional
+    public List<ExportField> create(List<ExportField> fields) {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ");
         sb.append(TABLE_NAME);
         sb.append(" (FieldID,FormatID,FieldType,AttributeID,AttributeField,Pattern,MaxLength,PadChar,PadSide,RoundingMode,MissingAttributeValue,MultiplierRemovedFlag) ");
         sb.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ");
-        return sb.toString();
-    }
-
-    private static String getRemoveByFormatIdSql() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ");
-        sb.append(TABLE_NAME);
-        sb.append(" WHERE FormatID = ? ");
-        return sb.toString();
-    }
-    @Override
-    @Transactional
-    public List<ExportField> create(List<ExportField> fields) {
         List<Object[]> batchArgs = Lists.newArrayList();
         for (ExportField field : fields) {
             int fieldId = nextValueHelper.getNextValue(TABLE_NAME);
@@ -80,39 +65,37 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             String multiplierRemovedFlag = ynBoolean.getDatabaseRepresentation().toString();
             batchArgs.add(new Object[] {fieldId,formatId,fieldType,attributeID, attributeField, pattern, maxLength, padChar, padSide, roundingMode, missingAttributeValue, multiplierRemovedFlag });
         }
-        yukonJdbcTemplate.batchUpdate(insertSql, batchArgs);
+        yukonJdbcTemplate.batchUpdate(sb.toString(), batchArgs);
         return fields;
     }
     
     @Override
     @Transactional
-    public boolean removeByFormatId(int formatId) {
-        int rowsAffected =  yukonJdbcTemplate.update(removeByFormatIdSql, formatId);
+    public boolean deleteByFormatId(int formatId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM");
+        sql.append(TABLE_NAME);
+        sql.append("WHERE FormatID").eq(formatId);
+        int rowsAffected = yukonJdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
+        
     
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ExportField> getByFormatId(int formatId) {
-        List<ExportField> fields = null;
         try {
-            SqlStatementBuilder selectByFormatIdSql = getSelectByFormatIdSql().eq(formatId);
-            fields = yukonJdbcTemplate.query(selectByFormatIdSql, rowMapper);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT A.AttributeName, A.DataSelection, A.DaysPrevious, F.FieldID, F.FormatID, F.FieldType, F.AttributeID, F.AttributeField, F.Pattern, F.MaxLength, F.PadChar, F.PadSide, F.RoundingMode, F.MissingAttributeValue, F.MultiplierRemovedFlag");
+            sql.append("FROM");
+            sql.append(TABLE_NAME);
+            sql.append("F LEFT JOIN ArchiveValuesExportAttribute A ON F.FormatID=A.FormatID AND F.AttributeID=A.AttributeID WHERE F.FormatID").eq(formatId);
+            return yukonJdbcTemplate.query(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("The format id supplied does not exist.");
         }
-        return fields;
     }
     
-    private SqlStatementBuilder getSelectByFormatIdSql() {
-        SqlStatementBuilder selectByFormatIdSql = new SqlStatementBuilder();
-        selectByFormatIdSql.append("SELECT A.AttributeName, A.DataSelection, A.DaysPrevious, F.FieldID, F.FormatID, F.FieldType, F.AttributeID, F.AttributeField, F.Pattern, F.MaxLength, F.PadChar, F.PadSide, F.RoundingMode, F.MissingAttributeValue, F.MultiplierRemovedFlag ");
-        selectByFormatIdSql.append("FROM ");
-        selectByFormatIdSql.append(TABLE_NAME);
-        selectByFormatIdSql.append(" AS F LEFT JOIN ArchiveValuesExportAttribute A ON F.FormatID=A.FormatID AND F.AttributeID=A.AttributeID WHERE F.FormatID");
-        return selectByFormatIdSql;
-    }
-    
+
     private ParameterizedRowMapper<ExportField> createRowMapper() {
         final ParameterizedRowMapper<ExportField> mapper =
             new ParameterizedRowMapper<ExportField>() {
@@ -122,7 +105,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     field.setFieldId(rs.getInt("FieldID"));
                     field.setFormatId(rs.getInt("FormatID"));
                     field.setFieldType(FieldType.valueOf(SqlUtils.convertDbValueToString(rs, "FieldType")));
-                    if (!StringUtils.isBlank(rs.getString("AttributeID"))) {
+                    if (StringUtils.isNotBlank(rs.getString("AttributeID"))) {
                         final ExportAttribute attribute = new ExportAttribute();
                         attribute.setFormatId(rs.getInt("FormatID"));
                         attribute.setAttributeId(rs.getInt("AttributeID"));
@@ -148,15 +131,5 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                 }
             };
         return mapper;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

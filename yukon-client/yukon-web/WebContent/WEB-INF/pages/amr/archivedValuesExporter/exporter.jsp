@@ -147,9 +147,6 @@
         <form:hidden path="format.formatId" />
         <tags:hidden path="rowIndex" />
 
-
-        <cti:url value="/spring/amr/archivedValuesExporter/view" var="viewUrl" />
-
         <!-- Helper Popups -->
         <i:simplePopup id="roundingHelper" titleKey=".roundingModeHelp" onClose="hidePopup('roundingHelper');" styleClass="secondLevelPopup">
             <cti:url var="roundingHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp" />
@@ -320,10 +317,6 @@
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
             <cti:dataGridCell>
                 <cti:displayForPageEditModes modes="VIEW">
-                    <tags:sectionLink>
-                        <a href="/spring/amr/archivedValuesExporter/deviceSelection"><i:inline key=".selectDevice" /> </a>
-                    </tags:sectionLink>
-                    <br>
                     <div class="smallBoldLabel notesSection">
                         <c:choose>
                             <c:when test="${deviceCollection ==  null}">
@@ -332,7 +325,7 @@
                             <c:otherwise>
                                 <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
                             </c:otherwise>
-                        </c:choose>
+                        </c:choose> &nbsp &nbsp<cti:button name="selectDevices" nameKey="selectDevices" type="submit" />
                     </div>
                     <tags:nameValueContainer2 id="formatContainer">
                         <tags:nameValue2 nameKey=".format">
@@ -358,9 +351,16 @@
                         <tags:boxContainer2 nameKey="generateReport">
                             <tags:nameValueContainer2>
                                 <tags:nameValue2 nameKey=".endDate">
-                                    <tags:dateInputCalendar fieldName="endDate" fieldValue="${origEndDate}"></tags:dateInputCalendar>
-                    <i:inline key=".cdt" />
-                                    <cti:button name="generateReport" nameKey="generateReport" type="submit" disabled="${ empty deviceCollection }" />
+                                    <tags:dateInputCalendar fieldName="endDate" fieldValue="${backingBean.endDate}"></tags:dateInputCalendar>
+                                     <i:inline key=".cdt" />
+                                    <c:choose>
+                                        <c:when test="${empty deviceCollection}">
+                                            <cti:button name="selectDevices" nameKey="selectDevices" type="submit" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:button name="generateReport" nameKey="generateReport" type="submit" />
+                                        </c:otherwise>
+                                    </c:choose>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                         </tags:boxContainer2>
@@ -556,7 +556,7 @@
                 <c:if test="${backingBean.format.formatId != 0}">
                     <cti:button name="deleteFormat" nameKey="delete" type="submit" styleClass="f_blocker" />
                 </c:if>
-                <cti:button nameKey="cancel" href="${viewUrl}" />
+                <cti:button name="cancel" nameKey="cancel" type="submit" />
                 <br>
             </div>
         </cti:displayForPageEditModes>

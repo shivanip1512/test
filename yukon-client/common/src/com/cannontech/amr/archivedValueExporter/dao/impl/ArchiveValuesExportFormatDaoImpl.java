@@ -20,6 +20,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -28,29 +29,28 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportFormatDao{
 
     public static final String TABLE_NAME = "ArchiveValuesExportFormat";
-
-    private static String insertSql = getInsertSql();
-    private static String updateSql = getUpdateSql();
-    private static String removeSql = getRemoveSql();
-    
-    private ArchiveValuesExportAttributeDao archiveValuesExportAttributeDao;
-    private ArchiveValuesExportFieldDao archiveValuesExportFieldDao;
+   
     private final ParameterizedRowMapper<ExportFormat> rowMapper = createRowMapper();
     private final ParameterizedRowMapper<ExportFormat> formatIdAndFormatNameRowMapper = createFormatIdAndFormatNameRowMapper();
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+   
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ArchiveValuesExportAttributeDao archiveValuesExportAttributeDao;
+    @Autowired private ArchiveValuesExportFieldDao archiveValuesExportFieldDao;
 
-    
+   
     @Override
     @Transactional
     public ExportFormat create(ExportFormat format) {
         format.setFormatId(nextValueHelper.getNextValue(TABLE_NAME));
-        int formatId = format.getFormatId();
-        String delimiter =  SqlUtils.convertStringToDbValue(format.getDelimiter());
-        String formatName =  SqlUtils.convertStringToDbValue(format.getFormatName());
-        String header =  SqlUtils.convertStringToDbValue(format.getHeader());
-        String footer =  SqlUtils.convertStringToDbValue(format.getFooter());
-        yukonJdbcTemplate.update(insertSql, formatId,formatName, delimiter, header, footer);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto(TABLE_NAME);
+        sink.addValue("FormatID", format.getFormatId());
+        sink.addValue("FormatName", format.getFormatName());
+        sink.addValue("Delimiter", format.getDelimiter());
+        sink.addValue("Header",  format.getHeader());
+        sink.addValue("Footer",  format.getFooter());
+        yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
         return format;
     }
@@ -59,31 +59,44 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     @Override
     @Transactional
     public ExportFormat update(ExportFormat format) {
-        int formatId = format.getFormatId();
-        String delimiter =  SqlUtils.convertStringToDbValue(format.getDelimiter());
-        String formatName =  SqlUtils.convertStringToDbValue(format.getFormatName());
-        String header =  SqlUtils.convertStringToDbValue(format.getHeader());
-        String footer =  SqlUtils.convertStringToDbValue(format.getFooter());
-        yukonJdbcTemplate.update( updateSql, formatId,formatName, delimiter, header, footer, formatId);  
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.update(TABLE_NAME);
+        sink.addValue("FormatID", format.getFormatId());
+        sink.addValue("FormatName", format.getFormatName());
+        sink.addValue("Delimiter", format.getDelimiter());
+        sink.addValue("Header",  format.getHeader());
+        sink.addValue("Footer",  format.getFooter());
+        sql.append("WHERE FormatID").eq(format.getFormatId());
+        yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
         return format;
     }
     
     @Override
     @Transactional
-    public void remove(int formatId) {
-        archiveValuesExportFieldDao.removeByFormatId(formatId);
-        archiveValuesExportAttributeDao.removeByFormatId(formatId);
-        yukonJdbcTemplate.update(removeSql, formatId);
+    public void delete(int formatId) {
+        archiveValuesExportFieldDao.deleteByFormatId(formatId);
+        archiveValuesExportAttributeDao.deleteByFormatId(formatId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM");
+        sql.append(TABLE_NAME);
+        sql.append("WHERE FormatID").eq(formatId);
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public ExportFormat getByFormatId(int formatId) {
         ExportFormat format = null;
         try {
-            SqlStatementBuilder selectByFormatIdSql = getSelectByFormatIdSql().eq(formatId);
-            format = yukonJdbcTemplate.queryForObject(selectByFormatIdSql, rowMapper);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer");
+            sql.append("FROM");
+            sql.append(TABLE_NAME);
+            sql.append("WHERE FormatID").eq(formatId);
+            List <ExportFormat> formats = yukonJdbcTemplate.query(sql, rowMapper);
+            if(!formats.isEmpty()){
+                format  = formats.get(0);
+            }
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("The format id supplied does not exist.");
         }
@@ -91,77 +104,30 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     }
     
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public ExportFormat getByFormatName(String formatName) {
         ExportFormat format = null;
         try {
-            SqlStatementBuilder selectByFormatNameSql = getSelectByFormatName();
-            selectByFormatNameSql.eq(formatName);
-            format = yukonJdbcTemplate.queryForObject(selectByFormatNameSql, rowMapper);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer");
+            sql.append("FROM");
+            sql.append(TABLE_NAME);
+            sql.append("WHERE FormatName").eq(formatName);
+            List <ExportFormat> formats = yukonJdbcTemplate.query(sql, rowMapper);
+            if(!formats.isEmpty()){
+                format  = formats.get(0);
+            }
         } catch (EmptyResultDataAccessException ex) {
         }
         return format;
     }
     
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ExportFormat> getAllFormats() {
-        List<ExportFormat> formats = null;
-        SqlStatementBuilder selectAllSql = getSelectFormatIdAndFormatNameSql();
-        formats = yukonJdbcTemplate.query(selectAllSql, formatIdAndFormatNameRowMapper);
-        return formats;
-    }
-    
-    private SqlStatementBuilder getSelectByFormatIdSql() {
-        SqlStatementBuilder selectByFormatIdSql = new SqlStatementBuilder();
-        selectByFormatIdSql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer ");
-        selectByFormatIdSql.append("FROM ");
-        selectByFormatIdSql.append(TABLE_NAME);
-        selectByFormatIdSql.append(" WHERE FormatID");
-        return selectByFormatIdSql;
-    }
-
-    private SqlStatementBuilder getSelectByFormatName() {
-        SqlStatementBuilder selectByFormatNameSql = new SqlStatementBuilder();
-        selectByFormatNameSql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer ");
-        selectByFormatNameSql.append("FROM ");
-        selectByFormatNameSql.append(TABLE_NAME);
-        selectByFormatNameSql.append(" WHERE FormatName");
-        return selectByFormatNameSql;
-    }
-    
-    private SqlStatementBuilder getSelectFormatIdAndFormatNameSql() {
-        SqlStatementBuilder selectAllSql = new SqlStatementBuilder();
-        selectAllSql.append("SELECT FormatID, FormatName ");
-        selectAllSql.append("FROM ");
-        selectAllSql.append(TABLE_NAME);
-        return selectAllSql;
-    }
-
-    private static String getUpdateSql() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("UPDATE ");
-        sb.append(TABLE_NAME);
-        sb.append(" SET FormatID = ?, FormatName = ?, Delimiter = ?, Header = ?, Footer = ? ");
-        sb.append("WHERE FormatID = ?");
-        return sb.toString();
-    }
-
-    private static String getInsertSql() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ");
-        sb.append(TABLE_NAME);
-        sb.append(" (FormatID,FormatName,Delimiter,Header,Footer) ");
-        sb.append("VALUES (?,?,?,?,?) ");
-        return sb.toString();
-    }
-
-    private static String getRemoveSql() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ");
-        sb.append(TABLE_NAME);
-        sb.append(" WHERE FormatID = ? ");
-        return sb.toString();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT FormatID, FormatName");
+        sql.append("FROM");
+        sql.append(TABLE_NAME);
+        return yukonJdbcTemplate.query(sql,  formatIdAndFormatNameRowMapper);
     }
     
     private ParameterizedRowMapper<ExportFormat> createRowMapper() {
@@ -196,8 +162,8 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     }
         
     private void createAttributesAndFields(ExportFormat format){
-        archiveValuesExportFieldDao.removeByFormatId(format.getFormatId());
-        archiveValuesExportAttributeDao.removeByFormatId(format.getFormatId());
+        archiveValuesExportFieldDao.deleteByFormatId(format.getFormatId());
+        archiveValuesExportAttributeDao.deleteByFormatId(format.getFormatId());
         updateAttributesWithFormatId(format);
         updateFieldsWithFormatId(format);
         for(ExportAttribute attribute:format.getAttributes()){
@@ -237,25 +203,5 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             field.setAttribute(newAttribute);
         }
     }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
 
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setArchiveValuesExportAttributeDao(ArchiveValuesExportAttributeDao archiveValuesExportAttributeDao) {
-        this.archiveValuesExportAttributeDao = archiveValuesExportAttributeDao;
-    }
-    
-    @Autowired
-    public void setArchiveValuesExportFieldDao(ArchiveValuesExportFieldDao archiveValuesExportFieldDao) {
-        this.archiveValuesExportFieldDao = archiveValuesExportFieldDao;
-    }
-    
 }

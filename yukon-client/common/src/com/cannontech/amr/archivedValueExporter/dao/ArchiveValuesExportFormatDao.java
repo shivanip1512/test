@@ -9,13 +9,13 @@ public interface ArchiveValuesExportFormatDao {
     public ExportFormat create(ExportFormat format);
 
     public ExportFormat update(ExportFormat format);
-
-    public void remove(int formatId);
-
+    
     public ExportFormat getByFormatId(int formatId);
 
     public List<ExportFormat> getAllFormats();
     
     public ExportFormat getByFormatName(String formatName);
+
+    public void delete(int formatId);
     
 }

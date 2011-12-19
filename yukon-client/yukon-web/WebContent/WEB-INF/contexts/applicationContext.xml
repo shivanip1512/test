@@ -1985,4 +1985,5 @@
     <bean id="exportAttributeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator"/>
     <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
+    <bean id="exportReportValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportReportValidator"/>
 </beans>

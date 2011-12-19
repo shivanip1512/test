@@ -3,11 +3,11 @@ package com.cannontech.web.amr.archivedValuesExporter.validator;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterBackingBean;
 
-public class ExportAttributeValidator extends SimpleValidator<ArchivedValuesExporterBackingBean>{
-    private static final String daysPrevious = "yukon.web.modules.amr.archivedValueExporter.formatError.lessThanZero.daysPrevious";
+public class ExportAttributeValidator extends SimpleValidator<ArchivedValuesExporterBackingBean> {
+    private static final String daysPrevious =
+        "yukon.web.modules.amr.archivedValueExporter.formatError.lessThanZero.daysPrevious";
 
     public ExportAttributeValidator() {
         super(ArchivedValuesExporterBackingBean.class);
@@ -15,11 +15,8 @@ public class ExportAttributeValidator extends SimpleValidator<ArchivedValuesExpo
 
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
-        ArchivedValuesExporterBackingBean archivedValuesExporterBackingBean = (ArchivedValuesExporterBackingBean)target;
-        if (archivedValuesExporterBackingBean.getExportAttribute().getDaysPrevious() < 1) {
+        if (target.getExportAttribute().getDaysPrevious() < 1) {
             errors.rejectValue("exportAttribute.daysPrevious", daysPrevious);
         }
-
     }
-
 }

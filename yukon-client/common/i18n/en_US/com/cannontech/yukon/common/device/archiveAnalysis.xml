@@ -107,10 +107,6 @@
     <entry key="yukon.web.modules.amr.analysis.readResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     
     <!-- expoter.jsp -->
-    <entry key="yukon.web.modules.amr.archivedValueExporter.copy.label">Copy</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.create.label">New</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.edit.label">Edit</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.cancel.label">Cancel</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.saveFormat.label">Save Format</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.createFormat.label">Create Format</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.deleteFormat.label">Delete Format</entry>
@@ -128,7 +124,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.delimiter">Delimiter</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.header">Header</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.footer">Footer</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevice">Select Device</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.label">Select Devices</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noSelectedDevice">Devices Selected: None</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeSetup.title">Attribute Setup:</entry>
     
@@ -145,12 +141,10 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSize">Field Size</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.padding">Padding</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.preview.title">Preview:</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.add.label">Add</entry>
-
+    
     <entry key="yukon.web.modules.amr.archivedValueExporter.addAttribute">Add Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.addField">Add Field</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.editAttribute">Edit Attribute</entry>
-
 
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.attribute">Attribute</entry>
@@ -225,6 +219,7 @@
    
      <!-- archivedValueExporter validation -->
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>
+     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.endDayRequired">End day is invalid.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.delimiterRequired">The delimiter cannot be blank.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.duplicateName">Name already in use, please provide a different format name.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.lessThanZero.daysPrevious">Days pervious must be greater than zero.</entry>
@@ -249,5 +244,10 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.TIMESTAMP">Timestamp</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.VALUE">Value</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.U_OF_M">Unit of Measure</entry>
+    
+        <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageName">Device Selection</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageDescription">Device Selection</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.selectionContainer.title">Select Devices</entry>
     
 </properties>

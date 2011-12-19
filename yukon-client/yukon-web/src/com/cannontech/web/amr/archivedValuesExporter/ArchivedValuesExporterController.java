@@ -1,18 +1,29 @@
 package com.cannontech.web.amr.archivedValuesExporter;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,30 +35,46 @@ import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator;
+import com.cannontech.web.amr.archivedValuesExporter.validator.ExportReportValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@Controller
+@RequestMapping("/archivedValuesExporter/*")
 @CheckRoleProperty(YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP)
 public class ArchivedValuesExporterController {
 
+    @Autowired
     private DeviceCollectionFactory deviceCollectionFactory;
-
+    @Autowired
+    private ExportReportValidator exportReportValidator;
+    @Autowired
     private ExportFormatValidator exportFormatValidator;
+    @Autowired
     private ExportAttributeValidator exportAttributeValidator;
+    @Autowired
     private ExportFieldValidator exportFieldValidator;
+    @Autowired
     private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
+    @Autowired
+    private MeterDao meterDao;
 
     @ModelAttribute("attributes")
     public BuiltInAttribute[] getAttributes() {
@@ -78,16 +105,25 @@ public class ArchivedValuesExporterController {
         ExportFormat format = null;
         if (backingBean.getSelectedFormatId() != 0) {
             format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
-        } else  {
+        } else {
             format = getFirstFormat(backingBean.getAllFormats());
         }
         backingBean.setFormat(format);
         return view;
     }
-    
+
+    @RequestMapping(params = "cancel")
+    public String cancel(ModelMap model,
+                         HttpServletRequest request,
+                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
+        return getView(model, request, PageEditMode.VIEW, backingBean);
+    }
+
     @RequestMapping(params = "copy")
     public String copy(ModelMap model, HttpServletRequest request,
-                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         ExportFormat format =
             archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
         format.setFormatId(0);
@@ -98,7 +134,8 @@ public class ArchivedValuesExporterController {
 
     @RequestMapping(params = "edit")
     public String edit(ModelMap model, HttpServletRequest request,
-                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         ExportFormat format =
             archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
         backingBean.setFormat(format);
@@ -108,20 +145,30 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "create")
     public String create(ModelMap model,
                          HttpServletRequest request,
-                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         ExportFormatHelper.preloadFormat(backingBean);
         return getView(model, request, PageEditMode.CREATE, backingBean);
     }
 
+    @RequestMapping(params = "selectDevices")
+    public String selectDevices(ModelMap model, HttpServletRequest request) {
+        return "archivedValuesExporter/selectDevices.jsp";
+    }
+
     @RequestMapping
-    public String deviceSelection(ModelMap model, HttpServletRequest request) {
-        return "forward:/spring/bulk/deviceSelection";
+    public String selected(ModelMap model,
+                           HttpServletRequest request,
+                           @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws DeviceCollectionCreationException, ServletException {
+        return view(model, request, backingBean);
     }
 
     @RequestMapping(params = "editAttribute")
     public String editAttribute(ModelMap model,
                                 HttpServletRequest request,
-                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.setExportAttribute(backingBean.getSelectedAttribute());
         backingBean.setPopupToOpen("addAttributePopup");
         return getView(model, request, PageEditMode.EDIT, backingBean);
@@ -130,7 +177,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "removeAttribute")
     public String removeAttribute(ModelMap model,
                                   HttpServletRequest request,
-                                  @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                                  @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.removeSelectedAttribute();
         return getView(model, request, PageEditMode.EDIT, backingBean);
     }
@@ -138,7 +186,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "addAttribute")
     public String addAttribute(ModelMap model,
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                               BindingResult bindingResult, HttpServletRequest request) {
+                               BindingResult bindingResult, HttpServletRequest request)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         exportAttributeValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             backingBean.setPopupToOpen("addAttributePopup");
@@ -151,7 +200,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "addNewAttribute")
     public String addNewAttribute(ModelMap model,
                                   @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                                  BindingResult bindingResult, HttpServletRequest request) {
+                                  BindingResult bindingResult, HttpServletRequest request)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.setExportAttribute(new ExportAttribute());
         backingBean.setRowIndex(-1);
         backingBean.setPopupToOpen("addAttributePopup");
@@ -161,7 +211,9 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "addField")
     public String addField(ModelMap model,
                            @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                           BindingResult bindingResult, HttpServletRequest request) {
+                           BindingResult bindingResult, HttpServletRequest request)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
+        backingBean.prefillExportField();
         exportFieldValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             backingBean.setPopupToOpen("addFieldPopup");
@@ -174,7 +226,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "removeField")
     public String removeField(ModelMap model,
                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                              BindingResult bindingResult, HttpServletRequest request) {
+                              BindingResult bindingResult, HttpServletRequest request)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.removeSelectedField();
         return getView(model, request, PageEditMode.EDIT, backingBean);
     }
@@ -182,7 +235,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "editField")
     public String editField(ModelMap model,
                             HttpServletRequest request,
-                            @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                            @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.setExportField(backingBean.getSelectedField());
         backingBean.setSelectedFieldId(backingBean.getExportField());
         backingBean.setPopupToOpen("addFieldPopup");
@@ -192,7 +246,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "addNewField")
     public String addNewField(ModelMap model,
                               HttpServletRequest request,
-                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         ExportFormatHelper.preloadField(backingBean);
         backingBean.setPopupToOpen("addFieldPopup");
         return getView(model, request, PageEditMode.EDIT, backingBean);
@@ -201,7 +256,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "moveFieldUp")
     public String moveFieldUp(ModelMap model,
                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                              BindingResult bindingResult, HttpServletRequest request) {
+                              BindingResult bindingResult, HttpServletRequest request)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.moveFieldUp(true);
         return getView(model, request, PageEditMode.EDIT, backingBean);
     }
@@ -209,7 +265,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "moveFieldDown")
     public String moveFieldDown(ModelMap model,
                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                                BindingResult bindingResult, HttpServletRequest request) {
+                                BindingResult bindingResult, HttpServletRequest request)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         backingBean.moveFieldUp(false);
         return getView(model, request, PageEditMode.EDIT, backingBean);
     }
@@ -219,7 +276,8 @@ public class ArchivedValuesExporterController {
                              ModelMap model,
                              HttpServletRequest request,
                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                             BindingResult bindingResult) {
+                             BindingResult bindingResult) throws ServletRequestBindingException,
+            DeviceCollectionCreationException {
         PageEditMode mode = PageEditMode.VIEW;
         exportFormatValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -242,17 +300,11 @@ public class ArchivedValuesExporterController {
     @RequestMapping(params = "deleteFormat")
     public String deleteFormat(ModelMap model,
                                HttpServletRequest request,
-                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) throws ServletException {
-        archiveValuesExportFormatDao.remove(backingBean.getFormat().getFormatId());
+                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+            throws ServletException {
+        archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
         backingBean.setSelectedFieldId(0);
         return view(model, request, backingBean);
-    }
-
-    @RequestMapping(params = "generateReport")
-    public String generateReport(ModelMap model,
-                                 HttpServletRequest request,
-                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
-        return getView(model, request, PageEditMode.VIEW, backingBean);
     }
 
     @InitBinder
@@ -269,52 +321,32 @@ public class ArchivedValuesExporterController {
         binder.registerCustomEditor(AttributeField.class, attributeFieldEditor);
     }
 
-    private void addDeviceCollectionAttribute(ModelMap model, HttpServletRequest request) {
-        try {
+    private void addDeviceCollectionAttribute(ModelMap model, HttpServletRequest request,
+                                              ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
+
+        if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
             DeviceCollection deviceCollection =
                 this.deviceCollectionFactory.createDeviceCollection(request);
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             model.addAttribute("deviceCollection", deviceCollection);
-
-        } catch (Exception e) {
-
+            backingBean.setDeviceCollection(deviceCollection);
         }
+
     }
 
     private String getView(ModelMap model, HttpServletRequest request, PageEditMode mode,
-                           ArchivedValuesExporterBackingBean backingBean) {
+                           ArchivedValuesExporterBackingBean backingBean)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
         model.addAttribute("mode", mode);
         model.addAttribute("backingBean", backingBean);
-        addDeviceCollectionAttribute(model, request);
+        addDeviceCollectionAttribute(model, request, backingBean);
         if (mode.equals(PageEditMode.VIEW)) {
             backingBean.setAllFormats(archiveValuesExportFormatDao.getAllFormats());
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            backingBean.setEndDate(sdf.format(new Date()));
         }
         return "archivedValuesExporter/exporter.jsp";
-    }
-
-    @Autowired
-    public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
-        this.deviceCollectionFactory = deviceCollectionFactory;
-    }
-
-    @Autowired
-    public void setArchiveValuesExportFormatDao(ArchiveValuesExportFormatDao archiveValuesExportFormatDao) {
-        this.archiveValuesExportFormatDao = archiveValuesExportFormatDao;
-    }
-
-    @Autowired
-    public void setExportFormatValidator(ExportFormatValidator exportFormatValidator) {
-        this.exportFormatValidator = exportFormatValidator;
-    }
-
-    @Autowired
-    public void setExportAttributeValidator(ExportAttributeValidator exportAttributeValidator) {
-        this.exportAttributeValidator = exportAttributeValidator;
-    }
-
-    @Autowired
-    public void setExportFieldValidator(ExportFieldValidator exportFieldValidator) {
-        this.exportFieldValidator = exportFieldValidator;
     }
 
     private static List<String> getRoundModes() {
@@ -328,15 +360,70 @@ public class ArchivedValuesExporterController {
         }
         return roundingModeStrs;
     }
-    
-    private ExportFormat getFirstFormat(List<ExportFormat> formats){
+
+    private ExportFormat getFirstFormat(List<ExportFormat> formats) {
         ExportFormat format = null;
         if (!formats.isEmpty()) {
             int formatId = formats.get(0).getFormatId();
             format = archiveValuesExportFormatDao.getByFormatId(formatId);
-        }else{
+        } else {
             format = new ExportFormat();
         }
-        return format;   
+        return format;
+    }
+
+    // I am still working on the report generation
+    @RequestMapping(params = "generateReport")
+    public String generateReport(ModelMap model,
+                                 HttpServletResponse response,
+                                 HttpServletRequest request,
+                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
+                                 BindingResult bindingResult)
+            throws ParseException, IOException, ServletRequestBindingException,
+            DeviceCollectionCreationException {
+        String view = getView(model, request, PageEditMode.VIEW, backingBean);
+        exportReportValidator.validate(backingBean, bindingResult);
+        if (!bindingResult.hasErrors()) {
+            DeviceCollection deviceCollection =
+                deviceCollectionFactory.createDeviceCollection(request);
+            List<SimpleDevice> deviceList = deviceCollection.getDeviceList();
+            List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
+            ExportFormat format =
+                archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
+            ExportReportGenarator reportGenarator = new ExportReportGenarator(meters, format);
+            List<String> report = reportGenarator.getReport();
+            String fileName = getFileName(backingBean.getEndDate(), format.getFormatName());
+            setupResponse(response, fileName);
+            createReportFile(response, report);
+            view = "";
+        }
+        return view;
+    }
+
+    private String getFileName(String endDate, String formatName) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        Date date = sdf.parse(endDate);
+        SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
+        String fileNameDateFormatString = fileNameDateFormat.format(date);
+        String fileName =
+            ServletUtil.makeWindowsSafeFileName(formatName + fileNameDateFormatString) + ".txt";
+        return fileName;
+    }
+
+    private void setupResponse(HttpServletResponse response, String fileName) {
+        response.setDateHeader("Expires", 0); // prevents caching at the proxy server
+        response.setContentType("text/x-comma-separated-values");
+        response.addHeader("Content-Disposition", "attachment;filename=" + fileName.toString());
+    }
+
+    private void createReportFile(HttpServletResponse response, List<String> report)
+            throws IOException {
+        OutputStream outputStream = response.getOutputStream();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        for (String row : report) {
+            writer.write(row);
+            writer.newLine();
+        }
+        writer.close();
     }
 }

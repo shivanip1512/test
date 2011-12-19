@@ -23,16 +23,15 @@ public class ExportFormatValidator extends SimpleValidator<ArchivedValuesExporte
 
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
-        ArchivedValuesExporterBackingBean archivedValuesExporterBackingBean = (ArchivedValuesExporterBackingBean)target;
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "format.formatName", formatNameRequired);
-        if (!errors.hasErrors() && archivedValuesExporterBackingBean.getFormat().getFormatId() == 0) {
-            ExportFormat format = archiveValuesExportFormatDao.getByFormatName(archivedValuesExporterBackingBean.getFormat().getFormatName());
+        if (!errors.hasErrors() && target.getFormat().getFormatId() == 0) {
+            ExportFormat format = archiveValuesExportFormatDao.getByFormatName(target.getFormat().getFormatName());
             if (format != null) {
                 errors.rejectValue("format.formatName", duplicateName);
             }
         }
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "format.delimiter", delimiterRequired);
-        if(archivedValuesExporterBackingBean.getFormat().getFields().isEmpty()){
+        if(target.getFormat().getFields().isEmpty()){
             errors.reject(fieldsRequired);
         }
     }

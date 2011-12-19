@@ -7,8 +7,8 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 public interface ArchiveValuesExportFieldDao {
     
     public List<ExportField> create(List<ExportField> fields) ;
-    
-    public boolean removeByFormatId(int formatId);
-    
+        
     public List<ExportField> getByFormatId(int formatId);
+
+    boolean deleteByFormatId(int formatId);
 }
