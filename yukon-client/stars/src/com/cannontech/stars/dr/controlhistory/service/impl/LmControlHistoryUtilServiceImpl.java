@@ -45,7 +45,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
 
         DateTime startDate = LMControlHistoryUtil.getPeriodStartTime( period, tz );
 
-        // Get database control history entries and build up the control history object fo the period.
+        // Get database control history entries and build up the control history object for the period.
         LiteStarsLMControlHistory liteCtrlHist = getControlHistory(loadGroupId, period, tz);
         StarsLMControlHistory starsCtrlHist = buildStarsControlHistoryForPeriod(liteCtrlHist, startDate, null, tz);
 
