@@ -159,37 +159,41 @@ bool DispatchPointDataRequest::isComplete()
     return _complete;
 }
 
+
+/*
+   A non-zero number of point IDs of a particular request type exist within the point request.
+*/
+bool DispatchPointDataRequest::hasRequestType(PointRequestType pointRequestType)
+{
+   PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
+
+   return itr != _requestTypeToPointId.end() && itr->second.size() > 0;
+}
+
+
 float DispatchPointDataRequest::ratioComplete(PointRequestType pointRequestType)
 {
-    PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
+   if ( hasRequestType(pointRequestType) )
+   {
+      PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
 
-    if (itr == _requestTypeToPointId.end())
-    {
-        return 0.0;
-    }
+      float total = static_cast<float>( itr->second.size() );
+      int   complete = 0;
 
-    int complete = 0;
-    int total = itr->second.size();
+      for each ( long pointId in itr->second )
+      {
+          if ( _values.find(pointId) != _values.end() )
+          {
+              ++complete;
+          }
+      }
 
-    if (total != 0)
-    {
-        for each (long pointId in itr->second)
-        {
-            PointValueMap::iterator valueItr = _values.find(pointId);
-            if (valueItr != _values.end())
-            {
-                ++complete;
-            }
-        }
+      return complete / total;
+   }
 
-        return complete/(float)total;
-    }
-    else //Avoiding a divide by zero.
-    {
-        return 0.0;
-    }
-
+   return 0.0;
 }
+
 
 PointValueMap DispatchPointDataRequest::getPointValues()
 {

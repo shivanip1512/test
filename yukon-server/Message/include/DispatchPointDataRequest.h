@@ -22,6 +22,7 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
 
         virtual bool watchPoints(const std::set<PointRequest>& points);
         virtual bool isComplete();
+        virtual bool hasRequestType(PointRequestType pointRequestType);
         virtual float ratioComplete(PointRequestType pointRequestType);
         virtual PointValueMap getPointValues();
         virtual PointValueMap getPointValues(PointRequestType pointRequestType);

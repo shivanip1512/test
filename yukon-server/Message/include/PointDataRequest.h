@@ -50,6 +50,7 @@ class IM_EX_MSG PointDataRequest
     public:
         virtual bool watchPoints(const std::set<PointRequest>& points)=0;
         virtual bool isComplete()=0;
+        virtual bool hasRequestType(PointRequestType pointRequestType)=0;
         virtual float ratioComplete(PointRequestType pointRequestType)=0;
         virtual PointValueMap getPointValues()=0;
         virtual PointValueMap getPointValues(PointRequestType pointRequestType)=0;

@@ -658,68 +658,82 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
 
     bool hasStaleData = false;
 
-    DataCheckResult result = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
+    DataCheckResult result;
 
-    if ( result.first != DataStatus_Good )
+    if ( request->hasRequestType( CbcRequestType ) )
     {
-        hasStaleData = true;
+       result = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
 
-        sendIVVCAnalysisMessage(
-            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                          ( result.first == DataStatus_Incomplete )
-                                                                ? IVVCAnalysisMessage::Scenario_CBCCommsIncomplete
-                                                                    : IVVCAnalysisMessage::Scenario_CBCCommsStale,
-                                                          timeNow,
-                                                          result.second * 100.0,
-                                                          _IVVC_BANKS_REPORTING_RATIO * 100.0 ) );
+       if ( result.first != DataStatus_Good )
+       {
+           hasStaleData = true;
+
+           sendIVVCAnalysisMessage(
+               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                             ( result.first == DataStatus_Incomplete )
+                                                                   ? IVVCAnalysisMessage::Scenario_CBCCommsIncomplete
+                                                                       : IVVCAnalysisMessage::Scenario_CBCCommsStale,
+                                                             timeNow,
+                                                             result.second * 100.0,
+                                                             _IVVC_BANKS_REPORTING_RATIO * 100.0 ) );
+       }
     }
 
-    result = checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
-
-    if ( result.first != DataStatus_Good )
+    if ( request->hasRequestType( RegulatorRequestType ) )
     {
-        hasStaleData = true;
+       result = checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
 
-        sendIVVCAnalysisMessage(
-            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                          ( result.first == DataStatus_Incomplete )
-                                                                ? IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete
-                                                                    : IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
-                                                          timeNow,
-                                                          result.second * 100.0,
-                                                          _IVVC_REGULATOR_REPORTING_RATIO * 100.0 ) );
+       if ( result.first != DataStatus_Good )
+       {
+           hasStaleData = true;
+
+           sendIVVCAnalysisMessage(
+               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                             ( result.first == DataStatus_Incomplete )
+                                                                   ? IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete
+                                                                       : IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
+                                                             timeNow,
+                                                             result.second * 100.0,
+                                                             _IVVC_REGULATOR_REPORTING_RATIO * 100.0 ) );
+       }
     }
 
-    result = checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
-
-    if ( result.first != DataStatus_Good )
+    if ( request->hasRequestType( OtherRequestType ) )
     {
-        hasStaleData = true;
+       result = checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
 
-        sendIVVCAnalysisMessage(
-            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                          ( result.first == DataStatus_Incomplete )
-                                                                ? IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete
-                                                                    : IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
-                                                          timeNow,
-                                                          result.second * 100.0,
-                                                          _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100.0 ) );
+       if ( result.first != DataStatus_Good )
+       {
+           hasStaleData = true;
+
+           sendIVVCAnalysisMessage(
+               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                             ( result.first == DataStatus_Incomplete )
+                                                                   ? IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete
+                                                                       : IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
+                                                             timeNow,
+                                                             result.second * 100.0,
+                                                             _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100.0 ) );
+       }
     }
 
-    result = checkForStaleData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
-
-    if ( result.first != DataStatus_Good )
+    if ( request->hasRequestType( BusPowerRequestType ) )
     {
-        hasStaleData = true;
+       result = checkForStaleData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
 
-        sendIVVCAnalysisMessage(
-            IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                          ( result.first == DataStatus_Incomplete )
-                                                                ? IVVCAnalysisMessage::Scenario_RequiredPointCommsIncomplete
-                                                                    : IVVCAnalysisMessage::Scenario_RequiredPointCommsStale,
-                                                          timeNow,
-                                                          result.second * 100.0,
-                                                          100.0 ) );
+       if ( result.first != DataStatus_Good )
+       {
+           hasStaleData = true;
+
+           sendIVVCAnalysisMessage(
+               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                             ( result.first == DataStatus_Incomplete )
+                                                                   ? IVVCAnalysisMessage::Scenario_RequiredPointCommsIncomplete
+                                                                       : IVVCAnalysisMessage::Scenario_RequiredPointCommsStale,
+                                                             timeNow,
+                                                             result.second * 100.0,
+                                                             100.0 ) );
+       }
     }
 
     return hasStaleData;
