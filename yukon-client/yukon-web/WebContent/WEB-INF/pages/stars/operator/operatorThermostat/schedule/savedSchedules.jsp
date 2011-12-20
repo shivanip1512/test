@@ -86,16 +86,18 @@ Event.observe(window, 'load', function(){
                         <%-- THERMOSTAT NAMES --%>
                         <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
                         <c:if test="${not empty currentSchedule}">
-                            <div class="paddedContainer">
-                                <tags:thermostatScheduleWidget schedule="${currentSchedule}"
-                                    thermostatId="${thermostatId}"
-                                    thermostatIds="${thermostatIds}"
-                                    accountId="${accountId}"
-                                    temperatureUnit="${temperatureUnit}"
-                                    actionPath="/spring/stars/operator/thermostatSchedule/save"
-                                    thermostatType="${thermostatType}"
-                                    styleClass="vh"/>
-                            </div>
+                        	<tags:sectionContainer2 nameKey="lastSent">
+	                            <div class="paddedContainer">
+	                                <tags:thermostatScheduleWidget schedule="${currentSchedule}"
+	                                    thermostatId="${thermostatId}"
+	                                    thermostatIds="${thermostatIds}"
+	                                    accountId="${accountId}"
+	                                    temperatureUnit="${temperatureUnit}"
+	                                    actionPath="/spring/stars/operator/thermostatSchedule/save"
+	                                    thermostatType="${thermostatType}"
+	                                    styleClass="vh"/>
+	                            </div>
+                            </tags:sectionContainer2>
                         </c:if>
                         <div class="box clear">
                             <div class="fr">

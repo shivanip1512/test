@@ -88,16 +88,18 @@ Event.observe(window, 'load', function(){
     <c:otherwise>
         <div class="schedules fl">
             <c:if test="${not empty currentSchedule}">
-                <div class="paddedContainer">
-                    <tags:thermostatScheduleWidget schedule="${currentSchedule}"
-                        thermostatId="${thermostatId}"
-                        thermostatIds="${thermostatIds}"
-                        accountId="${customerAccount.accountId}"
-                        temperatureUnit="${temperatureUnit}"
-                        actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
-                        thermostatType="${thermostatType}"
-                        styleClass="vh"/>
-                </div>
+	            <tags:sectionContainer2 nameKey="lastSent">
+	                <div class="paddedContainer">
+	                    <tags:thermostatScheduleWidget schedule="${currentSchedule}"
+	                        thermostatId="${thermostatId}"
+	                        thermostatIds="${thermostatIds}"
+	                        accountId="${customerAccount.accountId}"
+	                        temperatureUnit="${temperatureUnit}"
+	                        actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
+	                        thermostatType="${thermostatType}"
+	                        styleClass="vh"/>
+	                </div>
+                </tags:sectionContainer2>
             </c:if>
             <div class="box clear">
                 <div class="fr">
