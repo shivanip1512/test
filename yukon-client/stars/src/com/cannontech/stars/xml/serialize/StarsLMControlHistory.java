@@ -7,8 +7,6 @@ import java.util.Vector;
 
 public class StarsLMControlHistory {
 
-
-
     private boolean _beingControlled;
 
     /**
@@ -20,13 +18,10 @@ public class StarsLMControlHistory {
 
     private ControlSummary _controlSummary;
 
-
-
     public StarsLMControlHistory() {
         super();
         _controlHistoryList = new Vector<ControlHistoryEntry>();
     }
-
 
     public void addControlHistory(ControlHistoryEntry vControlHistory)
         throws java.lang.IndexOutOfBoundsException
