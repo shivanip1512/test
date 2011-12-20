@@ -276,7 +276,7 @@
     <entry key="yukon.web.modules.consumer.savedSchedules.modeHint">Select the which days of the week you want specific control over your Thermostat.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.title">Saved Schedules</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.lastSent">This is the last Schedule sent to your Thermostat.</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.lastSent.title">My Current Schedule</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.lastSent.title">Last Schedule Sent</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.otherSchedules.title">Other Schedules</entry>
     
     <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (defaultThermostatSchedule.jsp - DefaultThermostatScheduleController.java:()) -->
