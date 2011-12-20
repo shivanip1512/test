@@ -63,8 +63,6 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         return lastControlHistoryEvent;
     }
 
-    
-    
     public StarsLMControlHistory getEventsByGroup(final int customerAccountId,  int lmGroupId, int inventoryId,
                                                   final ControlPeriod period, final YukonUserContext yukonUserContext, boolean past) {
 
