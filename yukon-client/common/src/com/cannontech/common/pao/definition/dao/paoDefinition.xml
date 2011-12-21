@@ -6952,6 +6952,7 @@
         <displayName>CAP BANK</displayName>
         <points>
             <point type="Status" offset="1">
+                <init>true</init>
                 <name>BANK STATUS</name>
                 <stategroup value="CapBankStatus"/>
             </point>
