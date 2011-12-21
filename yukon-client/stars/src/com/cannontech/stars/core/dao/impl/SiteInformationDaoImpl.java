@@ -23,16 +23,24 @@ import com.cannontech.stars.core.dao.SiteInformationDao;
 
 public class SiteInformationDaoImpl implements SiteInformationDao, InitializingBean {
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private SimpleTableAccessTemplate<LiteSiteInformation> siteInfoTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+
     private static String TABLE_NAME = "SiteInformation";
     private static final ParameterizedRowMapper<LiteSiteInformation> rowMapper;
+    private SimpleTableAccessTemplate<LiteSiteInformation> siteInfoTemplate;
     
     static {
         rowMapper = SiteInformationDaoImpl.createRowMapper();
     }
-    
+
+    public void afterPropertiesSet() throws Exception {
+        siteInfoTemplate = new SimpleTableAccessTemplate<LiteSiteInformation>(yukonJdbcTemplate, nextValueHelper);
+        siteInfoTemplate.setTableName(TABLE_NAME);
+        siteInfoTemplate.setPrimaryKeyField("SiteId");
+        siteInfoTemplate.setFieldMapper(siteInfoFieldMapper); 
+    }
+
     private FieldMapper<LiteSiteInformation> siteInfoFieldMapper = new FieldMapper<LiteSiteInformation>() {
 
         @Override
@@ -117,8 +125,11 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     @Override
     @Transactional
     public void delete(LiteSiteInformation liteSiteInformation) {
-        // TODO Auto-generated method stub
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM SiteInformation");
+        sql.append("WHERE SiteId").eq(liteSiteInformation.getSiteID());
 
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
@@ -136,24 +147,4 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     public void update(LiteSiteInformation liteSiteInformation) {
         siteInfoTemplate.update(liteSiteInformation);
     }
-    
-    // DI Setters
-    @Autowired
-    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(final NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    public void afterPropertiesSet() throws Exception {
-        siteInfoTemplate = 
-            new SimpleTableAccessTemplate<LiteSiteInformation>(yukonJdbcTemplate, nextValueHelper);
-        siteInfoTemplate.setTableName(TABLE_NAME);
-        siteInfoTemplate.setPrimaryKeyField("SiteId");
-        siteInfoTemplate.setFieldMapper(siteInfoFieldMapper); 
-    }
-
 }

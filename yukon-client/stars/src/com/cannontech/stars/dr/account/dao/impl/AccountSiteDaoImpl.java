@@ -7,12 +7,13 @@ import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
@@ -20,9 +21,10 @@ import com.cannontech.stars.dr.account.model.AccountSite;
 public class AccountSiteDaoImpl implements AccountSiteDao {
     private static final String selectSql;
     private static final ParameterizedRowMapper<AccountSite> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    private NextValueHelper nextValueHelper;
-    private AddressDao addressDao;
+    
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private AddressDao addressDao;
     
     static {
         
@@ -47,7 +49,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
             siteNumber = "";
         }
         
-        int rows = simpleJdbcTemplate.update(sql, accountSiteId,
+        int rows = yukonJdbcTemplate.update(sql, accountSiteId,
                                                   accountSite.getSiteInformationId(),
                                                   SqlUtils.convertStringToDbValue(siteNumber),
                                                   accountSite.getStreetAddressId(),
@@ -65,7 +67,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         
         String sql = "UPDATE AccountSite SET SiteInformationID = ?, SiteNumber = ?, StreetAddressID = ?, PropertyNotes = ?, CustomerStatus = ?, CustAtHome = ? WHERE AccountSiteID = ?";
         
-        int rows = simpleJdbcTemplate.update(sql, accountSite.getSiteInformationId(),
+        int rows = yukonJdbcTemplate.update(sql, accountSite.getSiteInformationId(),
         										  SqlUtils.convertStringToDbValue(accountSite.getSiteNumber()),
                                                   accountSite.getStreetAddressId(),
                                                   SqlUtils.convertStringToDbValue(accountSite.getPropertyNotes()),
@@ -82,13 +84,18 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
     public boolean remove(final AccountSite accountSite) {
         validateNotNull(accountSite);
         
-        String deleteCustomerResidence = "DELETE FROM CustomerResidence WHERE AccountSiteId = ?";
-        simpleJdbcTemplate.update(deleteCustomerResidence, accountSite.getAccountSiteId());
-        String sql = "DELETE FROM AccountSite WHERE AccountSiteID = ?";
-        int rows = simpleJdbcTemplate.update(sql, accountSite.getAccountSiteId());
+        SqlStatementBuilder deleteCustomerResidence = new SqlStatementBuilder();
+        deleteCustomerResidence.append("DELETE FROM CustomerResidence");
+        deleteCustomerResidence.append("WHERE AccountSiteId").eq(accountSite.getAccountSiteId());
+        yukonJdbcTemplate.update(deleteCustomerResidence);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM AccountSite");
+        sql.append("WHERE AccountSiteId").eq(accountSite.getAccountSiteId());
+        int rows = yukonJdbcTemplate.update(sql);
+        
         addressDao.remove(accountSite.getStreetAddressId());
-        String deleteSiteInfo = "DELETE FROM SiteInformation WHERE SiteId = ?";
-        simpleJdbcTemplate.update(deleteSiteInfo, accountSite.getSiteInformationId());
+
         boolean result = (rows == 1);
         return result;
     }
@@ -97,7 +104,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public AccountSite getByAccountSiteId(int accountSiteId) {
         String sql = selectSql + " WHERE AccountSiteID = ?";
-        AccountSite accountSite = simpleJdbcTemplate.queryForObject(sql, rowMapper, accountSiteId);
+        AccountSite accountSite = yukonJdbcTemplate.queryForObject(sql, rowMapper, accountSiteId);
         return accountSite;
     }
 
@@ -105,14 +112,14 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public AccountSite getByAddressId(int addressId) {
         String sql = selectSql + " WHERE StreetAddressID = ?";
-        AccountSite accountSite = simpleJdbcTemplate.queryForObject(sql, rowMapper, addressId);
+        AccountSite accountSite = yukonJdbcTemplate.queryForObject(sql, rowMapper, addressId);
         return accountSite;
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<AccountSite> getAll() {
-        List<AccountSite> list = simpleJdbcTemplate.query(selectSql, rowMapper);
+        List<AccountSite> list = yukonJdbcTemplate.query(selectSql, rowMapper);
         return list;
     }
     
@@ -137,20 +144,4 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         };
         return mapper;
     }
-
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-
 }
