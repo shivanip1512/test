@@ -61,24 +61,48 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                 controlHistoryEventDao.toEventList(holder.programId, starsLMControlHistory, userContext);
             controlHistory.setCurrentHistory(controlHistoryEventList);
             
-            if (inventory != null) {
-                controlHistory.setInventory(inventory);
-                controlHistory.setDisplayName(inventoryBaseDao.getDisplayName(inventory));
-            }
-
             ControlHistorySummary programControlHistorySummary = new ControlHistorySummary(starsLMControlHistory);
             controlHistory.setProgramControlHistorySummary(programControlHistorySummary);
             
-            ControlHistorySummary controlHistorySummary = controlHistorySummaryService.getControlSummary(accountId, holder.inventoryId, holder.groupId, userContext, past);
+            ControlHistorySummary controlHistorySummary = 
+                controlHistorySummaryService.getControlSummary(accountId, holder.inventoryId, holder.groupId, userContext, past);
             controlHistory.setControlHistorySummary(controlHistorySummary);
 
-            ControlHistoryEvent lastControlHistoryEvent = controlHistoryEventDao.getLastControlHistoryEntry(accountId, holder.programId, holder.inventoryId, userContext, past);
+            ControlHistoryEvent lastControlHistoryEvent = 
+                controlHistoryEventDao.getLastControlHistoryEntry(accountId, holder.programId, holder.inventoryId, userContext, past);
             controlHistory.setLastControlHistoryEvent(lastControlHistoryEvent);
 
             ControlHistoryStatus controlHistoryStatus = getCurrentControlStatus(holder, lastControlHistoryEvent, userContext, past);
             controlHistory.setCurrentStatus(controlHistoryStatus);
             
-            programControlHistoryMultimap.put(holder.programId, controlHistory);
+            Boolean noControlHistoryForTheProgram = true;
+            if (inventory != null) {
+                // Set the display name
+                controlHistory.setInventory(inventory);
+                controlHistory.setDisplayName(inventoryBaseDao.getDisplayName(inventory));
+
+                /* Consolidate the control for a given piece of inventory if its been controlled 
+                 * through multiple enrollments.  This fixes duplication issues that appeared through
+                 * changing the load group on a given enrollment or un-enrolling and re-enrolling multiple times.
+                 */
+                List<ControlHistory> currentProgramControlHistory = programControlHistoryMultimap.get(holder.programId);
+                for (ControlHistory currentControlHistory : currentProgramControlHistory) {
+                    if (inventory.equals(currentControlHistory.getInventory())) {
+                        currentControlHistory.getCurrentHistory().addAll(controlHistory.getCurrentHistory());
+                        
+                        ControlHistorySummary updateControlHistorySummary = 
+                                controlHistorySummaryService.getControlSummary(currentControlHistory.getCurrentHistory(), userContext);
+                        currentControlHistory.setControlHistorySummary(updateControlHistorySummary);
+
+                        noControlHistoryForTheProgram = false;
+                    }
+                }
+            }
+            
+            // Control
+            if (noControlHistoryForTheProgram) {
+                programControlHistoryMultimap.put(holder.programId, controlHistory);
+            }
         }
 
         return programControlHistoryMultimap;

@@ -1,7 +1,11 @@
 package com.cannontech.stars.dr.controlhistory.model;
 
+import java.util.Comparator;
+
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+
+import com.google.common.collect.Ordering;
 
 public class ControlHistoryEvent {
     private Instant startDate;
@@ -9,10 +13,6 @@ public class ControlHistoryEvent {
     private Duration duration;
     private boolean controlling;
     private String gears;
-    
-    public ControlHistoryEvent() {
-        
-    }
 
     public Instant getStartDate() {
         return startDate;
@@ -52,6 +52,14 @@ public class ControlHistoryEvent {
         this.gears = gears;
     }
 
+    public static Comparator<ControlHistoryEvent> getStartDateComparator() {
+        return new Ordering<ControlHistoryEvent>() {
+            @Override
+            public int compare(ControlHistoryEvent che1, ControlHistoryEvent che2) {
+                return che1.getStartDate().compareTo(che2.getStartDate());
+            }};
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -90,5 +98,4 @@ public class ControlHistoryEvent {
             return false;
         return true;
     }
-
 }

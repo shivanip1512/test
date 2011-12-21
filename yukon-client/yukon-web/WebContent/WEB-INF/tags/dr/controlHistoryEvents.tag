@@ -1,4 +1,4 @@
-<%@ attribute name="controlHistoryEventList" required="true" type="java.util.List"%>
+<%@ attribute name="controlHistoryEventList" required="true" type="java.util.Set"%>
 <%@ attribute name="showControlSummary" required="true" type="java.lang.Boolean"%>
 <%@ attribute name="consumer" required="false" type="java.lang.Boolean"%>
 

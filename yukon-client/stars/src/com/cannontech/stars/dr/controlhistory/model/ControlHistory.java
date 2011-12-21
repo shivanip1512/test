@@ -1,8 +1,10 @@
 package com.cannontech.stars.dr.controlhistory.model;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.SortedSet;
 
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
+import com.google.common.collect.Sets;
 
 public class ControlHistory {
     private String displayName;
@@ -11,16 +13,11 @@ public class ControlHistory {
     private ControlHistorySummary controlHistorySummary;
     private ControlHistorySummary programControlHistorySummary;
     private ControlHistoryEvent lastControlHistoryEvent;
-    private List<ControlHistoryEvent> currentHistory;
-    
-    public ControlHistory() {
-        
-    }
+    private SortedSet<ControlHistoryEvent> currentHistory;
     
     public InventoryBase getInventory() {
         return inventory;
     }
-    
     public void setInventory(InventoryBase inventory) {
         this.inventory = inventory;
     }
@@ -28,7 +25,6 @@ public class ControlHistory {
     public ControlHistoryStatus getCurrentStatus() {
         return currentStatus;
     }
-    
     public void setCurrentStatus(ControlHistoryStatus currentStatus) {
         this.currentStatus = currentStatus;
     }
@@ -36,7 +32,6 @@ public class ControlHistory {
     public String getDisplayName() {
         return displayName;
     }
-
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
@@ -44,7 +39,6 @@ public class ControlHistory {
     public ControlHistorySummary getControlHistorySummary() {
         return controlHistorySummary;
     }
-
     public void setControlHistorySummary(ControlHistorySummary controlHistorySummary) {
         this.controlHistorySummary = controlHistorySummary;
     }
@@ -53,7 +47,6 @@ public class ControlHistory {
     public ControlHistorySummary getProgramControlHistorySummary() {
         return programControlHistorySummary;
     }
-
     public void setProgramControlHistorySummary(ControlHistorySummary programControlHistorySummary) {
         this.programControlHistorySummary = programControlHistorySummary;
     }
@@ -61,17 +54,16 @@ public class ControlHistory {
     public ControlHistoryEvent getLastControlHistoryEvent() {
         return lastControlHistoryEvent;
     }
-    
     public void setLastControlHistoryEvent(ControlHistoryEvent lastControlHistoryEvent) {
         this.lastControlHistoryEvent = lastControlHistoryEvent;
     }
     
-    public List<ControlHistoryEvent> getCurrentHistory() {
+    public SortedSet<ControlHistoryEvent> getCurrentHistory() {
         return currentHistory;
     }
-
-    public void setCurrentHistory(List<ControlHistoryEvent> currentHistory) {
-        this.currentHistory = currentHistory;
+    public void setCurrentHistory(Collection<ControlHistoryEvent> controlHistoryEvents) {
+        this.currentHistory = Sets.newTreeSet(ControlHistoryEvent.getStartDateComparator());
+        this.currentHistory.addAll(controlHistoryEvents);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.displayable.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -15,8 +14,8 @@ import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
-import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory.DisplayableControlHistoryType;
+import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -123,11 +122,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         for (final Program program : programList) {
             Integer programId = program.getProgramId();
 
-            List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(controlHistoryMap.get(programId));
-            if (controlHistoryList == null) {
-                controlHistoryList = Collections.emptyList();
-            }
-
+            List<ControlHistory> controlHistoryList = Lists.newArrayList(controlHistoryMap.get(programId));
             DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, controlPeriod, applyFilters, past);
             if (displayableProgram != null) { 
                 displayableProgramList.add(displayableProgram);
