@@ -8,53 +8,52 @@
 <cti:msgScope paths="modules.capcontrol.comments">
 
 <script type="text/javascript">
-$('executeCommand').observe('click', function(event) {
+jQuery("#executeCommand").click(function(event) {
     hideMenu();
-    doItemCommand('${paoId}', '${commandId}', event, $F('commentTextArea'), 'true');
+    doItemCommand('${paoId}', '${commandId}', event, jQuery('#commentTextArea').val(), 'true');
+});
+jQuery("#reasonSelect").change(function(event) {
+	jQuery('#commentTextArea').val(this.options[this.selectedIndex].value);
 });
 </script>
 
 <c:set var="maxCommentLength" value="40"/>
 
-<div id="menuPopupBoxContainer" class="thinBorder">
-    <div class="titledContainer boxContainer">
-    
-        <div class="titleBar boxContainer_titleBar">
-            <div class="controls" onclick="$('menuPopup').hide()">
-                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
-            </div>
-            <div class="title boxContainer_title">${reasonTitle}</div>
-        </div>
-        
-        <div class="content boxContainer_content">
-        
-        <div class="commandReason">
-            <div><i:inline key=".enterComment"/></div>
-            <div>
-                <textarea id="commentTextArea" style="width:100%;"></textarea>
-            </div>
-            <div>
-                <select onchange="$('commentTextArea').value = this.options[this.selectedIndex].value;">
-                    <option><i:inline key=".previousComment"/></option>
-                    <c:forEach var="comment" items="${comments}">
-                        <c:choose>
-                            <c:when test="${fn:length(comment) > maxCommentLength}">
-                                <c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}"/>
-                                <c:set var="formattedComment" value="${subString}..."/>   
-                            </c:when>
-                            <c:otherwise>
-                                <c:set var="formattedComment" value="${comment}"/>
-                            </c:otherwise>
-                        </c:choose>
-                        <option value="${formattedComment}"><spring:escapeBody htmlEscape="true">${formattedComment}</spring:escapeBody></option>
-                    </c:forEach>
-                </select>
-            </div>
-            <div class="actionArea">
-                <cti:button nameKey="submit" id="executeCommand"/>
-            </div>
-        </div>
-        
-    </div>
+<div id="menuPopupBoxContainer">
+	<input type="hidden" id="dialogTitle" value="${reasonTitle}">
+	<input type="hidden" id="isFinished" value="${finished}">
+
+	<div class="content boxContainer_content">
+
+		<div class="commandReason">
+			<div><i:inline key=".enterComment"/></div>
+			<div>
+				<textarea id="commentTextArea" rows="3" class="dialogReason"></textarea>
+			</div>
+			<div>
+				<select id="reasonSelect">
+					<option><i:inline key=".previousComment"/></option>
+					<c:forEach var="comment" items="${comments}">
+						<c:choose>
+							<c:when test="${fn:length(comment) > maxCommentLength}">
+								<c:set var="subString"
+									value="${fn:substring(comment, 0, (maxCommentLength - 3))}"/>
+								<c:set var="formattedComment" value="${subString}..."/>
+							</c:when>
+							<c:otherwise>
+								<c:set var="formattedComment" value="${comment}"/>
+							</c:otherwise>
+						</c:choose>
+						<option value="${formattedComment}">
+							<spring:escapeBody htmlEscape="true">${formattedComment}</spring:escapeBody>
+						</option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="actionArea">
+				<cti:button nameKey="submit" id="executeCommand"/>
+			</div>
+		</div>
+	</div>
 </div>
 </cti:msgScope>

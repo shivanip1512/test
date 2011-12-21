@@ -14,23 +14,16 @@
         <cti:param name="bankId" value="${paoId}"/>
         <cti:param name="assignHere" value="false"/>
     </cti:url>
-    
-    <div id="menuPopupBoxContainer" class="thinBorder">
-        <div class="titledContainer boxContainer">
-        
-            <div class="titleBar boxContainer_titleBar">
-                <div class="controls" onclick="$('menuPopup').hide()">
-                    <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
-                </div>
-                <div class="title boxContainer_title">${title}</div>
-            </div>
-            
-            <div class="content boxContainer_content">
-                <ul class="capcontrolMenu">
-                    <li class="menuOption f_blocker" onclick="window.location='${assignUrl}'">${assignLabel}</li>
-                    <li class="menuOption f_blocker" onclick="window.location='${returnUrl}'">${returnLabel}</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+
+	<div id="menuPopupBoxContainer">
+		<input type="hidden" id="dialogTitle" value="${title}">
+		<div class="content boxContainer_content">
+			<ul class="capcontrolMenu">
+				<li class="menuOption f_blocker"
+					onclick="window.location='${assignUrl}'">${assignLabel}</li>
+				<li class="menuOption f_blocker"
+					onclick="window.location='${returnUrl}'">${returnLabel}</li>
+			</ul>
+		</div>
+	</div>
 </cti:msgScope>

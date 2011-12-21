@@ -1,107 +1,99 @@
-YEvent.observeSelectorClick('li.menuOption.command', function(event) {
+jQuery(document).delegate("li.menuOption.command", "click", function(event) {
     hideMenu();
     var doCommand = true;
-    var menuOption = event.findElement('li');
-    var ul = menuOption.up('ul');
-    if ($F(ul.down("input[name='warnOnCommands']")) === 'true') {
-        var confirmMessage = menuOption.down('span.confirmMessage').innerHTML;
-        doCommand = confirm(confirmMessage);
+    var ul = jQuery(event.currentTarget).closest("ul");
+    if (ul.find("input[name='warnOnCommands']").val() === 'true') {
+        doCommand = confirm(menuOption.find('span.confirmMessage').html());
     }
     
     if (doCommand) {
-        doItemCommand($F(ul.down("input[name='paoId']")), menuOption.value, event);
+        doItemCommand(ul.find("input[name='paoId']").val(), jQuery(event.currentTarget).val(), event);
     }
 });
 
-YEvent.observeSelectorClick('li.menuOption.stateChange', function(event) {
+jQuery(document).delegate("li.menuOption.stateChange", "click", function(event) {
     hideMenu();
-    doChangeState($F(event.findElement('ul').down("input[name='paoId']")), event.findElement().value);
+    doChangeState(jQuery(event.currentTarget).closest("ul").find("input[name='paoId']").val(), jQuery(event.currentTarget).val());
 });
 
 function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
-    var url = '/spring/capcontrol/command/itemCommand';
-    var mouseX = event.pointerX();
-    var mouseY = event.pointerY();
     var parameters = {'itemId': itemId, 'commandId': commandId};
-    
     if (reason) parameters.reason =  reason;
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
-    new Ajax.Updater('menuPopup', url, {
-        'evalScripts' : true,
-        'method' : 'POST',
-        'parameters' : parameters,
-        'onSuccess' : function(response) {
-            var html = response.responseText;
-            var json = response.headerJSON;
-            if (json.finished === true) {
-                showMessage(html);
+    jQuery.ajax({
+        url: '/spring/capcontrol/command/itemCommand',
+        type: "POST",
+        data: parameters,
+        dataType: "html",
+        success: function(data) {
+            jQuery("#menuPopup").html(data);
+
+            if (jQuery("#menuPopup #isFinished").val() === "true") {
+                showMessage(data);
             } else {
-                showMenuPopup(mouseX, mouseY);
+                showMenuPopup({position: "center", modal: true});
             }
         }
     });
 }
 
 function doSystemCommand(commandId) {
-    var url = '/spring/capcontrol/command/system';
-    new Ajax.Request(url, {
-        'method' : 'POST',
-        'parameters' : {'commandId' : commandId},
-        'onSuccess' : function(response) {
-            showMessage(response.responseText);
+    jQuery.ajax({
+        url: '/spring/capcontrol/command/system',
+		type: 'POST',
+        data: {'commandId' : commandId},
+        success: function(response) {
+        	showMessage(response);
         }
     });
 }
 
 function doChangeState(itemId, stateId) {
-    var url = '/spring/capcontrol/command/manualStateChange';
-    new Ajax.Request(url, {
-        'method' : 'POST',
-        'parameters' : {'bankId' : itemId, 'rawStateId' : stateId},
-        'onSuccess' : function(response) {
-            showMessage(response.responseText);
+    jQuery.ajax({
+        url: '/spring/capcontrol/command/manualStateChange',
+		type: 'POST',
+        data: {'bankId' : itemId, 'rawStateId' : stateId},
+        success: function(response) {
+        	showMessage(response);
         }
     });
 }
 
 function doResetBankOpCount(itemId, newOpCount) {
     hideMenu();
-    var url = '/spring/capcontrol/command/resetBankOpCount';
-    new Ajax.Request(url, {
-        'method' : 'POST',
-        'parameters' : {'bankId' : itemId, 'newOpCount' : newOpCount},
-        'onSuccess' : function(response) {
-            showMessage(response.responseText);
+    jQuery.ajax({
+        url: '/spring/capcontrol/command/resetBankOpCount',
+        type: 'POST',
+        data: {'bankId' : itemId, 'newOpCount' : newOpCount},
+        success: function(response) {
+        	showMessage(response);
         }
     });
 }
 
 function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
     hideMenu();
-    var url = '/spring/capcontrol/command/changeOpState';
-    
     parameters = {'bankId': bankId, 'opState': stateId, 'reason': reason};
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
-    new Ajax.Request(url, {
-        'method' : 'POST',
-        'parameters' : parameters,
-        'onSuccess' : function(response) {
-            showMessage(response.responseText);
+    jQuery.ajax({
+        url: '/spring/capcontrol/command/changeOpState',
+        type: 'POST',
+        data: parameters,
+        success: function(response) {
+        	showMessage(response);
         }
     });
 }
 
 function addCommandMenuBehavior(selector) {
-    YEvent.observeSelectorClick(selector, function (event) {
-        var anchor = event.findElement('a');
-        var itemId = anchor.id.split('_')[1];
-        getCommandMenu(itemId, event);
+	jQuery(document).delegate(selector, "click", function (event) {
+        getCommandMenu(jQuery(event.currentTarget).closest("a")[0].id.split('_')[1], event);
     });
-    Event.observe(window, 'load', function() {
-        $$(selector).each(function(anchor) {
-            anchor.addClassName('actsAsAnchor');
+	jQuery(document).ready(function() {
+        jQuery(selector).each(function() {
+        	jQuery(this).addClass('actsAsAnchor');
         });
     });
 }

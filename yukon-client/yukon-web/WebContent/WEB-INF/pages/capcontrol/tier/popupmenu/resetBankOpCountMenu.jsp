@@ -6,16 +6,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.menu">
-    <div id="menuPopupBoxContainer" class="thinBorder">
-    <div class="titledContainer boxContainer">
-    
-        <div class="titleBar boxContainer_titleBar">
-            <div class="controls" onclick="$('menuPopup').hide()">
-                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
-            </div>
-            <div class="title boxContainer_title">${title}</div>
-        </div>
-        
+    <div id="menuPopupBoxContainer">
+		<input type="hidden" id="dialogTitle" value="${title}">        
         <div class="content boxContainer_content">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".resetOpCountTo">

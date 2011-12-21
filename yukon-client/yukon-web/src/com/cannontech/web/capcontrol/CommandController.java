@@ -6,8 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +145,7 @@ public class CommandController {
             List<String> comments = capControlCommentService.getLastTenCommentsForActionAndType(itemId, commandId);
             model.addAttribute("comments", comments);
             
-            setJsonHeader(response, false);
+            model.addAttribute("finished", false);
             return "tier/popupmenu/reasonMenu.jsp";
         } else {
             /* SEND COMMAND AND RETURN STATUS */
@@ -451,7 +449,7 @@ public class CommandController {
             model.addAttribute("success", false);
             model.addAttribute("message", accessor.getMessage("yukon.web.modules.capcontrol.oneline.tagMenuCommandFailed"));
         }
-        setJsonHeader(response, true);
+        model.addAttribute("finished", true);
         return "tier/popupmenu/statusMessage.jsp";
     }
 
@@ -508,13 +506,6 @@ public class CommandController {
         return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success); 
     }
     
-    /* HELPERS */
-    private void setJsonHeader(HttpServletResponse response, boolean finished) {
-        JSONObject json = new JSONObject();
-        json.put("finished", finished);
-        response.addHeader("X-JSON", json.toString());
-    }
-    
     private String sendNotAuthorizedResponse(HttpServletResponse response, 
                                              MessageSourceAccessor accessor, 
                                              ModelMap model, 
@@ -522,9 +513,9 @@ public class CommandController {
                                              CommandType type) {
         
         String commandName = accessor.getMessage(type);
-        setJsonHeader(response, true);
         String notAuthorized = accessor.getMessage("yukon.web.modules.capcontrol.command.notAuthorized", user.getUsername(), commandName);
         model.addAttribute("success", false);
+        model.addAttribute("finished", true);
         model.addAttribute("message", notAuthorized);
         return "tier/popupmenu/statusMessage.jsp";
     }
@@ -551,7 +542,7 @@ public class CommandController {
         model.addAttribute("success", success);
         model.addAttribute("message", message);
         
-        setJsonHeader(response, true);
+        model.addAttribute("finished", true);
         return "tier/popupmenu/statusMessage.jsp";
     }
     

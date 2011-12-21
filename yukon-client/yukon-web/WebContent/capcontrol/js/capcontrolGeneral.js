@@ -1,15 +1,16 @@
 function checkPageExpire() {
-    var paoIds = Object.toJSON($$("input[id^='paoId_']").pluck('value'));
-    var url = '/spring/capcontrol/pageExpire';
+	var paoIds = [];
+	jQuery("input[id^='paoId_']").each(function() {
+		paoIds.push(jQuery(this).val());
+	});
     
-    new Ajax.Request(url, {
-        'method': 'POST',
-        'parameters' : {'paoIds': paoIds},
-        onSuccess: function(transport) {
-            var html = transport.responseText;
-            var expired = eval(html);
+    jQuery.ajax({
+        url: "/spring/capcontrol/pageExpire",
+        data: {"paoIds": paoIds},
+        success: function(data) {
+            var expired = eval(data);
             if (expired) {
-                $('updatedWarning').show();    
+                jQuery("#updatedWarning").show();
                 return;    
             }
             setTimeout(checkPageExpire, 15000);
@@ -18,8 +19,7 @@ function checkPageExpire() {
 }
 
 function getCommandMenu(id, event) {
-    var url = '/spring/capcontrol/menu/commandMenu?id=' + id;
-    getMenuFromURL(url, event);
+    getMenuFromURL('/spring/capcontrol/menu/commandMenu?id=' + id, event);
 }
 
 function showDialog(title, url) {
@@ -27,91 +27,70 @@ function showDialog(title, url) {
 }
 
 function getMovedBankMenu(id, event) {
-    var url = '/spring/capcontrol/menu/movedBankMenu?id=' + id;
-    getMenuFromURL(url, event);
+    getMenuFromURL('/spring/capcontrol/menu/movedBankMenu?id=' + id, event);
 }
 
-function getMenuFromURL(url, event, up, left) {
+function getMenuFromURL(url, event, params) {
 	/*
 	 *  In IE the event does not pass through the ajax request
 	 *  so the attributes of the event need to be set and passed
 	 *  as variables.
 	 */
-	var x = event.pointerX();
-    var y = event.pointerY();
-    new Ajax.Updater('menuPopup', url, {
-        'evalScripts' : true,
-        'method' : 'POST',
-        'onComplete' : function() {
-            showMenuPopup(x, y, up, left);
+    
+    if (typeof(params) != 'undefined') {
+    	if (!("position" in params)) {
+    		params.position = [event.clientX, event.clientY];
+    	}
+    	if (!("modal" in params)) {
+    		params.modal = false;
+    	}
+    } else {
+    	params = {position: [event.clientX, event.clientY], modal: false};
+    }
+    
+    jQuery.ajax({
+        url: url,
+        complete: function(data) {
+        	jQuery("#menuPopup").html(data.responseText);
+        	showMenuPopup(params);
         }
     });
 }
 
-function showMenuPopup(x, y, up, left) {
-    if (!up) {
-        up = false;
-    }
-    if (!left) {
-        left = false;
-    }
-    
-    var menu = $('menuPopup');
-    var dimensions = menu.getDimensions();
-    
-    menu.show();
-    if (up == true) {
-        if (willMenuFitAbove(y, dimensions.height)) {
-            y = y - dimensions.eight;
-        }
-    } else {
-        if (!willMenuFitBelow(y, dimensions.height)) {
-            y = y - dimensions.height;
-        }
-    }
-    if (left == true) {
-        x = x - dimensions.width;
-    }
-    menu.setStyle({top: y + "px", left: x + "px"});
+function showMenuPopup(params) {
+    jQuery("#menuPopup").dialog({
+        resizable: false,
+        closeOnEscape: true,
+        width: "auto",
+        modal: params["modal"],
+        title: jQuery("#menuPopup input[id='dialogTitle']").val(),
+        position: params["position"]
+    });
 }
 
-function willMenuFitAbove(yClick, menuHeight) {
-    if (yClick < menuHeight) {
-        return false;
-    }
-    return true;
-}
-
-function willMenuFitBelow(yClick, menuHeight) {
-    if ((yClick + menuHeight) > document.documentElement.clientHeight) {
-        return false;
-    }
-    return true;
-}
-
-YEvent.observeSelectorClick('div.dynamicTableWrapper .pointAddItem', function(event) {
+jQuery(document).delegate("div.dynamicTableWrapper .pointAddItem", "click", function(event) {
     pointPicker.show();
 });
-YEvent.observeSelectorClick('div.dynamicTableWrapper .bankAddItem', function(event) {
+jQuery(document).delegate("div.dynamicTableWrapper .bankAddItem", "click", function(event) {
     bankPicker.show();
 });
 
 function hideMenu() {
-	$('menuPopup').hide();
+	jQuery('#menuPopup').dialog("close");
 }
 
 function hideContentPopup() {
-	$('contentPopup').hide();
+	jQuery('#contentPopup').hide();
 }
 
 function checkAll(allCheckBox, selector) {
-    $$(selector).each(function(item) {
+    jQuery(selector).each(function(item) {
         item.checked = allCheckBox.checked;
     });
 }
 
 function expandRow(itemId, imgId) {
-    var img = $(imgId);
+    var img = jQuery("#" + imgId)[0];
     var expand = false;
     if (img.src.indexOf('nav-minus.gif') > 0) {
         img.src='/capcontrol/images/nav-plus.gif';
@@ -119,19 +98,12 @@ function expandRow(itemId, imgId) {
         img.src = '/capcontrol/images/nav-minus.gif';
         expand = true;
     }
-    
-    $(itemId).select('tr').each(function(row) {
-        if (expand) {
-            row.show();
-        } else {
-            row.hide();
-        }
-    });
-}
 
-function statusMsg(elem, message) {
-    elem.onmouseout = function (e) {nd()};
-    overlib(message, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover');
+    if (expand) {
+    	jQuery("#" + itemId + " tr").show();
+    } else {
+    	jQuery("#" + itemId + " tr").hide();
+    }
 }
 
 function statusMsgAbove(elem, message) {
@@ -140,53 +112,44 @@ function statusMsgAbove(elem, message) {
 }
 
 function showDynamicPopup(containerId, popupWidth) {
-    overlib($(containerId).innerHTML, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover');
+    overlib(jQuery("#" + containerId).html(), WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover');
 }
 
 function showDynamicPopupAbove(containerId, popupWidth) {
-    overlib($(containerId).innerHTML, ABOVE, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover');
+    overlib(jQuery("#" + containerId).html(), ABOVE, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover');
 }
 
 function addLockButtonForButtonGroup (groupId, secs) {
-    Event.observe(window, 'load', function() {
-        var button_group = $(groupId);
-        var buttons = button_group.getElementsByTagName("input");
-        
+	jQuery(document).ready(function() {
+        var buttons = jQuery("#" + groupId + " input");
+
         for (var i=0; i<buttons.length; i++) {
-            var button_el =  buttons.item(i);
-            lock_buttons(button_el.id);
+            lock_buttons(buttons[i].id);
         }
     });
     
     if (secs != null) {
-        pause (secs * 1000);
+        pause(secs * 1000);
     }
 }
 
 function lock_buttons(el_id) {
-    var button_el = $(el_id);
-    var parent_el = $(button_el.parentNode.id);
-    var button_els = parent_el.getElementsByTagName("input");
-    Event.observe(button_el, 'click', function () {
-        for (var i=0; i < button_els.length; i++) {
-            var current_button = $(button_els.item(i).id);
-            if (current_button.id != el_id) {
-                current_button.disabled = true;
-            } else {    
-                setTimeout("$('" + el_id + "').disabled=true;", 1);
-            }
-        }
-    });
+	//el_id comes in looking like this: "editorForm:hdr_submit_button_1"
+	jQuery("[id='" + el_id + "']").click(function() {
+		jQuery("input.stdButton").each(function() {
+			if (this.id != el_id) {
+				this.disabled = true;
+			} else {
+				setTimeout("jQuery(\"[id='" + el_id + "']\")[0].disabled=true;", 1);
+			}
+		});
+	});
 }
 
 function lockButtonsPerSubmit (groupId) {
-    var button_group = $(groupId);
-    var buttons = button_group.getElementsByTagName("input");
-
-    for (var i=0; i<buttons.length; i++) {
-        var button_el =  buttons.item(i);
-        button_el.disabled = true;
-    }
+    jQuery("#" + groupId + " input").each(function() {
+    	this.disabled = true;
+    });
 }
 
 function pause(numberMillis) {
@@ -213,26 +176,26 @@ function showAlertMessageForAction(action, item, result, success) {
 }
 
 function showAlertMessage(message, success) {
-    var contents = $('alertMessageContents');
+    var contents = jQuery('#alertMessageContents');
     
     if (success) {
-        contents.addClassName('successMessage');
-        contents.removeClassName('errorMessage');
+        contents.addClass('successMessage');
+        contents.removeClass('errorMessage');
     } else {
-        contents.removeClassName('successMessage');
-        contents.addClassName('errorMessage');
+        contents.removeClass('successMessage');
+        contents.addClass('errorMessage');
     }
-    contents.innerHTML = message;
-    $('alertMessageContainer').show();
+    contents.html(message);
+    jQuery('#alertMessageContainer').show();
     setTimeout ('hideAlertMessage()', success ? 3000 : 8000);
 }
 
 function showMessage(message) {
-    $('alertMessageContents').innerHTML = message;
-    $('alertMessageContainer').show();
+    jQuery('#alertMessageContents').html(message);
+    jQuery('#alertMessageContainer').show();
     setTimeout ('hideAlertMessage()', 3000);
 }
 
 function hideAlertMessage() {
-    new Effect.Fade('alertMessageContainer', {duration: 3.0});
+	jQuery('#alertMessageContainer').hide("fade", {}, 3000);
 }

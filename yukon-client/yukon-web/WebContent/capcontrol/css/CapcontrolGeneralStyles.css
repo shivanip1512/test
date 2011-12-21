@@ -152,10 +152,8 @@ span.ivvcTargetLabel {
     text-align: center;
 }
 
-div.menuPopup {
-    position: absolute;
-    z-index: 1000;
-    overflow: hidden;
+div.menuPopup textarea.dialogReason {
+	width: 99%; /* so it grows with the resizing of the jquery dialog */
 }
 
 table.checkBoxList td.first,
