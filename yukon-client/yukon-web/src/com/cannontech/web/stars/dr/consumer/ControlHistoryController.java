@@ -37,7 +37,8 @@ public class ControlHistoryController extends AbstractConsumerController {
         List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
         
-        ListMultimap<Integer, ControlHistory> controlHistoryMap = controlHistoryDao.getControlHistory(customerAccount.getAccountId(), userContext, ControlPeriod.PAST_DAY, false);
+        ListMultimap<Integer, ControlHistory> controlHistoryMap = 
+                controlHistoryDao.getControlHistory(customerAccount.getAccountId(), userContext, ControlPeriod.PAST_DAY, false);
 
         programEnrollmentService.removeNonEnrolledPrograms(programList, controlHistoryMap);
 
