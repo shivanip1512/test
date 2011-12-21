@@ -735,13 +735,31 @@ Yukon.ThermostatManualEditor = {
     },
 
     temperatureUp: function(event) {
-        Yukon.ThermostatManualEditor.thermostat.stepUp();
-        Yukon.ThermostatManualEditor.render();
+        var _self = Yukon.ThermostatManualEditor;
+        switch(_self.thermostat.mode){
+        case 'EMERGENCY_HEAT':
+        case 'HEAT':
+        case 'COOL':
+            _self.thermostat.stepUp();
+            _self.render();
+            return true;
+        default:
+            return false;
+        }
     },
     
     temperatureDown: function(event) {
-        Yukon.ThermostatManualEditor.thermostat.stepDown();
-        Yukon.ThermostatManualEditor.render();
+        var _self = Yukon.ThermostatManualEditor;
+        switch(_self.thermostat.mode){
+        case 'EMERGENCY_HEAT':
+        case 'HEAT':
+        case 'COOL':
+            _self.thermostat.stepDown();
+            _self.render();
+            return true;
+        default:
+            return false;
+        }
     },
     
     render: function(){
