@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -38,25 +39,24 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         int programId;
     }
     
-    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, YukonUserContext userContext, boolean past){
-        List<LoadGroup> loadGroupList = loadGroupDao.getByStarsProgramId(programId);
-       
-        ControlHistoryEvent lastControlHistoryEvent = null;
-        for (LoadGroup loadGroup : loadGroupList) {
-            StarsLMControlHistory starsLMControlHistory = getEventsByGroup(accountId, loadGroup.getLoadGroupId(), inventoryId, ControlPeriod.ALL, userContext, past);
-            
-            Holder holder = new Holder();
-            holder.accountId = accountId;
-            holder.inventoryId = inventoryId;
-            holder.programId = programId;
-            holder.groupId = loadGroup.getLoadGroupId();
+    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId,
+                                                          int loadGroupId, int inventoryId,
+                                                          YukonUserContext userContext, boolean past) {
+        LoadGroup loadGroup;
+        try {
+            loadGroup = loadGroupDao.getById(loadGroupId);
+        } catch (NotFoundException e) {
+            // The load group has been deleted, there isn't much we can do.
+            return null;
+        }
 
-            List<ControlHistoryEvent> controlHistoryEventList = toEventList(programId, starsLMControlHistory, userContext);
-            for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
-                if (lastControlHistoryEvent == null ||
-                    controlHistoryEvent.getEndDate().isAfter(lastControlHistoryEvent.getEndDate())) {
-                    lastControlHistoryEvent = controlHistoryEvent;
-                }
+        ControlHistoryEvent lastControlHistoryEvent = null;
+        StarsLMControlHistory starsLMControlHistory = getEventsByGroup(accountId, loadGroup.getLoadGroupId(), inventoryId, ControlPeriod.ALL, userContext, past);
+        List<ControlHistoryEvent> controlHistoryEventList = toEventList(programId, starsLMControlHistory, userContext);
+        for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
+            if (lastControlHistoryEvent == null ||
+                controlHistoryEvent.getEndDate().isAfter(lastControlHistoryEvent.getEndDate())) {
+                lastControlHistoryEvent = controlHistoryEvent;
             }
         }
  

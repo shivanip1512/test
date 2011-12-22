@@ -68,8 +68,10 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                 controlHistorySummaryService.getControlSummary(accountId, holder.inventoryId, holder.groupId, userContext, past);
             controlHistory.setControlHistorySummary(controlHistorySummary);
 
-            ControlHistoryEvent lastControlHistoryEvent = 
-                controlHistoryEventDao.getLastControlHistoryEntry(accountId, holder.programId, holder.inventoryId, userContext, past);
+            ControlHistoryEvent lastControlHistoryEvent =
+                controlHistoryEventDao.getLastControlHistoryEntry(accountId, holder.programId,
+                                                                  holder.groupId, holder.inventoryId,
+                                                                  userContext, past);
             controlHistory.setLastControlHistoryEvent(lastControlHistoryEvent);
 
             ControlHistoryStatus controlHistoryStatus = getCurrentControlStatus(holder, lastControlHistoryEvent, userContext, past);

@@ -25,8 +25,9 @@ public interface ControlHistoryEventDao {
      * actual account.
      * 
      */
-    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, 
-                                                           YukonUserContext userContext, boolean past);
+    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId,
+                                                          int loadGroupId, int inventoryId,
+                                                          YukonUserContext userContext, boolean past);
     
     /**
      * This method takes in an old stars control history object and generates the
