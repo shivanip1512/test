@@ -1390,7 +1390,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         
         String defaultDataFileName = 
             databaseName + "_" + schemaUsername + "_" + exportType.getName() + "_" + currentDate + ".xml";
-
+        
+        // Replace invalid fileaname characters with "_".
+        // Invalid characters can appear in databaseName when instance explicitly called out (Ex: PSPL-123456\SQLEXPRESS
+        defaultDataFileName = defaultDataFileName.replace("\\", "_");
+        
         File file = null;
         try {
             file = new File(exportFilePath + defaultDataFileName);

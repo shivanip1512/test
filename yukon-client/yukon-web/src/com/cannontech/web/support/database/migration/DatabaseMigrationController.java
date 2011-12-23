@@ -199,11 +199,10 @@ public class DatabaseMigrationController {
                     InputStream inputStream = dataFile.getInputStream();
                     if (inputStream.available() <= 0) {
                     	loadError = messageSourceAccessor.getMessage(errorPrefix + ".emptyFile");
+                    } else {	// No loadErrors so far, get importFile
+                    	importFile = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename() + "_", "");
                     }
                 }
-
-                importFile = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename() + "_", "");
-
             } catch (IOException e) {
             	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
             }
