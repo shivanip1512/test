@@ -37,7 +37,7 @@ YEvent.observeSelectorClick('button.loginButton', function(event) {
                                 <td class="buttonColumn">
                                     <c:if test="${canManageMembers && company.parent != null}">
                                         <c:set var="parentLoginId" value="${parentLogins[company.energyCompanyId]}"/>
-                                        <c:if test="${not empty parentLoginId}">
+                                        <c:if test="${not empty parentLoginId && parentLoginId != loggedInUserId}">
                                             <cti:button nameKey="login" styleClass="loginButton" name="${parentLoginId}"/>
                                         </c:if>
                                     </c:if>

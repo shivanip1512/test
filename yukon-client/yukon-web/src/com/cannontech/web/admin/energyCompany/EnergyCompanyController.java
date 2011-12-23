@@ -203,6 +203,7 @@ public class EnergyCompanyController {
         modelMap.addAttribute("companies", companies);
         modelMap.addAttribute("parentLogins", getParentLogins(companies));
         modelMap.addAttribute("canManageMembers", energyCompanyService.canManageMembers(user));
+        modelMap.addAttribute("loggedInUserId", user.getUserID());
     }
     
     private Map<Integer, Integer> getParentLogins(Iterable<YukonEnergyCompany> companies) {
