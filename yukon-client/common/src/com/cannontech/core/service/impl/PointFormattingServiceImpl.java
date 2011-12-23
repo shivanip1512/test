@@ -29,6 +29,7 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
@@ -99,29 +100,32 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 }
                 
                 //State
-                LiteState liteState = stateDao.getLiteState(litePoint.getStateGroupID(),(int)data.getValue());
-                
-                if (liteState != null) {
-                    state = liteState.getStateText();
-                
-                    stateColor = Colors.getColor(liteState.getFgColor());
-                
-                    /* Use custom colors for red and green.
-                     * Should be the same as the errorRed and okGreen styles in YukonGeneralStyles.css 
-                     * YUK-9652 will solve this problem, at which point this can be reverted. */
-                    if (stateColor == Color.green) {
-                        stateColor = new Color(0,102, 51); //#006633
-                    } else if (stateColor == Color.red) {
-                        stateColor = new Color(204, 0, 0); //#CC0000
-                    }
+                // Only load state information for points that have a state group other than SystemState
+                // This may end up excluding something that is intentionally trying to use SystemState group
+                // However, it is expected that this stategroup is truly not being utilized for actual state information
+                // Excluding this group allows us to have a little more control over calls to stateDao (YUK-10270)
+                if (litePoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
+	                LiteState liteState = stateDao.getLiteState(litePoint.getStateGroupID(),(int)data.getValue());
+	                
+	                if (liteState != null) {
+	                    value = liteState.getStateText();
+	                    valueStr = liteState.getStateText();
+	
+	                	state = liteState.getStateText();
+	                    stateColor = Colors.getColor(liteState.getFgColor());
+	                
+	                    /* Use custom colors for red and green.
+	                     * Should be the same as the errorRed and okGreen styles in YukonGeneralStyles.css 
+	                     * YUK-9652 will solve this problem, at which point this can be reverted. */
+	                    if (stateColor == Color.green) {
+	                        stateColor = new Color(0,102, 51); //#006633
+	                    } else if (stateColor == Color.red) {
+	                        stateColor = new Color(204, 0, 0); //#CC0000
+	                    }
+	                }
                 }
                     
-                if (statusPoint) {
-                    
-                    value = liteState.getStateText();
-                    valueStr = liteState.getStateText();
-                    
-                } else {
+                if (!statusPoint) {
                     value = data.getValue();
                     if (templateProcessor.contains(format, "unit") || templateProcessor.contains(format, "default")) {
                         // point unit
