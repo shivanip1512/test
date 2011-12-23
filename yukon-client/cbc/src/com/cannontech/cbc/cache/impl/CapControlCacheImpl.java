@@ -455,7 +455,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * @return LiteState
      */
     public LiteState getCapBankState( int rawState ) {
-        return stateDao.getLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
+        return stateDao.findLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
     }
     
     /**

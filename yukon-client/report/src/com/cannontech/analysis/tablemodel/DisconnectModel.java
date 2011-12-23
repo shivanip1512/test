@@ -267,7 +267,7 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
     {
         LitePoint litePoint = (YukonSpringHook.getBean("pointDao", PointDao.class)).getLitePoint(pointID);
         int stateGroupId = litePoint.getStateGroupID();
-        LiteState liteState = (YukonSpringHook.getBean("stateDao", StateDao.class)).getLiteState(stateGroupId, (int) value);
+        LiteState liteState = (YukonSpringHook.getBean("stateDao", StateDao.class)).findLiteState(stateGroupId, (int) value);
         return liteState.getStateText();
     }
 

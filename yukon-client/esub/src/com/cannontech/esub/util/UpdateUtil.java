@@ -54,7 +54,7 @@ public class UpdateUtil {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
             
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
                         if( ls != null ) {          
                             text += ls.getStateRawState();
                             prev = true;
@@ -244,7 +244,7 @@ public class UpdateUtil {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
                     
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
                         if( ls != null ) {
                             text += ls.getStateText();
                             prev = true;
@@ -267,7 +267,7 @@ public class UpdateUtil {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
                     
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
                         if( ls != null ) {
                             text += ls.getStateRawState();
                             prev = true;
@@ -310,7 +310,7 @@ public class UpdateUtil {
             LiteYukonImage img;
             if (lp.getPointType() == PointTypes.STATUS_POINT)
             {
-        		LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
+        		LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue());
         		img = DaoFactory.getYukonImageDao().getLiteYukonImage(ls.getImageID());
             }else 
             {

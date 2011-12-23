@@ -633,7 +633,7 @@ public class PaoDefinitionDaoImplTest {
 
     private class MockStateDao implements StateDao {
 
-        public LiteState getLiteState(int stateGroupID, int rawState) {
+        public LiteState findLiteState(int stateGroupID, int rawState) {
             return null;
         }
 

@@ -71,7 +71,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
             PointValueHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
             int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.getLiteState(stateGroupId, (int) pointValue.getValue());
+            LiteState liteState = stateDao.findLiteState(stateGroupId, (int) pointValue.getValue());
             mav.addObject("state", getDisconnectedState(liteState.getStateRawState()));
             
             LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
@@ -245,7 +245,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             
             PointValueHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
             int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.getLiteState(stateGroupId, (int) pointValue.getValue());
+            LiteState liteState = stateDao.findLiteState(stateGroupId, (int) pointValue.getValue());
             
             stateValue = (double)liteState.getStateRawState();
         }

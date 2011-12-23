@@ -107,7 +107,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String uofm = "";
                 if (point.getPointType() == PointTypes.STATUS_POINT) {
                     // handle as status
-                    LiteState liteState = DaoFactory.getStateDao().getLiteState(point.getStateGroupID(), (int)msg.value);
+                    LiteState liteState = DaoFactory.getStateDao().findLiteState(point.getStateGroupID(), (int)msg.value);
                     notif.addData("value", liteState.getStateText());
                 } else {
                     // handle as analog

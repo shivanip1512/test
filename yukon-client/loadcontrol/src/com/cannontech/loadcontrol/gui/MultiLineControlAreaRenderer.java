@@ -211,8 +211,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			
 				if( trigger.getTriggerType() == TriggerType.STATUS )
 				{
-					LiteState lsVal = DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
-					LiteState lsThresh = DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
+					LiteState lsVal = DaoFactory.getStateDao().findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
+					LiteState lsThresh = DaoFactory.getStateDao().findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
 					
 					strBuf.append(
 						(lsVal == null ? "(Unknown State)" : lsVal.getStateText()) +

@@ -33,7 +33,7 @@ public java.lang.String getCurrentValue()
 		//Returns the current value of the point
 		if( getLitePoint().getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		{
-			currentValue = DaoFactory.getStateDao().getLiteState(
+			currentValue = DaoFactory.getStateDao().findLiteState(
 					 			getLitePoint().getStateGroupID(), getTrigger().getPointValue().intValue() ).getStateText();
 		}
 		else
@@ -73,7 +73,7 @@ public java.lang.String getTriggerValue()
 		//Returns the value of the trigger
 		if( getTrigger().getTriggerType() == TriggerType.STATUS )
 		{
-			triggerValue = DaoFactory.getStateDao().getLiteState( getLitePoint().getStateGroupID(), 
+			triggerValue = DaoFactory.getStateDao().findLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
 		else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD ||

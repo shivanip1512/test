@@ -122,8 +122,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
                 String val2 = data2.getOperationalState();
                 return (val1.compareToIgnoreCase(val2));
             }else if ( ORDER_TYPE_STRINGS[3].equals(getOrderBy()) ) {
-                String val1 = DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
-                String val2 = DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
+                String val1 = DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
+                String val2 = DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
                 return (val1.compareToIgnoreCase(val2));
             }else {
                 Date date1 = data1.getChangeDateTime();
@@ -340,7 +340,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 					return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
 					
 				case CONTROL_STATUS_COLUMN:
-					return DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 
 				case LAST_STATUS_CHANGE_TIME_COLUMN:
 					return ccStatData.getChangeDateTime();

@@ -324,7 +324,7 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 				case STATUS_VALUE_COLUMN:
 					if( ccStatData.getEventType().intValue() == 4)//4 is for OpCount
 						return new String("OpCount: " + ccStatData.getControlStatus().toString());
-					return DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 					
 				case EVENT_TEXT_COLUMN:
 					return ccStatData.getEventText();

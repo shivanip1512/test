@@ -60,7 +60,7 @@ public class DynamicLineElement extends LineElement implements OnelineLxElement 
         try {
             int state = -1;
             state = dynamicState.getLiteStateId(o, state);
-            ls = DaoFactory.getStateDao().getLiteState(group.getStateGroupID(),
+            ls = DaoFactory.getStateDao().findLiteState(group.getStateGroupID(),
                                                        state);
 
         } catch (Exception e) {

@@ -164,7 +164,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentColorState(ls);
                             le.updateColor();
@@ -202,7 +202,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteThicknessPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteThicknessPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteThicknessPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentThicknessState(ls);
                             le.updateThickness();
@@ -240,7 +240,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteArrowPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteArrowPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteArrowPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentArrowState(ls);
                             le.updateArrow();
@@ -277,7 +277,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteOpacityPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteOpacityPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteOpacityPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentOpacityState(ls);
                             le.updateOpacity();
@@ -423,7 +423,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             } else {
                 PointValueHolder pData = dynamicDataSource.getPointValue(lp.getLiteID());
                 if (pData != null) {
-                    LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
+                    LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue());
                     if (ls != null) {
                         si.setCurrentState(ls);
                         si.updateImage();
@@ -475,7 +475,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             dt.setCurrentColorState(ls);
                             dt.updateColor();
@@ -511,7 +511,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao()
-                            .getLiteState(liteTextPoint.getStateGroupID(),
+                            .findLiteState(liteTextPoint.getStateGroupID(),
                                           (int) pData.getValue());
                         if (ls != null) {
                             dt.setCurrentTextState(ls);

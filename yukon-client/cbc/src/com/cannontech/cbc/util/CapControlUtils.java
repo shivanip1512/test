@@ -757,7 +757,7 @@ public final class CapControlUtils {
      * @return The LiteState corresponding to this raw state or null;
      */
     public static LiteState getCapBankState(int rawState) {
-        return stateDao.getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
+        return stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
     }
     
     /**

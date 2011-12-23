@@ -41,7 +41,7 @@ public class AlarmUtils
 				else
 				{
 					//must be a state in the status point, (very fragile!!)
-					LiteState ls = DaoFactory.getStateDao().getLiteState( 
+					LiteState ls = DaoFactory.getStateDao().findLiteState( 
 						DaoFactory.getPointDao().getLitePoint(ptID_).getStateGroupID(),
 						conditionID_ - IAlarmDefs.STATUS_ALARM_STATES.length );
 						

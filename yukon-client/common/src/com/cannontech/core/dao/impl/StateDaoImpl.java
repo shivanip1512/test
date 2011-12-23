@@ -13,12 +13,6 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/26/2001 9:46:50 AM)
- * @author: 
- */
-
 public final class StateDaoImpl implements StateDao {
     private IDatabaseCache databaseCache;
 
@@ -26,7 +20,8 @@ public final class StateDaoImpl implements StateDao {
 
     }
 
-    public LiteState getLiteState(int stateGroupID, int rawState) {
+    @Override
+    public LiteState findLiteState(int stateGroupID, int rawState) {
         LiteStateGroup stateGroup = getLiteStateGroup( stateGroupID );
 
         List<LiteState> stateList = stateGroup.getStatesList();
@@ -41,6 +36,7 @@ public final class StateDaoImpl implements StateDao {
         return null;
     }
 
+    @Override
     public LiteStateGroup getLiteStateGroup(int stateGroupID) {
         synchronized (databaseCache) {
             LiteStateGroup liteStateGroup = databaseCache.getAllStateGroupMap().get(stateGroupID);
@@ -48,6 +44,7 @@ public final class StateDaoImpl implements StateDao {
         }
     }
 
+    @Override
     public LiteStateGroup getLiteStateGroup(String stateGroupName) {
         synchronized (databaseCache) {
             Map<Integer,LiteStateGroup> allStateGroupMap = databaseCache.getAllStateGroupMap();
@@ -61,6 +58,7 @@ public final class StateDaoImpl implements StateDao {
         throw new NotFoundException("State group '" + stateGroupName + "' doesn't exist");
     }
 
+    @Override
     public LiteState[] getLiteStates(int stateGroupID) {
         LiteStateGroup lsg = null;
         lsg = getLiteStateGroup(stateGroupID);
@@ -70,6 +68,7 @@ public final class StateDaoImpl implements StateDao {
         return ls;
     }
 
+    @Override
     public LiteStateGroup[] getAllStateGroups() {
         LiteStateGroup[] stateGroups = null;
 

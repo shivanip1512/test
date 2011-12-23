@@ -1255,7 +1255,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		litePAO = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 	
 		//set the states for the row
-		liteState = DaoFactory.getStateDao().getLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
+		liteState = DaoFactory.getStateDao().findLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
 	
 		if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
 		{

@@ -66,11 +66,11 @@ public class PointServiceImpl implements PointService
                     }
                 }
             }
-            LiteState ls = stateDao.getLiteState(lp.getStateGroupID(), highestPriorityCondition + 1);
+            LiteState ls = stateDao.findLiteState(lp.getStateGroupID(), highestPriorityCondition + 1);
             return ls;
         }else 
         {
-            LiteState ls = stateDao.getLiteState(lp.getStateGroupID(), 0);
+            LiteState ls = stateDao.findLiteState(lp.getStateGroupID(), 0);
             return ls;
         }
     }

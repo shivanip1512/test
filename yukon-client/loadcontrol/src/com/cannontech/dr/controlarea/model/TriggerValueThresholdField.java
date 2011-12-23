@@ -64,7 +64,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
         if (trigger.getTriggerType() == TriggerType.STATUS) {
-            LiteState state = stateDao.getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
+            LiteState state = stateDao.findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
             result = (state == null ? "(Unknown State)" : state.getStateText());
         }
         return result;
@@ -74,7 +74,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
         if (trigger.getTriggerType() == TriggerType.STATUS) {
-            LiteState state = stateDao.getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
+            LiteState state = stateDao.findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
             result = (state == null ? "(Unknown State)" : state.getStateText());
         }   
         return result;

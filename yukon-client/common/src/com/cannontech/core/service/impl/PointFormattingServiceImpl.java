@@ -105,7 +105,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 // However, it is expected that this stategroup is truly not being utilized for actual state information
                 // Excluding this group allows us to have a little more control over calls to stateDao (YUK-10270)
                 if (litePoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
-	                LiteState liteState = stateDao.getLiteState(litePoint.getStateGroupID(),(int)data.getValue());
+	                LiteState liteState = stateDao.findLiteState(litePoint.getStateGroupID(),(int)data.getValue());
 	                
 	                if (liteState != null) {
 	                    value = liteState.getStateText();

@@ -38,7 +38,7 @@ public class SubDynamicImage extends StateImage implements OnelineLxElement {
         int state = -1;
         state = dynamicState.getLiteStateId(subBusMsg, state);
 
-        ls = DaoFactory.getStateDao().getLiteState(group.getStateGroupID(),
+        ls = DaoFactory.getStateDao().findLiteState(group.getStateGroupID(),
                                                    state);
 
         if (ls != null) {
