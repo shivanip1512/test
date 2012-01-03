@@ -6557,6 +6557,16 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
            }
        }
     }
+    else
+    {
+        //Error Case.
+        if (!verificationFlag)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Feeder not found PAO Id: " << oldFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        return false;
+    }
 
     newFeederPtr = store->findFeederByPAObjectID(newFeederId);
     if (newFeederPtr != NULL)
@@ -6580,15 +6590,27 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
            }
        }
     }
+    else
+    {
+        //Error Case.
+        if (!verificationFlag)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Feeder not found PAO Id: " << newFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+
+        return false;
+    }
 
     movedCapBankPtr = store->findCapBankByPAObjectID(movedCapBankId);
     if (movedCapBankPtr!=NULL && !verificationFlag)
     {
+        //Remove the bank from the old feeder
         {
             CtiCCCapBank_SVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
 
             CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
-            while( itr != oldFeederCapBanks.end() )
+            while (itr != oldFeederCapBanks.end())
             {
                 if (*itr == movedCapBankPtr) {
                     itr = oldFeederCapBanks.erase( itr );
@@ -6599,7 +6621,8 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId);
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId);
 
-            if( !permanentFlag )
+            //If permanent, set to 0 since there is no need to preserve the original orders
+            if (!permanentFlag)
             {
                 movedCapBankPtr->getOriginalParent().setOriginalParentId(oldFeederPtr->getPaoId());
                 movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder(movedCapBankPtr->getControlOrder());
@@ -6619,6 +6642,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
             movedCapBankPtr->setDirty(true);
         }
 
+        //Add the bank to the new feeder.
         {
             CtiCCCapBank_SVector& newFeederCapBanks = newFeederPtr->getCCCapBanks();
 
@@ -6626,9 +6650,8 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
             movedCapBankPtr->setCloseOrder(closeOrder);
             movedCapBankPtr->setTripOrder(tripOrder);
 
-
-
-            if( permanentFlag )
+            //If permanent, reorder the banks to get rid of any '.' values.
+            if (permanentFlag)
             {
                 for (CtiCCCapBank_SVector::iterator itr = newFeederCapBanks.begin(); itr != newFeederCapBanks.end(); itr++)
                 {
@@ -6639,17 +6662,13 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
                     }
                 }
 
-                newFeederCapBanks.push_back(movedCapBankPtr);
-
                 //reorder new feeder.
-                newFeederPtr->checkForAndReorderFeeder();
+                newFeederPtr->orderBanksOnFeeder();
                 //reorder old feeder
-                oldFeederPtr->checkForAndReorderFeeder();
+                oldFeederPtr->orderBanksOnFeeder();
             }
-            else
-            {
-                newFeederCapBanks.push_back(movedCapBankPtr);
-            }
+
+            newFeederCapBanks.push_back(movedCapBankPtr);
 
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
             long subBusId = store->findSubBusIDbyFeederID(newFeederId);
@@ -6703,16 +6722,6 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
     {
         if (!verificationFlag)
         {
-            if( oldFeederPtr==NULL )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Feeder not found PAO Id: " << oldFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-            if( newFeederPtr==NULL )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Feeder not found PAO Id: " << newFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
             if( movedCapBankPtr==NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);

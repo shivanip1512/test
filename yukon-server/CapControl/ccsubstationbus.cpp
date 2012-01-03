@@ -10010,7 +10010,7 @@ string CtiCCSubstationBus::getVerificationString()
             text += " All";
             break;
         }
-        case CapControlCommand::VERIFY_FQ_BANK:
+        case CapControlCommand::VERIFY_FAILED_QUESTIONABLE_BANK:
         {
             text += " Failed and Questionable";
             break;
@@ -10020,7 +10020,7 @@ string CtiCCSubstationBus::getVerificationString()
             text += " Failed";
             break;
         }
-        case CapControlCommand::VERIFY_Q_BANK:
+        case CapControlCommand::VERIFY_QUESTIONABLE_BANK:
         {
             text += " Questionable";
             break;
@@ -10029,7 +10029,7 @@ string CtiCCSubstationBus::getVerificationString()
         {
             break;
         }
-        case CapControlCommand::VERIFY_SA_BANK:
+        case CapControlCommand::VERIFY_STAND_ALONE_BANK:
         {
             text += " Standalone";
             break;

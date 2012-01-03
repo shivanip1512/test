@@ -165,8 +165,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCCapBank_SVector& getCCCapBanks();
     std::list<int> getAllCapBankIds();
-    std::vector<CtiCCCapBankPtr> getAllCapBanks();    
-	std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
+    std::vector<CtiCCCapBankPtr> getAllCapBanks();
+        std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
     void deleteCCCapBank(long capBankId);
 
     CtiCCFeeder& setParentId(LONG parentId);
@@ -278,7 +278,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                                    BOOL dailyMaxOpsHitFlag);
     BOOL checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    void checkForAndReorderFeeder();
+    void orderBanksOnFeeder();
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
     BOOL isControlPoint(LONG pointid);

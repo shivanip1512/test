@@ -75,11 +75,11 @@ class CapControlCommand : public CtiMessage
             MANUAL_ENTRY,//55
 
             VERIFY_ALL_BANK,//56
-            VERIFY_FQ_BANK,//57
+            VERIFY_FAILED_QUESTIONABLE_BANK,//57
             VERIFY_FAILED_BANK,//58
-            VERIFY_Q_BANK,//59
+            VERIFY_QUESTIONABLE_BANK,//59
             VERIFY_INACTIVE_BANKS,//60
-            VERIFY_SA_BANK,//61
+            VERIFY_STAND_ALONE_BANK,//61
             STOP_VERIFICATION,//62
             EMERGENCY_STOP_VERIFICATION,//63
 

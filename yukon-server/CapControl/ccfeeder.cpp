@@ -2452,7 +2452,7 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
     }
 }
 
-void CtiCCFeeder::checkForAndReorderFeeder()
+void CtiCCFeeder::orderBanksOnFeeder()
 {
     CtiCCCapBank_SVector displayCaps;
     CtiCCCapBank_SCloseVector closeCaps;

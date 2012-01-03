@@ -62,11 +62,11 @@ VerificationExecutor::VerificationAction VerificationExecutor::convertVerificati
     switch (_verifyType)
     {
         case CapControlCommand::VERIFY_ALL_BANK:
-        case CapControlCommand::VERIFY_FQ_BANK:
+        case CapControlCommand::VERIFY_FAILED_QUESTIONABLE_BANK:
         case CapControlCommand::VERIFY_FAILED_BANK:
-        case CapControlCommand::VERIFY_Q_BANK:
+        case CapControlCommand::VERIFY_QUESTIONABLE_BANK:
         case CapControlCommand::VERIFY_INACTIVE_BANKS:
-        case CapControlCommand::VERIFY_SA_BANK:
+        case CapControlCommand::VERIFY_STAND_ALONE_BANK:
             ret = VERIFY_START;
             break;
         case CapControlCommand::EMERGENCY_STOP_VERIFICATION:
