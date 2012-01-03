@@ -116,6 +116,17 @@ public class RfnEventsReportController {
 		return "rfnEventsReport/report.jsp";
 	}
 
+
+    @RequestMapping
+    public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
+            throws ServletRequestBindingException, DeviceCollectionCreationException {
+        RfnEventsReportFilterBackingBean backingBean = new RfnEventsReportFilterBackingBean();
+        backingBean.setFromDate(null);
+        backingBean.setToDate(null);
+        setupModelMap(backingBean, request, model, null, null, userContext, null);
+        return "rfnEventsReport/report.jsp";
+    }
+
     private void setupModelMap(RfnEventsReportFilterBackingBean backingBean,
                                HttpServletRequest request, ModelMap model,
                                BindingResult bindingResult, FlashScope flashScope,

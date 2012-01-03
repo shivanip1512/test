@@ -185,11 +185,25 @@
 		</tags:nameValue2>
 
 		<tags:nameValue2 nameKey=".filter.dateFrom">
-			<cti:formatDate type="BOTH" value="${backingBean.fromDate}" />
+			<c:choose>
+				<c:when test="${backingBean.fromDate != null}">
+					<cti:formatDate type="BOTH" value="${backingBean.fromDate}" />
+				</c:when>
+				<c:otherwise>
+					<i:inline key="yukon.web.defaults.dashes"/>
+				</c:otherwise>
+			</c:choose>
 		</tags:nameValue2>
 
 		<tags:nameValue2 nameKey=".filter.dateTo">
-			<cti:formatDate type="BOTH" value="${backingBean.toDate}" />
+			<c:choose>
+				<c:when test="${backingBean.toDate != null}">
+					<cti:formatDate type="BOTH" value="${backingBean.toDate}" />
+				</c:when>
+				<c:otherwise>
+					<i:inline key="yukon.web.defaults.dashes"/>
+				</c:otherwise>
+			</c:choose>
 		</tags:nameValue2>
 
 		<tags:nameValue2 nameKey=".filter.onlyActiveEvents">
