@@ -123,3 +123,8 @@ div.resultBar > div {
 .eventStatusBad {
     color:#CC0000;
 }
+
+.rfnEventsReportLink {
+	font-size: 11px;
+	margin-right: 20px;
+}

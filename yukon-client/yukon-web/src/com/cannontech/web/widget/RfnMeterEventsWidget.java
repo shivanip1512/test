@@ -2,9 +2,9 @@ package com.cannontech.web.widget;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +18,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.MapUtil;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -68,29 +69,15 @@ public class RfnMeterEventsWidget extends AdvancedWidgetControllerBase {
                                                     10,
                                                     false,
                                                     Clusivity.INCLUSIVE_INCLUSIVE,
-                                                    Order.FORWARD);
+                                                    Order.REVERSE);
             for (Entry<PaoIdentifier, PointValueQualityHolder> entry : attributeData.entries()) {
                 sortedAttributeValueMap.put(entry.getValue(), attribute);
             }
         }
         
-        SortedMap<PointValueQualityHolder, BuiltInAttribute> limitedSortedAttributeValueMap =
-            getLimitedSortedAttributeValueMap(sortedAttributeValueMap);
-        return limitedSortedAttributeValueMap;
-    }
-    
-    private SortedMap<PointValueQualityHolder, BuiltInAttribute> getLimitedSortedAttributeValueMap(SortedMap<PointValueQualityHolder, BuiltInAttribute> sortedAttributeValueMap) {
-        int keyCounter = 0;
-        SortedMap<PointValueQualityHolder, BuiltInAttribute> limitedSortedAttributeValueMap =
-            new TreeMap<PointValueQualityHolder, BuiltInAttribute>(comparator);
-        for (Entry<PointValueQualityHolder, BuiltInAttribute> entry : sortedAttributeValueMap.entrySet()) {
-            if (keyCounter == 10) {
-                break;
-            }
-            limitedSortedAttributeValueMap.put(entry.getKey(), entry.getValue());
-            keyCounter++;
-        }
-        
-        return limitedSortedAttributeValueMap;
+        SortedMap<PointValueQualityHolder, BuiltInAttribute> limitedSortedValueToAttributeMap =
+                MapUtil.putFirstEntries(10, sortedAttributeValueMap, new TreeMap<PointValueQualityHolder, BuiltInAttribute>(comparator));
+
+        return limitedSortedValueToAttributeMap;
     }
 }

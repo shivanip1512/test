@@ -10,5 +10,6 @@
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.table.state">State</entry>
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.refresh.label">Refresh</entry>
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.refresh.labelBusy">Refreshing</entry>
+<entry key="yukon.web.widgets.rfnMeterEventsWidget.allEvents">All Events</entry>
 
 </properties>
