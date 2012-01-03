@@ -625,10 +625,27 @@ void CtiPILServer::resultThread()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
-                        dout << " Port listed as                                   : " << InMessage->Port     << endl;
-                        dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
+                            dout << " Port listed as                                   : " << InMessage->Port     << endl;
+                            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+                        }
+
+                        CtiReturnMsg *idnf_msg =
+                            new CtiReturnMsg(
+                                    InMessage->DeviceID,
+                                    InMessage->Return.CommandStr,
+                                    "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
+                                    IDNF,
+                                    InMessage->Return.RouteID,
+                                    InMessage->Return.MacroOffset,
+                                    InMessage->Return.Attempt,
+                                    InMessage->Return.GrpMsgID,
+                                    InMessage->Return.UserID,
+                                    InMessage->Return.SOE);
+
+                        retList.push_back(idnf_msg);
                     }
 
                     try
@@ -703,6 +720,7 @@ void CtiPILServer::resultThread()
                                     copyReturnMessageToResponseMonitorQueue(*(static_cast<CtiReturnMsg *>(pRet)), InMessage->Return.Connection);
                                 }
 
+                                //  This sends all ReturnMsgs to the InMessage->Return.Connection REGARDLESS of the ReturnMsg->ConnectionHandle.
                                 Conn->WriteConnQue(pRet);
                             }
                             else
@@ -745,7 +763,7 @@ void CtiPILServer::resultThread()
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " ****  EXCEPTION: PIL resultThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  - Will attmept to recover" << endl;
+            dout << "  - Will attempt to recover" << endl;
         }
 
     } /* End of for */

@@ -7,6 +7,9 @@
 #include "InvalidReaderException.h"
 #include "ctidate.h"
 #include "debug_timer.h"
+#include "c_port_interface.h"  //  for the Porter DeviceManager and PortManager instances
+#include "mgr_device.h"
+#include "mgr_port.h"
 
 using std::endl;
 
@@ -172,20 +175,26 @@ void StatisticsManager::processEvents(ThreadStatusKeeper &threadKeeper)
 }
 
 
-PaoStatistics &StatisticsManager::getPaoStatistics(long pao_id)
+PaoStatistics *StatisticsManager::getPaoStatistics(const long pao_id)
 {
     id_statistics_map::iterator itr = _pao_statistics.find(pao_id);
 
     if( itr != _pao_statistics.end() )
     {
-        return *itr->second;
+        return itr->second;
     }
 
-    PaoStatistics *p = new PaoStatistics(pao_id);
+    //  Only make a new record if the ID exists in the DeviceManager or PortManager
+    if( DeviceManager.getDeviceByID(pao_id) || PortManager.PortGetEqual(pao_id) )
+    {
+        PaoStatistics *p = new PaoStatistics(pao_id);
 
-    _pao_statistics.insert(std::make_pair(p->getPaoId(), p));
+        _pao_statistics.insert(std::make_pair(p->getPaoId(), p));
 
-    return *p;
+        return p;
+    }
+
+    return 0;
 }
 
 
@@ -208,19 +217,28 @@ void StatisticsManager::processEvent(const statistics_event_t &evt)
     {
         case statistics_event_t::Request:
         {
-            getPaoStatistics(evt.pao_id).incrementRequests(evt.time);
+            if( PaoStatistics *p = getPaoStatistics(evt.pao_id) )
+            {
+                p->incrementRequests(evt.time);
+            }
 
             break;
         }
         case statistics_event_t::Attempt:
         {
-            getPaoStatistics(evt.pao_id).incrementAttempts(evt.time, evt.result);
+            if( PaoStatistics *p = getPaoStatistics(evt.pao_id) )
+            {
+                p->incrementAttempts(evt.time, evt.result);
+            }
 
             break;
         }
         case statistics_event_t::Completion:
         {
-            getPaoStatistics(evt.pao_id).incrementCompletion(evt.time, evt.result);
+            if( PaoStatistics *p = getPaoStatistics(evt.pao_id) )
+            {
+                p->incrementCompletion(evt.time, evt.result);
+            }
 
             break;
         }

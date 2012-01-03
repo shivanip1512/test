@@ -1408,7 +1408,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
         if(pChg == NULL)
         {
-            DeviceManager.refresh();
+            DeviceManager.refreshAllDevices();
 
             DeviceManager.apply(attachRouteManagerToDevice, &RouteManager);
             DeviceManager.apply(attachPointManagerToDevice, &PorterPointManager);
@@ -1418,12 +1418,11 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
         }
         else
         {
-            LONG chgid = pChg->getId();
+            const long chgid = pChg->getId();
 
-            DeviceManager.refresh(chgid, pChg->getCategory(), pChg->getObjectType());
+            DeviceManager.refreshDeviceByID(chgid, pChg->getCategory(), pChg->getObjectType());
 
-            CtiDeviceSPtr pDev = DeviceManager.getDeviceByID( chgid );
-            if( pDev )
+            if( CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(chgid) )
             {
                 pDev->setRouteManager(&RouteManager);
                 pDev->setPointManager(&PorterPointManager);

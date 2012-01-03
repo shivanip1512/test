@@ -1457,6 +1457,31 @@ dev_mct31x.obj:	precompiled.h devicetypes.h tbl_ptdispatch.h ctibase.h \
 		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h dllyukon.h \
 		ctidate.h
+dev_mct410-revamped-daily-kwh.obj:	precompiled.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		dllyukon.h date_utility.h ctidate.h dev_mct410.h dev_mct4xx.h \
+		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
+		optional.h dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
+		database_reader.h boost_time.h rte_base.h dbmemobject.h \
+		ctibase.h ctinexus.h message.h collectable.h tbl_pao_lite.h \
+		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h msg_signal.h string_utility.h \
+		tbl_static_paoinfo.h pointdefs.h tbl_base.h tbl_stats.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
+		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h da_load_profile.h \
+		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h dev_mct410_commands.h \
+		cmd_mct410_hourlyRead.h cmd_mct410.h tbl_ptdispatch.h \
+		pt_status.h tbl_pt_status.h portglob.h porter.h devicetypes.h
 dev_mct410.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h dllyukon.h date_utility.h \
@@ -3233,6 +3258,8 @@ test_dev_mct410.obj:	dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h ctidate.h \
 		dev_mct410_commands.h cmd_mct410_hourlyRead.h cmd_mct410.h \
+		pt_analog.h tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
 		devicetypes.h boost_test_helpers.h
 test_dev_mct420.obj:	dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h cticonnect.h \

@@ -219,7 +219,7 @@ public:
     void addClient(UnsolicitedHandler *client);
     void removeClient(UnsolicitedHandler *client);
 
-    void sendMessageToClients(const CtiDBChangeMsg *msg);
+    void sendMessageToClients(const CtiDBChangeMsg &msg);
 };
 
 //  define the instance for disp_thd to write to and all UnsolicitedHandler child classes to register with

@@ -1,19 +1,11 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
 #include <iostream>
 #include <functional>
 #include <map>
 
-#include <rw/thr/rwlock.h>
-
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-using boost::shared_ptr;
 
 #include "dllbase.h"
 #include "dlldefs.h"
@@ -25,11 +17,11 @@ class CtiSmartMap
 {
 public:
 
-    typedef std::map< long, shared_ptr< T > >   coll_type;     // This is the collection type!
+    typedef typename boost::shared_ptr< T >              ptr_type;
+    typedef std::map< long, ptr_type >                   coll_type;     // This is the collection type!
     typedef typename coll_type::value_type               val_type;
     typedef typename coll_type::iterator                 spiterator;
     typedef typename std::pair<spiterator, bool>         insert_pair;
-    typedef typename shared_ptr< T >                     ptr_type;
 
     typedef typename Cti::readers_writer_lock_t          lock_t;
     typedef typename lock_t::reader_lock_guard_t         reader_lock_guard_t;
@@ -88,10 +80,10 @@ public:
     {
         writer_lock_guard_t guard(_lock);
 
-        return _map.insert( val_type(key, shared_ptr< T >(val)) );
+        return _map.insert( val_type(key, ptr_type(val)) );
     }
 
-    insert_pair insert(long key, shared_ptr< T > &storeval)
+    insert_pair insert(long key, ptr_type &storeval)
     {
         writer_lock_guard_t guard(_lock);
 
@@ -140,6 +132,24 @@ public:
         }
 
         return retRef;
+    }
+
+    template<typename Predicate>
+    std::vector<ptr_type> findAll(const Predicate &predicate)
+    {
+        reader_lock_guard_t guard(_lock);
+
+        std::vector<ptr_type> matches;
+
+        for each(const val_type item in _map)
+        {
+            if( predicate(*(item.second)) )
+            {
+                matches.push_back(item.second);
+            }
+        }
+
+        return matches;
     }
 
     ptr_type find(bool (*testFun)(ptr_type&, void*),void* d)
@@ -263,7 +273,7 @@ public:
         _dberrorcode = 0;      // Only set it if there was an error (don't re-set it)
     }
 
-    std::map< long, shared_ptr< T > > &getMap()
+    coll_type &getMap()
     {
         return _map;
     }

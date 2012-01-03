@@ -32,7 +32,7 @@ class StatisticsManager
     id_statistics_map _pao_statistics;
 
     void loadPaoStatistics(const std::set<long> &pao_ids);
-    Statistics::PaoStatistics &getPaoStatistics(long pao_id);
+    Statistics::PaoStatistics *getPaoStatistics(const long pao_id);
     void deletePaoStatistics(long pao_id);
 
     bool pruneDaily(Database::DatabaseConnection &conn);

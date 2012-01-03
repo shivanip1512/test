@@ -1,68 +1,19 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   disp_thd
-*
-* Date:   2/2/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.34.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include <iomanip>
-#include <iostream>
-
-#include "ctitime.h"
-#include <rw\thr\thrfunc.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw/toolpro/inetaddr.h>
-#include <rw\thr\mutex.h>
-
-#include "os2_2w32.h"
-#include "cticalls.h"
-
-#include "dsm2.h"
-#include "ctinexus.h"
-#include "porter.h"
-
-#include "cparms.h"
-#include "netports.h"
-#include "queent.h"
-#include "pil_conmgr.h"
-#include "pil_exefct.h"
 #include "pilserver.h"
-#include "msg_pcrequest.h"
-#include "msg_pcreturn.h"
 #include "msg_dbchg.h"
 #include "msg_cmd.h"
-#include "msg_reg.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
-#include "dlldefs.h"
 #include "connection.h"
-#include "numstr.h"
 #include "thread_monitor.h"
-#include "mgr_point.h"
-#include "pt_base.h"
-
 #include "portglob.h"
-#include "ctibase.h"
-#include "dllbase.h"
 
-#include "logger.h"
-#include "guard.h"
-#include "utility.h"
 
 #include "unsolicited_handler.h"
 #include "StatisticsManager.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+using namespace std;
 
 CtiConnection VanGoghConnection;
 
@@ -130,11 +81,11 @@ void DispatchMsgHandlerThread(void *Arg)
             }
 
 
-            auto_ptr<CtiMessage> MsgPtr(VanGoghConnection.ReadConnQue(2000L));
+            auto_ptr<const CtiMessage> MsgPtr(VanGoghConnection.ReadConnQue(2000L));
 
             TimeNow = CtiTime::now();
 
-            auto_ptr<CtiDBChangeMsg> dbchg;
+            auto_ptr<const CtiDBChangeMsg> dbchg;
 
             if(MsgPtr.get() != NULL)
             {
@@ -142,31 +93,23 @@ void DispatchMsgHandlerThread(void *Arg)
                 {
                 case MSG_DBCHANGE:
                     {
-                        //  grab a copy of the message, since it'll be deleted at the end of the loop
-                        dbchg.reset(static_cast<CtiDBChangeMsg *>(MsgPtr->replicateMessage()));
+                        dbchg.reset(static_cast<const CtiDBChangeMsg *>(MsgPtr.release()));
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << TimeNow << " Porter has received a " << dbchg->getCategory() << " DBCHANGE message from Dispatch." << endl;
                         }
 
-                        if ( dbchg->getTypeOfChange() == ChangeTypeDelete )
-                        {
-                            PorterStatisticsManager.deleteRecord(dbchg->getId());
-                        }
-
                         break;
                     }
                 case MSG_COMMAND:
                     {
-                        CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr.get();
+                        const CtiCommandMsg* Cmd = static_cast<const CtiCommandMsg *>(MsgPtr.get());
 
                         switch(Cmd->getOperation())
                         {
                         case (CtiCommandMsg::Shutdown):
                             {
-                                //SetEvent(hPorterEvents[P_QUIT_EVENT]);
-                                //PorterQuit = TRUE;
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -251,8 +194,22 @@ void DispatchMsgHandlerThread(void *Arg)
 
                 RefreshPorterRTDB(dbchg.get());
 
-                //  RTDB has been updated, tell the unsolicited ports
-                UnsolicitedPortsQueue.sendMessageToClients(dbchg.get());
+                if( dbchg.get() )
+                {
+                    //  RTDB has been updated, tell the unsolicited ports
+                    UnsolicitedPortsQueue.sendMessageToClients(*dbchg);
+
+                    if( dbchg->getTypeOfChange() == ChangeTypeDelete )
+                    {
+                        const int pao_category = resolvePAOCategory(dbchg->getCategory());
+
+                       if( pao_category == PAO_CATEGORY_DEVICE ||
+                           pao_category == PAO_CATEGORY_PORT )
+                       {
+                           PorterStatisticsManager.deleteRecord(dbchg->getId());
+                       }
+                   }
+               }
 
                 RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 

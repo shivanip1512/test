@@ -54,6 +54,9 @@ private:
 
     bool loadDeviceType(Cti::Database::id_set &paoids, const std::string &device_name, const CtiDeviceBase &device, std::string type=std::string(), const bool include_type=true);
 
+    void addAssociations   (const CtiDeviceBase &dev);
+    void removeAssociations(const CtiDeviceBase &dev);
+
     static bool isMct(int type);
     static bool isIon(int type);
 
@@ -102,7 +105,9 @@ public:
         return _smartMap.entries();
     }
 
-    virtual void refresh(LONG paoID = 0, std::string category = std::string(""), std::string devicetype = std::string(""));
+    //  Overridden by ScannableDeviceManager
+    virtual void refreshAllDevices();
+    void refreshDeviceByID(LONG paoID, std::string category, std::string devicetype);
     void refreshGroupHierarchy(LONG paoID = 0);
     bool refreshPointGroups(void);
     void writeDynamicPaoInfo(void);

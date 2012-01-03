@@ -111,7 +111,7 @@ test_gen_reply.obj:	precompiled.h boostutil.h utility.h ctitime.h \
 		dev_exclusion.h tbl_paoexclusion.h tbl_base.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		tbl_pt_property.h tbl_pt_trigger.h tbl_port_base.h xfer.h \
-		counter.h
+		counter.h cparms.h configkey.h configval.h
 test_lantronixencryption.obj:	precompiled.h encryption_lantronix.h \
 		EncodingFilter.h numstr.h dlldefs.h
 #ENDUPDATE#

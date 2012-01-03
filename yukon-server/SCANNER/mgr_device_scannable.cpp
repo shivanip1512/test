@@ -1,8 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_device_scannable
-*
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "mgr_device_scannable.h"
@@ -28,56 +23,47 @@ void ScannableDeviceManager::refreshDeviceProperties(Database::id_set &paoids, i
 }
 
 
-void ScannableDeviceManager::refresh(LONG paoID, string category, string devicetype)
+void ScannableDeviceManager::refreshAllDevices()
 {
-    if( !paoID )
+    map<int, Database::id_set > type_paoids;
+
     {
-        map<int, Cti::Database::id_set > type_paoids;
+        static const string sql =  "SELECT YP.paobjectid, YP.type "
+                                   "FROM yukonpaobject YP "
+                                   "WHERE YP.paobjectid IN (SELECT DSR.deviceid "
+                                                           "FROM devicescanrate DSR "
+                                                           "UNION "
+                                                           "SELECT DLP.deviceid "
+                                                           "FROM deviceloadprofile DLP "
+                                                           "WHERE DLP.loadprofilecollection != 'NNNN')";
 
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        rdr.execute();
+
+        if( !rdr.isValid() )
         {
-            static const string sql =  "SELECT YP.paobjectid, YP.type "
-                                       "FROM yukonpaobject YP "
-                                       "WHERE YP.paobjectid IN (SELECT DSR.deviceid "
-                                                               "FROM devicescanrate DSR "
-                                                               "UNION "
-                                                               "SELECT DLP.deviceid "
-                                                               "FROM deviceloadprofile DLP "
-                                                               "WHERE DLP.loadprofilecollection != 'NNNN')";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
-
-            rdr.execute();
-
-            if( !rdr.isValid() )
+            string loggedSQLstring = rdr.asString();
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << loggedSQLstring << endl;
             }
+        }
 
-            int i = 0;
+        int i = 0;
 
-            while( rdr() )
-            {
-                long id;
-                string temp;
+        while( rdr() )
+        {
+            long id;
+            string temp;
 
-                rdr[0] >> id;
-                rdr[1] >> temp;
+            rdr[0] >> id;
+            rdr[1] >> temp;
 
-                type_paoids[resolveDeviceType(temp)].insert(id);
+            type_paoids[resolveDeviceType(temp)].insert(id);
 
-                if( !(++i % 1000) )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-                    dout << "loaded " << i << " scannables " << endl;
-                }
-            }
-
+            if( !(++i % 1000) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -85,17 +71,18 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
             }
         }
 
-        //map<int, vector<long> >::const_iterator itr, itr_end = type_paoids.end();
-        map<int, Cti::Database::id_set >::iterator itr, itr_end = type_paoids.end();
-
-        for( itr = type_paoids.begin(); itr != itr_end; ++itr )
         {
-            Inherited::refreshList(itr->second, itr->first);
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+            dout << "loaded " << i << " scannables " << endl;
         }
     }
-    else
+
+    map<int, Cti::Database::id_set >::iterator itr, itr_end = type_paoids.end();
+
+    for( itr = type_paoids.begin(); itr != itr_end; ++itr )
     {
-        Inherited::refresh(paoID, category, devicetype);
+        Inherited::refreshList(itr->second, itr->first);
     }
 }
 

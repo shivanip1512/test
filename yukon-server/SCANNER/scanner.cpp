@@ -1190,18 +1190,15 @@ void LoadScannableDevices(void *ptr)
         {
             start = start.now();
 
-            LONG chgid = 0;
-            string catstr;
-            string devstr;
-
             if(pChg)
             {
-                chgid = pChg->getId();
-                catstr = pChg->getCategory();
-                devstr = pChg->getObjectType();
+                ScannerDeviceManager.refreshDeviceByID(pChg->getId(), pChg->getCategory(), pChg->getObjectType());
+            }
+            else
+            {
+                ScannerDeviceManager.refreshAllDevices();
             }
 
-            ScannerDeviceManager.refresh(chgid, catstr, devstr);
             ConfigManager.initialize(ScannerDeviceManager);
 
             stop = stop.now();

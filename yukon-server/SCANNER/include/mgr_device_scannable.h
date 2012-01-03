@@ -24,9 +24,9 @@ public:
     ScannableDeviceManager(CtiApplication_t app_id) :
         CtiDeviceManager(app_id)
     {
-    };
+    }
 
-    virtual void refresh(LONG paoID = 0, std::string category = std::string(""), std::string devicetype = std::string(""));
+    virtual void refreshAllDevices();
 };
 
 }

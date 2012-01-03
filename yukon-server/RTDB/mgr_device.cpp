@@ -167,12 +167,9 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
         long paoid = 0;
         rdr["deviceid"] >> paoid;            // get the DeviceID
 
-        CtiDeviceSPtr existing_device = getDeviceByID(paoid);
-
-        if( existing_device )
+        if( const CtiDeviceSPtr existing_device = getDeviceByID(paoid) )
         {
-            long old_portid = existing_device->getPortID();
-            int  old_type   = existing_device->getType();
+            removeAssociations(*existing_device);
 
             //  The device in this row is already in the list.  We need to
             //    update the list entry to the new settings
@@ -183,27 +180,7 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
             // Mark it updated...  should DecodeDatabaseReader() do this?
             existing_device->setUpdatedFlag();
 
-            long new_portid = existing_device->getPortID();
-            long new_type   = existing_device->getType();
-
-            if( old_portid != new_portid )
-            {
-                _portDevices[old_portid].erase(paoid);
-
-                if( new_portid >= 0 )
-                {
-                    _portDevices[new_portid].insert(paoid);
-                }
-            }
-            if( old_type != new_type )
-            {
-                _typeDevices[old_type].erase(paoid);
-
-                if( new_type >= 0 )
-                {
-                    _typeDevices[new_type].insert(paoid);
-                }
-            }
+            addAssociations(*existing_device);
         }
         else
         {
@@ -221,21 +198,32 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
                 // Stuff it in the list
                 _smartMap.insert( new_device->getID(), new_device );
 
-                long new_portid = new_device->getPortID();
-                long new_type   = new_device->getType();
-
-                if( new_portid >= 0 )
-                {
-                    _portDevices[new_portid].insert(paoid);
-                }
-
-                _typeDevices[new_type].insert(paoid);
+                addAssociations(*new_device);
             }
         }
     }
 
     return rowSelected;
 }
+
+
+void CtiDeviceManager::addAssociations(const CtiDeviceBase &dev)
+{
+    const long pao_id  = dev.getID();
+    const long port_id = dev.getPortID();
+    const long type    = dev.getType();
+
+    if( port_id >= 0 )
+    {
+        _portDevices[port_id].insert(pao_id);
+    }
+
+    if( type > 0 )
+    {
+        _typeDevices[type].insert(pao_id);
+    }
+}
+
 
 CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remote)
 {
@@ -500,7 +488,6 @@ _dberrorcode(0)
 
 CtiDeviceManager::~CtiDeviceManager()
 {
-    // cleanupDB();  // Deallocate all the DB stuff.
 }
 
 void CtiDeviceManager::deleteList(void)
@@ -508,51 +495,56 @@ void CtiDeviceManager::deleteList(void)
     _smartMap.removeAll(NULL, 0);
 }
 
-void CtiDeviceManager::refresh(LONG paoID, string category, string devicetype)
+void CtiDeviceManager::refreshDeviceByID(LONG paoID, string category, string devicetype)
 {
-    if(paoID != 0)
+    if( ! paoID )
     {
-        bool rowFound = false;
-        CtiDeviceSPtr pDev = getDeviceByID(paoID);
-
-        int type = resolvePAOType(category, devicetype);
-
-        if(pDev)
         {
-            if( pDev->getType() != type)
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** - PaoId = 0 in CtiDeviceManager::refreshDeviceByID(), calling refreshAllDevices() " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        return refreshAllDevices();
+    }
+
+    int type = resolvePAOType(category, devicetype);
+
+    if( CtiDeviceSPtr pDev = getDeviceByID(paoID) )
+    {
+        if( pDev->getType() != type)
+        {
+            coll_type::writer_lock_guard_t guard(getLock());
+
             {
-                coll_type::writer_lock_guard_t guard(getLock());
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
+            }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
-                }
-
-                if( _smartMap.remove(paoID) && DebugLevel & 0x00020000)
+            if( CtiDeviceSPtr orphanedDevice = _smartMap.remove(paoID) )
+            {
+                if( DebugLevel & 0x00020000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                removeAssociations(*orphanedDevice);
             }
         }
-
-        // We were given an id.  We can use that to reduce our workload.
-        //vector<long> paoid_vector;
-        Cti::Database::id_set paoids;
-
-        //paoid_vector.push_back(paoID);
-        paoids.insert(paoID);
-
-        refreshList(paoids, type);
     }
-    else
-    {
-        //vector<long> stub;
-        Cti::Database::id_set stub;
 
-        // we were given no id.  There must be no dbchange info.
-        refreshList(stub);
-    }
+    // We were given an id.  We can use that to reduce our workload.
+    Cti::Database::id_set paoids;
+
+    paoids.insert(paoID);
+
+    refreshList(paoids, type);
+}
+
+//  Overridden by Cti::ScannableDeviceManager
+void CtiDeviceManager::refreshAllDevices()
+{
+    refreshList(Database::id_set(), 0);
 }
 
 string CtiDeviceManager::createTypeSqlClause(string type, const bool include_type)
@@ -782,25 +774,37 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
             delete deviceTemplate;
         }
 
-        // Now I need to check for any Device removals based upon the
-        // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
-        if( paoids.empty() && rowFound )
+        // Now I need to check for any Device removals based upon the Updated Flag being NOT set.
         {
             Timing::DebugTimer timer("removing non-updated devices ");
 
-            CtiDeviceSPtr evictedDevice;
+            std::vector<CtiDeviceSPtr> evictedDevices;
 
-            // Effectively deletes the memory if there are no other "owners"
-            while( evictedDevice = _smartMap.remove(isDeviceNotUpdated, NULL) )
+            //  If this was a "reload all" and we didn't reload anything,
+            //    DON'T clear the map - we probably just had a DB error.
+            //  So make sure we got at least one row before clearing the non-updated devices.
+            if( ! paoids.empty() || rowFound )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Evicting " << evictedDevice->getName() << " from list" << endl;
-                }
+                evictedDevices = _smartMap.findAll(std::not1(std::mem_fun_ref(&CtiMemDBObject::getUpdatedFlag)));
+            }
 
-                _portDevices[evictedDevice->getPortID()].erase(evictedDevice->getID());
-                _typeDevices[evictedDevice->getType()  ].erase(evictedDevice->getID());
+            if( ! evictedDevices.empty() )
+            {
+                //  We need to grab the writer lock since we're modifying the associations.
+                coll_type::writer_lock_guard_t guard(getLock());
+
+                for each( CtiDeviceSPtr evictedDevice in evictedDevices )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  Evicting \"" << evictedDevice->getName() << "\" from list" << endl;
+                    }
+
+                    removeAssociations(*evictedDevice);
+
+                    _smartMap.remove(evictedDevice->getID());
+                }
             }
         }
     }
@@ -820,6 +824,13 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
         RWTHROW(e);
 
     }
+}
+
+
+void CtiDeviceManager::removeAssociations(const CtiDeviceBase &evictedDevice)
+{
+    _portDevices[evictedDevice.getPortID()].erase(evictedDevice.getID());
+    _typeDevices[evictedDevice.getType()  ].erase(evictedDevice.getID());
 }
 
 
@@ -1937,7 +1948,6 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
     {
         int trycount = 0;
 
-        #if 1
         coll_type::reader_lock_guard_t guard(getLock());
 
         while(!guard.isAcquired())
@@ -1952,13 +1962,12 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint: Was unable to lock device mutex.  Applying anyway. **** " << __FILE__ << " (" << __LINE__ << " Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << applyFun << endl;
                     dout << "  CtiDeviceManager::apply " << endl;
                 }
                 break;
             }
         }
-        #endif
 
         _smartMap.apply(applyFun,d);
     }
