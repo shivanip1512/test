@@ -8,6 +8,7 @@ import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessorBase;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
@@ -15,7 +16,7 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
     
     @Override
     public <T extends RfnEvent> void process(RfnMeter meter, T event, List<? super PointData> pointDatas) {
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, 2); // 2 = bad (outage)
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, OutageStatus.BAD.getRawState());
         
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
         rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_OUTAGE_COUNT, (Long) count);
