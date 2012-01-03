@@ -31,7 +31,7 @@
             <tr id="tr_feeder_${feederId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
             
                 <%-- Name --%>
-                <td class="nw">
+                <td class="wsnw">
                     <input type="hidden" id="paoId_${feederId}" value="${feederId}">
                     <span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
                         <spring:escapeBody htmlEscape="true">${viewfeeder.feeder.ccName}</spring:escapeBody>
@@ -39,7 +39,7 @@
                 </td>
                 
                 <%-- Actions --%>
-                <td class="nw">
+                <td class="wsnw">
                     <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${feederId}" styleClass="tierIconLink"/>
                     <c:if test="${hasEditingRole}">
                         <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${feederId}" styleClass="tierIconLink"/>
@@ -48,7 +48,7 @@
                 </td>
                 
                 <%-- State --%>
-                <td class="nw">
+                <td class="wsnw">
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
                     <a id="feederState_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
@@ -90,7 +90,7 @@
                 </td>
                 
                 <%-- kVAR Load / Est. --%>
-                <td class="nw">
+                <td class="wsnw">
                     <c:choose>
                         <c:when test="${viewfeeder.feeder.usePhaseData}">
                             <a onmouseover="showDynamicPopupAbove('feederVarLoadPopup_${feederId}');" onmouseout="nd();">
@@ -129,7 +129,7 @@
                 </td>
                 
                 <%-- kW / Volts--%>
-                <td class="nw">
+                <td class="wsnw">
                     <a id="kwVolts_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KW"/> 
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/WATT_QUALITY">

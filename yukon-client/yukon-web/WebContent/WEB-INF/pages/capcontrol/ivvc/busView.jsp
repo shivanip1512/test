@@ -222,7 +222,7 @@
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><i:inline key=".busDetail.table.state"/>: </td>
                         <%-- State --%>
-                        <td class="nw">
+                        <td class="wsnw">
                             <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
                             <a id="subbusState_${subBusId}">
                                 <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>

@@ -169,7 +169,7 @@ YEvent.observeSelectorClick('li.toggle', toggleLi);
                 </div>
                 <div style="float:right;width:50%;">
                     <tags:nameValueContainer2 tableClass="infoContainer">
-                        <tags:nameValue2 nameKey=".state" rowClass="nw">
+                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                             <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
                                 <a id="substationState_${substationId}">
                                     <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>

@@ -67,11 +67,11 @@
                                             <a class="tierIconLink" href="/editor/copyBase.jsf?itemid=${row.itemId}&type=1>"><img src="/WebConfig/yukon/Icons/copy.gif" class="tierImg"/></a>
                                         </cti:checkProperty>
                                     </c:if>
-                                    ${row.name}
+                                    <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
                                 </td>
             	                <td nowrap="nowrap">${row.itemType}</td>
             	                <td nowrap="nowrap">${row.itemDescription}</td>
-            	                <td>${row.parentString}</td>
+            	                <td><spring:escapeBody htmlEscape="true">${row.parentString}</spring:escapeBody></td>
             	            </tr>
             	        </c:forEach>
             	    </table>

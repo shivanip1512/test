@@ -47,7 +47,7 @@ td {display:table-cell;vertical-align:top}
 .tar{text-align:right}
 h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
 .fwn{font-weight:normal}
-.nw{white-space: nowrap}
+.wsnw{white-space: nowrap}
 .wsn{white-space: normal}
 
 .vat {vertical-align:top;}

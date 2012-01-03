@@ -249,9 +249,9 @@
     <entry key="yukon.web.modules.capcontrol.areas.systemActions.title">System Actions</entry>
     <entry key="yukon.web.modules.capcontrol.areas.areasContainer.title">Substation Areas</entry>
     <entry key="yukon.web.modules.capcontrol.areas.substations">Substations</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} Feeder(s)</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.banks">{0} Bank(s)</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} Substation(s)</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
     
     <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
     <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>

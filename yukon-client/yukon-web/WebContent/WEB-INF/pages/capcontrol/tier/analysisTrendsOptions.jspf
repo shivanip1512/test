@@ -13,7 +13,7 @@ function loadPointChartGreyBox(title, url) {
         targets.push(item.readAttribute('value'));
     });
     
-    url += '&targets=' + targets.join(',');
+    url += '&targets=' + encodeURIComponent(targets.join(','));
     
     GB_showFullScreen(title, url, null);
     return void(0);

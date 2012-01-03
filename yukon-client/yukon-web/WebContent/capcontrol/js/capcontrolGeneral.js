@@ -84,9 +84,7 @@ function hideContentPopup() {
 }
 
 function checkAll(allCheckBox, selector) {
-    jQuery(selector).each(function(item) {
-        item.checked = allCheckBox.checked;
-    });
+    jQuery(selector).prop("checked", allCheckBox.checked);
 }
 
 function expandRow(itemId, imgId) {

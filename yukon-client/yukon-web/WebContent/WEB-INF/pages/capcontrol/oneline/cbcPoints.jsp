@@ -8,6 +8,6 @@
 
 <cti:standardPage module="capcontrol_internal">
 
-<center><span style="font-weight: bold; font-size: 16;">${paoName}</span></center>
+<center><span style="font-weight: bold; font-size: 16;"><spring:escapeBody htmlEscape="true">${paoName}</spring:escapeBody></span></center>
 <%@ include file="../cbcPointTimestamps.jsp" %>
 </cti:standardPage>

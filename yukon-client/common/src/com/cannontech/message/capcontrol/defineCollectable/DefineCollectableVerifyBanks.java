@@ -2,6 +2,7 @@ package com.cannontech.message.capcontrol.defineCollectable;
 
 import java.io.IOException;
 
+import com.cannontech.message.capcontrol.model.ItemCommand;
 import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -28,7 +29,7 @@ public class DefineCollectableVerifyBanks extends DefineCollectableItemCommand {
         return DefineCollectable.NO_STRINGID;
     }
     
-    public Class<VerifyBanks> getJavaClass() {
+    public Class<? extends ItemCommand> getJavaClass() {
         return VerifyBanks.class;
     }
     

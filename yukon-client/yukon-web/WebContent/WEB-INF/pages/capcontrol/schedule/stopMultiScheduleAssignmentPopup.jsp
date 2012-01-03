@@ -12,7 +12,7 @@
             <select name="stopSchedule" id="stopSchedule">
                 <option value="All" <c:if test="${param.schedule == 'All'}">selected="selected" </c:if>><cti:msg2 key=".allSchedules"/></option>
                 <c:forEach var="aSchedule" items="${scheduleList}">
-                    <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected"</c:if>>${aSchedule.scheduleName}</option>
+                    <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected"</c:if>><spring:escapeBody htmlEscape="true">${aSchedule.scheduleName}</spring:escapeBody></option>
                 </c:forEach>
             </select>
         </tags:nameValue2>
@@ -26,7 +26,7 @@
                             <option value="${aCommand}">${aCommand.commandName}</option>
                         </c:when>
                         <c:otherwise>
-                            <option value="${aCommand}"<c:if test="${param.command == aCommand}"> selected="selected"</c:if>>${aCommand.commandName}</option>
+                            <option value="${aCommand}"<c:if test="${param.command == aCommand}"> selected="selected"</c:if>><spring:escapeBody htmlEscape="true">${aCommand.commandName}</spring:escapeBody></option>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>

@@ -68,14 +68,14 @@
                         </span>
     				</td>
                     
-                    <td class="nw">
+                    <td class="wsnw">
                         <cti:img nameKey="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
                             <cti:img nameKey="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
                         </c:if>
                     </td>
                     
-    				<td class="nw">
+    				<td class="wsnw">
                         <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
                         <a id="substationState_${substationId}">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE" />

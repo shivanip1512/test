@@ -1,10 +1,9 @@
 package com.cannontech.message.capcontrol.model;
 
 
-public class VerifyInactiveBanks extends ItemCommand {
+public class VerifyInactiveBanks extends VerifyBanks {
     
     long bankInactiveTime = -1;  // Default to -1?
-    boolean disableOvUv;
     
     public VerifyInactiveBanks() {
         super();
@@ -14,17 +13,9 @@ public class VerifyInactiveBanks extends ItemCommand {
     public VerifyInactiveBanks (int itemId, long bankInactiveTime, boolean disableOvUv) {
         setCommandId(CommandType.VERIFY_INACTIVE_BANKS.getCommandId());
         setItemId(itemId);
+        setDisableOvUv(disableOvUv);
         
         this.bankInactiveTime = bankInactiveTime;
-        this.disableOvUv = disableOvUv;
-    }
-
-    public boolean isDisableOvUv() {
-        return disableOvUv;
-    }
-    
-    public void setDisableOvUv(boolean disableOvUv) {
-        this.disableOvUv = disableOvUv;
     }
     
     public long getCbInactivityTime() {

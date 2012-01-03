@@ -3,9 +3,6 @@ package com.cannontech.message.capcontrol.model;
 
 public class CapControlServerResponse extends CapControlMessage implements CommandResultParticipant {
 	
-	/* This will needs to match the C++ ID's */
-	public static final int COMMANDREFUSED_ID = 1;
-	
 	private int messageId; 
 	
 	private String response;

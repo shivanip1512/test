@@ -6,8 +6,8 @@ Event.observe(window, 'load', function() {
         
         // Add timestamp hover
         var timestamp = row.down('a[id^="dateTime_"]');
-        timestamp.observe('mouseover', function() {showDynamicPopupAbove('capBankStatusPopup_' + bankId, 250)});
-        timestamp.observe('mouseout', function() {nd()});
+        timestamp.observe('mouseover', function() {showDynamicPopupAbove('capBankStatusPopup_' + bankId, 250); return false});
+        timestamp.observe('mouseout', function() {nd(); return false});
         
         if (${hasCapbankControl}) {
             var parentFeeder = row.down('a.parentFeeder');
@@ -15,23 +15,23 @@ Event.observe(window, 'load', function() {
             
             // Add move back link
             if (parentFeeder.hasClassName('warning')) {
-                parentFeeder.observe('click', function(event) {getMovedBankMenu(bankId, event)});
+                parentFeeder.observe('click', function(event) {getMovedBankMenu(bankId, event); return false});
             } else {
                 // Add move link
-                parentFeeder.observe('mouseover', function() {statusMsgAbove(parentFeeder, '${moveBank}')});
-                parentFeeder.observe('mouseout', function() {nd()});
+                parentFeeder.observe('mouseover', function() {statusMsgAbove(parentFeeder, '${moveBank}'); return false});
+                parentFeeder.observe('mouseout', function() {nd(); return false});
                 var title = parentFeeder.down('span.moveBankTitle').innerHTML;
-                parentFeeder.observe('click', function() {showDialog(title, '/spring/capcontrol/move/bankMove?bankid=' + bankId)});
+                parentFeeder.observe('click', function() {showDialog(title, '/spring/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)); return false});
             }
             
             // Add menus
             var bankName = row.down('a[id^="bankName"]');
             bankName.addClassName('actsAsAnchor');
-            bankName.observe('click', function(event) {getCommandMenu(bankId, event)});
+            bankName.observe('click', function(event) {getCommandMenu(bankId, event); return false});
             
             var bankState = row.down('a[id^="capbankState"]');
             bankState.addClassName('actsAsAnchor');
-            bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event)});
+            bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event); return false});
         }
     })
 });
@@ -45,13 +45,13 @@ Event.observe(window, 'load', function() {
             <tr>
                 <th><i:inline key=".cbcName"/></th>
                 <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
-                <th class="nw">
+                <th class="wsnw">
                     <cti:msg2 var="cbOrderInfo" key=".cbOrderInfo"/>
                     <i:inline key=".cbName"/>
                     <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif" onmouseover="statusMsgAbove(this, '${cbOrderInfo}');" >
                 </th>
                 <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
-                <th class="nw">
+                <th class="wsnw">
                     <cti:msg2 var="stateInfo" key=".stateInfo"/>
                     <i:inline key="yukon.web.modules.capcontrol.state"/> 
                     <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif" onmouseover="statusMsgAbove(this,'${stateInfo}');">  
@@ -74,7 +74,7 @@ Event.observe(window, 'load', function() {
             <tr id="tr_cap_${bankId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
                 
                 <%-- CBC Name --%>
-                <td class="nw">
+                <td class="wsnw">
                     <input type="hidden" id="paoId_${bankId}" value="${bankId}">
                     <c:choose>
                         <c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
@@ -87,7 +87,7 @@ Event.observe(window, 'load', function() {
                 </td>
                 
                 <%-- CBC Actions --%>
-                <td class="nw">
+                <td class="wsnw">
                     <c:if test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
                         <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" styleClass="tierIconLink"/>
                         <c:if test="${hasEditingRole}">
@@ -111,7 +111,7 @@ Event.observe(window, 'load', function() {
                 </td>
                 
                 <%-- Bank Actions --%>
-                <td class="nw">
+                <td class="wsnw">
                     <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}" styleClass="tierIconLink"/>
                     <c:if test="${hasEditingRole}">
                         <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${bankId}" styleClass="tierIconLink"/>
@@ -126,7 +126,7 @@ Event.observe(window, 'load', function() {
                 </td>
 
                 <%-- State --%>
-                <td class="nw">
+                <td class="wsnw">
                     <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
                     
                     <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
@@ -138,9 +138,9 @@ Event.observe(window, 'load', function() {
                         <table class='compactResultsTable'>
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
-                                <th class="nw"><i:inline key=".phaseA"/></th>
-                                <th class="nw"><i:inline key=".phaseB"/></th>
-                                <th class="nw"><i:inline key=".phaseC"/></th>
+                                <th class="wsnw"><i:inline key=".phaseA"/></th>
+                                <th class="wsnw"><i:inline key=".phaseB"/></th>
+                                <th class="wsnw"><i:inline key=".phaseC"/></th>
                                 <th><i:inline key=".total"/></th>
                             </tr>
                             <tr>
@@ -181,7 +181,7 @@ Event.observe(window, 'load', function() {
                 </td>
                 
                 <%-- Parent Feeder --%>
-                <td class="nw">
+                <td class="wsnw">
                     <a class="parentFeeder<c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>">
                         <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>

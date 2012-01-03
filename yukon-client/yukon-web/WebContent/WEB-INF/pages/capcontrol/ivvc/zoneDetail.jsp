@@ -531,7 +531,7 @@
 		            <c:forEach var="capBank" items="${capBankList}">
                         <c:set var="bankId" value="${capBank.capBankDevice.ccId}"/>
 		                <tr id="tr_cap_${bankId}" class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-		                    <td class="nw">
+		                    <td class="wsnw">
 		                    	<c:if test="${capBank.notAssignedToZone}">
                                     <span class="strongWarningMessage">*</span>
                                 </c:if>

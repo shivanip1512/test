@@ -2,14 +2,13 @@ package com.cannontech.message.capcontrol.defineCollectable;
 
 import java.io.IOException;
 
-import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.VirtualOutputStream;
 
-public class DefineCollectableVerifyInactiveBanks extends DefineCollectableItemCommand {
+public class DefineCollectableVerifyInactiveBanks extends DefineCollectableVerifyBanks {
 
     public static final int CTI_VERIFY_BANKS_ID = 532;
     
@@ -18,7 +17,7 @@ public class DefineCollectableVerifyInactiveBanks extends DefineCollectableItemC
     }
 
     public Object create(VirtualInputStream vstr) {
-        return new VerifyBanks();
+        return new VerifyInactiveBanks();
     }
 
     public int getCxxClassId() {

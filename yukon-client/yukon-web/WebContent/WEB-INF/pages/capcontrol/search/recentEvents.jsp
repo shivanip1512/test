@@ -9,25 +9,18 @@
 <cti:standardPage module="capcontrol" page="recentEvents">
 <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
-<script>
-function dateFilter(selectId, values) {
-    url = "/spring/capcontrol/search/recentEvents";
-    dayCnt = $(selectId).options[$(selectId).selectedIndex].value;
-    url+= "?dayCnt=" + dayCnt;
-    url += "&value=" + values;
-    window.location.replace(url);
-}
-</script>
-
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
 
     <div class="padBottom">
         <i:inline key=".filterByDate"/>
-        <select onchange="dateFilter('rcDateFilter', '${paoIdString}')" id="rcDateFilter">
-            <c:forEach var="i" begin="1" end="7">
-                <option value="${i}" <c:if test="${i == dayCnt}">selected</c:if>><cti:msg2 key=".days" argument="${i}"/></option>
-            </c:forEach>
-        </select>
+        <form action="/spring/capcontrol/search/recentEvents" id="daysFilterForm">
+            <input type="hidden" name="value" value="${paoIdString}">
+            <select id="rcDateFilter" name="dayCnt" onchange="$('daysFilterForm').submit()">
+                <c:forEach var="i" begin="1" end="7">
+                    <option value="${i}" <c:if test="${i == dayCnt}">selected</c:if>><cti:msg2 key=".days" argument="${i}"/></option>
+                </c:forEach>
+            </select>
+        </form>
     </div>
 
     <c:forEach var="eventSet" items="${listOfEventSets}">

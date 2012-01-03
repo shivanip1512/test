@@ -46,7 +46,7 @@
             <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>"  id="tr_sub_${subbusId}">
                 
                 <%-- Name --%>
-                <td id="anc_${subbusId}"  class="nw">
+                <td id="anc_${subbusId}"  class="wsnw">
                     <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${subbusId}">
                     <spring:escapeBody htmlEscape="true">${viewableSubBus.subBus.ccName}</spring:escapeBody>
                     <a href="${dualBusLink}" class="tierIconLink">
@@ -56,7 +56,7 @@
                 </td>
                 
                 <%-- Actions --%>
-                <td class="nw">
+                <td class="wsnw">
                     <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${subbusId}" styleClass="tierIconLink"/>
                     <c:if test="${hasEditingRole}">
                         <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${subbusId}" styleClass="tierIconLink"/>
@@ -76,7 +76,7 @@
                 </td>
                 
                 <%-- State --%>
-                <td class="nw">
+                <td class="wsnw">
                     <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
                     <a id="subbusState_${subbusId}">
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE"/>

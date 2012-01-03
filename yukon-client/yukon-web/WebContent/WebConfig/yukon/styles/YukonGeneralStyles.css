@@ -1506,21 +1506,9 @@ ul.buttonStack li {
     padding-bottom: 2px;
 }
 
-table.compactResultsTable button.image {
-    float: left;
-    margin-right: 5px;
-}
-
-table.compactResultsTable button.center {
-    margin-left: auto; 
-    margin-right: auto;
-    float: none;
-}
-
 button.naked,
 button.image {
     padding: 0px !important;
-    font-family: inherit !important;
 }
 
 button.naked {
