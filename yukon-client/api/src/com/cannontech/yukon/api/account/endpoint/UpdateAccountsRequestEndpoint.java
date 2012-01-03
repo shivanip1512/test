@@ -88,7 +88,10 @@ public class UpdateAccountsRequestEndpoint {
                     updateAccountResult.addContent(fe);
                 }
             } catch(InvalidSubstationNameException e) {
-                Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidSubstationNamer", e.getMessage());
+                Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidSubstationName", e.getMessage());
+                updateAccountResult.addContent(fe);
+            } catch(UserNameUnavailableException e) {
+                Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "UserNameUnavailable", e.getMessage());
                 updateAccountResult.addContent(fe);
             }
     
