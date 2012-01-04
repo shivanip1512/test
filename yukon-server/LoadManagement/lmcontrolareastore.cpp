@@ -829,7 +829,7 @@ void CtiLMControlAreaStore::reset()
                                                "PV.minactivatetime, PV.minrestarttime, PV.maxdailyops, "
                                                "PV.maxactivatetime, PV.holidayscheduleid, PV.seasonscheduleid, "
                                                "PD.heading, PD.messageheader, PD.messagefooter, PD.notifyactiveoffset, "
-                                               "PD.notifyinactiveoffset, PD.triggeroffset, PD.restoreoffset, "
+                                               "PD.notifyinactiveoffset, PD.notifyadjust, PD.triggeroffset, PD.restoreoffset, "
                                                "DP.programstate, DP.reductiontotal, DP.startedcontrolling, "
                                                "DP.lastcontrolsent, DP.manualcontrolreceivedflag, DPD.currentgearnumber, "
                                                "DPD.lastgroupcontrolled, DPD.starttime, DPD.stoptime, DPD.timestamp, "

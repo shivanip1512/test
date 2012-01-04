@@ -73,7 +73,9 @@ _currentgearnumber(0),
 _lastgroupcontrolled(0),
 _controlActivatedByStatusTrigger(false),
 _curLogID(0),
-_insertDynamicDataFlag(false)
+_insertDynamicDataFlag(false),
+_notify_adjust_enabled(false),
+_notify_adjust_pending(false)
 {
 }
 
@@ -82,7 +84,8 @@ _notify_active_time(gInvalidCtiTime),
 _notify_inactive_time(gInvalidCtiTime),
 _startedrampingout(gInvalidCtiTime),
 _constraint_override(false),
-_announced_program_constraint_violation(false)
+_announced_program_constraint_violation(false),
+_notify_adjust_pending(false)
 {
     restore(rdr);
 }
@@ -220,6 +223,12 @@ const CtiTime& CtiLMProgramDirect::getDirectStopTime() const
 const CtiTime& CtiLMProgramDirect::getNotifyActiveTime() const
 {
     return _notify_active_time;
+}
+
+// This is set when notification is needed and cleared when that notification goes out
+bool CtiLMProgramDirect::getAdjustNotificationPending() const
+{
+    return _notify_adjust_pending;
 }
 
 /*----------------------------------------------------------------------------
@@ -529,6 +538,13 @@ CtiLMProgramDirect& CtiLMProgramDirect::setNotifyActiveTime(const CtiTime& notif
         setDirty(true);
     }
     return *this;
+}
+
+// This is set when notification is needed and cleared when that notification goes out
+void CtiLMProgramDirect::setAdjustNotificationPending(bool adjustNeedsToBeSent)
+{
+    // Note that unlike the times, this is not sent to the clients and dirty does not need to be set
+    _notify_adjust_pending = adjustNeedsToBeSent;
 }
 
 /*----------------------------------------------------------------------------
@@ -3568,6 +3584,19 @@ BOOL CtiLMProgramDirect::notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg)
     }
 }
 
+bool CtiLMProgramDirect::notifyGroupsOfAdjustment(CtiMultiMsg* multiNotifMsg)
+{
+    if( _LM_DEBUG & LM_DEBUG_DIRECT_NOTIFY )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " sending notification of direct program adjustment. Program: " << getPAOName() << endl;
+    }
+
+    setAdjustNotificationPending(false);
+    return notifyGroups(CtiNotifLMControlMsg::UPDATING, multiNotifMsg);
+}
+
+
 /*----------------------------------------------------------------------------
   notifyGroupsOfStop
 
@@ -5372,6 +5401,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _directstoptime = right._directstoptime;
         _notify_active_time = right._notify_active_time;
         _notify_inactive_time = right._notify_inactive_time;
+        _notify_adjust_pending = right._notify_adjust_pending;
         _trigger_offset = right._trigger_offset;
         _trigger_restore_offset = right._trigger_restore_offset;
         _startedrampingout = right._startedrampingout;
@@ -5439,6 +5469,14 @@ void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
     rdr["restoreoffset"] >> _trigger_restore_offset;
     rdr["notifyactiveoffset"] >> _notify_active_offset;
     rdr["notifyinactiveoffset"] >> _notify_inactive_offset;
+
+    {
+        // NotifyAdjust is represented by -1 = false, 1 = true in the database.
+        int notifyAdjust;
+        rdr["notifyadjust"] >> notifyAdjust;
+        _notify_adjust_enabled = notifyAdjust > 0 ? true : false;
+    }
+    
 
     if( !rdr["currentgearnumber"].isNull() )
     {
@@ -5992,8 +6030,6 @@ double  CtiLMProgramDirect::StartMasterCycle(CtiTime currentTime, CtiLMProgramDi
 
 bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
 {
-    vector<int> notif_groups;// = _notificationgroupids;
-//    std::copy(_notificationgroupids.begin(), _notificationgroupids.end(), notif_groups.begin());
     CtiNotifLMControlMsg* notif_msg = CTIDBG_new CtiNotifLMControlMsg(_notificationgroupids, type, getPAOId(), getDirectStartTime(), getDirectStopTime());
     multiNotifMsg->insert(notif_msg);
     return true;
@@ -6026,6 +6062,28 @@ void CtiLMProgramDirect::scheduleStartNotification(const CtiTime& start_time)
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;
+        }
+    }
+}
+
+/**
+ * If this program is set to do adjust notifications, schedule 
+ * an adjustment notification. Adjustment notifications will not 
+ * go out if the stop time is now or earlier as the stop 
+ * notification is supposed to this. Also the notify active time 
+ * must be < now as we should not send out an adjust before the 
+ * start. 
+ */
+void CtiLMProgramDirect::requestAdjustNotification(const CtiTime& stop_time)
+{
+    if( _notify_adjust_enabled && stop_time > CtiTime::now() && getNotifyActiveTime() < CtiTime::now() )
+    {
+        setAdjustNotificationPending(true);
+
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " - " << " going to notify of adjustment" << endl;
         }
     }
 }

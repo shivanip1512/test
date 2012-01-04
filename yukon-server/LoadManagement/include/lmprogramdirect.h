@@ -53,7 +53,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const CtiTime& getNotifyInactiveTime() const;
     const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
-
+    bool getAdjustNotificationPending() const;
+    
     bool getIsRampingIn();
     bool getIsRampingOut();
 
@@ -86,7 +87,6 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     virtual CtiLMProgramBase& setProgramState(LONG newState);
 
-
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
@@ -109,8 +109,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     bool isControlling();
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
-    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);
+    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg); 
+    bool notifyGroupsOfAdjustment(CtiMultiMsg* multiNotifMsg);
     BOOL wasControlActivatedByStatusTrigger();
+
+    void requestAdjustNotification(const CtiTime& stop_time);
 
     virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
@@ -157,9 +160,10 @@ private:
 
     typedef CtiLMProgramBase Inherited;
     bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
-
+    
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
+    bool _notify_adjust_enabled;
 
     std::string _message_subject;
     std::string _message_header;
@@ -177,6 +181,7 @@ private:
     CtiTime _directstoptime;
     CtiTime _notify_active_time;
     CtiTime _notify_inactive_time;
+    bool    _notify_adjust_pending;
 
     CtiTime _startedrampingout;
     BOOL _constraint_override;
@@ -212,6 +217,7 @@ private:
     bool isAStopState(int state);
     unsigned long getCurrentHistLogId();
     void setCurrentHistLogId(unsigned long logID);
+    void setAdjustNotificationPending(bool adjustNeedsToBeSent);
     std::string getAndClearChangeReason();
     std::string getLastUser();
 

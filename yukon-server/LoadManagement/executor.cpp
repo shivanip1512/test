@@ -1686,6 +1686,7 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
         lmProgramDirect->setDirectStopTime(stopTime);
 
         lmProgramDirect->scheduleStopNotification(stopTime);
+        lmProgramDirect->requestAdjustNotification(stopTime);
 
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);

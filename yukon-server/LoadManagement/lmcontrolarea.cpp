@@ -2349,6 +2349,11 @@ void CtiLMControlArea::handleNotification(CtiTime currentTime, CtiMultiMsg* mult
                 currentLMDirectProgram->dumpDynamicData();
             }
 
+            if( currentLMDirectProgram->getAdjustNotificationPending() )
+            {
+                currentLMDirectProgram->notifyGroupsOfAdjustment(multiNotifMsg);
+            }
+
             //Notify of inactivation
             if( currentLMDirectProgram->getNotifyInactiveTime() > gInvalidCtiTime &&
                 currentLMDirectProgram->getNotifyInactiveTime() <= currentTime )
