@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/1/2011 4:01:05 PM                         */
+/* Created on:     1/3/2012 11:45:41 AM                         */
 /*==============================================================*/
 
 
@@ -5670,6 +5670,7 @@ create table LMProgramDirect  (
    TriggerOffset        FLOAT                           not null,
    RestoreOffset        FLOAT                           not null,
    NotifyInactiveOffset NUMBER                          not null,
+   NotifyAdjust         NUMBER                          not null,
    constraint PK_LMPROGRAMDIRECT primary key (DeviceID)
 );
 
