@@ -72,10 +72,6 @@
 
 <cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
 	<cti:standardMenu menuSelection="<%= menuSelection %>" />
-	
-    <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
-    <cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
-	
 <% 
 	//"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID
     String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;

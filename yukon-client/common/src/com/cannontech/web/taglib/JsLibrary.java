@@ -18,11 +18,7 @@ package com.cannontech.web.taglib;
  *  
  */
 public enum JsLibrary {
-    EXT_ALL("/JavaScript/extjs/ext-all.js"),
-    EXT_BASE("/JavaScript/extjs/ext-base.js"),
-
     //if updating jquery be sure to include the noconflict call at the end of the file if prototype
-    //if ext is still being included
     JQUERY("/JavaScript/lib/jQuery/1.6.4/jquery.min.js"),       //http://www.jquery.com
     JQUERY_COOKIE("/JavaScript/lib/jQuery/plugins/cookie/jquery.cookie.js"),
     JQUERY_FORM("/JavaScript/lib/jQuery/plugins/form/jquery.form.js"),  //http://jquery.malsup.com/form/

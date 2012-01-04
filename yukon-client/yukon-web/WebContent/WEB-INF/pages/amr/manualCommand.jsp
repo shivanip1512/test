@@ -15,10 +15,6 @@
 				}
 </style>
 
-<cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
-<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
-<cti:includeScript link="/JavaScript/commanderPrompter.js"/>
-
 <script language="JavaScript">
     function disableButton(x) {
         x.disabled = true;
@@ -48,7 +44,8 @@
                 
                             <tags:nameValueContainer2> <!--  altRowOn="true"> -->
                                 <tags:nameValue2 nameKey=".commonCommands">
-                                    <select name="commonCommand" onchange="loadCommanderCommand(this, 'command');">
+                                    <tags:commanderPrompter/>
+                                    <select name="commonCommand" class="f_loadCommanderCommand" data-cmdfield="command">
                                         <option value=""><i:inline key=".selectCommand"/></option>                
                                         
                                         <c:forEach var="command" items="${commandList}">
@@ -77,10 +74,5 @@
         </table>
     
     </tags:widgetContainer>
-    
-    <div id="commanderPrompterConfirm" class="dn" title="Enter value for command parameter">
-        <label>::REPLACED AT RUNTIME::</label>
-        <input type="text"/>
-    </div>
     
 </cti:standardPage>		

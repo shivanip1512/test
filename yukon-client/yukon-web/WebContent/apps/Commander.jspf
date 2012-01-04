@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <style type="text/css">
 div.scroll { font-size: 12px; 
@@ -37,8 +38,6 @@ div.scroll { font-size: 12px;
 	    YC_BEAN.setDeviceType(deviceID);    //default to the type of the deviceID selected
 	}
 %>     
-     
-<cti:includeScript link="/JavaScript/commanderPrompter.js"/>
      
 <SCRIPT language="JavaScript">
     function disableButton(x) {
@@ -109,7 +108,8 @@ div.scroll { font-size: 12px;
 			<tr> 
 	        	<td class="name">Common Commands:</td>
 	            <td class="value">
-	            	<select name="commonCommand" onChange="loadCommanderCommand(this, 'command');">
+                    <tags:commanderPrompter/>
+	            	<select name="commonCommand" class="f_loadCommanderCommand" data-cmdfield="command">
 	                	<option value="">Select a Command</option>                
 <%
 	Object commandObject = YC_BEAN.getLiteYukonPao();

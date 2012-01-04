@@ -32,4 +32,6 @@
     <entry key="yukon.common.device.commander.commandSelector.noAuthorizedCommands">No pre-defined commands authorized for this user.</entry>
     <entry key="yukon.common.device.commander.attributeSelector.selectAttribute">Select Attribute</entry>
     
+    <entry key="yukon.common.device.commander.prompterDialog.title">Enter value for command parameter</entry>
+    
 </properties>
