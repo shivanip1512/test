@@ -33,7 +33,7 @@ void PortDialbackThread(void *pid)
 
     INT            i, status = NORMAL;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
-    CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
+    CtiPortSPtr    Port( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
     DWORD oldmask = 0, inmask = 0;
     ULONG bytesRead;
     string byteString;

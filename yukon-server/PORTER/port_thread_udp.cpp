@@ -38,7 +38,7 @@ void PortUdpThread(void *pid)
 {
     long portid = (long)pid;
 
-    CtiPortSPtr Port(PortManager.PortGetEqual(portid));
+    CtiPortSPtr Port(PortManager.getPortById(portid));
 
     if( Port && Port->getType() == PortTypeUdp )
     {

@@ -40,7 +40,7 @@ void PortPoolDialoutThread(void *pid)
 
     INT            i, status = NORMAL;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
-    CtiPortSPtr    ParentPort( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
+    CtiPortSPtr    ParentPort( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
 
     OUTMESS        *OutMessage = 0;
     BYTE           ReadPriority;

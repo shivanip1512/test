@@ -132,7 +132,7 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
 {
     if( ULONG portID = msg->GroupMessageId() )
     {
-        if( CtiPortSPtr port = _portManager.PortGetEqual(portID) )
+        if( CtiPortSPtr port = _portManager.getPortById(portID) )
         {
             unsigned int entries = port->getWorkCount();
 

@@ -44,7 +44,7 @@ public:
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
     ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);
 
-    ptr_type PortGetEqual(LONG pid);
+    ptr_type getPortById(LONG pid);
 
     INT writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority);
 

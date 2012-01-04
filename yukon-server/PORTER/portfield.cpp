@@ -74,7 +74,7 @@ void PortThread(void *pid)
     CtiDeviceSPtr  Device;
     CtiDeviceSPtr  LastExclusionDevice;
 
-    CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
+    CtiPortSPtr    Port( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
 
     /* make it clear who is the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
@@ -134,7 +134,7 @@ void PortThread(void *pid)
                 continue;
             }
 
-            if( !Port->isValid() && !PortManager.PortGetEqual(portid) )
+            if( !Port->isValid() && !PortManager.getPortById(portid) )
             {
                 //  we've been deleted - exit the thread
                 break;
@@ -2501,11 +2501,11 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                              *  This is the guy who does some rudimentary checking on the CCU message
                                              *  He will return REQACK in that case...
                                              */
-                                            status = GenReply (InMessage->IDLCStat, 
-                                                               InMessage->InLength, 
-                                                               &pInfo->RemoteSequence.Request, 
-                                                               &pInfo->RemoteSequence.Reply, 
-                                                               Device->getAddress(), 
+                                            status = GenReply (InMessage->IDLCStat,
+                                                               InMessage->InLength,
+                                                               &pInfo->RemoteSequence.Request,
+                                                               &pInfo->RemoteSequence.Reply,
+                                                               Device->getAddress(),
                                                                OutMessage->Command,
                                                                &pInfo->SequencingBroken);
                                         }

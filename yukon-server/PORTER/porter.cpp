@@ -308,7 +308,7 @@ static void applyQueuedDevicePortMatchup(const long unusedid, CtiDeviceSPtr Remo
     if(RemoteDevice->getDeviceQueueHandler() != NULL && portPtr != NULL)
     {
         CtiPortManager *portMgrPtr = (CtiPortManager*)portPtr;
-        CtiPortSPtr port = portMgrPtr->PortGetEqual(RemoteDevice->getPortID());
+        CtiPortSPtr port = portMgrPtr->getPortById(RemoteDevice->getPortID());
         if(port)
         {
             port->addDeviceQueuedWork(RemoteDevice->getID(), -1);
@@ -1395,7 +1395,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
         if( pChg )
         {
-            if( CtiPortSPtr port = PortManager.PortGetEqual(pChg->getId()) )
+            if( CtiPortSPtr port = PortManager.getPortById(pChg->getId()) )
             {
                 port->verifyPortIsRunnable();
             }
@@ -1434,7 +1434,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
                 if(pDev->getDeviceQueueHandler() != NULL)
                 {
-                    CtiPortSPtr port = PortManager.PortGetEqual(pDev->getPortID());
+                    CtiPortSPtr port = PortManager.getPortById(pDev->getPortID());
                     if(port)
                     {
                         port->addDeviceQueuedWork(pDev->getID(), -1);

@@ -448,7 +448,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
         {
             first = false;
 
-            Port = PortManager.PortGetEqual(OutMessage->Port);
+            Port = PortManager.getPortById(OutMessage->Port);
 
             last_port_id = OutMessage->Port;
             last_port = Port;

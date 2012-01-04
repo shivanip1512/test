@@ -185,7 +185,7 @@ PaoStatistics *StatisticsManager::getPaoStatistics(const long pao_id)
     }
 
     //  Only make a new record if the ID exists in the DeviceManager or PortManager
-    if( DeviceManager.getDeviceByID(pao_id) || PortManager.PortGetEqual(pao_id) )
+    if( DeviceManager.getDeviceByID(pao_id) || PortManager.getPortById(pao_id) )
     {
         PaoStatistics *p = new PaoStatistics(pao_id);
 

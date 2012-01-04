@@ -218,7 +218,7 @@ HCTIQUEUE*   QueueHandle(LONG pid)
     HCTIQUEUE *pQue    = NULL;
     CtiPortSPtr pPort;
 
-    if( (pPort = PortManager.PortGetEqual(pid)) )
+    if( (pPort = PortManager.getPortById(pid)) )
     {
         pQue = &(pPort->getPortQueueHandle());
     }

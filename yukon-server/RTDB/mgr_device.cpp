@@ -783,9 +783,25 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
             //  If this was a "reload all" and we didn't reload anything,
             //    DON'T clear the map - we probably just had a DB error.
             //  So make sure we got at least one row before clearing the non-updated devices.
-            if( ! paoids.empty() || rowFound )
+            if( paoids.empty() )
             {
-                evictedDevices = _smartMap.findAll(std::not1(std::mem_fun_ref(&CtiMemDBObject::getUpdatedFlag)));
+                if( rowFound )
+                {
+                    evictedDevices = _smartMap.findAll(std::not1(std::mem_fun_ref(&CtiMemDBObject::getUpdatedFlag)));
+                }
+            }
+            else
+            {
+                for each( const long paoid in paoids )
+                {
+                    if( CtiDeviceSPtr dev = getDeviceByID(paoid) )
+                    {
+                        if( ! dev->getUpdatedFlag() )
+                        {
+                            evictedDevices.push_back(dev);
+                        }
+                    }
+                }
             }
 
             if( ! evictedDevices.empty() )

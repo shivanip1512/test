@@ -157,7 +157,7 @@ struct buildLGRPQ
                         {
                             if( pInfo->getStatus(INLGRPQ) && pInfo->getINLGRPQWarning() < CtiTime::now() )
                             {
-                                CtiPortSPtr port = PortManager.PortGetEqual(ccu_device->getPortID());
+                                CtiPortSPtr port = PortManager.getPortById(ccu_device->getPortID());
                                 if( port )
                                 {
                                     ULONG reqCount = 0;

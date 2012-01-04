@@ -474,7 +474,7 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
 }
 
 
-CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
+CtiPortManager::ptr_type CtiPortManager::getPortById(LONG pid)
 {
     ptr_type p;
     try
@@ -604,7 +604,7 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
 {
     INT status = NORMAL;
 
-    ptr_type pPort = PortGetEqual(pid);
+    ptr_type pPort = getPortById(pid);
 
     if(pPort)
     {
@@ -735,7 +735,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                         {
                         case (CtiTablePaoExclusion::ExFunctionIdExclusion):
                             {
-                                port = PortGetEqual(paox.getExcludedPaoId());
+                                port = getPortById(paox.getExcludedPaoId());
 
                                 if(port)
                                 {
