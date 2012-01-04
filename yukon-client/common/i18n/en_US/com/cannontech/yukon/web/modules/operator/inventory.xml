@@ -121,6 +121,7 @@
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.WAREHOUSE">Warehouse</entry>
 
     <entry key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel">Inventory Selected: </entry>
+    <entry key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle">Show Selected Inventory</entry>
     <entry key="yukon.common.collection.inventory.selectedInventoryPopup.count">Inventory Count: {0}</entry>
     <entry key="yukon.common.collection.inventory.selectedInventoryPopup.popupTitle">Selected Inventory</entry>
     <entry key="yukon.common.collection.inventory.selectedInventoryPopup.selectedDevicesResultsLimited">Results limited to first {0} inventory.</entry>

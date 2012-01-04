@@ -1473,6 +1473,13 @@ select:focus {
     cursor: not-allowed;
 }
 
+.magnifier {
+	background: transparent url(../Icons/magnifier.gif) top left no-repeat;
+}
+.magnifier:hover {
+	background: transparent url(../Icons/magnifier_zoom_in.gif) top left no-repeat;
+}
+
 .ui-icon.excel{
     background-image: url("/WebConfig/yukon/Icons/excel.gif") !important;
 }

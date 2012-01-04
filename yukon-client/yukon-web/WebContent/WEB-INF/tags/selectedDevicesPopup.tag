@@ -13,6 +13,16 @@
 <cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
 <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery(".f_showSelectedDevices").click(function(event) {
+			var args = jQuery(event.currentTarget).attr("data-function-arguments");
+			eval('args = ' + args);
+			showSelectedDevices(this, args.id, args.id + "InnerDiv", args.url);
+		});
+	});
+</script>
+
 <%-- CREATE URL --%>
 <c:choose>
 	<c:when test="${not empty pageScope.deviceCollection}">
@@ -36,16 +46,7 @@
 </c:choose>
 
 <%-- POPUP LINK --%>
-<c:url var="mag" value="/WebConfig/yukon/Icons/magnifier.gif"/>
-<c:url var="magOver" value="/WebConfig/yukon/Icons/magnifier_zoom_in.gif"/>
-<c:url var="magOverDisabled" value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>
-
-<img onclick="javascript:showSelectedDevices(this, '${id}', '${id}InnerDiv', '${selectedDevicesTableUrl}', '${mag}', '${magOverDisabled}');" 
-        title="${warning}" 
-        src="${mag}" 
-        onmouseover="javascript:this.src='${magOver}'" 
-        onmouseout="javascript:this.src='${mag}'"
-        class="cp">
+<a href="javascript:void(0);" title="${warning}" class="icon magnifier f_showSelectedDevices" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${warning}</a>
 <tags:simplePopup id="${id}" title="${popupTitle}">
     <div style="height:300px;overflow:auto;">
     <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>

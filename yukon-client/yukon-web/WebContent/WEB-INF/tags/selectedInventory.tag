@@ -9,6 +9,16 @@
 
 <cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
 
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery(".f_showSelectedInventory").click(function(event) {
+			var args = jQuery(event.currentTarget).attr("data-function-arguments");
+			eval('args = ' + args);
+			showSelectedDevices(this, args.id, args.id + "InnerDiv", args.url);
+		});
+	});
+</script>
+
 <c:set value="${inventoryCollection.count}" var="count"/>
 
 <%-- CREATE URL --%>
@@ -32,13 +42,15 @@
 <span class="smallBoldLabel">
     <i:inline key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel"/>
 </span>
-<c:if test="${count > 0}">
-    <a href="javascript:showInventoryCollection('${id}', '${id}InnerDiv', '${selectedInventoryTableUrl}', $('inventoryCollectionImg'));" class="simpleLink hoverableImageContainer">
-</c:if>
-<span class="smallLink"><i:inline key="${inventoryCollection.description}"/></span>
-<c:if test="${count > 0}">
-    <img id="inventoryCollectionImg" src="/WebConfig/yukon/Icons/magnifier.gif" class="logoImage hoverableImage"/></a>
-</c:if>
+<span class="smallLink">
+	<i:inline key="${inventoryCollection.description}"/>
+	<c:if test="${count > 0}">
+		<div class="dib">
+			<cti:msg2 var="magTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle"/>
+			<a href="javascript:void(0);" title="${magTitle}" class="icon magnifier f_showSelectedInventory" data-function-arguments="{'id':'${id}', 'url':'${selectedInventoryTableUrl}'}">${magTitle}</a>
+		</div>
+	</c:if>
+</span>
 
 <br>
 <span class="smallBoldLabel">
