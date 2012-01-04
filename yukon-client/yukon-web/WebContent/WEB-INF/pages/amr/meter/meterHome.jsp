@@ -17,12 +17,14 @@
 				<td class="widgetColumnCell" valign="top">
 				    <ct:widget bean="meterInformationWidget" />
 
-                    <c:if test="${threePhaseVoltageOrCurrentSupported}">
-                       <ct:widget bean="polyphaseMeterReadingsWidget" />
-                    </c:if>
-                    <c:if test="${not threePhaseVoltageOrCurrentSupported}">
-					   <ct:widget bean="meterReadingsWidget" />
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${threePhaseVoltageOrCurrentSupported}">
+                           <ct:widget bean="polyphaseMeterReadingsWidget" />
+                        </c:when>
+                        <c:otherwise>
+    					   <ct:widget bean="meterReadingsWidget" />
+                        </c:otherwise>
+                    </c:choose>
 
                     <c:if test="${isRFMesh_JUST_HIDE_FOR_NOW}">
                         <ct:widget bean="rfnMeterInfoWidget" />
