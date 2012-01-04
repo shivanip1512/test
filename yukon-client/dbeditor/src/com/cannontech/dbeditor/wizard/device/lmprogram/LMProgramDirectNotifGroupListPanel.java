@@ -20,13 +20,15 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
 	private com.cannontech.common.gui.util.AddRemovePanel ivjAddRemovePanel = null;
-	private javax.swing.JLabel ivjJLabelMinNotifyTime = null;
-	private javax.swing.JLabel JLabelNotifyInactiveOffset = null;
+	private javax.swing.JLabel jLabelMinNotifyTime = null;
+	private javax.swing.JLabel jLabelNotifyInactiveOffset = null;
+	private javax.swing.JLabel jLabelNotifyAdjust = null;
+	private javax.swing.JLabel jLabelMinutes = null;
 	private javax.swing.JTextField jTextFieldNotifyActiveOffset = null;
 	private javax.swing.JTextField jTextFieldNotifyInactiveOffset = null;
-	private javax.swing.JLabel jLabelMinutes = null;
 	private javax.swing.JCheckBox jCheckBoxEnableStart = null;
 	private javax.swing.JCheckBox jCheckBoxEnableStop = null;
+	private javax.swing.JCheckBox jCheckBoxNotifyAdjust = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	
 	class IvjEventHandler implements javax.swing.event.CaretListener, java.awt.event.ActionListener 
@@ -45,6 +47,10 @@ public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gu
 					handleOffsetEnabling(getJCheckBoxEnableStart().isSelected(), getJCheckBoxEnableStop().isSelected());
 				if (e.getSource() == getJCheckBoxEnableStop()) 
 					handleOffsetEnabling(getJCheckBoxEnableStart().isSelected(), getJCheckBoxEnableStop().isSelected());
+				if (e.getSource() == getJCheckBoxNotifyAdjust()) {
+				    getJLabelNotifyAdjust().setEnabled(getJCheckBoxNotifyAdjust().isSelected());
+				    fireInputUpdate();
+			    }
 			};
 	}
 /**
@@ -181,26 +187,31 @@ public Object getValue(Object o)
 	}
 	else
 		program.getDirectProgram().setNotifyInactiveOffset(new Integer(-1));
-	
-    
+
+	if (getJCheckBoxNotifyAdjust().isSelected()) {
+        program.getDirectProgram().setNotifyAdjust(new Integer(1));
+	} else {
+        program.getDirectProgram().setNotifyAdjust(new Integer(-1));
+	}
+
     // Create Status point
     if(program.getPAObjectID() == null){
         PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
         program.setPAObjectID(paoDao.getNextPaoId());
 
-    PointCreationService pointCreationService = (PointCreationService) YukonSpringHook.getBean("pointCreationService");
-    PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
-                                               "Status",
-                                               program.getPAObjectID(),
-                                               1,
-                                               0.0,
-                                               0,
-                                               StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
-                                               StateGroupUtils.DEFAULT_STATE,
-                                               PointUnit.DEFAULT_DECIMAL_PLACES,
-                                               ControlType.NONE,
-                                               PointArchiveType.NONE,
-                                               PointArchiveInterval.ZERO);
+        PointCreationService pointCreationService = (PointCreationService) YukonSpringHook.getBean("pointCreationService");
+        PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
+                                                   "Status",
+                                                   program.getPAObjectID(),
+                                                   1,
+                                                   0.0,
+                                                   0,
+                                                   StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
+                                                   StateGroupUtils.DEFAULT_STATE,
+                                                   PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                   ControlType.NONE,
+                                                   PointArchiveType.NONE,
+                                                   PointArchiveInterval.ZERO);
 
         SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
         persistant.addOwnerDBPersistent(program);
@@ -235,7 +246,7 @@ private void initConnections() throws java.lang.Exception {
 	getJTextFieldNotifyInactiveOffset().addCaretListener(ivjEventHandler);
 	getJCheckBoxEnableStart().addActionListener(ivjEventHandler);
 	getJCheckBoxEnableStop().addActionListener(ivjEventHandler);
-	
+	getJCheckBoxNotifyAdjust().addActionListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -246,14 +257,17 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("LMProgramDirectCustomerListPanel");
-		java.awt.GridBagConstraints consGridBagConstraints20 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints19 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints20 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints21 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints22 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints23 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints24 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints25 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints23 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints26 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints27 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints28 = new java.awt.GridBagConstraints();
+		
 		consGridBagConstraints21.insets = new java.awt.Insets(2,105,1,3);
 		consGridBagConstraints21.gridy = 1;
 		consGridBagConstraints21.gridx = 0;
@@ -271,10 +285,10 @@ private void initialize() {
 		consGridBagConstraints25.weightx = 1.0;
 		consGridBagConstraints25.gridy = 1;
 		consGridBagConstraints25.gridx = 2;
-		consGridBagConstraints19.insets = new java.awt.Insets(2,2,5,4);
+		consGridBagConstraints19.insets = new java.awt.Insets(20,2,5,4);
 		consGridBagConstraints19.ipady = 1;
 		consGridBagConstraints19.gridwidth = 4;
-		consGridBagConstraints19.gridy = 2;
+		consGridBagConstraints19.gridy = 3;
 		consGridBagConstraints19.gridx = 0;
 		consGridBagConstraints23.insets = new java.awt.Insets(9,4,2,4);
 		consGridBagConstraints23.fill = java.awt.GridBagConstraints.NONE;
@@ -286,15 +300,25 @@ private void initialize() {
 		consGridBagConstraints26.gridy = 0;
 		consGridBagConstraints26.gridx = 3;
 		consGridBagConstraints26.anchor = java.awt.GridBagConstraints.WEST;
+		consGridBagConstraints27.insets = new java.awt.Insets(2,105,0,0);
+		consGridBagConstraints27.gridy = 2;
+		consGridBagConstraints27.gridx = 0;
+		consGridBagConstraints28.insets = new java.awt.Insets(2,0,0,0);
+        consGridBagConstraints28.gridy = 2;
+        consGridBagConstraints28.gridx = 1;
+        consGridBagConstraints28.gridwidth = 2;
+		
 		setLayout(new java.awt.GridBagLayout());
 		this.add(getAddRemovePanel(), consGridBagConstraints19);
 		this.add(getJCheckBoxEnableStart(), consGridBagConstraints20);
 		this.add(getJCheckBoxEnableStop(), consGridBagConstraints21);
-		this.add(getIvjJLabelMinNotifyTime(), consGridBagConstraints22);
+		this.add(getJLabelMinNotifyTime(), consGridBagConstraints22);
 		this.add(getJTextFieldNotifyActiveOffset(), consGridBagConstraints23);
 		this.add(getJLabelNotifyInactiveOffset(), consGridBagConstraints24);
 		this.add(getJTextFieldNotifyInactiveOffset(), consGridBagConstraints25);
 		this.add(getJLabelMinutes(), consGridBagConstraints26);
+		this.add(getJCheckBoxNotifyAdjust(), consGridBagConstraints27);
+		this.add(getJLabelNotifyAdjust(), consGridBagConstraints28);
 		setSize(416, 348);
 
 		initConnections();
@@ -497,6 +521,15 @@ public void setValue(Object o)
 		getJTextFieldNotifyActiveOffset().setText( new Integer(program.getDirectProgram().getNotifyActiveOffset().intValue() / 60).toString() );
 	if(numStop.intValue() != -1)
 		getJTextFieldNotifyInactiveOffset().setText( new Integer(program.getDirectProgram().getNotifyInactiveOffset().intValue() / 60).toString() );
+	
+	if (program.getDirectProgram().getNotifyAdjust() == 1) {
+	    getJCheckBoxNotifyAdjust().setSelected(true);
+	    getJLabelNotifyAdjust().setEnabled(true);
+	}
+	if (program.getDirectProgram().getNotifyAdjust() == -1) {
+	    getJCheckBoxNotifyAdjust().setSelected(false);
+	    getJLabelNotifyAdjust().setEnabled(false);
+	}
 }
 
 public void setFirstFocus() 
@@ -512,22 +545,22 @@ public void setFirstFocus()
 }
 
 	/**
-	 * This method initializes ivjJLabelMinNotifyTime
+	 * This method initializes jLabelMinNotifyTime
 	 * 
 	 * @return javax.swing.JLabel
 	 */
-	private javax.swing.JLabel getIvjJLabelMinNotifyTime() {
-		if(ivjJLabelMinNotifyTime == null) {
-			ivjJLabelMinNotifyTime = new javax.swing.JLabel();
-			ivjJLabelMinNotifyTime.setText("Program Start:");
-			ivjJLabelMinNotifyTime.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 14));
-			ivjJLabelMinNotifyTime.setMaximumSize(new java.awt.Dimension(108,19));
-			ivjJLabelMinNotifyTime.setMinimumSize(new java.awt.Dimension(108,19));
-			ivjJLabelMinNotifyTime.setName("ivjJLabelMinNotifyTime");
-			ivjJLabelMinNotifyTime.setPreferredSize(new java.awt.Dimension(108,19));
-			ivjJLabelMinNotifyTime.setEnabled(false);
+	private javax.swing.JLabel getJLabelMinNotifyTime() {
+		if(jLabelMinNotifyTime == null) {
+			jLabelMinNotifyTime = new javax.swing.JLabel();
+			jLabelMinNotifyTime.setText("Program Start:");
+			jLabelMinNotifyTime.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 14));
+			jLabelMinNotifyTime.setMaximumSize(new java.awt.Dimension(108,19));
+			jLabelMinNotifyTime.setMinimumSize(new java.awt.Dimension(108,19));
+			jLabelMinNotifyTime.setName("ivjJLabelMinNotifyTime");
+			jLabelMinNotifyTime.setPreferredSize(new java.awt.Dimension(108,19));
+			jLabelMinNotifyTime.setEnabled(false);
 		}
-		return ivjJLabelMinNotifyTime;
+		return jLabelMinNotifyTime;
 	}
 	/**
 	 * This method initializes JLabelNotifyInactiveOffset
@@ -535,17 +568,35 @@ public void setFirstFocus()
 	 * @return javax.swing.JLabel
 	 */
 	private javax.swing.JLabel getJLabelNotifyInactiveOffset() {
-		if(JLabelNotifyInactiveOffset == null) {
-			JLabelNotifyInactiveOffset = new javax.swing.JLabel();
-			JLabelNotifyInactiveOffset.setText("Program Stop: ");
-			JLabelNotifyInactiveOffset.setMaximumSize(new java.awt.Dimension(108,19));
-			JLabelNotifyInactiveOffset.setMinimumSize(new java.awt.Dimension(108,19));
-			JLabelNotifyInactiveOffset.setPreferredSize(new java.awt.Dimension(108,19));
-			JLabelNotifyInactiveOffset.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 14));
-			JLabelNotifyInactiveOffset.setName("JLabelNotifyInactiveOffset");
-			JLabelNotifyInactiveOffset.setEnabled(false);
+		if(jLabelNotifyInactiveOffset == null) {
+			jLabelNotifyInactiveOffset = new javax.swing.JLabel();
+			jLabelNotifyInactiveOffset.setText("Program Stop: ");
+			jLabelNotifyInactiveOffset.setMaximumSize(new java.awt.Dimension(108,19));
+			jLabelNotifyInactiveOffset.setMinimumSize(new java.awt.Dimension(108,19));
+			jLabelNotifyInactiveOffset.setPreferredSize(new java.awt.Dimension(108,19));
+			jLabelNotifyInactiveOffset.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 14));
+			jLabelNotifyInactiveOffset.setName("JLabelNotifyInactiveOffset");
+			jLabelNotifyInactiveOffset.setEnabled(false);
 		}
-		return JLabelNotifyInactiveOffset;
+		return jLabelNotifyInactiveOffset;
+	}
+	/**
+	 * This method initializes JLabelNotifyAdjust
+	 * 
+	 * @return javax.swing.JLabel
+	 */
+	private javax.swing.JLabel getJLabelNotifyAdjust() {
+	    if(jLabelNotifyAdjust == null) {
+	        jLabelNotifyAdjust = new javax.swing.JLabel();
+	        jLabelNotifyAdjust.setText("Notify on Adjustment");
+	        jLabelNotifyAdjust.setMaximumSize(new java.awt.Dimension(200,19));
+	        jLabelNotifyAdjust.setMinimumSize(new java.awt.Dimension(200,19));
+	        jLabelNotifyAdjust.setPreferredSize(new java.awt.Dimension(200,19));
+	        jLabelNotifyAdjust.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 14));
+	        jLabelNotifyAdjust.setName("JLabelNotifyAdjust");
+	        jLabelNotifyAdjust.setEnabled(false);
+	    }
+	    return jLabelNotifyAdjust;
 	}
 	/**
 	 * This method initializes jTextFieldNotifyActiveOffset
@@ -624,10 +675,18 @@ public void setFirstFocus()
 		return jCheckBoxEnableStop;
 	}
 	
+	private javax.swing.JCheckBox getJCheckBoxNotifyAdjust() {
+	    if(jCheckBoxNotifyAdjust == null) {
+	        jCheckBoxNotifyAdjust = new javax.swing.JCheckBox();
+	        jCheckBoxNotifyAdjust.setName("jCheckBoxNotifyAdjust");
+	    }
+	    return jCheckBoxNotifyAdjust;
+	}
+	
 	public void handleOffsetEnabling(boolean start, boolean stop)
 	{
 		getJTextFieldNotifyActiveOffset().setEnabled(start);
-		getIvjJLabelMinNotifyTime().setEnabled(start);
+		getJLabelMinNotifyTime().setEnabled(start);
 		
 		getJTextFieldNotifyInactiveOffset().setEnabled(stop);
 		getJLabelNotifyInactiveOffset().setEnabled(stop);

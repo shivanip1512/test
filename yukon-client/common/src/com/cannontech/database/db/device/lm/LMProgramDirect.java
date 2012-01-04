@@ -11,6 +11,7 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	private Integer deviceID = null;
 	private Integer notifyActiveOffset = new Integer(-1);
 	private Integer notifyInactiveOffset = new Integer(-1);
+	private Integer notifyAdjust = new Integer(-1);
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
@@ -20,7 +21,7 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"NOTIFYACTIVEOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET", "RESTOREOFFSET", "NOTIFYINACTIVEOFFSET"
+		"NOTIFYACTIVEOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET", "RESTOREOFFSET", "NOTIFYINACTIVEOFFSET", "NOTIFYADJUST"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -39,7 +40,8 @@ public LMProgramDirect() {
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getDeviceID(), getNotifyActiveOffset(), getHeading(),
-						   getMessageHeader(), getMessageFooter(), getTriggerOffset(), getRestoreOffset(), getNotifyInactiveOffset() };
+						   getMessageHeader(), getMessageFooter(), getTriggerOffset(), 
+						   getRestoreOffset(), getNotifyInactiveOffset(), getNotifyAdjust() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -61,6 +63,10 @@ public java.lang.Integer getDeviceID() {
 
 public Integer getNotifyActiveOffset() {
 	return notifyActiveOffset;
+}
+
+public Integer getNotifyAdjust() {
+    return notifyAdjust;
 }
 
 public String getHeading() {
@@ -159,6 +165,7 @@ public void retrieve() throws java.sql.SQLException
 		setTriggerOffset( (Double) results[4] );
 		setRestoreOffset( (Double) results[5] );
 		setNotifyInactiveOffset( (Integer) results[6]);
+		setNotifyAdjust( (Integer) results[7]);
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -199,7 +206,8 @@ public void setRestoreOffset(Double restoreOffset) {
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getNotifyActiveOffset(), getHeading(), getMessageHeader(),
-							getMessageFooter(), getTriggerOffset(), getRestoreOffset(), getNotifyInactiveOffset()};
+							getMessageFooter(), getTriggerOffset(), getRestoreOffset(), 
+							getNotifyInactiveOffset(), getNotifyAdjust()};
 
 	Object constraintValues[] = { getDeviceID() };
 
@@ -214,5 +222,8 @@ public void setNotifyInactiveOffset(Integer notifyInactiveOffset) {
 }
 public void setNotifyActiveOffset(Integer notifyActiveOffset) {
 	this.notifyActiveOffset = notifyActiveOffset;
+}
+public void setNotifyAdjust(Integer notifyAdjust) {
+    this.notifyAdjust = notifyAdjust;
 }
 }
