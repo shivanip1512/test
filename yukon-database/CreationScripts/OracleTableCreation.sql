@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/3/2012 11:45:41 AM                         */
+/* Created on:     1/4/2012 4:27:59 PM                          */
 /*==============================================================*/
 
 
@@ -9534,7 +9534,7 @@ create table ZBEndPoint  (
 /*==============================================================*/
 create table ZBGateway  (
    DeviceId             NUMBER                          not null,
-   FirmwareVersion      VARCHAR2(255)                   not null,
+   FirmwareVersion      VARCHAR2(255),
    MacAddress           VARCHAR2(255)                   not null,
    constraint PK_ZBGateway primary key (DeviceId)
 );

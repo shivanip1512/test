@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/3/2012 1:11:58 PM                          */
+/* Created on:     1/4/2012 4:18:41 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -10036,7 +10036,7 @@ go
 /*==============================================================*/
 create table ZBGateway (
    DeviceId             numeric              not null,
-   FirmwareVersion      varchar(255)         not null,
+   FirmwareVersion      varchar(255)         null,
    MacAddress           varchar(255)         not null,
    constraint PK_ZBGateway primary key (DeviceId)
 )
