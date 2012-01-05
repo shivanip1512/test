@@ -138,8 +138,7 @@ public class CalculationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         //-- _updateType
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_updateType", "updateType", org.exolab.castor.xml.NodeType.Element);
-        desc.setImmutable(true);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType.class, "_updateType", "updateType", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -152,7 +151,7 @@ public class CalculationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             {
                 try {
                     Calculation target = (Calculation) object;
-                    target.setUpdateType( (java.lang.String) value);
+                    target.setUpdateType( (com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -162,6 +161,8 @@ public class CalculationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 return null;
             }
         };
+        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType.class, handler);
+        desc.setImmutable(true);
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -169,43 +170,40 @@ public class CalculationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         //-- validation code for: _updateType
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            StringValidator typeValidator = new StringValidator();
-            typeValidator.setWhiteSpace("preserve");
-            fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- _componentList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.Component.class, "_componentList", "component", org.exolab.castor.xml.NodeType.Element);
+        //-- _components
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.Components.class, "_components", "components", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Calculation target = (Calculation) object;
-                return target.getComponent();
+                return target.getComponents();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     Calculation target = (Calculation) object;
-                    target.addComponent( (com.cannontech.common.pao.definition.model.castor.Component) value);
+                    target.setComponents( (com.cannontech.common.pao.definition.model.castor.Components) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.pao.definition.model.castor.Component();
+                return new com.cannontech.common.pao.definition.model.castor.Components();
             }
         };
         desc.setHandler(handler);
         desc.setRequired(true);
-        desc.setMultivalued(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _componentList
+        //-- validation code for: _components
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(2);
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
         }
         desc.setValidator(fieldValidator);

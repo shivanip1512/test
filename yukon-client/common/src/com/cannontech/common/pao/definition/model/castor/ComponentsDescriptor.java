@@ -17,11 +17,11 @@ import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
 /**
- * Class BasicCalcLookupDescriptor.
+ * Class ComponentsDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class BasicCalcLookupDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class ComponentsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -53,57 +53,56 @@ public class BasicCalcLookupDescriptor extends org.exolab.castor.xml.util.XMLCla
      //- Constructors -/
     //----------------/
 
-    public BasicCalcLookupDescriptor() 
+    public ComponentsDescriptor() 
      {
         super();
-        xmlName = "basicLookup";
+        xmlName = "components";
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
         
-        //-- _point
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_point", "point", org.exolab.castor.xml.NodeType.Attribute);
-        desc.setImmutable(true);
+        //-- initialize element descriptors
+        
+        //-- _componentList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.Component.class, "_componentList", "component", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                BasicCalcLookup target = (BasicCalcLookup) object;
-                return target.getPoint();
+                Components target = (Components) object;
+                return target.getComponent();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    BasicCalcLookup target = (BasicCalcLookup) object;
-                    target.setPoint( (java.lang.String) value);
+                    Components target = (Components) object;
+                    target.addComponent( (com.cannontech.common.pao.definition.model.castor.Component) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new com.cannontech.common.pao.definition.model.castor.Component();
             }
         };
         desc.setHandler(handler);
         desc.setRequired(true);
-        desc.setMultivalued(false);
+        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _point
+        //-- validation code for: _componentList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
-            StringValidator typeValidator = new StringValidator();
-            typeValidator.setWhiteSpace("preserve");
-            fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- initialize element descriptors
-        
-    } //-- com.cannontech.common.pao.definition.model.castor.BasicCalcLookupDescriptor()
+    } //-- com.cannontech.common.pao.definition.model.castor.ComponentsDescriptor()
 
 
       //-----------/
@@ -155,7 +154,7 @@ public class BasicCalcLookupDescriptor extends org.exolab.castor.xml.util.XMLCla
      */
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.common.pao.definition.model.castor.BasicCalcLookup.class;
+        return com.cannontech.common.pao.definition.model.castor.Components.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

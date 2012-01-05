@@ -11,6 +11,8 @@ package com.cannontech.common.pao.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType;
+import com.cannontech.common.pao.definition.model.castor.types.OperatorType;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -34,19 +36,19 @@ public class Component implements java.io.Serializable {
     //--------------------------/
 
     /**
+     * Field _point
+     */
+    private java.lang.String _point;
+
+    /**
      * Field _componentType
      */
-    private java.lang.String _componentType = "Operation";
+    private com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType _componentType = com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType.valueOf("Operation");
 
     /**
      * Field _operator
      */
-    private java.lang.String _operator = "+";
-
-    /**
-     * Field _basicCalcLookup
-     */
-    private com.cannontech.common.pao.definition.model.castor.BasicCalcLookup _basicCalcLookup;
+    private com.cannontech.common.pao.definition.model.castor.types.OperatorType _operator = com.cannontech.common.pao.definition.model.castor.types.OperatorType.valueOf("+");
 
 
       //----------------/
@@ -56,8 +58,8 @@ public class Component implements java.io.Serializable {
     public Component() 
      {
         super();
-        setComponentType("Operation");
-        setOperator("+");
+        setComponentType(com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType.valueOf("Operation"));
+        setOperator(com.cannontech.common.pao.definition.model.castor.types.OperatorType.valueOf("+"));
     } //-- com.cannontech.common.pao.definition.model.castor.Component()
 
 
@@ -66,37 +68,37 @@ public class Component implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'basicCalcLookup'.
-     * 
-     * @return BasicCalcLookup
-     * @return the value of field 'basicCalcLookup'.
-     */
-    public com.cannontech.common.pao.definition.model.castor.BasicCalcLookup getBasicCalcLookup()
-    {
-        return this._basicCalcLookup;
-    } //-- com.cannontech.common.pao.definition.model.castor.BasicCalcLookup getBasicCalcLookup() 
-
-    /**
      * Returns the value of field 'componentType'.
      * 
-     * @return String
+     * @return ComponentTypeType
      * @return the value of field 'componentType'.
      */
-    public java.lang.String getComponentType()
+    public com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType getComponentType()
     {
         return this._componentType;
-    } //-- java.lang.String getComponentType() 
+    } //-- com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType getComponentType() 
 
     /**
      * Returns the value of field 'operator'.
      * 
-     * @return String
+     * @return OperatorType
      * @return the value of field 'operator'.
      */
-    public java.lang.String getOperator()
+    public com.cannontech.common.pao.definition.model.castor.types.OperatorType getOperator()
     {
         return this._operator;
-    } //-- java.lang.String getOperator() 
+    } //-- com.cannontech.common.pao.definition.model.castor.types.OperatorType getOperator() 
+
+    /**
+     * Returns the value of field 'point'.
+     * 
+     * @return String
+     * @return the value of field 'point'.
+     */
+    public java.lang.String getPoint()
+    {
+        return this._point;
+    } //-- java.lang.String getPoint() 
 
     /**
      * Method isValid
@@ -145,34 +147,34 @@ public class Component implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'basicCalcLookup'.
-     * 
-     * @param basicCalcLookup the value of field 'basicCalcLookup'.
-     */
-    public void setBasicCalcLookup(com.cannontech.common.pao.definition.model.castor.BasicCalcLookup basicCalcLookup)
-    {
-        this._basicCalcLookup = basicCalcLookup;
-    } //-- void setBasicCalcLookup(com.cannontech.common.pao.definition.model.castor.BasicCalcLookup) 
-
-    /**
      * Sets the value of field 'componentType'.
      * 
      * @param componentType the value of field 'componentType'.
      */
-    public void setComponentType(java.lang.String componentType)
+    public void setComponentType(com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType componentType)
     {
         this._componentType = componentType;
-    } //-- void setComponentType(java.lang.String) 
+    } //-- void setComponentType(com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType) 
 
     /**
      * Sets the value of field 'operator'.
      * 
      * @param operator the value of field 'operator'.
      */
-    public void setOperator(java.lang.String operator)
+    public void setOperator(com.cannontech.common.pao.definition.model.castor.types.OperatorType operator)
     {
         this._operator = operator;
-    } //-- void setOperator(java.lang.String) 
+    } //-- void setOperator(com.cannontech.common.pao.definition.model.castor.types.OperatorType) 
+
+    /**
+     * Sets the value of field 'point'.
+     * 
+     * @param point the value of field 'point'.
+     */
+    public void setPoint(java.lang.String point)
+    {
+        this._point = point;
+    } //-- void setPoint(java.lang.String) 
 
     /**
      * Method unmarshal

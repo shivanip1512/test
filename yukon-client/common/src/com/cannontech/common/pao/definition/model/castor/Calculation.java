@@ -11,12 +11,11 @@ package com.cannontech.common.pao.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -48,12 +47,12 @@ public class Calculation implements java.io.Serializable {
     /**
      * Field _updateType
      */
-    private java.lang.String _updateType = "On First Change";
+    private com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType _updateType = com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType.valueOf("On First Change");
 
     /**
-     * Field _componentList
+     * Field _components
      */
-    private java.util.ArrayList _componentList;
+    private com.cannontech.common.pao.definition.model.castor.Components _components;
 
 
       //----------------/
@@ -63,8 +62,7 @@ public class Calculation implements java.io.Serializable {
     public Calculation() 
      {
         super();
-        setUpdateType("On First Change");
-        _componentList = new ArrayList();
+        setUpdateType(com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType.valueOf("On First Change"));
     } //-- com.cannontech.common.pao.definition.model.castor.Calculation()
 
 
@@ -73,100 +71,15 @@ public class Calculation implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method addComponent
+     * Returns the value of field 'components'.
      * 
-     * 
-     * 
-     * @param vComponent
+     * @return Components
+     * @return the value of field 'components'.
      */
-    public void addComponent(com.cannontech.common.pao.definition.model.castor.Component vComponent)
-        throws java.lang.IndexOutOfBoundsException
+    public com.cannontech.common.pao.definition.model.castor.Components getComponents()
     {
-        _componentList.add(vComponent);
-    } //-- void addComponent(com.cannontech.common.pao.definition.model.castor.Component) 
-
-    /**
-     * Method addComponent
-     * 
-     * 
-     * 
-     * @param index
-     * @param vComponent
-     */
-    public void addComponent(int index, com.cannontech.common.pao.definition.model.castor.Component vComponent)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _componentList.add(index, vComponent);
-    } //-- void addComponent(int, com.cannontech.common.pao.definition.model.castor.Component) 
-
-    /**
-     * Method clearComponent
-     * 
-     */
-    public void clearComponent()
-    {
-        _componentList.clear();
-    } //-- void clearComponent() 
-
-    /**
-     * Method enumerateComponent
-     * 
-     * 
-     * 
-     * @return Enumeration
-     */
-    public java.util.Enumeration enumerateComponent()
-    {
-        return new org.exolab.castor.util.IteratorEnumeration(_componentList.iterator());
-    } //-- java.util.Enumeration enumerateComponent() 
-
-    /**
-     * Method getComponent
-     * 
-     * 
-     * 
-     * @param index
-     * @return Component
-     */
-    public com.cannontech.common.pao.definition.model.castor.Component getComponent(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _componentList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (com.cannontech.common.pao.definition.model.castor.Component) _componentList.get(index);
-    } //-- com.cannontech.common.pao.definition.model.castor.Component getComponent(int) 
-
-    /**
-     * Method getComponent
-     * 
-     * 
-     * 
-     * @return Component
-     */
-    public com.cannontech.common.pao.definition.model.castor.Component[] getComponent()
-    {
-        int size = _componentList.size();
-        com.cannontech.common.pao.definition.model.castor.Component[] mArray = new com.cannontech.common.pao.definition.model.castor.Component[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (com.cannontech.common.pao.definition.model.castor.Component) _componentList.get(index);
-        }
-        return mArray;
-    } //-- com.cannontech.common.pao.definition.model.castor.Component[] getComponent() 
-
-    /**
-     * Method getComponentCount
-     * 
-     * 
-     * 
-     * @return int
-     */
-    public int getComponentCount()
-    {
-        return _componentList.size();
-    } //-- int getComponentCount() 
+        return this._components;
+    } //-- com.cannontech.common.pao.definition.model.castor.Components getComponents() 
 
     /**
      * Returns the value of field 'forceQualityNormal'.
@@ -193,13 +106,13 @@ public class Calculation implements java.io.Serializable {
     /**
      * Returns the value of field 'updateType'.
      * 
-     * @return String
+     * @return UpdateTypeType
      * @return the value of field 'updateType'.
      */
-    public java.lang.String getUpdateType()
+    public com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType getUpdateType()
     {
         return this._updateType;
-    } //-- java.lang.String getUpdateType() 
+    } //-- com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType getUpdateType() 
 
     /**
      * Method isValid
@@ -248,52 +161,14 @@ public class Calculation implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Method removeComponent
+     * Sets the value of field 'components'.
      * 
-     * 
-     * 
-     * @param vComponent
-     * @return boolean
+     * @param components the value of field 'components'.
      */
-    public boolean removeComponent(com.cannontech.common.pao.definition.model.castor.Component vComponent)
+    public void setComponents(com.cannontech.common.pao.definition.model.castor.Components components)
     {
-        boolean removed = _componentList.remove(vComponent);
-        return removed;
-    } //-- boolean removeComponent(com.cannontech.common.pao.definition.model.castor.Component) 
-
-    /**
-     * Method setComponent
-     * 
-     * 
-     * 
-     * @param index
-     * @param vComponent
-     */
-    public void setComponent(int index, com.cannontech.common.pao.definition.model.castor.Component vComponent)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _componentList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _componentList.set(index, vComponent);
-    } //-- void setComponent(int, com.cannontech.common.pao.definition.model.castor.Component) 
-
-    /**
-     * Method setComponent
-     * 
-     * 
-     * 
-     * @param componentArray
-     */
-    public void setComponent(com.cannontech.common.pao.definition.model.castor.Component[] componentArray)
-    {
-        //-- copy array
-        _componentList.clear();
-        for (int i = 0; i < componentArray.length; i++) {
-            _componentList.add(componentArray[i]);
-        }
-    } //-- void setComponent(com.cannontech.common.pao.definition.model.castor.Component) 
+        this._components = components;
+    } //-- void setComponents(com.cannontech.common.pao.definition.model.castor.Components) 
 
     /**
      * Sets the value of field 'forceQualityNormal'.
@@ -321,10 +196,10 @@ public class Calculation implements java.io.Serializable {
      * 
      * @param updateType the value of field 'updateType'.
      */
-    public void setUpdateType(java.lang.String updateType)
+    public void setUpdateType(com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType updateType)
     {
         this._updateType = updateType;
-    } //-- void setUpdateType(java.lang.String) 
+    } //-- void setUpdateType(com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType) 
 
     /**
      * Method unmarshal
