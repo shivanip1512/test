@@ -172,20 +172,10 @@ public class PointTemplate implements Comparable<PointTemplate> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((calcPointInfo == null) ? 0 : calcPointInfo.hashCode());
-        result = prime * result + ((controlType == null) ? 0 : controlType.hashCode());
-        result = prime * result + decimalPlaces;
-        result = prime * result + initialState;
-        long temp;
-        temp = Double.doubleToLongBits(multiplier);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result =
-            prime * result + ((pointArchiveInterval == null) ? 0 : pointArchiveInterval.hashCode());
-        result = prime * result + ((pointArchiveType == null) ? 0 : pointArchiveType.hashCode());
-        result = prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier.hashCode());
-        result = prime * result + stateGroupId;
-        result = prime * result + unitOfMeasure;
+            prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier
+                .hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 

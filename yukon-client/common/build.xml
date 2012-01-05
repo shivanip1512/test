@@ -71,7 +71,6 @@
                           package="com.cannontech.common.pao.definition.model.castor"
                           types="j2"
                           warnings="true"
-        				  bindingFile="src/com/cannontech/common/pao/definition/dao/paoDefinitionBinding.xml"
         				  properties="src/com/cannontech/common/pao/definition/dao/paoDefinitionBuild.properties"/>
     </target>
 

@@ -52,8 +52,8 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
-import com.cannontech.common.pao.definition.model.CalcPointInfo;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
+import com.cannontech.common.pao.definition.model.CalcPointInfo;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
@@ -62,7 +62,6 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.castor.Archive;
-import com.cannontech.common.pao.definition.model.castor.BasicCalcLookup;
 import com.cannontech.common.pao.definition.model.castor.BasicLookup;
 import com.cannontech.common.pao.definition.model.castor.Calculation;
 import com.cannontech.common.pao.definition.model.castor.Cmd;
@@ -75,6 +74,9 @@ import com.cannontech.common.pao.definition.model.castor.Point;
 import com.cannontech.common.pao.definition.model.castor.PointRef;
 import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.definition.model.castor.TypeFilter;
+import com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType;
+import com.cannontech.common.pao.definition.model.castor.types.OperatorType;
+import com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SetUtils;
@@ -962,21 +964,21 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         
         int periodicRate = calculation.getPeriodicRate();
         boolean forceQualityNormal = calculation.getForceQualityNormal();
-        String updateType = calculation.getUpdateType();
-        CalcPointInfo calcPointInfo = new CalcPointInfo(updateType, periodicRate, forceQualityNormal);
+        UpdateTypeType updateType = calculation.getUpdateType();
+        CalcPointInfo calcPointInfo = new CalcPointInfo(updateType.toString(), periodicRate, forceQualityNormal);
         
         List<CalcPointComponent> calcPointComponents = Lists.newArrayList();
-        Component[] components = calculation.getComponent();
+        Component[] components = calculation.getComponents().getComponent();
         for (Component component : components) {
-            String componentType = component.getComponentType();
-            String operator = component.getOperator();
-            BasicCalcLookup lookup = component.getBasicCalcLookup();
-            PointTemplate componentPointTemplate = pointNameTemplateMap.get(lookup.getPoint());
+            ComponentTypeType componentType = component.getComponentType();
+            OperatorType operator = component.getOperator();
+            String lookup = component.getPoint();
+            PointTemplate componentPointTemplate = pointNameTemplateMap.get(lookup);
             if (componentPointTemplate == null) {
-                throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + ":");
+                throw new IllegalArgumentException("Can't resolve point name '" + lookup + ":");
             }
             
-            CalcPointComponent calcPointComponent = new CalcPointComponent(componentPointTemplate.getPointIdentifier(), componentType, operator);
+            CalcPointComponent calcPointComponent = new CalcPointComponent(componentPointTemplate.getPointIdentifier(), componentType.toString(), operator.toString());
             calcPointComponents.add(calcPointComponent);
         }
 

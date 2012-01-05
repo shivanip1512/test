@@ -75,6 +75,34 @@
 	    </xs:sequence>
     </xs:complexType>
 
+    <xs:simpleType name="updateTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="On First Change"/>
+            <xs:enumeration value="On All Change"/>
+            <xs:enumeration value="On Timer"/>
+            <xs:enumeration value="On Timer+Change"/>
+            <xs:enumeration value="Constant"/>
+            <xs:enumeration value="Historical"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+	<!-- We do not yet support the Constant or Function componentTypes -->
+    <xs:simpleType name="componentTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Operation"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="operatorType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="+"/>
+            <xs:enumeration value="-"/>
+            <xs:enumeration value="*"/>
+            <xs:enumeration value="/"/>
+            <xs:enumeration value="PUSH"/>
+        </xs:restriction>
+    </xs:simpleType>
+
 	<!-- POINTS -->
 	<xs:attributeGroup name="pointAttributes">
 		<xs:attribute name="type" type="xs:string" use="required" /> <!-- Type and offset together is the unique identifier for points for the parser. -->
@@ -135,19 +163,19 @@
                                 <xs:sequence>
                                     <xs:element name="forceQualityNormal" minOccurs="0" type="xs:boolean" default="false" />
                                     <xs:element name="periodicRate" minOccurs="0" type="xs:integer" default="1" />
-                                    <xs:element name="updateType" minOccurs="0" type="xs:string" default="On First Change" />
-                                    <xs:element name="component" minOccurs="2" maxOccurs="unbounded">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="componentType" minOccurs="0" type="xs:string" default="Operation" />
-                                                <xs:element name="operator" minOccurs="0" type="xs:string" default="+" />
-                                                <xs:element name="basicLookup" maxOccurs="1">
-                                                    <xs:complexType>
-                                                        <xs:attribute name="point" type="xs:string" use="required" />
-                                                    </xs:complexType>
-                                                </xs:element>
-                                            </xs:sequence>
-                                        </xs:complexType>
+                                    <xs:element name="updateType" minOccurs="0" type="updateTypeType" default="On First Change" />
+									<xs:element name="components" minOccurs="1" maxOccurs="1">
+			                            <xs:complexType>
+			                                <xs:sequence>
+			                                    <xs:element name="component" minOccurs="1" maxOccurs="unbounded">
+			                                        <xs:complexType>
+														<xs:attribute name="point" type="xs:string" use="required" />
+														<xs:attribute name="componentType" type="componentTypeType" default="Operation" />
+														<xs:attribute name="operator" type="operatorType" default="+" />
+			                                        </xs:complexType>
+			                                    </xs:element>
+	                                    	</xs:sequence>
+	                                    </xs:complexType>
                                     </xs:element>
                                 </xs:sequence>
                             </xs:complexType>

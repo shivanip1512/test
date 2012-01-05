@@ -5004,12 +5004,10 @@
                 <decimalplaces value="0"/>
                 <calculation>
                     <updateType>On First Change</updateType>
-                    <component>
-                        <basicLookup point="Blink Count" />
-                    </component>
-                    <component>
-                        <basicLookup point="Outage Count" />
-                    </component>
+                    <components>
+	                    <component point="Blink Count"/>
+	                    <component point="Outage Count"/>
+                    </components>
                 </calculation>
             </point>
         </points>
