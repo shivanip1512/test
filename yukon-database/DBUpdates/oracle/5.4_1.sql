@@ -8,9 +8,11 @@ UPDATE LMProgramDirect SET NotifyAdjust = -1;
 ALTER TABLE LMProgramDirect MODIFY NotifyAdjust NUMBER(18,0) NOT NULL;
 /* End YUK-10547 */
 
-/* Start YUK-10536 */ 
+/* Start YUK-10536 */
+/* @error ignore-begin */
 ALTER TABLE ZBGateway
 MODIFY FirmwareVersion VARCHAR(255) NULL;
+/* @error ignore-end */
 /* End YUK-10536 */
 
 /**************************************************************/ 

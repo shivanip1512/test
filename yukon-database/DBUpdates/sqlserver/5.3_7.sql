@@ -122,6 +122,12 @@ WHERE AcctThermostatScheduleEntryId IN
                   OR (ats.ScheduleMode = 'SEVEN_DAY'       AND atse.TimeOfWeek NOT IN ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY')))))
 );
 /* End YUK-10440 */
+
+/* Start YUK-10536 */ 
+ALTER TABLE ZBGateway
+ALTER COLUMN FirmwareVersion VARCHAR(255) NULL;
+GO
+/* End YUK-10536 */
               
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

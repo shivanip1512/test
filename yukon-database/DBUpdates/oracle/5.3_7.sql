@@ -123,6 +123,11 @@ WHERE AcctThermostatScheduleEntryId IN
 );
 /* End YUK-10440 */
 
+/* Start YUK-10536 */ 
+ALTER TABLE ZBGateway
+MODIFY FirmwareVersion VARCHAR(255) NULL;
+/* End YUK-10536 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
