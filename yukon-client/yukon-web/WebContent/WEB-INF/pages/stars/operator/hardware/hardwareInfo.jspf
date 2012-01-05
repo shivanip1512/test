@@ -144,11 +144,11 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                         
                         <tags:selectWithItems path="gatewayId" items="${gateways}" itemValue="paoId" itemLabel="name" 
                                 defaultItemValue="" defaultItemLabel="${none}"/>
+                        <c:if test="${mode == 'VIEW' and hardware.gatewayId != null}">
+                            </a>
+                        </c:if>
                     </tags:nameValue2>
                     
-                    <c:if test="${mode == 'VIEW' and hardware.gatewayId != null}">
-                        </a>
-                    </c:if>
                 </c:if>
                 
                 <c:if test="${showRoute}">

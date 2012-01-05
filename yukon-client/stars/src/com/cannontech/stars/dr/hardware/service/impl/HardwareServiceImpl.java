@@ -44,6 +44,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;

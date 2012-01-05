@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.stars.dr.hardware.service.impl.NotSupportedException;
+import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;

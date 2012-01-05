@@ -8,6 +8,11 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+/**
+ * An implementation of ResultSetExtractor that will return subsets of the result set.
+ * Useful for paging search results.  Use this when retrieving data for a paged box container.
+ * @param <T>
+ */
 public class PagingExtractor<T> implements ResultSetExtractor {
     
     private int pageCount = 0;

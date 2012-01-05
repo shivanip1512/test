@@ -641,17 +641,14 @@ public class InventoryDaoImpl implements InventoryDao {
         selectData.append(  "LMHB.ManufacturerSerialNumber,");
         if (starsMeters) {
             selectData.append(  "MHB.MeterNumber,");
+            selectData.append(  "MHB.MeterTypeID,");
         } else {
             selectData.append(  "DMG.MeterNumber,");
+            selectData.append(  "YPO.Type,");
         }
         selectData.append(  "IM.EnergyCompanyId,");
         selectData.append(  "EC.Name EnergyCompanyName,");
         selectData.append(  "LMHB.LMHardwareTypeID,");
-        if (starsMeters) {
-            selectData.append(  "MHB.MeterTypeID,");
-        } else {
-            selectData.append(  "YPO.Type,");
-        }
         selectData.append(  "IB.DeviceLabel,");
         selectData.append(  "CA.AccountId,");
         selectData.append(  "CA.AccountNumber,");

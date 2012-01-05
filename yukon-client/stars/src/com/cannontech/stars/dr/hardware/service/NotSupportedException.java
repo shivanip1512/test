@@ -1,4 +1,4 @@
-package com.cannontech.stars.dr.hardware.service.impl;
+package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
 

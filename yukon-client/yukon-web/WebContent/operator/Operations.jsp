@@ -210,9 +210,11 @@
                     </tags:sectionLink>
                 </cti:checkProperty>
 
-                <tags:sectionLink>
-                    <a href="/spring/stars/operator/inventory/home">Inventory Operations</a>
-                </tags:sectionLink>
+                <cti:checkRole role="InventoryRole.ROLEID">
+                    <tags:sectionLink>
+                        <a href="/spring/stars/operator/inventory/home">Inventory Operations</a>
+                    </tags:sectionLink>
+                </cti:checkRole>
 
                 <!-- Hardware search form -->
                 <cti:checkRolesAndProperties value="INVENTORY_SEARCH">
