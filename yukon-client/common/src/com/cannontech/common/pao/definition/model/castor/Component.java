@@ -12,7 +12,6 @@ package com.cannontech.common.pao.definition.model.castor;
 //---------------------------------/
 
 import com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType;
-import com.cannontech.common.pao.definition.model.castor.types.OperatorType;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -48,7 +47,7 @@ public class Component implements java.io.Serializable {
     /**
      * Field _operator
      */
-    private com.cannontech.common.pao.definition.model.castor.types.OperatorType _operator = com.cannontech.common.pao.definition.model.castor.types.OperatorType.valueOf("+");
+    private java.lang.String _operator = "+";
 
 
       //----------------/
@@ -59,7 +58,7 @@ public class Component implements java.io.Serializable {
      {
         super();
         setComponentType(com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType.valueOf("Operation"));
-        setOperator(com.cannontech.common.pao.definition.model.castor.types.OperatorType.valueOf("+"));
+        setOperator("+");
     } //-- com.cannontech.common.pao.definition.model.castor.Component()
 
 
@@ -81,13 +80,13 @@ public class Component implements java.io.Serializable {
     /**
      * Returns the value of field 'operator'.
      * 
-     * @return OperatorType
+     * @return String
      * @return the value of field 'operator'.
      */
-    public com.cannontech.common.pao.definition.model.castor.types.OperatorType getOperator()
+    public java.lang.String getOperator()
     {
         return this._operator;
-    } //-- com.cannontech.common.pao.definition.model.castor.types.OperatorType getOperator() 
+    } //-- java.lang.String getOperator() 
 
     /**
      * Returns the value of field 'point'.
@@ -161,10 +160,10 @@ public class Component implements java.io.Serializable {
      * 
      * @param operator the value of field 'operator'.
      */
-    public void setOperator(com.cannontech.common.pao.definition.model.castor.types.OperatorType operator)
+    public void setOperator(java.lang.String operator)
     {
         this._operator = operator;
-    } //-- void setOperator(com.cannontech.common.pao.definition.model.castor.types.OperatorType) 
+    } //-- void setOperator(java.lang.String) 
 
     /**
      * Sets the value of field 'point'.
