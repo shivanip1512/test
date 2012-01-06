@@ -35,7 +35,6 @@
 	<entry key="yukon.web.components.slowInput.add.label">Add</entry>
 	<entry key="yukon.web.components.slowInput.ok.label">OK</entry>
 	<entry key="yukon.web.components.slowInput.submit.label">Submit</entry>
-	<entry key="yukon.web.components.slowInput.import.label">Import</entry>
 	<entry key="yukon.web.components.slowInput.cancel.label">Cancel</entry>
 	<entry key="yukon.web.components.slowInput.cancel.labelBusy">Canceling</entry>
 

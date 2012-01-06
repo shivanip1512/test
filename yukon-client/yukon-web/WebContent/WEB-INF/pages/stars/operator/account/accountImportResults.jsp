@@ -108,8 +108,10 @@
         
         <form action="${action}" id="importForm">
             <input type="hidden" value="${resultId}" name="resultId">
-            <c:if test="${prescan}"><input type="submit" class="formSubmit" id="importButton" value="<cti:msg2 key="yukon.web.components.slowInput.import.label"/>" disabled="disabled"></c:if>
-            <input type="submit" class="formSubmit" id="cancelButton" name="cancelImport" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
+              
+            <c:if test="${prescan}"><cti:button type="submit" id="importButton" nameKey="import" disabled="disabled"/></c:if>
+            <cti:button type="submit" id="cancelButton" name="cancelImport" nameKey="cancel"/>
+            
             <input type="hidden" name="prescan" value="${prescan}">
         </form>
         
