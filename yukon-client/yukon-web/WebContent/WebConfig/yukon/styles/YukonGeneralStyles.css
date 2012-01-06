@@ -353,10 +353,6 @@ table.compactResultsTable td td {
     padding: 0px 0px;
 }
 
-table.compactResultsTable td img {
-    vertical-align: top;
-}
-
 table.compactResultsTable td {
     padding: 3px 8px 2px 4px;
     font-size: 11px !important;
