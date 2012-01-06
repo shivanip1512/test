@@ -3,12 +3,14 @@ package com.cannontech.common.pao.definition.service;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
@@ -20,6 +22,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -48,41 +51,47 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     
     public List<PointBase> createDefaultPointsForPao(YukonPao pao) {
 
-        List<PointBase> pointList = Lists.newArrayList();
-        
-        // Non-calculated points
-        Set<PointTemplate> pointTemplates = paoDefinitionDao.getInitPointTemplates(pao.getPaoIdentifier().getPaoType());
-        for (PointTemplate template : pointTemplates) {
-            if (template.getCalcPointInfo() == null) {
-                pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
-            }
-        }
-        
-        // Calculated points (requires above points to first be created)
-        for (PointTemplate template : pointTemplates) {
-            if (template.getCalcPointInfo() != null) {
-                pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
-            }
-        }
-
+        Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(pao.getPaoIdentifier().getPaoType());
+        List<PointBase> pointList = createPointsForPaoHelper(pao, initPointTemplates);
         return pointList;
     }
     
     public List<PointBase> createAllPointsForPao(YukonPao pao) {
 
-        // Non-calculated points
+        Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
+        List<PointBase> pointList = createPointsForPaoHelper(pao, allPointTemplates);
+        return pointList;
+    }
+    
+    private List<PointBase> createPointsForPaoHelper(YukonPao pao, Set<PointTemplate> pointTemplates) {
         List<PointBase> pointList = Lists.newArrayList();
-        Set<PointTemplate> pointTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
+        Map<PointIdentifier, Integer> pointIdLookupMap = Maps.newHashMap();
+        
+        // Non-calculated points
         for (PointTemplate template : pointTemplates) {
             if (template.getCalcPointInfo() == null) {
-                pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
+                PointBase pointBase = pointCreationService.createPoint(pao.getPaoIdentifier(), template);
+                pointList.add(pointBase);
+                if (pointBase.getPoint() != null) {
+                    pointIdLookupMap.put(template.getPointIdentifier(), pointBase.getPoint().getPointID());
+                }
+            }
+        }
+
+        // Populate CalcPointComponent.pointId values
+        for (PointTemplate template : pointTemplates) {
+            if (template.getCalcPointInfo() != null) {
+                for (CalcPointComponent pointComponent : template.getCalcPointInfo().getComponents()) {
+                    Integer pointId = pointIdLookupMap.get(pointComponent.getPointIdentifier());
+                    pointComponent.setPointId(pointId);
+                }
             }
         }
         
         // Calculated points (requires above points to first be created)
         for (PointTemplate template : pointTemplates) {
             if (template.getCalcPointInfo() != null) {
-                pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
+                pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier(), template));
             }
         }
 

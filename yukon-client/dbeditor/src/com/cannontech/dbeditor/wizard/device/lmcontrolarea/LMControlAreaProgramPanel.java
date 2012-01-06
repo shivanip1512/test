@@ -15,6 +15,8 @@ import javax.swing.KeyStroke;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.gui.util.TreeFindPanel;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -675,7 +677,7 @@ public Object getValue(Object o)
             (PointCreationService) YukonSpringHook.getBean("pointCreationService");
         PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
                                                            "Status",
-                                                           controlArea.getPAObjectID(),
+                                                           new PaoIdentifier(controlArea.getPAObjectID(), PaoType.LM_CONTROL_AREA),
                                                            1,
                                                            0.0,
                                                            0,

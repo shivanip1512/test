@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -202,7 +204,7 @@ public Object getValue(Object o)
         PointCreationService pointCreationService = (PointCreationService) YukonSpringHook.getBean("pointCreationService");
         PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
                                                    "Status",
-                                                   program.getPAObjectID(),
+                                                   new PaoIdentifier(program.getPAObjectID(), PaoType.LM_DIRECT_PROGRAM),
                                                    1,
                                                    0.0,
                                                    0,

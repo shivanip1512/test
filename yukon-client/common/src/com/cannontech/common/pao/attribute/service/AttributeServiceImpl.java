@@ -228,7 +228,7 @@ public class AttributeServiceImpl implements AttributeService {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
-            PointBase point = pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier().getPaoId(), paoPointTemplate.getPointTemplate());
+            PointBase point = pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier(), paoPointTemplate.getPointTemplate());
             try {
                 dbPersistentDao.performDBChange(point, TransactionType.INSERT);
             } catch (PersistenceException e) {

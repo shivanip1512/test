@@ -4,6 +4,7 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 public class CalcPointComponent {
 
+    private Integer pointId; // This is a convenience object used only for the creation and copying of new calculated points
     private PointIdentifier pointIdentifier;
     private String calcComponentType = CalcComponentTypes.OPERATION_COMP_TYPE;
     private String operation = CalcComponentTypes.ADDITION_OPERATION;
@@ -12,6 +13,14 @@ public class CalcPointComponent {
         this.pointIdentifier = pointIdentifier;
         this.calcComponentType = calcComponentType;
         this.operation = operation;
+    }
+
+    public Integer getPointId() {
+        return pointId;
+    }
+
+    public void setPointId(Integer pointId) {
+        this.pointId = pointId;
     }
 
     public PointIdentifier getPointIdentifier() {

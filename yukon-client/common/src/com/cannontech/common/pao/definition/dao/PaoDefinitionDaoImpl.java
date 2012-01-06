@@ -75,7 +75,6 @@ import com.cannontech.common.pao.definition.model.castor.PointRef;
 import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.definition.model.castor.TypeFilter;
 import com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType;
-import com.cannontech.common.pao.definition.model.castor.types.OperatorType;
 import com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.common.util.CtiUtilities;
@@ -971,14 +970,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         Component[] components = calculation.getComponents().getComponent();
         for (Component component : components) {
             ComponentTypeType componentType = component.getComponentType();
-            OperatorType operator = component.getOperator();
             String lookup = component.getPoint();
             PointTemplate componentPointTemplate = pointNameTemplateMap.get(lookup);
             if (componentPointTemplate == null) {
                 throw new IllegalArgumentException("Can't resolve point name '" + lookup + ":");
             }
             
-            CalcPointComponent calcPointComponent = new CalcPointComponent(componentPointTemplate.getPointIdentifier(), componentType.toString(), operator.toString());
+            CalcPointComponent calcPointComponent = new CalcPointComponent(componentPointTemplate.getPointIdentifier(), componentType.toString(), component.getOperator());
             calcPointComponents.add(calcPointComponent);
         }
 

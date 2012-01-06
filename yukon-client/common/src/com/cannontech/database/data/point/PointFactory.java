@@ -4,18 +4,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CalcPointInfo;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -31,8 +27,6 @@ import com.cannontech.database.db.state.StateGroupUtils;
  */
 public final class PointFactory {
 public static final String PTNAME_TAG = "Tag Point";
-
-private static PointDao pointDao;
 
 /**
  * This method was created in VisualAge.
@@ -481,14 +475,9 @@ public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, Strin
     if (calcPoint != null) {
         int order = 1;
         Vector<CalcComponent> calcComponents = new Vector<CalcComponent>();
+        Integer pointId = point.getPoint().getPointID();
         for (CalcPointComponent calcPointComponent: calcPoint.getComponents()) {
-            Integer pointId = point.getPoint().getPointID();
-            
-            // We are assuming here that our calculated pointIdentifier is referencing the current paoIdentifier
-            // So basically this method does not support handling calculated points that reference pao's other than itself
-            PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(paoIdentifier, calcPointComponent.getPointIdentifier());
-            int componentPointId = pointDao.getPointId(paoPointIdentifier);
-            
+            Integer componentPointId = calcPointComponent.getPointId();
             String componentType = calcPointComponent.getCalcComponentType();
             String operation = calcPointComponent.getOperation();
             
@@ -539,11 +528,6 @@ public static synchronized void addPoint(PointBase point) {
         } catch (SQLException e) {
             CTILogger.error(e);
         }
-}
-
-@Autowired
-public void setPointDao(PointDao pointDao) {
-    this.pointDao = pointDao;
 }
 
 }
