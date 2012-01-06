@@ -1549,6 +1549,7 @@
     <bean id="zigbeeDeviceService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigbeeDeviceServiceImpl"/>
     
     <bean id="fdrTranslationManagerService" class="com.cannontech.common.bulk.service.impl.FdrTranslationManagerServiceImpl"/>
+    <bean id="fdrTranslationManagerCsvHelper" class="com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper"/>
     
     <!-- Simple HTTP Post Service Factory -->
     <bean id="simpleHttpPostServiceFactory" class="com.cannontech.web.simplePost.impl.SimpleHttpPostServiceFactoryImpl">

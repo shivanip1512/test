@@ -28,6 +28,7 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.TranslationImportCallbackResult;
 import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
+import com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper;
 import com.cannontech.common.bulk.service.FdrTranslationManagerService;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -48,6 +49,7 @@ import com.google.common.collect.Lists;
 @RequestMapping("fdrTranslationManager/*")
 public class FdrTranslationManagerController {
     private FdrTranslationManagerService fdrTranslationManagerService;
+    private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
     private RecentResultsCache<TranslationImportCallbackResult> recentResultsCache;
     
     @RequestMapping
@@ -66,12 +68,12 @@ public class FdrTranslationManagerController {
     @RequestMapping
     public String report(ModelMap model, HttpServletResponse response, String reportInterface) throws IOException {
         List<String> formattedHeaders = Lists.newArrayList();
-        fdrTranslationManagerService.addDefaultColumnsToList(formattedHeaders);
+        fdrTranslationManagerCsvHelper.addDefaultColumnsToList(formattedHeaders);
         
         List<FdrTranslation> filteredTranslationsList = fdrTranslationManagerService.getFilteredTranslationList(reportInterface);
         
         //Add all headers for each translation type to the headers list
-        fdrTranslationManagerService.addHeadersFromTranslations(formattedHeaders, filteredTranslationsList);
+        fdrTranslationManagerCsvHelper.addHeadersFromTranslations(formattedHeaders, filteredTranslationsList);
         
         //Create data array with dimensions [# of translations + 1][headers]
         String[][] dataGrid = new String[filteredTranslationsList.size()+1][];
@@ -85,7 +87,7 @@ public class FdrTranslationManagerController {
         }
         
         //Insert translation data
-        fdrTranslationManagerService.populateExportArray(dataGrid, filteredTranslationsList);
+        fdrTranslationManagerCsvHelper.populateExportArray(dataGrid, filteredTranslationsList);
         
         //Set up CSV stream
         response.setContentType("text/csv");
@@ -136,7 +138,7 @@ public class FdrTranslationManagerController {
         String[] headersArray = csvReader.readNext();
         List<String> headers;
         try {
-            headers = fdrTranslationManagerService.cleanAndValidateHeaders(headersArray);
+            headers = fdrTranslationManagerCsvHelper.cleanAndValidateHeaders(headersArray);
         } catch(ImportFileFormatException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.duplicateColumn", e.getHeaderName());
             flashScope.setError(errorMsg);
@@ -144,7 +146,7 @@ public class FdrTranslationManagerController {
         }
         
         //Check for all default headers
-        String missingHeaders = fdrTranslationManagerService.checkForMissingDefaultImportHeaders(headers);
+        String missingHeaders = fdrTranslationManagerCsvHelper.checkForMissingDefaultImportHeaders(headers);
         if(missingHeaders != null) {
             //Error - missing default header
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.defaultHeaderMissing", missingHeaders);
@@ -164,7 +166,7 @@ public class FdrTranslationManagerController {
         }
         
         try {
-            fdrTranslationManagerService.validateInterfaceHeadersPresent(interfaceInfo, headers);
+            fdrTranslationManagerCsvHelper.validateInterfaceHeadersPresent(interfaceInfo, headers);
         } catch(ImportFileFormatException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.missingColumn", e.getHeaderName(), e.getInterfaceName());
             flashScope.setError(errorMsg);
@@ -278,6 +280,11 @@ public class FdrTranslationManagerController {
     @Resource(name="recentResultsCache")
     public void setResultsCache(RecentResultsCache<TranslationImportCallbackResult> resultsCache) {
         this.recentResultsCache = resultsCache;
+    }
+    
+    @Autowired
+    public void setFdrTranslationManagerCsvHelper(FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper) {
+        this.fdrTranslationManagerCsvHelper = fdrTranslationManagerCsvHelper;
     }
     
     @Autowired

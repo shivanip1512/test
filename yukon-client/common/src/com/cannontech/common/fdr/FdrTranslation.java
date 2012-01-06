@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** 
- * 
  * Base Translation class. Extend for new interfaces to create specific calls instead of the
  * generic getParameters(String).
- *
  */
 
 public class FdrTranslation {

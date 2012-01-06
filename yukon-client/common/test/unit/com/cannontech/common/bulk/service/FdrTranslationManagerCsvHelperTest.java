@@ -7,17 +7,15 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.cannontech.common.bulk.service.impl.FdrTranslationManagerServiceImpl;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.google.common.collect.Lists;
 
-@SuppressWarnings("unused")
-public class FDRTranslationManagerServiceTest {
-    private static FdrTranslationManagerService service;
+public class FdrTranslationManagerCsvHelperTest {
+private static FdrTranslationManagerCsvHelper helper;
     
     @BeforeClass
     public static void setup() {
-        service = new FdrTranslationManagerServiceImpl();
+        helper = new FdrTranslationManagerCsvHelper();
     }
     
     @Test
@@ -25,7 +23,7 @@ public class FDRTranslationManagerServiceTest {
         String optionString = "test test/ test (test)";
         String interfaceName = "INTERFACE";
         
-        String output = service.formatOptionForColumnHeader(optionString, interfaceName);
+        String output = helper.formatOptionForColumnHeader(optionString, interfaceName);
         Assert.assertEquals("INTERFACE_TEST_TEST__TEST_TEST", output);
     }
     
@@ -33,7 +31,7 @@ public class FDRTranslationManagerServiceTest {
     public void testAddDefaultColumnsToList() {
         String[] array = {"ONE", "TWO"};
         List<String> list = Lists.newArrayList(array);
-        service.addDefaultColumnsToList(list);
+        helper.addDefaultColumnsToList(list);
         
         Assert.assertTrue(list.contains("ONE"));
         Assert.assertTrue(list.contains("TWO"));
@@ -54,14 +52,14 @@ public class FDRTranslationManagerServiceTest {
         String deviceNameSpace = "DEVICE NAME";
         String other = "OTHER";
         
-        Assert.assertTrue(service.matchesDefaultColumn(action));
-        Assert.assertTrue(service.matchesDefaultColumn(deviceName));
-        Assert.assertTrue(service.matchesDefaultColumn(deviceType));
-        Assert.assertTrue(service.matchesDefaultColumn(pointName));
-        Assert.assertTrue(service.matchesDefaultColumn(direction));
-        Assert.assertFalse(service.matchesDefaultColumn(actionLc));
-        Assert.assertFalse(service.matchesDefaultColumn(other));
-        Assert.assertFalse(service.matchesDefaultColumn(deviceNameSpace));
+        Assert.assertTrue(helper.matchesDefaultColumn(action));
+        Assert.assertTrue(helper.matchesDefaultColumn(deviceName));
+        Assert.assertTrue(helper.matchesDefaultColumn(deviceType));
+        Assert.assertTrue(helper.matchesDefaultColumn(pointName));
+        Assert.assertTrue(helper.matchesDefaultColumn(direction));
+        Assert.assertFalse(helper.matchesDefaultColumn(actionLc));
+        Assert.assertFalse(helper.matchesDefaultColumn(other));
+        Assert.assertFalse(helper.matchesDefaultColumn(deviceNameSpace));
     }
     
     @Test
@@ -77,17 +75,17 @@ public class FDRTranslationManagerServiceTest {
         String[] actionDirectionMissingArray = {"DEVICE_NAME", "DEVICE_TYPE", "POINT_NAME"};
         List<String> actionDirectionMissingList = Lists.newArrayList(actionDirectionMissingArray);
         
-        Assert.assertNull(service.checkForMissingDefaultImportHeaders(allList));
-        Assert.assertEquals("ACTION", service.checkForMissingDefaultImportHeaders(actionMissingList));
-        Assert.assertEquals("DIRECTION", service.checkForMissingDefaultImportHeaders(directionMissingList));
-        Assert.assertEquals("DIRECTION", service.checkForMissingDefaultImportHeaders(directionMissingList2));
-        Assert.assertEquals("ACTION, DIRECTION", service.checkForMissingDefaultImportHeaders(actionDirectionMissingList));
+        Assert.assertNull(helper.checkForMissingDefaultImportHeaders(allList));
+        Assert.assertEquals("ACTION", helper.checkForMissingDefaultImportHeaders(actionMissingList));
+        Assert.assertEquals("DIRECTION", helper.checkForMissingDefaultImportHeaders(directionMissingList));
+        Assert.assertEquals("DIRECTION", helper.checkForMissingDefaultImportHeaders(directionMissingList2));
+        Assert.assertEquals("ACTION, DIRECTION", helper.checkForMissingDefaultImportHeaders(actionDirectionMissingList));
     }
     
     @Test
     public void testCleanAndValidateHeaders1() throws ImportFileFormatException {
         String[] array = {" outerspace  ", "inner space"};
-        List<String> output = service.cleanAndValidateHeaders(array);
+        List<String> output = helper.cleanAndValidateHeaders(array);
         
         Assert.assertTrue(output.contains("OUTERSPACE"));
         Assert.assertTrue(output.contains("INNERSPACE"));
@@ -96,13 +94,13 @@ public class FDRTranslationManagerServiceTest {
     @Test(expected=ImportFileFormatException.class)
     public void testCleanAndValidateHeaders2() throws ImportFileFormatException {
         String[] array = {" s i m i l a r", "similar"};
-        List<String> output = service.cleanAndValidateHeaders(array); //should throw exception
+        helper.cleanAndValidateHeaders(array); //should throw exception
     }
     
     @Test(expected=ImportFileFormatException.class)
     public void testCleanAndValidateHeaders3() throws ImportFileFormatException {
         String[] array = {"similar", "SIMILAR"};
-        List<String> output = service.cleanAndValidateHeaders(array); //should throw exception
+        helper.cleanAndValidateHeaders(array); //should throw exception
     }
 
 }

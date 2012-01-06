@@ -59,9 +59,7 @@
                     <select name="reportInterface">
                         <option value="AllInterfaces"><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.allInterfaces"/></option>
                         <c:forEach var="interface" items="${interfaceTypes}">
-                            <c:if test="${interface.displayed}">
-                                <option value="${interface}"><i:inline key="${interface}"/></option>
-                            </c:if>
+                            <option value="${interface}"><i:inline key="${interface}"/></option>
                         </c:forEach>
                     </select>
                     <cti:button type="submit" nameKey="downloadTranslationsButton"/>
@@ -128,9 +126,7 @@
                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsLabel"/>
                 <select id="interfaceColumnSelector">
                     <c:forEach var="interface" items="${interfaceTypes}">
-                        <c:if test="${interface.displayed}">
-                            <option value="${interface}"><i:inline key="${interface}"/></option>
-                        </c:if>
+                        <option value="${interface}"><i:inline key="${interface}"/></option>
                     </c:forEach>
                 </select>
                 <div class="bottomPadded">

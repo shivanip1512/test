@@ -2,7 +2,6 @@ package com.cannontech.common.fdr;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-
 public enum FdrDirection implements DatabaseRepresentationSource{
 	RECEIVE("Receive"),
 	RECEIVE_FOR_CONTROL("Receive for control"),
