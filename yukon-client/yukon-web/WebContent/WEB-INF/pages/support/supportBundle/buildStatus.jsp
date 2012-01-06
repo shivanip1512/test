@@ -15,7 +15,7 @@
                 <!-- Optional writers which are not being included will not show up in this list-->
                 <c:if test="${not empty thingsDoneMap[writer.name]}"> 
                     <td>
-                        <i:inline key=".writerName.${writer.name}" />
+                        <i:inline key=".writerName.${writer.name}" />&nbsp;
                     </td>
                     <td>
                         <c:if test="${thingsDoneMap[writer.name]}">
@@ -28,13 +28,32 @@
                 </c:if>
             </tr>
         </c:forEach>
+        <tr>
+            <td><br></td>
+        </tr>
+        <tr>
+            <td>
+                <i:inline key='.bundleCreationStatus.label'/>
+            </td>
+            <td>
+                <c:if test="${inProgress}">
+                    <div class="errorMessage">
+                        <i:inline key='.bundleCreationStatus.inProgressMsg'/>
+                    </div>               
+                </c:if>
+                <c:if test="${not inProgress}">
+                    <div class="successMessage">
+                        <i:inline key='.bundleCreationStatus.finishedMsg'/>
+                    </div>
+                </c:if>
+            </td>
+        </tr>
     </table>
 
     <div class="pageActionArea">
         <c:if test="${inProgress}">
             <cti:button nameKey="downloadBtn" disabled="true"/>
             <cti:button nameKey="ftpUploadBtn" disabled="true"/>
-            <span class="errorMessage"><i:inline key='.bundleCreationStatus.inProgressMsg'/> </span>
         </c:if>
         <c:if test="${not inProgress}">
             <cti:url var="transferUrl" value="transfer"/>
@@ -42,7 +61,6 @@
                 <input type="hidden" name="fileNum" value="0">
                 <cti:button nameKey="downloadBtn" name="download" type="submit"/>
                 <cti:button nameKey="ftpUploadBtn" name="upload" type="submit" styleClass="f_blocker"/>
-                <span class="successMessage"><i:inline key='.bundleCreationStatus.finishedMsg'/></span>
             </form>
         </c:if>
     </div>

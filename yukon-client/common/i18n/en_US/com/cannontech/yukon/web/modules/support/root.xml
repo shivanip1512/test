@@ -77,6 +77,7 @@
     <entry key="yukon.web.modules.support.supportBundle.okImg.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.okImg.label">Ok</entry>
 
+    <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.label">Status</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.doneMsg">Done</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.pendingMsg">Pending</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.inProgressMsg">In Progress...</entry>
