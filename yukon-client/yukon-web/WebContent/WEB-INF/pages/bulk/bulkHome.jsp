@@ -71,7 +71,7 @@
                         <input type="button" id="massChangeTypeButton" value="Create Collection" onclick="$('createCollectionForm').submit();" style="width:170px;"/>
                     </form>
                 </td>
-                <td>Create a collection of meters to perform actions upon.</td>
+                <td>Create a collection of devices to perform actions upon.</td>
             </tr>
 
             <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
