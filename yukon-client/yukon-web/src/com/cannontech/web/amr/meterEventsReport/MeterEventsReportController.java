@@ -44,7 +44,10 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -69,18 +72,21 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/meterEventsReport/*")
 public class MeterEventsReportController {
 	
-	private DatePropertyEditorFactory datePropertyEditorFactory;
-	private RawPointHistoryDao rawPointHistoryDao;
-	private PointFormattingService pointFormattingService;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
-	private DeviceCollectionFactory deviceCollectionFactory;
-	private MeterDao meterDao;
+	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+	@Autowired private RawPointHistoryDao rawPointHistoryDao;
+	@Autowired private PointFormattingService pointFormattingService;
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+	@Autowired private DeviceCollectionFactory deviceCollectionFactory;
+	@Autowired private MeterDao meterDao;
+	@Autowired private AttributeService attributeService;
 	
 	private Map<String, Comparator<MeterReportEvent>> sorters;
 
@@ -225,6 +231,25 @@ public class MeterEventsReportController {
         } else {
             backingBean.setEventTypesAllTrue();
         }
+
+        Set<PaoType> paoTypes = Sets.newHashSet();
+        for (SimpleDevice device : deviceCollection.getDeviceList()) {
+            paoTypes.add(device.getDeviceType());
+        }
+
+        Set<Attribute> availableAttributes = Sets.newHashSet();
+        for (PaoType paoType : paoTypes) {
+            availableAttributes.addAll(attributeService.getAvailableAttributes(paoType));
+        }
+
+        Map<BuiltInAttribute, Boolean> tempMap = Maps.newHashMap(backingBean.getMeterEventTypesMap());
+        for (Entry<BuiltInAttribute, Boolean> entry : backingBean.getMeterEventTypesMap().entrySet()) {
+            if (!availableAttributes.contains(entry.getKey())) {
+                tempMap.remove(entry.getKey());
+            }
+        }
+        
+        backingBean.setMeterEventTypesMap(tempMap);
     }
     
     private void setupReportFromFilter(MeterEventsReportFilterBackingBean backingBean,
@@ -432,33 +457,4 @@ public class MeterEventsReportController {
         binder.registerCustomEditor(Date.class, "toDate", toDateEditor);
     }
     
-	@Autowired
-	public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-	
-	@Autowired
-	public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-	
-	@Autowired
-	public void setPointFormattingService(PointFormattingService pointFormattingService) {
-        this.pointFormattingService = pointFormattingService;
-    }
-	
-	@Autowired
-	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-	
-	@Autowired
-	public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
-        this.deviceCollectionFactory = deviceCollectionFactory;
-    }
-	
-	@Autowired
-	public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
 }

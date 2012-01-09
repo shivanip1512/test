@@ -148,11 +148,17 @@ public class AttributeServiceImpl implements AttributeService {
         
     }
     
+    @Override
     public Set<Attribute> getAvailableAttributes(YukonPao pao) {
+        return getAvailableAttributes(pao.getPaoIdentifier().getPaoType());
+    }
+    
+    @Override
+    public Set<Attribute> getAvailableAttributes(PaoType paoType) {
         Set<Attribute> result = Sets.newHashSet();
         
         // first add type-based attributes
-        Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(pao.getPaoIdentifier().getPaoType());
+        Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(paoType);
         for (AttributeDefinition attributeDefinition : definedAttributes) {
             result.add(attributeDefinition.getAttribute());
         }

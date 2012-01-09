@@ -79,13 +79,19 @@ public interface AttributeService {
      */
     public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
     
-    
     /**
      * Method to get a set of attributes available for the given pao
      * @param pao - The pao to get attributes for
      * @return An immutable set of all attributes available for this pao
      */
     public Set<Attribute> getAvailableAttributes(YukonPao pao);
+    
+    /**
+     * Method to get a set of attributes available for the given PaoType
+     * @param paoType - The PaoType to get attributes for
+     * @return An immutable set of all attributes available for this paoType
+     */
+    public Set<Attribute> getAvailableAttributes(PaoType paoType);
 
     /**
      * Method to get a set of all attributes for which points exist for a given

@@ -82,41 +82,12 @@
 	    	}
 	    	
 	    	var map = ${meterEventTypesMap}; // {"LINE_FREQUENCY_WARNING":true,"TIME_ADJUSTMENT":true,...}
-	    	var generalEvents = ${generalEvents}; // ["CLOCK_ERROR","CONFIGURATION_ERROR",...]
-	    	
-	    	var generalNodes = [];
-	    	for (var i = 0; i < generalEvents.length; i++) {
-	    		var selected = map[generalEvents[i]];
-	    		generalNodes.push({title: generalEvents[i], select: selected});
-	    	}
-	    	
-	    	var hardwareEvents = ${hardwareEvents};
-	    	var hardwareNodes = [];
-	    	for (var i = 0; i < hardwareEvents.length; i++) {
-	    		var selected = map[hardwareEvents[i]];
-	    		hardwareNodes.push({title: hardwareEvents[i], select: selected});
-	    	}
-	    	
-	    	var tamperEvents = ${tamperEvents};
-	    	var tamperNodes = [];
-	    	for (var i = 0; i < tamperEvents.length; i++) {
-	    		var selected = map[tamperEvents[i]];
-	    		tamperNodes.push({title: tamperEvents[i], select: selected});
-	    	}
-	    	
-	    	var outageEvents = ${outageEvents};
-	    	var outageNodes = [];
-	    	for (var i = 0; i < outageEvents.length; i++) {
-	    		var selected = map[outageEvents[i]];
-	    		outageNodes.push({title: outageEvents[i], select: selected});
-	    	}
-	    	
-	    	var meteringEvents = ${meteringEvents};
-	    	var meteringNodes = [];
-	    	for (var i = 0; i < meteringEvents.length; i++) {
-	    		var selected = map[meteringEvents[i]];
-	    		meteringNodes.push({title: meteringEvents[i], select: selected});
-	    	}
+
+	    	var generalNodes = populateTreeNodes({allEventsMap: map, events: ${generalEvents}});
+	    	var hardwareNodes = populateTreeNodes({allEventsMap: map, events: ${hardwareEvents}});
+	    	var tamperNodes = populateTreeNodes({allEventsMap: map, events: ${tamperEvents}});
+	    	var outageNodes = populateTreeNodes({allEventsMap: map, events: ${outageEvents}});
+	    	var meteringNodes = populateTreeNodes({allEventsMap: map, events: ${meteringEvents}});
 
 	    	var allTitle = '<cti:msg2 key=".filter.tree.all" javaScriptEscape="true"/>';
 	    	titlesToIgnore.push(allTitle);
@@ -130,13 +101,25 @@
 	    	titlesToIgnore.push(outageTitle);
 	    	var meteringTitle = '<cti:msg2 key=".filter.tree.metering" javaScriptEscape="true"/>';
 	    	titlesToIgnore.push(meteringTitle);
+	    	
+	    	var treeChildrenGroups = [];
+	    	if (generalNodes.length > 0) {
+	    		treeChildrenGroups.push({title: generalTitle, isFolder: true, children: generalNodes});
+	    	}
+	    	if (hardwareNodes.length > 0) {
+	    		treeChildrenGroups.push({title: hardwareTitle, isFolder: true, children: hardwareNodes});
+	    	}
+	    	if (tamperNodes.length > 0) {
+	    		treeChildrenGroups.push({title: tamperTitle, isFolder: true, children: tamperNodes});
+	    	}
+	    	if (outageNodes.length > 0) {
+	    		treeChildrenGroups.push({title: outageTitle, isFolder: true, children: outageNodes});
+	    	}
+	    	if (meteringNodes.length > 0) {
+	    		treeChildrenGroups.push({title: meteringTitle, isFolder: true, children: meteringNodes});
+	    	}
 
-	    	var treeChildren = [{title: allTitle, isFolder: true, children: [
-		    	                    {title: generalTitle, isFolder: true, children: generalNodes},
-		    	                    {title: hardwareTitle, isFolder: true, children: hardwareNodes},
-		    	                    {title: tamperTitle, isFolder: true, children: tamperNodes},
-		    	                    {title: outageTitle, isFolder: true, children: outageNodes},
-		    	                    {title: meteringTitle, isFolder: true, children: meteringNodes}]}];
+	    	var treeChildren = [{title: allTitle, isFolder: true, children: treeChildrenGroups}];
 	    	
 	    	jQuery("#eventTree").dynatree({
 	    		checkbox: true,
@@ -146,6 +129,17 @@
 	    	
 		    initialized = true;
 	    };
+	    
+	    function populateTreeNodes(params) {
+	    	var nodes = [];
+	    	for (var i = 0; i < params.events.length; i++) {
+	    		var selected = params.allEventsMap[params.events[i]];
+	    		if (typeof(selected) != 'undefined') {
+	    			nodes.push({title: params.events[i], select: selected});
+	    		}
+	    	}
+	    	return nodes;
+	    }
 	    
         function ignoreTitle(title) {
         	for (var i = 0; i < titlesToIgnore.length; i++) {
