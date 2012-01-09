@@ -63,6 +63,7 @@ import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.google.common.collect.Lists;
 
 /**
  * 
@@ -455,7 +456,11 @@ public class StarsDatabaseCache implements DBChangeListener {
 	private void handleApplianceCategoryChange(DatabaseChangeEvent event) {
 	    int applianceCategoryId = event.getPrimaryKey();
 
-	    List<Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompaniesByApplianceCategoryId(applianceCategoryId);
+	    List<Integer> energyCompanyIds = Lists.newArrayList();
+	    try {
+	        energyCompanyIds = applianceCategoryDao.getEnergyCompaniesByApplianceCategoryId(applianceCategoryId);
+	    } catch (NotFoundException ex) {/* There are no longer any energy companies attached to this appliance category*/}
+
 	    for (Integer energyCompanyId : energyCompanyIds) {
 	        LiteStarsEnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
 
