@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
+    <entry key="yukon.web.modules.amr.meterEventsReport.selectDevices.pageName">Meter Events Report Device Selection</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.selectDevices.pageDescription">Meter Events Report Device Selection</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.selectDevices.selectionContainer.title">Select Devices</entry>
+
+    <!-- METER EVENTS REPORT report.jsp -->
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.pageName">Meter Events Report</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.pageDescription">Meter Events Report</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.report.deviceSectionHeader.title">Devices</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.report.filterSectionHeader.title">Filter</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">Selected</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.selectedDevicesCount">Count</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.section">Filter Options</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.eventTypes">Event Types</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.deviceGroup">Device Group - {0}</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.viewDeviceGroup">View Group</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.devices">Devices</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.selected">selected</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.selectBy">Select By</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.cog.imageUrl">/WebConfig/yukon/Icons/cog.png</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.cog.title">Display Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateFrom">From</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateTo">To</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents">Only Active Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvent">Only Latest Event</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.includeDisabledDevices">Include Disabled Devices</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.eventTypesRow">Event Types</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.all">All</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.general">General</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.hardware">Hardware</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.tamper">Tamper</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.outage">Outage</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.metering">Metering</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableTitle.title">Meter Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText">Device Name</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceType.linkText">Device Type</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText">Date</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.attribute.linkText">Attribute</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText">Value</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.noEvents">No Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.csv.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.csv.label">Export CSV</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.report.true">True</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.report.false">False</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.selectByDevice.imageUrl">/WebConfig/yukon/Icons/electric_16.png</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.selectByDevice.label">Select By Device</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.eventTypesMag.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.eventTypesMag.hoverText">View Selected Event Types</entry>
+    
+    <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.header">Select Devices</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteLabel"></entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteText"></entry>
+
+</properties>

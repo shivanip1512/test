@@ -17,6 +17,7 @@ public class TestEvent {
     private Double thresholdValue;
     private String uom; // V
     private String uomModifiers; // milli, max
+    private int numEventPerMeter = 1;
     
     public int getSerialFrom() {
         return serialFrom;
@@ -95,6 +96,12 @@ public class TestEvent {
     }
     public void setUomModifiers(String uomModifiers) {
         this.uomModifiers = uomModifiers;
+    }
+    public int getNumEventPerMeter() {
+        return numEventPerMeter;
+    }
+    public void setNumEventPerMeter(int numEventPerMeter) {
+        this.numEventPerMeter = numEventPerMeter;
     }
 
 }

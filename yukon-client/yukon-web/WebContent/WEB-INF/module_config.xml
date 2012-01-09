@@ -427,11 +427,11 @@
                         </page>
                     </pages>
                 </page>
-		        <page name="rfnEventsReport.selectDevices" type="BASIC">
+		        <page name="meterEventsReport.selectDevices" type="BASIC">
 		            <menu>meters</menu>
-					<link>/spring/amr/rfnEventsReport/selectDevices</link>
+					<link>/spring/amr/meterEventsReport/selectDevices</link>
 					<pages>
-		                <page name="rfnEventsReport.report" type="DETAIL">
+		                <page name="meterEventsReport.report" type="DETAIL">
 		                    <menu>meters</menu>
 		                </page>
                 	</pages>

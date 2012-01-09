@@ -35,11 +35,11 @@
         </c:otherwise>
     </c:choose>
     <div class="actionArea">
-    	<cti:url value="/spring/amr/rfnEventsReport/reportAll" var="rfnEventsReportUrl">
+    	<cti:url value="/spring/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
     		<cti:param name="collectionType" value="idList"/>
     		<cti:param name="idList.ids" value="${deviceId}"/>
     	</cti:url>
-    	<a href="${rfnEventsReportUrl}" class="rfnEventsReportLink">
+    	<a href="${meterEventsReportUrl}" class="meterEventsReportLink">
     		<i:inline key=".allEvents"/>
    		</a>
         <tags:widgetActionUpdate hide="false" method="render" nameKey="refresh" container="${widgetParameters.widgetId}_events"/>

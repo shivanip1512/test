@@ -9,16 +9,6 @@
 
 <cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
 
-<script type="text/javascript">
-	jQuery(document).ready(function() {
-		jQuery(".f_showSelectedInventory").click(function(event) {
-			var args = jQuery(event.currentTarget).attr("data-function-arguments");
-			eval('args = ' + args);
-			showSelectedDevices(this, args.id, args.id + "InnerDiv", args.url);
-		});
-	});
-</script>
-
 <c:set value="${inventoryCollection.count}" var="count"/>
 
 <%-- CREATE URL --%>

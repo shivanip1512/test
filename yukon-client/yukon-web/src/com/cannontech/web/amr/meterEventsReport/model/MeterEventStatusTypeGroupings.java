@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.rfnEventsReport.model;
+package com.cannontech.web.amr.meterEventsReport.model;
 
 import java.util.Set;
 
@@ -6,7 +6,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
-public class RfnEventStatusTypeGroupings {
+public class MeterEventStatusTypeGroupings {
     
     private static ImmutableSet<BuiltInAttribute> all;
     private static ImmutableSet<BuiltInAttribute> general;
@@ -16,21 +16,25 @@ public class RfnEventStatusTypeGroupings {
     private static ImmutableSet<BuiltInAttribute> metering;
     
     static {
-        Builder<BuiltInAttribute> allBuilder = ImmutableSet.builder();
-        allBuilder.addAll(BuiltInAttribute.getRfnEventStatusTypes());
-        all = allBuilder.build();
-        
         buildGeneralTypes();
         buildHardwareTypes();
         buildTamperTypes();
         buildOutageTypes();
         buildMeteringTypes();
+
+        Builder<BuiltInAttribute> allBuilder = ImmutableSet.builder();
+        allBuilder.addAll(general);
+        allBuilder.addAll(hardware);
+        allBuilder.addAll(tamper);
+        allBuilder.addAll(outage);
+        allBuilder.addAll(metering);
+        all = allBuilder.build();
     }
-    
-    public static Set<BuiltInAttribute> getAllTypes() {
+
+    public static ImmutableSet<BuiltInAttribute> getAll() {
         return all;
     }
-    
+
     public  static Set<BuiltInAttribute> getGeneral() {
         return general;
     }
@@ -72,6 +76,10 @@ public class RfnEventStatusTypeGroupings {
     
     private static void buildGeneralTypes() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
+        //PLC
+        builder.add(BuiltInAttribute.GENERAL_ALARM_FLAG);
+        
+        //RFN
         builder.add(BuiltInAttribute.CONFIGURATION_ERROR);
         builder.add(BuiltInAttribute.CLOCK_ERROR);
         builder.add(BuiltInAttribute.DISPLAY_LOCKED_BY_WARNING);
@@ -98,6 +106,11 @@ public class RfnEventStatusTypeGroupings {
     
     private static void buildOutageTypes() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
+        //PLC
+        builder.add(BuiltInAttribute.POWER_FAIL_FLAG);
+        builder.add(BuiltInAttribute.ZERO_USAGE_FLAG);
+        
+        //RFN
         builder.add(BuiltInAttribute.CURRENT_LOSS);
         builder.add(BuiltInAttribute.LOAD_SIDE_VOLTAGE_IS_MISSING);
         builder.add(BuiltInAttribute.LOSS_OF_ALL_CURRENT);
@@ -113,6 +126,10 @@ public class RfnEventStatusTypeGroupings {
     
     private static void buildMeteringTypes() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
+        //PLC
+        builder.add(BuiltInAttribute.REVERSE_POWER_FLAG);
+        
+        //RFN
         builder.add(BuiltInAttribute.DEMAND_OVERLOAD);
         builder.add(BuiltInAttribute.DEMAND_READS_AND_RESET);
         builder.add(BuiltInAttribute.DEMAND_THRESHOLD_EXCEEDED_WARNING);

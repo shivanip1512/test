@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<cti:standardPage page="rfnEventsReport.report" module="amr">
+<cti:standardPage page="meterEventsReport.report" module="amr">
 
     <script type="text/javascript">
 	    jQuery(document).ready(function() {
@@ -16,19 +16,35 @@
 	            jQuery('#filterPopup').show();
 	        }
 	        
-	        jQuery("#eventTypesCog").click(function() {
-	        	showSimplePopup($('filterPopupEventTypes'));
+	        jQuery(".selectedDevicesLink").hover(function() {
+	        	jQuery("#deviceMagIcon .magnifier").toggleClass("magnifier_hovered");
 	        });
 	        
-	        jQuery("#eventTypesMag").click(function() {
-	        	showSimplePopup($('eventTypesList'));
+	        jQuery(".selectedDevicesLink").click(function() {
+	        	jQuery(".f_showSelectedDevices").trigger("click");
+	        });
+	        
+	        jQuery("#deviceMagIcon .magnifier").hover(function() {
+	        	jQuery(".selectedDevicesLink.anchorUnderlineHover").toggleClass("anchorUnderlineHover_hovered");
+	        });
+	        
+	        jQuery(".eventTypesLink").hover(function() {
+	        	jQuery("#eventTypesCog").toggleClass("cog_hovered");
+	        });
+	        
+	        jQuery("#eventTypesCog").hover(function() {
+	        	jQuery(".eventTypesLink.anchorUnderlineHover").toggleClass("anchorUnderlineHover_hovered");
+	        });
+	        
+	        jQuery("#eventTypesCog, .eventTypesLink").click(function() {
+	        	showSimplePopup('filterPopupEventTypes');
 	        });
 	        
 	        jQuery("#eventTypesListOk").click(function() {
 	        	jQuery('#eventTypesList').hide();
 	        });
 	        
-	        jQuery('#filterForm, #csvForm').submit(function() {
+	        jQuery('#eventsFilterForm, #csvForm').submit(function() {
 	        	var attrNames = '';
 		    	jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
 		    		if (ignoreTitle(node.data.title) === false) {
@@ -40,7 +56,7 @@
 	   			    type: 'hidden',
 	   			    name: 'attrNames',
 	   			    value: attrNames
-	   			}).appendTo('#filterForm');
+	   			}).appendTo('#eventsFilterForm');
 	   			return true;
 	        });
 	        
@@ -65,8 +81,8 @@
 	    		return;
 	    	}
 	    	
-	    	var map = ${rfnEventTypesMap};
-	    	var generalEvents = ${generalEvents};
+	    	var map = ${meterEventTypesMap}; // {"LINE_FREQUENCY_WARNING":true,"TIME_ADJUSTMENT":true,...}
+	    	var generalEvents = ${generalEvents}; // ["CLOCK_ERROR","CONFIGURATION_ERROR",...]
 	    	
 	    	var generalNodes = [];
 	    	for (var i = 0; i < generalEvents.length; i++) {
@@ -140,150 +156,108 @@
         	return false;
         }
     </script>
-    
-	<i:simplePopup titleKey=".filter.eventTypes" id="eventTypesList" styleClass="smallSimplePopup">
-		<div class="dialogScrollArea">
-		<table class="compactResultsTable">
-			<tr>
-				<th>Event Type</th>
-			</tr>
-			<c:forEach items="${backingBean.enabledEventTypeStrings}" var="eventType">
-				<tr>
-					<td>${eventType}</td>
-				</tr>
-			</c:forEach>
-		</table>
-		</div>
-		<div class="actionArea">
-			<cti:button nameKey="ok" id="eventTypesListOk"/>
-		</div>
-	</i:simplePopup>
+	
+	<form:form id="eventsFilterForm" action="report" method="get"commandName="backingBean">
+        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
-	<tags:nameValueContainer2>
-		<tags:nameValue2 nameKey="yukon.common.device.bulk.selectedDevicesPopup.linkLabel">
-			<c:choose>
-				<c:when
-					test="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}">
-					<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
-						<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
-					</cti:url>
-					<i:inline key=".filter.deviceGroup" />
-					<a href="${deviceGroupUrl}">${backingBean.deviceCollection.collectionParameters['group.name']}</a>
-				</c:when>
-				<c:otherwise>
-					<cti:msg key="${backingBean.deviceCollection.description}" />
-				</c:otherwise>
-			</c:choose>
-			<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
-				<tags:selectedDevicesPopup
-					deviceCollection="${backingBean.deviceCollection}" />
-			</c:if>
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey="yukon.common.device.bulk.selectedDevicesPopup.deviceCount">
-			${backingBean.deviceCollection.deviceCount}
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey=".filter.dateFrom">
-			<c:choose>
-				<c:when test="${backingBean.fromDate != null}">
-					<cti:formatDate type="BOTH" value="${backingBean.fromDate}" />
-				</c:when>
-				<c:otherwise>
-					<i:inline key="yukon.web.defaults.dashes"/>
-				</c:otherwise>
-			</c:choose>
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey=".filter.dateTo">
-			<c:choose>
-				<c:when test="${backingBean.toDate != null}">
-					<cti:formatDate type="BOTH" value="${backingBean.toDate}" />
-				</c:when>
-				<c:otherwise>
-					<i:inline key="yukon.web.defaults.dashes"/>
-				</c:otherwise>
-			</c:choose>
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey=".filter.onlyActiveEvents">
-			<i:inline key=".${backingBean.onlyActiveEvents}" />
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
-			<i:inline key=".${backingBean.onlyLatestEvent}" />
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
-			<i:inline key=".${backingBean.includeDisabledPaos}" />
-		</tags:nameValue2>
-
-		<tags:nameValue2 nameKey=".filter.eventTypesRow">
-                	${backingBean.numSelectedEventTypes}
-                	<i:inline key=".filter.selected" />
-			<cti:button nameKey="eventTypesMag" renderMode="image"
-				id="eventTypesMag" />
-		</tags:nameValue2>
-
-	</tags:nameValueContainer2>
-
-	<%-- FILTER POPUP --%>
-	<i:simplePopup titleKey=".filter.section" id="filterPopup" styleClass="smallSimplePopup">
-        <cti:flashScopeMessages/>
-        <form:form id="filterForm" action="report" method="get" commandName="backingBean">
-            <tags:sortFields backingBean="${backingBean}" />
-            <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
-
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".filter.dateFrom">
-                    <tags:dateInputCalendar fieldName="fromDate" springInput="true" />
-                </tags:nameValue2>
-
-                <tags:nameValue2 nameKey=".filter.dateTo">
-                    <tags:dateInputCalendar fieldName="toDate" springInput="true" />
-                </tags:nameValue2>
-
-                <tags:nameValue2 nameKey=".filter.onlyActiveEvents">
-                    <form:checkbox path="onlyActiveEvents" />
-                </tags:nameValue2>
-
-                <tags:nameValue2 nameKey=".filter.onlyLatestEvent">
-                    <form:checkbox path="onlyLatestEvent" id="onlyLatestEvent"/>
-                </tags:nameValue2>
-
-                <tags:nameValue2 nameKey=".filter.includeDisabledDevices">
-                    <form:checkbox path="includeDisabledPaos" />
-                </tags:nameValue2>
-
-                <tags:nameValue2 nameKey=".filter.eventTypesRow">
-                    <span id="numEventTypes">
-                    	${backingBean.numSelectedEventTypes}
-                   	</span>
-                   	<i:inline key=".filter.selected"/>
-					<cti:button nameKey="filter.cog" renderMode="image" id="eventTypesCog" styleClass="filterCog"/>
-                </tags:nameValue2>
-                
-            </tags:nameValueContainer2>
-
-			<i:simplePopup titleKey=".filter.eventTypes" id="filterPopupEventTypes" styleClass="smallSimplePopup" onClose="updateEventTypesNum()">
-				
-				<jsTree:inlineTree id="eventTree"
-	                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
-	                treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
-	                width="500"
-	                height="300"
-	                includeControlBar="true" />
-				
-				<div class="actionArea">
-					<cti:button nameKey="ok" onclick="updateEventTypesNum()"/>
+            <%-- LEFT SIDE COLUMN --%>
+            <cti:dataGridCell>
+				<tags:formElementContainer nameKey="filterSectionHeader">
+					<tags:nameValueContainer2>
+						<tags:nameValue2 nameKey=".filter.dateFrom">
+							<tags:dateInputCalendar fieldName="fromDate" springInput="true" />
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey=".filter.dateTo">
+							<tags:dateInputCalendar fieldName="toDate" springInput="true" />
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey=".filter.onlyActiveEvents">
+							<form:checkbox path="onlyActiveEvents" />
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
+							<form:checkbox path="onlyLatestEvent" id="onlyLatestEvent" />
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
+							<form:checkbox path="includeDisabledPaos" />
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey=".filter.eventTypesRow">
+							<span class="eventTypesLink anchorUnderlineHover">
+								<span id="numEventTypes">
+									${backingBean.numSelectedEventTypes}
+								</span>
+								<i:inline key=".filter.selected"/>
+							</span>
+							<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
+							<div class="dib">
+								<a id="eventTypesCog" href="javascript:void(0);" title="${cogTitle}" class="icon cog">${cogTitle}</a>
+							</div>
+						</tags:nameValue2>
+					</tags:nameValueContainer2>
+				</tags:formElementContainer>
+	
+				<i:simplePopup titleKey=".filter.eventTypes"
+					id="filterPopupEventTypes" styleClass="smallSimplePopup"
+					onClose="updateEventTypesNum()">
+		
+					<jsTree:inlineTree id="eventTree"
+						treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+						treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
+						width="500" height="300" includeControlBar="true" />
+		
+					<div class="actionArea">
+						<cti:button nameKey="ok" onclick="updateEventTypesNum()" />
+					</div>
+				</i:simplePopup>
+				<div class="pageActionArea">
+					<cti:button nameKey="update" type="submit" styleClass="f_blocker" />
+					<cti:button nameKey="reset" type="submit" name="clear"
+						styleClass="f_blocker" />
 				</div>
-			</i:simplePopup>
-            <div class="actionArea">
-                <cti:button nameKey="filter" type="submit" styleClass="f_blocker" />
-                <cti:button nameKey="clear" type="submit" name="clear" styleClass="f_blocker" />
-            </div>
-        </form:form>
-    </i:simplePopup>
+			</cti:dataGridCell>
+
+			<%-- RIGHT SIDE COLUMN --%>
+            <cti:dataGridCell>
+				<tags:sortFields backingBean="${backingBean}" />
+				<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+			    <tags:formElementContainer nameKey="deviceSectionHeader">
+					<tags:nameValueContainer2>
+						<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">
+							<c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}"/>
+							<span class="selectedDevicesLink anchorUnderlineHover">
+								<c:choose>
+									<c:when test="${isDeviceGroup}">
+										<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
+									</c:when>
+									<c:otherwise>
+										<cti:msg key="${backingBean.deviceCollection.description}" />
+									</c:otherwise>
+								</c:choose>
+							</span>
+							<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
+								<span id="deviceMagIcon">
+									<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}" />
+								</span>
+							</c:if>
+							<c:if test="${isDeviceGroup}">
+								<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+									<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
+								</cti:url>
+								(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
+							</c:if>
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevicesCount">
+							${backingBean.deviceCollection.deviceCount}
+						</tags:nameValue2>
+					</tags:nameValueContainer2>
+				</tags:formElementContainer>
+			</cti:dataGridCell>
+		</cti:dataGrid>
+	</form:form>
 
 	<form:form id="csvForm" action="csv" method="post" commandName="backingBean" cssClass="fr">
 		<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
@@ -297,7 +271,7 @@
 	</form:form>
 	<div class="cr"></div>
 
-	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" filterDialog="filterPopup">
+	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report">
 		<table id="eventsTable" class="compactResultsTable">
 			<tr>
 				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>

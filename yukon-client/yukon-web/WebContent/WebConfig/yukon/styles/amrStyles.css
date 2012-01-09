@@ -124,7 +124,11 @@ div.resultBar > div {
     color:#CC0000;
 }
 
-.rfnEventsReportLink {
+.meterEventsReportLink {
 	font-size: 11px;
 	margin-right: 20px;
+}
+
+#eventsFilterForm table.twoColumnLayout {
+	width: 100%;
 }

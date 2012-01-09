@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.rfnEventsReport;
+package com.cannontech.web.amr.meterEventsReport;
 
 import java.beans.PropertyEditor;
 import java.io.BufferedWriter;
@@ -58,9 +58,9 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.amr.rfnEventsReport.model.RfnEventStatusTypeGroupings;
-import com.cannontech.web.amr.rfnEventsReport.model.RfnEventsReportFilterBackingBean;
-import com.cannontech.web.amr.rfnEventsReport.model.RfnReportEvent;
+import com.cannontech.web.amr.meterEventsReport.model.MeterEventStatusTypeGroupings;
+import com.cannontech.web.amr.meterEventsReport.model.MeterEventsReportFilterBackingBean;
+import com.cannontech.web.amr.meterEventsReport.model.MeterReportEvent;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -72,8 +72,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
-@RequestMapping("/rfnEventsReport/*")
-public class RfnEventsReportController {
+@RequestMapping("/meterEventsReport/*")
+public class MeterEventsReportController {
 	
 	private DatePropertyEditorFactory datePropertyEditorFactory;
 	private RawPointHistoryDao rawPointHistoryDao;
@@ -82,11 +82,11 @@ public class RfnEventsReportController {
 	private DeviceCollectionFactory deviceCollectionFactory;
 	private MeterDao meterDao;
 	
-	private Map<String, Comparator<RfnReportEvent>> sorters;
+	private Map<String, Comparator<MeterReportEvent>> sorters;
 
     @PostConstruct
     public void initialize() {
-        Builder<String, Comparator<RfnReportEvent>> builder = ImmutableMap.builder();
+        Builder<String, Comparator<MeterReportEvent>> builder = ImmutableMap.builder();
         builder.put("NAME", getNameComparator());
         builder.put("TYPE", getDeviceTypeComparator());
         builder.put("DATE", getDateComparator());
@@ -97,37 +97,37 @@ public class RfnEventsReportController {
     
     @RequestMapping
     public String selectDevices(YukonUserContext userContext, ModelMap model) {
-        return "rfnEventsReport/selectDevices.jsp";
+        return "meterEventsReport/selectDevices.jsp";
     }
     
     @RequestMapping
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-        setupModelMap(new RfnEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
-        return "rfnEventsReport/report.jsp";
+        setupModelMap(new MeterEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
+        return "meterEventsReport/report.jsp";
     }
     
     @RequestMapping
-    public String report(@ModelAttribute("rfnEventsReportFilterBackingBean") RfnEventsReportFilterBackingBean backingBean,
+    public String report(@ModelAttribute("meterEventsReportFilterBackingBean") MeterEventsReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
                          FlashScope flashScope, YukonUserContext userContext, String attrNames)
                                  throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupModelMap(backingBean, request, model, bindingResult, flashScope, userContext, attrNames);
-		return "rfnEventsReport/report.jsp";
+		return "meterEventsReport/report.jsp";
 	}
 
 
     @RequestMapping
     public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-        RfnEventsReportFilterBackingBean backingBean = new RfnEventsReportFilterBackingBean();
+        MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean();
         backingBean.setFromDate(null);
         backingBean.setToDate(null);
         setupModelMap(backingBean, request, model, null, null, userContext, null);
-        return "rfnEventsReport/report.jsp";
+        return "meterEventsReport/report.jsp";
     }
 
-    private void setupModelMap(RfnEventsReportFilterBackingBean backingBean,
+    private void setupModelMap(MeterEventsReportFilterBackingBean backingBean,
                                HttpServletRequest request, ModelMap model,
                                BindingResult bindingResult, FlashScope flashScope,
                                YukonUserContext userContext, String attrNames)
@@ -140,12 +140,12 @@ public class RfnEventsReportController {
     @RequestMapping(params = "clear")
     public String clear(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-        setupModelMap(new RfnEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
-        return "rfnEventsReport/report.jsp";
+        setupModelMap(new MeterEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
+        return "meterEventsReport/report.jsp";
     }
     
     @RequestMapping
-    public String csv(@ModelAttribute("rfnEventsReportFilterBackingBean") RfnEventsReportFilterBackingBean backingBean,
+    public String csv(@ModelAttribute("meterEventsReportFilterBackingBean") MeterEventsReportFilterBackingBean backingBean,
                       ModelMap model, HttpServletRequest request, HttpServletResponse response,
                       YukonUserContext userContext, String attrNames) throws IOException,
                           ServletRequestBindingException, DeviceCollectionCreationException {
@@ -155,13 +155,13 @@ public class RfnEventsReportController {
         
         //header row
         String[] headerRow = new String[4];
-        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.rfnEventsReport.report.tableHeader.deviceName.linkText");
-        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.rfnEventsReport.report.tableHeader.date.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.rfnEventsReport.report.tableHeader.attribute.linkText");
-        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.rfnEventsReport.report.tableHeader.value.linkText");
+        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText");
+        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.attribute.linkText");
+        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
         
         //data rows
-        List<RfnReportEvent> events = getReportEvents(backingBean, userContext);
+        List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
                 Collections.sort(events, Collections.reverseOrder(sorters.get(backingBean.getSort())));
@@ -173,7 +173,7 @@ public class RfnEventsReportController {
         }
         
         List<String[]> dataRows = Lists.newArrayList();
-        for(RfnReportEvent event : events) {
+        for(MeterReportEvent event : events) {
             String[] dataRow = new String[4];
             dataRow[0] = event.getMeter().getName();
             
@@ -191,7 +191,7 @@ public class RfnEventsReportController {
         //set up output for CSV
         response.setContentType("text/csv");
         response.setHeader("Content-Type", "application/force-download");
-        String fileName = "RfnEvents.csv";
+        String fileName = "MeterEvents.csv";
         fileName = ServletUtil.makeWindowsSafeFileName(fileName);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
         OutputStream outputStream = response.getOutputStream();
@@ -209,7 +209,7 @@ public class RfnEventsReportController {
         return "";
     }
     
-    private void setupBackingBean(RfnEventsReportFilterBackingBean backingBean,
+    private void setupBackingBean(MeterEventsReportFilterBackingBean backingBean,
                                   HttpServletRequest request, String attrNames)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -217,7 +217,7 @@ public class RfnEventsReportController {
         
         if (attrNames != null) {
             List<String> attrNamesList = Lists.newArrayList(StringUtils.split(attrNames, ","));
-            for (Entry<BuiltInAttribute, Boolean> type : backingBean.getRfnEventTypesMap().entrySet()) {
+            for (Entry<BuiltInAttribute, Boolean> type : backingBean.getMeterEventTypesMap().entrySet()) {
                 if (attrNamesList.contains(type.getKey().name())) {
                     type.setValue(true);
                 }
@@ -227,12 +227,12 @@ public class RfnEventsReportController {
         }
     }
     
-    private void setupReportFromFilter(RfnEventsReportFilterBackingBean backingBean,
+    private void setupReportFromFilter(MeterEventsReportFilterBackingBean backingBean,
                                      YukonUserContext userContext, ModelMap model) {
         
-        List<RfnReportEvent> events = getReportEvents(backingBean, userContext);
+        List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
 
-        SearchResult<RfnReportEvent> filterResult = new SearchResult<RfnReportEvent>();
+        SearchResult<MeterReportEvent> filterResult = new SearchResult<MeterReportEvent>();
         filterResult.setBounds(backingBean.getStartIndex(),
                                backingBean.getItemsPerPage(),
                                events.size());
@@ -243,9 +243,9 @@ public class RfnEventsReportController {
                                           events.size() : backingBean.getStartIndex() +
                                           backingBean.getItemsPerPage());
         
-        for (RfnReportEvent rfnReportEvent : events) {
-            String valueString = pointFormattingService.getValueString(rfnReportEvent.getPointValueHolder(), Format.VALUE, userContext);
-            rfnReportEvent.setFormattedValue(valueString);
+        for (MeterReportEvent meterReportEvent : events) {
+            String valueString = pointFormattingService.getValueString(meterReportEvent.getPointValueHolder(), Format.VALUE, userContext);
+            meterReportEvent.setFormattedValue(valueString);
         }
 
         if (backingBean.getSort() != null) {
@@ -262,12 +262,12 @@ public class RfnEventsReportController {
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("backingBean", backingBean);
         model.addAllAttributes(backingBean.getDeviceCollection().getCollectionParameters());
-        model.addAttribute("rfnEventTypesMap", getJSONObject(backingBean.getRfnEventTypesMap()));
+        model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap()));
     }
 
-    private JSONObject getJSONObject(Map<BuiltInAttribute, Boolean> rfnEventsMap) {
+    private JSONObject getJSONObject(Map<BuiltInAttribute, Boolean> meterEventsMap) {
         JSONObject retVal = new JSONObject();
-        for (Entry<BuiltInAttribute, Boolean> entry : rfnEventsMap.entrySet()) {
+        for (Entry<BuiltInAttribute, Boolean> entry : meterEventsMap.entrySet()) {
             retVal.put(entry.getKey().toString(), entry.getValue());
         }
         return retVal;
@@ -286,24 +286,24 @@ public class RfnEventsReportController {
             model.addAttribute("hasFilterErrors", hasFilterErrors);
         }
         
-        model.addAttribute("generalEvents", getJSONArray(RfnEventStatusTypeGroupings.getGeneral()));
-        model.addAttribute("hardwareEvents", getJSONArray(RfnEventStatusTypeGroupings.getHardware()));
-        model.addAttribute("tamperEvents", getJSONArray(RfnEventStatusTypeGroupings.getTamper()));
-        model.addAttribute("outageEvents", getJSONArray(RfnEventStatusTypeGroupings.getOutage()));
-        model.addAttribute("meteringEvents", getJSONArray(RfnEventStatusTypeGroupings.getMetering()));
+        model.addAttribute("generalEvents", getJSONArray(MeterEventStatusTypeGroupings.getGeneral()));
+        model.addAttribute("hardwareEvents", getJSONArray(MeterEventStatusTypeGroupings.getHardware()));
+        model.addAttribute("tamperEvents", getJSONArray(MeterEventStatusTypeGroupings.getTamper()));
+        model.addAttribute("outageEvents", getJSONArray(MeterEventStatusTypeGroupings.getOutage()));
+        model.addAttribute("meteringEvents", getJSONArray(MeterEventStatusTypeGroupings.getMetering()));
     }
     
-    private List<RfnReportEvent> getReportEvents(RfnEventsReportFilterBackingBean backingBean, YukonUserContext userContext) {
+    private List<MeterReportEvent> getReportEvents(MeterEventsReportFilterBackingBean backingBean, YukonUserContext userContext) {
         
         List<SimpleDevice> deviceList = backingBean.getDeviceCollection().getDeviceList();
         List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
         
-        List<RfnReportEvent> events = Lists.newArrayList();
+        List<MeterReportEvent> events = Lists.newArrayList();
         if (CollectionUtils.isEmpty(deviceList)) {
             return events;
         }
         
-        for (Entry<BuiltInAttribute, Boolean> type : backingBean.getRfnEventTypesMap().entrySet()) {
+        for (Entry<BuiltInAttribute, Boolean> type : backingBean.getMeterEventTypesMap().entrySet()) {
             if (!type.getValue()) continue;
 
             ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData;
@@ -333,12 +333,12 @@ public class RfnEventsReportController {
                     // StateGroup: "Outage Status" has states "good", "questionable", and "bad"
                     if ("cleared".equalsIgnoreCase(valueString) || "good".equalsIgnoreCase(valueString)) continue;
                 }
-                RfnReportEvent rfnReportEvent = new RfnReportEvent();
-                rfnReportEvent.setAttribute(type.getKey());
-                rfnReportEvent.setMeter(getMeterFromPaoIdentifier(meters, entry.getKey()));
-                rfnReportEvent.setPointValueHolder(entry.getValue());
+                MeterReportEvent meterReportEvent = new MeterReportEvent();
+                meterReportEvent.setAttribute(type.getKey());
+                meterReportEvent.setMeter(getMeterFromPaoIdentifier(meters, entry.getKey()));
+                meterReportEvent.setPointValueHolder(entry.getValue());
                 
-                events.add(rfnReportEvent);
+                events.add(meterReportEvent);
             }
         }
         return events;
@@ -367,57 +367,57 @@ public class RfnEventsReportController {
         return array;
     }
     
-    private static Comparator<RfnReportEvent> getNameComparator() {
+    private static Comparator<MeterReportEvent> getNameComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<RfnReportEvent> nameOrdering = normalStringComparer
-            .onResultOf(new Function<RfnReportEvent, String>() {
-                public String apply(RfnReportEvent from) {
+        Ordering<MeterReportEvent> nameOrdering = normalStringComparer
+            .onResultOf(new Function<MeterReportEvent, String>() {
+                public String apply(MeterReportEvent from) {
                     return from.getMeter().getName();
                 }
             });
         return nameOrdering;
     }
     
-    private static Comparator<RfnReportEvent> getDeviceTypeComparator() {
+    private static Comparator<MeterReportEvent> getDeviceTypeComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<RfnReportEvent> typeOrdering = normalStringComparer
-                .onResultOf(new Function<RfnReportEvent, String>() {
-                    public String apply(RfnReportEvent from) {
+        Ordering<MeterReportEvent> typeOrdering = normalStringComparer
+                .onResultOf(new Function<MeterReportEvent, String>() {
+                    public String apply(MeterReportEvent from) {
                         return from.getMeter().getPaoType().getDbString();
                     }
                 });
         return typeOrdering;
     }
     
-    private static Comparator<RfnReportEvent> getDateComparator() {
+    private static Comparator<MeterReportEvent> getDateComparator() {
         Ordering<Date> dateComparer = Ordering.natural().nullsLast();
-        Ordering<RfnReportEvent> dateOrdering = dateComparer
-        .onResultOf(new Function<RfnReportEvent, Date>() {
-            public Date apply(RfnReportEvent from) {
+        Ordering<MeterReportEvent> dateOrdering = dateComparer
+        .onResultOf(new Function<MeterReportEvent, Date>() {
+            public Date apply(MeterReportEvent from) {
                 return from.getPointValueHolder().getPointDataTimeStamp();
             }
         });
-        Ordering<RfnReportEvent> result = dateOrdering.compound(getNameComparator());
+        Ordering<MeterReportEvent> result = dateOrdering.compound(getNameComparator());
         return result;
     }
     
-    private static Comparator<RfnReportEvent> getAttributeComparator() {
+    private static Comparator<MeterReportEvent> getAttributeComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<RfnReportEvent> attributeOrdering = normalStringComparer
-        .onResultOf(new Function<RfnReportEvent, String>() {
-            public String apply(RfnReportEvent from) {
+        Ordering<MeterReportEvent> attributeOrdering = normalStringComparer
+        .onResultOf(new Function<MeterReportEvent, String>() {
+            public String apply(MeterReportEvent from) {
                 return from.getAttribute().name();
             }
         });
-        Ordering<RfnReportEvent> result = attributeOrdering.compound(getNameComparator());
+        Ordering<MeterReportEvent> result = attributeOrdering.compound(getNameComparator());
         return result;
     }
     
-    private static Comparator<RfnReportEvent> getFormattedValueComparator() {
+    private static Comparator<MeterReportEvent> getFormattedValueComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<RfnReportEvent> formattedValueOrdering = normalStringComparer
-            .onResultOf(new Function<RfnReportEvent, String>() {
-                public String apply(RfnReportEvent from) {
+        Ordering<MeterReportEvent> formattedValueOrdering = normalStringComparer
+            .onResultOf(new Function<MeterReportEvent, String>() {
+                public String apply(MeterReportEvent from) {
                     return from.getFormattedValue();
                 }
             });

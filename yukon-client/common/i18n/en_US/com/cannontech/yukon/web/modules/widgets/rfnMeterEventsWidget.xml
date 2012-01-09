@@ -4,7 +4,6 @@
 
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.title">Rfn Events</entry>
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.noEvents">No Events have occured for this meter</entry>
-<entry key="yukon.web.widgets.rfnMeterEventsWidget.helpText">Displaying the 10 most recent events.</entry>
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.table.timestamp">Timestamp</entry>
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.table.event">Event</entry>
 <entry key="yukon.web.widgets.rfnMeterEventsWidget.table.state">State</entry>

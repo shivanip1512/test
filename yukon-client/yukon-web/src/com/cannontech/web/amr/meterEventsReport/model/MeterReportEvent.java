@@ -1,10 +1,10 @@
-package com.cannontech.web.amr.rfnEventsReport.model;
+package com.cannontech.web.amr.meterEventsReport.model;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public class RfnReportEvent {
+public class MeterReportEvent {
 
     private Meter meter;
     private BuiltInAttribute attribute;

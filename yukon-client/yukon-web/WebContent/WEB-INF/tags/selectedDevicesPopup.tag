@@ -13,16 +13,6 @@
 <cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
 <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 
-<script type="text/javascript">
-	jQuery(document).ready(function() {
-		jQuery(".f_showSelectedDevices").click(function(event) {
-			var args = jQuery(event.currentTarget).attr("data-function-arguments");
-			eval('args = ' + args);
-			showSelectedDevices(this, args.id, args.id + "InnerDiv", args.url);
-		});
-	});
-</script>
-
 <%-- CREATE URL --%>
 <c:choose>
 	<c:when test="${not empty pageScope.deviceCollection}">
@@ -46,7 +36,9 @@
 </c:choose>
 
 <%-- POPUP LINK --%>
-<a href="javascript:void(0);" title="${warning}" class="icon magnifier f_showSelectedDevices" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${warning}</a>
+<div class="dib">
+	<a href="javascript:void(0);" title="${warning}" class="icon magnifier f_showSelectedDevices" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${warning}</a>
+</div>
 <tags:simplePopup id="${id}" title="${popupTitle}">
     <div style="height:300px;overflow:auto;">
     <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>

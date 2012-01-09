@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.rfnEventsReport.model;
+package com.cannontech.web.amr.meterEventsReport.model;
 
 import java.util.Collections;
 import java.util.Date;
@@ -15,22 +15,21 @@ import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class RfnEventsReportFilterBackingBean extends ListBackingBean {
+public class MeterEventsReportFilterBackingBean extends ListBackingBean {
 
     private DeviceCollection deviceCollection;
     private Date toDate = new Date();
     private Date fromDate = new DateTime().minus(Duration.standardDays(7)).toDate();
-    private Map<BuiltInAttribute, Boolean> rfnEventTypesMap;
+    private Map<BuiltInAttribute, Boolean> meterEventTypesMap;
     private boolean onlyActiveEvents;
     private boolean onlyLatestEvent;
     private boolean includeDisabledPaos;
 
-    public RfnEventsReportFilterBackingBean() {
+    public MeterEventsReportFilterBackingBean() {
         setDescending(true);
-        rfnEventTypesMap =
-            Maps.newHashMapWithExpectedSize(BuiltInAttribute.getRfnEventStatusTypes().size());
-        for (BuiltInAttribute attr : BuiltInAttribute.getRfnEventStatusTypes()) {
-            rfnEventTypesMap.put(attr, false);
+        meterEventTypesMap = Maps.newHashMapWithExpectedSize(MeterEventStatusTypeGroupings.getAll().size());
+        for (BuiltInAttribute attr : MeterEventStatusTypeGroupings.getAll()) {
+            meterEventTypesMap.put(attr, false);
         }
         setItemsPerPage(10);
     }
@@ -59,23 +58,23 @@ public class RfnEventsReportFilterBackingBean extends ListBackingBean {
         this.fromDate = fromDate;
     }
 
-    public Map<BuiltInAttribute, Boolean> getRfnEventTypesMap() {
-        return rfnEventTypesMap;
+    public Map<BuiltInAttribute, Boolean> getMeterEventTypesMap() {
+        return meterEventTypesMap;
     }
 
-    public void setRfnEventTypesMap(Map<BuiltInAttribute, Boolean> rfnEventTypesMap) {
-        this.rfnEventTypesMap = rfnEventTypesMap;
+    public void setMeterEventTypesMap(Map<BuiltInAttribute, Boolean> meterEventTypesMap) {
+        this.meterEventTypesMap = meterEventTypesMap;
     }
 
     public void setEventTypesAllTrue() {
-        for (Entry<BuiltInAttribute, Boolean> event : rfnEventTypesMap.entrySet()) {
+        for (Entry<BuiltInAttribute, Boolean> event : meterEventTypesMap.entrySet()) {
             event.setValue(true);
         }
     }
 
     public int getNumSelectedEventTypes() {
         int result = 0;
-        for (Entry<BuiltInAttribute, Boolean> event : rfnEventTypesMap.entrySet()) {
+        for (Entry<BuiltInAttribute, Boolean> event : meterEventTypesMap.entrySet()) {
             if (event.getValue() == true) {
                 result++;
             }
@@ -85,7 +84,7 @@ public class RfnEventsReportFilterBackingBean extends ListBackingBean {
     
     public List<String> getEnabledEventTypeStrings() {
         List<String> events = Lists.newArrayList();
-        for(Entry<BuiltInAttribute, Boolean> event : rfnEventTypesMap.entrySet()) {
+        for(Entry<BuiltInAttribute, Boolean> event : meterEventTypesMap.entrySet()) {
             if (event.getValue()) {
                 events.add(event.getKey().toString());
             }

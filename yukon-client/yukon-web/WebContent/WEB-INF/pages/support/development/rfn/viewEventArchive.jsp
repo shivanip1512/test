@@ -43,6 +43,10 @@
                     </form:select>
                 </tags:nameValue>
                 
+                <tags:nameValue name="Num Events Per Meter">
+                    <form:input path="numEventPerMeter" />
+                </tags:nameValue>
+                
                 <tags:nameValueContainer2>
                     <br>
                     <strong><u>Condition Data Types (meta data)</u></strong>

@@ -1472,8 +1472,17 @@ select:focus {
 .magnifier {
 	background: transparent url(../Icons/magnifier.gif) top left no-repeat;
 }
+.magnifier_hovered,
 .magnifier:hover {
-	background: transparent url(../Icons/magnifier_zoom_in.gif) top left no-repeat;
+	background: transparent url(../Icons/magnifier_over.gif) top left no-repeat;
+}
+
+.cog {
+	background: transparent url(../Icons/cog.png) top left no-repeat;
+}
+.cog_hovered,
+.cog:hover {
+	background: transparent url(../Icons/cog_over.png) top left no-repeat;
 }
 
 .ui-icon.excel{
@@ -1633,6 +1642,15 @@ table.tabular th {
 
 .dateTimeInputWidth {
      width:200px;
+}
+
+.anchorUnderlineHover {
+    color: #0066CC;
+    cursor: pointer;
+}
+.anchorUnderlineHover_hovered,
+.anchorUnderlineHover:hover {
+	text-decoration: underline;
 }
 
 .actsAsAnchor {

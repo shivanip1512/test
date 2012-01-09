@@ -64,7 +64,17 @@ public class RfnMeterArchiveTestController {
     public String viewAlarmArchiveRequest(ModelMap model) {
         return setupEventAlarmAttributes(model, new TestEvent(), "sendAlarm");
     }
-    
+
+    private String setupEventAlarmAttributes(ModelMap model, TestEvent event, String formAction) {
+        List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
+        model.addAttribute("rfnConditionTypes", rfnConditionTypes);
+        ArrayList<RfnConditionDataType> dataTypes = Lists.newArrayList(RfnConditionDataType.values());
+        model.addAttribute("dataTypes", dataTypes);
+        model.addAttribute("event", event);
+        model.addAttribute("formAction", formAction);
+        return "development/rfn/viewEventArchive.jsp";
+    }
+
     @RequestMapping("sendMeterArchiveRequest")
     public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, boolean random, String uom, 
                        boolean quad1,
@@ -124,12 +134,16 @@ public class RfnMeterArchiveTestController {
     
     @RequestMapping
     public String sendEvent(@ModelAttribute TestEvent event, ModelMap model) {
-        RfnEvent rfnEvent = buildEvent(event, new RfnEvent());
-        
-        RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
-        archiveRequest.setEvent(rfnEvent);
-        archiveRequest.setDataPointId(1);
-        sendArchiveRequest("yukon.rr.obj.amr.rfn.EventArchiveRequest", archiveRequest);
+        for (int i = event.getSerialFrom(); i <= event.getSerialTo(); i++) {
+            for (int j=0; j < event.getNumEventPerMeter(); j++) {
+                RfnEvent rfnEvent = buildEvent(event, new RfnEvent(), i);
+                
+                RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
+                archiveRequest.setEvent(rfnEvent);
+                archiveRequest.setDataPointId(1);
+                sendArchiveRequest("yukon.rr.obj.amr.rfn.EventArchiveRequest", archiveRequest);
+            }
+        }
         
         setupEventAlarmAttributes(model, event, "sendEvent");
         return "development/rfn/viewEventArchive.jsp";
@@ -137,51 +151,37 @@ public class RfnMeterArchiveTestController {
 
     @RequestMapping
     public String sendAlarm(@ModelAttribute TestEvent event, ModelMap model) {
-        RfnAlarm rfnAlarm = buildEvent(event, new RfnAlarm());
-        
-        RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
-        archiveRequest.setAlarm(rfnAlarm);
-        archiveRequest.setDataPointId(1);
-        sendArchiveRequest("yukon.rr.obj.amr.rfn.AlarmArchiveRequest", archiveRequest);
+        for (int i = event.getSerialFrom(); i <= event.getSerialTo(); i++) {
+            for (int j=0; j < event.getNumEventPerMeter(); j++) {
+                RfnAlarm rfnAlarm = buildEvent(event, new RfnAlarm(), i);
+                
+                RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
+                archiveRequest.setAlarm(rfnAlarm);
+                archiveRequest.setDataPointId(1);
+                sendArchiveRequest("yukon.rr.obj.amr.rfn.AlarmArchiveRequest", archiveRequest);
+            }
+        }
         
         setupEventAlarmAttributes(model, event, "sendAlarm");
         return "redirect:viewAlarmArchiveRequest";
     }
-    
-    private String setupEventAlarmAttributes(ModelMap model, TestEvent event, String formAction) {
-        List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
-        model.addAttribute("rfnConditionTypes", rfnConditionTypes);
-        ArrayList<RfnConditionDataType> dataTypes = Lists.newArrayList(RfnConditionDataType.values());
-        model.addAttribute("dataTypes", dataTypes);
-        model.addAttribute("event", event);
-        model.addAttribute("formAction", formAction);
-        return "development/rfn/viewEventArchive.jsp";
-    }
-    
-    private <T extends RfnEvent> T buildEvent(TestEvent testEvent, T rfnEvent) {
-        JmsTemplate jmsTemplate;
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(false);
-        jmsTemplate.setDeliveryPersistent(false);
-        jmsTemplate.setPubSubDomain(false);
+
+    private <T extends RfnEvent> T buildEvent(TestEvent testEvent, T rfnEvent, int serialNum) {
+        rfnEvent.setType(testEvent.getRfnConditionType());
+        RfnMeterIdentifier meterIdentifier =
+            new RfnMeterIdentifier(Integer.toString(serialNum), testEvent.getManufacturer(), testEvent.getModel());
+        rfnEvent.setRfnMeterIdentifier(meterIdentifier);
+        long nowInMillis = new Instant().getMillis();
+        rfnEvent.setTimeStamp(nowInMillis);
         
-        for (int i = testEvent.getSerialFrom(); i <= testEvent.getSerialTo(); i++) {
-            rfnEvent.setType(testEvent.getRfnConditionType());
-            RfnMeterIdentifier meterIdentifier =
-                new RfnMeterIdentifier(Integer.toString(i), testEvent.getManufacturer(), testEvent.getModel());
-            rfnEvent.setRfnMeterIdentifier(meterIdentifier);
-            long nowInMillis = new Instant().getMillis();
-            rfnEvent.setTimeStamp(nowInMillis);
-            
-            testEvent.setOutageStartTime(nowInMillis - 60000); // 60 seconds ago
-            Map<RfnConditionDataType, Object> testEventMap = Maps.newHashMap();
-            copyDataTypesToMap(testEvent, testEventMap);
-            
-            // clear timestamp
-            testEvent.setOutageStartTime(null);
-            
-            rfnEvent.setEventData(testEventMap);
-        }
+        testEvent.setOutageStartTime(nowInMillis - 60000); // 60 seconds ago
+        Map<RfnConditionDataType, Object> testEventMap = Maps.newHashMap();
+        copyDataTypesToMap(testEvent, testEventMap);
+        
+        // clear timestamp
+        testEvent.setOutageStartTime(null);
+        
+        rfnEvent.setEventData(testEventMap);
         return rfnEvent;
     }
     

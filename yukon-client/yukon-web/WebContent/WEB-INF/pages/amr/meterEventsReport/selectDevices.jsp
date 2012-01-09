@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<cti:standardPage page="rfnEventsReport.selectDevices" module="amr">
+<cti:standardPage page="meterEventsReport.selectDevices" module="amr">
 	<tags:boxContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
         <tags:deviceSelection action="selected"
