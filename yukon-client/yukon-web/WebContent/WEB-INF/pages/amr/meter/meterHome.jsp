@@ -122,8 +122,7 @@
 					</c:if>
 					
                     <c:if test="${rfnEventsSupported}">
-                        <cti:msg2 key="yukon.web.widgets.rfnMeterEventsWidget.helpText" var="rfnHelpText"/>
-    					<ct:widget bean="rfnMeterEventsWidget" helpText="${rfnHelpText}"/>
+    					<ct:widget bean="rfnMeterEventsWidget"/>
                     </c:if>
 	
 					<c:if test="${outageSupported}">
