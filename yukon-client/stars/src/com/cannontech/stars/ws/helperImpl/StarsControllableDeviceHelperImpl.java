@@ -103,16 +103,26 @@ public class StarsControllableDeviceHelperImpl implements
         return custAcct;
     }
 
+    /**
+     * Returns the YukonListEntry id value for deviceInfo.deviceType
+     * Performs initial validation on deviceType as defined by getDeviceType(deviceInfo).
+     * Throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType
+     * @param deviceInfo
+     * @param energyCompany
+     * @return deviceTypeId - yukonListEntry id value.
+     */
     private int getDeviceTypeId(StarsControllableDeviceDTO deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
-        int deviceTypeId = YukonListEntryHelper.getEntryIdForEntryText(getDeviceType(deviceInfo),
-                                                                       YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
-                                                                       energyCompany);
-        if (deviceTypeId <= 0) {
-            throw new StarsInvalidDeviceTypeException(getDeviceType(deviceInfo),
+    	String deviceType = getDeviceType(deviceInfo);
+    	try {
+    		int deviceTypeId = YukonListEntryHelper.getEntryIdForEntryText(deviceType, 
+    				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
+    				energyCompany);
+    		return deviceTypeId;	
+    	} catch (NotFoundException e) {
+            throw new StarsInvalidDeviceTypeException(deviceType,
                                                       energyCompany.getName());
         }
-        return deviceTypeId;
     }
 
     @Override
