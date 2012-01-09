@@ -9,20 +9,15 @@ public class IvvcAnalysisMessage {
     private long timeStamp;
     private int scenarioId;
     private IvvcAnalysisScenarioType type; // not sent from ivvc
-    private int numIntData;
-    private int numFloatData;
     private List<Integer> intData;
     private List<Float> floatData;
 
     public IvvcAnalysisMessage(int subBusId, long timeStamp, int scenarioId, IvvcAnalysisScenarioType type,
-                               int numIntData, int numFloatData,
-                                List<Integer> intData, List<Float> floatData) {
+                               List<Integer> intData, List<Float> floatData) {
         this.subBusId = subBusId;
         this.timeStamp = timeStamp;
         this.scenarioId = scenarioId;
         this.type = type;
-        this.numIntData = numIntData;
-        this.numFloatData = numFloatData;
         this.intData = intData;
         this.floatData = floatData;
     }
@@ -41,14 +36,6 @@ public class IvvcAnalysisMessage {
 
     public IvvcAnalysisScenarioType getType() {
         return type;
-    }
-
-    public int getNumIntData() {
-        return numIntData;
-    }
-
-    public int getNumFloatData() {
-        return numFloatData;
     }
 
     public List<Integer> getIntData() {

@@ -61,8 +61,6 @@ public class IvvcAnalysisMessageListener implements MessageListener {
                                                           timeStamp,
                                                           scenarioId,
                                                           type,
-                                                          numIntData,
-                                                          numFloatData,
                                                           intData,
                                                           floatData);
         return msg;

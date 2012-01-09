@@ -22,6 +22,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
+import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMap;
@@ -227,7 +228,8 @@ public class IvvcAnalysisScenarioProcessor {
     
     private String getCapControlFacesEditorLinkHtml(int ccId, YukonUserContext userContext) {
         String name = getPaoNameWithId(ccId, userContext);
-        String html = getLinkHtml("/editor/cbcBase.jsf?type=2&amp;itemid=" + ccId, name, new HashMap<String, String>());
+        String html = getLinkHtml("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
+                                + "&amp;itemid=" + ccId, name, new HashMap<String, String>());
         return html;
     }
     
