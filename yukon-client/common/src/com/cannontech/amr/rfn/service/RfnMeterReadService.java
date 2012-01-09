@@ -133,7 +133,8 @@ public class RfnMeterReadService {
         Instant readingInstant = new Instant(meterReadingData.getRfnMeterReadingData().getTimeStamp());
         
         for (ChannelData channelData : meterReadingData.getRfnMeterReadingData().getChannelDataList()) {
-            LogHelper.debug(log, "Processing %s for %s", channelData, meterReadingData.getRfnMeter());
+            RfnMeter rfnMeter = meterReadingData.getRfnMeter();
+            LogHelper.debug(log, "Processing %s for %s", channelData, rfnMeter);
             ChannelDataStatus status = channelData.getStatus();
             if (status == null) {
                 LogHelper.debug(log, "Received null status for channelData, skipping");
@@ -144,7 +145,7 @@ public class RfnMeterReadService {
                 continue;
             }
             
-            PointValueHandler pointValueHandler = unitOfMeasureToPointMapper.findMatch(meterReadingData.getRfnMeter(), channelData.getUnitOfMeasure(), channelData.getUnitOfMeasureModifiers());
+            PointValueHandler pointValueHandler = unitOfMeasureToPointMapper.findMatch(rfnMeter, channelData);
             if (pointValueHandler == null) {
                 log.debug("No PointValueHandler for this channelData");
                 continue;

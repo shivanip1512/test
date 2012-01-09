@@ -19,6 +19,8 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.rfn.message.read.ChannelData;
+import com.cannontech.amr.rfn.message.read.DatedChannelData;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -95,12 +97,20 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         private final PaoType paoType;
         private final String unitOfMeasure;
         private final Set<String> unitOfMeasureModifiers;
+        
+        private final String baseUnitOfMeasure;
+        private final Set<String> baseUnitOfMeasureModifiers;
 
-        public CachedPointKey(PaoType paoType, String unitOfMeasure,
-                Set<String> unitOfMeasureModifiers) {
+        public CachedPointKey(PaoType paoType, 
+                              String unitOfMeasure,
+                              Set<String> unitOfMeasureModifiers,
+                              String baseUnitOfMeasure,
+                              Set<String> baseUnitOfMeasureModifiers) {
                     this.paoType = paoType;
                     this.unitOfMeasure = unitOfMeasure;
                     this.unitOfMeasureModifiers = unitOfMeasureModifiers;
+                    this.baseUnitOfMeasure = baseUnitOfMeasure;
+                    this.baseUnitOfMeasureModifiers = baseUnitOfMeasureModifiers;
         }
 
         public PaoType getPaoType() {
@@ -114,14 +124,32 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         public Set<String> getUnitOfMeasureModifiers() {
             return unitOfMeasureModifiers;
         }
+        
+        public String getBaseUnitOfMeasure() {
+            return baseUnitOfMeasure;
+        }
+        
+        public Set<String> getBaseUnitOfMeasureModifiers() {
+            return baseUnitOfMeasureModifiers;
+        }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + paoType.hashCode();
-            result = prime * result + unitOfMeasure.hashCode();
-            result = prime * result + unitOfMeasureModifiers.hashCode();
+            result =
+                prime * result + ((baseUnitOfMeasure == null) ? 0 : baseUnitOfMeasure.hashCode());
+            result =
+                prime
+                        * result
+                        + ((baseUnitOfMeasureModifiers == null) ? 0 : baseUnitOfMeasureModifiers
+                            .hashCode());
+            result = prime * result + ((paoType == null) ? 0 : paoType.hashCode());
+            result = prime * result + ((unitOfMeasure == null) ? 0 : unitOfMeasure.hashCode());
+            result =
+                prime
+                        * result
+                        + ((unitOfMeasureModifiers == null) ? 0 : unitOfMeasureModifiers.hashCode());
             return result;
         }
 
@@ -134,11 +162,27 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
             if (getClass() != obj.getClass())
                 return false;
             CachedPointKey other = (CachedPointKey) obj;
-            if (!paoType.equals(other.paoType))
+            if (baseUnitOfMeasure == null) {
+                if (other.baseUnitOfMeasure != null)
+                    return false;
+            } else if (!baseUnitOfMeasure.equals(other.baseUnitOfMeasure))
                 return false;
-            if (!unitOfMeasure.equals(other.unitOfMeasure))
+            if (baseUnitOfMeasureModifiers == null) {
+                if (other.baseUnitOfMeasureModifiers != null)
+                    return false;
+            } else if (!baseUnitOfMeasureModifiers.equals(other.baseUnitOfMeasureModifiers))
                 return false;
-            if (!unitOfMeasureModifiers.equals(other.unitOfMeasureModifiers))
+            if (paoType != other.paoType)
+                return false;
+            if (unitOfMeasure == null) {
+                if (other.unitOfMeasure != null)
+                    return false;
+            } else if (!unitOfMeasure.equals(other.unitOfMeasure))
+                return false;
+            if (unitOfMeasureModifiers == null) {
+                if (other.unitOfMeasureModifiers != null)
+                    return false;
+            } else if (!unitOfMeasureModifiers.equals(other.unitOfMeasureModifiers))
                 return false;
             return true;
         }
@@ -163,7 +207,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         
         computingCache = new MapMaker()
             .concurrencyLevel(6)
-            .expiration(5, TimeUnit.MINUTES)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             .makeComputingMap(new Function<CachedPointKey, CachedPointValue>() {
 
                 @Override
@@ -173,9 +217,23 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         });
     }
     
-    public PointValueHandler findMatch(YukonPao pao, String unitOfMeasure, Set<String> unitOfMeasureModifiers) {
-
-        CachedPointKey key = new CachedPointKey(pao.getPaoIdentifier().getPaoType(), unitOfMeasure, unitOfMeasureModifiers);
+    @Override
+    public <T extends ChannelData> PointValueHandler findMatch(YukonPao pao, T channelData) {
+        String baseUnitOfMeasure = null;
+        Set<String> baseUnitOfMeasureModifiers = null;
+        
+        // 'base' uom and modifiers are for coincidental measurements
+        if (channelData instanceof DatedChannelData) {
+            DatedChannelData dated = (DatedChannelData) channelData;
+            baseUnitOfMeasure = dated.getBaseChannelData().getUnitOfMeasure();
+            baseUnitOfMeasureModifiers = dated.getBaseChannelData().getUnitOfMeasureModifiers();
+        }
+        
+        CachedPointKey key = new CachedPointKey(pao.getPaoIdentifier().getPaoType(), 
+                                                channelData.getUnitOfMeasure(), 
+                                                channelData.getUnitOfMeasureModifiers(),
+                                                baseUnitOfMeasure, 
+                                                baseUnitOfMeasureModifiers);
 
         CachedPointValue value = computingCache.get(key);
 
@@ -209,12 +267,21 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
     }
 
     private CachedPointValue locatePointValueHandler(CachedPointKey cachedPointKey) {
+        
         PaoType paoType = cachedPointKey.getPaoType();
         String unitOfMeasure = cachedPointKey.getUnitOfMeasure();
+        String baseUnitOfMeasure = cachedPointKey.getBaseUnitOfMeasure();
         Set<String> unitOfMeasureModifiers = cachedPointKey.getUnitOfMeasureModifiers();
+        Set<String> baseUnitOfMeasureModifiers = cachedPointKey.getBaseUnitOfMeasureModifiers();
+        // Allowing baseUnitOfMeasureModifiers to come in null allows the xml to not require a <baseModifiers> tag
+        if (baseUnitOfMeasureModifiers == null) {
+            baseUnitOfMeasureModifiers = Sets.newHashSet();
+        }
         Iterable<PointMapper> pointMappers = pointMapperMap.get(paoType);
+        
         for (PointMapper pointMapper : pointMappers) {
             String uom = pointMapper.getUom();
+            String baseUom = pointMapper.getBaseUom();
             if (!uom.equals(unitOfMeasure)) continue;
             
             Set<String> modifiers = Sets.newHashSet(unitOfMeasureModifiers);
@@ -224,8 +291,25 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
                 prefixMultiplier = processAndRemoveSiPrefix(modifiers);
             }
             
-            if (!checkModifiersForMatch(modifiers, pointMapper)) {
+            Iterable<ModifiersMatcher> matchers = pointMapper.getModifiersMatchers();
+            if (!checkModifiersForMatch(modifiers, matchers)) {
                 continue;
+            }
+            
+            // Check base uom and base modifiers incase of coincidental measurement points
+            if (baseUnitOfMeasure == null) {
+                if (baseUom != null) {
+                    continue;
+                }
+            } else {
+                if (!baseUnitOfMeasure.equalsIgnoreCase(baseUom)) {
+                    continue;
+                }
+                Set<String> baseModifiers = Sets.newHashSet(baseUnitOfMeasureModifiers);
+                Iterable<ModifiersMatcher> baseMatchers = pointMapper.getBaseModifiersMatchers();
+                if (!checkModifiersForMatch(baseModifiers, baseMatchers)) {
+                    continue;
+                }
             }
             
             // if we get here, all matchers must have matched, now we can build our answer
@@ -254,9 +338,8 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         return nullCachedPointValue;
     }
     
-    public boolean checkModifiersForMatch(Set<String> modifiers, PointMapper pointMapper) {
-        Iterable<ModifiersMatcher> modifiersMatchers = pointMapper.getModifiersMatchers();
-        for (ModifiersMatcher modifiersMatcher : modifiersMatchers) {
+    public boolean checkModifiersForMatch(Set<String> modifiers, Iterable<ModifiersMatcher> matchers) {
+        for (ModifiersMatcher modifiersMatcher : matchers) {
             boolean match = modifiersMatcher.getStyle().matches(modifiers, modifiersMatcher.getModifiers());
             if (!match) return false;
             modifiers.removeAll(modifiersMatcher.getModifiers()); // I think this is a good idea
@@ -325,23 +408,49 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
             String valueStr = siPrefixElement.getAttributeValue("value", Boolean.toString(true));
             siPrefixParsing = Boolean.parseBoolean(valueStr);
         }
+        
+        // Normal modifier sets
         Iterable<Element> modifiersElements = getElementChildren(pointElement, "modifiers");
         List<ModifiersMatcher> modifiersMatcherList = Lists.newArrayList();
         for (Element modifiersElement : modifiersElements) {
-            String matchStyleStr = modifiersElement.getAttributeValue("match");
-            MatchStyle matchStyle = MatchStyle.valueOf(matchStyleStr);
-            Iterable<Element> modifierElements = getElementChildren(modifiersElement, "modifier");
-            Set<String> modifierSet = Sets.newHashSet();
-            for (Element modifierElement : modifierElements) {
-                String uomModifier = modifierElement.getTextTrim();
-                modifierSet.add(uomModifier);
-            }
-            ModifiersMatcher modifiersMatcher = new ModifiersMatcher(matchStyle, modifierSet);
+            ModifiersMatcher modifiersMatcher = getModifiersMatcher(modifiersElement);
             modifiersMatcherList.add(modifiersMatcher);
         }
         
-        PointMapper pointMapper = new PointMapper(name, uom, multiplier, siPrefixParsing, modifiersMatcherList);
+        // 'Base' modifier sets, used for tieing coincidental measurments to the channel data that spawned them
+        // example: the var measurement taken at the peak demand event, the base uom and base modifiers would be
+        // those of the peak demand channel data.
+        Iterable<Element> baseModifiersElements = getElementChildren(pointElement, "baseModifiers");
+        List<ModifiersMatcher> baseModifiersMatcherList = null;
+        String baseUom = pointElement.getChildTextTrim("baseUom"); // will be null if not present
+        if (!Iterables.isEmpty(baseModifiersElements)) {
+            baseModifiersMatcherList = Lists.newArrayList();
+            for (Element baseModifiersElement : baseModifiersElements) {
+                ModifiersMatcher baseModifiersMatcher = getModifiersMatcher(baseModifiersElement);
+                baseModifiersMatcherList.add(baseModifiersMatcher);
+            }
+        }
+        
+        PointMapper pointMapper = new PointMapper(name, 
+                                                  uom, 
+                                                  multiplier, 
+                                                  siPrefixParsing, 
+                                                  modifiersMatcherList, 
+                                                  baseUom, 
+                                                  baseModifiersMatcherList);
         return pointMapper;
+    }
+    
+    private ModifiersMatcher getModifiersMatcher(Element modifiersElement) {
+        String matchStyleStr = modifiersElement.getAttributeValue("match");
+        MatchStyle matchStyle = MatchStyle.valueOf(matchStyleStr);
+        Iterable<Element> modifierElements = getElementChildren(modifiersElement, "modifier");
+        Set<String> modifierSet = Sets.newHashSet();
+        for (Element modifierElement : modifierElements) {
+            String uomModifier = modifierElement.getTextTrim();
+            modifierSet.add(uomModifier);
+        }
+        return new ModifiersMatcher(matchStyle, modifierSet);
     }
 
     public static Iterable<Element> getElementChildren(Element element, String name) {

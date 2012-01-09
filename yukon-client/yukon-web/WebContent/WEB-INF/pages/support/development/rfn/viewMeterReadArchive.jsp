@@ -24,8 +24,8 @@ function useRandom() {
                 
                 <tags:nameValue name="Manufacturer">
                     <select name="manufacturer">
-                        <option value="Eka">Eka</option>
                         <option value="LGYR">LGYR</option>
+                        <option value="Eka">Eka</option>
                         <option value="EE">EE</option>
                         <option value="GE">GE</option>
                     </select>
@@ -33,9 +33,9 @@ function useRandom() {
                 
                 <tags:nameValue name="Model">
                     <select name="model">
+                        <option value="FocuskWh">FocuskWh</option>
                         <option value="water_sensor">water_sensor</option>
                         <option value="water_sensor">water_node</option>
-                        <option value="FocuskWh">FocuskWh</option>
                         <option value="A3R">A3R</option>
                         <option value="Centron">Centron</option>
                         <option value="kV2">kV2</option>
@@ -46,12 +46,12 @@ function useRandom() {
                 
                 <tags:nameValue name="UoM">
                     <select name="uom">
+                        <option value="Wh">Wh</option>
+                        <option value="W">W</option>
                         <option value="gal">gal</option>
                         <option value="-">-</option>
                         <option value="ft^3">ft^3</option>
                         <option value="m^3">m^3</option>
-                        <option value="Wh">Wh</option>
-                        <option value="W">W</option>
                         <option value="Restore Blink Count">Restore Blink Count</option>
                         <option value="Restore Count">Restore Count</option>
                         <option value="Outage Blink Count">Outage Blink Count</option>
@@ -66,10 +66,10 @@ function useRandom() {
                 </tags:nameValue>
                 
                 <tags:nameValue name="Modifiers">
-                    <input type="checkbox" id="quad1" name="quad1"> <label for="quad1">Quadrant 1</label><br>
+                    <input type="checkbox" id="quad1" name="quad1" checked="checked"> <label for="quad1">Quadrant 1</label><br>
                     <input type="checkbox" id="quad2" name="quad2"> <label for="quad2">Quadrant 2</label><br>
                     <input type="checkbox" id="quad3" name="quad3"> <label for="quad3">Quadrant 3</label><br>
-                    <input type="checkbox" id="quad4" name="quad4"> <label for="quad4">Quadrant 4</label><br>
+                    <input type="checkbox" id="quad4" name="quad4" checked="checked"> <label for="quad4">Quadrant 4</label><br>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Value">
