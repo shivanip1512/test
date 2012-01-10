@@ -166,7 +166,7 @@
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.count">Device Count: {0}</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.deviceCount">Device Count</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle">Selected Devices</entry>
-    <entry key="yukon.common.device.bulk.selectedDevicesPopup.warning">View names of selected devices.</entry>
+    <entry key="yukon.common.device.bulk.selectedDevicesPopup.warning">View names of selected devices</entry>
     
     <!-- massChangeSelect.jsp -->
     <entry key="yukon.common.device.bulk.massChangeSelect.pageTitle">Mass Change</entry>

@@ -1429,13 +1429,19 @@ select:focus {
     cursor: pointer;
 }
 
-.labeled_icon {
+.labeled_icon,
+.labeled_icon_right {
     padding: 0 0 0 20px;
     overflow:hidden;
     float:left;
     line-height: 16px; /* since the 'icon' will be positioned top left */
     min-height: 16px; /* don't cut off the 'icon' */
     cursor: pointer;
+}
+.cog.labeled_icon_right,
+.cog.labeled_icon_right:hover {
+	background-position: top right;
+	padding: 0 20px 0 0;
 }
 
 .search_button {
@@ -1478,11 +1484,14 @@ select:focus {
 }
 
 .cog {
-	background: transparent url(../Icons/cog.png) top left no-repeat;
+	background-color: transparent;
+	background-image: url(../Icons/cog.png);
+	background-position: top left;
+	background-repeat: no-repeat;
 }
 .cog_hovered,
 .cog:hover {
-	background: transparent url(../Icons/cog_over.png) top left no-repeat;
+	background-image: url(../Icons/cog_over.png);
 }
 
 .ui-icon.excel{

@@ -17,23 +17,15 @@
 	        }
 	        
 	        jQuery(".selectedDevicesLink").hover(function() {
-	        	jQuery("#deviceMagIcon .magnifier").toggleClass("magnifier_hovered");
+	        	jQuery(".deviceMagIcon .magnifier").toggleClass("magnifier_hovered");
+	        });
+	        
+	        jQuery(".deviceMagIcon .magnifier").hover(function() {
+	        	jQuery(".selectedDevicesLink.anchorUnderlineHover").toggleClass("anchorUnderlineHover_hovered");
 	        });
 	        
 	        jQuery(".selectedDevicesLink").click(function() {
 	        	jQuery(".f_showSelectedDevices").trigger("click");
-	        });
-	        
-	        jQuery("#deviceMagIcon .magnifier").hover(function() {
-	        	jQuery(".selectedDevicesLink.anchorUnderlineHover").toggleClass("anchorUnderlineHover_hovered");
-	        });
-	        
-	        jQuery(".eventTypesLink").hover(function() {
-	        	jQuery("#eventTypesCog").toggleClass("cog_hovered");
-	        });
-	        
-	        jQuery("#eventTypesCog").hover(function() {
-	        	jQuery(".eventTypesLink.anchorUnderlineHover").toggleClass("anchorUnderlineHover_hovered");
 	        });
 	        
 	        jQuery("#eventTypesCog, .eventTypesLink").click(function() {
@@ -179,16 +171,13 @@
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.eventTypesRow">
-							<span class="eventTypesLink anchorUnderlineHover">
+							<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
+							<span id="eventTypesCog" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
 								<span id="numEventTypes">
 									${backingBean.numSelectedEventTypes}
 								</span>
 								<i:inline key=".filter.selected"/>
 							</span>
-							<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-							<div class="dib">
-								<a id="eventTypesCog" href="javascript:void(0);" title="${cogTitle}" class="icon cog">${cogTitle}</a>
-							</div>
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
 				</tags:formElementContainer>
@@ -232,8 +221,8 @@
 								</c:choose>
 							</span>
 							<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
-								<span id="deviceMagIcon">
-									<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}" />
+								<span class="fr deviceMagIcon">
+									<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
 								</span>
 							</c:if>
 							<c:if test="${isDeviceGroup}">

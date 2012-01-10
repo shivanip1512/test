@@ -132,3 +132,7 @@ div.resultBar > div {
 #eventsFilterForm table.twoColumnLayout {
 	width: 100%;
 }
+
+.deviceMagIcon {
+	margin-left: 5px;
+}
