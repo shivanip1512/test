@@ -52,7 +52,6 @@ public class PointUtil {
                                                    PointUnit.DEFAULT_DECIMAL_PLACES,
                                                    PointArchiveType.NONE,
                                                    PointArchiveInterval.ZERO);
-           point.getPoint().setServiceFlag(disabledChar);
            break;
        case PointTypes.STATUS_POINT:
            point = PointFactory.createBankStatusPt(paoId);
