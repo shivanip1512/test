@@ -25,6 +25,8 @@ import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
+import com.cannontech.multispeak.data.MspBlockReturnList;
+import com.cannontech.multispeak.data.MspMeterReadReturnList;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -39,7 +41,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	private MeterReadProcessingService meterReadProcessingService;
     
 	@Override
-	public List<MeterRead> retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
+	public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
 	                                      Date endDate, String lastReceived, int maxRecords) {
 
 	    List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
@@ -62,7 +64,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	    }
 
 	    // build the actual MeterRead objects in the order they are to be output getPaoList returns the meters in
-	    List<MeterRead> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+	    List<MeterRead> meterReads = Lists.newArrayListWithExpectedSize(estimatedSize);
 	    
 
 	    // loop over meters, results will be returned in whatever order getPaoList returns the meters in
@@ -73,17 +75,22 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
                     MeterRead meterRead = meterReadProcessingService.createMeterRead(meter); 
                     meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder); 
-                    result.add(meterRead); 
+                    meterReads.add(meterRead); 
                 } 
             } 
         }
 
-        log.debug("Retrieved " + result.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-	    return result;
+        MspMeterReadReturnList mspMeterReadReturn = new MspMeterReadReturnList();
+        mspMeterReadReturn.setMeterReads(meterReads);
+        mspMeterReadReturn.setReturnFields(meters, maxRecords);
+
+        log.debug("Retrieved " + meterReads.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        
+	    return mspMeterReadReturn;
 	}
 
 	@Override
-    public List<MeterRead> retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
+    public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
 
         List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
         
@@ -101,7 +108,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             estimatedSize += resultsForAttribute.size();
         }
 
-        List<MeterRead> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+        List<MeterRead> meterReads = Lists.newArrayListWithExpectedSize(estimatedSize);
         
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         // attempt to group all attributes for one meter together, because we know we only have one pointValue per meter per attribute. 
@@ -122,16 +129,21 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             }
             
             if (hasReadings) {  // only add to the return list if we have actual readings.
-                result.add(meterRead);
+                meterReads.add(meterRead);
             }
         }
 
-        log.debug("Retrieved " + result.size() + " Latest MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        return result;
+        MspMeterReadReturnList mspMeterReadReturn = new MspMeterReadReturnList();
+        mspMeterReadReturn.setMeterReads(meterReads);
+        mspMeterReadReturn.setReturnFields(meters, maxRecords);
+        
+        log.debug("Retrieved " + meterReads.size() + " Latest MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        
+        return mspMeterReadReturn;
     }
     
     @Override
-    public List<Block> retrieveBlock(ReadBy readBy, String readByValue, 
+    public MspBlockReturnList retrieveBlock(ReadBy readBy, String readByValue, 
                                      FormattedBlockProcessingService<Block> blockProcessingService,
                                      Date startDate, Date endDate, String lastReceived, int maxRecords) {
 
@@ -155,7 +167,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             estimatedSize += resultsForAttribute.size();
         }
 
-        List<Block> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+        List<Block> blocks = Lists.newArrayListWithExpectedSize(estimatedSize);
          
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         // results will be one block for every reading, no grouping of similar timstamped data into one block.
@@ -169,16 +181,21 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
                     Block block = blockProcessingService.createBlock(meter); 
                     blockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder); 
-                    result.add(block); 
+                    blocks.add(block); 
                 } 
             } 
         }
-        log.debug("Retrieved " + result.size() + " Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        return result;
+        
+        MspBlockReturnList mspBlockReturn = new MspBlockReturnList();
+        mspBlockReturn.setBlocks(blocks);
+        mspBlockReturn.setReturnFields(meters, maxRecords);
+        
+        log.debug("Retrieved " + blocks.size() + " Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        return mspBlockReturn;
     }
 
     @Override
-    public List<Block> retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService, String lastReceived, int maxRecords) {
+    public MspBlockReturnList retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService, String lastReceived, int maxRecords) {
 
         List<Meter> meters = getPaoList(ReadBy.NONE, null, lastReceived, maxRecords);
         
@@ -200,7 +217,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             estimatedSize += resultsForAttribute.size();
         }
 
-        List<Block> result = Lists.newArrayListWithExpectedSize(estimatedSize);
+        List<Block> blocks = Lists.newArrayListWithExpectedSize(estimatedSize);
 
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         // attempt to "block" all attributes for one meter together, because we know we only have one pointValue per meter per attribute.
@@ -213,12 +230,16 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                 }
             }
             if (block.hasData()) {
-                result.add(block);
+                blocks.add(block);
             }
         }
 
-        log.debug("Retrieved " + result.size() + " Latest Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        return result;
+        MspBlockReturnList mspBlockReturn = new MspBlockReturnList();
+        mspBlockReturn.setBlocks(blocks);
+        mspBlockReturn.setReturnFields(meters, maxRecords);
+        
+        log.debug("Retrieved " + blocks.size() + " Latest Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        return mspBlockReturn;
     }
  
     /**

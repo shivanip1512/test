@@ -1,10 +1,10 @@
 package com.cannontech.multispeak.dao;
 
 import java.util.Date;
-import java.util.List;
 
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.data.MspBlockReturnList;
+import com.cannontech.multispeak.data.MspMeterReadReturnList;
 
 public interface MspRawPointHistoryDao {
     public enum ReadBy {
@@ -13,7 +13,7 @@ public interface MspRawPointHistoryDao {
     }
 
     /**
-     * Returns a List of MeterReads with kW and kWh readings for ReadBy value.
+     * Returns a MspMeterRead object with kW and kWh MeterRead readings for ReadBy value.
      * The readings are not grouped together such that there may be multiple MeterReads per meter per Attribute
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue
@@ -22,13 +22,13 @@ public interface MspRawPointHistoryDao {
      * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *                  that meterNumber will still be included. Meaning meterRead[].length > maxRecords is possible).
-     * @return List<MeterRead>
+     * @return MspMeterRead
      */
-    public List<MeterRead> retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate,
+    public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate,
                                               Date endDate, String lastReceived, int maxRecords);
 
     /**
-     * Returns a List of MeterReads with kW and kWh readings for ReadBy value.
+     * Returns a MspMeterRead object with kW and kWh MeterRead readings for ReadBy value.
      * Similar to retrieveMeterReads except that it returns only the latest archived reading for kWh
      * and kW elements of MeterRead.
      * The readings will be grouped together such that there is only one MeterRead per meter
@@ -37,9 +37,9 @@ public interface MspRawPointHistoryDao {
      * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecordsis possible).
-     * @return List<MeterRead>
+     * @return MspMeterRead
      */
-    public List<MeterRead> retrieveLatestMeterReads(ReadBy readBy, String readByValue,
+    public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue,
                                                     String lastReceived, int maxRecords);
 
     /**
@@ -54,9 +54,9 @@ public interface MspRawPointHistoryDao {
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecords
      *            is possible). More specifically, maxRecords is equivalent
      *            to the number of actual Meters that data is being returned for.
-     * @return List<Block>
+     * @return MspBlock
      */
-    public List<Block> retrieveBlock(ReadBy readBy, String readByValue,
+    public MspBlockReturnList retrieveBlock(ReadBy readBy, String readByValue,
                                      FormattedBlockProcessingService<Block> blockProcessingService,
                                      Date startDate, Date endDate, String lastReceived,
                                      int maxRecords);
@@ -69,8 +69,8 @@ public interface MspRawPointHistoryDao {
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecords
      *            is possible). More specifically, maxRecords is equivalent
      *            to the number of actual Meters that data is being returned for.
-     * @return List<Block>
+     * @return MspBlock
      */
-    public List<Block> retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService,
+    public MspBlockReturnList retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService,
                                            String lastReceived, int maxRecords);
 }

@@ -22,6 +22,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.data.MspMeterReturnList;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.Module;
 import com.cannontech.multispeak.deploy.service.Nameplate;
@@ -56,7 +57,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
     	};
    };
 
-    public List<Meter> getAMRSupportedMeters(String lastReceived, int maxRecords) {
+    public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(selectSql);
@@ -67,7 +68,9 @@ public final class MspMeterDaoImpl implements MspMeterDao
             List<Meter> mspMeters = new ArrayList<Meter>();
             CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
             yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
-            return mspMeters;
+            MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
+            mspMeterReturnList.setMeters(mspMeters);
+            return mspMeterReturnList;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No results found > MeterNumber" + lastReceived + ".");
         }
