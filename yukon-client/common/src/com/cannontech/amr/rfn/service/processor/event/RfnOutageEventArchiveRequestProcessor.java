@@ -16,10 +16,10 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
     
     @Override
     public <T extends RfnEvent> void process(RfnMeter meter, T event, List<? super PointData> pointDatas) {
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, OutageStatus.BAD.getRawState());
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, event.getTimeStamp(), OutageStatus.BAD.getRawState());
         
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_OUTAGE_COUNT, (Long) count);
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_OUTAGE_COUNT, event.getTimeStamp(), (Long) count);
     }
     
     @Override

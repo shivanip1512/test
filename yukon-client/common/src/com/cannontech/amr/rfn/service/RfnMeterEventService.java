@@ -1,5 +1,6 @@
 package com.cannontech.amr.rfn.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -63,10 +64,16 @@ public class RfnMeterEventService {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
             if (eventAttr.isRfnEventStatusType()) {
-                Boolean cleared = (Boolean) event.getEventData().get(RfnConditionDataType.CLEARED);
+                
+                Map<RfnConditionDataType, Object> eventData = event.getEventData();
+                Boolean cleared = false;
+                if (eventData != null) {
+                    Object thing = eventData.get(RfnConditionDataType.CLEARED);
+                    if (thing != null) cleared = (Boolean)thing;
+                }
                 int rawEventStatusState = clearedStateMap.get(cleared);
                 
-                processAttributePointData(meter, pointDatas, eventAttr, rawEventStatusState);
+                processAttributePointData(meter, pointDatas, eventAttr, event.getTimeStamp(), rawEventStatusState);
                 return true;
             }
         } catch (IllegalArgumentException e) {
@@ -83,6 +90,7 @@ public class RfnMeterEventService {
     public void processAttributePointData(RfnMeter rfnMeter,
                                           List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
+                                          long timestamp,
                                           double pointValue) {
         // create our attribute point if it doesn't exist yet
         attributeService.createPointForAttribute(rfnMeter, attr);
@@ -91,6 +99,7 @@ public class RfnMeterEventService {
 
         PointData pointData = new PointData();
         pointData.setId(litePoint.getPointID());
+        pointData.setTime(new Date(timestamp));
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
         pointData.setValue(pointValue);

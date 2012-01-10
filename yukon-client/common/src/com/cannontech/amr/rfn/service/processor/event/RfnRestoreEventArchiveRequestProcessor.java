@@ -16,15 +16,15 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
     
     @Override
     public <T extends RfnEvent> void process(RfnMeter meter, T event, List<? super PointData> pointDatas) {
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, OutageStatus.GOOD.getRawState());
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, event.getTimeStamp(), OutageStatus.GOOD.getRawState());
         
         Long start = (Long) getEventDataWithType(event, RfnConditionDataType.OUTAGE_START_TIME);
         Long end = event.getTimeStamp();
         Long durationInSeconds = (end - start) / 1000;
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_LOG, durationInSeconds);
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_LOG, event.getTimeStamp(), durationInSeconds);
 
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_OUTAGE_RESTORE_COUNT, count);
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_OUTAGE_RESTORE_COUNT, event.getTimeStamp(), count);
     }
     
     @Override

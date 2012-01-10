@@ -16,7 +16,7 @@ public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnEventConditi
     @Override
     public <T extends RfnEvent> void process(RfnMeter meter, T event, List<? super PointData> pointDatas) {
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
-        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_BLINK_RESTORE_COUNT, count);
+        rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.RFN_BLINK_RESTORE_COUNT, event.getTimeStamp(), count);
     }
     
     @Override
