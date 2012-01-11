@@ -195,9 +195,9 @@ moveDownDisabledIcon = templateIcons[4];
 						                    </cti:url>
                                             <dialog:confirm on="#deleteBtn${question.surveyQuestionId}"
                                                 nameKey="confirmDelete"
-                                                argument="${question.questionKey}" href="${deleteUrl}"/>
+                                                argument="${question.questionKey}"/>
                                             <cti:button id="deleteBtn${question.surveyQuestionId}"
-                                                nameKey="deleteQuestion" renderMode="image"/>
+                                                nameKey="deleteQuestion" renderMode="image" href="${deleteUrl}"/>
 					                    </c:if>
 					                </td>
 					            </tr>

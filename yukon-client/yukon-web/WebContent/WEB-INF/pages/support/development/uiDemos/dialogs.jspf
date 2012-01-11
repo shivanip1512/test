@@ -55,25 +55,24 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
 
 <tags:sectionContainer title="Confirmation Dialogs">
     <h3>Custom OK Handling</h3>
-    <dialog:confirm id="confirmDeleteDlg" on="#deleteBtn" nameKey="confirmDelete" argument="Thing to Delete"/>
+    <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="Thing to Delete"/>
     <cti:button id="deleteBtn" nameKey="delete"/>
 
     <h3>OK Goes to a Specified Link</h3>
-    <dialog:confirm on="#gotoHome" nameKey="confirmGotoHome" href="/home"/>
-    <button id="gotoHome">Home</button>
+    <dialog:confirm on="#gotoHome" nameKey="confirmGotoHome"/>
+    <a href="/home" id="gotoHome">Home</a>
 
     <h3>OK Submits a Form</h3>
     <form action="http://en.wikipedia.org/w/index.php" method="get" id="wikipediaForm">
         <input type="hidden" name="title" value="Special:Search">
         <input type="text" name="search">
-        <dialog:confirm on="#searchWikipedia" nameKey="searchWikipedia" form="closest"/>
-        <button id="searchWikipedia" type="button">Search Wikipedia</button>
+        <dialog:confirm on="#searchWikipedia" nameKey="searchWikipedia"/>
+        <button id="searchWikipedia" type="submit">Search Wikipedia</button>
     </form>
 
     <h3>OK Submits an Other Form</h3>
-    <dialog:confirm on="#searchWikipedia2" nameKey="searchWikipedia" form="#wikipediaForm"/>
-    <button id="searchWikipedia2" type="button">Search Wikipedia</button>
-</tags:sectionContainer>
+    <dialog:confirm on="#searchWikipedia2" nameKey="searchWikipedia" />
+    <button id="searchWikipedia2" type="button" data-form="#wikipediaForm">Search Wikipedia</button>
 
 <tags:sectionContainer title="In-line Dialogs">
     <ul>

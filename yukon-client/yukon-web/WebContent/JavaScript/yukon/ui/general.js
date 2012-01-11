@@ -2,7 +2,8 @@
 *   General purpose ui functionality for Yukon.
 *   
 *     REQUIRES:
-*     * Prototype 1.7.1+
+*     * jQuery 1.6.4
+*     * blockUI 2.39
 *     
 *     USAGE:
 *     In day to day use, the Yukon.ui class will be your best bet at getting the functionality you
@@ -19,58 +20,42 @@ Yukon.ui = {
 
     init : function() {
         if (!this._initialized) {
-
             this.autoWire();
-
             this._initialized = true;
-            
             this.wizard.init();
         }
     },
     
     exclusiveSelect: function(item) {
-        item.siblings().invoke('removeClassName', 'selected');
-        item.addClassName('selected');
+        item = jQuery(item);
+        item.siblings().removeClass('selected');
+        item.addClass('selected');
+        
     },
     
     autoWire: function() {
         // register listeners
-        $$("a.f_blocker").each(function(elem) {
-            elem.observe('click', function(event) {
-                Yukon.ui.blockPage({color:'#000', alpha: 0.25});
-                return true;
-            });
-        });
         
-        $$("button.f_blocker").each(function(elem) {
-            elem.observe('click', function(event) {
-                Yukon.ui.blockPage({color:'#000', alpha: 0.25});
-                return true;
-            });
-        });
+        //buttons that redirect the page on click
+        jQuery(document).delegate("button[data-href]", 'click', function(event){window.location = jQuery(this).attr("data-href");});
         
-        $$(".f_clearBlocker").each(function(elem){
-            elem.observe('click', function(event){
-                Yukon.ui.unblockPage();
-                return true;
-            });
-        });
+        // page blockers
+        jQuery(document).delegate('a.f_blocker, button.f_blocker', 'click', Yukon.ui.block);
+        jQuery(document).delegate('#modal_glass', 'resize', Yukon.ui.blockPage);
+        
+        // clear page blocker
+        jQuery(document).delegate('.f_clearBlocker', 'click', Yukon.ui.unblockPage);
         
         // close popup on submit event
-        $$("button.f_closePopupOnSubmit").each(function(elem){
-            elem.observe('click', function(event){
-            	elem.up('.popUpDiv').hide();
-                return true;
-            });
+        
+        // close popup on submit event
+        jQuery("button.f_closePopupOnSubmit").live('click', function(event){
+            jQuery(event).closest('.popUpDiv').hide();
         });
         
         // resize it with the window
-        Event.observe(window, 'resize', function(event) {
-            //get visible blocked element's glass and redraw them as well
-            $$("div.glass").each(function(elem){
-                Yukon.uiUtils.elementGlass.redraw(elem);
-            });
-        });
+        
+        // resize blocked elements w/ page resize
         
         $$("input.f_formatPhone").each(function(elem){
             elem.observe('blur', function(event){
@@ -79,6 +64,7 @@ Yukon.ui = {
             
             Yukon.ui.formatPhone(elem);
         });
+        
 
         $$("input.f_toggle:checkbox").each(function(elem){
             elem.observe('change', function(event){
@@ -121,31 +107,31 @@ Yukon.ui = {
             focusElement.focus();
         }
     },
+    
+    block: function(event){
+       var target = jQuery(event.currentTarget);
+       var blockElement = target.closest(".f_block_this");
+       if(blockElement[0]){
+           Yukon.uiUtils.elementGlass.show(blockElement[0]);
+       }else{
+           Yukon.uiUtils.pageGlass.show();
+       }
+    },
+    
+    unblock: function(event){
+        
+    },
 
     blockPage: function(args) {
-        Yukon.uiUtils.pageGlass.show(args);
+        Yukon.uiUtils.pageGlass.show();
     },
 
     unblockPage: function() {
         Yukon.uiUtils.pageGlass.hide();
     },
     
-    blockElement: function(args) {
-        $$(args.selector).each(function(elem){
-            args.element = elem;
-            Yukon.uiUtils.elementGlass.show(args);            
-        });
-    },
-    
-    unblockElement: function(args) {
-        $$(args.selector).each(function(elem){
-            args.element = elem;
-            Yukon.uiUtils.elementGlass.hide(args);            
-        });
-    },
-    
     formatPhone: function(input){
-        //strip the input down to just numbers, then format
+        // strip the input down to just numbers, then format
         var stripped = input.value.replace(/[^\d]/g, "");
         if(stripped.length > 0) {
             for(var i=0; i<YG.PHONE.FORMATS.length; i++){
@@ -163,8 +149,8 @@ Yukon.ui = {
     },
     
     /**
-     * args: {  selector:   String css selector for use by $$
-     *          classes:    Array or string of class names to toggle on targeted elements }
+     * args: { selector: String css selector for use by $$ classes: Array or
+     * string of class names to toggle on targeted elements }
      */
     toggleClass: function(args){
         var classNames = args.classes;
@@ -179,7 +165,7 @@ Yukon.ui = {
     },
 
     toggleInputs: function(input){
-        //find matching inputs
+        // find matching inputs
         var container = input.next("div.f_toggle");
         var enable = input.checked;
         
@@ -221,7 +207,8 @@ Yukon.ui = {
             }
         });
     },
-pad: function(number, length) {
+    
+    pad: function(number, length) {
         
         var str = '' + number;
         while (str.length < length) {
@@ -318,11 +305,12 @@ pad: function(number, length) {
         },
         
         /**
-         * Resets the page of the wizard to the first/initial page.  Does NOT do anything with the contents
+         * Resets the page of the wizard to the first/initial page. Does NOT do
+         * anything with the contents
          * 
-         * wizard: can be any element in the DOM.  
-         *              * If it is the f_wizard container itself, it will reset the page
-         *              * If it is an arbitrary node, it will search for and reset ALL f_wizard containers within
+         * wizard: can be any element in the DOM. * If it is the f_wizard
+         * container itself, it will reset the page * If it is an arbitrary
+         * node, it will search for and reset ALL f_wizard containers within
          * 
          */
         reset: function(wizard) {
@@ -352,182 +340,63 @@ pad: function(number, length) {
 
 Yukon.uiUtils = {
     elementGlass: {
-        show: function(args) {
-            if(args.element != null) {
-                
-                args.element.select('button', 'input[type=button]', 'input[type=submit]').each(function(item) {
-                    item.disable();
-                });
-                
-                var glass = args.element.next(".glass");
-                if(glass == null) { //create the glass
-                    glass = new Element('div', {'class': 'glass'});
-                    //insert the element
-                    args.element.insert({after:glass});
+        show: function(element) {
+            var element = jQuery(element);
+            if(element[0]){
+                var glass = element.find(".glass");
+                if(!glass[0]){
+                    element.prepend(jQuery("<div>").addClass("glass"));
                 }
-                
-                if(args.color != null) {
-                    glass.setStyle("background-color:"+args.color);
-                }
-                
-                if(args.alpha != null) {
-                    glass.setOpacity(args.alpha);
-                }
-                
-                this.redraw(glass);
-                return glass;
+                return Yukon.uiUtils.elementGlass.redraw(glass);
             }
+            // nothing to block
             return null;
         },
         
-        hide: function(args) {
-            if(args.element != null) {
-                
-                args.element.select('button', 'input[type=button]', 'input[type=submit]').each(function(item) {
-                    item.enable();
-                });
-                
-                var glass = args.element.next(".glass");
-                if(glass) {
-                    glass.remove();
-                }
-            }
+        hide: function(element) {
+            jQuery(element).find('.glass:first').fadeOut(200, function(){jQuery(this).remove()});
         },
         
-        redraw: function(elem) {
-            
-            //resize the glass
-            elem.clonePosition(elem.previous());
-            
-            //show the glass
-            elem.show();
+        redraw: function(glass) {
+            var container = glass.closest(".f_block_this");
+            // resize the glass
+            glass.css('width', container.outerWidth()).css('height', container.outerHeight()).fadeIn(200);
+        },
+        
+        resize: function(event) {
+            Yukon.uiUtils.elementGlass.redraw(jQuery(event.currentTarget));
         }
     }, 
         
     pageGlass : {
         show : function(args) {
-            if (args == null) {
-                args = {color:'#000', alpha: 0.25};
-            }
-            var glass = $("modal_glass");
-            var tint = $$("#modal_glass > .tint")[0];
+            var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args);
+            var glass = jQuery("#modal_glass");
+            
             if (glass == null) {
-                glass = new Element('div', {
-                    id : "modal_glass",
-                    style : 'display:none;);' //hide it so we can fade it in
-                });
-                tint = new Element('div', {'class':'tint'});
-                glass.insert(new Element('div', {'class':'loading'}));
-                glass.insert(tint);
-                document.body.insertBefore(glass, document.body.childNodes[0]);
+                glass = jQuery('<div>').attr("id", "modal_glass").append(
+                            jQuery('<div>').addClass('tint').append(
+                                jQuery('<div>').addClass('loading')));
+                jQuery('body').prepend(glass);
             }
-            
-            if(args.color != null) {
-                tint.setStyle("background-color:"+args.color);
-            }
-            
-            if(args.alpha != null) {
-                tint.setOpacity(args.alpha);
-            }
-            
-            // size it appropriately
-            tint.setStyle({
-                height : Yukon.uiUtils.viewport.height() + 'px'
-            });
-            tint.setStyle({
-                width : Yukon.uiUtils.viewport.width() + 'px'
-            });
-
-            //sugary gooey-ness
-            Effect.Appear('modal_glass', {duration: 0.2});
+            glass.find('.tint').css('opacity', defaults.alpha).css('background-color', defaults.color);
+            glass.fadeIn(200);
         },
 
         hide : function() {
-            Effect.Fade('modal_glass', {duration: 0.2});
-            window.onresize = null;
+            jQuery("#modal_glass").fadeOut(200);
         }
     },
     
     tabs: {
-        init: function(elem){
-            if(elem === undefined){
-                $$(".f_tabs > li").each(function(elem){
-                    elem.observe('click', function(event){
-                        Yukon.uiUtils.tabs.showTab(event.element());
-                    });
-                });
-                
-                $$(".f_tabs").each(function(elem){
-                    elem.select("li:first").each(function(li){
-                        Yukon.uiUtils.tabs.showTab(li);
-                    });
-                });                
-            } else {
-                elem.select(".f_tabs > li").each(function(elem){
-                    elem.observe('click', function(event){
-                        Yukon.uiUtils.tabs.showTab(event.element());
-                    });
-                });
-                
-                elem.select(".f_tabs").each(function(elem){
-                    elem.select("li:first").each(function(li){
-                        Yukon.uiUtils.tabs.showTab(li);
-                    });
-                });
-            }
-        },
-        showTab: function(target){
-            if(!target.hasClassName("active")){
-                var tabIndex = -1;
-                var tabbedContent = null;
-                var tabControls = null;
-                
-                //Show the tab via the tab itself
-                if(target.hasClassName("f_tab")){
-                    tabIndex = target.previousSiblings().grep(new Selector('.f_tab')).size();
-                    tabbedContent = target.up(".f_tabbed");
-                    // IE doesn't extend the parentNode for some reason in Prototype 1.7
-                    tabControls = $(target.parentNode.parentNode).down(".f_tabs");
-                //show the tab via the tab controls
-                }else{
-                    tabIndex = target.previousSiblings().grep(new Selector('li')).size();
-                    tabControls = target.up(".f_tabs");
-                 // IE doesn't extend the parentNode for some reason in Prototype 1.7
-                    tabbedContent = $(target.parentNode.parentNode).down(".f_tabbed");
-                }
-                
-                tabbedContent.childElements().invoke('removeClassName', 'active');
-                tabControls.childElements().invoke('removeClassName', 'active');
-
-                //there can be other content in the .f_tabbed container but we are only interested
-                //in the f_tab elements
-                var tabs = tabbedContent.childElements().grep(new Selector('.f_tab'));
-                //make sure we are in-bounds
-                if(tabs.length > tabIndex){
-                    tabs[tabIndex].addClassName("active");
-                }
-                
-                //make sure we are in-bounds
-                if(tabControls.childElements().length > tabIndex){
-                    tabControls.childElements()[tabIndex].addClassName("active");
-                }
-                return true;
-            }
-            return false;
-        }
-    },
-
-    viewport : {
-        height : function() {
-            return (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
-        },
-        width : function() {
-            return (document.body.offsetWidth || window.innerWidth || document.documentElement.clientWidth || 0);
+        init: function(args){
+            var defaults = {};
+            jQuery(".f_tabs").tabs(jQuery.extend(defaults, args));
         }
     }
 };
 
-//Really Prototype doesn't have this!
+// Really Prototype doesn't have this!
 Element.prototype.trigger = function(eventName)
 {
     if (document.createEvent){
@@ -541,7 +410,7 @@ Element.prototype.trigger = function(eventName)
     }
 }
 
-//initialize the lib
-document.observe("dom:loaded", function() {
+// initialize the lib
+jQuery(document).ready(function(){
     Yukon.ui.init();
 });

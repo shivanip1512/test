@@ -8,6 +8,8 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
 <cti:standardPage module="survey" page="list">
+    <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
+
     <div id="ajaxDialog"></div>
 
     <cti:url var="addUrl" value="editDetails"/>
@@ -49,8 +51,8 @@
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
                             <dialog:confirm on="#deleteBtn${surveyId}" nameKey="confirmDelete"
-                                argument="${survey.surveyName}" href="${deleteUrl}"/>
-                            <cti:button id="deleteBtn${surveyId}" nameKey="delete" renderMode="image"/>
+                                argument="${survey.surveyName}"/>
+                            <cti:button id="deleteBtn${surveyId}" nameKey="delete" renderMode="image" href="${deleteUrl}" />
                         </td>
                     </tr>
                 </c:forEach>
