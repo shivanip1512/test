@@ -37,9 +37,9 @@
 				
 				<td class="widgetColumnCell">
 					<ct:widget bean="meterSearchWidget" />
-					<cti:checkRolesAndProperties value="PHASE_DETECT">
+					<cti:checkRole role="DeviceActionsRole.ROLEID">
                         <ct:widget bean="systemActionsMenuWidget" />
-                    </cti:checkRolesAndProperties>
+                    </cti:checkRole>
 				</td>
 			
 			</tr>
