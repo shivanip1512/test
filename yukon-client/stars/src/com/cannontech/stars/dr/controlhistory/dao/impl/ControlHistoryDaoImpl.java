@@ -77,7 +77,7 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
             ControlHistoryStatus controlHistoryStatus = getCurrentControlStatus(holder, lastControlHistoryEvent, userContext, past);
             controlHistory.setCurrentStatus(controlHistoryStatus);
             
-            Boolean noControlHistoryForTheProgram = true;
+            boolean noControlHistoryForTheProgram = true;
             if (inventory != null) {
                 // Set the display name
                 controlHistory.setInventory(inventory);
