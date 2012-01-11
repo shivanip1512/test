@@ -8,7 +8,7 @@
 
 using boost::unit_test_framework::test_suite;
 
-
+//test function to verify the Attribute retreival is correct.
 BOOST_AUTO_TEST_CASE(test_valueOf)
 {
     PointAttribute attributeTest = PointAttribute::valueOf("UNKNOWN");
