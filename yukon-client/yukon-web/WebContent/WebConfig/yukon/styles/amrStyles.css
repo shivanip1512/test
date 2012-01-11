@@ -119,6 +119,9 @@ div.resultBar > div {
 .eventStatusGood {
     color:#006633;
 }
+.eventStatusQuestionable {
+	color:#FF9900;
+}
 .eventStatusActive,
 .eventStatusBad {
     color:#CC0000;
