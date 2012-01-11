@@ -62,6 +62,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_WEB_CONFIG_DB = 33;
     public static final int CHANGE_STARS_PUBLISHED_PROGRAM_DB = 34;
     public static final int CHANGE_IVVC_ZONE = 35;
+    public static final int CHANGE_STATIC_PAO_INFO_DB = 36;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will
@@ -93,6 +94,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_PAO_SCHEDULE = "PAO Schedule";
 	public static final String CAT_SETTLEMENT = "Settlement";
     public static final String CAT_DEVICE_CONFIG = "Device Config";
+    public static final String CAT_STATIC_PAO_INFO_DB = "Static Pao Info";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";
