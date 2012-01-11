@@ -7,34 +7,35 @@
 package com.cannontech.fdemulator.model;
 
 import java.awt.Color;
-import java.io.*;
-import java.util.*;
-import com.cannontech.fdemulator.protocols.*;
-import com.cannontech.fdemulator.fileio.*;
+import java.io.File;
+import java.util.List;
+import java.util.Vector;
+
+import com.cannontech.fdemulator.fileio.ValmetFileIO;
+import com.cannontech.fdemulator.protocols.ValmetPoint;
 
 public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 {
 	/* ROW DATA */
-	private java.util.Vector allValmetPoints = null;
-	private java.util.List currentValmetPoints = null;
+	private Vector<ValmetPoint> allValmetPoints = null;
+	private List<ValmetPoint> currentValmetPoints = null;
 	/* END - ROW DATA */
 
 	//The columns and their column index	
 	public static final int TYPE_COLUMN = 0;
 	public static final int NAME_COLUMN = 1;
-	public static final int INTERVAL_COLUMN = 2;
-	public static final int FUNCTION_COLUMN = 3;
-	public static final int MIN_COLUMN = 4;
-	public static final int MAX_COLUMN = 5;
-	public static final int DELTA_COLUMN = 6;
-	public static final int MAXSTART_COLUMN = 7;
+	public static final int PORT_COLUMN = 2;
+	public static final int INTERVAL_COLUMN = 3;
+	public static final int FUNCTION_COLUMN = 4;
+	public static final int MIN_COLUMN = 5;
+	public static final int MAX_COLUMN = 6;
+	public static final int DELTA_COLUMN = 7;
+	public static final int MAXSTART_COLUMN = 8;
 	public static final String valmetFile = "resource/valmet_points.cfg";
-	private static final String LF = System.getProperty("line.separator");
-	private BufferedReader file;
 	private ValmetFileIO valmetFileIO = null;
 
 	//The column names based on their column index
-	private static final String[] COLUMN_NAMES = { "Type", "Name", "Interval", "Function", "Min", "Max", "Delta", "MaxStart" };
+	private static final String[] COLUMN_NAMES = { "Type", "Name", "Port", "Interval", "Function", "Min", "Max", "Delta", "MaxStart" };
 
 	//The color schemes - based on the schedule status
 	private static Color[] cellColors = {
@@ -70,10 +71,10 @@ public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	private java.util.Vector getAllValmetPoints()
+	private Vector<ValmetPoint> getAllValmetPoints()
 	{
 		if (allValmetPoints == null)
-			allValmetPoints = new java.util.Vector(20);
+			allValmetPoints = new Vector<ValmetPoint>(20);
 		return allValmetPoints;
 	}
 
@@ -106,7 +107,7 @@ public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 			return null;
 	}
 
-	private java.util.List getCurrentValmetPoints()
+	private List<ValmetPoint> getCurrentValmetPoints()
 	{
 		if (currentValmetPoints == null)
 			currentValmetPoints = getAllValmetPoints();
@@ -116,13 +117,11 @@ public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 
 	public int getRowCount()
 	{
-
 		return getCurrentValmetPoints().size();
 	}
 
 	public Object getValueAt(int row, int col)
 	{
-
 		ValmetPoint pointRow = getRowAt(row);
 
 		switch (col)
@@ -136,6 +135,12 @@ public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 				{
 					return pointRow.getPointName();
 				}
+				
+			case ValmetPointTableModel.PORT_COLUMN :
+    			{
+    			    Integer newint = new Integer(pointRow.getPort());
+    			    return newint.toString();
+    			}
 
 			case ValmetPointTableModel.INTERVAL_COLUMN :
 				{
@@ -175,59 +180,55 @@ public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 			default :
 				return null;
 		}
-
 	}
 	
 	public ValmetFileIO getValmetFileIO()
-		{
-			if(valmetFileIO == null)
-			{
-				valmetFileIO = new ValmetFileIO(valmetFile)
-				{
-				};
-			}
-			return valmetFileIO;
+	{
+		if(valmetFileIO == null) {
+			valmetFileIO = new ValmetFileIO(valmetFile);
 		}
+		return valmetFileIO;
+	}
 	
 	public void setValueAt(Object value, int row, int col)
 	{
-		
 		// update the file with new value
 		getValmetFileIO().writeValmetFileUpdate(valmetFileIO.readFile(new File(valmetFile)), new File(valmetFile), row, col, value);
 		// update table cell
-		Vector vec = getAllValmetPoints();
+		Vector<ValmetPoint> vec = getAllValmetPoints();
 		ValmetPoint point = (ValmetPoint) vec.elementAt(row);
-		if(col == 0){
+		if(col == TYPE_COLUMN){
 			point.setPointType(value.toString());
-		}else if(col == 1){
+		}else if(col == NAME_COLUMN){
 			point.setPointName(value.toString());
-		}else if(col == 2){
+		}else if(col == PORT_COLUMN){
+		    Integer newint = new Integer(value.toString());
+		    point.setPort(newint.intValue());
+		}else if(col == INTERVAL_COLUMN){
 			Integer newint = new Integer(value.toString());
 			point.setPointInterval(newint.intValue());
-		}else if(col == 3){
+		}else if(col == FUNCTION_COLUMN){
 			point.setPointFunction(value.toString());
-		}else if(col == 4){
+		}else if(col == MIN_COLUMN){
 			Double newdouble = new Double(value.toString());
 			point.setPointMin(newdouble.doubleValue());
-		}else if(col == 5){
+		}else if(col == MAX_COLUMN){
 			Double newdouble = new Double(value.toString());
 			point.setPointMax(newdouble.doubleValue());
-		}else if(col == 6){
+		}else if(col == DELTA_COLUMN){
 			Double newdouble = new Double(value.toString());
 			point.setPointDelta(newdouble.doubleValue());
-		}else if(col == 7){
+		}else if(col == MAXSTART_COLUMN){
 			Boolean bool = new Boolean(value.toString());
 			point.setPointMaxStart(bool.booleanValue());
 		}
 		vec.setElementAt(point,row);
 		// fire a repaint of the cell
 		fireTableCellUpdated(row, col);
-		
 	}
 
 	public boolean isCellEditable(int row, int column)
 	{
-		
 		return true;
 	}
 }

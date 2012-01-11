@@ -80,7 +80,7 @@ public class ValmetFileIO
 			}
 
 			fileWriter.write("EOF\n");
-			fileWriter.write("# Structure: <string point_type>;<string point_name>;<int sending_interval>;<string function>;<int min>;<int max>; + function variables\n");
+			fileWriter.write("# Structure: <string point_type>;<string point_name>;<int port_number>;<int sending_interval>;<string function>;<int min>;<int max>; + function variables\n");
 			fileWriter.write("#\n");
 			fileWriter.write("#	Sending Intervals (10,30,60,300,900,3600)\n");
 			fileWriter.write("#\n");
@@ -92,9 +92,9 @@ public class ValmetFileIO
 			fileWriter.write("#\n");
 			fileWriter.write("# Examples:\n");
 			fileWriter.write("#\n");
-			fileWriter.write("#  Random: 	'Value;Input 1;10;RANDOM;0;100'\n");
-			fileWriter.write("#  Pyramid:	'Value;Input 4;30;PYRAMID;0;100;10'\n");
-			fileWriter.write("#  Dropoff:	'Value;Input 5;60;DROPOFF;0;100;10;true'\n");
+	        fileWriter.write("#  Random:    'Value;Input 1;10000;10;RANDOM;0;100'\n");
+	        fileWriter.write("#  Pyramid:   'Value;Input 4;9999;30;PYRAMID;0;100;10'\n");
+	        fileWriter.write("#  Dropoff:   'Value;Input 5;9998;60;DROPOFF;0;100;10;true'\n");
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (Exception e)
@@ -133,7 +133,7 @@ public class ValmetFileIO
 			}
 
 			fileWriter.write("EOF\n");
-			fileWriter.write("# Structure: <string point_type>;<string point_name>;<int sending_interval>;<string function>;<int min>;<int max>; + function variables\n");
+			fileWriter.write("# Structure: <string point_type>;<string point_name>;<int port_number>;<int sending_interval>;<string function>;<int min>;<int max>; + function variables\n");
 			fileWriter.write("#\n");
 			fileWriter.write("#	Sending Intervals (10,30,60,300,900,3600)\n");
 			fileWriter.write("#\n");
@@ -145,9 +145,9 @@ public class ValmetFileIO
 			fileWriter.write("#\n");
 			fileWriter.write("# Examples:\n");
 			fileWriter.write("#\n");
-			fileWriter.write("#  Random: 	'Value;Input 1;10;RANDOM;0;100'\n");
-			fileWriter.write("#  Pyramid:	'Value;Input 4;30;PYRAMID;0;100;10'\n");
-			fileWriter.write("#  Dropoff:	'Value;Input 5;60;DROPOFF;0;100;10;true'\n");
+			fileWriter.write("#  Random:    'Value;Input 1;10000;10;RANDOM;0;100'\n");
+	        fileWriter.write("#  Pyramid:   'Value;Input 4;9999;30;PYRAMID;0;100;10'\n");
+	        fileWriter.write("#  Dropoff:   'Value;Input 5;9998;60;DROPOFF;0;100;10;true'\n");
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (Exception e)
@@ -211,6 +211,7 @@ public class ValmetFileIO
 
 		newline = (newpoint.getPointType() + ";" + 
 			newpoint.getPointName() + ";" +
+			newpoint.getPort() + ";" +
 			newpoint.getPointInterval() + ";" + 
 			newpoint.getPointFunction() + ";" + 
 			newpoint.getPointMin() + ";" + 
@@ -248,7 +249,7 @@ public class ValmetFileIO
 		try{
 		fileWriter.write(newline + LF);
 		fileWriter.write("EOF\n");
-		fileWriter.write("# Structure: <string point_type>;<string point_name>;<int sending_interval>;<string function>;<int min>;<int max>; + function variables\n");
+		fileWriter.write("# Structure: <string point_type>;<string point_name>;<int port_number>;<int sending_interval>;<string function>;<int min>;<int max>; + function variables\n");
 		fileWriter.write("#\n");
 		fileWriter.write("#	Sending Intervals (10,30,60,300,900,3600)\n");
 		fileWriter.write("#\n");
@@ -260,9 +261,9 @@ public class ValmetFileIO
 		fileWriter.write("#\n");
 		fileWriter.write("# Examples:\n");
 		fileWriter.write("#\n");
-		fileWriter.write("#  Random: 	'Value;Input 1;10;RANDOM;0;100'\n");
-		fileWriter.write("#  Pyramid:	'Value;Input 4;30;PYRAMID;0;100;10'\n");
-		fileWriter.write("#  Dropoff:	'Value;Input 5;60;DROPOFF;0;100;10;true'\n");
+		fileWriter.write("#  Random: 	'Value;Input 1;10000;10;RANDOM;0;100'\n");
+		fileWriter.write("#  Pyramid:	'Value;Input 4;9999;30;PYRAMID;0;100;10'\n");
+		fileWriter.write("#  Dropoff:	'Value;Input 5;9998;60;DROPOFF;0;100;10;true'\n");
 		fileWriter.flush();
 		fileWriter.close();
 		}catch(Exception e){
@@ -270,8 +271,12 @@ public class ValmetFileIO
 		}
 	}
 	
+	public Object[] getAllValmetPointsFromFile() {
+	    return getValmetPointsFromFileForPort(null);
+	}
+	
 	// method for filling point array with points from point file
-	public Object[] getValmetPointsFromFile()
+	public Object[] getValmetPointsFromFileForPort(Integer runningPort)
 	{
 		Object[] pointarray = new Object[500];
 
@@ -303,6 +308,7 @@ public class ValmetFileIO
 				StringTokenizer st = new StringTokenizer(pointline, ";");
 				String pointtype = st.nextToken();
 				String pointname = st.nextToken();
+				String port = st.nextToken();
 				String interval = st.nextToken();
 				String function = st.nextToken();
 				String min = st.nextToken();
@@ -310,10 +316,13 @@ public class ValmetFileIO
 				String delta = st.nextToken();
 				String maxstart = st.nextToken();
 
-				ValmetPoint newpoint = new ValmetPoint(pointtype, pointname, interval, function, min, max, delta, maxstart);
-				pointarray[i] = newpoint;
-
-				i++;
+				int newPort = new Integer(port);
+				if (runningPort == null || newPort == runningPort) {
+    				ValmetPoint newpoint = new ValmetPoint(pointtype, pointname, port, interval, function, min, max, delta, maxstart);
+    				pointarray[i] = newpoint;
+    
+    				i++;
+				}
 
 			} catch (Exception e)
 			{

@@ -16,8 +16,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.util.Vector;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -46,9 +48,15 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.fdemulator.protocols.*;
-import com.cannontech.fdemulator.model.*;
-import com.cannontech.fdemulator.fileio.*;
+import com.cannontech.fdemulator.fileio.AcsFileIO;
+import com.cannontech.fdemulator.fileio.RdexFileIO;
+import com.cannontech.fdemulator.fileio.ValmetFileIO;
+import com.cannontech.fdemulator.model.AcsPointTableModel;
+import com.cannontech.fdemulator.model.RdexPointTableModel;
+import com.cannontech.fdemulator.model.ValmetPointTableModel;
+import com.cannontech.fdemulator.protocols.ACSPoint;
+import com.cannontech.fdemulator.protocols.RdexPoint;
+import com.cannontech.fdemulator.protocols.ValmetPoint;
 
 /**
  * @author ASolberg
@@ -73,7 +81,6 @@ public class PointEditor extends JFrame implements ActionListener
 	private JLabel rdexMinLabel;
 	private JLabel rdexMaxLabel;
 	private JLabel rdexDeltaLabel;
-	private JLabel rdexMaxStartLabel;
 	private JComboBox rdexTypeCB;
 	private JTextField rdexNameTF;
 	private JComboBox rdexIntervalCB;
@@ -92,7 +99,6 @@ public class PointEditor extends JFrame implements ActionListener
 	private JLabel acsMinLabel;
 	private JLabel acsMaxLabel;
 	private JLabel acsDeltaLabel;
-	private JLabel acsMaxStartLabel;
 	private JComboBox acsTypeCB;
 	private JTextField acsRemoteTF;
 	private JTextField acsPointTF;
@@ -106,14 +112,15 @@ public class PointEditor extends JFrame implements ActionListener
 
 	private JLabel valmetTypeLabel;
 	private JLabel valmetNameLabel;
+	private JLabel valmetPortLabel;
 	private JLabel valmetIntervalLabel;
 	private JLabel valmetFunctionLabel;
 	private JLabel valmetMinLabel;
 	private JLabel valmetMaxLabel;
 	private JLabel valmetDeltaLabel;
-	private JLabel valmetMaxStartLabel;
 	private JComboBox valmetTypeCB;
 	private JTextField valmetNameTF;
+	private JTextField valmetPortTF;
 	private JComboBox valmetIntervalCB;
 	private JComboBox valmetFunctionCB;
 	private JTextField valmetMinTF;
@@ -151,7 +158,6 @@ public class PointEditor extends JFrame implements ActionListener
 	private String valmetFile = "resource/valmet_points.cfg";
 	private String rdexFile = "resource/rdex_points.cfg";
 	private String acsFile = "resource/acs_points.cfg";
-	private BufferedReader file;
 
 	private Object[] valmetArray;
 	private Object[] rdexArray;
@@ -175,8 +181,6 @@ public class PointEditor extends JFrame implements ActionListener
 	private ValmetPoint oldvalmetpoint;
 	private ACSPoint oldacspoint;
 	private RdexPoint oldrdexpoint;
-
-	private static final String LF = System.getProperty("line.separator");
 
 	private VirtualDevice virtDevice = null;
 	private boolean deviceadded = false;
@@ -525,6 +529,12 @@ public class PointEditor extends JFrame implements ActionListener
 		valmetNameTF = new JTextField("");
 		valmetNameTF.setBounds(new Rectangle(160, 10, 80, 20));
 		valmetPanel.add(valmetNameTF);
+		valmetPortLabel = new JLabel("Port:");
+		valmetPortLabel.setBounds(new Rectangle(250, 10, 30, 20));
+		valmetPanel.add(valmetPortLabel);
+		valmetPortTF = new JTextField("");
+		valmetPortTF.setBounds(new Rectangle(280, 10, 50, 20));
+		valmetPanel.add(valmetPortTF);
 		valmetIntervalLabel = new JLabel("Interval:");
 		valmetIntervalLabel.setBounds(new Rectangle(10, 40, 40, 20));
 		valmetPanel.add(valmetIntervalLabel);
@@ -532,32 +542,32 @@ public class PointEditor extends JFrame implements ActionListener
 		valmetIntervalCB.setBounds(new Rectangle(55, 40, 50, 20));
 		valmetPanel.add(valmetIntervalCB);
 		valmetFunctionLabel = new JLabel("Function:");
-		valmetFunctionLabel.setBounds(new Rectangle(115, 40, 45, 20));
+		valmetFunctionLabel.setBounds(new Rectangle(110, 40, 45, 20));
 		valmetPanel.add(valmetFunctionLabel);
 		valmetFunctionCB = new JComboBox(new String[] { "RANDOM", "PYRAMID", "DROPOFF" });
-		valmetFunctionCB.setBounds(new Rectangle(170, 40, 80, 20));
+		valmetFunctionCB.setBounds(new Rectangle(160, 40, 80, 20));
 		valmetPanel.add(valmetFunctionCB);
 
 		valmetMinLabel = new JLabel("Min:");
-		valmetMinLabel.setBounds(new Rectangle(260, 40, 40, 20));
+		valmetMinLabel.setBounds(new Rectangle(245, 40, 40, 20));
 		valmetPanel.add(valmetMinLabel);
 		valmetMinTF = new JTextField("");
-		valmetMinTF.setBounds(new Rectangle(285, 40, 40, 20));
+		valmetMinTF.setBounds(new Rectangle(270, 40, 40, 20));
 		valmetPanel.add(valmetMinTF);
 		valmetMaxLabel = new JLabel("Max:");
-		valmetMaxLabel.setBounds(new Rectangle(340, 40, 40, 20));
+		valmetMaxLabel.setBounds(new Rectangle(315, 40, 40, 20));
 		valmetPanel.add(valmetMaxLabel);
 		valmetMaxTF = new JTextField("");
-		valmetMaxTF.setBounds(new Rectangle(370, 40, 40, 20));
+		valmetMaxTF.setBounds(new Rectangle(345, 40, 40, 20));
 		valmetPanel.add(valmetMaxTF);
 		valmetDeltaLabel = new JLabel("Delta:");
-		valmetDeltaLabel.setBounds(new Rectangle(420, 40, 40, 20));
+		valmetDeltaLabel.setBounds(new Rectangle(390, 40, 40, 20));
 		valmetPanel.add(valmetDeltaLabel);
 		valmetDeltaTF = new JTextField("");
-		valmetDeltaTF.setBounds(new Rectangle(455, 40, 40, 20));
+		valmetDeltaTF.setBounds(new Rectangle(420, 40, 40, 20));
 		valmetPanel.add(valmetDeltaTF);
 		valmetMaxStartCB = new JCheckBox("MaxStart");
-		valmetMaxStartCB.setBounds(new Rectangle(500, 40, 70, 20));
+		valmetMaxStartCB.setBounds(new Rectangle(465, 40, 70, 20));
 		valmetPanel.add(valmetMaxStartCB);
 
 		valmetTable = new JTable(getValmetTableModel());
@@ -571,7 +581,7 @@ public class PointEditor extends JFrame implements ActionListener
 			}
 		});
 		
-		TableColumn valmetIntervalColumn = valmetTable.getColumnModel().getColumn(2);
+		TableColumn valmetIntervalColumn = valmetTable.getColumnModel().getColumn(ValmetPointTableModel.INTERVAL_COLUMN);
 
 		JComboBox valmetIntervalComboBox = new JComboBox();
 		valmetIntervalComboBox.addItem("10");
@@ -582,7 +592,7 @@ public class PointEditor extends JFrame implements ActionListener
 		valmetIntervalComboBox.addItem("3600");
 		valmetIntervalColumn.setCellEditor(new DefaultCellEditor(valmetIntervalComboBox));
 
-		TableColumn valmetTypeColumn = valmetTable.getColumnModel().getColumn(0);
+		TableColumn valmetTypeColumn = valmetTable.getColumnModel().getColumn(ValmetPointTableModel.TYPE_COLUMN);
 
 		JComboBox valmetTypeComboBox = new JComboBox();
 		valmetTypeComboBox.addItem("Value");
@@ -592,7 +602,7 @@ public class PointEditor extends JFrame implements ActionListener
 
 		valmetTypeColumn.setCellEditor(new DefaultCellEditor(valmetTypeComboBox));
 
-		TableColumn valmetFunctionColumn = valmetTable.getColumnModel().getColumn(3);
+		TableColumn valmetFunctionColumn = valmetTable.getColumnModel().getColumn(ValmetPointTableModel.FUNCTION_COLUMN);
 
 		JComboBox valmetFunctionComboBox = new JComboBox();
 		valmetFunctionComboBox.addItem("RANDOM");
@@ -600,7 +610,7 @@ public class PointEditor extends JFrame implements ActionListener
 		valmetFunctionComboBox.addItem("DROPOFF");
 		valmetFunctionColumn.setCellEditor(new DefaultCellEditor(valmetFunctionComboBox));
 		
-		TableColumn valmetMaxStartColumn = valmetTable.getColumnModel().getColumn(7);
+		TableColumn valmetMaxStartColumn = valmetTable.getColumnModel().getColumn(ValmetPointTableModel.MAXSTART_COLUMN);
 		
 		JComboBox valmetMaxStartComboBox = new JComboBox();
 		valmetMaxStartComboBox.addItem("true");
@@ -608,42 +618,38 @@ public class PointEditor extends JFrame implements ActionListener
 		valmetMaxStartColumn.setCellEditor(new DefaultCellEditor(valmetMaxStartComboBox));
 
 		valmetScrollPane = new JScrollPane(valmetTable);
-		valmetScrollPane.setBounds(new Rectangle(10, 65, 570, 265));
-		valmetScrollPane.setPreferredSize(new Dimension(570, 265));
+		valmetScrollPane.setBounds(new Rectangle(10, 65, 595, 265));
+		valmetScrollPane.setPreferredSize(new Dimension(595, 265));
 
-		valmetScrollPane = new JScrollPane(valmetTable);
-		valmetScrollPane.setBounds(new Rectangle(10, 65, 570, 265));
-		valmetScrollPane.setPreferredSize(new Dimension(570, 265));
-
-		valmetArray = getValmetFileIO().getValmetPointsFromFile();
+		valmetArray = getValmetFileIO().getAllValmetPointsFromFile();
 		loadValmetFile(valmetArray);
 
 		valmetPanel.add(valmetScrollPane);
 		valmetSave = new JButton("Save");
-		valmetSave.setBounds(new Rectangle(520, 10, 60, 20));
+		valmetSave.setBounds(new Rectangle(540, 10, 65, 20));
 		valmetPanel.add(valmetSave);
 		valmetSave.setVisible(false);
 		valmetDelete = new JButton("Delete");
-		valmetDelete.setBounds(new Rectangle(520, 10, 65, 20));
+		valmetDelete.setBounds(new Rectangle(540, 10, 65, 20));
 		valmetPanel.add(valmetDelete);
 		valmetDelete.setVisible(true);
 		valmetEdit = new JButton("Edit");
-		valmetEdit.setBounds(new Rectangle(460, 10, 55, 20));
+		valmetEdit.setBounds(new Rectangle(480, 10, 55, 20));
 		valmetPanel.add(valmetEdit);
 		valmetAdd = new JButton("Add");
-		valmetAdd.setBounds(new Rectangle(400, 10, 55, 20));
+		valmetAdd.setBounds(new Rectangle(420, 10, 55, 20));
 		valmetPanel.add(valmetAdd);
 		valmetGenerate = new JButton("Generate");
-		valmetGenerate.setBounds(new Rectangle(315, 10, 80, 20));
+		valmetGenerate.setBounds(new Rectangle(335, 10, 80, 20));
 		valmetPanel.add(valmetGenerate);
 		valmetCopy = new JButton("Copy");
-		valmetCopy.setBounds(new Rectangle(245, 10, 65, 20));
+		valmetCopy.setBounds(new Rectangle(540, 40, 65, 20));
 		valmetPanel.add(valmetCopy);
 		valmetCopy.setVisible(false);
 
 		disableValmetFields();
 
-		valmetPanel.setPreferredSize(new Dimension(600, 400));
+		valmetPanel.setPreferredSize(new Dimension(635, 400));
 		tabbedPane.addTab("Valmet Points", icon, valmetPanel, "Valmet Point Editor");
 		tabbedPane.setMnemonicAt(2, KeyEvent.VK_3);
 
@@ -666,7 +672,7 @@ public class PointEditor extends JFrame implements ActionListener
 		this.getContentPane().add(tabbedPane);
 
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		this.setSize(new Dimension(600, 400));
+		this.setSize(new Dimension(635, 400));
 		this.setTitle("Point Editor");
 
 		this.getContentPane().setBackground(Color.gray);
@@ -769,9 +775,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if (rdexTableModel == null)
 		{
-			rdexTableModel = new RdexPointTableModel()
-			{
-			};
+			rdexTableModel = new RdexPointTableModel();
 		}
 		return rdexTableModel;
 	}
@@ -780,9 +784,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if(rdexFileIO == null)
 		{
-			rdexFileIO = new RdexFileIO(rdexFile)
-			{
-			};
+			rdexFileIO = new RdexFileIO(rdexFile);
 		}
 		return rdexFileIO;
 	}
@@ -791,9 +793,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if (acsTableModel == null)
 		{
-			acsTableModel = new AcsPointTableModel()
-			{
-			};
+			acsTableModel = new AcsPointTableModel();
 		}
 		return acsTableModel;
 	}
@@ -802,9 +802,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if(acsFileIO == null)
 		{
-			acsFileIO = new AcsFileIO(acsFile)
-			{
-			};
+			acsFileIO = new AcsFileIO(acsFile);
 		}
 		return acsFileIO;
 	}
@@ -813,9 +811,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if (valmetTableModel == null)
 		{
-			valmetTableModel = new ValmetPointTableModel()
-			{
-			};
+			valmetTableModel = new ValmetPointTableModel();
 		}
 		return valmetTableModel;
 	}
@@ -824,9 +820,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if(valmetFileIO == null)
 		{
-			valmetFileIO = new ValmetFileIO(valmetFile)
-			{
-			};
+			valmetFileIO = new ValmetFileIO(valmetFile);
 		}
 		return valmetFileIO;
 	}
@@ -837,14 +831,16 @@ public class PointEditor extends JFrame implements ActionListener
 	protected void loadValmetPoint(Point cell)
 	{
 		int r = getValmetTable().rowAtPoint(cell);
-		valmetTypeCB.setSelectedItem(getValmetTable().getValueAt(r, 0));
-		valmetNameTF.setText((String) getValmetTable().getValueAt(r, 1));
-		valmetIntervalCB.setSelectedItem(getValmetTable().getValueAt(r, 2));
-		valmetFunctionCB.setSelectedItem(getValmetTable().getValueAt(r, 3));
-		valmetMinTF.setText((String) getValmetTable().getValueAt(r, 4));
-		valmetMaxTF.setText((String) getValmetTable().getValueAt(r, 5));
-		valmetDeltaTF.setText((String) getValmetTable().getValueAt(r, 6));
-		Boolean bool = new Boolean((String) getValmetTable().getValueAt(r, 7));
+		JTable valmetTable = getValmetTable();
+		valmetTypeCB.setSelectedItem(valmetTable.getValueAt(r, ValmetPointTableModel.TYPE_COLUMN));
+		valmetNameTF.setText((String) valmetTable.getValueAt(r, ValmetPointTableModel.NAME_COLUMN));
+		valmetPortTF.setText((String) valmetTable.getValueAt(r, ValmetPointTableModel.PORT_COLUMN));
+		valmetIntervalCB.setSelectedItem(valmetTable.getValueAt(r, ValmetPointTableModel.INTERVAL_COLUMN));
+		valmetFunctionCB.setSelectedItem(valmetTable.getValueAt(r, ValmetPointTableModel.FUNCTION_COLUMN));
+		valmetMinTF.setText((String) valmetTable.getValueAt(r, ValmetPointTableModel.MIN_COLUMN));
+		valmetMaxTF.setText((String) valmetTable.getValueAt(r, ValmetPointTableModel.MAX_COLUMN));
+		valmetDeltaTF.setText((String) valmetTable.getValueAt(r, ValmetPointTableModel.DELTA_COLUMN));
+		Boolean bool = new Boolean((String) valmetTable.getValueAt(r, ValmetPointTableModel.MAXSTART_COLUMN));
 		valmetMaxStartCB.setSelected(bool.booleanValue());
 	}
 
@@ -987,7 +983,7 @@ public class PointEditor extends JFrame implements ActionListener
 			}
 		}
 		PointBase analogPoint;
-		Object[] points = getValmetFileIO().getValmetPointsFromFile();
+		Object[] points = getValmetFileIO().getAllValmetPointsFromFile();
 		int j = 0;
 		int exit = 0;
 		while (exit != 1)
@@ -1117,19 +1113,20 @@ public class PointEditor extends JFrame implements ActionListener
 			String newValmetMin = valmetMinTF.getText();
 			String newValmetMax = valmetMaxTF.getText();
 			String newValmetDelta = valmetDeltaTF.getText();
+			String newValmetPort = valmetPortTF.getText();
 			Boolean bool = new Boolean(valmetMaxStartCB.isSelected());
 			String newValmetMaxStart = bool.toString();
-			ValmetPoint newpoint = new ValmetPoint(newValmetType, newValmetName, newValmetInterval, newValmetFunction, newValmetMin, newValmetMax, newValmetDelta, newValmetMaxStart);
+			ValmetPoint newpoint = new ValmetPoint(newValmetType, newValmetName, newValmetPort, newValmetInterval, newValmetFunction, newValmetMin, newValmetMax, newValmetDelta, newValmetMaxStart);
 
 			String[] points = getValmetFileIO().readFile(new File(valmetFile));
 
-			String oldpoint = oldvalmetpoint.getPointType() + ";" + oldvalmetpoint.getPointName() + ";" + oldvalmetpoint.getPointInterval() + ";" + oldvalmetpoint.getPointFunction() + ";" + oldvalmetpoint.getPointMin() + ";" + oldvalmetpoint.getPointMax() + ";" + oldvalmetpoint.getPointDelta() + ";" + oldvalmetpoint.getPointMaxStart();
+			String oldpoint = oldvalmetpoint.getPointType() + ";" + oldvalmetpoint.getPointName() + ";"  + oldvalmetpoint.getPort() + ";" + oldvalmetpoint.getPointInterval() + ";" + oldvalmetpoint.getPointFunction() + ";" + oldvalmetpoint.getPointMin() + ";" + oldvalmetpoint.getPointMax() + ";" + oldvalmetpoint.getPointDelta() + ";" + oldvalmetpoint.getPointMaxStart();
 
 			for (int i = 0; i < points.length; i++)
 			{
 				if (oldpoint.equalsIgnoreCase(points[i]))
 				{
-					String newpointstring = newpoint.getPointType() + ";" + newpoint.getPointName() + ";" + newpoint.getPointInterval() + ";" + newpoint.getPointFunction() + ";" + newpoint.getPointMin() + ";" + newpoint.getPointMax() + ";" + newpoint.getPointDelta() + ";" + newpoint.getPointMaxStart();
+					String newpointstring = newpoint.getPointType() + ";" + newpoint.getPointName() + ";" + newpoint.getPort() + ";" + newpoint.getPointInterval() + ";" + newpoint.getPointFunction() + ";" + newpoint.getPointMin() + ";" + newpoint.getPointMax() + ";" + newpoint.getPointDelta() + ";" + newpoint.getPointMaxStart();
 
 					points[i] = newpointstring;
 					break;
@@ -1138,7 +1135,7 @@ public class PointEditor extends JFrame implements ActionListener
 			
 			getValmetFileIO().writeValmetFile(points, new File(valmetFile));
 
-			valmetArray = getValmetFileIO().getValmetPointsFromFile();
+			valmetArray = getValmetFileIO().getAllValmetPointsFromFile();
 			getValmetTableModel().clear();
 			loadValmetFile(valmetArray);
 
@@ -1149,7 +1146,7 @@ public class PointEditor extends JFrame implements ActionListener
 			//adding a new point
 			Boolean bool = new Boolean(valmetMaxStartCB.isSelected());
 
-			ValmetPoint newpoint = new ValmetPoint(valmetTypeCB.getSelectedItem().toString(), valmetNameTF.getText(), valmetIntervalCB.getSelectedItem().toString(), valmetFunctionCB.getSelectedItem().toString(), valmetMinTF.getText(), valmetMaxTF.getText(), valmetDeltaTF.getText(), bool.toString());
+			ValmetPoint newpoint = new ValmetPoint(valmetTypeCB.getSelectedItem().toString(), valmetNameTF.getText(), valmetPortTF.getText(), valmetIntervalCB.getSelectedItem().toString(), valmetFunctionCB.getSelectedItem().toString(), valmetMinTF.getText(), valmetMaxTF.getText(), valmetDeltaTF.getText(), bool.toString());
 
 			getValmetFileIO().addValmetPointToFile(newpoint);
 			getValmetTableModel().addRow(newpoint);
@@ -1166,22 +1163,23 @@ public class PointEditor extends JFrame implements ActionListener
 	private void valmetDelete_actionPerformed()
 	{
 		int row = getValmetTable().getSelectedRow();
-		Vector vec = new Vector();
+		Vector<String> vec = new Vector<String>();
 		String[] points = getValmetFileIO().readFile(new File(valmetFile));
 		for (int i = 0; i < points.length; i++)
 		{
 			vec.add(points[i]);
 		}
-		String delType = getValmetTableModel().getValueAt(row, 0).toString();
-		String delName = getValmetTableModel().getValueAt(row, 1).toString();
-		String delInterval = getValmetTableModel().getValueAt(row, 2).toString();
-		String delFunction = getValmetTableModel().getValueAt(row, 3).toString();
-		String delMin = getValmetTableModel().getValueAt(row, 4).toString();
-		String delMax = getValmetTableModel().getValueAt(row, 5).toString();
-		String delDelta = getValmetTableModel().getValueAt(row, 6).toString();
-		String delMaxStart = getValmetTableModel().getValueAt(row, 7).toString();
+		String delType = getValmetTableModel().getValueAt(row, ValmetPointTableModel.TYPE_COLUMN).toString();
+		String delName = getValmetTableModel().getValueAt(row, ValmetPointTableModel.NAME_COLUMN).toString();
+		String portNum = getValmetTableModel().getValueAt(row, ValmetPointTableModel.PORT_COLUMN).toString();
+		String delInterval = getValmetTableModel().getValueAt(row, ValmetPointTableModel.INTERVAL_COLUMN).toString();
+		String delFunction = getValmetTableModel().getValueAt(row, ValmetPointTableModel.FUNCTION_COLUMN).toString();
+		String delMin = getValmetTableModel().getValueAt(row, ValmetPointTableModel.MIN_COLUMN).toString();
+		String delMax = getValmetTableModel().getValueAt(row, ValmetPointTableModel.MAX_COLUMN).toString();
+		String delDelta = getValmetTableModel().getValueAt(row, ValmetPointTableModel.DELTA_COLUMN).toString();
+		String delMaxStart = getValmetTableModel().getValueAt(row, ValmetPointTableModel.MAXSTART_COLUMN).toString();
 
-		String del = delType + ";" + delName + ";" + delInterval + ";" + delFunction + ";" + delMin + ";" + delMax + ";" + delDelta + ";" + delMaxStart;
+		String del = delType + ";" + delName + ";" + portNum + ";"+ delInterval + ";" + delFunction + ";" + delMin + ";" + delMax + ";" + delDelta + ";" + delMaxStart;
 		System.out.println("del: " + del);
 		int index = vec.indexOf((Object) del);
 		vec.remove(index);
@@ -1189,7 +1187,7 @@ public class PointEditor extends JFrame implements ActionListener
 
 		getValmetFileIO().writeValmetFile((String[]) points, new File(valmetFile));
 		
-		valmetArray = getValmetFileIO().getValmetPointsFromFile();
+		valmetArray = getValmetFileIO().getAllValmetPointsFromFile();
 		getValmetTableModel().clear();
 		loadValmetFile(valmetArray);
 	}
@@ -1207,9 +1205,10 @@ public class PointEditor extends JFrame implements ActionListener
 		String oldValmetMin = valmetMinTF.getText();
 		String oldValmetMax = valmetMaxTF.getText();
 		String oldValmetDelta = valmetDeltaTF.getText();
+		String oldValmetPort = valmetPortTF.getText();
 		Boolean bool = new Boolean(valmetMaxStartCB.isSelected());
 		String oldValmetMaxStart = bool.toString();
-		oldvalmetpoint = new ValmetPoint(oldValmetType, oldValmetName, oldValmetInterval, oldValmetFunction, oldValmetMin, oldValmetMax, oldValmetDelta, oldValmetMaxStart);
+		oldvalmetpoint = new ValmetPoint(oldValmetType, oldValmetName, oldValmetPort, oldValmetInterval, oldValmetFunction, oldValmetMin, oldValmetMax, oldValmetDelta, oldValmetMaxStart);
 		valmetediting = true;
 		enableValmetFields();
 		valmetAdd.setEnabled(false);
@@ -1435,7 +1434,7 @@ public class PointEditor extends JFrame implements ActionListener
 	private void rdexDelete_actionPerformed()
 	{
 		int row = getRdexTable().getSelectedRow();
-		Vector vec = new Vector();
+		Vector<String> vec = new Vector<String>();
 		String[] points = getRdexFileIO().readFile(new File(rdexFile));
 		for (int i = 0; i < points.length; i++)
 		{
@@ -1695,8 +1694,6 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		if (acsediting)
 		{
-			
-			
 			// editing an old point
 			// save new point attributes
 			String newAcsType = acsTypeCB.getSelectedItem().toString();
@@ -1750,7 +1747,7 @@ public class PointEditor extends JFrame implements ActionListener
 	private void acsDelete_actionPerformed()
 	{
 		int row = getAcsTable().getSelectedRow();
-		Vector vec = new Vector();
+		Vector<String> vec = new Vector<String>();
 		String[] points = getAcsFileIO().readFile(new File(acsFile));
 		for (int i = 0; i < points.length; i++)
 		{
@@ -1962,6 +1959,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		valmetTypeCB.setEnabled(false);
 		valmetNameTF.setEnabled(false);
+		valmetPortTF.setEnabled(false);
 		valmetIntervalCB.setEnabled(false);
 		valmetFunctionCB.setEnabled(false);
 		valmetMinTF.setEnabled(false);
@@ -1974,6 +1972,7 @@ public class PointEditor extends JFrame implements ActionListener
 	{
 		valmetTypeCB.setEnabled(true);
 		valmetNameTF.setEnabled(true);
+		valmetPortTF.setEnabled(true);
 		valmetIntervalCB.setEnabled(true);
 		valmetFunctionCB.setEnabled(true);
 		valmetMinTF.setEnabled(true);

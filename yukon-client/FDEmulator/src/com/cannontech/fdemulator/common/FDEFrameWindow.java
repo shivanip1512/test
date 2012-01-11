@@ -83,14 +83,18 @@ public class FDEFrameWindow extends JFrame implements Observer, ActionListener
 		menuFile.setText("File");
 		menuFile.setMnemonic(KeyEvent.VK_F);
 		menuFDSystem.setText("New FDE Test");
+		menuFDSystem.setMnemonic(KeyEvent.VK_N);
 		menuHelp.setText("Help");
 		menuHelp.setMnemonic(KeyEvent.VK_H);
 		menuHelpAbout.setText("About");
 		menuFileExit.setText("Exit");
 		rdexProto.setText("RDEX");
+		rdexProto.setMnemonic(KeyEvent.VK_R);
 		acsProto.setText("ACS");
+		acsProto.setMnemonic(KeyEvent.VK_A);
 		valmetProto.setText("VALMET");
-
+		valmetProto.setMnemonic(KeyEvent.VK_V);
+		
 		menuTools.add(pointEditor);
 		menuHelp.add(menuHelpAbout);
 		menuFile.add(menuFDSystem);

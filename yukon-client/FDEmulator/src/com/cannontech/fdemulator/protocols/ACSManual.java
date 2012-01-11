@@ -19,7 +19,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import com.cannontech.fdemulator.common.FDEProtocol;
-import com.cannontech.fdemulator.common.FDTestPanelNotifier;
 
 /**
  * @author ASolberg
@@ -29,7 +28,6 @@ import com.cannontech.fdemulator.common.FDTestPanelNotifier;
  */
 public class ACSManual extends JFrame implements Runnable, ActionListener
 {
-	private FDTestPanelNotifier notifier;
 	private ACSProtocol proto;
 	private JButton submitButton = new JButton("Submit");
 	private JButton dismissButton = new JButton("Dismiss");

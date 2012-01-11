@@ -311,13 +311,12 @@ public class ValmetSettings extends JFrame implements ActionListener
 
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource() == okButton)
-		{
+		if (e.getSource() == okButton) {
 			okButton_actionPerformed(e);
-		} else if (e.getSource() == cancelButton)
-		{
+		} else if (e.getSource() == cancelButton) {
 			cancelButton_actionPerformed(e);
 		}
 	}

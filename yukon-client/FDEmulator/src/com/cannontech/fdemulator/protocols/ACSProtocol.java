@@ -3,19 +3,40 @@
  *
  */
 package com.cannontech.fdemulator.protocols;
-import java.awt.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.Socket;
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Observer;
+import java.util.Random;
+import java.util.SimpleTimeZone;
+import java.util.StringTokenizer;
 import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
-import sun.awt.Mutex;
-
-import com.cannontech.fdemulator.common.*;
+import com.cannontech.fdemulator.common.FDEProtocol;
+import com.cannontech.fdemulator.common.FDTestPanel;
+import com.cannontech.fdemulator.common.FDTestPanelNotifier;
+import com.cannontech.fdemulator.common.Logger;
+import com.cannontech.fdemulator.common.TraceLogPanel;
 import com.cannontech.fdemulator.fileio.AcsFileIO;
 
 /**
@@ -59,7 +80,6 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	private Timer heartbeat;
 	private Timer interval;
 	private Timer timesync;
-	private int tenSecond = 0;
 	private int thirtySecond = 0;
 	private int sixtySecond = 0;
 	private int fiveMinute = 0;
@@ -92,18 +112,10 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	private DataInputStream in = null;
 	private final String DEFAULT_POINTFILE = "resource/acs_points.cfg";
 	private final String DEFAULT_TRAFFICFILE = "resource/acs_traffic_log.txt";
-	private BufferedReader file = null;
-	private BufferedReader file2 = null;
 	private RandomAccessFile pointList;
 	private String pointFile = null;
 	private String trafficFile = null;
-	private String pointInterval;
 	private AcsFileIO acsFileIO = null;
-
-	// message variables
-	private int qual;
-	private String point;
-	private String point2;
 
 	// stat panel variables
 	private JPanel statPanel = new JPanel();
@@ -765,7 +777,6 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	                } else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 	                {
 	                    double currentvalue = nextpoint.getPointCurrentValue();
-	                    double incriment = nextpoint.getPointDelta();
 	                    if (nextpoint.getPointMaxStart())
 	                    {
 	                        Double cvdouble = new Double(currentvalue);
@@ -1099,7 +1110,6 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	// Method for reading input from socket into a byte array
 	public void readBytes()
 	{
-		int num = 0;
 		int function = 0;
 		int remoteNum = 0;
 		int pointNum = 0;
@@ -1145,7 +1155,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 
 						// Recieved a heartbeat message
 					    SwingUtilities.invokeLater(new Logger(log, "RECV: heartbeat", 2));
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						in.read(b, 0, 12);
 						FileWriter traffic = new FileWriter(trafficFile, true);
 						traffic.write(getDebugTimeStamp() + "RECV              " + "Heartbeat messsage" + "\n");
@@ -1171,7 +1181,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					case ACS_VALUE :
 
 						// Received an analog point message
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 
 						remoteNum = in.readShort();
 						pointNum = in.readShort();
@@ -1190,7 +1200,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					case ACS_STATUS :
 
 						// Recieved a status point message
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						remoteNum = in.readShort();
 						pointNum = in.readShort();
 						firstchar = in.readByte();
@@ -1216,7 +1226,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					case ACS_CONTROL :
 
 						// Received a control point message
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						remoteNum = in.readShort();
 						pointNum = in.readShort();
 						firstchar = in.readByte();

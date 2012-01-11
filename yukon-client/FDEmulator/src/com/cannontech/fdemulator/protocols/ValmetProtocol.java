@@ -7,26 +7,45 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.io.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Observer;
+import java.util.Random;
+import java.util.SimpleTimeZone;
+import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
-import com.cannontech.fdemulator.common.*;
-import com.cannontech.fdemulator.fileio.*;
-import java.net.InetAddress;
-import java.net.Inet4Address;
+
+import com.cannontech.fdemulator.common.FDEProtocol;
+import com.cannontech.fdemulator.common.FDTestPanel;
+import com.cannontech.fdemulator.common.FDTestPanelNotifier;
+import com.cannontech.fdemulator.common.Logger;
+import com.cannontech.fdemulator.common.TraceLogPanel;
+import com.cannontech.fdemulator.fileio.ValmetFileIO;
 
 /**
  * @author ASolberg
  */
-public class ValmetProtocol extends FDEProtocol implements Runnable
-{
+public class ValmetProtocol extends FDEProtocol implements Runnable {
 	// settings gui
 	private ValmetSettings settings = null;
 
@@ -58,15 +77,14 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	private final int VALMET_NULL = 0;
 	private final int VALMET_VALUE = 101;
 	private final int VALMET_STATUS = 102;
-	private final int VALMET_ANALOGOUTPUT = 103;
+	//private final int VALMET_ANALOGOUTPUT = 103;
 	private final int VALMET_CONTROL = 201;
-	private final int VALMET_TIMESYNC = 401;
+	//private final int VALMET_TIMESYNC = 401;
 
 	// timers and timer variables
 	private Timer heartbeat;
 	private Timer interval;
 	private Timer timesync;
-	private int tenSecond = 0;
 	private int thirtySecond = 0;
 	private int sixtySecond = 0;
 	private int fiveMinute = 0;
@@ -99,18 +117,10 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	private DataInputStream in = null;
 	private final String DEFAULT_POINTFILE = "resource/valmet_points.cfg";
 	private final String DEFAULT_TRAFFICFILE = "resource/valmet_traffic_log.txt";
-	private BufferedReader file = null;
-	private BufferedReader file2 = null;
 	private RandomAccessFile pointList;
 	private String pointFile = null;
 	private String trafficFile = null;
-	private String pointInterval;
 	private ValmetFileIO valmetFileIO = null;
-
-	// message variables
-	private int qual;
-	private String point;
-	private String point2;
 
 	// stat panel variables
 	private JPanel statPanel = new JPanel();
@@ -147,8 +157,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	 * Set TraceLogInstance to parent TestPanel's ouput log.
 	 * Save reference to parents test panel. 
 	 */
-	public ValmetProtocol(TraceLogPanel logPanel, FDTestPanel panel)
-	{
+	public ValmetProtocol(TraceLogPanel logPanel, FDTestPanel panel) {
 		log = logPanel;
 		testPanel = panel;
 
@@ -164,17 +173,14 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 		// Center the window
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = settings.getSize();
-		if (frameSize.height > screenSize.height)
-		{
+		if (frameSize.height > screenSize.height) {
 			frameSize.height = screenSize.height;
 		}
-		if (frameSize.width > screenSize.width)
-		{
+		if (frameSize.width > screenSize.width) {
 			frameSize.width = screenSize.width;
 		}
 		settings.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		settings.setVisible(true);
-		settings.show();
 		statPanel.setLayout(null);
 		serverLabel.setBounds(new Rectangle(5, 5, 48, 30));
 		back1Label.setBounds(new Rectangle(5, 30, 48, 30));
@@ -185,7 +191,6 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 		pathLabel.setBounds(new Rectangle(5, 155, 48, 30));
 		trafficLabel.setBounds(new Rectangle(5, 215, 80, 20));
         extendedNameLabel.setBounds(new Rectangle(5, 270, 80, 20));
-
 
 		serverDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
 		back1DataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
@@ -236,63 +241,53 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	private class heartbeatTask extends TimerTask
-	{
+	private class heartbeatTask extends TimerTask {
 		/**
 		 * run gets called when a timer expires.  Timers are
 		 * set to ensure logon processing and message blocks
 		 * arrive in timely fashion.  A timer going off
 		 * indicates an error that will be processed
 		 */
-		public void run()
-		{
+		public void run() {
 			retryHeartbeat++;
 			SwingUtilities.invokeLater(new Logger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
 			//write message to traffic log file
-			try
-			{
+			try {
 				FileWriter traffic = new FileWriter("resource/valmet_traffic_log.txt", true);
 				traffic.write(getDebugTimeStamp() + "-------------------10 SECOND HEARTBEAT TIMED OUT-------------------" + "\n");
 				traffic.close();
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.out.println(getDebugTimeStamp() + "Error with traffic stream");
 				e.printStackTrace(System.out);
 			}
 
-			if (retryHeartbeat == 6)
-			{
+			if (retryHeartbeat == 6) {
 				SwingUtilities.invokeLater(new Logger(log, "Closing Connection: too many heartbeat timeouts", 3));
 				closeConnection();
 
 				//write message to traffic log file
-				try
-				{
+				try {
 					FileWriter traffic = new FileWriter("resource/valmet_traffic_log.txt", true);
 					traffic.write(getDebugTimeStamp() + "---------DISCONNECTING DUE TO 60 SECOND TIME OUT FROM YUKON--------" + "\n");
 					traffic.close();
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					System.out.println(getDebugTimeStamp() + "Error with traffic stream");
 					e.printStackTrace(System.out);
 				}
 				notifier.setActionCode(FDTestPanelNotifier.ACTION_CONNECTION_LOST);
 			}
 			// send heartbeat
-			try
-			{
+			try {
 				out.writeShort(VALMET_NULL);
 				out.writeBytes(getTimeStamp());
 				int nameLength = settings.isExtendedName() ? 32 : 16;
-                for (int i = 0; i < nameLength + 8; i++)
-                {
+                for (int i = 0; i < nameLength + 8; i++) {
 					out.writeByte(0);
 				}
 				FileWriter traffic = new FileWriter(trafficFile, true);
 				traffic.write(getDebugTimeStamp() + "SENT              " + "Heartbeat messsage due to heartbeat timer timeout------------------------" + "\n");
 				traffic.close();
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				SwingUtilities.invokeLater(new Logger(log, "Error sending heartbeat from hb timeout", 3));
 				e.printStackTrace(System.out);
 			}
@@ -300,93 +295,69 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	}
 
 	// Run method for point send interval timer
-	private class intervalTask extends TimerTask
-	{
+	private class intervalTask extends TimerTask {
 		/**
 		 * Run gets called when the interval timer expires,
 		 * sendPoints gets called to send all points whose intervals are up.
 		 */
-		public void run()
-		{
+		public void run() {
 			thirtySecond++;
 			sixtySecond++;
 			fiveMinute++;
 			fifteenMinute++;
 			sixtyMinute++;
-			if (thirtySecond == 4)
-			{
+			if (thirtySecond == 4) {
 				thirtySecond = 1;
 			}
-			if (sixtySecond == 7)
-			{
+			if (sixtySecond == 7) {
 				sixtySecond = 1;
 			}
-			if (fiveMinute == 31)
-			{
+			if (fiveMinute == 31) {
 				fiveMinute = 1;
 			}
-			if (fifteenMinute == 91)
-			{
+			if (fifteenMinute == 91) {
 				fifteenMinute = 1;
 			}
-			if (sixtyMinute == 361)
-			{
+			if (sixtyMinute == 361) {
 				sixtyMinute = 1;
 			}
-			if (flipflop10 == 1)
-			{
+			if (flipflop10 == 1) {
 				flipflop10 = 2;
-			} else if (flipflop10 == 2)
-			{
+			} else if (flipflop10 == 2) {
 				flipflop10 = 1;
 			}
-			if (thirtySecond == 3)
-			{
-				if (flipflop30 == 1)
-				{
+			if (thirtySecond == 3) {
+				if (flipflop30 == 1) {
 					flipflop30 = 2;
-				} else if (flipflop30 == 2)
-				{
+				} else if (flipflop30 == 2) {
 					flipflop30 = 1;
 				}
 			}
-			if (sixtySecond == 6)
-			{
-				if (flipflop60 == 1)
-				{
+			if (sixtySecond == 6) {
+				if (flipflop60 == 1) {
 					flipflop60 = 2;
-				} else if (flipflop60 == 2)
-				{
+				} else if (flipflop60 == 2) {
 					flipflop60 = 1;
 				}
 			}
-			if (fiveMinute == 30)
-			{
-				if (flipflop300 == 1)
-				{
+			if (fiveMinute == 30) {
+				if (flipflop300 == 1) {
 					flipflop300 = 2;
-				} else if (flipflop300 == 2)
-				{
+				} else if (flipflop300 == 2) {
 					flipflop300 = 1;
 				}
 			}
-			if (fifteenMinute == 90)
-			{
-				if (flipflop900 == 1)
-				{
+			if (fifteenMinute == 90) {
+				if (flipflop900 == 1) {
 					flipflop900 = 2;
-				} else if (flipflop900 == 2)
-				{
+				} else if (flipflop900 == 2) {
 					flipflop900 = 1;
 				}
 			}
-			if (sixtyMinute == 360)
-			{
-				if (flipflop3600 == 1)
-				{
+			if (sixtyMinute == 360) {
+				if (flipflop3600 == 1) {
 					flipflop3600 = 2;
-				} else if (flipflop3600 == 2)
-				{
+				} else if (flipflop3600 == 2) {
 					flipflop3600 = 1;
 				}
 			}
@@ -677,7 +648,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 		}
 
 		// fill point array with points from point file
-		pointarray = getValmetFileIO().getValmetPointsFromFile();
+		pointarray = getValmetFileIO().getValmetPointsFromFileForPort(yukon_in_port);
 
 		return true;
 	}
@@ -686,9 +657,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	{
 		if(valmetFileIO == null)
 		{
-			valmetFileIO = new ValmetFileIO(settings.getPath())
-			{
-			};
+			valmetFileIO = new ValmetFileIO(settings.getPath());
 		}
 		return valmetFileIO;
 	}
@@ -696,13 +665,11 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	// Send random points based on interval from file as timers expire
 	public void sendPoints()
 	{
-
 		//System.out.println(getDebugTimeStamp() + "VALMET   Counters: 30 sec: " + thirtySecond + "        60 sec: " + sixtySecond + "        5 min: " + fiveMinute + "        15 min: " + fifteenMinute + "        60 min: " + sixtyMinute);
 		int exit = 0;
 		int i = 0;
 		ValmetPoint nextpoint;
 		ValmetPoint lastpoint;
-
 
 		while (exit != 1)
 		{
@@ -729,93 +696,94 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 						exit = 1;
 					}
 				}
-
-				if (nextpoint.getPointInterval() == 10)
-				{
-
-					if ("Value".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createValuePoint(out, nextpoint, value);
-					} 
-					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createStatusPoint(out, nextpoint, value, flipflop10);
-					} 
-					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
-                    {
-                        createControlPoint(out, nextpoint, value, flipflop10); 
-                    }
-				} else if (nextpoint.getPointInterval() == 30 && thirtySecond == 3)
-				{
-					if ("Value".equals(nextpoint.getPointType()))
-					{
-					    createValuePoint(out, nextpoint, value);
-					} 
-					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createStatusPoint(out, nextpoint, value, flipflop30);
-					} 
-					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
-                    {
-                        createControlPoint(out, nextpoint, value, flipflop30); 
-                    }
-				} else if (nextpoint.getPointInterval() == 60 && sixtySecond == 6)
-				{
-					if ("Value".equals(nextpoint.getPointType()))
-					{
-					    createValuePoint(out, nextpoint, value);
-					} 
-					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createStatusPoint(out, nextpoint, value, flipflop60);
-					}  
-					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createControlPoint(out, nextpoint, value, flipflop60); 
-					}
-				} else if (nextpoint.getPointInterval() == 300 && fiveMinute == 30)
-				{
-					if ("Value".equals(nextpoint.getPointType()))
-					{
-					    createValuePoint(out, nextpoint, value);
-					} 
-					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createStatusPoint(out, nextpoint, value, flipflop300);
-					} 
-					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createControlPoint(out, nextpoint, value, flipflop300); 
-					}
-				} else if (nextpoint.getPointInterval() == 900 && fifteenMinute == 90)
-				{
-				    if ("Value".equals(nextpoint.getPointType()))
-				    {
-	                    createValuePoint(out, nextpoint, value);
-					} 
-				    else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
-					{
-					    createStatusPoint(out, nextpoint, value, flipflop900);
-					} 
-					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
-                    {
-                        createControlPoint(out, nextpoint, value, flipflop900); 
-                    }
-				} else if (nextpoint.getPointInterval() == 3600 && fiveMinute == 360)
-				{
-					if ("Value".equals(nextpoint.getPointType()))
-					{
-					    createValuePoint(out, nextpoint, value);
-					} 
-					else if ("Status".equalsIgnoreCase(nextpoint.getPointType())) 
-					{
-					    createStatusPoint(out, nextpoint, value, flipflop3600);
-					} 
-					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
-                    {
-                        createControlPoint(out, nextpoint, value, flipflop3600); 
-                    }
-				}
+				//if (nextpoint.getPort() == yukon_in_port) 
+				//{
+    				if (nextpoint.getPointInterval() == 10)
+    				{
+    					if ("Value".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createValuePoint(out, nextpoint, value);
+    					} 
+    					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createStatusPoint(out, nextpoint, value, flipflop10);
+    					} 
+    					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
+                        {
+                            createControlPoint(out, nextpoint, value, flipflop10); 
+                        }
+    				} else if (nextpoint.getPointInterval() == 30 && thirtySecond == 3)
+    				{
+    					if ("Value".equals(nextpoint.getPointType()))
+    					{
+    					    createValuePoint(out, nextpoint, value);
+    					} 
+    					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createStatusPoint(out, nextpoint, value, flipflop30);
+    					} 
+    					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
+                        {
+                            createControlPoint(out, nextpoint, value, flipflop30); 
+                        }
+    				} else if (nextpoint.getPointInterval() == 60 && sixtySecond == 6)
+    				{
+    					if ("Value".equals(nextpoint.getPointType()))
+    					{
+    					    createValuePoint(out, nextpoint, value);
+    					} 
+    					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createStatusPoint(out, nextpoint, value, flipflop60);
+    					}  
+    					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createControlPoint(out, nextpoint, value, flipflop60); 
+    					}
+    				} else if (nextpoint.getPointInterval() == 300 && fiveMinute == 30)
+    				{
+    					if ("Value".equals(nextpoint.getPointType()))
+    					{
+    					    createValuePoint(out, nextpoint, value);
+    					} 
+    					else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createStatusPoint(out, nextpoint, value, flipflop300);
+    					} 
+    					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createControlPoint(out, nextpoint, value, flipflop300); 
+    					}
+    				} else if (nextpoint.getPointInterval() == 900 && fifteenMinute == 90)
+    				{
+    				    if ("Value".equals(nextpoint.getPointType()))
+    				    {
+    	                    createValuePoint(out, nextpoint, value);
+    					} 
+    				    else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
+    					{
+    					    createStatusPoint(out, nextpoint, value, flipflop900);
+    					} 
+    					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
+                        {
+                            createControlPoint(out, nextpoint, value, flipflop900); 
+                        }
+    				} else if (nextpoint.getPointInterval() == 3600 && fiveMinute == 360)
+    				{
+    					if ("Value".equals(nextpoint.getPointType()))
+    					{
+    					    createValuePoint(out, nextpoint, value);
+    					} 
+    					else if ("Status".equalsIgnoreCase(nextpoint.getPointType())) 
+    					{
+    					    createStatusPoint(out, nextpoint, value, flipflop3600);
+    					} 
+    					else if ("Control".equalsIgnoreCase(nextpoint.getPointType()) || "Analog Output".equalsIgnoreCase(nextpoint.getPointType()))
+                        {
+                            createControlPoint(out, nextpoint, value, flipflop3600); 
+                        }
+    				}
+				//}
 
 				i++;
 			} catch (Exception e)
@@ -1030,12 +998,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 	// Method for reading input from socket into a byte array
 	public void readBytes()
 	{
-		int num = 0;
 		int function = 0;
 		float rFloatValue;
 		int rStatusValue;
 		int quality;
 		int index;
+		int hbyte = 0, lbyte = 0;
 		String pointString = "";
 		byte[] pointName = new byte[2048];
 		byte[] time = new byte[2048];
@@ -1045,7 +1013,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 			// Read from Socket queue, close connection if excepiton occurs and reconnects
 			try
 			{
-				function = in.readShort();
+			    hbyte = in.readUnsignedByte();
+			    lbyte = in.readUnsignedByte();
+				function = hbyte * 256 + lbyte;
 			} catch (Exception e)
 			{
 				System.out.println(e.toString());
@@ -1078,7 +1048,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 							SwingUtilities.invokeLater(new Logger(log, "RECV: heartbeat", 2));
 							SwingUtilities.invokeLater(new Logger(log, "SENT: heartbeat", 1));
 						}
-						num = in.read(time, 0, 18);
+						in.read(time, 0, 18);
 						in.read(pointName, 0, nameLength + 8);
 						FileWriter traffic = new FileWriter(trafficFile, true);
 						traffic.write(getDebugTimeStamp() + "RECV              " + "Heartbeat messsage" + "\n");
@@ -1100,7 +1070,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 					case VALMET_VALUE :
 
 						// Received an analog point message
-						num = in.read(time, 0, 18);
+						in.read(time, 0, 18);
 						in.read(pointName, 0, nameLength);
 						index = 0;
 						
@@ -1126,7 +1096,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 					case VALMET_STATUS :
 
 						// Received a status point message
-						num = in.read(time, 0, 18);
+						in.read(time, 0, 18);
 						in.read(pointName, 0, nameLength);
                         index = 0;
                         
@@ -1148,8 +1118,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 						{
 							statusValueString = "Open";
 						}
+	                    in.readShort();
 						quality = in.readShort();
-						in.read(pointName, 0, 4);
+	                    in.readShort();
 						SwingUtilities.invokeLater(new Logger(log, "RECV: Status " + "Name: " + pointString + " State: " + statusValueString + " Quality: " + quality + " TStamp: " + new String(time, 0, 18), 2));
 						System.out.println(getDebugTimeStamp() + "VALMET RECV: Status " + statusValueString);
 						writeToFile("Status", pointString, (double) rStatusValue);
@@ -1159,7 +1130,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 					case VALMET_CONTROL :
 
 						// Received a control point message
-						num = in.read(time, 0, 18);
+						in.read(time, 0, 18);
 						in.read(pointName, 0, nameLength);
                         index = 0;
                         
@@ -1191,8 +1162,8 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 					default :
 
 						// Received unknown message
-						SwingUtilities.invokeLater(new Logger(log, "Received unknown message type", 3));
-						System.out.println(getDebugTimeStamp() + "Received unknown message type");
+						SwingUtilities.invokeLater(new Logger(log, "Received unknown function type: " + function + " bytes: " + hbyte + " " + lbyte, 3));
+						System.out.println(getDebugTimeStamp() + "Received unknown function type:" + function);
 						quit = 1;
 						break;
 				}
@@ -1236,9 +1207,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 
 		// fill points array with point from yukon file
 
-		int i = 0;
-		int k = 0;
-		int l = 0;
+		int i = 0, k = 0, l = 0;
 
 		while (l != 1)
 		{
@@ -1249,7 +1218,6 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 				k++;
 				if ("EOF".equalsIgnoreCase(pointline))
 				{
-
 					l = 1;
 				} else
 				{
@@ -1526,6 +1494,8 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 			Thread.sleep(10);
 			out.close();
 			in.close();
+			fdeSocket.shutdownInput();
+			fdeSocket.shutdownOutput();
 			fdeSocket.close();
 		} catch (Exception e)
 		{
@@ -1560,7 +1530,6 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
 		}
 		settings.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		settings.setVisible(true);
-		settings.show();
 	}
 	
 	public void createControlPoint(DataOutputStream out, ValmetPoint nextpoint, Float value, int flipFlopValue) {
@@ -1592,7 +1561,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
                 out.writeInt(0);
             }
             out.writeShort(0);
-            SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: " + "Control " + "Name: " + nextpoint.getPointName() + " Point: " + valueString, 1));
+            SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control Name: " + nextpoint.getPointName() + " Point: " + valueString, 1));
         } catch (Exception e)
         {
             e.printStackTrace(System.out);
@@ -1612,9 +1581,6 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
         }
 	}
 	
-	
-	
-	
 	public void createValuePoint(DataOutputStream out, ValmetPoint nextpoint, Float value) {
 	    try {
 	        
@@ -1625,10 +1591,11 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
     
             if ("RANDOM".equalsIgnoreCase(nextpoint.getPointFunction()))
             {
-                Double maxdouble = new Double(nextpoint.getPointMax());
-                int first = gen.nextInt(maxdouble.intValue());
+                // We want to normalize the scale to 0, then add the point minimum back at the end.
+                Double randomMax = new Double(nextpoint.getPointMax() - nextpoint.getPointMin());
+                int first = gen.nextInt(randomMax.intValue());
                 float last = gen.nextFloat();
-                value = first + last;
+                value = first + last + (float)nextpoint.getPointMin();
                 out.writeFloat(value);
                 out.writeShort(0);
                 out.writeShort(0);
@@ -1687,7 +1654,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable
                     out.writeShort(0);
                     out.writeShort(0);
     
-                    currentvalue = currentvalue - nextpoint.getPointDelta();
+                    currentvalue = currentvalue - incriment;
     
                     if (currentvalue < nextpoint.getPointMin())
                     {

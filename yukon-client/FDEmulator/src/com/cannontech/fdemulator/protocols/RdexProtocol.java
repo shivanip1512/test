@@ -60,7 +60,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 	// timer variables
 	private Timer heartbeat;
 	private Timer interval;
-	private int tenSecond = 0;
 	private int thirtySecond = 0;
 	private int sixtySecond = 0;
 	private int fiveMinute = 0;
@@ -72,7 +71,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 	private int flipflop300 = 0;
 	private int flipflop900 = 0;
 	private int flipflop3600 = 0;
-	private final static long T3_TIME = 1000; // one second timer
 	private final static long T1_TIME = 10500; // 10.5 seconds, so we don't get a lot of timeouts
 	private final static long T2_TIME = 10000;
 	private int retryHeartbeat = 0;
@@ -87,18 +85,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 	private String pointFile = null;
 	private String trafficFile = null;
 	private RdexFileIO rdexFileIO = null;
-
-	private BufferedReader file = null;
-	private BufferedReader file2 = null;
 	private RandomAccessFile pointList;
-
-	// message variables
-	private String pointName;
-	private String pointName2;
-	private String pointType;
-	private String pointType2;
-	private String pointInterval;
-	private int qual;
 
 	// timestamp variables
 	private static final String formatDesc = "yyyyMMddHHmmss";
@@ -165,7 +152,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		}
 		settings.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		settings.setVisible(true);
-		settings.show();
 		statPanel.setLayout(null);
 		serverLabel.setBounds(new Rectangle(5, 5, 48, 20));
 		back1Label.setBounds(new Rectangle(5, 30, 48, 20));
@@ -735,7 +721,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 						{
 							double currentvalue = nextpoint.getPointCurrentValue();
-							double incriment = nextpoint.getPointDelta();
 							if (nextpoint.getPointMaxStart())
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -885,7 +870,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 						{
 							double currentvalue = nextpoint.getPointCurrentValue();
-							double incriment = nextpoint.getPointDelta();
 							if (nextpoint.getPointMaxStart())
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1035,7 +1019,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 						{
 							double currentvalue = nextpoint.getPointCurrentValue();
-							double incriment = nextpoint.getPointDelta();
 							if (nextpoint.getPointMaxStart())
 							{
 
@@ -1188,7 +1171,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 						{
 							double currentvalue = nextpoint.getPointCurrentValue();
-							double incriment = nextpoint.getPointDelta();
 							if (nextpoint.getPointMaxStart())
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1337,7 +1319,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 						{
 							double currentvalue = nextpoint.getPointCurrentValue();
-							double incriment = nextpoint.getPointDelta();
 							if (nextpoint.getPointMaxStart())
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1487,7 +1468,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 						{
 							double currentvalue = nextpoint.getPointCurrentValue();
-							double incriment = nextpoint.getPointDelta();
 							if (nextpoint.getPointMaxStart())
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1684,7 +1664,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					} else if ("DROPOFF".equalsIgnoreCase(nextpoint.getPointFunction()))
 					{
 						double currentvalue = nextpoint.getPointCurrentValue();
-						double incriment = nextpoint.getPointDelta();
 						if (nextpoint.getPointMaxStart())
 						{
 
@@ -1948,7 +1927,6 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 	// Method for reading input from socket into a byte array
 	public void readBytes()
 	{
-		int num = 0;
 		int function = 0;
 		float rFloatValue;
 		int rStatusValue;
@@ -1995,7 +1973,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							SwingUtilities.invokeLater(new Logger(log, "RECV: Heartbeat", 2));
 							SwingUtilities.invokeLater(new Logger(log, "SENT: Heartbeat", 1));
 						}
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						in.read(pointName, 0, 88);
 						FileWriter traffic = new FileWriter(trafficFile, true);
 						traffic.write(getDebugTimeStamp() + "RECV              " + "Heartbeat messsage" + "\n");
@@ -2027,7 +2005,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						SwingUtilities.invokeLater(new Logger(log, "RECV: Acknowledge", 2));
 						//System.out.println(getDebugTimeStamp() + "RDEX RECV: Acknowledge");
 						// Write message to traffic log file
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						in.read(pointName, 0, 88);
 						index = 0;
 						for (int i = 0; i < 80; i++)
@@ -2056,7 +2034,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					case RDEX_VALUE :
 
 						// Received a point value
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						in.read(pointName, 0, 80);
 						index = 0;
 						for (int i = 0; i < 80; i++)
@@ -2079,7 +2057,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					case RDEX_STATUS :
 
 						// Received a satus message
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						in.read(pointName, 0, 80);
 						index = 0;
 						for (int i = 0; i < 80; i++)
@@ -2110,7 +2088,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					case RDEX_CONTROL :
 
 						// Received a control message
-						num = in.read(time, 0, 16);
+						in.read(time, 0, 16);
 						in.read(pointName, 0, 80);
 						index = 0;
 						for (int i = 0; i < 80; i++)
@@ -2509,6 +2487,5 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		}
 		settings.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		settings.setVisible(true);
-		settings.show();
 	}
 }

@@ -18,6 +18,7 @@ public class ValmetPoint
 	private String pointType;
 	private String pointName;
 	private int interval;
+	private int port;
 	private String function;
 	private double min;
 	private double max;
@@ -25,13 +26,16 @@ public class ValmetPoint
 	private boolean maxstart;
 	private double currentValue;
 
-	public ValmetPoint(String pointTypevar, String pointNamevar, String intervalvar, String functionvar, String minvar, String maxvar, String deltavar, String maxstartvar)
+	public ValmetPoint(String pointTypevar, String pointNamevar, String portvar, String intervalvar, 
+	                   String functionvar, String minvar, String maxvar, String deltavar, String maxstartvar)
 	{
 		pointType = pointTypevar;
 		pointName = pointNamevar;
 		function = functionvar;
 		Integer newint = new Integer(intervalvar);
 		interval = newint.intValue();
+		Integer newport = new Integer(portvar);
+		port = newport;
 		
 		function = functionvar;
 		Double newmin = new Double(minvar);
@@ -193,5 +197,13 @@ public class ValmetPoint
 	{
 		currentValue = currentValuevar;
 	}
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
 }
