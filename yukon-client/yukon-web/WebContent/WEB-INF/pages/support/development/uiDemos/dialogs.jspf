@@ -73,6 +73,7 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
     <h3>OK Submits an Other Form</h3>
     <dialog:confirm on="#searchWikipedia2" nameKey="searchWikipedia" />
     <button id="searchWikipedia2" type="button" data-form="#wikipediaForm">Search Wikipedia</button>
+</tags:sectionContainer>
 
 <tags:sectionContainer title="In-line Dialogs">
     <ul>
