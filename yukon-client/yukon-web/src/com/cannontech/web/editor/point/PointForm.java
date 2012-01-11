@@ -309,8 +309,6 @@ public class PointForm extends DBEditorForm
         pointFDREntry = null;
         pointStatusEntry = null;
         staleData = null;
-        getWizData().reset();
-
     }
     
     
@@ -740,12 +738,12 @@ public class PointForm extends DBEditorForm
         //make sure we are not erroring out because of the same offset
         LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(getPointBase().getPoint().getPointID().intValue());
         
-        if (!checkPointLimits ())   
+        if (!checkPointLimits())   
             throw new InvalidPointLimits ("High point limit can't be lower than Low point Limit");
         if (litePoint.getPointOffset() == offset)
             return;
-        if (!PointOffsetUtils.isValidPointOffset(offset,paoId ,type)) {
-            throw new InvalidPointOffsetException("The point offset if invalid for " + getPointBase().getPoint().getPointType() +  " point type. Consider increasing offset");
+        if (!PointOffsetUtils.isValidPointOffset(offset, paoId, type)) {
+            throw new InvalidPointOffsetException("The point offset " + offset + " is already in use by another " + getPointBase().getPoint().getPointType() +  " point on this device.");
         }
      }
 
