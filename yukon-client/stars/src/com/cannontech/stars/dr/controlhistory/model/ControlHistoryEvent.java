@@ -52,7 +52,7 @@ public class ControlHistoryEvent {
         this.gears = gears;
     }
 
-    public static Comparator<ControlHistoryEvent> getStartDateComparator() {
+    public static Ordering<ControlHistoryEvent> getStartDateComparator() {
         return new Ordering<ControlHistoryEvent>() {
             @Override
             public int compare(ControlHistoryEvent che1, ControlHistoryEvent che2) {

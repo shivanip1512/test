@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.MutableDuration;
 import com.cannontech.common.util.OpenInterval;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
@@ -74,7 +75,7 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
 
     private Duration getControlHistoryTotalDuration(Collection<ControlHistoryEvent> controlHistoryEventList,
                                                     ControlPeriod controlPeriod, YukonUserContext userContext) {
-        Duration results = new Duration(0);
+        MutableDuration results = new MutableDuration(0);
         
         StarsCtrlHistPeriod period = StarsCtrlHistPeriod.valueOf(controlPeriod.starsName());
         DateTime periodStartTime = LMControlHistoryUtil.getPeriodStartTime( period, userContext.getJodaTimeZone());
@@ -86,11 +87,11 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
             OpenInterval overlap = startPeriodInterval.overlap(controlHistoryInterval);
             if (overlap != null) {
                 Duration displayedControlDuration = new Duration(overlap.getStart(), overlap.getEnd());
-                results = displayedControlDuration.plus(results);
+                results.plus(displayedControlDuration);
             }
         }
         
-        return results;
+        return results.toDuration();
     }
     
     protected static class Holder {

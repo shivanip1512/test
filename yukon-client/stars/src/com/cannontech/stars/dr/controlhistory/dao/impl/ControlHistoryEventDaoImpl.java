@@ -27,18 +27,11 @@ import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
-    private LoadGroupDao loadGroupDao;
-    private LmControlHistoryUtilService lmControlHistoryUtilService;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private LoadGroupDao loadGroupDao;
+    @Autowired private LmControlHistoryUtilService lmControlHistoryUtilService;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    protected static class Holder {
-        int accountId;
-        int inventoryId;
-        int groupId;
-        int programId;
-    }
-    
     public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId,
                                                           int loadGroupId, int inventoryId,
                                                           YukonUserContext userContext, boolean past) {
@@ -138,22 +131,41 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         return eventList;
     }
 
-    @Autowired
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
-        this.loadGroupDao = loadGroupDao;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    @Autowired
-    public void setLmControlHistoryUtilService(LmControlHistoryUtilService lmControlHistoryUtilService) {
-        this.lmControlHistoryUtilService = lmControlHistoryUtilService;
+    protected static class Holder {
+        int accountId;
+        int inventoryId;
+        int groupId;
+        int programId;
+        
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + accountId;
+            result = prime * result + groupId;
+            result = prime * result + inventoryId;
+            result = prime * result + programId;
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Holder other = (Holder) obj;
+            if (accountId != other.accountId)
+                return false;
+            if (groupId != other.groupId)
+                return false;
+            if (inventoryId != other.inventoryId)
+                return false;
+            if (programId != other.programId)
+                return false;
+            return true;
+        }
     }
 }
