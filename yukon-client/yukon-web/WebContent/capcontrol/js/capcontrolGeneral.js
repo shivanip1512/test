@@ -39,7 +39,7 @@ function getMenuFromURL(url, event, params) {
     
     if (typeof(params) != 'undefined') {
     	if (!("position" in params)) {
-    		params.position = [event.clientX, event.clientY];
+    		params.position = [event.pageX, event.pageY];
     	}
     	if (!("modal" in params)) {
     		params.modal = false;
@@ -133,7 +133,7 @@ function addLockButtonForButtonGroup (groupId, secs) {
 
 function lock_buttons(el_id) {
 	//el_id comes in looking like this: "editorForm:hdr_submit_button_1"
-	jQuery("[id='" + el_id + "']").click(function() {
+	jQuery(document.getElementById(el_id)).click(function() {
 		jQuery("input.stdButton").each(function() {
 			if (this.id != el_id) {
 				this.disabled = true;
@@ -177,11 +177,9 @@ function showAlertMessage(message, success) {
     var contents = jQuery('#alertMessageContents');
     
     if (success) {
-        contents.addClass('successMessage');
-        contents.removeClass('errorMessage');
+        contents.addClass('successMessage').removeClass('errorMessage');
     } else {
-        contents.removeClass('successMessage');
-        contents.addClass('errorMessage');
+        contents.removeClass('successMessage').addClass('errorMessage');
     }
     contents.html(message);
     jQuery('#alertMessageContainer').show();

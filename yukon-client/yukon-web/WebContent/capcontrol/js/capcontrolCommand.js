@@ -1,7 +1,8 @@
 jQuery(document).delegate("li.menuOption.command", "click", function(event) {
     hideMenu();
     var doCommand = true;
-    var ul = jQuery(event.currentTarget).closest("ul");
+    var menuOption = jQuery(event.currentTarget).closest("li");
+    var ul = menuOption.parent("ul");
     if (ul.find("input[name='warnOnCommands']").val() === 'true') {
         doCommand = confirm(menuOption.find('span.confirmMessage').html());
     }
