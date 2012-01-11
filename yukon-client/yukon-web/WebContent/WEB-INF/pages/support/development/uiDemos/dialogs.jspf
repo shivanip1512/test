@@ -23,24 +23,30 @@ jQuery(document).ready(function() {
 
 <div id="ajaxDialog"></div>
 
-<dialog:inline nameKey="inlineDialog1" okAction="none" on="#sampleInlineBtn1">
-    <p>I'm an example of an in-line dialog box without an okAction.<p>
+<dialog:inline nameKey="inlineDialog1" okEvent="none" on="#sampleInlineBtn1">
+    <p>I'm an example of an in-line dialog box "none" for the okEvent.<p>
     <p>Because of this, I have no OK button.</p>
 </dialog:inline>
 
-<dialog:inline dialogId="inlineDialog2" nameKey="inlineDialog2" okAction="submit" on="#sampleInlineBtn2">
+<dialog:inline id="inlineDialog2" nameKey="inlineDialog2" okEvent="yukonDialogSubmit" on="#sampleInlineBtn2">
     <form action="http://en.wikipedia.org/w/index.php" method="get">
-        <p>I'm an example of an in-line dialog box with a "submit" okAction.<p>
+        <p>I'm an example of an in-line dialog box with a "yukonDialogSubmit" okEvent.<p>
         <p>Because of this, you will submit a form when you press "OK".</p>
         <input type="hidden" name="title" value="Special:Search">
         <p>Search For: <input type="text" name="search"></p>
     </form>
 </dialog:inline>
 
-<dialog:inline dialogId="inlineDialog3" nameKey="inlineDialog3" okAction="yukonOkPressed" on="#sampleInlineBtn3">
-    <p>I'm an example of an in-line dialog box with "yukonOkPressed" okAction.<p>
+<dialog:inline id="inlineDialog3" nameKey="inlineDialog3" okEvent="yukonOkPressed" on="#sampleInlineBtn3">
+    <p>I'm an example of an in-line dialog box with "yukonOkPressed" okEvent.<p>
     <p>Because of this, the dialog will trigger the "yukonOkPressed" custom event on the dialog
     div when you press OK.</p>
+</dialog:inline>
+
+<dialog:inline id="inlineDialog4" nameKey="inlineDialog4" okEvent="none" on="#sampleInlineBtn4"
+    options="{'modal' : false}">
+    <p>I'm an example of an in-line dialog box with options.  Specifically, my options are
+    set to "{'modal' : false}" to turn of modality.<p>
 </dialog:inline>
 
 <p class="pageDescription">
@@ -48,7 +54,6 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
 </p>
 
 <tags:sectionContainer title="Confirmation Dialogs">
-
     <h3>Custom OK Handling</h3>
     <dialog:confirm id="confirmDeleteDlg" on="#deleteBtn" nameKey="confirmDelete" argument="Thing to Delete"/>
     <cti:button id="deleteBtn" nameKey="delete"/>
@@ -68,12 +73,13 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
     <h3>OK Submits an Other Form</h3>
     <dialog:confirm on="#searchWikipedia2" nameKey="searchWikipedia" form="#wikipediaForm"/>
     <button id="searchWikipedia2" type="button">Search Wikipedia</button>
+</tags:sectionContainer>
 
-    <h3>In-line Dialogs</h3>
-        <ul>
-            <li><cti:button id="sampleInlineBtn1" nameKey="inline1"/></li>
-            <li><cti:button id="sampleInlineBtn2" nameKey="inline2"/></li>
-            <li><cti:button id="sampleInlineBtn3" nameKey="inline3"/></li>
-        </ul>
-
+<tags:sectionContainer title="In-line Dialogs">
+    <ul>
+        <li><cti:button id="sampleInlineBtn1" nameKey="inline1"/></li>
+        <li><cti:button id="sampleInlineBtn2" nameKey="inline2"/></li>
+        <li><cti:button id="sampleInlineBtn3" nameKey="inline3"/></li>
+        <li><cti:button id="sampleInlineBtn4" nameKey="inline4"/></li>
+    </ul>
 </tags:sectionContainer>

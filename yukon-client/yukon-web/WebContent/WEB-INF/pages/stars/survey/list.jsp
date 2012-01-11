@@ -8,8 +8,6 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
 <cti:standardPage module="survey" page="list">
-    <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
-
     <div id="ajaxDialog"></div>
 
     <cti:url var="addUrl" value="editDetails"/>

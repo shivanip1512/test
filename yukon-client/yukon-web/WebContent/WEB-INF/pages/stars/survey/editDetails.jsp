@@ -8,7 +8,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<dialog:ajaxPage nameKey="details" module="survey" page="list" okAction="submit">
+<dialog:ajaxPage nameKey="details" module="survey" page="list" okEvent="yukonDialogSubmit">
 
 <script type="text/javascript">
 jQuery(document).ready(function() {

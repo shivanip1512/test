@@ -1,19 +1,22 @@
 <%@ tag language="java" pageEncoding="UTF-8" description="Use this tag to wrap a JSP which is to be an AJAX dialog."%>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%@ attribute name="nameKey" required="true"%>
-<%@ attribute name="module" required="true"%>
-<%@ attribute name="page" required="true"%>
-<%@ attribute name="okAction" required="true" description="Use 'submit' to submit a form, 'none' to skip the ok button or an event name to trigger that event on the dialog."%>
-<%@ attribute name="dialogId" description="The id of the div to put the dialog in.  This div should exist on the page using the dialog.  Defaults to 'ajaxDialog'."%>
+<%@ attribute name="nameKey" required="true" %>
+<%@ attribute name="module" required="true" %>
+<%@ attribute name="page" required="true" %>
+<%@ attribute name="okEvent" required="true" description="Use 'yukonDialogSubmit' to submit a form, 'none' to skip the ok button or an event name to trigger that event on the dialog." %>
+<%@ attribute name="id" description="The id of the div to put the dialog in.  This div should exist on the page using the dialog.  Defaults to 'ajaxDialog'." %>
+<%@ attribute name="options" description="Options to use for the dialog.  See http://jqueryui.com/demos/dialog/#options" %>
 
-<c:if test="${empty pageScope.dialogId}">
-    <c:set var="dialogId" value="ajaxDialog"/>
+<cti:includeScript link="/JavaScript/ajaxDialog.js"/>
+
+<c:if test="${empty pageScope.id}">
+    <c:set var="id" value="ajaxDialog"/>
 </c:if>
 
 <c:set var="pageParts" value="${fn:split(page, '.')}"/>
@@ -37,15 +40,11 @@
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
+    var dialogDiv = jQuery('#${id}');
     var buttons = [];
-    <c:if test="${okAction != 'none'}">
+    <c:if test="${okEvent != 'none'}">
         var okButton = {'text' : '${okBtnMsg}'};
-        <c:if test="${okAction == 'submit'}">
-            okButton.click = function() { jQuery(this).find('form').submit(); }
-        </c:if>
-        <c:if test="${okAction != 'submit'}">
-            okButton.click = function() { jQuery('#${dialogId}').trigger('${okAction}'); }
-        </c:if>
+        okButton.click = function() { dialogDiv.trigger('${okEvent}'); }
         buttons.push(okButton);
     </c:if>
     buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
@@ -54,8 +53,12 @@ jQuery(document).ready(function() {
             'position' : 'center',
             'width' : 'auto',
             'height' : 'auto',
+            'modal' : true,
             'buttons' : buttons };
-    jQuery('#${dialogId}').dialog(dialogOpts);
+    <c:if test="${!empty pageScope.options}">
+        jQuery.extend(dialogOpts, ${options});
+    </c:if>
+    dialogDiv.dialog(dialogOpts);
     Yukon.ui.unblockPage();
 });
 </script>

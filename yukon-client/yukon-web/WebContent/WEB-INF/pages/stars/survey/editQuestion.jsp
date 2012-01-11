@@ -11,10 +11,10 @@
 
 <c:set var="okAction" value="none"/>
 <cti:displayForPageEditModes modes="EDIT">
-    <c:set var="okAction" value="submit"/>
+    <c:set var="okAction" value="yukonDialogSubmit"/>
 </cti:displayForPageEditModes>
 
-<dialog:ajaxPage nameKey="editQuestion" module="survey" page="edit" okAction="${okAction}">
+<dialog:ajaxPage nameKey="editQuestion" module="survey" page="edit" okEvent="${okAction}">
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
