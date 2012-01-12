@@ -9,6 +9,7 @@ public class MeterReportEvent {
     private Meter meter;
     private BuiltInAttribute attribute;
     private PointValueHolder pointValueHolder;
+    private String pointName;
     private String formattedValue;
 
     public Meter getMeter() {
@@ -33,6 +34,14 @@ public class MeterReportEvent {
 
     public void setPointValueHolder(PointValueHolder pointValueHolder) {
         this.pointValueHolder = pointValueHolder;
+    }
+
+    public String getPointName() {
+        return pointName;
+    }
+
+    public void setPointName(String pointName) {
+        this.pointName = pointName;
     }
 
     public String getFormattedValue() {

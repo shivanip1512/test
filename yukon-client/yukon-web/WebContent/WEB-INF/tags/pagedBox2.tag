@@ -13,6 +13,7 @@
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
 <%@ attribute name="isFiltered" type="java.lang.Boolean" %>
 <%@ attribute name="showAllUrl" %>
+<%@ attribute name="titleLinkHtml" %>
 <%@ attribute name="pageByHundereds" %>
 <%@ attribute name="styleClass" %>
 
@@ -36,6 +37,7 @@
         isFiltered="${pageScope.isFiltered}"
         pageByHundereds="${pageScope.pageByHundereds}"
         showAllUrl="${pageScope.showAllUrl}"
+        titleLinkHtml="${pageScope.titleLinkHtml}"
         styleClass="${pageScope.styleClass}">
         
     <jsp:doBody/>

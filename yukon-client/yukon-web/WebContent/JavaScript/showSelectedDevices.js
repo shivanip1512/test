@@ -12,6 +12,7 @@ function showSelectedDevices(imgEl, divId, innerDivId, url) {
         url: url,
         success: function(transport) {
         	jQuery("#" + innerDivId).html(transport);
+        	adjustDialogSizeAndPosition(divId);
             jQuery("#" + divId).show();
             jQuery(imgEl).removeClass("loading");
         }

@@ -38,18 +38,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
+import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -61,7 +62,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.amr.meterEventsReport.model.MeterEventStatusTypeGroupings;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsReportFilterBackingBean;
 import com.cannontech.web.amr.meterEventsReport.model.MeterReportEvent;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -86,17 +86,19 @@ public class MeterEventsReportController {
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DeviceCollectionFactory deviceCollectionFactory;
 	@Autowired private MeterDao meterDao;
-	@Autowired private AttributeService attributeService;
+	@Autowired private PointDao pointDao;
+	@Autowired private MeterEventLookupService meterEventLookupService;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	
 	private Map<String, Comparator<MeterReportEvent>> sorters;
 
     @PostConstruct
     public void initialize() {
         Builder<String, Comparator<MeterReportEvent>> builder = ImmutableMap.builder();
-        builder.put("NAME", getNameComparator());
+        builder.put("NAME", getMeterNameComparator());
         builder.put("TYPE", getDeviceTypeComparator());
         builder.put("DATE", getDateComparator());
-        builder.put("ATTR", getAttributeComparator());
+        builder.put("EVENT", getEventComparator());
         builder.put("VALUE", getFormattedValueComparator());
         sorters = builder.build();
     }
@@ -163,7 +165,7 @@ public class MeterEventsReportController {
         String[] headerRow = new String[4];
         headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText");
         headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.attribute.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.event.linkText");
         headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
         
         //data rows
@@ -187,7 +189,7 @@ public class MeterEventsReportController {
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
             dataRow[1] = dateTimeString;
             
-            dataRow[2] = event.getAttribute().name();
+            dataRow[2] = event.getPointName();
             
             String valueString = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext);
             dataRow[3] = valueString;
@@ -232,19 +234,13 @@ public class MeterEventsReportController {
             backingBean.setEventTypesAllTrue();
         }
 
-        Set<PaoType> paoTypes = Sets.newHashSet();
-        for (SimpleDevice device : deviceCollection.getDeviceList()) {
-            paoTypes.add(device.getDeviceType());
-        }
-
-        Set<Attribute> availableAttributes = Sets.newHashSet();
-        for (PaoType paoType : paoTypes) {
-            availableAttributes.addAll(attributeService.getAvailableAttributes(paoType));
-        }
+        Set<BuiltInAttribute> availableEventAttributes =
+            meterEventLookupService.getAvailableEventAttributes(backingBean.getDeviceCollection()
+                .getDeviceList());
 
         Map<BuiltInAttribute, Boolean> tempMap = Maps.newHashMap(backingBean.getMeterEventTypesMap());
         for (Entry<BuiltInAttribute, Boolean> entry : backingBean.getMeterEventTypesMap().entrySet()) {
-            if (!availableAttributes.contains(entry.getKey())) {
+            if (!availableEventAttributes.contains(entry.getKey())) {
                 tempMap.remove(entry.getKey());
             }
         }
@@ -256,6 +252,8 @@ public class MeterEventsReportController {
                                      YukonUserContext userContext, ModelMap model) {
         
         List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
+        DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(events, userContext);
+        model.addAttribute("collectionFromReportResults", collectionFromReportResults);
 
         SearchResult<MeterReportEvent> filterResult = new SearchResult<MeterReportEvent>();
         filterResult.setBounds(backingBean.getStartIndex(),
@@ -288,6 +286,19 @@ public class MeterEventsReportController {
         model.addAttribute("backingBean", backingBean);
         model.addAllAttributes(backingBean.getDeviceCollection().getCollectionParameters());
         model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap()));
+    }
+    
+    private DeviceCollection getDeviceCollectionFromReportResults(List<MeterReportEvent> events, YukonUserContext userContext) {
+        Set<Meter> meters = Sets.newHashSet();
+        for (MeterReportEvent reportEvent : events) {
+            meters.add(reportEvent.getMeter());
+        }
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String message = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.results.deviceCollectionDescription");
+
+        DeviceCollection resultsDeviceCollection = deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), message);
+        return resultsDeviceCollection;
     }
 
     private JSONObject getJSONObject(Map<BuiltInAttribute, Boolean> meterEventsMap) {
@@ -352,16 +363,21 @@ public class MeterEventsReportController {
             }
 
             for (Entry<PaoIdentifier, PointValueQualityHolder> entry : attributeData.entries()) {
+                PointValueQualityHolder pointValueHolder = entry.getValue();
                 if (backingBean.isOnlyActiveEvents()) {
-                    String valueString = pointFormattingService.getValueString(entry.getValue(), Format.VALUE, userContext);
+                    String valueString = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
                     // StateGroup: "Event Status" has states "cleared" and "active"
                     // StateGroup: "Outage Status" has states "good", "questionable", and "bad"
                     if ("cleared".equalsIgnoreCase(valueString) || "good".equalsIgnoreCase(valueString)) continue;
                 }
                 MeterReportEvent meterReportEvent = new MeterReportEvent();
                 meterReportEvent.setAttribute(type.getKey());
-                meterReportEvent.setMeter(getMeterFromPaoIdentifier(meters, entry.getKey()));
-                meterReportEvent.setPointValueHolder(entry.getValue());
+                Meter meter = getMeterFromPaoIdentifier(meters, entry.getKey());
+                meterReportEvent.setMeter(meter);
+                meterReportEvent.setPointValueHolder(pointValueHolder);
+                
+                String pointName = pointDao.getPointName(pointValueHolder.getId());
+                meterReportEvent.setPointName(pointName);
                 
                 events.add(meterReportEvent);
             }
@@ -392,7 +408,7 @@ public class MeterEventsReportController {
         return array;
     }
     
-    private static Comparator<MeterReportEvent> getNameComparator() {
+    private static Comparator<MeterReportEvent> getMeterNameComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<MeterReportEvent> nameOrdering = normalStringComparer
             .onResultOf(new Function<MeterReportEvent, String>() {
@@ -422,19 +438,19 @@ public class MeterEventsReportController {
                 return from.getPointValueHolder().getPointDataTimeStamp();
             }
         });
-        Ordering<MeterReportEvent> result = dateOrdering.compound(getNameComparator());
+        Ordering<MeterReportEvent> result = dateOrdering.compound(getMeterNameComparator());
         return result;
     }
     
-    private static Comparator<MeterReportEvent> getAttributeComparator() {
+    private static Comparator<MeterReportEvent> getEventComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
         Ordering<MeterReportEvent> attributeOrdering = normalStringComparer
         .onResultOf(new Function<MeterReportEvent, String>() {
             public String apply(MeterReportEvent from) {
-                return from.getAttribute().name();
+                return from.getPointName();
             }
         });
-        Ordering<MeterReportEvent> result = attributeOrdering.compound(getNameComparator());
+        Ordering<MeterReportEvent> result = attributeOrdering.compound(getMeterNameComparator());
         return result;
     }
     

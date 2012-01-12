@@ -254,13 +254,21 @@
 	</form:form>
 	<div class="cr"></div>
 
-	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report">
+	<c:set var="linkHeaderHtml">
+		<span class="navLink"> <cti:link
+				href="/spring/bulk/collectionActions"
+				key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
+				<cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
+			</cti:link> </span>
+	</c:set>
+
+	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
 		<table id="eventsTable" class="compactResultsTable">
 			<tr>
 				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>
 				<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="TYPE" /></th>
 				<th><tags:sortLink nameKey="tableHeader.date" baseUrl="report" fieldName="DATE" isDefault="true" /></th>
-				<th><tags:sortLink nameKey="tableHeader.attribute" baseUrl="report" fieldName="ATTR" /></th>
+				<th><tags:sortLink nameKey="tableHeader.event" baseUrl="report" fieldName="EVENT" /></th>
 				<th><tags:sortLink nameKey="tableHeader.value" baseUrl="report" fieldName="VALUE" /></th>
 			</tr>
 			<c:forEach var="event" items="${filterResult.resultList}">
@@ -285,7 +293,7 @@
 					    </c:choose>
 					</td>
 					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
-	                <td>${event.attribute}</td>
+	                <td>${event.pointName}</td>
 					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
 				</tr>
 			</c:forEach>

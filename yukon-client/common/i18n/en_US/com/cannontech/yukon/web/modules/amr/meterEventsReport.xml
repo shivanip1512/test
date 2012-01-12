@@ -39,7 +39,7 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText">Device Name</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceType.linkText">Device Type</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText">Date</entry>
-    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.attribute.linkText">Attribute</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.event.linkText">Event</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText">Value</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.noEvents">No Events</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.csv.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
@@ -50,6 +50,7 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.selectByDevice.label">Select By Device</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.eventTypesMag.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.eventTypesMag.hoverText">View Selected Event Types</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.results.deviceCollectionDescription">Meter Events Report Results</entry>
     
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.header">Select Devices</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteLabel"></entry>
