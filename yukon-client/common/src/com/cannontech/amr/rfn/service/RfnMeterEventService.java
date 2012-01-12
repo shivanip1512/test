@@ -48,8 +48,9 @@ public class RfnMeterEventService {
      * status point), then continue on to our more specific processor
      */
     public <T extends RfnEvent> void processEvent(RfnMeter meter, T event, List<? super PointData> pointDatas) {
-        boolean handledStatusEvent = handleRfnEventStatusEvents(meter, event, pointDatas);
+        log.debug("Event Recieved - event: " + event + " Meter: " + meter);
 
+        boolean handledStatusEvent = handleRfnEventStatusEvents(meter, event, pointDatas);
         RfnArchiveRequestProcessorBase processor = processorsMap.get(event.getType());
         if (processor != null) {
             processor.process(meter, event, pointDatas);
