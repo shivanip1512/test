@@ -122,7 +122,7 @@
 					</c:if>
 					
                     <c:if test="${rfnEventsSupported}">
-    					<ct:widget bean="rfnMeterEventsWidget"/>
+    					<ct:widget bean="meterEventsWidget"/>
                     </c:if>
 	
 					<c:if test="${outageSupported}">

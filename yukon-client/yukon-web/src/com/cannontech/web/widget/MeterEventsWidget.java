@@ -3,6 +3,7 @@ package com.cannontech.web.widget;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -13,12 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
-import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.MapUtil;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -27,10 +29,12 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.collect.ListMultimap;
 
-public class RfnMeterEventsWidget extends AdvancedWidgetControllerBase {
+public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     
     @Autowired RawPointHistoryDao rawPointHistoryDao;
-    @Autowired RfnMeterDao rfnMeterDao;
+    @Autowired PaoDao paoDao;
+    @Autowired MeterEventLookupService meterEventLookupService;
+    @Autowired PointDao pointDao;
     
     private Comparator<PointValueQualityHolder> comparator =
         new Comparator<PointValueQualityHolder>() {
@@ -44,23 +48,26 @@ public class RfnMeterEventsWidget extends AdvancedWidgetControllerBase {
             throws Exception {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         setupModel(deviceId, model);
-        return "rfnMeterEventsWidget/render.jsp";
+        return "meterEventsWidget/render.jsp";
     }
 
     public void setupModel(int deviceId, ModelMap model) {
-        RfnMeter meter = rfnMeterDao.getForId(deviceId);
+        YukonPao meter = paoDao.getYukonPao(deviceId);
         
-        SortedMap<PointValueQualityHolder, BuiltInAttribute> sortedLimitedAttributeValueMap =
+        SortedMap<PointValueQualityHolder, String> sortedLimitedAttributeValueMap =
             getRphSortedLimitedAttributeValueMap(meter);
         model.addAttribute("valueMap", sortedLimitedAttributeValueMap);
         model.addAttribute("deviceId", deviceId);
     }
     
-    private SortedMap<PointValueQualityHolder, BuiltInAttribute> getRphSortedLimitedAttributeValueMap(YukonPao meter) {
-        SortedMap<PointValueQualityHolder, BuiltInAttribute> sortedAttributeValueMap =
-            new TreeMap<PointValueQualityHolder, BuiltInAttribute>(comparator);
+    private SortedMap<PointValueQualityHolder, String> getRphSortedLimitedAttributeValueMap(YukonPao meter) {
+        SortedMap<PointValueQualityHolder, String> sortedPointValueMap =
+            new TreeMap<PointValueQualityHolder, String>(comparator);
 
-        for (BuiltInAttribute attribute : BuiltInAttribute.getRfnEventStatusTypes()) {
+        Set<BuiltInAttribute> availableEventAttributes =
+            meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(meter));
+
+        for (BuiltInAttribute attribute : availableEventAttributes) {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
                 rawPointHistoryDao.getLimitedAttributeData(Collections.singleton(meter),
                                                     attribute,
@@ -71,13 +78,14 @@ public class RfnMeterEventsWidget extends AdvancedWidgetControllerBase {
                                                     Clusivity.INCLUSIVE_INCLUSIVE,
                                                     Order.REVERSE);
             for (Entry<PaoIdentifier, PointValueQualityHolder> entry : attributeData.entries()) {
-                sortedAttributeValueMap.put(entry.getValue(), attribute);
+                String pointName = pointDao.getPointName(entry.getValue().getId());
+                sortedPointValueMap.put(entry.getValue(), pointName);
             }
         }
         
-        SortedMap<PointValueQualityHolder, BuiltInAttribute> limitedSortedValueToAttributeMap =
-                MapUtil.putFirstEntries(10, sortedAttributeValueMap, new TreeMap<PointValueQualityHolder, BuiltInAttribute>(comparator));
+        SortedMap<PointValueQualityHolder, String> limitedSortedValueToPointNameMap =
+                MapUtil.putFirstEntries(10, sortedPointValueMap, new TreeMap<PointValueQualityHolder, String>(comparator));
 
-        return limitedSortedValueToAttributeMap;
+        return limitedSortedValueToPointNameMap;
     }
 }

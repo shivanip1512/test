@@ -1,4 +1,4 @@
-package amr.meterEvents;
+package com.cannontech.amr.meterEvents;
 
 import java.util.Set;
 
@@ -6,8 +6,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.web.amr.meterEventsReport.model.MeterEventStatusTypeGroupings;
 
 public class MeterEventTypeGroupsTest {
     
