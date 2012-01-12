@@ -3,15 +3,15 @@
 /******************************************/ 
 
 /* Start YUK-10547 */ 
-ALTER TABLE LMProgramDirect ADD NotifyAdjust NUMBER(18,0);
+ALTER TABLE LMProgramDirect ADD NotifyAdjust NUMBER;
 UPDATE LMProgramDirect SET NotifyAdjust = -1;
-ALTER TABLE LMProgramDirect MODIFY NotifyAdjust NUMBER(18,0) NOT NULL;
+ALTER TABLE LMProgramDirect MODIFY NotifyAdjust NUMBER NOT NULL;
 /* End YUK-10547 */
 
 /* Start YUK-10536 */
 /* @error ignore-begin */
 ALTER TABLE ZBGateway
-MODIFY FirmwareVersion VARCHAR(255) NULL;
+MODIFY FirmwareVersion VARCHAR2(255) NULL;
 /* @error ignore-end */
 /* End YUK-10536 */
 
