@@ -22,19 +22,19 @@ DELETE FROM AcctThermostatScheduleEntry WHERE AcctThermostatScheduleEntryid IN (
 /*This adds saturday/sunday entries if there are only weekend entries. This must not be run on a system that uses 5-2 schedules*/
 /* @start-block */
 DECLARE
-v_schedule_id NUMBER;
-v_starttime NUMBER;
-v_cooltemp FLOAT;
-v_heattemp FLOAT;
-v_last_schedule_entry NUMBER;
+    v_schedule_id NUMBER;
+    v_starttime NUMBER;
+    v_cooltemp FLOAT;
+    v_heattemp FLOAT;
+    v_last_schedule_entry NUMBER;
 
-CURSOR c_weekend_entries IS (SELECT AcctThermostatScheduleId, StartTime, CoolTemp, HeatTemp
-                             FROM AcctThermostatScheduleEntry 
-                             WHERE TimeOfWeek = 'WEEKEND' 
-                               AND AcctThermostatScheduleId NOT IN (SELECT AcctThermostatScheduleId 
-                                                                    FROM AcctThermostatScheduleEntry 
-                                                                    WHERE TimeOfWeek = 'SUNDAY'
-                                                                    GROUP BY AcctThermostatScheduleId));
+    CURSOR c_weekend_entries IS (SELECT AcctThermostatScheduleId, StartTime, CoolTemp, HeatTemp
+                                 FROM AcctThermostatScheduleEntry 
+                                 WHERE TimeOfWeek = 'WEEKEND' 
+                                   AND AcctThermostatScheduleId NOT IN (SELECT AcctThermostatScheduleId 
+                                                                        FROM AcctThermostatScheduleEntry 
+                                                                        WHERE TimeOfWeek = 'SUNDAY'
+                                                                        GROUP BY AcctThermostatScheduleId));
 
 BEGIN
    SELECT MAX(AcctThermostatScheduleEntryId) INTO v_last_schedule_entry 
@@ -62,10 +62,7 @@ UPDATE AcctThermostatSchedule
 SET ScheduleMode = NULL 
 WHERE ScheduleMode = 'WEEKDAY_WEEKEND';
 
-UPDATE SequenceNUMBER 
-SET LastValue = (SELECT MAX(AcctThermostatScheduleEntryId) 
-                 FROM AcctThermostatScheduleEntry)
-WHERE SequenceName = 'AcctThermostatScheduleEntry';
+DELETE FROM SequenceNumber WHERE SequenceName = 'AcctThermostatScheduleEntry';
 
 /*Note each of these must be run in sequence*/
 /*Update the schedule type to all if saturday and sunday and weekday are equal*/

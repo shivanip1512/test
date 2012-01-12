@@ -6,16 +6,16 @@
 /*Script deletes all entries >4 per ScheduleId AND time of week*/
 WITH OrderedEntries as
 (  
-    SELECT row_number() OVER (PARTITION BY atse.AcctThermostatScheduleId, atse.TimeOfWeek ORDER BY AcctThermostatScheduleEntryId) RowNumber, 
-           atse.AcctThermostatScheduleEntryId, ats.AccountId
-    FROM AcctThermostatScheduleEntry atse 
-    JOIN AcctThermostatSchedule ats ON atse.AcctThermostatScheduleId = ats.AcctThermostatScheduleId
+    SELECT row_number() OVER (PARTITION BY ATSE.AcctThermostatScheduleId, ATSE.TimeOfWeek ORDER BY AcctThermostatScheduleEntryId) RowNumber, 
+           ATSE.AcctThermostatScheduleEntryId, ATS.AccountId
+    FROM AcctThermostatScheduleEntry ATSE 
+    JOIN AcctThermostatSchedule ATS ON ATSE.AcctThermostatScheduleId = ATS.AcctThermostatScheduleId
 )
 DELETE FROM AcctThermostatScheduleEntry 
-WHERE AcctThermostatScheduleEntryId in (SELECT AcctThermostatScheduleEntryId 
+WHERE AcctThermostatScheduleEntryId IN (SELECT AcctThermostatScheduleEntryId 
                                         FROM OrderedEntries 
                                         WHERE AccountId != 0 
-                                        AND RowNumber > 4);
+                                          AND RowNumber > 4);
 
 /*This adds saturday/sunday entries if there are only weekend entries. This must not be run on a system that uses 5-2 schedules*/
 /* @start-block */
@@ -28,7 +28,7 @@ DECLARE @v_last_schedule_entry NUMERIC;
 DECLARE c_weekend_entries CURSOR STATIC FOR (SELECT AcctThermostatScheduleId, StartTime, CoolTemp, HeatTemp
                                              FROM AcctThermostatScheduleEntry 
                                              WHERE TimeOfWeek = 'WEEKEND' 
-                                               AND AcctThermostatScheduleId not in (SELECT AcctThermostatScheduleId 
+                                               AND AcctThermostatScheduleId NOT IN (SELECT AcctThermostatScheduleId 
                                                                                     FROM AcctThermostatScheduleEntry 
                                                                                     WHERE TimeOfWeek = 'SUNDAY'
                                                                                     GROUP BY AcctThermostatScheduleId));
@@ -60,10 +60,7 @@ SET ScheduleMode = NULL
 WHERE ScheduleMode = 'WEEKDAY_WEEKEND';
 GO
 
-UPDATE SequenceNumber
-SET LastValue = (SELECT MAX(AcctThermostatScheduleEntryId)
-                 FROM AcctThermostatScheduleEntry)
-WHERE SequenceName = 'AcctThermostatScheduleEntry';
+DELETE FROM SequenceNumber WHERE SequenceName = 'AcctThermostatScheduleEntry';
 GO
 
 /*Note each of these must be run in sequence*/
