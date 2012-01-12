@@ -14,7 +14,7 @@ GO
 /* Start YUK-10536 */
 /* @error ignore-begin */
 ALTER TABLE ZBGateway
-ALTER COLUMN FirmwareVersion VARCHAR2(255) NULL;
+ALTER COLUMN FirmwareVersion VARCHAR(255) NULL;
 GO
 /* @error ignore-end */
 /* End YUK-10536 */
