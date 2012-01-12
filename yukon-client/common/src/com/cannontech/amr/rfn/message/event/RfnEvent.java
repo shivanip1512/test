@@ -87,7 +87,7 @@ public class RfnEvent implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnEvent [type=%s, rfnMeterIdentifier=%s, timeStamp=%s, eventData=%s]",
+            .format("RfnEvent [type=%s, rfnMeterIdentifier=%s, timeStamp=%tc, eventData=%s]",
                     type,
                     rfnMeterIdentifier,
                     timeStamp,
