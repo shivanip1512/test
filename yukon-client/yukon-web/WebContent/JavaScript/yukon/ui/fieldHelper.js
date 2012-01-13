@@ -16,7 +16,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
     Yukon.FieldHelper = {
          _initialized: false,
          _timeout: null,
-    	 _timeoutArgs: null,
+         _timeoutArgs: null,
          
          //Initializer
          init: function(){
