@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
@@ -64,26 +66,39 @@ public interface OptOutEventDao {
 	 * @return List of opt out history
 	 */
 	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate);
-	
+
     /**
-     * Method to get a list of opt out events by the assigning user of the opt out. 
-     * @param userId
-     * @param startTime
-     * @param stopTime
-     * @return
+     * Method to get a list of opt out events by account, time period, and login group
+     * @param accountId - Account to get history for
+     * @param startDate - Start of time period
+     * @param stopDate - End of time period
+     * @return List of opt out history
      */
-    public List<OverrideHistory> getOptOutHistoryByLogUserId(int logUserId, Date startTime, Date stopTime);
-	
-	/**
+    public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
+
+    /**
+     * Method to get a list of opt out events by the assigning user of the opt out, time period, and login group. 
+     */
+    public List<OverrideHistory> getOptOutHistoryByLogUserId(int userId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
+
+    /**
 	 * Method to get a list of opt out events by inventory and time period
 	 * @param inventoryId - Inventory to get history for
 	 * @param startDate - Start of time period
 	 * @param stopDate - End of time period
 	 * @return List of opt out history
 	 */
-	public List<OverrideHistory> getOptOutHistoryForInventory(
-			int inventoryId, Date startDate, Date stopDate);
+	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate);
 
+    /**
+     * Method to get a list of opt out events by inventory, time period, and login group
+     * @param inventoryId - Inventory to get history for
+     * @param startDate - Start of time period
+     * @param stopDate - End of time period
+     * @return List of opt out history
+     */
+	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
+	
 	/**
 	 * Method to get the last (or current) opt out event that actually happened (ignoring canceled 
 	 * scheduled events) for the given inventory and account
@@ -214,6 +229,5 @@ public interface OptOutEventDao {
 	 * @param customerAccountId - Account for inventory
 	 * @return Event if there is one
 	 */
-	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
-			int customerAccountId);
+	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId);
 }

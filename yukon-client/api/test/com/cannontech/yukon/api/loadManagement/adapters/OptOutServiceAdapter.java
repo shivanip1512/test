@@ -10,6 +10,7 @@ import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -95,16 +96,14 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
-	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user)
+	public List<OverrideHistory> getOptOutHistoryByProgram(String programName, Date startTime, Date stopTime, LiteYukonUser user)
 			throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
-	public List<OverrideHistory> getOptOutHistoryForAccount(
-			String accountNumber, Date startTime, Date stopTime,
-			LiteYukonUser user, String programName) throws NotFoundException {
+	public List<OverrideHistory> getOptOutHistoryForAccount(String accountNumber, Date startTime, Date stopTime, LiteYukonUser user, String programName) 
+	        throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -171,4 +170,8 @@ public class OptOutServiceAdapter implements OptOutService {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public List<OptOutLimit> findCurrentOptOutLimit(LiteYukonGroup residentialGroup) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

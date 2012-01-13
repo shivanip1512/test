@@ -8,6 +8,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableSet;
 
@@ -159,4 +160,8 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public String getPropertyStringValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

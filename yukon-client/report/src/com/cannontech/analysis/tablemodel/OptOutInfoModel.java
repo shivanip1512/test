@@ -121,9 +121,7 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
         // Check to see if accounts where selected and uses them to find the report data.
         if (accountIds != null) {
             for (Integer accountId : accountIds) {
-                overrideHistoryList.addAll(optOutEventDao.getOptOutHistoryForAccount(accountId, 
-                                                                                     getStartDate(), 
-                                                                                     getStopDate()));
+                overrideHistoryList.addAll(optOutEventDao.getOptOutHistoryForAccount(accountId, getStartDate(), getStopDate()));
             }
         }
         
@@ -133,8 +131,7 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
 
             List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
             List<CustomerAccountWithNames> accounts = 
-                customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, groupIdsFromSQL,
-                                                                     getStartDate(), getStopDate());
+                customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, groupIdsFromSQL, getStartDate(), getStopDate());
 
             for (CustomerAccountWithNames account : accounts) {
                 List<OverrideHistory> overrideHistories = 

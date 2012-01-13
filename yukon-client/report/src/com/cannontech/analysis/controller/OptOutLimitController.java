@@ -45,6 +45,9 @@ public class OptOutLimitController extends ReportControllerBase {
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td><input type='checkbox' name='"+ATT_SHOW_OVERRIDES_THAT_DO_NOT_COUNT+"' value='true'> Show Overrides That Do Not Count" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td>* The stop date above will be used as an end date for the opt out limits.  Any piece of inventory that has reached the limit by that date will be shown in the report." + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
         sb.append("  </tr>" + LINE_SEPARATOR);

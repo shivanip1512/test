@@ -7,6 +7,7 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableSet;
 
@@ -334,4 +335,20 @@ public interface RolePropertyDao {
      * @return
      */
     public ImmutableSet<YukonRoleProperty> getMissingProperties();
+
+    /**
+     * Returns the liteYukonGroup's value of the specified role property as a String.
+     * 
+     * This method will never return null. Undefined values are returned as "".
+     * 
+     * Unlike the other methods, this can be called regardless of the type
+     * of the property, it essentially calls a toString on the value and
+     * returns that.
+     * 
+     * @param property any property
+     * @param liteYukonGroup 
+     * @return  "" or the value of the property
+     * @throws UserNotInRoleException user must be in role to access a role property
+     */
+    public String getPropertyStringValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property);
 }

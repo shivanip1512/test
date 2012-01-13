@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,6 +27,7 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -286,10 +288,32 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return historyList;
 	}
 	
-	@Override
+    @Override
+    @Transactional
+    public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OOE.*");
+        sql.append("FROM OptOutEvent OOE");
+        sql.append("  JOIN CustomerAccount CA ON CA.AccountId = OOE.CustomerAccountId");
+        sql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
+        sql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
+        sql.append("  JOIN YukonUserGroup YUG ON YUG.UserId = Cont.LoginId");
+        sql.append("WHERE OOE.CustomerAccountId").eq(accountId);
+        sql.append("  AND YUG.GroupId").eq(residentialGroup.getGroupID());
+        sql.append("  AND OOE.StartDate").lte(stopDate);
+        sql.append("  AND OOE.StopDate").gte(startDate);
+        sql.append("  AND (OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+        sql.append("            OR OOE.EventState").eq_k(OptOutEventState.CANCEL_SENT).append(")");
+        sql.append("ORDER BY OOE.StartDate DESC");
+        
+        List<OverrideHistory> historyList = yukonJdbcTemplate.query(sql, new OverrideHistoryRowMapper());
+        return historyList;
+    }
+
+    @Override
 	@Transactional
-	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId,
-			Date startDate, Date stopDate) {
+	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
@@ -314,22 +338,48 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
     @Override
-    public List<OverrideHistory> getOptOutHistoryByLogUserId(int logUserId,
-                                                              Date startDate,
-                                                              Date stopDate) {
+    @Transactional
+    public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT * ");
-        sql.append("FROM OptOutEvent ");
-        sql.append("WHERE OptOutEventId").in(getEventsByUserId(logUserId));
-        sql.append("  AND StartDate").lte(stopDate);
-        sql.append("  AND StopDate").gte(startDate);
-        sql.append("  AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT);
-        sql.append("       OR EventState").eq(OptOutEventState.CANCEL_SENT).append(")");
-        sql.append("ORDER BY StartDate DESC");
+        sql.append("SELECT OOE.* ");
+        sql.append("FROM OptOutEvent OOE");
+        sql.append("  JOIN CustomerAccount CA ON CA.AccountId = OOE.CustomerAccountId");
+        sql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
+        sql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
+        sql.append("  JOIN YukonUserGroup YUG ON YUG.UserId = Cont.LoginId");
+        sql.append("WHERE OOE.InventoryId").eq(inventoryId);
+        sql.append("  AND YUG.GroupId").eq(residentialGroup.getGroupID());
+        sql.append("  AND OOE.StartDate").lte(stopDate);
+        sql.append("  AND OOE.StopDate").gte(startDate);
+        sql.append("  AND (OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+        sql.append("            OR OOE.EventState").eq_k(OptOutEventState.CANCEL_SENT).append(")");
+        sql.append("ORDER BY OOE.StartDate DESC");
         
-        List<OverrideHistory> historyList = 
-            yukonJdbcTemplate.query(sql, new OverrideHistoryRowMapper());
+        List<OverrideHistory> historyList = yukonJdbcTemplate.query(sql,  new OverrideHistoryRowMapper());
+        
+        return historyList;
+    }
+
+    @Override
+    public List<OverrideHistory> getOptOutHistoryByLogUserId(int logUserId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OOE.* ");
+        sql.append("FROM OptOutEvent OOE");
+        sql.append("  JOIN CustomerAccount CA ON CA.AccountId = OOE.CustomerAccountId");
+        sql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
+        sql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
+        sql.append("  JOIN YukonUserGroup YUG ON YUG.UserId = Cont.LoginId");
+        sql.append("WHERE OOE.OptOutEventId").in(getEventsByUserId(logUserId));
+        sql.append("  AND YUG.GroupId").eq(residentialGroup.getGroupID());
+        sql.append("  AND OOE.StartDate").lte(stopDate);
+        sql.append("  AND OOE.StopDate").gte(startDate);
+        sql.append("  AND (OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+        sql.append("             OR OOE.EventState").eq_k(OptOutEventState.CANCEL_SENT).append(")");
+        sql.append("ORDER BY OOE.StartDate DESC");
+        
+        List<OverrideHistory> historyList = yukonJdbcTemplate.query(sql, new OverrideHistoryRowMapper());
         
         return historyList;
     }

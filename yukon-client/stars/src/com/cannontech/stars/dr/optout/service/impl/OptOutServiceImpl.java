@@ -54,6 +54,7 @@ import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -658,6 +659,14 @@ public class OptOutServiceImpl implements OptOutService {
         
     }
     
+    @Override
+    public List<OptOutLimit> findCurrentOptOutLimit(LiteYukonGroup residentialGroup) {
+        String optOutLimitString = rolePropertyDao.getPropertyStringValue(residentialGroup, YukonRoleProperty.RESIDENTIAL_OPT_OUT_LIMITS);
+        List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
+        
+        return optOutLimits;
+    }
+
 	@Override
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId) {
 
@@ -780,9 +789,7 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-	public List<OverrideHistory> getOptOutHistoryForAccount(
-			String accountNumber, Date startTime, Date stopTime,
-			LiteYukonUser user, String programName) 
+    public List<OverrideHistory> getOptOutHistoryForAccount(String accountNumber, Date startTime, Date stopTime, LiteYukonUser user, String programName) 
 		throws AccountNotFoundException, ProgramNotFoundException {
 
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();

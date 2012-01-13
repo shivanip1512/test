@@ -26,18 +26,6 @@ public class OptOutLimitReport extends GroupYukonReportBase {
         new ColumnLayoutData("Serial Number: ", "serialNumber", 200)
     };
     
-//  The total footers are being removed for now due to how we are calculating totals.
-//  We may want to change this in the future to just total up a given inventory's opt outs.
-//    private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
-//        new LabelFooterFieldFactory(bodyColumns[0], "Total"),
-//        new SumFooterFieldFactory(bodyColumns[2]),
-//    };
-    
-//    @Override
-//    protected List<? extends AggregateFooterFieldFactory> getFooterColumns() {
-//        return Arrays.asList(footerColumns);
-//    }
-    
     @Override
     protected List<ColumnLayoutData> getMultiGroupFieldData() {
         List<ColumnLayoutData> groupFieldData = Lists.newArrayList(groupColumns);

@@ -9,6 +9,7 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -231,8 +232,7 @@ public interface OptOutService {
 	 * @return List of opt out history
 	 * @throws ProgramNotFoundException - if program name is not valid
 	 */
-	public List<OverrideHistory> getOptOutHistoryByProgram(
-			String programName, Date startTime, Date stopTime, LiteYukonUser user)
+	public List<OverrideHistory> getOptOutHistoryByProgram(String programName, Date startTime, Date stopTime, LiteYukonUser user)
 		throws ProgramNotFoundException;
 	
 	/**
@@ -247,9 +247,7 @@ public interface OptOutService {
 	 * @throws AccountNotFoundException - If account number is not found
 	 * @throws ProgramNotFoundException - If program name is not found
 	 */
-	public List<OverrideHistory> getOptOutHistoryForAccount(
-			String accountNumber, Date startTime, Date stopTime, LiteYukonUser user, 
-			String programName)
+	public List<OverrideHistory> getOptOutHistoryForAccount(String accountNumber, Date startTime, Date stopTime, LiteYukonUser user, String programName)
 		throws AccountNotFoundException, ProgramNotFoundException;
 
 	/**
@@ -267,11 +265,10 @@ public interface OptOutService {
 			CustomerAccount customerAccount, LiteYukonUser user)
 			throws CommandCompletionException;
 
+    public String checkOptOutStartDate(int accountId, LocalDate startDate,  YukonUserContext userContext, boolean isOperator);
 
-	/**
-     * @param localDate
-     * @param errors
+    /**
+     * This method returns a list of all of the month spans and limits for a given login group.
      */
-    public String checkOptOutStartDate(int accountId, LocalDate startDate, 
-                                       YukonUserContext userContext, boolean isOperator);
+    public List<OptOutLimit> findCurrentOptOutLimit(LiteYukonGroup residentialGroup);
 }
