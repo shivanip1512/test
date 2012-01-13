@@ -348,7 +348,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                          {
                              CtiLockGuard<CtiLogger> doubt_guard(dout);
                              dout << CtiTime() << " Control point " << point.getPointID();
-                             dout << " queued as " << point.getTranslateName(string (FDR_VALMETMULTI));
+                             dout << " queued as " << ptr->Control.Name;
                              if (point.getValue() == OPENED)
                              {
                                  dout << " state of Open ";
@@ -578,10 +578,8 @@ CtiFDRPointSPtr CtiFDR_ValmetMulti::findFdrPointInPointList(const std::string &t
     CtiFDRPointSPtr point;
 
     CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
-    string pointName = translationName;
-    std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
 
-    NameToPointIdMap::iterator iter = _nameToPointId.find(pointName);
+    NameToPointIdMap::iterator iter = _nameToPointId.find(translationName);
     if( iter != _nameToPointId.end() ) {
         point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
     }
