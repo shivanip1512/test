@@ -1,6 +1,6 @@
 /*
  * Requirements: 
- *      - Prototype 1.6+
+ *      - jQuery 1.6+
  *      - /JavaScript/yukon/ui/general.js [for the trigger()]
  * 
  * Singleton for UI functionality editing focusableFieldHolders
@@ -15,6 +15,8 @@ if(typeof(Yukon) === "undefined"){
 if(typeof(Yukon.FieldHelper) === "undefined"){
     Yukon.FieldHelper = {
          _initialized: false,
+         _timeout: null,
+    	 _timeoutArgs: null,
          
          //Initializer
          init: function(){
@@ -22,73 +24,84 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
                  var self = Yukon.FieldHelper;
                  
                  //setup select elements
-                 $$('.focusableFieldHolder select').invoke('observe', 'blur', self.blurSelect);
-                 $$('.focusableFieldHolder select').invoke('observe', 'change', self.blurSelect);
-                 $$('.focusableFieldHolder select').invoke('observe', 'focus', self.focusSelect);
+                 jQuery('.focusableFieldHolder select').bind('blur', self.blurSelect);
+                 jQuery('.focusableFieldHolder select').bind('change', self.focusSelect);
+                 jQuery('.focusableFieldHolder select').bind('focus', self.focusSelect);
+                 jQuery('.focusableFieldHolder select').bind('active', self.focusSelect);
+                 jQuery('.focusableFieldHolder select').bind('mouseenter', self.showTooltip);
+                 jQuery('.focusableFieldHolder select').bind('mouseleave', self.blurSelect);
                  
                  //setup input elements
-                 $$('.focusableFieldHolder input').invoke('observe', 'blur', self.blurInput);
-                 $$('.focusableFieldHolder input').invoke('observe', 'change', self.blurInput);
-                 $$('.focusableFieldHolder input').invoke('observe', 'focus', self.focusInput);
+                 jQuery('.focusableFieldHolder input').bind('blur', self.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('change', self.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('focus', self.focusInput);
+                 jQuery('.focusableFieldHolder input').bind('mouseenter', self.showTooltip);
+//                 jQuery('.focusableFieldHolder input').bind('mouseleave', self.blurInput);
                  
                  //trigger a blur event on each element -> performs an initial render
-                 $$('.focusableFieldHolder select, .focusableFieldHolder input').invoke('trigger', 'blur');
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');
                  this._initialized = true;
              }
          },
          
          blurInput: function(event){
-             var inputField = event.currentTarget;
-             var defaultField = inputField.up('span').next('input');
-             $('descriptionPopup').hide();
-             if (typeof(defaultField) == 'undefined') {
+             var inputField = jQuery(event.currentTarget);
+             var defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
+             jQuery('#descriptionPopup').hide();
+             if (!defaultField.length) {
                  return;
              }
-             if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
-                 inputField.removeClassName('usingNonDefaultValue');
-                 inputField.value = $F(defaultField);
+             if (inputField.val() == defaultField.val() || inputField.val() == "") {
+                 inputField.removeClass('usingNonDefaultValue');
+                 inputField.val(defaultField.val());
              } else {
-                 inputField.addClassName('usingNonDefaultValue');
+                 inputField.addClass('usingNonDefaultValue');
              }
          },
          
          blurSelect: function(event){
-             var inputField = event.currentTarget;
-             var defaultField = inputField.up('span').next('input');
-             $('descriptionPopup').hide();
-             if (typeof(defaultField) == 'undefined') {
+             var inputField = jQuery(event.currentTarget);
+             var defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
+             jQuery('#descriptionPopup').hide();
+             if (!defaultField.length) {
                  return;
              }
-             if ($F(inputField) == $F(defaultField)) {
-                 inputField.removeClassName('usingNonDefaultValue');
+             if (inputField.val() == defaultField.val()) {
+                 inputField.removeClass('usingNonDefaultValue');
              } else {
-                 inputField.addClassName('usingNonDefaultValue');
+                 inputField.addClass('usingNonDefaultValue');
              }
          },
          
          focusInput: function(event){
-             Yukon.FieldHelper.showPointingPopup(event);
-             var inputField = event.currentTarget;
-             var defaultField = inputField.up('span').next('input');
-             inputField.removeClassName('usingNonDefaultValue');
-             if (typeof(defaultField) == 'undefined') {
+        	 Yukon.FieldHelper.showPointingPopup(event);
+             var inputField = jQuery(event.currentTarget);
+             var defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
+             inputField.removeClass('usingNonDefaultValue');
+             if (!defaultField.length) {
                  return;
              }
-             if ($F(inputField) == $F(defaultField)) {
-                 inputField.value = "";
+             if (inputField.val() == defaultField.val()) {
+                 inputField.val("");
              }
+         },
+
+         showTooltip: function(event){
+        	 Yukon.FieldHelper._timeoutArgs = event;
+        	 clearTimeout(Yukon.FieldHelper._timeout);
+        	 Yukon.FieldHelper._timeout = setTimeout('Yukon.FieldHelper.showPointingPopup(Yukon.FieldHelper._timeoutArgs)', 400);
          },
          
          //just show a popup and remove the class name
          focusSelect: function(event){
              Yukon.FieldHelper.showPointingPopup(event);
-             event.currentTarget.removeClassName('usingNonDefaultValue');
+             jQuery(event.currentTarget).removeClass('usingNonDefaultValue');
          },
          
          showPointingPopup: function(event){
-             var popup = $("descriptionPopup");
+             var popup = jQuery("#descriptionPopup");
              
-             if(!popup){
+             if(!popup.length){
                  var popupString = [];
                  popupString.push('<div class="pointingPopup_container" id="descriptionPopup" style="display:none;">');
                      popupString.push('<div class="pointingPopup_chevron ov pr">');
@@ -100,15 +113,16 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
                  document.body.insert(popupString.join(''));
              }
              
-             var target = Event.element(event);
-             var offsets = target.cumulativeOffset();
-             var popupLeft = offsets.left + target.getDimensions().width + 2;
+             var target = jQuery(event.currentTarget);
+             var popupLeft = target.offset().left + target.width() + 4;
              var left = popupLeft + 'px';
-             var top = (offsets.top -20) + 'px';
+             var top = (target.offset().top -20) + 'px';
              
-             $('descriptionPopup').setStyle({left:left, top:top});
-             $('descriptionPopup_content').innerHTML = target.up().next('span.focusedFieldDescription').innerHTML;
-             $('descriptionPopup').show();
+             jQuery('#descriptionPopup').css({left:left, top:top});
+             
+             var fieldDesc = target.closest('.focusableFieldHolder').nextAll('span.focusedFieldDescription');
+             jQuery('#descriptionPopup_content').html(fieldDesc.html());
+             jQuery('#descriptionPopup').show();
          }
     };
 }

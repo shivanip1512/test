@@ -1684,6 +1684,7 @@ div.scrollingContainer {
 .pointingPopup_content {
     background: none repeat scroll 0 0 white;
     border: 3px solid #CCCCCC;
+  	-webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
     float: right;
     min-height: 2em;
@@ -1691,9 +1692,9 @@ div.scrollingContainer {
     width: 274px;
 }
 .pointingPopup_chevron {
-    border-color: white #CCCCCC white -moz-use-text-color;
-    border-style: solid solid solid none;
-    border-width: 10px 10px 10px medium;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	border-right: 10px solid #CCCCCC;
     float: left;
     font-size: 0;
     line-height: 0;
