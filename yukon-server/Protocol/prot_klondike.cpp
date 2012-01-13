@@ -311,22 +311,22 @@ string KlondikeProtocol::describeCurrentStatus( void ) const
 
     sync_guard_t guard(_sync);
 
-    if( _device_queue_entries_available != numeric_limits<unsigned int>::max() )  stream << "_device_queue_entries_available = " << _device_queue_entries_available << endl;
-    if( _device_queue_sequence          != numeric_limits<unsigned int>::max() )  stream << "_device_queue_sequence          = " << hex << setw(4) << _device_queue_sequence << endl;
+    if( _device_queue_entries_available != numeric_limits<unsigned int>::max() )  stream << "Queue entries available: " << _device_queue_entries_available << endl;
+    if( _device_queue_sequence          != numeric_limits<unsigned int>::max() )  stream << "Current sequence number: " << hex << setw(4) << _device_queue_sequence << endl;
 
-    stream << "_device_status.as_ushort        = " << hex << setw(4) << _device_status.as_ushort        << endl;
+    stream << "Status (" << hex << setw(4) << _device_status.as_ushort << ")" << endl;
 
-    if( _device_status.response_buffer_has_unmarked_data) stream << "_device_status.response_buffer_has_data        " << endl;
-    if( _device_status.response_buffer_has_marked_data  ) stream << "_device_status.response_buffer_has_marked_data " << endl;
-    if( _device_status.response_buffer_full             ) stream << "_device_status.response_buffer_full            " << endl;
-    if( _device_status.transmit_buffer_has_data         ) stream << "_device_status.transmit_buffer_has_data        " << endl;
-    if( _device_status.transmit_buffer_full             ) stream << "_device_status.transmit_buffer_full            " << endl;
-    if( _device_status.transmit_buffer_frozen           ) stream << "_device_status.transmit_buffer_frozen          " << endl;
-    if( _device_status.plc_transmitting_dtran_message   ) stream << "_device_status.plc_transmitting_dtran_message  " << endl;
-    if( _device_status.plc_transmitting_buffer_message  ) stream << "_device_status.plc_transmitting_buffer_message " << endl;
-    if( _device_status.time_sync_required               ) stream << "_device_status.time_sync_required              " << endl;
-    if( _device_status.broadcast_in_progress            ) stream << "_device_status.broadcast_in_progress           " << endl;
-    if( _device_status.reserved                         ) stream << "_device_status.reserved                        " << endl;
+    if( _device_status.response_buffer_has_unmarked_data) stream << "  Response buffer has data        " << endl;
+    if( _device_status.response_buffer_has_marked_data  ) stream << "  Response buffer has marked data " << endl;
+    if( _device_status.response_buffer_full             ) stream << "  Response buffer full            " << endl;
+    if( _device_status.transmit_buffer_has_data         ) stream << "  Transmit buffer has data        " << endl;
+    if( _device_status.transmit_buffer_full             ) stream << "  Transmit buffer full            " << endl;
+    if( _device_status.transmit_buffer_frozen           ) stream << "  Transmit buffer frozen          " << endl;
+    if( _device_status.plc_transmitting_dtran_message   ) stream << "  PLC transmitting dtran message  " << endl;
+    if( _device_status.plc_transmitting_buffer_message  ) stream << "  PLC transmitting buffer message " << endl;
+    if( _device_status.time_sync_required               ) stream << "  Time sync required              " << endl;
+    if( _device_status.broadcast_in_progress            ) stream << "  Broadcast in progress           " << endl;
+    if( _device_status.reserved                         ) stream << "  Reserved bits set               " << endl;
 
     return stream.str();
 }
