@@ -36,7 +36,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
                  jQuery('.focusableFieldHolder input').bind('change', self.blurInput);
                  jQuery('.focusableFieldHolder input').bind('focus', self.focusInput);
                  jQuery('.focusableFieldHolder input').bind('mouseenter', self.showTooltip);
-//                 jQuery('.focusableFieldHolder input').bind('mouseleave', self.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('mouseleave', self.blurInput);
                  
                  //trigger a blur event on each element -> performs an initial render
                  jQuery('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');
