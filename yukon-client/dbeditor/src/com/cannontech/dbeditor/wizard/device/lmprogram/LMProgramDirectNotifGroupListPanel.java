@@ -190,10 +190,10 @@ public Object getValue(Object o)
 	else
 		program.getDirectProgram().setNotifyInactiveOffset(new Integer(-1));
 
-	if (getJCheckBoxNotifyAdjust().isSelected()) {
-        program.getDirectProgram().setNotifyAdjust(new Integer(1));
-	} else {
-        program.getDirectProgram().setNotifyAdjust(new Integer(-1));
+	if (getJCheckBoxNotifyAdjust().isSelected()) {                            // -1 = False/Off    1 = True/On
+        program.getDirectProgram().setNotifyAdjust(new Integer(1));           // These values have been chosen so that the data 
+	} else {                                                                  // written to the database will be consistent with the 
+        program.getDirectProgram().setNotifyAdjust(new Integer(-1));          // conventions used by the other Notify columns.  
 	}
 
     // Create Status point
@@ -270,45 +270,59 @@ private void initialize() {
 		java.awt.GridBagConstraints consGridBagConstraints27 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints28 = new java.awt.GridBagConstraints();
 		
-		consGridBagConstraints21.insets = new java.awt.Insets(2,105,1,3);
+		consGridBagConstraints19.insets = new java.awt.Insets(20,2,50,4);
+        consGridBagConstraints19.ipadx = 12;
+        consGridBagConstraints19.gridwidth = 4;
+        consGridBagConstraints19.gridy = 3;
+        consGridBagConstraints19.gridx = 0;
+        consGridBagConstraints19.weightx = 1.0;
+        consGridBagConstraints19.weighty = 1.0;
+        consGridBagConstraints19.fill = java.awt.GridBagConstraints.BOTH;
+		
+        consGridBagConstraints20.insets = new java.awt.Insets(20,105,1,3);
+        consGridBagConstraints20.gridy = 0;
+        consGridBagConstraints20.gridx = 0;
+        
+        consGridBagConstraints21.insets = new java.awt.Insets(2,105,1,3);
 		consGridBagConstraints21.gridy = 1;
 		consGridBagConstraints21.gridx = 0;
-		consGridBagConstraints24.insets = new java.awt.Insets(2,3,3,4);
+		
+		consGridBagConstraints22.insets = new java.awt.Insets(20,5,3,4);
+        consGridBagConstraints22.gridy = 0;
+        consGridBagConstraints22.gridx = 1;
+        
+        consGridBagConstraints23.insets = new java.awt.Insets(20,4,2,4);
+        consGridBagConstraints23.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints23.gridy = 0;
+        consGridBagConstraints23.gridx = 2;
+        consGridBagConstraints23.weightx = 0.25;
+        
+		consGridBagConstraints24.insets = new java.awt.Insets(3,5,3,4);
 		consGridBagConstraints24.gridy = 1;
 		consGridBagConstraints24.gridx = 1;
-		consGridBagConstraints22.insets = new java.awt.Insets(9,3,3,4);
-		consGridBagConstraints22.gridy = 0;
-		consGridBagConstraints22.gridx = 1;
-		consGridBagConstraints20.insets = new java.awt.Insets(9,105,1,3);
-		consGridBagConstraints20.gridy = 0;
-		consGridBagConstraints20.gridx = 0;
+
 		consGridBagConstraints25.insets = new java.awt.Insets(2,4,2,4);
-		consGridBagConstraints25.fill = java.awt.GridBagConstraints.NONE;
-		consGridBagConstraints25.weightx = 1.0;
+		consGridBagConstraints25.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		consGridBagConstraints25.gridy = 1;
 		consGridBagConstraints25.gridx = 2;
-		consGridBagConstraints19.insets = new java.awt.Insets(20,2,5,4);
-		consGridBagConstraints19.ipady = 1;
-		consGridBagConstraints19.gridwidth = 4;
-		consGridBagConstraints19.gridy = 3;
-		consGridBagConstraints19.gridx = 0;
-		consGridBagConstraints23.insets = new java.awt.Insets(9,4,2,4);
-		consGridBagConstraints23.fill = java.awt.GridBagConstraints.NONE;
-		consGridBagConstraints23.weightx = 1.0;
-		consGridBagConstraints23.gridy = 0;
-		consGridBagConstraints23.gridx = 2;
-		consGridBagConstraints26.insets = new java.awt.Insets(22,5,17,68);
+		consGridBagConstraints25.weightx = 0.25;
+				
+		consGridBagConstraints26.insets = new java.awt.Insets(30,5,17,30);
 		consGridBagConstraints26.gridheight = 2;
 		consGridBagConstraints26.gridy = 0;
 		consGridBagConstraints26.gridx = 3;
 		consGridBagConstraints26.anchor = java.awt.GridBagConstraints.WEST;
+		consGridBagConstraints26.weightx = 0.75;
+		
 		consGridBagConstraints27.insets = new java.awt.Insets(2,105,0,0);
 		consGridBagConstraints27.gridy = 2;
 		consGridBagConstraints27.gridx = 0;
-		consGridBagConstraints28.insets = new java.awt.Insets(2,0,0,0);
+				
+		consGridBagConstraints28.insets = new java.awt.Insets(2,5,0,0);
         consGridBagConstraints28.gridy = 2;
         consGridBagConstraints28.gridx = 1;
         consGridBagConstraints28.gridwidth = 2;
+        consGridBagConstraints28.anchor = java.awt.GridBagConstraints.WEST;
 		
 		setLayout(new java.awt.GridBagLayout());
 		this.add(getAddRemovePanel(), consGridBagConstraints19);
