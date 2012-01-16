@@ -9,13 +9,13 @@
 </c:if>
 
 <cti:msgScope paths="modules.support.supportBundle">
-    <table>
+    <table class="bundleStatusTable">
         <c:forEach var="writer" items="${writerList}">
             <tr>
                 <!-- Optional writers which are not being included will not show up in this list-->
                 <c:if test="${not empty thingsDoneMap[writer.name]}"> 
                     <td>
-                        <i:inline key=".writerName.${writer.name}" />&nbsp;
+                        <i:inline key=".writerName.${writer.name}" />
                     </td>
                     <td>
                         <c:if test="${thingsDoneMap[writer.name]}">
@@ -28,9 +28,9 @@
                 </c:if>
             </tr>
         </c:forEach>
-        <tr>
-            <td><br></td>
-        </tr>
+    </table>
+
+    <table class="statusMsgTable">
         <tr>
             <td>
                 <i:inline key='.bundleCreationStatus.label'/>

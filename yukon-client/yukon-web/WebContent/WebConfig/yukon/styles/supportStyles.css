@@ -62,6 +62,17 @@ table.resultsTable td.inputTest {
     vertical-align: top;
 }
 
+table.bundleStatusTable td
+{
+  	padding-right: 5em;
+}
+
+table.statusMsgTable td
+{
+    padding-top: 1em;    
+    padding-right: 5em;
+}
+
 textarea.xml {
     width: 1000px;
     height: 300px;
