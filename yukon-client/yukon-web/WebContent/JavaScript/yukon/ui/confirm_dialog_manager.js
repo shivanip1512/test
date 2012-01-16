@@ -67,6 +67,18 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                     var element = jQuery(defaults.on);
                     element.data("args", defaults);
                     
+                    //remove the href redirect for buttons as applied in general.js for buttons with 
+                    //a data-href attribute since the binding is likely to be higher in the call
+                    //stack than the binding for this function.  Simply removing the data-href attribute
+                    //solves the problem as general.js delegates this attribute on the document.
+                    jQuery(defaults.on).each(function(idx, elem){
+                        elem = jQuery(elem);
+                        if(elem.attr("data-href") != ""){
+                            elem.data("href", elem.attr("data-href"));
+                            elem.removeAttr("data-href");
+                        }
+                    });
+                    
                     //register the event handler
                     jQuery(document).delegate(defaults.on, defaults.eventType, this._show_window);
                     return true;
@@ -130,6 +142,8 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 //is the intent to redirect on ok?
                 else if(element.attr("data-href")){
                     buttons[0].click = function(){window.location = element.attr("data-href");};
+                }else if(element.data("href")){
+                    buttons[0].click = function(){window.location = element.data("href");};
                 }
                 //is the intent to submit a form on ok?
                 else if(element.attr("type").toLowerCase() == "submit"){
