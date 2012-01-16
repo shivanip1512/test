@@ -278,7 +278,9 @@ ul.dynatree-container a
 /*	outline: 0; /* @ Firefox, prevent dotted border after click */
 }
 
-ul.dynatree-container a:hover
+ul.dynatree-container a:hover,
+span.dynatree-focused a:link,
+span.dynatree-active a
 {
 /*	text-decoration: underline; */
 	background: #F2F7FD; /* light blue */
@@ -323,8 +325,8 @@ span.dynatree-selected a
 
 span.dynatree-active a
 {
-	background-color: #3169C6 !important;
-	color: white !important; @ IE6
+/* 	background-color: #3169C6 !important; */
+/* 	color: white !important; @ IE6 */
 }
 
 span.dynatree-selected .dynatree-title {
