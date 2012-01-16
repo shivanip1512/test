@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
+import com.cannontech.amr.rfn.message.read.DatedChannelData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
@@ -130,9 +131,17 @@ public class RfnMeterReadService {
     }
     
     public void processMeterReadingDataMessage(RfnMeterPlusReadingData meterReadingData, List<? super PointData> pointDatas) {
+        
+        List<ChannelData> nonDatedChannelData = meterReadingData.getRfnMeterReadingData().getChannelDataList();
+        List<? extends ChannelData> datedChannelData = meterReadingData.getRfnMeterReadingData().getDatedChannelDataList();
+        
+        List<ChannelData> allChannelData = Lists.newArrayList(nonDatedChannelData);
+        
+        allChannelData.addAll(datedChannelData);
+        
         Instant readingInstant = new Instant(meterReadingData.getRfnMeterReadingData().getTimeStamp());
         
-        for (ChannelData channelData : meterReadingData.getRfnMeterReadingData().getChannelDataList()) {
+        for (ChannelData channelData : allChannelData) {
             RfnMeter rfnMeter = meterReadingData.getRfnMeter();
             LogHelper.debug(log, "Processing %s for %s", channelData, rfnMeter);
             ChannelDataStatus status = channelData.getStatus();
@@ -165,7 +174,12 @@ public class RfnMeterReadService {
             pointData.setPointQuality(PointQuality.Normal);
             double value = pointValueHandler.convert(channelData.getValue());
             pointData.setValue(value);
-            pointData.setTime(readingInstant.toDate());
+            if (channelData instanceof DatedChannelData) {
+                DatedChannelData dated = (DatedChannelData)channelData;
+                pointData.setTime(new Instant(dated.getTimeStamp()).toDate());
+            } else {
+                pointData.setTime(readingInstant.toDate());
+            }
             pointData.setType(pointValueHandler.getPaoPointIdentifier().getPointIdentifier().getPointType().getPointTypeId());
             pointData.setTagsPointMustArchive(true); // temporary solution
             

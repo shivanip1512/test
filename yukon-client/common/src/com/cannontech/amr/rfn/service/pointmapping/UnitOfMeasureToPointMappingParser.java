@@ -222,11 +222,13 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         String baseUnitOfMeasure = null;
         Set<String> baseUnitOfMeasureModifiers = null;
         
-        // 'base' uom and modifiers are for coincidental measurements
         if (channelData instanceof DatedChannelData) {
             DatedChannelData dated = (DatedChannelData) channelData;
-            baseUnitOfMeasure = dated.getBaseChannelData().getUnitOfMeasure();
-            baseUnitOfMeasureModifiers = dated.getBaseChannelData().getUnitOfMeasureModifiers();
+            // 'base' uom and modifiers are for coincidental measurements
+            if (dated.getBaseChannelData() != null) {
+                baseUnitOfMeasure = dated.getBaseChannelData().getUnitOfMeasure();
+                baseUnitOfMeasureModifiers = dated.getBaseChannelData().getUnitOfMeasureModifiers();
+            }
         }
         
         CachedPointKey key = new CachedPointKey(pao.getPaoIdentifier().getPaoType(), 
