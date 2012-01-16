@@ -165,33 +165,33 @@ bool DispatchPointDataRequest::isComplete()
 */
 bool DispatchPointDataRequest::hasRequestType(PointRequestType pointRequestType)
 {
-   PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
+    PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
 
-   return itr != _requestTypeToPointId.end() && itr->second.size() > 0;
+    return itr != _requestTypeToPointId.end() && itr->second.size() > 0;
 }
 
 
 float DispatchPointDataRequest::ratioComplete(PointRequestType pointRequestType)
 {
-   if ( hasRequestType(pointRequestType) )
-   {
-      PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
+    if ( hasRequestType(pointRequestType) )
+    {
+        PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
 
-      float total = static_cast<float>( itr->second.size() );
-      int   complete = 0;
+        const float total = itr->second.size();
+        int complete = 0;
 
-      for each ( long pointId in itr->second )
-      {
-          if ( _values.find(pointId) != _values.end() )
-          {
-              ++complete;
-          }
-      }
+        for each ( long pointId in itr->second )
+        {
+            if ( _values.find(pointId) != _values.end() )
+            {
+                ++complete;
+            }
+        }
 
-      return complete / total;
-   }
+        return complete / total;
+    }
 
-   return 0.0;
+    return 0.0;
 }
 
 

@@ -42,7 +42,7 @@ class IVVCAlgorithm
         };
         typedef std::pair<DataStatus, double>   DataCheckResult;
 
-        virtual bool            checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, const long subbusId);
+        virtual bool            checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus);
         virtual DataCheckResult checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString);
 
         virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);

@@ -228,7 +228,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            bool hasStaleData           = checkForStaleData( request, timeNow, subbus->getPaoId() );
+            bool hasStaleData           = checkForStaleData( request, timeNow, subbus );
             bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
 
             if ( hasStaleData || hasAutoModeRegulator )
@@ -652,9 +652,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 }//execute
 
 
-bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, const long subbusId)
+bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus)
 {
     using namespace Cti::Messaging::CapControl;
+
+    const long subbusId = subbus->getPaoId();
 
     bool hasStaleData = false;
 
@@ -662,78 +664,89 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
 
     if ( request->hasRequestType( CbcRequestType ) )
     {
-       result = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
+        result = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
 
-       if ( result.first != DataStatus_Good )
-       {
-           hasStaleData = true;
+        if ( result.first != DataStatus_Good )
+        {
+            hasStaleData = true;
 
-           sendIVVCAnalysisMessage(
-               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                             ( result.first == DataStatus_Incomplete )
-                                                                   ? IVVCAnalysisMessage::Scenario_CBCCommsIncomplete
-                                                                       : IVVCAnalysisMessage::Scenario_CBCCommsStale,
-                                                             timeNow,
-                                                             result.second * 100.0,
-                                                             _IVVC_BANKS_REPORTING_RATIO * 100.0 ) );
-       }
+            sendIVVCAnalysisMessage(
+                                   IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                                                 ( result.first == DataStatus_Incomplete )
+                                                                                     ? IVVCAnalysisMessage::Scenario_CBCCommsIncomplete
+                                                                                     : IVVCAnalysisMessage::Scenario_CBCCommsStale,
+                                                                                 timeNow,
+                                                                                 result.second * 100.0,
+                                                                                 _IVVC_BANKS_REPORTING_RATIO * 100.0 ) );
+        }
     }
 
     if ( request->hasRequestType( RegulatorRequestType ) )
     {
-       result = checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
+        result = checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
 
-       if ( result.first != DataStatus_Good )
-       {
-           hasStaleData = true;
+        if ( result.first != DataStatus_Good )
+        {
+            hasStaleData = true;
 
-           sendIVVCAnalysisMessage(
-               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                             ( result.first == DataStatus_Incomplete )
-                                                                   ? IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete
-                                                                       : IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
-                                                             timeNow,
-                                                             result.second * 100.0,
-                                                             _IVVC_REGULATOR_REPORTING_RATIO * 100.0 ) );
-       }
+            sendIVVCAnalysisMessage(
+                                   IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                                                 ( result.first == DataStatus_Incomplete )
+                                                                                     ? IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete
+                                                                                     : IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
+                                                                                 timeNow,
+                                                                                 result.second * 100.0,
+                                                                                 _IVVC_REGULATOR_REPORTING_RATIO * 100.0 ) );
+        }
     }
 
     if ( request->hasRequestType( OtherRequestType ) )
     {
-       result = checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
+        result = checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
 
-       if ( result.first != DataStatus_Good )
-       {
-           hasStaleData = true;
+        if ( result.first != DataStatus_Good )
+        {
+            hasStaleData = true;
 
-           sendIVVCAnalysisMessage(
-               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                             ( result.first == DataStatus_Incomplete )
-                                                                   ? IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete
-                                                                       : IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
-                                                             timeNow,
-                                                             result.second * 100.0,
-                                                             _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100.0 ) );
-       }
+            sendIVVCAnalysisMessage(
+                                   IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                                                 ( result.first == DataStatus_Incomplete )
+                                                                                     ? IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete
+                                                                                     : IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
+                                                                                 timeNow,
+                                                                                 result.second * 100.0,
+                                                                                 _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100.0 ) );
+        }
     }
 
     if ( request->hasRequestType( BusPowerRequestType ) )
     {
-       result = checkForStaleData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
+        result = checkForStaleData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
 
-       if ( result.first != DataStatus_Good )
-       {
-           hasStaleData = true;
+        if ( result.first != DataStatus_Good )
+        {
+            hasStaleData = true;
 
-           sendIVVCAnalysisMessage(
-               IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
-                                                             ( result.first == DataStatus_Incomplete )
-                                                                   ? IVVCAnalysisMessage::Scenario_RequiredPointCommsIncomplete
-                                                                       : IVVCAnalysisMessage::Scenario_RequiredPointCommsStale,
-                                                             timeNow,
-                                                             result.second * 100.0,
-                                                             100.0 ) );
-       }
+            sendIVVCAnalysisMessage(
+                                   IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
+                                                                                 ( result.first == DataStatus_Incomplete )
+                                                                                     ? IVVCAnalysisMessage::Scenario_RequiredPointCommsIncomplete
+                                                                                     : IVVCAnalysisMessage::Scenario_RequiredPointCommsStale,
+                                                                                 timeNow,
+                                                                                 result.second * 100.0,
+                                                                                 100.0 ) );
+        }
+    }
+    else    // subbus is missing watt or var points.
+    {
+        hasStaleData = true;
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+            dout << CtiTime() << " - IVVC: " << subbus->getPaoName()
+                 << " - Missing Bus Watt or Var points.  Cannot perform analysis." << std::endl;
+        }
     }
 
     return hasStaleData;
