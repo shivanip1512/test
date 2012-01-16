@@ -15,10 +15,16 @@ public class CalcPointComponent {
         this.operation = operation;
     }
 
+    /**
+     * This method should generally not be used and is currently only used during calculated point creation & copying
+     */
     public Integer getPointId() {
         return pointId;
     }
 
+    /**
+     * This method should generally not be used and is currently only used during calculated point creation & copying
+     */
     public void setPointId(Integer pointId) {
         this.pointId = pointId;
     }

@@ -17,7 +17,6 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
@@ -340,7 +339,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         	
         	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getType() + " offset=" + template.getOffset());
         	
-            PointBase point = pointCreationService.createPoint(new PaoIdentifier(yukonDevice.getDeviceId(), PaoType.getForId(yukonDevice.getType())), template);
+            PointBase point = pointCreationService.createPoint(yukonDevice.getPaoIdentifier(), template);
 
             Transaction<?> t = Transaction.createTransaction(Transaction.INSERT, point);
             t.execute();
