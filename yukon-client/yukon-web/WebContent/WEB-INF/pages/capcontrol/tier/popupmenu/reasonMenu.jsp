@@ -27,8 +27,8 @@ jQuery("#reasonSelect").change(function(event) {
 
 		<div class="commandReason">
 			<div><i:inline key=".enterComment"/></div>
-			<div>
-				<textarea id="commentTextArea" rows="3" class="dialogReason"></textarea>
+			<div class="dialogReason">
+				<textarea id="commentTextArea" rows="3"></textarea>
 			</div>
 			<div>
 				<select id="reasonSelect">

@@ -32,9 +32,9 @@ jQuery("#reasonSelect").change(function(event) {
 					</c:forEach>
 				</select>
 			</div>
-			<div>
+			<div class="dialogReason">
 				<div><i:inline key=".reason"/></div>
-				<textarea id="coReason" rows="3" class="dialogReason">${reason}</textarea>
+				<textarea id="coReason" rows="3">${reason}</textarea>
 			</div>
 			<div>
 				<select id="reasonSelect">
