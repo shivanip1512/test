@@ -1,5 +1,7 @@
 package com.cannontech.web.support.development.model;
 
+import org.joda.time.Instant;
+
 import com.cannontech.amr.rfn.message.event.Direction;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 
@@ -8,7 +10,7 @@ public class TestEvent {
     private int serialTo = 1000;
     private String manufacturer;
     private String model;
-    private RfnConditionType rfnConditionType = RfnConditionType.OUTAGE;
+    private RfnConditionType rfnConditionType;
     private Boolean cleared;
     private Long count;
     private Direction direction;
@@ -18,6 +20,8 @@ public class TestEvent {
     private String uom; // V
     private String uomModifiers; // milli, max
     private int numEventPerMeter = 1;
+    private int numAlarmPerMeter = 0;
+    private Instant timestamp = new Instant();
     
     public int getSerialFrom() {
         return serialFrom;
@@ -102,6 +106,18 @@ public class TestEvent {
     }
     public void setNumEventPerMeter(int numEventPerMeter) {
         this.numEventPerMeter = numEventPerMeter;
+    }
+    public int getNumAlarmPerMeter() {
+        return numAlarmPerMeter;
+    }
+    public void setNumAlarmPerMeter(int numAlarmPerMeter) {
+        this.numAlarmPerMeter = numAlarmPerMeter;
+    }
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

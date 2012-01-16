@@ -1,5 +1,6 @@
 package com.cannontech.web.support.development;
 
+import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,10 @@ import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckDevelopmentMode;
 import com.cannontech.web.support.development.model.TestEvent;
@@ -44,6 +49,7 @@ import com.google.common.collect.Sets;
 public class RfnMeterArchiveTestController {
 
     @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     
     @RequestMapping
     public String viewBase() {
@@ -57,21 +63,15 @@ public class RfnMeterArchiveTestController {
     
     @RequestMapping
     public String viewEventArchiveRequest(ModelMap model) {
-        return setupEventAlarmAttributes(model, new TestEvent(), "sendEvent");
-    }
-    
-    @RequestMapping
-    public String viewAlarmArchiveRequest(ModelMap model) {
-        return setupEventAlarmAttributes(model, new TestEvent(), "sendAlarm");
+        return setupEventAlarmAttributes(model, new TestEvent());
     }
 
-    private String setupEventAlarmAttributes(ModelMap model, TestEvent event, String formAction) {
+    private String setupEventAlarmAttributes(ModelMap model, TestEvent event) {
         List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
         model.addAttribute("rfnConditionTypes", rfnConditionTypes);
         ArrayList<RfnConditionDataType> dataTypes = Lists.newArrayList(RfnConditionDataType.values());
         model.addAttribute("dataTypes", dataTypes);
         model.addAttribute("event", event);
-        model.addAttribute("formAction", formAction);
         return "development/rfn/viewEventArchive.jsp";
     }
 
@@ -136,34 +136,32 @@ public class RfnMeterArchiveTestController {
     public String sendEvent(@ModelAttribute TestEvent event, ModelMap model) {
         for (int i = event.getSerialFrom(); i <= event.getSerialTo(); i++) {
             for (int j=0; j < event.getNumEventPerMeter(); j++) {
-                RfnEvent rfnEvent = buildEvent(event, new RfnEvent(), i);
-                
-                RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
-                archiveRequest.setEvent(rfnEvent);
-                archiveRequest.setDataPointId(1);
-                sendArchiveRequest("yukon.rr.obj.amr.rfn.EventArchiveRequest", archiveRequest);
+                buildAndSendEvent(event, i);
+            }
+            for (int j=0; j < event.getNumAlarmPerMeter(); j++) {
+                buildAndSendAlarm(event, i);
             }
         }
         
-        setupEventAlarmAttributes(model, event, "sendEvent");
-        return "development/rfn/viewEventArchive.jsp";
+        return setupEventAlarmAttributes(model, event);
     }
-
-    @RequestMapping
-    public String sendAlarm(@ModelAttribute TestEvent event, ModelMap model) {
-        for (int i = event.getSerialFrom(); i <= event.getSerialTo(); i++) {
-            for (int j=0; j < event.getNumEventPerMeter(); j++) {
-                RfnAlarm rfnAlarm = buildEvent(event, new RfnAlarm(), i);
-                
-                RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
-                archiveRequest.setAlarm(rfnAlarm);
-                archiveRequest.setDataPointId(1);
-                sendArchiveRequest("yukon.rr.obj.amr.rfn.AlarmArchiveRequest", archiveRequest);
-            }
-        }
+    
+    private void buildAndSendEvent(TestEvent event, int serialNum) {
+        RfnEvent rfnEvent = buildEvent(event, new RfnEvent(), serialNum);
         
-        setupEventAlarmAttributes(model, event, "sendAlarm");
-        return "redirect:viewAlarmArchiveRequest";
+        RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
+        archiveRequest.setEvent(rfnEvent);
+        archiveRequest.setDataPointId(1);
+        sendArchiveRequest("yukon.rr.obj.amr.rfn.EventArchiveRequest", archiveRequest);
+    }
+    
+    private void buildAndSendAlarm(TestEvent event, int serialNum) {
+        RfnAlarm rfnAlarm = buildEvent(event, new RfnAlarm(), serialNum);
+        
+        RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
+        archiveRequest.setAlarm(rfnAlarm);
+        archiveRequest.setDataPointId(1);
+        sendArchiveRequest("yukon.rr.obj.amr.rfn.AlarmArchiveRequest", archiveRequest);
     }
 
     private <T extends RfnEvent> T buildEvent(TestEvent testEvent, T rfnEvent, int serialNum) {
@@ -171,10 +169,16 @@ public class RfnMeterArchiveTestController {
         RfnMeterIdentifier meterIdentifier =
             new RfnMeterIdentifier(Integer.toString(serialNum), testEvent.getManufacturer(), testEvent.getModel());
         rfnEvent.setRfnMeterIdentifier(meterIdentifier);
-        long nowInMillis = new Instant().getMillis();
-        rfnEvent.setTimeStamp(nowInMillis);
         
-        testEvent.setOutageStartTime(nowInMillis - 60000); // 60 seconds ago
+        long timestamp;
+        if (testEvent.getTimestamp() == null) {
+            timestamp = new Instant().getMillis();
+        } else {
+            timestamp = testEvent.getTimestamp().getMillis();
+        }
+        rfnEvent.setTimeStamp(timestamp);
+        
+        testEvent.setOutageStartTime(timestamp - 60000); // 60 seconds ago
         Map<RfnConditionDataType, Object> testEventMap = Maps.newHashMap();
         copyDataTypesToMap(testEvent, testEventMap);
         
@@ -210,8 +214,14 @@ public class RfnMeterArchiveTestController {
     }
     
     @InitBinder
-    public void setupBinder(WebDataBinder binder) {
+    public void setupBinder(WebDataBinder binder, YukonUserContext userContext) {
         EnumPropertyEditor.register(binder, RfnConditionType.class);
+        
+        PropertyEditor instantEditor =
+                datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM,
+                                                                   userContext,
+                                                                   BlankMode.ERROR);
+            binder.registerCustomEditor(Instant.class, instantEditor);
     }
     
 }

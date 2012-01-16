@@ -6,8 +6,17 @@
 
 <cti:standardPage module="support" page="rfnTest">
 
-    <tags:sectionContainer2 nameKey="${formAction}">
-        <form:form action="${formAction}" method="post" commandName="event">
+	<script>
+		jQuery(document).ready(function() {
+			jQuery('.f_sendEventArchive').click(function() {
+			    combineDateAndTimeFields('timestamp');
+			    jQuery('#eventForm').submit();
+			});
+		});
+	</script>
+
+    <tags:sectionContainer2 nameKey="sendEvent">
+        <form:form action="sendEvent" method="post" commandName="event" id="eventForm">
             <tags:nameValueContainer>
                 <tags:nameValue name="Serial Number">
                     <form:input path="serialFrom" /> to <form:input path="serialTo"/>
@@ -36,33 +45,41 @@
                 </tags:nameValue>
                 
                 <tags:nameValue name="Event Type">
-                    <form:select path="rfnConditionType" styleClass="rfnConditionTypes">
-                        <c:forEach items="${rfnConditionTypes}" var="type">
-                            <form:option value="${type}">${type}</form:option>
-                        </c:forEach>
-                    </form:select>
+                    <form:select path="rfnConditionType" styleClass="rfnConditionTypes" items="${rfnConditionTypes}"/>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Num Events Per Meter">
                     <form:input path="numEventPerMeter" />
                 </tags:nameValue>
                 
-                <tags:nameValueContainer2>
-                    <br>
-                    <strong><u>Condition Data Types (meta data)</u></strong>
-                    <tags:inputNameValue nameKey=".dataType.CLEARED" path="cleared"/>
-                    <tags:inputNameValue nameKey=".dataType.COUNT" path="count"/>
-                    <tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction"/>
-                    <tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue"/>
-                    <tags:inputNameValue nameKey=".dataType.OUTAGE_START_TIME" path="outageStartTime"/>
-                    <tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue"/>
-                    <tags:inputNameValue nameKey=".dataType.UOM" path="uom"/>
-                    <tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers"/>
-                </tags:nameValueContainer2>
+                <tags:nameValue name="Num Alarms Per Meter">
+                    <form:input path="numAlarmPerMeter" />
+                </tags:nameValue>
                 
+		        <tags:nameValue name="Event Time">
+		            <tags:dateTimeInput path="timestamp" fieldValue="${event.timestamp}" />
+		        </tags:nameValue>
             </tags:nameValueContainer>
-            <div class="pageActionArea">
-                <cti:button nameKey="send" type="submit" styleClass="f_blocker"/>
+
+			<tags:nameValueContainer2>
+				<strong><u>Condition Data Types (meta data)</u></strong>
+				<tags:nameValue2 nameKey=".dataType.CLEARED">
+					<form:select path="cleared">
+						<form:option value="true">True</form:option>
+						<form:option value="false">False</form:option>
+					</form:select>
+				</tags:nameValue2>
+				<tags:inputNameValue nameKey=".dataType.COUNT" path="count" />
+				<tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction" />
+				<tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue" />
+				<tags:inputNameValue nameKey=".dataType.OUTAGE_START_TIME" path="outageStartTime" />
+				<tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
+				<tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
+				<tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
+			</tags:nameValueContainer2>
+
+			<div class="pageActionArea">
+                <cti:button nameKey="send" styleClass="f_blocker f_sendEventArchive"/>
             </div>
         </form:form>
     </tags:sectionContainer2>

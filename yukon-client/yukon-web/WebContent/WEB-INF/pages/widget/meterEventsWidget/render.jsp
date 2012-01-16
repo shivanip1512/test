@@ -23,10 +23,10 @@
                 <tbody>
                     <c:forEach items="${valueMap}" var="entry">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td><cti:formatDate type="BOTH" value="${entry.key.pointDataTimeStamp}"/></td>
-                            <td>${entry.value}</td>
-                            <td class="eventStatus<cti:pointValueFormatter value="${entry.key}" format="VALUE"/>">
-                                <cti:pointValueFormatter value="${entry.key}" format="VALUE"/>
+                            <td><cti:formatDate type="BOTH" value="${entry.pointValueQualityHolder.pointDataTimeStamp}"/></td>
+                            <td>${entry.pointName}</td>
+                            <td class="eventStatus<cti:pointValueFormatter value="${entry.pointValueQualityHolder}" format="VALUE"/>">
+                                <cti:pointValueFormatter value="${entry.pointValueQualityHolder}" format="VALUE"/>
                             </td>
                         </tr>
                     </c:forEach>

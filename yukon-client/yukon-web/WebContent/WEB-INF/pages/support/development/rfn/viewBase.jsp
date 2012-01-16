@@ -8,7 +8,6 @@
         <div class="rfnTests">
             <cti:button nameKey="meterReadArchiveRequest" href="viewMeterReadArchiveRequest" />
             <cti:button nameKey="eventArchiveRequest" href="viewEventArchiveRequest"/>
-            <cti:button nameKey="alarmArchiveRequest" href="viewAlarmArchiveRequest"/>
         </div>
     </tags:boxContainer2>
 </cti:standardPage>
