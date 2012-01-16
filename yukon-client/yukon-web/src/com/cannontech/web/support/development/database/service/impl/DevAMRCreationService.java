@@ -201,7 +201,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
     }
 
     private void createMeter(DevAMR devAMR, DevMeter meter) {
-        int routeId = getDefaultRouteId();
+        int routeId = getRouteIdForMeter(meter);
         createMeter(devAMR, meter.getPaoType().getDeviceTypeId(), meter.getName(), meter.getAddress(), routeId, true);
     }
 
@@ -235,6 +235,14 @@ public class DevAMRCreationService extends DevObjectCreationBase {
     
     private int getDefaultRouteId() {
         Integer routeId = paoDao.getRouteIdForRouteName(DevCCU.SIM_711.getName());
+        if (routeId == null) {
+            throw new RuntimeException("Couldn't find route with name " + DevCCU.SIM_711.getName());
+        }
+        return routeId;
+    }
+    
+    private int getRouteIdForMeter(DevMeter meter) {
+        Integer routeId = paoDao.getRouteIdForRouteName(meter.getCcu().getName());
         if (routeId == null) {
             throw new RuntimeException("Couldn't find route with name " + DevCCU.SIM_711.getName());
         }
