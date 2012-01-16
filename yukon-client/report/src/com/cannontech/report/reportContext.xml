@@ -701,68 +701,73 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.DailyUsageReportLayoutData"/>
         </property>
     </bean>
+   
+    <!-- Group Meter Read Success Result Report -->
+    <bean id="groupMeterReadSuccessResultModel" class="com.cannontech.analysis.tablemodel.GroupMeterReadSuccessResultsModel" scope="prototype"/>
     
-   <!-- Group Command Success Result Report -->
-   <bean id="groupCommanderSuccessResultModel" class="com.cannontech.analysis.tablemodel.GroupCommanderSuccessResultsModel" scope="prototype">
-   </bean>
-    
-    <bean id="groupCommanderSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-    
-        <property name="reportModelName"><idref local="groupCommanderSuccessResultModel"/></property>
+    <bean id="groupActionResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" abstract="true">
         <property name="inputs">
-          <bean class="com.cannontech.web.input.InputRoot">
-            <property name="inputList">
-              <list>
-                <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="resultKey"/>
-                    <property name="displayName" value="Result Key"/>
-                    <property name="type">
-                      <bean class="com.cannontech.web.input.type.StringType"/>
-                    </property>
-                    <property name="validatorList">
-                        <list>
-                             <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
-                        </list>
-                    </property>
-                </bean>
-              </list>
-            </property>
-          </bean>
-        </property>
-        <property name="reportLayoutData">
-            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupCommanderSuccessResultsReportLayoutData"/>
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="resultKey"/>
+                            <property name="displayName" value="Result Key"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                            <property name="validatorList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
+                                </list>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
         </property>
     </bean>
-    
-   <!-- Group Command Failure Result Report -->
-   <bean id="groupCommanderFailureResultModel" class="com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel" scope="prototype">
-   </bean>
-    
-    <bean id="groupCommanderFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-    
-        <property name="reportModelName"><idref local="groupCommanderFailureResultModel"/></property>
-        <property name="inputs">
-          <bean class="com.cannontech.web.input.InputRoot">
-            <property name="inputList">
-              <list>
-                <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="resultKey"/>
-                    <property name="displayName" value="Result Key"/>
-                    <property name="type">
-                      <bean class="com.cannontech.web.input.type.StringType"/>
-                    </property>
-                    <property name="validatorList">
-                        <list>
-                             <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
-                        </list>
-                    </property>
-                </bean>
-              </list>
-            </property>
-          </bean>
+
+    <bean id="groupMeterReadSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
+        <property name="reportModelName">
+            <idref local="groupMeterReadSuccessResultModel" />
         </property>
         <property name="reportLayoutData">
-            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupCommanderFailureResultsReportLayoutData"/>
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionSuccessResultsReportLayoutData"/>
+        </property>
+    </bean>
+
+    <!-- Group Command Success Result Report -->
+    <bean id="groupCommanderSuccessResultModel" class="com.cannontech.analysis.tablemodel.GroupCommanderSuccessResultsModel" scope="prototype"/>
+
+    <bean id="groupCommanderSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
+        <property name="reportModelName">
+            <idref local="groupCommanderSuccessResultModel" />
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionSuccessResultsReportLayoutData"/>
+        </property>
+    </bean>
+
+    <!-- Group Command Failure Result Report -->
+    <bean id="groupCommanderFailureResultModel" class="com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel" scope="prototype"/>
+    <bean id="groupMeterReadFailureResultModel" class="com.cannontech.analysis.tablemodel.GroupMeterReadFailureResultsModel" scope="prototype"/>
+
+    <bean id="groupCommanderFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
+        <property name="reportModelName">
+            <idref local="groupCommanderFailureResultModel"/>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionFailureResultsReportLayoutData"/>
+        </property>
+    </bean>
+
+    <bean id="groupMeterReadFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
+        <property name="reportModelName">
+            <idref local="groupMeterReadFailureResultModel"/>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionFailureResultsReportLayoutData"/>
         </property>
     </bean>
     

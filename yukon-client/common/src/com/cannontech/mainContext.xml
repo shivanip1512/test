@@ -124,6 +124,7 @@
         <property name="basenames">
             <list>
                <value>classpath:com/cannontech/yukon/common/general</value>
+               <value>classpath:com/cannontech/yukon/common/reports</value>
                <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
                <value>classpath:com/cannontech/yukon/common/durationFormatting</value>
                <value>classpath:com/cannontech/yukon/common/point</value>

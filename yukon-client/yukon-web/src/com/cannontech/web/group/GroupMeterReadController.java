@@ -263,6 +263,7 @@ public class GroupMeterReadController extends MultiActionController {
 		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/errorsList.jsp");
+		mav.addObject("definitionName", "groupMeterReadFailureResultDefinition");
 		mav.addObject("result", result);
 		return mav;
     }
@@ -273,6 +274,7 @@ public class GroupMeterReadController extends MultiActionController {
 		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/successList.jsp");
+		mav.addObject("definitionName", "groupMeterReadSuccessResultDefinition");
 		mav.addObject("result", result);
 		return mav;
     }

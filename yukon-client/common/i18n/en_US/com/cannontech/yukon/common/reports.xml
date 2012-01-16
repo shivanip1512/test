@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+<!-- Common reporting words -->
+<entry key="yukon.common.reports.attributes">Attributes</entry>
+<entry key="yukon.common.reports.command">Command</entry>
+
+<entry key="yukon.common.reports.groupMeterReadFailure.title">Group Meter Read Failure Results</entry>
+
+<entry key="yukon.common.reports.groupMeterReadSuccess.title">Group Meter Read Success Results</entry>
+
+<entry key="yukon.common.reports.groupCommandFailure.title">Group Command Failure Results</entry>
+
+<entry key="yukon.common.reports.groupCommandSuccess.title">Group Command Success Results</entry>
+
+</properties>

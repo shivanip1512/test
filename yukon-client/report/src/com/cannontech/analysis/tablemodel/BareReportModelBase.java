@@ -19,6 +19,7 @@ import com.cannontech.clientutils.YukonLogManager;
  * ColumnDataField class is useful.
  */
 public abstract class BareReportModelBase<T> implements BareReportModel, LoadableModel {
+    protected final static String baseKey = "yukon.common.reports.";
     private List<Field> columnData = null;
     private Logger log = YukonLogManager.getLogger(this.getClass());
     private Date loadDate = null;

@@ -12,27 +12,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class GroupCommanderSuccessResultsModel extends BareReportModelBase<GroupCommanderSuccessResultsModel.ModelRow> implements ReportModelMetaInfo {
     
-    // dependencies
     private GroupCommandExecutor groupCommandExecutor;
 	private PaoDao paoDao;
 	private PointDao pointDao;
-	
-	
-    // inputs
-    String resultKey;
-
-    // member variables
-    private static String title = "Group Command Success Results";
+    private String resultKey;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private static String title;
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private String command;
     
@@ -100,18 +97,15 @@ public class GroupCommanderSuccessResultsModel extends BareReportModelBase<Group
                 
                 data.add(row);
             }
-            
-            
-            
         }
     }
     
     @Override
-    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
-        
+    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext context) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
-        
-        info.put("Command", this.command);
+        info.put(accessor.getMessage(baseKey + "command"), this.command);
+        title = accessor.getMessage(baseKey + "groupCommandSuccess.title");
         return info;
     }
 
@@ -133,6 +127,19 @@ public class GroupCommanderSuccessResultsModel extends BareReportModelBase<Group
         return title;
     }
     
+    public void setResultKey(String resultKey) {
+        this.resultKey = resultKey;
+    }
+    
+    public String getResultKey() {
+        return resultKey;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
     @Autowired
     public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
         this.groupCommandExecutor = groupCommandExecutor;
@@ -146,13 +153,5 @@ public class GroupCommanderSuccessResultsModel extends BareReportModelBase<Group
     @Autowired
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
-    }
-
-    public void setResultKey(String resultKey) {
-        this.resultKey = resultKey;
-    }
-    
-    public String getResultKey() {
-        return resultKey;
     }
 }

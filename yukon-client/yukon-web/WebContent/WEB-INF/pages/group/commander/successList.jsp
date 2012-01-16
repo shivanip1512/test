@@ -3,6 +3,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<c:if test="${empty definitionName}">
+    <c:set var="definitionName" value="groupCommanderSuccessResultDefinition"/>
+</c:if>
+
 <c:choose>
 
     <c:when test="${fn:length(result.resultHolder.successfulDevices) > 0}">
@@ -10,11 +14,11 @@
         <br>
         <div style="font-size:11px;">
             Tabular Data: 
-            <cti:simpleReportLinkFromNameTag definitionName="groupCommanderSuccessResultDefinition" viewType="extView" resultKey="${result.key}">HTML</cti:simpleReportLinkFromNameTag>
+            <cti:simpleReportLinkFromNameTag definitionName="${definitionName}" viewType="extView" resultKey="${result.key}">HTML</cti:simpleReportLinkFromNameTag>
             |
-            <cti:simpleReportLinkFromNameTag definitionName="groupCommanderSuccessResultDefinition" viewType="csvView" resultKey="${result.key}">CSV</cti:simpleReportLinkFromNameTag>
+            <cti:simpleReportLinkFromNameTag definitionName="${definitionName}" viewType="csvView" resultKey="${result.key}">CSV</cti:simpleReportLinkFromNameTag>
             |
-            <cti:simpleReportLinkFromNameTag definitionName="groupCommanderSuccessResultDefinition" viewType="pdfView" resultKey="${result.key}">PDF</cti:simpleReportLinkFromNameTag>
+            <cti:simpleReportLinkFromNameTag definitionName="${definitionName}" viewType="pdfView" resultKey="${result.key}">PDF</cti:simpleReportLinkFromNameTag>
         </div>
         
         <br>
