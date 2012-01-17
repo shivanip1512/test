@@ -15,13 +15,13 @@ private:
     static const CommandSet       _commandStore;
     static       CommandSet       initCommandStore();
 
-    static const read_key_store_t _readKeyStore;
+    static const  ValueMapping _memoryMap;
+    static const  FunctionReadValueMappings _functionReadValueMaps;
 
     static const ConfigPartsList  _config_parts;
     static       ConfigPartsList  initConfigParts();
 
     static std::string describeStatusAndEvents(unsigned char *buf);
-
 
     struct daily_read_info_t
     {
@@ -84,7 +84,9 @@ private:
 
 protected:
 
-    static read_key_store_t initReadKeyStore();
+    //  protected so the MCT-420 can access them
+    static ValueMapping initMemoryMap();
+    static FunctionReadValueMappings initFunctionReadValueMaps();
 
     virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
@@ -106,6 +108,9 @@ protected:
 
     enum MemoryMap
     {
+        Memory_SspecPos             = 0x00,
+        Memory_SspecLen             =    5,
+
         Memory_RevisionPos          = 0x01,
         Memory_RevisionLen          =    1,
 
@@ -367,7 +372,8 @@ protected:
 
     virtual ConfigPartsList getPartsList();
 
-    virtual const read_key_store_t &getReadKeyStore(void) const;
+    virtual const ValueMapping *getMemoryMap() const;
+    virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
     virtual INT SubmitRetry( const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );

@@ -36,20 +36,15 @@ INT VersacomMessage(OUTMESS *&OutMessage);
 INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype);
 INT QueueBookkeeping(OUTMESS *&SendOutMessage);
 INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
-INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutTemplate);
+INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutTemplate);
 
 INT ValidateOutMessage(OUTMESS *&OutMessage);
-void ConnectionThread (void *Arg);
+void ConnectionThread(CtiConnect *Nexus);
 INT realignNexus(OUTMESS *&OutMessage);
 
 /* Threads to field incoming messages from the pipes */
 void PorterConnectionThread (void *Arg)
 {
-    INT   iNexus   = 0;
-    INT   nRet     = 0;
-
-    CTINEXUS  *NewNexus = NULL;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " PorterConnectionThread started as TID:  " << CurrentTID() << endl;
@@ -60,7 +55,7 @@ void PorterConnectionThread (void *Arg)
     ::strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
 
     //Initiate a thread for the porter pil connection
-    _beginthread(ConnectionThread, 0, (void*)&PorterToPil);
+    boost::thread porterToPilConnection(ConnectionThread, &PorterToPil);
 
     /*
      *  4/7/99 This is the server side of a new Port Control Nexus
@@ -82,64 +77,45 @@ void PorterConnectionThread (void *Arg)
         Sleep(2500);
     }
 
+    int iNexus = 0;
+
     for(; !PorterQuit ;)
     {
-        NewNexus = (CTINEXUS*) CTIDBG_new CTINEXUS;
+        auto_ptr<CTINEXUS> NewNexus(new CTINEXUS);
 
-        if(NewNexus == NULL)
-        {
-            fprintf(stderr,"Unable to acquire memory for a CTIDBG_new connection to port control\n");
-
-            Sleep(1000);
-            continue;
-        }
         ::sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
 
         /*
          *  Blocking wait on the listening nexus.
          */
 
-        nRet = PorterListenNexus.CTINexusConnect(NewNexus, &hPorterEvents[P_QUIT_EVENT]);
-
+        int nRet = PorterListenNexus.CTINexusConnect(NewNexus.get(), &hPorterEvents[P_QUIT_EVENT]);
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
         {
-            delete NewNexus;
-            NewNexus = 0;
-
             break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
         else if(!nRet)
         {
             /* Someone has connected to us.. */
-            // fprintf(stderr,"PortControl Connection Server: Nexus Connected\n");
-            _beginthread(ConnectionThread, 0, (void*)NewNexus);
-
-            NewNexus = 0;
+            boost::thread newConnection(ConnectionThread, NewNexus.release());
         }
         else
         {
             fprintf(stderr,"Error creating listener nexus\n");
-            delete NewNexus;
-            NewNexus = 0;
 
             break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
     }
-
-    if(NewNexus) delete NewNexus;
-
-    return;
 }
 
 
 /*
  *  This is the guy who deals with incoming data from any one else in the system.
  */
-void ConnectionThread (void *Arg)
+void ConnectionThread(CtiConnect *MyNexus)
 {
     INT            i;
-    CtiConnect        *MyNexus = (CtiConnect*)Arg;     // This is an established connection with a client!
     OUTMESS        *OutMessage = NULL;
 
     ULONG                   BytesRead;
@@ -217,7 +193,7 @@ void ConnectionThread (void *Arg)
             {
                 if( BytesRead > 0 )
                 {
-                    MyNexus->CTINexusRead (&(((BYTE*)OutMessage)[BytesRead]), sizeof(*OutMessage) - BytesRead, &BytesRead, CTINEXUS_INFINITE_TIMEOUT);
+                    MyNexus->CTINexusRead (reinterpret_cast<BYTE *>(OutMessage) + BytesRead, sizeof(*OutMessage) - BytesRead, &BytesRead, CTINEXUS_INFINITE_TIMEOUT);
                 }
                 else if(BytesRead < 0)
                 {
@@ -254,13 +230,10 @@ void ConnectionThread (void *Arg)
 
         if(OutMessage->Request.BuildIt == TRUE)
         {
-            GenerateCompleteRequest( outList, OutMessage );
+            GenerateCompleteRequest( outList, *OutMessage );
 
-            if(OutMessage != NULL)
-            {
-                delete OutMessage;
-                OutMessage = NULL;
-            }
+            delete OutMessage;
+            OutMessage = NULL;
         }
         else if( OutMessage->DeviceID == 0 || OutMessage->Port == 0 )
         {
@@ -436,7 +409,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
     static CtiCriticalSection crit;
     static CtiPortSPtr last_port;
     static long last_port_id;
-    static bool first;
+    static bool first = true;
 
     CtiPortSPtr Port;
 
@@ -754,131 +727,114 @@ INT RemoteComm(OUTMESS *&OutMessage)
     return status;
 }
 
-INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
+INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
 {
     extern CtiConnection VanGoghConnection;
 
     INT status = NORMAL;
-    INT i;
 
-    CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(OutMessage->DeviceID, OutMessage->Request.CommandStr);
+    CtiRequestMsg pReq(OutMessage.DeviceID, OutMessage.Request.CommandStr);
     list< CtiMessage* >  vgList;
     list< CtiMessage* >  retList;
 
-    if(OutMessage != NULL)
+    CtiCommandParser parse(pReq.CommandString());
+
+    CtiDeviceSPtr Dev = DeviceManager.getDeviceByID(pReq.DeviceId());
+
+    if(Dev)
     {
-        CtiCommandParser parse(pReq->CommandString());
+        // Re-establish the connection on the beastie..
+        pReq.setRouteId( OutMessage.Request.RouteID );
 
-        CtiDeviceSPtr Dev = DeviceManager.getDeviceByID(pReq->DeviceId());
-
-        if(Dev)
+        if(OutMessage.Request.MacroOffset == 0)
         {
-            CtiReturnMsg   *pcRet = NULL;
-            CtiMessage     *pMsg  = NULL;
-            CtiMessage     *pVg  = NULL;
+            OutMessage.Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+        }
 
-            // Re-establish the connection on the beastie..
-            pReq->setRouteId( OutMessage->Request.RouteID );
+        pReq.setMacroOffset( OutMessage.Request.MacroOffset );
 
-            if(OutMessage->Request.MacroOffset == 0)
+        pReq.setMessagePriority(OutMessage.Priority);
+
+        try
+        {
+            /*
+             *  We will execute based upon the data in the request....
+             */
+
+            status = Dev->beginExecuteRequestFromTemplate(&pReq, CtiCommandParser(pReq.CommandString()), vgList, retList, outList, &OutMessage);
+        }
+        catch(...)
+        {
+            status = ErrorInvalidRequest;
+
             {
-                OutMessage->Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
+                CtiTime NowTime;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
+                dout << NowTime << "   Command: " << pReq.CommandString() << endl;
             }
+        }
 
-            pReq->setMacroOffset( OutMessage->Request.MacroOffset );
-
-            pReq->setMessagePriority(OutMessage->Priority);
-
-            try
+        if(status != NORMAL)
+        {
             {
-                /*
-                 *  We will execute based upon the data in the request....
-                 */
+                CtiTime NowTime;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << NowTime << "   Device:  " << Dev->getName() << endl;
+                dout << NowTime << "   Command: " << pReq.CommandString() << endl;
+                dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
 
-                status = Dev->beginExecuteRequestFromTemplate(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);
-            }
-            catch(...)
-            {
-                status = ErrorInvalidRequest;
-
+                if(outList.size() > 0)
                 {
-                    CtiTime NowTime;
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
-                    dout << NowTime << "   Command: " << pReq->CommandString() << endl;
+                    dout << NowTime << "   Sending " << outList.size() << " requests through porter on error condition" << endl;
                 }
             }
-
-            if(status != NORMAL)
-            {
-                {
-                    CtiTime NowTime;
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << NowTime << "   Device:  " << Dev->getName() << endl;
-                    dout << NowTime << "   Command: " << pReq->CommandString() << endl;
-                    dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
-
-                    if(outList.size() > 0)
-                    {
-                        dout << NowTime << "   Sending " << outList.size() << " requests through porter on error condition" << endl;
-                    }
-                }
-                delete_container(vgList);
-                delete_container(retList);
-                retList.clear();
-                vgList.clear();
-            }
-            else
-            {
-                while( !retList.empty() )
-                {
-                    CtiReturnMsg *pRet = (CtiReturnMsg *)retList.front();retList.pop_front();
-                    CtiConnection *Conn = NULL;
-
-                    if((Conn = ((CtiConnection*)pRet->getConnectionHandle())) != NULL)
-                    {
-                        pRet->setExpectMore(true);
-                        Conn->WriteConnQue(pRet);
-                    }
-                    else
-                    {
-                        delete pRet;
-                    }
-                }
-
-                while( !vgList.empty() )
-                {
-                    CtiMessage *pVg = vgList.front();vgList.pop_front();
-                    VanGoghConnection.WriteConnQue(pVg);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-            }
+            delete_container(vgList);
+            delete_container(retList);
+            retList.clear();
+            vgList.clear();
         }
         else
         {
+            while( !retList.empty() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " Command " << pReq->CommandString() << endl;
-                dout << CtiTime() << " Device: " << pReq->DeviceId() << endl;
+                CtiReturnMsg *pRet = (CtiReturnMsg *)retList.front();retList.pop_front();
+                CtiConnection *Conn = NULL;
+
+                if((Conn = ((CtiConnection*)pRet->getConnectionHandle())) != NULL)
+                {
+                    pRet->setExpectMore(true);
+                    Conn->WriteConnQue(pRet);
+                }
+                else
+                {
+                    delete pRet;
+                }
             }
 
-            status = IDNF;
+            while( !vgList.empty() )
+            {
+                CtiMessage *pVg = vgList.front();vgList.pop_front();
+                VanGoghConnection.WriteConnQue(pVg);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
     }
     else
     {
-        status = MEMORY;
-    }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Command " << pReq.CommandString() << endl;
+            dout << CtiTime() << " Device: " << pReq.DeviceId() << endl;
+        }
 
-    if(pReq)
-    {
-        delete pReq;
+        status = IDNF;
     }
 
     return status;

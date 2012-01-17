@@ -31,6 +31,8 @@
 #include "trx_info.h"
 #include "trx_711.h"
 
+#include "ctilocalconnect.h"
+
 #include "portfield.h"
 
 using namespace std;
@@ -39,6 +41,7 @@ using Cti::Porter::PorterStatisticsManager;
 
 extern CtiPorterVerification PorterVerificationThread;
 extern CtiRouteManager RouteManager;
+extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
 
 #define INF_LOOP_COUNT 1000
 
@@ -3307,6 +3310,19 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, co
 }
 
 
+void SnipeDynamicInfo(const INMESS &ResultMessage)
+{
+    CtiDeviceSPtr dev = DeviceManager.getDeviceByID(ResultMessage.TargetID);
+
+    boost::shared_ptr<Cti::Devices::MctDevice> mct = boost::dynamic_pointer_cast<Cti::Devices::MctDevice>(dev);
+
+    if( mct )
+    {
+        mct->extractDynamicPaoInfo(ResultMessage);
+    }
+}
+
+
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
 {
     INT         status = NORMAL;
@@ -3327,6 +3343,12 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
                 /* send message back to originating process */
                 if(OutMessage->ReturnNexus != NULL)
                 {
+                    //  This won't be decoded in Porter, so grab the dynamic info
+                    if(OutMessage->ReturnNexus != &PorterToPil)
+                    {
+                        SnipeDynamicInfo(*InMessage);
+                    }
+
                     if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
                     {
                         {

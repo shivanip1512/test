@@ -10,16 +10,27 @@ using std::list;
 
 struct test_Mct4xxDevice : Mct4xxDevice
 {
-    //  these placeholder pure-virtual overrides should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
-    const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
-    point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const   {  BOOST_CHECK(0);  return point_info();  };
-    point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
-    long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
-    INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  BOOST_CHECK(0);  return 0;};
-    ConfigPartsList getPartsList()  {  BOOST_CHECK(0);  return ConfigPartsList();  };
-    bool isSupported(const Features feature) const                  {  BOOST_CHECK(0);  return false;  };
-    bool sspecValid(const unsigned sspec, const unsigned rev) const {  BOOST_CHECK(0);  return false;  };
-    unsigned getUsageReportDelay(const unsigned int,const unsigned int) const {  BOOST_CHECK(0);  return 0;  }
+    //  these are just placeholder pure-virtuals so we can instantiate this abstract base class
+    const ValueMapping *getMemoryMap() const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+    const FunctionReadValueMappings *getFunctionReadValueMaps() const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+    point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
+    point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
+    long getLoadProfileInterval(unsigned channel)
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+    INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+    ConfigPartsList getPartsList()
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return ConfigPartsList();  };
+    bool isSupported(const Features feature) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return false;  };
+    bool sspecValid(const unsigned sspec, const unsigned rev) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return false;  };
+    unsigned getUsageReportDelay(const unsigned int,const unsigned int) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
 
     typedef Mct4xxDevice Inherited;
 
@@ -45,8 +56,6 @@ struct test_Mct4xxDevice : Mct4xxDevice
 
     using Mct4xxDevice::isProfileTablePointerCurrent;
     using MctDevice::getOperation;
-
-    read_key_store_t fake_key_store;
 };
 
 BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)

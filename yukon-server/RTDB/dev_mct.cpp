@@ -40,7 +40,6 @@ namespace Cti {
 namespace Devices {
 
 const MctDevice::CommandSet MctDevice::_commandStore = MctDevice::initCommandStore();
-const MctDevice::read_key_store_t MctDevice::_emptyReadKeyStore;
 
 MctDevice::MctDevice() :
     _lpIntervalSent(false),
@@ -202,51 +201,156 @@ string MctDevice::getDescription(const CtiCommandParser &parse) const
     return getName();
 }
 
-const MctDevice::read_key_store_t &MctDevice::getReadKeyStore(void) const
+const MctDevice::ValueMapping *MctDevice::getMemoryMap(void) const
 {
-    return _emptyReadKeyStore;
+    return 0;
 }
+
+const MctDevice::FunctionReadValueMappings *MctDevice::getFunctionReadValueMaps(void) const
+{
+    return 0;
+}
+
+const MctDevice::ValueMapping *MctDevice::getValueMapForFunctionRead(unsigned function) const
+{
+    if( const FunctionReadValueMappings *fr = getFunctionReadValueMaps() )
+    {
+        FunctionReadValueMappings::const_iterator itr = fr->find(function);
+
+        if( itr != fr->end() )
+        {
+            return &(itr->second);
+        }
+    }
+
+    return 0;
+}
+
 
 //  this will need to become virtual and reimplemented by the MCT-420, since all of its reads are "function" reads now - no more memory map reads
 void MctDevice::extractDynamicPaoInfo(const INMESS &InMessage)
 {
-    const char &io = InMessage.Return.ProtocolInfo.Emetcon.IO;
+    const ValueMapping *value_map = 0;
+    unsigned read_offset;
 
-    if( io == EmetconProtocol::IO_Function_Read ||
-        io == EmetconProtocol::IO_Read )
+    switch( InMessage.Return.ProtocolInfo.Emetcon.IO )
     {
-        const unsigned long &length = InMessage.Buffer.DSt.Length;
-        bool function_read = (io == EmetconProtocol::IO_Function_Read);
-
-        int function = (function_read)?(InMessage.Return.ProtocolInfo.Emetcon.Function):(-1);
-        int offset   = (function_read)?(0):(InMessage.Return.ProtocolInfo.Emetcon.Function);
-
-        //  getReadKeyInfo is overridden separately by the 410 and 470
-        const read_key_store_t &readKeyStore = getReadKeyStore();
-
-        read_key_store_t::const_iterator itr    = readKeyStore.lower_bound(read_key_info_t(function, offset,          0));
-        read_key_store_t::const_iterator itr_hi = readKeyStore.upper_bound(read_key_info_t(function, offset + length, 0));
-
-        //  find the first key matching our read location
-        for( ; itr != itr_hi; ++itr )
+        case EmetconProtocol::IO_Function_Read:
         {
-            const read_key_info_t &read_key = *itr;
+            value_map = getValueMapForFunctionRead(InMessage.Return.ProtocolInfo.Emetcon.Function);
+            read_offset = 0;
 
-            if( (read_key.offset + read_key.length) <= (offset + length) )
+            break;
+        }
+        case EmetconProtocol::IO_Read:
+        {
+            value_map = getMemoryMap();
+            read_offset = InMessage.Return.ProtocolInfo.Emetcon.Function;
+
+            break;
+        }
+    }
+
+    if( value_map )
+    {
+        unsigned read_length = InMessage.Buffer.DSt.Length;
+
+        ValueMapping::const_iterator itr    = value_map->lower_bound(read_offset);
+        ValueMapping::const_iterator itr_hi = value_map->upper_bound(read_offset + read_length);
+
+        while( itr != itr_hi )
+        {
+            const unsigned item_offset = itr->first - read_offset;
+            const value_descriptor item = itr->second;
+            ++itr;
+
+            if( (item_offset + item.length) <= read_length )
             {
-                unsigned long value = 0;
-
-                for( int i = 0; i < read_key.length; i++ )
-                {
-                    value <<= 8;
-                    value |= InMessage.Buffer.DSt.Message[read_key.offset - offset + i];
-                }
-
-                setDynamicInfo(read_key.key, value);
+                decodeReadDataForKey(
+                    InMessage.Buffer.DSt.Message + item_offset,
+                    InMessage.Buffer.DSt.Message + item_offset + item.length,
+                    item.name);
             }
         }
     }
 }
+
+
+void MctDevice::decodeReadDataForKey(const unsigned char *begin, const unsigned char *end, const CtiTableDynamicPaoInfo::PaoInfoKeys key)
+{
+    //  Special processing for Key_MCT_SSpec - should probably factor this out into a "processing" function so we can manipulate other values
+    if( key == CtiTableDynamicPaoInfo::Key_MCT_SSpec && (end - begin) == 5 )
+    {
+        long sspec = begin[0];
+        sspec     |= begin[4] << 8;
+
+        setDynamicInfo(key, sspec);
+
+        return;
+    }
+    if( key == CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval && end > begin )
+    {
+        //  Comes back as minutes, stored as seconds
+        setDynamicInfo(key, begin[0] * 60);
+
+        return;
+    }
+    if( key == CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig && (end - begin) == Mct470Device::ChannelCount )
+    {
+        std::string channel_info;
+
+        for( const unsigned char *itr = begin; itr < end; ++itr )
+        {
+            /*
+            Bits 0-1 - Type:    00 = Channel Not Used
+                                01 = Electronic Meter
+                                10 = 2-wire KYZ (form A)
+                                11 = 3-wire KYZ (form C)
+            Bits 2-5 - Physical Channel / Attached Meter's Channel
+            Bit 6 - Load Profile Interval #0 or #1 (0, 1)
+            */
+
+            //  type
+            channel_info += CtiNumStr(*itr & 0x03);
+
+            if( *itr & 0x03 )
+            {
+                //  input
+                channel_info  += CtiNumStr((*itr >> 2) & 0x0f).hex();
+                //  load profile interval
+                channel_info  += (*itr & 0x40)?"1":"0";
+            }
+            else
+            {
+                channel_info  += "00";
+            }
+        }
+
+        if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << channel_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        setDynamicInfo(key, channel_info);
+
+        return;
+    }
+
+    if( begin < end )
+    {
+        unsigned long value = 0;
+
+        for( const unsigned char *itr = begin; itr < end; ++itr )
+        {
+            value <<= 8;
+            value |= *itr;
+        }
+
+        setDynamicInfo(key, value);
+    }
+}
+
 
 LONG MctDevice::getDemandInterval()
 {
@@ -677,6 +781,9 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 
 INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
+    //  extract the DynamicPaoInfo first so we have it during the decode
+    extractDynamicPaoInfo(*InMessage);
+
     INT status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
     if( status == NoResultDecodeMethod )
@@ -691,24 +798,17 @@ INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList 
         dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
     }
 
-    if( !status && InMessage->Buffer.DSt.Length )
+    if( InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
+        InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
     {
-        //  living in here in case the address of the D word doesn't match
-        extractDynamicPaoInfo(*InMessage);
-
-        CtiPointStatusSPtr point_powerfail, point_generalalarm;
-        CtiReturnMsg *retMsg;
-        string pointResult;
-
-        point_powerfail    = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_Powerfail,    StatusPointType ));
-        point_generalalarm = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_GeneralAlarm, StatusPointType ));
+        CtiPointStatusSPtr point_powerfail    = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(PointOffset_Status_Powerfail,    StatusPointType));
+        CtiPointStatusSPtr point_generalalarm = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(PointOffset_Status_GeneralAlarm, StatusPointType));
 
         if( point_powerfail || point_generalalarm )
         {
-            //  eventually, this block should use the same ReturnMsg as above - actually, a LOT of the work replicated
-            //    within these decode functions could be consolidated to this function...  or maybe it could be moved to PlcDevice so
-            //    the repeaters get it, too... ?  Do they have a powerfail status?
-            retMsg = CTIDBG_new CtiReturnMsg(getID());
+            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID());
+
+            string pointResult;
 
             if( point_powerfail )
             {
@@ -882,7 +982,6 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
                                                 InMessage.Return.Attempt,
                                                 InMessage.Return.GrpMsgID,
                                                 InMessage.Return.UserID);
-    int i;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -991,7 +1090,7 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
                     }
                     else
                     {
-                        for( i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
+                        for( int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
                         {
                             if( getLoadProfile()->isChannelValid(i) )
                             {

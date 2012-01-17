@@ -14,8 +14,11 @@ private:
     static const CommandSet       _commandStore;
     static       CommandSet       initCommandStore();
 
-    static const read_key_store_t _readKeyStore;
-    static       read_key_store_t initReadKeyStore();
+    static const  ValueMapping _memoryMap;
+    static        ValueMapping initMemoryMap();
+
+    static const  FunctionReadValueMappings _functionReadValueMaps;
+    static        FunctionReadValueMappings initFunctionReadValueMaps();
 
     static const ConfigPartsList  _config_parts_430;
     static const ConfigPartsList  _config_parts_470;
@@ -211,7 +214,12 @@ protected:
 
     enum MemoryMap
     {
-        //  new/changed stuff
+        Memory_SspecPos             = 0x00,
+        Memory_SspecLen             =    5,
+
+        Memory_RevisionPos          = 0x01,
+        Memory_RevisionLen          =    1,
+
         Memory_EventFlagsMask1Pos   = 0x08,
         Memory_EventFlagsMask1Len   =    1,
 
@@ -431,7 +439,8 @@ protected:
 
     void sendIntervals(OUTMESS *&OutMessage, OutMessageList &outList);
 
-    virtual const read_key_store_t &getReadKeyStore(void) const;
+    virtual const ValueMapping *getMemoryMap() const;
+    virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList);

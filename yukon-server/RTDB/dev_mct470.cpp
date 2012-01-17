@@ -26,9 +26,11 @@ namespace Cti {
 namespace Devices {
 
 const Mct470Device::CommandSet       Mct470Device::_commandStore = Mct470Device::initCommandStore();
-const Mct470Device::read_key_store_t Mct470Device::_readKeyStore = Mct470Device::initReadKeyStore();
 const Mct470Device::ConfigPartsList  Mct470Device::_config_parts_430 = Mct470Device::initConfigParts430();
 const Mct470Device::ConfigPartsList  Mct470Device::_config_parts_470 = Mct470Device::initConfigParts470();
+
+const Mct470Device::ValueMapping Mct470Device::_memoryMap = Mct470Device::initMemoryMap();
+const Mct470Device::FunctionReadValueMappings Mct470Device::_functionReadValueMaps = Mct470Device::initFunctionReadValueMaps();
 
 const Mct470Device::error_map Mct470Device::_error_info_old_lp    = Mct470Device::initErrorInfoOldLP();
 const Mct470Device::error_map Mct470Device::_error_info_lgs4      = Mct470Device::initErrorInfoLGS4();
@@ -172,111 +174,141 @@ Mct470Device::CommandSet Mct470Device::initCommandStore( )
     return cs;
 }
 
-Mct470Device::read_key_store_t Mct470Device::initReadKeyStore()
+Mct470Device::ValueMapping Mct470Device::initMemoryMap()
 {
-    read_key_store_t readKeyStore;
+    struct memory_read_value
+    {
+        unsigned offset;
+        value_descriptor value;
+    }
+    const values[] =
+    {
+        { Memory_SspecPos,                  { Memory_SspecLen,                 CtiTableDynamicPaoInfo::Key_MCT_SSpec                      } },
+        { Memory_RevisionPos,               { Memory_RevisionLen,              CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision              } },
+        { Memory_OptionsPos,                { Memory_OptionsLen,               CtiTableDynamicPaoInfo::Key_MCT_Options                    } },
+        { Memory_ConfigurationPos,          { Memory_ConfigurationLen,         CtiTableDynamicPaoInfo::Key_MCT_Configuration              } },
+        { Memory_EventFlagsMask1Pos,        { Memory_EventFlagsMask1Len,       CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1            } },
+        { Memory_EventFlagsMask2Pos,        { Memory_EventFlagsMask2Len,       CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2            } },
+        { Memory_AddressBronzePos,          { Memory_AddressBronzeLen,         CtiTableDynamicPaoInfo::Key_MCT_AddressBronze              } },
+        { Memory_AddressLeadPos,            { Memory_AddressLeadLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressLead                } },
+        { Memory_AddressCollectionPos,      { Memory_AddressCollectionLen,     CtiTableDynamicPaoInfo::Key_MCT_AddressCollection          } },
+        { Memory_AddressSPIDPos,            { Memory_AddressSPIDLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID   } },
+        { Memory_DemandIntervalPos,         { Memory_DemandIntervalLen,        CtiTableDynamicPaoInfo::Key_MCT_DemandInterval             } },
+        { Memory_LoadProfileInterval1Pos,   { Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval        } },
+        { Memory_LoadProfileInterval2Pos,   { Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2       } },
+        { Memory_TimeAdjustTolerancePos,    { Memory_TimeAdjustToleranceLen,   CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance        } },
+        { Memory_DSTBeginPos,               { Memory_DSTBeginLen,              CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime               } },
+        { Memory_DSTEndPos,                 { Memory_DSTEndLen,                CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime                 } },
+        { Memory_TimeZoneOffsetPos,         { Memory_TimeZoneOffsetLen,        CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset             } },
+        { Memory_TOUDayTablePos,            { Memory_TOUDayTableLen,           CtiTableDynamicPaoInfo::Key_MCT_DayTable                   } },
+        { Memory_TOUDailySched1Pos,         { Memory_TOUDailySched1Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1               } },
+        { Memory_TOUDailySched2Pos,         { Memory_TOUDailySched2Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2               } },
+        { Memory_TOUDailySched3Pos,         { Memory_TOUDailySched3Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3               } },
+        { Memory_TOUDailySched4Pos,         { Memory_TOUDailySched4Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4               } },
+        { Memory_TOUDefaultRatePos,         { Memory_TOUDefaultRateLen,        CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate             } },
+        { Memory_Holiday1Pos,               { Memory_Holiday1Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday1                   } },
+        { Memory_Holiday2Pos,               { Memory_Holiday2Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday2                   } },
+        { Memory_Holiday3Pos,               { Memory_Holiday3Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday3                   } },
+        { Memory_KRatio1Pos,                { Memory_KRatio1Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1         } },
+        { Memory_MeteringRatio1Pos,         { Memory_MeteringRatio1Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1     } },
+        { Memory_ChannelConfig1Pos,         { Memory_ChannelConfig1Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1  } },
+        { Memory_KRatio2Pos,                { Memory_KRatio2Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2         } },
+        { Memory_MeteringRatio2Pos,         { Memory_MeteringRatio2Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2     } },
+        { Memory_ChannelConfig2Pos,         { Memory_ChannelConfig2Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2  } },
+        { Memory_KRatio3Pos,                { Memory_KRatio3Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3         } },
+        { Memory_MeteringRatio3Pos,         { Memory_MeteringRatio3Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3     } },
+        { Memory_ChannelConfig3Pos,         { Memory_ChannelConfig3Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3  } },
+        { Memory_KRatio4Pos,                { Memory_KRatio4Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4         } },
+        { Memory_MeteringRatio4Pos,         { Memory_MeteringRatio4Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4     } },
+        { Memory_ChannelConfig4Pos,         { Memory_ChannelConfig4Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4  } },
 
-//  The SSPEC is set in decodeGetConfigModel().
-//    This code assumes that the values are contiguous, which the SSPEC is not.
-/*
-    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                  Memory_SSpecLen,                 CtiTableDynamicPaoInfo::Key_MCT_SSpec));
-    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,               Memory_RevisionLen,              CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
-*/
-    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,                Memory_OptionsLen,               CtiTableDynamicPaoInfo::Key_MCT_Options));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,          Memory_ConfigurationLen,         CtiTableDynamicPaoInfo::Key_MCT_Configuration));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,        Memory_EventFlagsMask1Len,       CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,        Memory_EventFlagsMask2Len,       CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressBronzePos,          Memory_AddressBronzeLen,         CtiTableDynamicPaoInfo::Key_MCT_AddressBronze));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressLeadPos,            Memory_AddressLeadLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressLead));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     CtiTableDynamicPaoInfo::Key_MCT_AddressCollection));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        CtiTableDynamicPaoInfo::Key_MCT_DemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,               Memory_DSTBeginLen,              CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                 Memory_DSTEndLen,                CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,         Memory_TimeZoneOffsetLen,        CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,            Memory_TOUDayTableLen,           CtiTableDynamicPaoInfo::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched1Pos,         Memory_TOUDailySched1Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched2Pos,         Memory_TOUDailySched2Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched3Pos,         Memory_TOUDailySched3Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched4Pos,         Memory_TOUDailySched4Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDefaultRatePos,         Memory_TOUDefaultRateLen,        CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,               Memory_Holiday1Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,               Memory_Holiday2Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,               Memory_Holiday3Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio1Pos,                Memory_KRatio1Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio1Pos,         Memory_MeteringRatio1Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig1Pos,         Memory_ChannelConfig1Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio2Pos,                Memory_KRatio2Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio2Pos,         Memory_MeteringRatio2Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig2Pos,         Memory_ChannelConfig2Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio3Pos,                Memory_KRatio3Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio3Pos,         Memory_MeteringRatio3Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig3Pos,         Memory_ChannelConfig3Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio4Pos,                Memory_KRatio4Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio4Pos,         Memory_MeteringRatio4Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig4Pos,         Memory_ChannelConfig4Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+        { Memory_RelayATimerPos,            { Memory_RelayATimerLen,           CtiTableDynamicPaoInfo::Key_MCT_RelayATimer                } },
+        { Memory_RelayBTimerPos,            { Memory_RelayBTimerLen,           CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer                } },
+        { Memory_TableReadIntervalPos,      { Memory_TableReadIntervalLen,     CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval } },
+        { Memory_PrecannedMeterNumPos,      { Memory_PrecannedMeterNumLen,     CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber       } },
+        { Memory_PrecannedTableTypePos,     { Memory_PrecannedTableTypeLen,    CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType         } },
+    };
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_RelayATimerPos,            Memory_RelayATimerLen,           CtiTableDynamicPaoInfo::Key_MCT_RelayATimer));
-    readKeyStore.insert(read_key_info_t(-1, Memory_RelayBTimerPos,            Memory_RelayBTimerLen,           CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber));
-    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
+    ValueMapping memoryMap;
 
-//  function reads
+    for each( memory_read_value mrv in values )
+    {
+        memoryMap.insert(std::make_pair(mrv.offset, mrv.value));
+    }
 
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      1, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      2, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      3, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
-    //  Still stored as seconds - maybe change someday?
-    //readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      6, 1, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval));
+    return memoryMap;
+}
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  1, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  3, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  6, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  8, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  1, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  3, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  6, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  8, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4));
+Mct470Device::FunctionReadValueMappings Mct470Device::initFunctionReadValueMaps()
+{
+    struct function_read_value
+    {
+        unsigned function;
+        unsigned offset;
+        value_descriptor value;
+    }
+    const values[] =
+    {
+        { FuncRead_ChannelSetupDataPos,      0, { 4, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig          } },
+        //  duplicated on purpose - load profile config is decoded into these 5 keys
+        { FuncRead_ChannelSetupDataPos,      0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1  } },
+        { FuncRead_ChannelSetupDataPos,      1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2  } },
+        { FuncRead_ChannelSetupDataPos,      2, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3  } },
+        { FuncRead_ChannelSetupDataPos,      3, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4  } },
+        { FuncRead_ChannelSetupDataPos,      4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval        } },
+        { FuncRead_ChannelSetupDataPos,      5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2       } },
+        { FuncRead_ChannelSetupDataPos,      6, { 1, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval     } },
 
-    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        0, 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval));
-    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        1, 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber));
-    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        2, 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
+        { FuncRead_LoadProfileChannel12Pos,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1  } },
+        { FuncRead_LoadProfileChannel12Pos,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1     } },
+        { FuncRead_LoadProfileChannel12Pos,  3, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1         } },
+        { FuncRead_LoadProfileChannel12Pos,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2  } },
+        { FuncRead_LoadProfileChannel12Pos,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2     } },
+        { FuncRead_LoadProfileChannel12Pos,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2         } },
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             4, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             5, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             6, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             7, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+        { FuncRead_LoadProfileChannel34Pos,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3  } },
+        { FuncRead_LoadProfileChannel34Pos,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3     } },
+        { FuncRead_LoadProfileChannel34Pos,  3, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3         } },
+        { FuncRead_LoadProfileChannel34Pos,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4  } },
+        { FuncRead_LoadProfileChannel34Pos,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4     } },
+        { FuncRead_LoadProfileChannel34Pos,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4         } },
 
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               1, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               2, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               3, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               4, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               5, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               6, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               7, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               8, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               9, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              10, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              11, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              12, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+        { FuncRead_PrecannedTablePos,        0, { 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval } },
+        { FuncRead_PrecannedTablePos,        1, { 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber       } },
+        { FuncRead_PrecannedTablePos,        2, { 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType         } },
 
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,        0, 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,        2, 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,       10, 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
+        { FuncRead_LLPStatusPos,             4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len             } },
+        { FuncRead_LLPStatusPos,             5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len             } },
+        { FuncRead_LLPStatusPos,             6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len             } },
+        { FuncRead_LLPStatusPos,             7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
 
-    return readKeyStore;
+        { FuncRead_IED_CRCPos,               1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len             } },
+        { FuncRead_IED_CRCPos,               2, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len             } },
+        { FuncRead_IED_CRCPos,               3, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len             } },
+        { FuncRead_IED_CRCPos,               4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,               5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,               6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,               7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,               8, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,               9, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,              10, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,              11, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+        { FuncRead_IED_CRCPos,              12, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len             } },
+
+        { FuncRead_TOUDaySchedulePos,        0, { 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable                   } },
+        { FuncRead_TOUDaySchedulePos,        2, { 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate             } },
+        { FuncRead_TOUDaySchedulePos,       10, { 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset             } },
+    };
+
+    FunctionReadValueMappings fr;
+
+    for each( function_read_value frv in values )
+    {
+        fr[frv.function].insert(std::make_pair(frv.offset, frv.value));
+    }
+
+    return fr;
 }
 
 
@@ -1342,9 +1374,15 @@ bool Mct470Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
-const Mct470Device::read_key_store_t &Mct470Device::getReadKeyStore(void) const
+const Mct470Device::ValueMapping *Mct470Device::getMemoryMap(void) const
 {
-    return _readKeyStore;
+    return &_memoryMap;
+}
+
+
+const Mct470Device::FunctionReadValueMappings *Mct470Device::getFunctionReadValueMaps(void) const
+{
+    return &_functionReadValueMaps;
 }
 
 
@@ -5239,49 +5277,13 @@ INT Mct470Device::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNo
         result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
         result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
         result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " minutes\n";
-        //  The MCT_LoadProfileInterval keys are set automatically by extractDynamicInfo(),
-        //    but MCT_IEDLoadProfileInterval is still adjusted from seconds and stored manually
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, (long)DSt->Message[6] * 60);
 
         for( int i = 0; i < ChannelCount; i++ )
         {
             result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
 
             result_string += describeChannel(DSt->Message[i]) + "\n";
-
-            /*
-            Bits 0-1 - Type:    00=Channel Not Used
-                                01 = Electronic Meter
-                                10 = 2-wire KYZ (form A)
-                                11 = 3-wire KYZ (form C)
-            Bits 2-5 - Physical Channel / Attached Meter's Channel
-            Bit 6 - Load Profile Interval #0 or #1 (0, 1)
-            */
-
-            //  type
-            dynamic_info += CtiNumStr(DSt->Message[i] & 0x03);
-
-            if( DSt->Message[i] & 0x03 )
-            {
-                //  input
-                dynamic_info  += CtiNumStr((DSt->Message[i] >> 2) & 0x0f).hex();
-                //  load profile interval
-                dynamic_info  += (DSt->Message[i] & 0x40)?"1":"0";
-            }
-            else
-            {
-                dynamic_info  += "00";
-            }
         }
-
-        if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << dynamic_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        //  I don't like how this bit of dynamic info is set and used...  we should use a generic translation function instead
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, dynamic_info);
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -5323,10 +5325,6 @@ INT Mct470Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
 
         rev  = (unsigned)InMessage->Buffer.DSt.Message[1];
 
-        //  set the dynamic info for use later
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         ssp);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, rev);
-
         //  convert 10 to 1.0, 24 to 2.4
         sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
 
@@ -5340,9 +5338,6 @@ INT Mct470Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
         {
             sspec += "\n";
         }
-
-        //  this will need to be removed when we do this automatically
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, InMessage->Buffer.DSt.Message[3]);
 
         options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
 

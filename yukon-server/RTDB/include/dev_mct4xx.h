@@ -217,8 +217,9 @@ protected:
 
     virtual bool isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const;
 
-    //  force it pure virtual so it must be overridden by the 410 and 470
-    virtual const read_key_store_t &getReadKeyStore(void) const = 0;
+    //  force them pure virtual so they must be overridden by the 410 and 470
+    virtual const ValueMapping              *getMemoryMap()             const = 0;
+    virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const = 0;
 
     //  overridden by the 410, 420, and 470 so they can use the same peak/TOU decode function
     virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter = 0) const = 0;

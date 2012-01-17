@@ -29,6 +29,7 @@
 #include "mgr_device.h"
 #include "mgr_port.h"
 #include "port_shr.h"
+#include "ctilocalconnect.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -44,8 +45,11 @@ using Cti::Porter::PorterStatisticsManager;
 extern CtiPortManager            PortManager;
 extern map<long, CtiPortShare *> PortShareManager;
 
+extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
+
 extern HCTIQUEUE *QueueHandle(LONG pid);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
+extern void SnipeDynamicInfo(const INMESS &ResultMessage);
 
 static const ULONG MAX_CCU_QUEUE_TIME = 1800;
 static const ULONG QUEUED_MSG_REQ_ID_BASE = 0xFFFFFF00;
@@ -1044,6 +1048,13 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                             }
                         }
                     }
+
+                    //  This won't be decoded in Porter, so grab the dynamic info
+                    if( ResultMessage.ReturnNexus != &PorterToPil )
+                    {
+                        SnipeDynamicInfo(ResultMessage);
+                    }
+
                     /* this is a completed result so send it to originating process */
                     if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)) != NORMAL)
                     {

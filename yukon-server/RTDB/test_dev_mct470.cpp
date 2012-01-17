@@ -70,46 +70,49 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2009)
 {
     test_Mct470Device dev;
 
-    utc34_checker tc[] = {{0x000000, {2009,  1}, {2009,  1,  1,  0,  0}},
-                          {0x000001, {2009,  1}, {2008, 12, 31, 23, 59}},
-                          {0x00003c, {2009,  1}, {2008, 12, 31, 23,  0}},
-                          {0x0005a0, {2009,  1}, {2008, 12, 31,  0,  0}},
-                          {0x00ae60, {2009,  1}, {2008, 12,  1,  0,  0}},
-                          {0x080520, {2009,  1}, {2008,  1,  2,  0,  0}},  //  leap year
+    utc34_checker test_cases[] = {
+        {0x000000, {2009,  1}, {2009,  1,  1,  0,  0}},
+        {0x000001, {2009,  1}, {2008, 12, 31, 23, 59}},
+        {0x00003c, {2009,  1}, {2008, 12, 31, 23,  0}},
+        {0x0005a0, {2009,  1}, {2008, 12, 31,  0,  0}},
+        {0x00ae60, {2009,  1}, {2008, 12,  1,  0,  0}},
+        {0x080520, {2009,  1}, {2008,  1,  2,  0,  0}},  //  leap year
 
-                          {0x800000, {2009,  1}, {2010,  1,  1,  0,  0}},
-                          {0x800001, {2009,  1}, {2009, 12, 31, 23, 59}},
-                          {0x80003c, {2009,  1}, {2009, 12, 31, 23,  0}},
-                          {0x8005a0, {2009,  1}, {2009, 12, 31,  0,  0}},
-                          {0x80ae60, {2009,  1}, {2009, 12,  1,  0,  0}},
-                          {0x880520, {2009,  1}, {2009,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2009,  1}, {2010,  1,  1,  0,  0}},
+        {0x800001, {2009,  1}, {2009, 12, 31, 23, 59}},
+        {0x80003c, {2009,  1}, {2009, 12, 31, 23,  0}},
+        {0x8005a0, {2009,  1}, {2009, 12, 31,  0,  0}},
+        {0x80ae60, {2009,  1}, {2009, 12,  1,  0,  0}},
+        {0x880520, {2009,  1}, {2009,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2009, 12}, {2011,  1,  1,  0,  0}},
-                          {0x000001, {2009, 12}, {2010, 12, 31, 23, 59}},
-                          {0x00003c, {2009, 12}, {2010, 12, 31, 23,  0}},
-                          {0x0005a0, {2009, 12}, {2010, 12, 31,  0,  0}},
-                          {0x00ae60, {2009, 12}, {2010, 12,  1,  0,  0}},
-                          {0x080520, {2009, 12}, {2010,  1,  1,  0,  0}},  //  not a leap year
+        {0x000000, {2009, 12}, {2011,  1,  1,  0,  0}},
+        {0x000001, {2009, 12}, {2010, 12, 31, 23, 59}},
+        {0x00003c, {2009, 12}, {2010, 12, 31, 23,  0}},
+        {0x0005a0, {2009, 12}, {2010, 12, 31,  0,  0}},
+        {0x00ae60, {2009, 12}, {2010, 12,  1,  0,  0}},
+        {0x080520, {2009, 12}, {2010,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x800000, {2009, 12}, {2010,  1,  1,  0,  0}},
-                          {0x800001, {2009, 12}, {2009, 12, 31, 23, 59}},
-                          {0x80003c, {2009, 12}, {2009, 12, 31, 23,  0}},
-                          {0x8005a0, {2009, 12}, {2009, 12, 31,  0,  0}},
-                          {0x80ae60, {2009, 12}, {2009, 12,  1,  0,  0}},
-                          {0x880520, {2009, 12}, {2009,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2009, 12}, {2010,  1,  1,  0,  0}},
+        {0x800001, {2009, 12}, {2009, 12, 31, 23, 59}},
+        {0x80003c, {2009, 12}, {2009, 12, 31, 23,  0}},
+        {0x8005a0, {2009, 12}, {2009, 12, 31,  0,  0}},
+        {0x80ae60, {2009, 12}, {2009, 12,  1,  0,  0}},
+        {0x880520, {2009, 12}, {2009,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2009,  1}, {2009,  1,  1,  0,  0}}};
+        {0x000000, {2009,  1}, {2009,  1,  1,  0,  0}}};
 
-    utc34_checker c;
+    std::vector<unsigned long> expected, results;
 
-    const size_t elements = sizeof(tc) / sizeof(tc[0]);
-
-    for( size_t i = 0; i < elements; ++i )
+    for each( utc34_checker tc in test_cases )
     {
-        c = tc[i];
+        expected.push_back(build_gmt_seconds(tc.expected_time));
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        results.push_back(dev.convertTimestamp(tc.raw_value, build_base_date(tc.base_date)));
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(),  results.end());
 }
 
 
@@ -117,46 +120,49 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2010)
 {
     test_Mct470Device dev;
 
-    utc34_checker tc[] = {{0x000000, {2010,  1}, {2011,  1,  1,  0,  0}},
-                          {0x000001, {2010,  1}, {2010, 12, 31, 23, 59}},
-                          {0x00003c, {2010,  1}, {2010, 12, 31, 23,  0}},
-                          {0x0005a0, {2010,  1}, {2010, 12, 31,  0,  0}},
-                          {0x00ae60, {2010,  1}, {2010, 12,  1,  0,  0}},
-                          {0x080520, {2010,  1}, {2010,  1,  1,  0,  0}},  //  not a leap year
+    utc34_checker test_cases[] = {
+        {0x000000, {2010,  1}, {2011,  1,  1,  0,  0}},
+        {0x000001, {2010,  1}, {2010, 12, 31, 23, 59}},
+        {0x00003c, {2010,  1}, {2010, 12, 31, 23,  0}},
+        {0x0005a0, {2010,  1}, {2010, 12, 31,  0,  0}},
+        {0x00ae60, {2010,  1}, {2010, 12,  1,  0,  0}},
+        {0x080520, {2010,  1}, {2010,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x800000, {2010,  1}, {2010,  1,  1,  0,  0}},
-                          {0x800001, {2010,  1}, {2009, 12, 31, 23, 59}},
-                          {0x80003c, {2010,  1}, {2009, 12, 31, 23,  0}},
-                          {0x8005a0, {2010,  1}, {2009, 12, 31,  0,  0}},
-                          {0x80ae60, {2010,  1}, {2009, 12,  1,  0,  0}},
-                          {0x880520, {2010,  1}, {2009,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2010,  1}, {2010,  1,  1,  0,  0}},
+        {0x800001, {2010,  1}, {2009, 12, 31, 23, 59}},
+        {0x80003c, {2010,  1}, {2009, 12, 31, 23,  0}},
+        {0x8005a0, {2010,  1}, {2009, 12, 31,  0,  0}},
+        {0x80ae60, {2010,  1}, {2009, 12,  1,  0,  0}},
+        {0x880520, {2010,  1}, {2009,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2010, 12}, {2011,  1,  1,  0,  0}},
-                          {0x000001, {2010, 12}, {2010, 12, 31, 23, 59}},
-                          {0x00003c, {2010, 12}, {2010, 12, 31, 23,  0}},
-                          {0x0005a0, {2010, 12}, {2010, 12, 31,  0,  0}},
-                          {0x00ae60, {2010, 12}, {2010, 12,  1,  0,  0}},
-                          {0x080520, {2010, 12}, {2010,  1,  1,  0,  0}},  //  not a leap year
+        {0x000000, {2010, 12}, {2011,  1,  1,  0,  0}},
+        {0x000001, {2010, 12}, {2010, 12, 31, 23, 59}},
+        {0x00003c, {2010, 12}, {2010, 12, 31, 23,  0}},
+        {0x0005a0, {2010, 12}, {2010, 12, 31,  0,  0}},
+        {0x00ae60, {2010, 12}, {2010, 12,  1,  0,  0}},
+        {0x080520, {2010, 12}, {2010,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x800000, {2010, 12}, {2012,  1,  1,  0,  0}},
-                          {0x800001, {2010, 12}, {2011, 12, 31, 23, 59}},
-                          {0x80003c, {2010, 12}, {2011, 12, 31, 23,  0}},
-                          {0x8005a0, {2010, 12}, {2011, 12, 31,  0,  0}},
-                          {0x80ae60, {2010, 12}, {2011, 12,  1,  0,  0}},
-                          {0x880520, {2010, 12}, {2011,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2010, 12}, {2012,  1,  1,  0,  0}},
+        {0x800001, {2010, 12}, {2011, 12, 31, 23, 59}},
+        {0x80003c, {2010, 12}, {2011, 12, 31, 23,  0}},
+        {0x8005a0, {2010, 12}, {2011, 12, 31,  0,  0}},
+        {0x80ae60, {2010, 12}, {2011, 12,  1,  0,  0}},
+        {0x880520, {2010, 12}, {2011,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2010,  1}, {2011,  1,  1,  0,  0}}};
+        {0x000000, {2010,  1}, {2011,  1,  1,  0,  0}}};
 
-    utc34_checker c;
+    std::vector<unsigned long> expected, results;
 
-    const size_t elements = sizeof(tc) / sizeof(tc[0]);
-
-    for( size_t i = 0; i < elements; ++i )
+    for each( utc34_checker tc in test_cases )
     {
-        c = tc[i];
+        expected.push_back(build_gmt_seconds(tc.expected_time));
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        results.push_back(dev.convertTimestamp(tc.raw_value, build_base_date(tc.base_date)));
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(),  results.end());
 }
 
 
@@ -164,46 +170,49 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2011)
 {
     test_Mct470Device dev;
 
-    utc34_checker tc[] = {{0x000000, {2011,  1}, {2011,  1,  1,  0,  0}},
-                          {0x000001, {2011,  1}, {2010, 12, 31, 23, 59}},
-                          {0x00003c, {2011,  1}, {2010, 12, 31, 23,  0}},
-                          {0x0005a0, {2011,  1}, {2010, 12, 31,  0,  0}},
-                          {0x00ae60, {2011,  1}, {2010, 12,  1,  0,  0}},
-                          {0x080520, {2011,  1}, {2010,  1,  1,  0,  0}},  //  not a leap year
+    utc34_checker test_cases[] = {
+        {0x000000, {2011,  1}, {2011,  1,  1,  0,  0}},
+        {0x000001, {2011,  1}, {2010, 12, 31, 23, 59}},
+        {0x00003c, {2011,  1}, {2010, 12, 31, 23,  0}},
+        {0x0005a0, {2011,  1}, {2010, 12, 31,  0,  0}},
+        {0x00ae60, {2011,  1}, {2010, 12,  1,  0,  0}},
+        {0x080520, {2011,  1}, {2010,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x800000, {2011,  1}, {2012,  1,  1,  0,  0}},
-                          {0x800001, {2011,  1}, {2011, 12, 31, 23, 59}},
-                          {0x80003c, {2011,  1}, {2011, 12, 31, 23,  0}},
-                          {0x8005a0, {2011,  1}, {2011, 12, 31,  0,  0}},
-                          {0x80ae60, {2011,  1}, {2011, 12,  1,  0,  0}},
-                          {0x880520, {2011,  1}, {2011,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2011,  1}, {2012,  1,  1,  0,  0}},
+        {0x800001, {2011,  1}, {2011, 12, 31, 23, 59}},
+        {0x80003c, {2011,  1}, {2011, 12, 31, 23,  0}},
+        {0x8005a0, {2011,  1}, {2011, 12, 31,  0,  0}},
+        {0x80ae60, {2011,  1}, {2011, 12,  1,  0,  0}},
+        {0x880520, {2011,  1}, {2011,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2011, 12}, {2013,  1,  1,  0,  0}},
-                          {0x000001, {2011, 12}, {2012, 12, 31, 23, 59}},
-                          {0x00003c, {2011, 12}, {2012, 12, 31, 23,  0}},
-                          {0x0005a0, {2011, 12}, {2012, 12, 31,  0,  0}},
-                          {0x00ae60, {2011, 12}, {2012, 12,  1,  0,  0}},
-                          {0x080520, {2011, 12}, {2012,  1,  2,  0,  0}},  //  leap year
+        {0x000000, {2011, 12}, {2013,  1,  1,  0,  0}},
+        {0x000001, {2011, 12}, {2012, 12, 31, 23, 59}},
+        {0x00003c, {2011, 12}, {2012, 12, 31, 23,  0}},
+        {0x0005a0, {2011, 12}, {2012, 12, 31,  0,  0}},
+        {0x00ae60, {2011, 12}, {2012, 12,  1,  0,  0}},
+        {0x080520, {2011, 12}, {2012,  1,  2,  0,  0}},  //  leap year
 
-                          {0x800000, {2011, 12}, {2012,  1,  1,  0,  0}},
-                          {0x800001, {2011, 12}, {2011, 12, 31, 23, 59}},
-                          {0x80003c, {2011, 12}, {2011, 12, 31, 23,  0}},
-                          {0x8005a0, {2011, 12}, {2011, 12, 31,  0,  0}},
-                          {0x80ae60, {2011, 12}, {2011, 12,  1,  0,  0}},
-                          {0x880520, {2011, 12}, {2011,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2011, 12}, {2012,  1,  1,  0,  0}},
+        {0x800001, {2011, 12}, {2011, 12, 31, 23, 59}},
+        {0x80003c, {2011, 12}, {2011, 12, 31, 23,  0}},
+        {0x8005a0, {2011, 12}, {2011, 12, 31,  0,  0}},
+        {0x80ae60, {2011, 12}, {2011, 12,  1,  0,  0}},
+        {0x880520, {2011, 12}, {2011,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2011,  1}, {2011,  1,  1,  0,  0}}};
+        {0x000000, {2011,  1}, {2011,  1,  1,  0,  0}}};
 
-    utc34_checker c;
+    std::vector<unsigned long> expected, results;
 
-    const size_t elements = sizeof(tc) / sizeof(tc[0]);
-
-    for( size_t i = 0; i < elements; ++i )
+    for each( utc34_checker tc in test_cases )
     {
-        c = tc[i];
+        expected.push_back(build_gmt_seconds(tc.expected_time));
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        results.push_back(dev.convertTimestamp(tc.raw_value, build_base_date(tc.base_date)));
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(),  results.end());
 }
 
 
@@ -211,46 +220,150 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2012)
 {
     test_Mct470Device dev;
 
-    utc34_checker tc[] = {{0x000000, {2012,  1}, {2013,  1,  1,  0,  0}},
-                          {0x000001, {2012,  1}, {2012, 12, 31, 23, 59}},
-                          {0x00003c, {2012,  1}, {2012, 12, 31, 23,  0}},
-                          {0x0005a0, {2012,  1}, {2012, 12, 31,  0,  0}},
-                          {0x00ae60, {2012,  1}, {2012, 12,  1,  0,  0}},
-                          {0x080520, {2012,  1}, {2012,  1,  2,  0,  0}},  //  leap year
+    utc34_checker test_cases[] = {
+        {0x000000, {2012,  1}, {2013,  1,  1,  0,  0}},
+        {0x000001, {2012,  1}, {2012, 12, 31, 23, 59}},
+        {0x00003c, {2012,  1}, {2012, 12, 31, 23,  0}},
+        {0x0005a0, {2012,  1}, {2012, 12, 31,  0,  0}},
+        {0x00ae60, {2012,  1}, {2012, 12,  1,  0,  0}},
+        {0x080520, {2012,  1}, {2012,  1,  2,  0,  0}},  //  leap year
 
-                          {0x800000, {2012,  1}, {2012,  1,  1,  0,  0}},
-                          {0x800001, {2012,  1}, {2011, 12, 31, 23, 59}},
-                          {0x80003c, {2012,  1}, {2011, 12, 31, 23,  0}},
-                          {0x8005a0, {2012,  1}, {2011, 12, 31,  0,  0}},
-                          {0x80ae60, {2012,  1}, {2011, 12,  1,  0,  0}},
-                          {0x880520, {2012,  1}, {2011,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2012,  1}, {2012,  1,  1,  0,  0}},
+        {0x800001, {2012,  1}, {2011, 12, 31, 23, 59}},
+        {0x80003c, {2012,  1}, {2011, 12, 31, 23,  0}},
+        {0x8005a0, {2012,  1}, {2011, 12, 31,  0,  0}},
+        {0x80ae60, {2012,  1}, {2011, 12,  1,  0,  0}},
+        {0x880520, {2012,  1}, {2011,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2012, 12}, {2013,  1,  1,  0,  0}},
-                          {0x000001, {2012, 12}, {2012, 12, 31, 23, 59}},
-                          {0x00003c, {2012, 12}, {2012, 12, 31, 23,  0}},
-                          {0x0005a0, {2012, 12}, {2012, 12, 31,  0,  0}},
-                          {0x00ae60, {2012, 12}, {2012, 12,  1,  0,  0}},
-                          {0x080520, {2012, 12}, {2012,  1,  2,  0,  0}},  //  leap year
+        {0x000000, {2012, 12}, {2013,  1,  1,  0,  0}},
+        {0x000001, {2012, 12}, {2012, 12, 31, 23, 59}},
+        {0x00003c, {2012, 12}, {2012, 12, 31, 23,  0}},
+        {0x0005a0, {2012, 12}, {2012, 12, 31,  0,  0}},
+        {0x00ae60, {2012, 12}, {2012, 12,  1,  0,  0}},
+        {0x080520, {2012, 12}, {2012,  1,  2,  0,  0}},  //  leap year
 
-                          {0x800000, {2012, 12}, {2014,  1,  1,  0,  0}},
-                          {0x800001, {2012, 12}, {2013, 12, 31, 23, 59}},
-                          {0x80003c, {2012, 12}, {2013, 12, 31, 23,  0}},
-                          {0x8005a0, {2012, 12}, {2013, 12, 31,  0,  0}},
-                          {0x80ae60, {2012, 12}, {2013, 12,  1,  0,  0}},
-                          {0x880520, {2012, 12}, {2013,  1,  1,  0,  0}},  //  not a leap year
+        {0x800000, {2012, 12}, {2014,  1,  1,  0,  0}},
+        {0x800001, {2012, 12}, {2013, 12, 31, 23, 59}},
+        {0x80003c, {2012, 12}, {2013, 12, 31, 23,  0}},
+        {0x8005a0, {2012, 12}, {2013, 12, 31,  0,  0}},
+        {0x80ae60, {2012, 12}, {2013, 12,  1,  0,  0}},
+        {0x880520, {2012, 12}, {2013,  1,  1,  0,  0}},  //  not a leap year
 
-                          {0x000000, {2012,  1}, {2013,  1,  1,  0,  0}}};
+        {0x000000, {2012,  1}, {2013,  1,  1,  0,  0}}};
 
-    utc34_checker c;
+    std::vector<unsigned long> expected, results;
 
-    const size_t elements = sizeof(tc) / sizeof(tc[0]);
-
-    for( size_t i = 0; i < elements; ++i )
+    for each( utc34_checker tc in test_cases )
     {
-        c = tc[i];
+        expected.push_back(build_gmt_seconds(tc.expected_time));
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        results.push_back(dev.convertTimestamp(tc.raw_value, build_base_date(tc.base_date)));
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(),  results.end());
+}
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo)
+{
+    test_Mct470Device dev;
+
+    INMESS im;
+
+    im.Buffer.DSt.Message[ 0] = 0xff;
+    im.Buffer.DSt.Message[ 1] = 0xfe;
+    im.Buffer.DSt.Message[ 2] = 0xfd;
+    im.Buffer.DSt.Message[ 3] = 0xfc;
+    im.Buffer.DSt.Message[ 4] = 0xfb;
+    im.Buffer.DSt.Message[ 5] = 0xfa;
+    im.Buffer.DSt.Message[ 6] = 0xf9;
+    im.Buffer.DSt.Message[ 7] = 0xf8;
+    im.Buffer.DSt.Message[ 8] = 0xf7;
+    im.Buffer.DSt.Message[ 9] = 0xf6;
+    im.Buffer.DSt.Message[10] = 0xf5;
+    im.Buffer.DSt.Message[11] = 0xf4;
+    im.Buffer.DSt.Message[12] = 0xf3;
+
+    im.Buffer.DSt.Length = 13;
+    im.Return.ProtocolInfo.Emetcon.Function = 0x00;
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+    dev.extractDynamicPaoInfo(im);
+
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
+    //  unavailable - only the first byte available in the range 0x00 - 0x0c
+    BOOST_CHECK(!dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask));
+
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec),           0xfbff);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision),   0xfe);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options),         0xfd);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration),   0xfc);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1), 0xf7);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2), 0xf6);
+
+    im.Buffer.DSt.Length = 2;
+    im.Return.ProtocolInfo.Emetcon.Function = 0x0c;
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+    dev.extractDynamicPaoInfo(im);
+
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressBronze));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressBronze), 0xfe);
+
+    im.Buffer.DSt.Length = 3;
+    im.Return.ProtocolInfo.Emetcon.Function = 0xad; //  FuncRead_TOUDaySchedulePos;  it's protected, so instead of inheriting it, it's a magic number
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+    dev.extractDynamicPaoInfo(im);
+
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
+    //  outside the collected range
+    BOOST_CHECK(!dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
+
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable),       0xfffe);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate), 0xfd);
+
+    im.Buffer.DSt.Message[ 0] = 0x03;  //  3 wire KYZ, channel 1, LP interval 1
+    im.Buffer.DSt.Message[ 1] = 0x4a;  //  2 wire KYZ, channel 3, LP interval 2
+    im.Buffer.DSt.Message[ 2] = 0x19;  //  IED, channel 7, LP interval 1
+    im.Buffer.DSt.Message[ 3] = 0x3c;  //  Unused, channel 15, LP interval 1
+    im.Buffer.DSt.Message[ 4] = 0x05;  //  LP interval 1 = 5 mins
+    im.Buffer.DSt.Message[ 5] = 0x0f;  //  LP interval 2 = 15 mins
+    im.Buffer.DSt.Message[ 6] = 0x1e;  //  IED LP interval = 30 mins
+
+    im.Buffer.DSt.Length = 7;
+    im.Return.ProtocolInfo.Emetcon.Function = 0x20;
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+    dev.extractDynamicPaoInfo(im);
+
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval));
+
+    string lpconfig;
+    dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+    BOOST_CHECK_EQUAL(lpconfig, "300221160000");
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x03);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x4a);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x19);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x3c);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval),       0x05);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2),      0x0f);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval),    1800);
 }
 
 

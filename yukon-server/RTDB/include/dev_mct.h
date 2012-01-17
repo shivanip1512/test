@@ -71,37 +71,22 @@ protected:
 
     static bool getMCTDebugLevel(int mask);
 
-    struct read_key_info_t
+    struct value_descriptor
     {
-        read_key_info_t(int func, int off, int len, CtiTableDynamicPaoInfo::PaoInfoKeys k=CtiTableDynamicPaoInfo::Key_Invalid) :
-            function(func),
-            offset(off),
-            length(len),
-            key(k)
-        { };
-
-        int function, length, offset;
-
-        CtiTableDynamicPaoInfo::PaoInfoKeys key;
-
-        bool read_key_info_t::operator<(const read_key_info_t &rhs) const
-        {
-            if( function < rhs.function )  return true;
-            if( function > rhs.function )  return false;
-
-            if( offset   < rhs.offset   )  return true;
-            if( offset   > rhs.offset   )  return false;
-
-            return length < rhs.length;
-        }
+        unsigned length;
+        CtiTableDynamicPaoInfo::PaoInfoKeys name;
     };
 
-    typedef std::set<read_key_info_t> read_key_store_t;
+    //  multimap because data for multiple keys could start at the same location
+    typedef std::multimap<unsigned, value_descriptor> ValueMapping;
+    typedef std::map<unsigned, ValueMapping> FunctionReadValueMappings;
 
-    static const read_key_store_t _emptyReadKeyStore;
-    virtual const read_key_store_t &getReadKeyStore(void) const;
+    virtual const ValueMapping *getMemoryMap(void) const;
+    virtual const FunctionReadValueMappings *getFunctionReadValueMaps(void) const;
 
-    void extractDynamicPaoInfo(const INMESS &InMessage);
+    const ValueMapping *getValueMapForFunctionRead(const unsigned function) const;
+
+    void decodeReadDataForKey(const unsigned char *begin, const unsigned char *end, const CtiTableDynamicPaoInfo::PaoInfoKeys key);
 
     virtual INT executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual INT executeScan     ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
@@ -246,6 +231,8 @@ public:
     virtual INT AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 3 );
     virtual INT IntegrityScan  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4 );
     virtual INT LoadProfileScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 9 );
+
+    void extractDynamicPaoInfo(const INMESS &InMessage);
 
     void setConfigData( const std::string &configName, int configType, const std::string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
 

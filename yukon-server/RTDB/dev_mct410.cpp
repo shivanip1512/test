@@ -25,8 +25,10 @@ namespace Cti {
 namespace Devices {
 
 const Mct410Device::CommandSet       Mct410Device::_commandStore = Mct410Device::initCommandStore();
-const Mct410Device::read_key_store_t Mct410Device::_readKeyStore = Mct410Device::initReadKeyStore();
 const Mct410Device::ConfigPartsList  Mct410Device::_config_parts = Mct410Device::initConfigParts();
+
+const Mct410Device::ValueMapping              Mct410Device::_memoryMap             = Mct410Device::initMemoryMap();
+const Mct410Device::FunctionReadValueMappings Mct410Device::_functionReadValueMaps = Mct410Device::initFunctionReadValueMaps();
 
 
 Mct410Device::Mct410Device( ) :
@@ -63,72 +65,102 @@ void Mct410Device::setDisconnectAddress( unsigned long address )
     _disconnectAddress = address;
 }
 
-Mct410Device::read_key_store_t Mct410Device::initReadKeyStore()
+Mct410Device::ValueMapping Mct410Device::initMemoryMap()
 {
-    read_key_store_t readKeyStore;
+    struct memory_read_value
+    {
+        unsigned offset;
+        value_descriptor value;
+    }
+    const values[] =
+    {
+        { Memory_SspecPos,                 { Memory_SspecLen,                CtiTableDynamicPaoInfo::Key_MCT_SSpec                    } },
+        { Memory_RevisionPos,              { Memory_RevisionLen,             CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision            } },
 
-//  these cannot be properly decoded by the dynamicPaoAddressing code
-//
-//    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                 Memory_SSpecLen,                CtiTableDynamicPaoInfo::Key_MCT_SSpec));
-//    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,              Memory_RevisionLen,             CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
-//
-//    readKeyStore.insert(read_key_info_t(-1, Memory_DayOfScheduledFreezePos,  Memory_DayOfScheduledFreezeLen, CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay));
+        { Memory_DayOfScheduledFreezePos,  { Memory_DayOfScheduledFreezeLen, CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay       } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,               Memory_OptionsLen,              CtiTableDynamicPaoInfo::Key_MCT_Options));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,         Memory_ConfigurationLen,        CtiTableDynamicPaoInfo::Key_MCT_Configuration));
+        { Memory_OptionsPos,               { Memory_OptionsLen,              CtiTableDynamicPaoInfo::Key_MCT_Options                  } },
+        { Memory_ConfigurationPos,         { Memory_ConfigurationLen,        CtiTableDynamicPaoInfo::Key_MCT_Configuration            } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask));
+        { Memory_EventFlagsMask1Pos,       { Memory_EventFlagsMask1Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1          } },
+        { Memory_EventFlagsMask2Pos,       { Memory_EventFlagsMask2Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2          } },
+        { Memory_MeterAlarmMaskPos,        { Memory_MeterAlarmMaskLen,       CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask           } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_BronzeAddressPos,         Memory_BronzeAddressLen,        CtiTableDynamicPaoInfo::Key_MCT_AddressBronze));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LeadAddressPos,           Memory_LeadAddressLen,          CtiTableDynamicPaoInfo::Key_MCT_AddressLead));
-    readKeyStore.insert(read_key_info_t(-1, Memory_CollectionAddressPos,     Memory_CollectionAddressLen,    CtiTableDynamicPaoInfo::Key_MCT_AddressCollection));
-    readKeyStore.insert(read_key_info_t(-1, Memory_SPIDAddressPos,           Memory_SPIDAddressLen,          CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID));
+        { Memory_BronzeAddressPos,         { Memory_BronzeAddressLen,        CtiTableDynamicPaoInfo::Key_MCT_AddressBronze            } },
+        { Memory_LeadAddressPos,           { Memory_LeadAddressLen,          CtiTableDynamicPaoInfo::Key_MCT_AddressLead              } },
+        { Memory_CollectionAddressPos,     { Memory_CollectionAddressLen,    CtiTableDynamicPaoInfo::Key_MCT_AddressCollection        } },
+        { Memory_SPIDAddressPos,           { Memory_SPIDAddressLen,          CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,        Memory_DemandIntervalLen,       CtiTableDynamicPaoInfo::Key_MCT_DemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileIntervalPos,   Memory_LoadProfileIntervalLen,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_VoltageDemandIntervalPos, Memory_VoltageDemandIntervalLen, CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_VoltageLPIntervalPos,     Memory_VoltageLPIntervalLen,    CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval));
+        { Memory_DemandIntervalPos,        { Memory_DemandIntervalLen,       CtiTableDynamicPaoInfo::Key_MCT_DemandInterval           } },
+        { Memory_LoadProfileIntervalPos,   { Memory_LoadProfileIntervalLen,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval      } },
+        { Memory_VoltageDemandIntervalPos, { Memory_VoltageDemandIntervalLen, CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval   } },
+        { Memory_VoltageLPIntervalPos,     { Memory_VoltageLPIntervalLen,    CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval        } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_OverVThresholdPos,        Memory_OverVThresholdLen,       CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold));
-    readKeyStore.insert(read_key_info_t(-1, Memory_UnderVThresholdPos,       Memory_UnderVThresholdLen,      CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold));
+        { Memory_OverVThresholdPos,        { Memory_OverVThresholdLen,       CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold     } },
+        { Memory_UnderVThresholdPos,       { Memory_UnderVThresholdLen,      CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold    } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_OutageCyclesPos,          Memory_OutageCyclesLen,         CtiTableDynamicPaoInfo::Key_MCT_OutageCycles));
+        { Memory_OutageCyclesPos,          { Memory_OutageCyclesLen,         CtiTableDynamicPaoInfo::Key_MCT_OutageCycles             } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolPos,         Memory_TimeAdjustTolLen,        CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance));
+        { Memory_TimeAdjustTolPos,         { Memory_TimeAdjustTolLen,        CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance      } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,              Memory_DSTBeginLen,             CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                Memory_DSTEndLen,               CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
+        { Memory_DSTBeginPos,              { Memory_DSTBeginLen,             CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime             } },
+        { Memory_DSTEndPos,                { Memory_DSTEndLen,               CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime               } },
+        { Memory_TimeZoneOffsetPos,        { Memory_TimeZoneOffsetLen,       CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset           } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+        { Memory_TOUDayTablePos,           { Memory_TOUDayTableLen,          CtiTableDynamicPaoInfo::Key_MCT_DayTable                 } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,              Memory_Holiday1Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,              Memory_Holiday2Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,              Memory_Holiday3Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday3));
+        { Memory_Holiday1Pos,              { Memory_Holiday1Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday1                 } },
+        { Memory_Holiday2Pos,              { Memory_Holiday2Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday2                 } },
+        { Memory_Holiday3Pos,              { Memory_Holiday3Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday3                 } },
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_DisplayParametersPos,     Memory_DisplayParametersLen,    CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TransformerRatioPos,      Memory_TransformerRatioLen,     CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio));
+        { Memory_DisplayParametersPos,     { Memory_DisplayParametersLen,    CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters        } },
+        { Memory_TransformerRatioPos,      { Memory_TransformerRatioLen,     CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio         } },
+    };
 
-//  function reads
+    ValueMapping memoryMap;
 
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    2, 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
+    for each( memory_read_value mrv in values )
+    {
+        memoryMap.insert(make_pair(mrv.offset,  mrv.value));
+    }
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         4, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         5, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         6, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         7, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    return memoryMap;
+}
 
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  5, 2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  7, 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  9, 1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 10, 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 11, 1, CtiTableDynamicPaoInfo::Key_MCT_Configuration));
+Mct410Device::FunctionReadValueMappings Mct410Device::initFunctionReadValueMaps()
+{
+    struct function_read_value
+    {
+        unsigned function;
+        unsigned offset;
+        value_descriptor value;
+    }
+    const values[] =
+    {
+        { FuncRead_TOUDaySchedulePos,    0, { 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable          } },
+        { FuncRead_TOUDaySchedulePos,    2, { 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate    } },
+        { FuncRead_TOUDaySchedulePos,   10, { 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset    } },
 
-    return readKeyStore;
+        { FuncRead_LLPStatusPos,         4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len    } },
+        { FuncRead_LLPStatusPos,         5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len    } },
+        { FuncRead_LLPStatusPos,         6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len    } },
+        { FuncRead_LLPStatusPos,         7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len    } },
+
+        { FuncRead_DisconnectConfigPos,  5, { 2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold   } },
+        { FuncRead_DisconnectConfigPos,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay      } },
+        { FuncRead_DisconnectConfigPos,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes } },
+        { FuncRead_DisconnectConfigPos, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes    } },
+        { FuncRead_DisconnectConfigPos, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_Configuration     } },
+    };
+
+    FunctionReadValueMappings fr;
+
+    for each( function_read_value frv in values )
+    {
+        fr[frv.function].insert(make_pair(frv.offset, frv.value));
+    }
+
+    return fr;
 }
 
 
@@ -768,9 +800,15 @@ bool Mct410Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
-const Mct410Device::read_key_store_t &Mct410Device::getReadKeyStore(void) const
+const Mct410Device::ValueMapping *Mct410Device::getMemoryMap() const
 {
-    return _readKeyStore;
+    return &_memoryMap;
+}
+
+
+const Mct410Device::FunctionReadValueMappings *Mct410Device::getFunctionReadValueMaps() const
+{
+    return &_functionReadValueMaps;
 }
 
 
@@ -4480,10 +4518,6 @@ INT Mct410Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
         }
 
         descriptor += "\n";
-
-        //  set the dynamic info for use later
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)rev);
 
         descriptor += getName() + " / Physical meter configuration:\n";
         descriptor += "Base meter: ";

@@ -13,12 +13,13 @@ class IM_EX_DEVDB Mct420Device : public Mct410Device
     static const ConfigPartsList  _config_parts;
     static       ConfigPartsList  initConfigParts();
 
-    static const read_key_store_t _readKeyStore;
-    static       read_key_store_t initReadKeyStore();
+    static const  ValueMapping _memoryMap;
+    static        ValueMapping initMemoryMap();
+
+    static const  FunctionReadValueMappings _functionReadValueMaps;
+    static        FunctionReadValueMappings initFunctionReadValueMaps();
 
     virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
-
-    const read_key_store_t &getReadKeyStore() const;
 
     typedef Mct410Device Inherited;
 
@@ -27,6 +28,9 @@ class IM_EX_DEVDB Mct420Device : public Mct410Device
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 
 protected:
+
+    virtual const ValueMapping *getMemoryMap() const;
+    virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
 
     virtual bool isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const;
 

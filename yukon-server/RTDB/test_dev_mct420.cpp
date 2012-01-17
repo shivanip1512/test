@@ -449,6 +449,41 @@ BOOST_AUTO_TEST_CASE(test_dev_mct420_getUsageReportDelay)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_dev_mct420_extractDynamicPaoInfo)
+{
+    test_Mct420CL dev;
+
+    INMESS im;
+
+    im.Buffer.DSt.Message[ 0] = 0xff;
+    im.Buffer.DSt.Message[ 1] = 0xfe;
+    im.Buffer.DSt.Message[ 2] = 0xfd;
+    im.Buffer.DSt.Message[ 3] = 0xfc;
+    im.Buffer.DSt.Message[ 4] = 0xfb;
+    im.Buffer.DSt.Message[ 5] = 0xfa;
+    im.Buffer.DSt.Message[ 5] = 0xf9;
+    im.Buffer.DSt.Message[ 6] = 0xf8;
+    im.Buffer.DSt.Message[ 7] = 0xf7;
+    im.Buffer.DSt.Message[ 8] = 0xf6;
+    im.Buffer.DSt.Message[ 9] = 0xf5;
+    im.Buffer.DSt.Message[10] = 0xf4;
+    im.Buffer.DSt.Message[11] = 0xf3;
+    im.Buffer.DSt.Message[12] = 0xf2;
+
+    im.Buffer.DSt.Length = 13;
+    im.Return.ProtocolInfo.Emetcon.Function = 0;
+    im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+    dev.extractDynamicPaoInfo(im);
+
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
+
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec),           0xfefd);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision),   0xff);
+}
+
+
 struct getOperation_helper
 {
     test_Mct420CL mct;
