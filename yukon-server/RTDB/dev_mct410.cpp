@@ -4055,12 +4055,6 @@ INT Mct410Device::decodeGetConfigFreeze(INMESS *InMessage, CtiTime &TimeNow, Cti
             resultString  = getName() + " / Scheduled day of freeze: (disabled)\n";
         }
 
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay) != day )
-        {
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, day);
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, CtiTime::now());
-        }
-
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

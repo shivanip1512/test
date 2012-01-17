@@ -295,6 +295,18 @@ void MctDevice::decodeReadDataForKey(const unsigned char *begin, const unsigned 
 
         return;
     }
+    if( key == CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay && end > begin )
+    {
+        long day = begin[0];
+
+        if( getDynamicInfo(key) != day )
+        {
+            setDynamicInfo(key, day);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, CtiTime::now());
+        }
+
+        return;
+    }
     if( key == CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig && (end - begin) == Mct470Device::ChannelCount )
     {
         std::string channel_info;
