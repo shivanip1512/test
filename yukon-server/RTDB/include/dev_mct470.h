@@ -141,8 +141,8 @@ private:
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, const unsigned char *buf, unsigned len );
 
-    bool hasChannelConfig(unsigned channel);
-    bool requestChannelConfig(unsigned channel, OUTMESS *OutMessage, OutMessageList &outList);
+    virtual bool hasChannelConfig    (const unsigned channel) const;
+    virtual bool requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList);
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 

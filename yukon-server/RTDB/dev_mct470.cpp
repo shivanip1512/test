@@ -826,7 +826,7 @@ bool Mct470Device::isIedChannel(unsigned channel) const
 }
 
 
-bool Mct470Device::hasChannelConfig(unsigned channel)
+bool Mct470Device::hasChannelConfig(const unsigned channel) const
 {
     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
     {
@@ -844,19 +844,10 @@ bool Mct470Device::hasChannelConfig(unsigned channel)
 }
 
 
-bool Mct470Device::requestChannelConfig(unsigned channel, OUTMESS *OutMessage, OutMessageList &outList)
+bool Mct470Device::requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList)
 {
-    CtiMessageList unused;
-
-    CtiRequestMsg req(getID(), "getconfig channels");
-
-    req.setMessagePriority(OutMessage->Priority);
-
-    CtiCommandParser parse(req.CommandString());
-
-    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, OutMessage) == NoError;
+    return executeBackgroundRequest("getconfig channels", OutMessage, outList);
 }
-
 
 
 unsigned Mct470Device::getUsageReportDelay(const unsigned interval_length, const unsigned days) const

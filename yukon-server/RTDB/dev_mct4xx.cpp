@@ -347,6 +347,20 @@ CtiDeviceSingle::point_info Mct4xxDevice::getDataError(unsigned error_code, cons
 }
 
 
+bool Mct4xxDevice::executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList)
+{
+    CtiMessageList unused;
+
+    CtiRequestMsg req(getID(), commandString);
+
+    req.setMessagePriority(OutMessageTemplate.Priority);
+
+    CtiCommandParser parse(req.CommandString());
+
+    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == NoError;
+}
+
+
 INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
@@ -467,9 +481,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             }
             else if( ! hasChannelConfig(request_channel) )
             {
-                found = requestChannelConfig(request_channel, OutMessage, outList);
-
-                if( found )
+                if( found = requestChannelConfig(request_channel, *OutMessage, outList) )
                 {
                     CtiReturnMsg *ReturnMsg =
                         new CtiReturnMsg(
@@ -792,31 +804,48 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         {
                             CtiString temp = "Load profile peak request already in progress\n";
                             errRet->setResultString(temp);
-                            errRet->setStatus(NOTNORMAL);
+                            errRet->setStatus(ErrorCommandAlreadyInProgress);
                             retList.push_back(errRet);
                             errRet = NULL;
                         }
                     }
                     else
                     {
-                        if( !isSupported(Feature_LoadProfilePeakReport) )
+                        if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
+                            ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                         {
-                            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+                            //  we need to read the SSPEC out of the meter
+                            executeBackgroundRequest("getconfig model", *OutMessage, outList);
 
-                            if( ReturnMsg )
-                            {
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
+                            CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
+                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                            ReturnMsg->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
 
-                                delete OutMessage;
-                                OutMessage = 0;
-                                found = false;
-                                nRet  = ExecutionComplete;
+                            retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, ReturnMsg, vgList, retList );
 
-                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                            }
+                            delete OutMessage;
+                            OutMessage = 0;
+                            found = false;
+                            nRet  = ExecutionComplete;
+
+                            InterlockedExchange(&_llpPeakInterest.in_progress, false);
+                        }
+                        else if( !isSupported(Feature_LoadProfilePeakReport) )
+                        {
+                            CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                            ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
+
+                            retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+                            found = false;
+                            nRet  = ExecutionComplete;
+
+                            InterlockedExchange(&_llpPeakInterest.in_progress, false);
                         }
                         else
                         {

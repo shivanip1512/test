@@ -229,10 +229,12 @@ protected:
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len) = 0;
 
-    virtual bool hasChannelConfig    (unsigned channel)                                                {  return true;  }
-    virtual bool requestChannelConfig(unsigned channel, OUTMESS *OutMessage, OutMessageList &outList)  {  return false;  }
+    virtual bool hasChannelConfig    (const unsigned channel) const                                                {  return true;  }
+    virtual bool requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList)  {  return false;  }
 
     virtual ConfigPartsList getPartsList() = 0;
+
+    bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
 
     INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     INT executeInstallReads(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
