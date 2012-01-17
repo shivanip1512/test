@@ -5240,7 +5240,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="105">
-                <init>false</init>
+                <init>true</init>
                 <name>Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -5319,6 +5319,26 @@
                 <name>Net kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+    </pao>
+    
+    <!-- Coincident Value Supporting Devices -->
+    <pao id="RFN_COINCIDENT_VALUES" abstract="true">
+        <points>
+            <point type="Analog" offset="106">
+                <init>false</init>
+                <name>Coincident kVAr</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="107">
+                <init>false</init>
+                <name>Coincident kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
                 <decimalplaces value="3"/>
             </point>
         </points>
@@ -5412,8 +5432,14 @@
             </point>
         </points>
         <attributes>
-            <attribute name="VOLTAGE">
+            <attribute name="VOLTAGE_PHASE_A">
                 <basicLookup point="Volts Phase A" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B">
+                <basicLookup point="Volts Phase B" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_C">
+                <basicLookup point="Volts Phase C" />
             </attribute>
         </attributes>
     </pao>
@@ -5520,7 +5546,7 @@
         <displayName>RFN-420cD</displayName>
     </pao>
 	
-    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES">
         <displayName>RFN-430A3</displayName>
     </pao>
     
