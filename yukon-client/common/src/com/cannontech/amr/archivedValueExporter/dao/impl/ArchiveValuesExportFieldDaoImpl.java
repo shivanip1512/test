@@ -72,7 +72,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     pattern, maxLength, padChar, padSide, roundingMode, missingAttribute,
                     missingAttributeValue });
         }
-        yukonJdbcTemplate.batchUpdate(sql.toString(), batchArgs);
+        yukonJdbcTemplate.batchUpdate(sql.getSql(), batchArgs);
         return fields;
     }
 

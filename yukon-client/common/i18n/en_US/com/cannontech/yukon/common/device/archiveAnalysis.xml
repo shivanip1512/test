@@ -210,7 +210,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.HH:mm:ss">HH:mm:ss</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.space">Space</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.zero">Zero ( 0 )</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.cdt"> * All times are CDT</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.timezone"> * All times are </entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noMax">No Max</entry>
    
      <!-- archivedValueExporter validation -->

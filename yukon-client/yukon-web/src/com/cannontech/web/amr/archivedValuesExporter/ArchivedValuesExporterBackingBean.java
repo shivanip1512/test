@@ -1,7 +1,9 @@
 package com.cannontech.web.amr.archivedValuesExporter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -41,10 +43,9 @@ public class ArchivedValuesExporterBackingBean{
     private String popupToOpen;
     private int rowIndex = -1;
     private String preview;
-
     private String endDate;
-    
     private String pageNameKey;
+    private String timezone;
 
     public ArchivedValuesExporterBackingBean(){
         int id = 0;
@@ -54,6 +55,8 @@ public class ArchivedValuesExporterBackingBean{
                 fieldSelect.add(field);
             }
         }
+        SimpleDateFormat timezoneFormat = new java.text.SimpleDateFormat("z");
+        timezone = timezoneFormat.format(new Date());
     }
 
     public DeviceCollection getDeviceCollection() {
@@ -368,5 +371,8 @@ public class ArchivedValuesExporterBackingBean{
     public void setPlainText(String plainText) {
         this.plainText = plainText;
     }
-    
+
+    public String getTimezone() {
+        return timezone;
+    }
 }

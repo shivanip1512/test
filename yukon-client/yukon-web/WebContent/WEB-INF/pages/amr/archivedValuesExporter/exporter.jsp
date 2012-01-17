@@ -380,7 +380,7 @@
                             <tags:nameValueContainer2>
                                 <tags:nameValue2 nameKey=".endDate">
                                     <tags:dateInputCalendar fieldId="endDate" fieldName="endDate" fieldValue="${backingBean.endDate}"></tags:dateInputCalendar>
-                                    <i:inline key=".cdt" />
+                                    <i:inline key=".timezone" />${backingBean.timezone}
                                     <c:choose>
                                         <c:when test="${empty deviceCollection}">
                                              <cti:button id="selectDevicesBtn2" nameKey="selectDevices" />
