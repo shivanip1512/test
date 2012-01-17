@@ -134,7 +134,6 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.actions">Actions</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSetup.title">Field Setup:</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.field">Field</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.multiplier">Multiplier</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.missingValue">Missing Value</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.roundingMode">Rounding Mode</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.pattern">Pattern</entry>
@@ -142,16 +141,18 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.padding">Padding</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.preview.title">Preview:</entry>
     
-    <entry key="yukon.web.modules.amr.archivedValueExporter.addAttribute">Add Attribute</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.addField">Add Field</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.editAttribute.title">Edit Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.addAttribute.title">Add Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.editField.title">Edit Field</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.addField.title">Add Field</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.editAttribute">Edit Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.editField">Edit Field</entry>
 
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.daysPrevious">Days Previous</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.field">Field</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.unsupportedField">Unsupported Field</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.removeMultiplier">Remove Multiplier</entry> 
     
     <entry key="yukon.web.modules.amr.archivedValueExporter.generateReport.title">Generate Report:</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSelection.title">Field Selection</entry>
@@ -192,6 +193,9 @@
     <entry key="yukon.web.components.image.helpTimestampPattern.imageUrl">/WebConfig/yukon/Icons/help.gif</entry>
     <entry key="yukon.web.components.image.helpTimestampPattern.hoverUrl">/WebConfig/yukon/Icons/help_over.gif</entry>
     <entry key="yukon.web.components.image.helpTimestampPattern.hoverText">The timestamp pattern input box will accept a textual pattern that represents a date and time format. The format will be applied to the selected field when the billing file is generated.</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.helper.timestamp.title">Timestamp</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.helper.value.title">Value</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.helper.rounding.title">Rounding</entry>
     
     <entry key="yukon.web.modules.amr.archivedValueExporter.comma">Comma ( , )</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.semicolon">Semicolon ( ; )</entry>
@@ -204,25 +208,18 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.MM/dd/yyyy">MM/dd/yyyy</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.hh:mm:ss a">hh:mm:ss a</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.HH:mm:ss">HH:mm:ss</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.left">Left</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.right">Right</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.none">None</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.space">Space</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.zero">Zero ( 0 )</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.leaveBlank">Leave Blank</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.skipRecord">Skip Record</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.fixedValue">Fixed Value</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.cdt"> * All times are CDT</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noMax">No Max</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.unused">Unused</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.applied">Applied</entry>
    
      <!-- archivedValueExporter validation -->
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>
-     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.endDayRequired">End day is invalid.</entry>
+     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.endDateRequired">A valid end date is required. Example: 01/01/2011</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.delimiterRequired">The delimiter cannot be blank.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.duplicateName">Name already in use, please provide a different format name.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.lessThanZero.daysPrevious">Days pervious must be greater than zero.</entry>
+     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.lessThanZero.fieldSize">Field size must be greater than zero.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.textInputRequired">The plain text input cannot be blank.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.fieldsRequired">At least one field must be entered.</entry>
      <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.invalidPattern">The pattern is invalid.</entry>
@@ -240,10 +237,20 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.RF_MODEL">RF Model</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.RF_SERIAL_NUMBER">RF Serial Number</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.PLAIN_TEXT">Plain Text</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.ROUTE">Route</entry>
     
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.TIMESTAMP">Timestamp</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.VALUE">Value</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.U_OF_M">Unit of Measure</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.UNIT_OF_MEASURE">Unit of Measure</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.QUALITY">Quality</entry>
+    
+    <entry key="yukon.web.modules.amr.archivedValueExporter.padSide.LEFT">Left</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.padSide.RIGHT">Right</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.padSide.NONE">None</entry>
+    
+    <entry key="yukon.web.modules.amr.archivedValueExporter.missingAttribute.LEAVE_BLANK">Leave Blank</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.missingAttribute.SKIP_RECORD">Skip Record</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.missingAttribute.FIXED_VALUE">Fixed Value</entry>
     
         <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageName">Device Selection</entry>

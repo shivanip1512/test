@@ -285,11 +285,11 @@
                         <a href="../apps/SelectDevice.jsp">Commander</a>
                     </tags:sectionLink>
                 </cti:checkProperty>
-                <cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
+                <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORTER">
                     <tags:sectionLink>
                         <a href="/spring/amr/archivedValuesExporter/view">Archived Values Exporter</a>
                     </tags:sectionLink>
-                </cti:checkProperty>
+                </cti:checkRolesAndProperties>
                 <cti:checkProperty property="MultispeakRole.MSP_LM_MAPPING_SETUP">
                     <tags:sectionLink>
                         <a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" />

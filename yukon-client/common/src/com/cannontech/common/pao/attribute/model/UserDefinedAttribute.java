@@ -1,5 +1,9 @@
 package com.cannontech.common.pao.attribute.model;
 
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 
 public class UserDefinedAttribute implements Attribute {
     private String key;
@@ -17,4 +21,8 @@ public class UserDefinedAttribute implements Attribute {
         return key;
     }
 
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return YukonMessageSourceResolvable.createDefaultWithoutCode(description);
+    }
 }

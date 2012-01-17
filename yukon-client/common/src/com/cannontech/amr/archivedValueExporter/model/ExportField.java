@@ -1,19 +1,24 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
+import org.springframework.context.MessageSourceResolvable;
 
-public class ExportField {
+import com.cannontech.common.i18n.Displayable;
+
+
+public class ExportField implements Displayable{
     private int fieldId;
     private int formatId;
     private FieldType fieldType;
     private ExportAttribute attribute;
     private AttributeField attributeField;
     private String pattern;
-    private int maxLength;
+    private Integer maxLength = 0;
     private String padChar;
-    private String padSide;
+    private PadSide padSide;
     private String roundingMode;
+    private MissingAttribute missingAttribute;
     private String missingAttributeValue;
-    private boolean multiplierRemovedFlag;
+
 
     public int getFieldId() {
         return fieldId;
@@ -38,12 +43,12 @@ public class ExportField {
     public void setPattern(String pattern) {
         this.pattern = pattern;
     }
-
-    public int getMaxLength() {
+ 
+    public Integer getMaxLength() {
         return maxLength;
     }
 
-    public void setMaxLength(int maxLength) {
+    public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
     }
 
@@ -71,22 +76,6 @@ public class ExportField {
         this.roundingMode = roundingMode;
     }
 
-    public boolean isMultiplierRemovedFlag() {
-        return multiplierRemovedFlag;
-    }
-
-    public void setMultiplierRemovedFlag(boolean multiplierRemovedFlag) {
-        this.multiplierRemovedFlag = multiplierRemovedFlag;
-    }
-
-    public String getPadSide() {
-        return padSide;
-    }
-
-    public void setPadSide(String padSide) {
-        this.padSide = padSide;
-    }
-
     public FieldType getFieldType() {
         return fieldType;
     }
@@ -109,5 +98,34 @@ public class ExportField {
 
     public void setAttribute(ExportAttribute attribute) {
         this.attribute = attribute;
+    }
+
+    public PadSide getPadSide() {
+        return padSide;
+    }
+
+    public void setPadSide(PadSide padSide) {
+        this.padSide = padSide;
+    }
+
+    public MissingAttribute getMissingAttribute() {
+        return missingAttribute;
+    }
+
+    public void setMissingAttribute(MissingAttribute missingAttribute) {
+        this.missingAttribute = missingAttribute;
+    }
+
+    @Override
+    public MessageSourceResolvable getMessage() {
+        MessageSourceResolvable  messageSourceResolvable = null;
+        if(fieldType != null){
+            if(fieldType == FieldType.ATTRIBUTE){
+                messageSourceResolvable = attribute.getAttribute().getMessage();
+            }else{
+                messageSourceResolvable = fieldType.getMessage();
+            }
+        }
+        return messageSourceResolvable;
     }
 }

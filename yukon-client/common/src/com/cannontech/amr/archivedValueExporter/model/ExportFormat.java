@@ -3,7 +3,6 @@ package com.cannontech.amr.archivedValueExporter.model;
 import java.util.List;
 
 import com.cannontech.common.util.LazyList;
-import com.google.common.collect.Lists;
 
 public class ExportFormat {
     private int formatId;
@@ -59,10 +58,6 @@ public class ExportFormat {
         this.fields = fields;
     }
     public void addAttribute(ExportAttribute attribute) {
-        if(attributes == null){
-            attributes =Lists.newArrayList();
-        }
         attributes.add(attribute);
     }
-   
 }

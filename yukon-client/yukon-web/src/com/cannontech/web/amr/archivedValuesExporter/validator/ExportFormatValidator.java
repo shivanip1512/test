@@ -10,7 +10,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterBackingBean;
 
 public class ExportFormatValidator extends SimpleValidator<ArchivedValuesExporterBackingBean>{
-    private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
+    @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     
     private static final String formatNameRequired = "yukon.web.modules.amr.archivedValueExporter.formatError.formatNameRequired";
     private static final String delimiterRequired = "yukon.web.modules.amr.archivedValueExporter.formatError.delimiterRequired";
@@ -24,8 +24,13 @@ public class ExportFormatValidator extends SimpleValidator<ArchivedValuesExporte
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "format.formatName", formatNameRequired);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "format.formatName", target.getFormat().getFormatName(), 100);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "format.delimiter", target.getFormat().getDelimiter(), 20);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "format.header", target.getFormat().getHeader(), 255);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "format.footer", target.getFormat().getFooter(), 255);
+        
         if (!errors.hasErrors() && target.getFormat().getFormatId() == 0) {
-            ExportFormat format = archiveValuesExportFormatDao.getByFormatName(target.getFormat().getFormatName());
+            ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormat().getFormatName());
             if (format != null) {
                 errors.rejectValue("format.formatName", duplicateName);
             }
@@ -35,10 +40,4 @@ public class ExportFormatValidator extends SimpleValidator<ArchivedValuesExporte
             errors.reject(fieldsRequired);
         }
     }
-
-    @Autowired
-    public void setArchiveValuesExportFormatDao(ArchiveValuesExportFormatDao archiveValuesExportFormatDao) {
-        this.archiveValuesExportFormatDao = archiveValuesExportFormatDao;
-    }
-    
 }

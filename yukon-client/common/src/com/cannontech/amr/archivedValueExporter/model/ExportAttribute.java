@@ -3,13 +3,13 @@ package com.cannontech.amr.archivedValueExporter.model;
 import com.cannontech.common.pao.attribute.model.Attribute;
 
 
-public class ExportAttribute {
+public class ExportAttribute{
     
     private int attributeId;
     private int formatId;
     private Attribute attribute;
     private DataSelection dataSelection;
-    private int daysPrevious = 1;
+    private Integer daysPrevious = 1;
     
     public int getAttributeId() {
         return attributeId;
@@ -35,11 +35,10 @@ public class ExportAttribute {
     public void setDataSelection(DataSelection dataSelection) {
         this.dataSelection = dataSelection;
     }
-    public int getDaysPrevious() {
+    public Integer getDaysPrevious() {
         return daysPrevious;
     }
-    public void setDaysPrevious(int daysPrevious) {
+    public void setDaysPrevious(Integer daysPrevious) {
         this.daysPrevious = daysPrevious;
     }
-
 }

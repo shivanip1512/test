@@ -2,6 +2,7 @@ package com.cannontech.web.amr.archivedValuesExporter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -13,11 +14,12 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.util.LazyList;
 import com.google.common.collect.Lists;
 
-public class ArchivedValuesExporterBackingBean {
+public class ArchivedValuesExporterBackingBean{
 
     private DeviceCollection deviceCollection;
 
@@ -31,16 +33,24 @@ public class ArchivedValuesExporterBackingBean {
     private ExportFormat format = new ExportFormat();
     private ExportAttribute exportAttribute = new ExportAttribute();
     private ExportField exportField = new ExportField();
+    
+    private String plainText;
+    private String valuePattern;
+    private String timestampPattern;
 
     private String popupToOpen;
     private int rowIndex = -1;
+    private String preview;
 
     private String endDate;
+    
+    private String pageNameKey;
 
-    {
+    public ArchivedValuesExporterBackingBean(){
+        int id = 0;
         for (FieldType type : FieldType.values()) {
-            if (!type.equals(FieldType.ATTRIBUTE)) {
-                Field field = new Field(fieldSelect.size() + 1, type, null, type.getDescription());
+            if (type != FieldType.ATTRIBUTE) {
+                Field field = new Field(--id, type, null);
                 fieldSelect.add(field);
             }
         }
@@ -138,11 +148,19 @@ public class ArchivedValuesExporterBackingBean {
             format.getAttributes().add(exportAttribute);
         } else {
             format.getAttributes().set(rowIndex, exportAttribute);
+            Iterator<ExportField> it = format.getFields().iterator();
+            while (it.hasNext()) {
+                ExportField field = it.next();
+                if (field.getAttribute() != null
+                    && field.getAttribute().getAttributeId() == exportAttribute.getAttributeId()) {
+                    field.setAttribute(exportAttribute);
+                }
+            }
         }
         setExportAttribute(new ExportAttribute());
     }
-
-    private int getNextAttributeId() {
+    
+   private int getNextAttributeId() {
         int nextId = 1;
         if (!format.getAttributes().isEmpty()) {
             List<Integer> ids = new ArrayList<Integer>();
@@ -154,8 +172,25 @@ public class ArchivedValuesExporterBackingBean {
         return nextId;
     }
 
+
     public void addSelectedField() {
         ExportField exportField = getExportField();
+        if (FieldType.ATTRIBUTE == exportField.getFieldType()) {
+            List<Field> fields = getFieldSelect();
+            for (Field field : fields) {
+                if (getSelectedFieldId() == field.getFieldId()) {
+                    exportField.setAttribute(field.getAttribute());
+                    break;
+                }
+            }
+            if(AttributeField.TIMESTAMP == exportField.getAttributeField()){
+                exportField.setPattern(getTimestampPattern());
+            }else if(AttributeField.VALUE == exportField.getAttributeField()){
+                exportField.setPattern(getValuePattern());
+            }
+        }else if (FieldType.PLAIN_TEXT == exportField.getFieldType()) {
+            exportField.setPattern(getPlainText());
+        }
         if (rowIndex == -1) {
             format.getFields().add(exportField);
         } else {
@@ -163,16 +198,19 @@ public class ArchivedValuesExporterBackingBean {
         }
         setExportField(new ExportField());
     }
-
-    private Field getField() {
-        List<Field> fields = getFieldSelect();
-        for (Field field : fields) {
-            if (field.getFieldId() == getSelectedFieldId()) {
-                return field;
+    
+    public void copyPattern(ExportField exportField) {
+        if (FieldType.ATTRIBUTE == exportField.getFieldType()) {
+            if (AttributeField.TIMESTAMP == exportField.getAttributeField()) {
+                setTimestampPattern(exportField.getPattern());
+            } else if (AttributeField.VALUE == exportField.getAttributeField()) {
+                setValuePattern(exportField.getPattern());
             }
+        } else if (FieldType.PLAIN_TEXT == exportField.getFieldType()) {
+            setPlainText(exportField.getPattern());
         }
-        return null;
     }
+    
 
     public int getSelectedFieldId() {
         return selectedFieldId;
@@ -186,15 +224,14 @@ public class ArchivedValuesExporterBackingBean {
         ListIterator<Field> it = fieldSelect.listIterator();
         while (it.hasNext()) {
             Field field = it.next();
-            if (field.getType().equals(FieldType.ATTRIBUTE)) {
+            if (field.getType() == FieldType.ATTRIBUTE) {
                 it.remove();
             }
         }
         if (!format.getAttributes().isEmpty()) {
             for (ExportAttribute attribute : format.getAttributes()) {
                 Field field =
-                    new Field(fieldSelect.size() + 1, FieldType.ATTRIBUTE, attribute, attribute
-                        .getAttribute().getDescription());
+                    new Field(attribute.getAttributeId(), FieldType.ATTRIBUTE, attribute);
                 fieldSelect.add(field);
             }
         }
@@ -229,26 +266,51 @@ public class ArchivedValuesExporterBackingBean {
         this.exportField = exportField;
     }
 
-    public void addFieldTypeToExportField() {
-        ExportField exoprtField = getExportField();
-        Field field = getField();
-        exoprtField.setFieldType(field.getType());
-        if (field.getType().equals(FieldType.ATTRIBUTE)) {
-            exoprtField.setAttribute(field.getAttribute());
+    
+    public void resetExportFieldValues() {
+        exportField.setFieldType(findSelectedFieldType());
+        if(exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE 
+                && StringUtils.isEmpty(getExportField().getMissingAttributeValue())){
+            exportField.setMissingAttribute(MissingAttribute.LEAVE_BLANK);
+        }if(exportField == null){
+            exportField.setMaxLength(0);
+        }
+        if (exportField.getFieldType() == FieldType.ATTRIBUTE 
+            && exportField.getAttributeField() != AttributeField.VALUE) {
+                exportField.setRoundingMode("");
         }
     }
 
-    public void setSelectedFieldId(ExportField exportField) {
+
+    public int findSelectedFieldId() {
+        int id = 0;
         List<Field> fields = getFieldSelect();
         for (Field field : fields) {
-            if (field.getType().equals(exportField.getFieldType())) {
-                selectedFieldId = field.getFieldId();
+            if (FieldType.ATTRIBUTE == exportField.getFieldType()) {
+                if (exportField.getAttribute().getAttributeId() == field.getFieldId()) {
+                    id = field.getFieldId();
+                    break;
+                }
+            }
+            else if (field.getType() == exportField.getFieldType()) {
+               id = field.getFieldId();
+               break;
             }
         }
+        return id;
     }
-
-    public String getPreview() {
-        return ExportPreviewFormatter.format(format);
+    
+    
+    public FieldType findSelectedFieldType() {
+        FieldType fieldType = null;
+        List<Field> fields = getFieldSelect();
+        for(Field field:fields){
+            if(selectedFieldId == field.getFieldId()){
+                fieldType=  field.getType();
+                break;
+            }
+        } 
+        return fieldType;
     }
 
     public String getEndDate() {
@@ -259,17 +321,52 @@ public class ArchivedValuesExporterBackingBean {
         this.endDate = endDate;
     }
 
-    public void prefillExportField() {
-        addFieldTypeToExportField();
-        if (StringUtils.isBlank(exportField.getMissingAttributeValue())) {
-            exportField.setMissingAttributeValue("Leave Blank");
-        }
-        if (exportField.getAttributeField() != null && exportField.getAttributeField()
-            .equals(AttributeField.TIMESTAMP)) {
-            if (StringUtils.isBlank(exportField.getPattern())) {
-                exportField.setPattern("dd/MM/yyyy");
-            }
-        }
+    public String getPreview() {
+        return preview;
     }
 
+    public void setPreview(List<String> preview) {
+        StringBuilder report = new StringBuilder();
+        for (int i = 0; i < preview.size(); i++) {
+            report.append(preview.get(i));
+            if (i != preview.size() - 1) {
+                report.append("<BR>");
+            }
+        }
+        this.preview = report.toString();
+    }
+
+    public String getPageNameKey() {
+        return pageNameKey;
+    }
+
+    public void setPageNameKey(String pageNameKey) {
+        this.pageNameKey = pageNameKey;
+    }
+
+
+    public String getValuePattern() {
+        return valuePattern;
+    }
+
+    public void setValuePattern(String valuePattern) {
+        this.valuePattern = valuePattern;
+    }
+
+    public String getTimestampPattern() {
+        return timestampPattern;
+    }
+
+    public void setTimestampPattern(String timeStampPattern) {
+        this.timestampPattern = timeStampPattern;
+    }
+
+    public String getPlainText() {
+        return plainText;
+    }
+
+    public void setPlainText(String plainText) {
+        this.plainText = plainText;
+    }
+    
 }

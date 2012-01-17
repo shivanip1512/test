@@ -33,6 +33,11 @@ public interface RawPointHistoryDao {
         FORWARD, REVERSE
     }
     
+    public enum OrderBy {
+        TIMESTAMP, VALUE
+    }
+    
+    
     public enum Clusivity {
         INCLUSIVE_EXCLUSIVE(true, false),
         EXCLUSIVE_INCLUSIVE(false, true),
@@ -140,6 +145,27 @@ public interface RawPointHistoryDao {
      * @return
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
+    
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
+     * such that the RPH values for each PAO will be accessible (and ordered) on their own. For any pao in "paos", the following will
+     * be true:
+     * 
+     * result.get(pao).size() <= maxRows
+     * 
+     * @param paos The Iterable of PAOs
+     * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
+     * @param startDate The lower limit for the timestamp of the values to return, may be null
+     * @param stopDate The upper limit for the timestamp of the values to return, may be null
+     * @param maxRows The maximum number of rows to return for each PAO
+     * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering  [ASC, DESC]
+     * @param orderBy - controls field to order by  [timestamp, value]
+     * @return
+     */
+    
+   public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, Clusivity clusivity, Order order, OrderBy orderBy);
     
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos, String pointName, Date startDate, Date stopDate, int maxRows, Clusivity clusivity, Order order);
 

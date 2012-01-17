@@ -15,7 +15,8 @@ public class ExportAttributeValidator extends SimpleValidator<ArchivedValuesExpo
 
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
-        if (target.getExportAttribute().getDaysPrevious() < 1) {
+        if (target.getExportAttribute().getDaysPrevious() == null
+                || target.getExportAttribute().getDaysPrevious() < 1) {
             errors.rejectValue("exportAttribute.daysPrevious", daysPrevious);
         }
     }

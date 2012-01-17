@@ -92,10 +92,6 @@ div.simplePopup {
   top: 15%;
 }
 
-div.secondLevelPopup {
-    z-index: 101;
-}
-
 div.simplePopup div.content, .popupScrollArea {
   overflow-y: auto;
   overflow-x: hidden;
@@ -1715,3 +1711,7 @@ input.working {
 tr.ui-priority-secondary {
     background: #fff;
 }
+
+.helpDialogContents {
+    max-width: 800px;
+ }

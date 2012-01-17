@@ -176,9 +176,10 @@
                             <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
                                 action="/spring/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
                         </cti:checkProperty>        
-                            
-                        <tags:collectionActionTr buttonValue="${archivedValueDataExporterLabel}" description="${archivedValueDataExporterDescription}"
-                            action="/spring/amr/archivedValuesExporter/view" deviceCollection="${deviceCollection}"/>
+                       <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORTER">
+                            <tags:collectionActionTr buttonValue="${archivedValueDataExporterLabel}" description="${archivedValueDataExporterDescription}"
+                                action="/spring/amr/archivedValuesExporter/view" deviceCollection="${deviceCollection}"/>
+                       </cti:checkRolesAndProperties>
                     </table>
                 </tags:sectionContainer>
             </cti:dataGridCell>

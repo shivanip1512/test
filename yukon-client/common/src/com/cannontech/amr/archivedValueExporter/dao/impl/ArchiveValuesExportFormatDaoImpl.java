@@ -23,6 +23,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 
@@ -30,8 +32,8 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
 
     public static final String TABLE_NAME = "ArchiveValuesExportFormat";
    
-    private final ParameterizedRowMapper<ExportFormat> rowMapper = createRowMapper();
-    private final ParameterizedRowMapper<ExportFormat> formatIdAndFormatNameRowMapper = createFormatIdAndFormatNameRowMapper();
+    private final YukonRowMapper<ExportFormat> rowMapper = createRowMapper();
+    private final YukonRowMapper<ExportFormat> formatIdAndFormatNameRowMapper = createFormatIdAndFormatNameRowMapper();
    
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -104,7 +106,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     }
     
     @Override
-    public ExportFormat getByFormatName(String formatName) {
+    public ExportFormat findByFormatName(String formatName) {
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -112,11 +114,9 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE FormatName").eq(formatName);
-            List <ExportFormat> formats = yukonJdbcTemplate.query(sql, rowMapper);
-            if(!formats.isEmpty()){
-                format  = formats.get(0);
-            }
+            format = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex) {
+            // returns null if the format was not found
         }
         return format;
     }
@@ -130,16 +130,16 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         return yukonJdbcTemplate.query(sql,  formatIdAndFormatNameRowMapper);
     }
     
-    private ParameterizedRowMapper<ExportFormat> createRowMapper() {
-        final ParameterizedRowMapper<ExportFormat> mapper = new ParameterizedRowMapper<ExportFormat>() {
+    private YukonRowMapper<ExportFormat> createRowMapper() {
+        final YukonRowMapper<ExportFormat> mapper = new YukonRowMapper<ExportFormat>() {
             @Override
-            public ExportFormat mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
                 final ExportFormat format = new ExportFormat();
                 format.setFormatId(rs.getInt("FormatID"));
-                format.setFormatName(SqlUtils.convertDbValueToString(rs, "FormatName"));
-                format.setDelimiter(SqlUtils.convertDbValueToString(rs, "Delimiter"));
-                format.setHeader(SqlUtils.convertDbValueToString(rs, "Header"));
-                format.setFooter(SqlUtils.convertDbValueToString(rs, "Footer"));
+                format.setFormatName(rs.getStringSafe("FormatName"));
+                format.setDelimiter(rs.getStringSafe("Delimiter"));
+                format.setHeader(rs.getStringSafe("Header"));
+                format.setFooter(rs.getStringSafe("Footer"));
                 format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
                 format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
                 return format ;
@@ -148,13 +148,13 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         return mapper;
     }
     
-    private ParameterizedRowMapper<ExportFormat> createFormatIdAndFormatNameRowMapper() {
-        final ParameterizedRowMapper<ExportFormat> mapper = new ParameterizedRowMapper<ExportFormat>() {
+    private YukonRowMapper<ExportFormat> createFormatIdAndFormatNameRowMapper() {
+        final YukonRowMapper<ExportFormat> mapper = new YukonRowMapper<ExportFormat>() {
             @Override
-            public ExportFormat mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
                 final ExportFormat format = new ExportFormat();
                 format.setFormatId(rs.getInt("FormatID"));
-                format.setFormatName(SqlUtils.convertDbValueToString(rs, "FormatName"));
+                format.setFormatName(rs.getStringSafe("FormatName"));
                 return format ;
             }
         };

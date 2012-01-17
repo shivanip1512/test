@@ -2,6 +2,9 @@ package com.cannontech.common.pao.attribute.model;
 
 import java.util.Set;
 
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
@@ -256,4 +259,8 @@ public enum BuiltInAttribute implements Attribute {
         return this.name();
     }
 
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return YukonMessageSourceResolvable.createDefault("yukon.common.attribute.builtInAttribute." + name(), description);
+    }
 }

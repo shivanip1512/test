@@ -1,15 +1,22 @@
-package com.cannontech.web.amr.archivedValuesExporter;
+package com.cannontech.amr.archivedValueExporter.service.impl;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
+import com.cannontech.amr.archivedValueExporter.model.PadSide;
 
 public class ExportValueFormatter {
     
     // This method takes care of any modifying that needs to take place
        // on the valueString to output the wanted representation 
-       public static String formatValue(ExportField field, String valueString) {
+       public static String padValue(ExportField field, String valueString) {
            // This if checks to see if we need more padding or 
            // to truncate from the front of the value
            if(field.getMaxLength() > 0) {
@@ -23,10 +30,10 @@ public class ExportValueFormatter {
                            paddedStr += field.getPadChar();
                        }
                        // Put the padding on the left or right
-                       if (field.getPadSide().equalsIgnoreCase("left")) {
+                       if (field.getPadSide() == PadSide.LEFT) {
                            valueString = paddedStr + valueString;
                        }
-                       if (field.getPadSide().equalsIgnoreCase("right")) {
+                       else if (field.getPadSide() == PadSide.RIGHT) {
                            valueString += paddedStr;
                        }
                    }
@@ -39,6 +46,19 @@ public class ExportValueFormatter {
            return valueString;
        }
 
+      
+    public static String formatValue(double value, ExportField field) {
+        DecimalFormat formatter = new DecimalFormat(field.getPattern());
+        formatter.setRoundingMode(RoundingMode.valueOf(field.getRoundingMode()));
+        String formatedValue = formatter.format(value);
+        return formatedValue;
+    }
+
+    public static String formatTimestamp(DateTime timeStamp, ExportField field) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(field.getPattern());
+        String formatedDate = timeStamp.toString(formatter);
+        return formatedDate;
+    }
        
        public static String  formatHeader(ExportFormat format) {
            if (!StringUtils.isEmpty(format.getHeader())) {

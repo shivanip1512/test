@@ -1,13 +1,9 @@
 package com.cannontech.web.amr.archivedValuesExporter.validator;
 
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
-
-
 
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
@@ -15,12 +11,13 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterBackingBean;
 
-
 public class ExportFieldValidator extends SimpleValidator<ArchivedValuesExporterBackingBean> {
     private static final String textInputRequired =
         "yukon.web.modules.amr.archivedValueExporter.formatError.textInputRequired";
     private static final String invalidPattern =
         "yukon.web.modules.amr.archivedValueExporter.formatError.invalidPattern";
+    private static final String maxLength =
+        "yukon.web.modules.amr.archivedValueExporter.formatError.lessThanZero.fieldSize";
 
     public ExportFieldValidator() {
         super(ArchivedValuesExporterBackingBean.class);
@@ -28,30 +25,40 @@ public class ExportFieldValidator extends SimpleValidator<ArchivedValuesExporter
 
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
-        if (target.getExportField().getFieldType().equals(FieldType.PLAIN_TEXT)) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors,
-                                                           "exportField.pattern",
-                                                           textInputRequired);
+        if (target.getExportField().getFieldType() == FieldType.PLAIN_TEXT ) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "plainText", textInputRequired);
+            YukonValidationUtils.checkExceedsMaxLength(errors,
+                                                       "plainText",
+                                                       target.getPlainText(),
+                                                       50);
+        } else if (target.getExportField().getMaxLength() == null
+                   || target.getExportField().getMaxLength() < 0) {
+            errors.rejectValue("exportField.maxLength", maxLength);
         }
-        if (target.getExportField().getFieldType()
-            .equals(FieldType.ATTRIBUTE)) {
-            if (target.getExportField().getAttributeField()
-                .equals(AttributeField.TIMESTAMP)) {
+
+        YukonValidationUtils.checkExceedsMaxLength(errors, "exportField.padChar", target
+            .getExportField().getPadChar(), 1);
+        YukonValidationUtils.checkExceedsMaxLength(errors,
+                                                   "exportField.missingAttributeValue",
+                                                   target.getExportField()
+                                                       .getMissingAttributeValue(),
+                                                   20);
+        if (target.getExportField().getFieldType() == FieldType.ATTRIBUTE) {
+            if (target.getExportField().getAttributeField() == AttributeField.TIMESTAMP) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "timestampPattern", target.getTimestampPattern(), 50);
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "timestampPattern", invalidPattern);
                 try {
-                    new SimpleDateFormat(target.getExportField().getPattern());
-                } catch (IllegalArgumentException e) {
-                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors,
-                                                                   "exportField.pattern",
-                                                                   invalidPattern);
+                    new SimpleDateFormat(target.getTimestampPattern());
+                } catch (Exception e) {
+                    errors.rejectValue("timestampPattern", invalidPattern);
                 }
-            } else if (target.getExportField().getAttributeField()
-                .equals(AttributeField.VALUE)) {
+            } else if (target.getExportField().getAttributeField() == AttributeField.VALUE) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "valuePattern", target.getValuePattern(), 50);
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "valuePattern", invalidPattern);
                 try {
-                    new DecimalFormat(target.getExportField().getPattern());
-                } catch (IllegalArgumentException e) {
-                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors,
-                                                                   "exportField.pattern",
-                                                                   invalidPattern);
+                    new DecimalFormat(target.getValuePattern());
+                } catch (Exception e) {
+                    errors.rejectValue("valuePattern", invalidPattern);
                 }
             }
         }

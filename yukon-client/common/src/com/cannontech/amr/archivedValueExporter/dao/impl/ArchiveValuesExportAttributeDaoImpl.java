@@ -1,12 +1,10 @@
 package com.cannontech.amr.archivedValueExporter.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttributeDao;
@@ -17,13 +15,15 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportAttributeDao{
     
     public static final String TABLE_NAME = "ArchiveValuesExportAttribute";
         
-    private final ParameterizedRowMapper<ExportAttribute> rowMapper = createRowMapper();
+    private final YukonRowMapper<ExportAttribute> rowMapper = createRowMapper();
     @Autowired  private NextValueHelper nextValueHelper;
     @Autowired  private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -67,15 +67,15 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
         }
     }
     
-    private ParameterizedRowMapper<ExportAttribute> createRowMapper() {
-        final ParameterizedRowMapper<ExportAttribute> mapper = new ParameterizedRowMapper<ExportAttribute>() {
+    private YukonRowMapper<ExportAttribute> createRowMapper() {
+        final YukonRowMapper<ExportAttribute> mapper = new YukonRowMapper<ExportAttribute>() {
             @Override
-            public ExportAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public ExportAttribute mapRow(YukonResultSet rs) throws SQLException {
                 final ExportAttribute attribute = new ExportAttribute();
                 attribute.setFormatId(rs.getInt("FormatID"));
                 attribute.setAttributeId(rs.getInt("AttributeID"));
-                attribute.setAttribute(BuiltInAttribute.valueOf(rs.getString("AttributeName")));
-                attribute.setDataSelection(DataSelection.valueOf(rs.getString("DataSelection")));
+                attribute.setAttribute(rs.getEnum("AttributeName", BuiltInAttribute.class));
+                attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
                 attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
                 return attribute;
             }

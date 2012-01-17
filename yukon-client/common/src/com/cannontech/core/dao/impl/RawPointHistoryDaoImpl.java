@@ -151,7 +151,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     public static void appendOrderByClause(SqlBuilder sql, Order order) {
-        sql.append("ORDER BY rph.timestamp");
+        appendOrderByClause(sql,order,OrderBy.TIMESTAMP);
+    }
+    
+    public static void appendOrderByClause(SqlBuilder sql, Order order, OrderBy orderBy) {
+        sql.append("ORDER BY");
+        if (orderBy == OrderBy.TIMESTAMP) {
+            sql.append("rph.timestamp");
+        }else if (orderBy == OrderBy.VALUE) {
+            sql.append("rph.value");
+        }
         if (order == Order.REVERSE) {
             sql.append("DESC");
         }
@@ -226,6 +235,51 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
     }
 
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
+                                                                                        Attribute attribute,
+                                                                                        final Date startDate,
+                                                                                        final Date stopDate,
+                                                                                        final int maxRows,
+                                                                                        final boolean excludeDisabledPaos,
+                                                                                        final Clusivity clusivity,
+                                                                                        final Order order,
+                                                                                        final OrderBy orderBy) {
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT * FROM (");
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append("rph.value, rph.quality, p.pointtype");
+                        sql.append(", ROW_NUMBER() OVER (");
+                        sql.append("PARTITION BY rph.pointid");
+                        appendOrderByClause(sql, order, orderBy);
+                        sql.append(") rn");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append("JOIN point p ON rph.pointId = p.pointId");
+                        sql.append("JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append("AND p.PointType").eq_k(pointIdentifier.getPointType());
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                        sql.append("AND yp.PAObjectID").in(subList);
+                        if (excludeDisabledPaos) {
+                            sql.append("AND yp.DisableFlag = 'N'");
+                        }
+                        sql.append(") numberedRows");
+                        sql.append("WHERE numberedRows.rn").lte(maxRows);
+                        sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
+    
+                        return sql;
+                    }
+                };
+            }
+        };
+
+        return loadValuesForGeneratorFactory(factory,displayableDevices,attribute, maxRows,excludeDisabledPaos);
+    }
+    
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {

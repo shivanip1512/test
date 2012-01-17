@@ -298,6 +298,7 @@ public enum YukonRoleProperty {
     SEND_READ_CONFIG(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.SEND_READ_CONFIG, booleanType()),
     ARCHIVED_DATA_ANALYSIS(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.ARCHIVED_DATA_ANALYSIS, booleanType()),   
     FDR_TRANSLATION_MANAGER(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER, booleanType()),
+    ARCHIVED_DATA_EXPORTER(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.ARCHIVED_DATA_EXPORTER, booleanType()),  
     
     
     OPERATOR_ESUBSTATION_DRAWINGS_VIEW(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.VIEW, booleanType()),

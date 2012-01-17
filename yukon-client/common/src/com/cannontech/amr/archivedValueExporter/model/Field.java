@@ -1,17 +1,19 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
-public class Field {
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.common.i18n.Displayable;
+
+public class Field implements Displayable {
     
     private int fieldId;
     private FieldType type;
     private ExportAttribute attribute;
-    private String displayName;
     
-    public Field(int fieldId, FieldType type, ExportAttribute attribute, String displayName){
+    public Field(int fieldId, FieldType type, ExportAttribute attribute){
         this.fieldId = fieldId;
         this.type = type;
         this.attribute = attribute;
-        this.displayName = displayName;
         
     }
     public int getFieldId() {
@@ -33,9 +35,11 @@ public class Field {
         this.attribute = attribute;
     }
     public String getDisplayName() {
-        return displayName;
+        return type == FieldType.ATTRIBUTE? attribute.getAttribute().getKey(): type.getKey();
     }
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return type == FieldType.ATTRIBUTE? attribute.getAttribute().getMessage() : type.getMessage();
     }
 }

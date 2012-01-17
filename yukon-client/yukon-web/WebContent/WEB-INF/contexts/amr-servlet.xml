@@ -118,8 +118,6 @@
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
-<!--     <bean id="ArchivedValuesExporterController" class="com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterController"/> -->
-    
     <!-- OUTAGE PROCESSING -->
     <bean id="OutageMonitorEditorController" class="com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController"/>
     <bean id="OutageProcessingController" class="com.cannontech.web.amr.outageProcessing.OutageProcessingController"/>

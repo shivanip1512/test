@@ -31,6 +31,9 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
         if (object instanceof MessageSourceResolvable) {
             return (MessageSourceResolvable) object;
         }
+        if (object instanceof Displayable) {
+            return ((Displayable) object).getMessage();
+        }
         if (object instanceof DisplayableEnum) {
             return new YukonMessageSourceResolvable(((DisplayableEnum) object).getFormatKey());
         }
