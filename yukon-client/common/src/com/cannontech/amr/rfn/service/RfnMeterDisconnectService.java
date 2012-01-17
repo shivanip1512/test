@@ -92,7 +92,7 @@ public class RfnMeterDisconnectService {
                     callback.receivedError(message);
                 } else {
                     /* Confirmation response successful, process point data */
-                    callback.receivedSuccess();
+                    callback.receivedSuccess(confirmationReplyMessage.getState());
                 }
            }
 

@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 public class RfnMeterDisconnectConfirmationReply implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     private RfnMeterDisconnectConfirmationReplyType replyType = RfnMeterDisconnectConfirmationReplyType.TIMEOUT;
+    private RfnMeterDisconnectState state;
     
     public boolean isSuccess() {
         return replyType == RfnMeterDisconnectConfirmationReplyType.SUCCESS;
@@ -19,17 +20,20 @@ public class RfnMeterDisconnectConfirmationReply implements Serializable {
         return replyType;
     }
     
-    @Override
-    public String toString() {
-        return "RfnMeterDisconnectConfirmationReply [replyType=" + replyType + "]";
+    public void setState(RfnMeterDisconnectState state) {
+        this.state = state;
+    }
+    
+    public RfnMeterDisconnectState getState() {
+        return state;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                 + ((replyType == null) ? 0 : replyType.hashCode());
+        result = prime * result + ((replyType == null) ? 0 : replyType.hashCode());
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
         return result;
     }
 
@@ -42,11 +46,16 @@ public class RfnMeterDisconnectConfirmationReply implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         RfnMeterDisconnectConfirmationReply other = (RfnMeterDisconnectConfirmationReply) obj;
-        if (replyType == null) {
-            if (other.replyType != null)
-                return false;
-        } else if (!replyType.equals(other.replyType))
+        if (replyType != other.replyType)
+            return false;
+        if (state != other.state)
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "RfnMeterDisconnectConfirmationReply [replyType=" + replyType + ", state=" + state + "]";
+    }
+    
 }

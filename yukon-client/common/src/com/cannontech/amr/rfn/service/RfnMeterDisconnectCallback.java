@@ -2,6 +2,8 @@ package com.cannontech.amr.rfn.service;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+
 public interface RfnMeterDisconnectCallback {
     
     /**
@@ -18,9 +20,9 @@ public interface RfnMeterDisconnectCallback {
     
     /**
      * Handles the successful response for a disconnect request.
-     * @param replyType
+     * @param state the state return when doing a 'QUERY' command.
      */
-    public void receivedSuccess();
+    public void receivedSuccess(RfnMeterDisconnectState state);
     
     /**
      * Handles the errors for the response of a disconnect request.

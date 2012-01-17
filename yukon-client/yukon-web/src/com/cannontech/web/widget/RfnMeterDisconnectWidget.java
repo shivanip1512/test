@@ -13,6 +13,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
@@ -37,35 +38,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     private DynamicDataSource dynamicDataSource;
     private RfnMeterDisconnectService rfnMeterDisconnectService;
     private ConfigurationSource configurationSource;
-    private enum DisconnectState {
-        
-        UNKNOWN(0, null), 
-        CONNECTED(1, RfnMeterDisconnectStatusType.RESUME), 
-        DISCONNECTED(2, RfnMeterDisconnectStatusType.TERMINATE), 
-        ARMED(3, RfnMeterDisconnectStatusType.ARM);
-        
-        private int rawState;
-        private RfnMeterDisconnectStatusType type; 
-        
-        private DisconnectState(int rawState, RfnMeterDisconnectStatusType type) {
-            this.rawState = rawState;
-            this.type = type;
-        }
-        
-        public static DisconnectState getForType(RfnMeterDisconnectStatusType type) {
-            for (DisconnectState state : values()) {
-                if (state.type == type) {
-                    return state;
-                }
-            }
-            throw new IllegalArgumentException();
-        }
-        
-        public int getRawState() {
-            return rawState;
-        }
-        
-    };
+    
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectWidget.class);
     
     @RequestMapping
@@ -132,9 +105,16 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
             }
 
             @Override
-            public void receivedSuccess() {
+            public void receivedSuccess(RfnMeterDisconnectState state) {
+                // state will only be used as the state of the meter when doing
+                // a 'QUERY' command for now.  This may change based on what
+                // NM will decide to set this as for connect/disconnect/arm commands.
                 model.addAttribute("responseSuccess", true);
-                publishPointData(action, meter);
+                if (action == RfnMeterDisconnectStatusType.QUERY) {
+                    publishPointData(state.getRawState(), meter);
+                } else {
+                    publishPointData(RfnMeterDisconnectState.getForType(action).getRawState(), meter);
+                }
             }
 
             @Override
@@ -152,12 +132,12 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         
     }
     
-    private void publishPointData(RfnMeterDisconnectStatusType action, RfnMeter meter) {
+    private void publishPointData(int rawState, RfnMeter meter) {
         LitePoint point = getDisconnectStatusPoint(meter);
         PointData pointData = new PointData();
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
-        pointData.setValue(DisconnectState.getForType(action).getRawState());
+        pointData.setValue(rawState);
         pointData.setTime(new Date());
         pointData.setType(point.getPointType());
         
