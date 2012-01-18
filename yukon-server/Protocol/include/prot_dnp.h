@@ -137,6 +137,8 @@ public:
         Command_SetDigitalOut_SBO_Operate,
         Command_SetDigitalOut_SBO_SelectOnly,
 
+        Command_ResetDeviceRestartBit,
+
         Command_Loopback,  //  actually a time-delay request
 
         Command_UnsolicitedEnable,

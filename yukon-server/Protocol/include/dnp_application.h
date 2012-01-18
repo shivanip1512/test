@@ -168,6 +168,7 @@ public:
     //  post-completion processing
     void getObjects( object_block_queue &object_queue );
     std::string getInternalIndications( void ) const;
+    bool hasDeviceRestarted() const;
 
     enum FunctionCode
     {

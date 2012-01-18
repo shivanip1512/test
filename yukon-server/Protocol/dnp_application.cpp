@@ -280,7 +280,9 @@ void ApplicationLayer::getObjects( object_block_queue &ob_queue )
 
 string ApplicationLayer::getInternalIndications( void ) const
 {
-    string iin = "Internal indications:\n";
+    string iin;
+
+    if( _iin.raw )          iin += "Internal indications:\n";
 
     if( _iin.all_stations ) iin += "Broadcast message received\n";
     if( _iin.class_1      ) iin += "Class 1 data available\n";
@@ -289,7 +291,7 @@ string ApplicationLayer::getInternalIndications( void ) const
     if( _iin.need_time    ) iin += "Time synchronization needed\n";
     if( _iin.local        ) iin += "Some digital output points in local mode - control disabled\n";
     if( _iin.dev_trouble  ) iin += "Device trouble (see device spec for details)\n";
-    if( _iin.restart      ) iin += "User application restarted\n";
+    if( _iin.restart      ) iin += "Device restart\n";
 
     if( _iin.bad_function ) iin += "Function code not implemented\n";
     if( _iin.obj_unknown  ) iin += "Requested objects unknown\n";
@@ -299,6 +301,12 @@ string ApplicationLayer::getInternalIndications( void ) const
     if( _iin.bad_config   ) iin += "DNP configuration is corrupt\n";
 
     return iin;
+}
+
+
+bool ApplicationLayer::hasDeviceRestarted() const
+{
+    return _iin.restart;
 }
 
 

@@ -13,6 +13,7 @@
 #include "dnp_object_analogoutput.h"
 #include "dnp_object_counter.h"
 #include "dnp_object_time.h"
+#include "dnp_object_internalindications.h"
 
 using std::endl;
 using std::string;
@@ -126,6 +127,19 @@ int DNPInterface::generate( CtiXfer &xfer )
             case Command_UnsolicitedDisable:
             {
                 _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited);
+
+                break;
+            }
+            case Command_ResetDeviceRestartBit:
+            {
+                InternalIndications *restart = new InternalIndications(InternalIndications::II_InternalIndications);
+                restart->setValue(false);
+
+                ObjectBlock *iin = new ObjectBlock(ObjectBlock::NoIndex_ByteStartStop, restart->getGroup(), restart->getVariation());
+                iin->addObjectRange(restart, 7, 7);
+
+                _app_layer.setCommand(ApplicationLayer::RequestWrite);
+                _app_layer.addObjectBlock(iin);
 
                 break;
             }
@@ -573,8 +587,16 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
             }
 
-            //  set final = false in the above switch statement if you want to do anything crazy (like SBO)
-            setCommand(Command_Complete);
+            if( _app_layer.hasDeviceRestarted() && _command != Command_ResetDeviceRestartBit )
+            {
+                _string_results.push_back(new string("Attempting to clear Device Restart bit"));
+
+                setCommand(Command_ResetDeviceRestartBit);
+            }
+            else
+            {
+                setCommand(Command_Complete);
+            }
         }
     }
 

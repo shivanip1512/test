@@ -148,14 +148,14 @@ void ObjectBlock::init( QualifierType type, int group, int variation )
         case ShortIndex_ShortQty:
         case NoIndex_NoRange:
         case NoIndex_ShortQty:
+        case NoIndex_ByteStartStop:
+        case NoIndex_ShortStartStop:
         {
             _qualifier = type;
 
             break;
         }
 
-        case NoIndex_ByteStartStop:
-        case NoIndex_ShortStartStop:
         default:
         {
             {
@@ -295,9 +295,6 @@ bool ObjectBlock::addObjectIndex( const Object *object, int index )
                     break;
                 }
 
-                case NoIndex_ByteQty:
-                case NoIndex_NoRange:
-                case NoIndex_ShortQty:
                 default:
                 {
                     {
@@ -322,11 +319,69 @@ bool ObjectBlock::addObjectIndex( const Object *object, int index )
 }
 
 
-/*void ObjectBlock::addRange( Object *object, int start, int stop )
+bool ObjectBlock::addObjectRange( Object *objectArray, const unsigned start, const unsigned stop )
 {
+    bool success = false;
 
+    switch( _qualifier )
+    {
+        case NoIndex_ByteStartStop:
+        case NoIndex_ShortStartStop:
+        {
+            if( objectArray )
+            {
+                _start = start;
+
+                for( unsigned index = start; index <= stop; ++index )
+                {
+                    Object *object = objectArray + index - start;
+
+                    if( _group < 0 )
+                    {
+                        _group     = object->getGroup();
+                        _variation = object->getVariation();
+                    }
+
+                    if( object->getGroup()     == _group &&
+                        object->getVariation() == _variation )
+                    {
+                        _objectList.push_back(object);
+
+                        success = true;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - attempt to insert mismatched group and variation into an object block **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** current: (" << _group << ", " << _variation << ")  attempted: (" << object->getGroup() << ", " << object->getVariation() << ") ****" << endl;
+
+                        success = false;
+                    }
+                }
+
+                break;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - null object array (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                break;
+            }
+        }
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - attempt to use invalid qualifier (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return success;
 }
-*/
 
 
 unsigned ObjectBlock::size( void ) const

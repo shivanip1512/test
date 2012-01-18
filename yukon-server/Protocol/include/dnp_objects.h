@@ -119,7 +119,7 @@ public:
 
     bool addObject( const Object *object );
     bool addObjectIndex( const Object *object, int index );
-//    void addRange( Object *objArray, int start, int stop );
+    bool addObjectRange( Object *objectArray, const unsigned start, const unsigned stop );
 
     unsigned size( void )  const;
     bool     empty( void ) const;

@@ -8,12 +8,17 @@ namespace DNP       {
 
 class IM_EX_PROT InternalIndications : public Object
 {
+private:
+
+    bool _value;
+
 protected:
 
     InternalIndications(int group, int variation) :
         Object(group, variation)
     {
         _valid = false;
+        _value = false;
     };
 
 public:
@@ -22,6 +27,7 @@ public:
         Object(Group, variation)
     {
         _valid = false;
+        _value = false;
     };
 
     enum Variation
@@ -33,6 +39,11 @@ public:
     {
         Group = 80
     };
+
+    void setValue(bool value);
+
+    virtual int serialize(unsigned char *buf) const;
+    virtual int getSerializedLen(void) const;
 
     virtual int restoreBits(const unsigned char *buf, int bitoffset, int len);
 };

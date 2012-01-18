@@ -20,8 +20,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
 
         BOOST_CHECK_EQUAL(80,    iin.getGroup());
         BOOST_CHECK_EQUAL( 1,    iin.getVariation());
-        BOOST_CHECK_EQUAL( 0,    iin.getSerializedLen());
-        BOOST_CHECK_EQUAL( 0,    iin.serialize(NULL));
         BOOST_CHECK_EQUAL(false, iin.isValid());
 
         BOOST_CHECK_EQUAL(0,     iin.restore(NULL, 0));
@@ -37,12 +35,33 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
     }
 
     {
+        Cti::Protocol::DNP::InternalIndications iin(Cti::Protocol::DNP::InternalIndications::II_InternalIndications);
+
+        BOOST_CHECK_EQUAL(80,    iin.getGroup());
+        BOOST_CHECK_EQUAL( 1,    iin.getVariation());
+
+        unsigned char buf = 17;
+
+        iin.setValue(true);
+
+        BOOST_CHECK_EQUAL( 1,    iin.getSerializedLen());
+        BOOST_CHECK_EQUAL( 1,    iin.serialize(&buf));
+
+        BOOST_CHECK_EQUAL( 1,    buf);
+
+        iin.setValue(false);
+
+        BOOST_CHECK_EQUAL( 1,    iin.getSerializedLen());
+        BOOST_CHECK_EQUAL( 1,    iin.serialize(&buf));
+
+        BOOST_CHECK_EQUAL( 0,    buf);
+    }
+
+    {
         Cti::Protocol::DNP::InternalIndications iin(-1);
 
         BOOST_CHECK_EQUAL( 80,   iin.getGroup());
         BOOST_CHECK_EQUAL(255,   iin.getVariation());  //  getVariation returns an unsigned char
-        BOOST_CHECK_EQUAL(  0,   iin.getSerializedLen());
-        BOOST_CHECK_EQUAL(  0,   iin.serialize(NULL));
         BOOST_CHECK_EQUAL(false, iin.isValid());
 
         BOOST_CHECK_EQUAL(  0,   iin.restore(NULL, 0));
@@ -62,8 +81,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
 
         BOOST_CHECK_EQUAL(80,    iin.getGroup());
         BOOST_CHECK_EQUAL( 2,    iin.getVariation());  //  getVariation returns an unsigned char
-        BOOST_CHECK_EQUAL( 0,    iin.getSerializedLen());
-        BOOST_CHECK_EQUAL( 0,    iin.serialize(NULL));
         BOOST_CHECK_EQUAL(false, iin.isValid());
 
         BOOST_CHECK_EQUAL( 0,    iin.restore(NULL, 0));
