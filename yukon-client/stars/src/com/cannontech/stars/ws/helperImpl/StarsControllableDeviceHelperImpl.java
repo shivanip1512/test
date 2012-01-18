@@ -106,10 +106,10 @@ public class StarsControllableDeviceHelperImpl implements
     /**
      * Returns the YukonListEntry id value for deviceInfo.deviceType
      * Performs initial validation on deviceType as defined by getDeviceType(deviceInfo).
-     * Throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType
      * @param deviceInfo
      * @param energyCompany
      * @return deviceTypeId - yukonListEntry id value.
+     * @throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType 
      */
     private int getDeviceTypeId(StarsControllableDeviceDTO deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
