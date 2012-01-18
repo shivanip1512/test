@@ -7,6 +7,7 @@ import java.util.Set;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.model.CancelZigbeeText;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMGroupDao;
@@ -14,6 +15,7 @@ import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
@@ -34,7 +36,7 @@ public class DigiXMLBuilder {
     private static int serverClient = 1;
     
     public String buildInstallEndPointMessage(ZigbeeDevice gateway, ZigbeeEndpoint endpoint) {
-        String gatewayMacAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+        DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
         String endpointMac = endpoint.getMacAddress();
         String installCode = endpoint.getInstallCode();
         installCode = installCode.replaceAll(":","");
@@ -45,7 +47,7 @@ public class DigiXMLBuilder {
         String xml = "<sci_request version=\"1.0\">" +
                         "<send_message>" +
                             "<targets>" +
-                                "<device id=\"" + gatewayMacAddress + "\"/>" +
+                                "<device id=\"" + connectwareId.getDevConnectwareId() + "\"/>" +
                             "</targets>" +
                             "<rci_request version=\"1.1\">" +
                                 "<do_command target=\"RPC_request\">" +
@@ -66,7 +68,7 @@ public class DigiXMLBuilder {
     }
     
     public String buildUninstallEndPointMessage(ZigbeeDevice gateway, ZigbeeDevice device) {
-        String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+        DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
         
         String endpointMac = device.getZigbeeMacAddress();
         endpointMac = endpointMac.replaceAll(":","");
@@ -75,7 +77,7 @@ public class DigiXMLBuilder {
                "<sci_request version=\"1.0\">"
             + "  <send_message>"
             + "    <targets>"
-            + "      <device id=\"" + macAddress + "\"/>"
+            + "      <device id=\"" + connectwareId.getDevConnectwareId() + "\"/>"
             + "    </targets>"
             + "    <rci_request version=\"1.1\">"
             + "      <do_command target=\"RPC_request\">"
@@ -90,8 +92,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildTextMessage(ZigbeeDevice gateway, ZigbeeTextMessage message) {
-        String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+    public String buildTextMessage(List<ZigbeeDevice> gateways, ZigbeeTextMessage message) {
         int confirmationValue = message.isConfirmationRequired() ? 128:0;
         
         long startTimeSeconds = 0; // Zero means now
@@ -105,9 +106,15 @@ public class DigiXMLBuilder {
         String xml = 
                "<sci_request version=\"1.0\">"
             + "  <send_message>"
-            + "    <targets>"
-            + "      <device id=\"" + macAddress + "\"/>"
-            + "    </targets>"
+
+            + "    <targets>";
+            for (ZigbeeDevice gateway : gateways) {
+                DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
+
+                xml += "      <device id=\"" + connectwareId.getDevConnectwareId() + "\"/>";
+            }
+            xml += "    </targets>"
+                    
             + "    <rci_request version=\"1.1\">"
             + "      <do_command target=\"RPC_request\">"
             + "        <create_message_event synchronous=\"true\">"
@@ -127,6 +134,34 @@ public class DigiXMLBuilder {
         return xml;
     }
     
+    public String buildCancelMessageEvent(List<ZigbeeDevice> gateways, CancelZigbeeText cancelZigbeeText) {
+        String xml = 
+               "<sci_request version=\"1.0\">"
+            + "  <send_message>"
+
+            + "    <targets>";
+            for (ZigbeeDevice gateway : gateways) {
+                DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
+
+                xml += "      <device id=\"" + connectwareId.getDevConnectwareId() + "\"/>";
+            }
+            xml += "    </targets>"
+                    
+            + "    <rci_request version=\"1.1\">"
+            + "      <do_command target=\"RPC_request\">"
+            + "        <cancel_message_event synchronous=\"true\">"
+            + "          <record type=\"CancelMessageRecord\">"
+            + "            <message_id>" + cancelZigbeeText.getMessageId() + "</message_id>"
+            + "          </record>"
+            + "        </cancel_message_event>"
+            + "      </do_command>"
+            + "    </rci_request>"
+            + "  </send_message>"
+            + "</sci_request>";
+        
+        return xml;
+    }
+    
     public String buildSEPControlMessage(int eventId,  List<ZigbeeDevice> gateways, SepControlMessage controlMessage) {
         int groupId = controlMessage.getGroupId();
         
@@ -138,10 +173,10 @@ public class DigiXMLBuilder {
         byte utilEnrollmentGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(groupId);
         
         //Get gateways on the group
-        Set<String> macAddresses = Sets.newHashSet();        
+        Set<String> connectwareIds = Sets.newHashSet();        
         for (ZigbeeDevice gateway : gateways) {
-            String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
-            macAddresses.add(macAddress);
+            DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
+            connectwareIds.add(connectwareId.getDevConnectwareId());
         }
         
         String xml = 
@@ -149,8 +184,8 @@ public class DigiXMLBuilder {
         + "  <send_message>"
         + "    <targets>";
             //Setup all gateway MacAddresses
-            for (String macAddress : macAddresses) {
-                xml += "      <device id=\"" + macAddress + "\"/>";
+            for (String connectwareId : connectwareIds) {
+                xml += "      <device id=\"" + connectwareId + "\"/>";
             }
         xml += "</targets>"
         + "    <rci_request version=\"1.1\">"
@@ -221,8 +256,8 @@ public class DigiXMLBuilder {
         List<String> macAddresses = Lists.newArrayList();
 
         for (ZigbeeDevice gateway : gateways) {
-            String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
-            macAddresses.add(macAddress);
+            DevConnectwareId macAddress = new DevConnectwareId(gateway.getZigbeeMacAddress());
+            macAddresses.add(macAddress.getDevConnectwareId());
         }
         
         String xml = 
@@ -230,8 +265,8 @@ public class DigiXMLBuilder {
         + "  <send_message>"
         + "    <targets>";
             //Setup all gateway MacAddresses
-            for (String macAddress : macAddresses) {
-                xml += "      <device id=\"" + macAddress + "\"/>";
+            for (String connectwareId : macAddresses) {
+                xml += "      <device id=\"" + connectwareId + "\"/>";
             }
         xml += "</targets>"
         + "    <rci_request version=\"1.1\">"
@@ -265,7 +300,7 @@ public class DigiXMLBuilder {
     
     public String buildWriteLMAddressing(ZigbeeDevice gateway, ZigbeeDevice endPoint, Map<DRLCClusterAttribute,Integer> attributes) {
         
-        String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+        DevConnectwareId gatewayMac = new DevConnectwareId(gateway.getZigbeeMacAddress());
                 
         //Find based on the endPoint Device
         ZigbeeEndpoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
@@ -274,7 +309,7 @@ public class DigiXMLBuilder {
            "<sci_request version=\"1.0\">"
         + "  <send_message>"
         + "  <targets>"
-        + "    <device id=\"" + gatewayMac + "\"/>"
+        + "    <device id=\"" + gatewayMac.getDevConnectwareId() + "\"/>"
         + "  </targets>"
         + "  <rci_request version=\"1.1\">"
         + "  <do_command target=\"RPC_request\">"
@@ -314,13 +349,13 @@ public class DigiXMLBuilder {
         //Find based on the endPoint Device
         ZigbeeEndpoint tstat = zigbeeDeviceDao.getZigbeeEndPoint(endPoint.getZigbeeDeviceId());
 
-        String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+        DevConnectwareId gatewayMac = new DevConnectwareId(gateway.getZigbeeMacAddress());
         
         String xml = 
            "<sci_request version=\"1.0\">"
         + "  <send_message>"
         + "  <targets>"
-        + "    <device id=\"" + gatewayMac + "\"/>"
+        + "    <device id=\"" + gatewayMac.getDevConnectwareId() + "\"/>"
         + "  </targets>"
         + "  <rci_request version=\"1.1\">"
         + "  <do_command target=\"RPC_request\">"
@@ -375,14 +410,6 @@ public class DigiXMLBuilder {
         }
         
         return deviceClass;
-    }
-    
-    public static String convertMacAddresstoDigi(String mac) {
-        String digiMac = mac.replaceAll(":","");
-        
-        digiMac = "00000000-00000000-" + digiMac.substring(0,6) + "FF-FF" + digiMac.substring(6);
-        
-        return digiMac;
     }
     
     /**

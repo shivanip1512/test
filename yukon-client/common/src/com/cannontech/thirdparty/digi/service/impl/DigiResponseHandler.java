@@ -34,8 +34,13 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.FileData;
+import com.cannontech.thirdparty.digi.model.MacAddress;
+import com.cannontech.thirdparty.digi.model.NodeAddress;
+import com.cannontech.thirdparty.digi.model.NodeStatus;
+import com.cannontech.thirdparty.digi.model.NodeType;
 import com.cannontech.thirdparty.digi.model.XbeeCore;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
@@ -127,17 +132,25 @@ public class DigiResponseHandler {
         public XbeeCore map(Node node) throws DOMException {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
 
-            String macAddress = template.evaluateAsString("xpExtAddr");
-            String devConnectwareId = template.evaluateAsString("devConntectwareId");
+            String temp = template.evaluateAsString("xpExtAddr");
+            MacAddress macAddress = new MacAddress(temp);
+            
+            temp = template.evaluateAsString("devConnectwareId");
+            DevConnectwareId devConnectwareId = new DevConnectwareId(temp);
+            
             int xpNetAddr = template.evaluateAsInt("xpNetAddr");
+            NodeAddress nodeId = new NodeAddress(xpNetAddr);
+            
             int xpNodeType = template.evaluateAsInt("xpNodeType");
-            int xpDiscoveryIndex = template.evaluateAsInt("xpDiscoveryIndex");
-            boolean xpStatus = (template.evaluateAsInt("xpStatus") == 1)?true:false;
+            NodeType nodeType = NodeType.getNodeType(xpNodeType);
+            
+            int xpStatus = template.evaluateAsInt("xpStatus");
+            NodeStatus nodeStatus = NodeStatus.getNodeStatus(xpStatus);
             
             String updateTime = template.evaluateAsString("xpUpdateTime");
             Instant xpUpdateTime = new Instant(updateTime);
             
-            return new XbeeCore(macAddress,devConnectwareId,xpNetAddr,xpNodeType,xpDiscoveryIndex,xpStatus,xpUpdateTime);
+            return new XbeeCore(macAddress,devConnectwareId,nodeId,nodeType,nodeStatus,xpUpdateTime);
         }
     };
     
@@ -287,10 +300,10 @@ public class DigiResponseHandler {
         for (XbeeCore core : cores) {
             ZigbeeEndpoint endPoint;
             try {
-                endPoint = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(core.getMacAddress());
+                endPoint = zigbeeDeviceDao.getZigbeeEndPointByMACAddress(core.getMacAddress().getMacAddress());
                 
                 Commissioned state = Commissioned.DISCONNECTED;
-                if (core.isConnected()) {
+                if (core.getNodeStatus().isConnected()) {
                     state = Commissioned.CONNECTED;
                 }
 

@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.thermostat.service.impl;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -10,9 +11,10 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.ZigbeeTextMessageDto;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -35,12 +37,14 @@ import com.google.common.collect.ImmutableSetMultimap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 public class ZigbeeCommandService extends AbstractCommandExecutionService {
     
-    private InventoryDao inventoryDao;
-    private ZigbeeDeviceDao zigbeeDeviceDao;
-    private ZigbeeWebService zigbeeWebService;
+    private @Autowired InventoryDao inventoryDao;
+    private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
+    private @Autowired ZigbeeWebService zigbeeWebService;
+    private @Autowired NextValueHelper nextValueHelper;
     
     private final SetMultimap<TimeOfWeek, String> dayLetterLookup;
     {
@@ -64,7 +68,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                                                           LiteYukonUser user) throws CommandCompletionException {
         try {
             String command = buildManualEventZigbeeCommand(stat,event);
-            ZigbeeTextMessage message = new ZigbeeTextMessage();
+            ZigbeeTextMessageDto message = new ZigbeeTextMessageDto();
             message.setAccountId(inventoryDao.getAccountIdForInventory(stat.getId()));
             message.setDisplayDuration(Duration.standardMinutes(1));
             Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(stat.getId());
@@ -77,6 +81,15 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             message.setInventoryId(stat.getId());
             message.setMessage(command);
             message.setStartTime(new Instant());
+            
+            //Needs a unique id. Not tracked, we don't need to cancel these messages.
+            int messageId = nextValueHelper.getNextValue("ZBControlEvent");
+            message.setMessageId(messageId);
+            
+            Set<Integer> inventoryIds = Sets.newHashSet(1);
+            inventoryIds.add(stat.getId());
+            message.setInventoryIds(inventoryIds);
+            
             zigbeeWebService.sendManualAdjustment(message);
         } catch (ZigbeeClusterLibraryException e) {
             throw new CommandCompletionException(e.getMessage(), e);
@@ -96,7 +109,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             try {
                 List<String> commands = buildUpdateScheduleZigbeeCommand(stat, ats, timeOfWeek, mode);
                 for (String command : commands) {
-                    ZigbeeTextMessage message = new ZigbeeTextMessage();
+                    ZigbeeTextMessageDto message = new ZigbeeTextMessageDto();
                     message.setAccountId(inventoryDao.getAccountIdForInventory(stat.getId()));
                     message.setDisplayDuration(Duration.standardMinutes(1));
                     Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(stat.getId());
@@ -109,6 +122,15 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                     message.setInventoryId(stat.getId());
                     message.setMessage(command);
                     message.setStartTime(new Instant());
+                    
+                    //Needs a unique id.
+                    int messageId = nextValueHelper.getNextValue("ZBControlEvent");
+                    message.setMessageId(messageId);
+                    
+                    Set<Integer> inventoryIds = Sets.newHashSet(1);
+                    inventoryIds.add(stat.getId());
+                    message.setInventoryIds(inventoryIds);
+                    
                     zigbeeWebService.sendManualAdjustment(message);
                 }
                 
@@ -235,20 +257,4 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
         
         return command.toString();
     }
-
-    @Autowired
-    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
-        this.zigbeeWebService = zigbeeWebService;
-    }
-    
-    @Autowired
-    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
-        this.zigbeeDeviceDao = zigbeeDeviceDao;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
 }

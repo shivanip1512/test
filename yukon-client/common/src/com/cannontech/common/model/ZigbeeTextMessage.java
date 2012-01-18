@@ -1,18 +1,21 @@
 package com.cannontech.common.model;
 
 
-import java.util.Date;
+import java.io.Serializable;
+import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-public class ZigbeeTextMessage {
+public class ZigbeeTextMessage implements Serializable {
+    private static final long serialVersionUID = 2L;
 
+    //Addressing
+    private Set<Integer> inventoryIds;
+
+    //Message Data
     private int messageId;
     private String message;
-    private int accountId;
-    private int inventoryId;
-    private int gatewayId;
     private boolean confirmationRequired;
     private Duration displayDuration;
     private Instant startTime;
@@ -25,28 +28,12 @@ public class ZigbeeTextMessage {
         this.message = message;
     }
     
-    public int getAccountId() {
-        return accountId;
+    public Set<Integer> getInventoryIds() {
+        return inventoryIds;
     }
     
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
-    
-    public int getInventoryId() {
-        return inventoryId;
-    }
-    
-    public void setInventoryId(int inventoryId) {
-        this.inventoryId = inventoryId;
-    }
-    
-    public int getGatewayId() {
-        return gatewayId;
-    }
-    
-    public void setGatewayId(int gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setInventoryIds(Set<Integer> inventoryIds) {
+        this.inventoryIds = inventoryIds;
     }
     
     public boolean isConfirmationRequired() {
@@ -73,9 +60,11 @@ public class ZigbeeTextMessage {
         this.startTime = startTime;
     }
     
-    /* Thain told me to */
     public int getMessageId() {
-        return (int)new Date().getTime();
+        return messageId;
     }
     
+    public void setMessageId(int messageId) {
+        this.messageId = messageId;
+    }
 }

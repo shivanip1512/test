@@ -1,21 +1,28 @@
 package com.cannontech.thirdparty.messaging.activemq;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.ObjectMessage;
 import javax.jms.StreamMessage;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.CancelZigbeeText;
+import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.service.SepMessageHandler;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 public class SepMessageListener {
 
@@ -145,6 +152,122 @@ public class SepMessageListener {
                 logger.error("Exception parsing StreamMessage.");
                 return;
             }
+        }
+    }
+    
+    /**
+     * Handle the sending of a text message to a gateway
+     * 
+     * @param zigbeeTextMessage
+     */
+    public void handleSendTextMessage(Message message) {
+        logger.debug("Received message on yukon.notif.stream.dr.smartEnergyProfileTextMessage.Send Queue");
+
+        ZigbeeTextMessage zigbeeTextMessage;
+        
+        if (message instanceof StreamMessage) {
+            //This is how C++ will send us the message
+            try {
+                StreamMessage streamMessage = (StreamMessage) message;
+                
+                int listSize = streamMessage.readInt();
+                Set<Integer> inventoryIds = Sets.newHashSet(listSize);
+                
+                for (int i = 0; i < listSize; i++) {
+                    int inventoryId = streamMessage.readInt();
+                    inventoryIds.add(inventoryId);
+                }
+
+                int messageId = streamMessage.readInt();
+                
+                int stringSize = streamMessage.readInt();
+                String messageStr = new String();
+                
+                for (int i = 0; i < stringSize; i++) {
+                    char character = streamMessage.readChar();
+                    messageStr += character;
+                }
+
+                boolean confirmationRequired = streamMessage.readBoolean();
+                int durationInt = streamMessage.readInt();
+                Duration displayDuration = new Duration(durationInt);
+                
+                long timeSeconds = streamMessage.readLong();
+                Instant startTime = new Instant(timeSeconds);
+                
+                zigbeeTextMessage = new ZigbeeTextMessage();
+                zigbeeTextMessage.setInventoryIds(inventoryIds);
+                zigbeeTextMessage.setMessageId(messageId);
+                zigbeeTextMessage.setMessage(messageStr);
+                zigbeeTextMessage.setConfirmationRequired(confirmationRequired);
+                zigbeeTextMessage.setDisplayDuration(displayDuration);
+                zigbeeTextMessage.setStartTime(startTime);
+            } catch (JMSException e) {
+                logger.error("Exception parsing StreamMessage.");
+                return;
+            }            
+        } else {
+            logger.error("Unhandled message type on the queue.");
+            return;
+        }
+
+        handleSendTextMessage(zigbeeTextMessage);
+    }
+    
+    public void handleSendTextMessage(ZigbeeTextMessage zigbeeTextMessage) {
+        //Passes the message to the handlers
+        for (SepMessageHandler handler : sepMessageHandlers) {
+            handler.handleSendTextMessage(zigbeeTextMessage);
+        }
+    }
+    
+    /**
+     * Handle the canceling of a text message event.
+     * 
+     * @param zigbeeTextMessage
+     */
+    public void handleCancelTextMessage(Message message) {
+        logger.debug("Received message on yukon.notif.stream.dr.smartEnergyProfileTextMessage.Cancel Queue");
+        
+        CancelZigbeeText cancelZigbeeText;
+        
+        if (message instanceof StreamMessage) {
+            //This is how C++ will send us the message
+            try {
+                StreamMessage streamMessage = (StreamMessage) message;
+                
+                int messageId = streamMessage.readInt();
+                
+                int listSize = streamMessage.readInt();
+                Set<Integer> inventoryIds = Sets.newHashSet(listSize);
+                
+                for (int i = 0; i < listSize; i++) {
+                    int inventoryId = streamMessage.readInt();
+                    inventoryIds.add(inventoryId);
+                }
+                
+                cancelZigbeeText = new CancelZigbeeText();
+                cancelZigbeeText.setMessageId(messageId);
+                cancelZigbeeText.setInventoryIds(inventoryIds);                
+            } catch (JMSException e) {
+                logger.error("Exception parsing StreamMessage.");
+                return;
+            }
+        } else if (message instanceof ObjectMessage) {
+            //This is how Java would send us the message.
+            cancelZigbeeText = (CancelZigbeeText)message;
+        } else {
+            logger.error("Unhandled message type on the queue.");
+            return;
+        }
+
+        handleCancelTextMessage(cancelZigbeeText);
+    }
+    
+    public void handleCancelTextMessage(CancelZigbeeText cancelZigbeeText) {
+        //Passes the message to the handlers
+        for (SepMessageHandler handler : sepMessageHandlers) {
+            handler.handleCancelTextMessage(cancelZigbeeText);
         }
     }
     

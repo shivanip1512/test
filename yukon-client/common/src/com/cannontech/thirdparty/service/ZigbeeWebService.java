@@ -2,6 +2,7 @@ package com.cannontech.thirdparty.service;
 
 import java.util.Map;
 
+import com.cannontech.common.model.CancelZigbeeText;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
@@ -67,6 +68,15 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	 * @throws ZigbeeClusterLibraryException
 	 */
 	public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
+
+    /**
+     * Cancels a text message to the gateway. 
+     *  
+     * @param cancelZigbeeText
+     * @throws ZigbeeClusterLibraryException
+     */
+    public void cancelTextMessage(CancelZigbeeText cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
+
 	
 	/**
 	 * Sends a manual adjustment to the gateway.

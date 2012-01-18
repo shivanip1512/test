@@ -20,6 +20,8 @@
         <jms:listener destination="yukon.notif.stream.dr.SmartEnergyProfileControlMessage" ref="sepMessageListener" method="handleControlMessage"/>
         <jms:listener destination="yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage" ref="sepMessageListener" method="handleRestoreMessage"/>
         <jms:listener destination="yukon.notif.stream.dr.HistoryRowAssociationResponse" ref="sepMessageListener" method="handleControlHistoryAssociation"/>
+        <jms:listener destination="yukon.notif.stream.dr.smartEnergyProfileTextMessage.Send" ref="sepMessageListener" method="handleSendTextMessage"/>
+        <jms:listener destination="yukon.notif.stream.dr.smartEnergyProfileTextMessage.Cancel" ref="sepMessageListener" method="handleCancelTextMessage"/>
     </jms:listener-container>
     
 </beans>

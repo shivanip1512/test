@@ -2,6 +2,7 @@ package com.cannontech.thirdparty.digi.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -13,10 +14,10 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
-import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.model.CancelZigbeeText;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -27,9 +28,9 @@ import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiEmptyDeviceCoreResultException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
-import com.cannontech.thirdparty.exception.ZCLStatus;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
@@ -264,10 +265,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     @Override
     public ZigbeePingResponse updateGatewayStatus(ZigbeeDevice gateway) {
         log.debug("Refresh Gateway start");
-        String convertedMac = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+        
+        DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
         
         //URL for single gateway. NOT using digiId in case it has not been commissioned properly
-        String url = digiBaseUrl + "ws/DeviceCore/?condition=devConnectwareId='" + convertedMac +"'";
+        String url = digiBaseUrl + "ws/DeviceCore/?condition=devConnectwareId='" + connectwareId.getDevConnectwareId() +"'";
 
         List<ZigbeeDevice> expected = Lists.newArrayList();
         expected.add(gateway);
@@ -389,27 +391,29 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         return updated;
     }
 
-    
     @Override
     public void sendManualAdjustment(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
-        log.debug("Sending adjusment message to Gateway with Id: " + message.getGatewayId() 
-                     +" message: \"" + message.getMessage() +"\"");
+        log.debug("Sending adjusment message to Gateways. Message: \"" + message.getMessage() +"\"");
 
-        ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
+        Set<Integer> inventoryIds = message.getInventoryIds();
+        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForInventoryIds(inventoryIds); 
         
         //Hijacking the text message for smuggling. This will change to Private Extensions in future revisions.
-        sendTextMessage(gateway,message);
+        sendTextMessage(gateways,message);
     }
     
     @Override
     public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
-        ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
+        log.debug("Sending text message to Gateways. Message: \"" + message.getMessage() +"\"");
+
+        Set<Integer> inventoryIds = message.getInventoryIds();
+        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForInventoryIds(inventoryIds); 
         
-        sendTextMessage(gateway,message);
+        sendTextMessage(gateways,message);
     }
-    
-    private void sendTextMessage(ZigbeeDevice gateway, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
-        String xml = digiXMLBuilder.buildTextMessage(gateway, message);
+        
+    private void sendTextMessage(List<ZigbeeDevice> gateways, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        String xml = digiXMLBuilder.buildTextMessage(gateways, message);
         String source;
         
         try {
@@ -422,27 +426,78 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
-        Node errorNode = template.evaluateAsNode("//error");
-        if (errorNode != null) {
-            log.error(" Sending Text message was unsuccessful.");
-            
-            String errorText = template.evaluateAsString("//desc");
-            throw new DigiWebServiceException(errorText);
-        } else {
-            String statusText = template.evaluateAsString("//status");
-            
-            Validate.notNull(statusText);
-            
-            int status = Integer.decode(statusText);
-            if (status != 0) {
-                ZCLStatus zclStatus = ZCLStatus.getByValue(status);
-                log.error(" Sending Text message was unsuccessful: " + zclStatus.getDescription());
-                log.debug(" Gateway MAC: " + gateway.getZigbeeMacAddress());
-                throw new ZigbeeClusterLibraryException(zclStatus);
-            }
-        }
+        log.debug(source);
+        
+        //TODO: This error handling is still assuming we only sent to one gateway
+//        Node errorNode = template.evaluateAsNode("//error");
+//        if (errorNode != null) {
+//            log.error(" Sending Text message was unsuccessful.");
+//            
+//            String errorText = template.evaluateAsString("//desc");
+//            throw new DigiWebServiceException(errorText);
+//        } else {
+//            String statusText = template.evaluateAsString("//status");
+//            
+//            Validate.notNull(statusText);
+//            
+//            int status = Integer.decode(statusText);
+//            if (status != 0) {
+//                ZCLStatus zclStatus = ZCLStatus.getByValue(status);
+//                log.error(" Sending Text message was unsuccessful: " + zclStatus.getDescription());
+//                //TODO HERE
+//                log.debug(" Gateway MAC: " + gateways.get(0).getZigbeeMacAddress());
+//                throw new ZigbeeClusterLibraryException(zclStatus);
+//            }
+//        }
     }
 
+    @Override
+    public void cancelTextMessage(CancelZigbeeText cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        Set<Integer> inventoryIds = cancelZigbeeText.getInventoryIds();
+        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForInventoryIds(inventoryIds); 
+        
+        cancelTextMessage(gateways,cancelZigbeeText);
+    }
+    
+    private void cancelTextMessage(List<ZigbeeDevice> devices, CancelZigbeeText cancelZigbeeText) {
+        String xml = digiXMLBuilder.buildCancelMessageEvent(devices, cancelZigbeeText);
+        String source;
+        
+        try {
+            log.debug(xml);
+            source = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+        } catch (RestClientException e) {
+            throw new DigiWebServiceException(e);
+        }
+
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(source);
+        
+        log.debug(source);
+        
+        //TODO: This error handling is still assuming we only sent to one gateway
+//        Node errorNode = template.evaluateAsNode("//error");
+//        if (errorNode != null) {
+//            log.error(" Sending Text message was unsuccessful.");
+//            
+//            String errorText = template.evaluateAsString("//desc");
+//            throw new DigiWebServiceException(errorText);
+//        } else {
+//            String statusText = template.evaluateAsString("//status");
+//            
+//            Validate.notNull(statusText);
+//            
+//            int status = Integer.decode(statusText);
+//            if (status != 0) {
+//                ZCLStatus zclStatus = ZCLStatus.getByValue(status);
+//                log.error(" Sending Text message was unsuccessful: " + zclStatus.getDescription());
+//                //TODO HERE
+//                log.debug(" Gateway MAC: " + gateways.get(0).getZigbeeMacAddress());
+//                throw new ZigbeeClusterLibraryException(zclStatus);
+//            }
+//        }
+    }
+    
     @Override
     public void sendSEPControlMessage(int eventId, SepControlMessage controlMessage) {
         log.debug("Sending SEP Control Message Start");

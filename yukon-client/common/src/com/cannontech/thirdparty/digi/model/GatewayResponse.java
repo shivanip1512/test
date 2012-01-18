@@ -16,7 +16,7 @@ public class GatewayResponse {
     public boolean hasError() {
         return errorId != null;
     }
-
+    
     public String getDeviceId() {
         return deviceId;
     }

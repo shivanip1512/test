@@ -165,7 +165,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             //Determine Gateway and Device Id.
                             int deviceId = liteHw.getDeviceID();
                             
-                            List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByDeviceId(deviceId);
+                            List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByEndPointId(deviceId);
                             
                             if (lmGroupIds.isEmpty()) {
                                 throw new InvalidParameterException("Device is not Enrolled in any program.");

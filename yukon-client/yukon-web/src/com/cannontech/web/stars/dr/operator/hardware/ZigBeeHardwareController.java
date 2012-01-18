@@ -3,6 +3,7 @@ package com.cannontech.web.stars.dr.operator.hardware;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,12 +27,13 @@ import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.ZigbeeTextMessageDto;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -56,6 +58,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @RequestMapping("/operator/hardware/zb/*")
 @Controller
@@ -65,17 +68,19 @@ public class ZigBeeHardwareController {
     private static final Logger log = YukonLogManager.getLogger(ZigBeeHardwareController.class);
     
     private static final String keyPrefix = "yukon.web.modules.operator.hardware.";
-    private ZigbeeWebService zigbeeWebService;
-    private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
-    private ZigbeeDeviceDao zigbeeDeviceDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
-    private GatewayDeviceDao gatewayDeviceDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private InventoryDao inventoryDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private ZigbeeEventLogService zigbeeEventLogService;
-    private PaoDao paoDao;
-
+    
+    private @Autowired ZigbeeWebService zigbeeWebService;
+    private @Autowired ZigbeeStateUpdaterService zigbeeStateUpdaterService;
+    private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
+    private @Autowired LMHardwareBaseDao lmHardwareBaseDao;
+    private @Autowired GatewayDeviceDao gatewayDeviceDao;
+    private @Autowired DatePropertyEditorFactory datePropertyEditorFactory;
+    private @Autowired InventoryDao inventoryDao;
+    private @Autowired YukonUserContextMessageSourceResolver messageSourceResolver;
+    private @Autowired ZigbeeEventLogService zigbeeEventLogService;
+    private @Autowired PaoDao paoDao;
+    private @Autowired NextValueHelper nextValueHelper;
+    
     @RequestMapping
     public ModelAndView refresh(YukonUserContext context, int deviceId) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
@@ -285,7 +290,7 @@ public class ZigBeeHardwareController {
     @RequestMapping
     public String showTextMessage(ModelMap model, int accountId, int inventoryId, int gatewayId) {
         
-        ZigbeeTextMessage textMessage = new ZigbeeTextMessage();
+        ZigbeeTextMessageDto textMessage = new ZigbeeTextMessageDto();
         textMessage.setAccountId(accountId);
         textMessage.setInventoryId(inventoryId);
         textMessage.setGatewayId(gatewayId);
@@ -321,7 +326,7 @@ public class ZigBeeHardwareController {
     
     @RequestMapping
     public String sendTextMessage(ModelMap model, FlashScope flash, 
-                                  @ModelAttribute("textMessage") ZigbeeTextMessage textMessage,
+                                  @ModelAttribute("textMessage") ZigbeeTextMessageDto textMessage,
                                   BindingResult result,
                                   AccountInfoFragment fragment,
                                   YukonUserContext context,
@@ -346,6 +351,15 @@ public class ZigBeeHardwareController {
         boolean messageFailed = false;
         String errorMessage = null;
         try {
+            Set<Integer> inventoryIds = Sets.newHashSet(1);
+            inventoryIds.add(inventoryId);
+            textMessage.setInventoryIds(inventoryIds);
+            
+            //Needs a unique id.
+            int messageId = nextValueHelper.getNextValue("ZBControlEvent");
+            textMessage.setMessageId(messageId);
+            //We are not tracking these Id's yet. They will be needed to cancel any messages being displayed.
+            
             zigbeeWebService.sendTextMessage(textMessage);
             
             zigbeeEventLogService.zigbeeSentText(pao.getPaoName(),textMessage.getMessage());
@@ -435,55 +449,5 @@ public class ZigBeeHardwareController {
         model.addAttribute("accountId", accountId);
         
         return "redirect:/spring/stars/operator/hardware/view";
-    }
-    
-    @Autowired
-    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
-        this.zigbeeDeviceDao = zigbeeDeviceDao;
-    }
-    
-    @Autowired
-    public void setZigbeeStateUpdaterService(ZigbeeStateUpdaterService zigbeeStateUpdaterService) {
-        this.zigbeeStateUpdaterService = zigbeeStateUpdaterService;
-    }
-    
-    @Autowired
-    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
-        this.zigbeeWebService = zigbeeWebService;
-    }
-    
-    @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
-        this.zigbeeEventLogService = zigbeeEventLogService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 }

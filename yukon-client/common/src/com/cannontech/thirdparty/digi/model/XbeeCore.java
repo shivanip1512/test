@@ -7,47 +7,40 @@ import org.joda.time.Instant;
  */
 public class XbeeCore {
 
-    private String macAddress; //This EndPoint
-    private String devConnectwareId; //Gateway it delongs to
-    private int xpNetAddr;
-    private int xpNodeType; // 0 = coordinator, 1 = router (UPRO is this), 2 = End Node
-    private int xpDiscoveryIndex;
-    private boolean xpStatus;
-    private Instant xpUpdateTime;
-
-    public XbeeCore(String macAddress, String devConnectwareId, int xpNetAddr, int xpNodeType,
-                     int xpDiscoveryIndex, boolean xpStatus, Instant xpUpdateTime) {
+    private MacAddress macAddress; //This EndPoint
+    private DevConnectwareId devConnectwareId; //Gateway it belongs to
+    private NodeAddress xpNetAddr;
+    private NodeType xpNodeType;
+    private NodeStatus xpStatus;
+    private final Instant xpUpdateTime;
+    
+    public XbeeCore(MacAddress macAddress, DevConnectwareId devConnectwareId, NodeAddress xpNetAddr, 
+                     NodeType xpNodeType, NodeStatus xpStatus, Instant xpUpdateTime) {
         this.macAddress = macAddress;
         this.devConnectwareId = devConnectwareId;
         this.xpNetAddr = xpNetAddr;
         this.xpNodeType = xpNodeType;
-        this.xpDiscoveryIndex = xpDiscoveryIndex;
         this.xpStatus = xpStatus;
         this.xpUpdateTime = xpUpdateTime;
     }
 
-    public String getMacAddress() {
+    public MacAddress getMacAddress() {
         return macAddress;
     }
     
-    public String getDevConnectwareId() {
+    public DevConnectwareId getDevConnectwareId() {
         return devConnectwareId;
     }
     
-    public int getXpNetAddr() {
+    public NodeAddress getXpNetAddr() {
         return xpNetAddr;
     }
     
-    public int getXpNodeType() {
+    public NodeType getXpNodeType() {
         return xpNodeType;
     }
     
-    
-    public int getXpDiscoveryIndex() {
-        return xpDiscoveryIndex;
-    }
-    
-    public boolean isConnected() {
+    public NodeStatus getNodeStatus() {
         return xpStatus;
     }
     

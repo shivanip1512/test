@@ -11,6 +11,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.CancelZigbeeText;
+import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -22,6 +24,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
@@ -32,7 +35,7 @@ import com.cannontech.yukon.IServerConnection;
 
 public class DigiControlMessageHandler implements SepMessageHandler {
 
-    private static final Logger logger = YukonLogManager.getLogger(DigiControlMessageHandler.class);
+    private static final Logger log = YukonLogManager.getLogger(DigiControlMessageHandler.class);
     
     private IServerConnection dispatchConnection;
     private AttributeService attributeService;
@@ -57,7 +60,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Override
     public void handleControlMessage(SepControlMessage message) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
-        logger.info("Sending Control Command to Load Group: " + pao.getPaoName());
+        log.info("Sending Control Command to Load Group: " + pao.getPaoName());
         
         int eventId = nextValueHelper.getNextValue("ZBControlEvent");
         Instant now = new Instant();
@@ -83,14 +86,14 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             dispatchConnection.queue(chMessage);
 
         } catch (DigiWebServiceException e) {
-            logger.error("Error in ZigBeeWebService: " + e.getMessage());
+            log.error("Error in ZigBeeWebService: " + e.getMessage());
         }
     }
 
     @Override
     public void handleRestoreMessage(SepRestoreMessage message) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
-        logger.info("Sending Restore Command to Load Group: " + pao.getPaoName());
+        log.info("Sending Restore Command to Load Group: " + pao.getPaoName());
         
         int eventId = zigbeeControlEventDao.findCurrentEventId(message.getGroupId());
         
@@ -102,7 +105,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             dispatchConnection.queue(histMsg);
             
         } catch (DigiWebServiceException e) {
-            logger.error("Error in ZigBeeWebService: " + e.getMessage());
+            log.error("Error in ZigBeeWebService: " + e.getMessage());
         }
     }
     
@@ -173,6 +176,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         return chMessage;
     }
     
+    @Override
     public void handleAssociationMessage(int eventId, int controlHistoryId) {
         //Check if this is our Event;
         if (pendingEvents.contains(eventId)) {
@@ -180,6 +184,29 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             pendingEvents.remove(eventId);
         }
     }
+    
+    @Override
+    public void handleSendTextMessage(ZigbeeTextMessage zigbeeTextMessage) {
+        try {
+            zigbeeWebService.sendTextMessage(zigbeeTextMessage);
+        } catch (DigiWebServiceException e) {
+            log.warn("caught exception in handleTextMessage", e);
+        } catch (ZigbeeClusterLibraryException e) {
+            log.warn("caught exception in handleTextMessage", e);
+        }
+    }
+
+    @Override
+    public void handleCancelTextMessage(CancelZigbeeText cancelZigbeeText) {
+        try {
+            zigbeeWebService.cancelTextMessage(cancelZigbeeText);
+        } catch (DigiWebServiceException e) {
+            log.warn("caught exception in handleTextMessage", e);
+        } catch (ZigbeeClusterLibraryException e) {
+            log.warn("caught exception in handleTextMessage", e);
+        }
+    }
+
     
     @Autowired
     public void setDispatchConnection(IServerConnection dispatchConnection) {

@@ -1,5 +1,7 @@
 package com.cannontech.thirdparty.service;
 
+import com.cannontech.common.model.CancelZigbeeText;
+import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
@@ -37,4 +39,19 @@ public interface SepMessageHandler {
      * @param controlHistoryId
      */
     public void handleAssociationMessage(int eventId, int controlHistoryId);
+    
+    /**
+     * Handles sending the SEP text message to the integrated system.
+     * 
+     * @param zigbeeTextMessage
+     */
+    public void handleSendTextMessage(ZigbeeTextMessage zigbeeTextMessage);
+
+    /**
+     * Handles canceling of the SEP text message to the integrated system.
+     * 
+     * @param cancelZigbeeText
+     */
+    public void handleCancelTextMessage(CancelZigbeeText cancelZigbeeText);
+
 }

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.model.CancelZigbeeText;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.database.db.point.stategroup.Commissioned;
@@ -101,6 +102,10 @@ public class DummyZigbeeWebServiceImpl implements ZigbeeWebService, ZigbeeStateU
     @Override
     public void sendSEPRestoreMessage(int eventId, SepRestoreMessage restoreMessage) {
         throw new DigiWebServiceException("ZigBee Web Services is not enabled.");
+    }
+
+    @Override
+    public void cancelTextMessage(CancelZigbeeText cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException {
     }
 
 }

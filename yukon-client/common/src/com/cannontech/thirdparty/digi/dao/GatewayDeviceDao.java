@@ -1,5 +1,6 @@
 package com.cannontech.thirdparty.digi.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -11,6 +12,8 @@ import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
 public interface GatewayDeviceDao {
     
     public ZigbeeDevice getZigbeeGateway(int gatewayId);
+    
+    public List<ZigbeeDevice> getZigbeeGateways(Collection<Integer> gatewaysIds);
     
     public List<ZigbeeDevice> getAllGateways();
     
@@ -55,7 +58,7 @@ public interface GatewayDeviceDao {
     public List<DigiGateway> getGatewaysForAccount(int accountId);
     
     /**
-     * Returns a list of gateways for devices assigned the the LM Group with groupId.
+     * Returns a list of gateways for devices assigned to the LM Group with groupId.
      * 
      * @param groupId
      * @return
@@ -63,11 +66,26 @@ public interface GatewayDeviceDao {
     public List<ZigbeeDevice> getZigbeeGatewaysForGroupId(int groupId);
     
     /**
-     * Returns the LMGroupId of the ZigBee End Point.
-     * @param deviceId
+     * Returns a list of gateways for devices with the passed in inventory ids
+     * 
+     * @param inventoryIds
      * @return
      */
-    public List<Integer> getLMGroupIdByDeviceId(int endPointId);
+    public List<ZigbeeDevice> getZigbeeGatewaysForInventoryIds(Collection<Integer> inventoryIds);
+    
+    /**
+     * Returns the LMGroupId of the ZigBee End Point.
+     * @param endPointId
+     * @return
+     */
+    public List<Integer> getLMGroupIdByEndPointId(int endPointId);
+    
+    /**
+     * Returns the LMGroupId of the Zigbee Gateway Id
+     * @param gatewayId
+     * @return
+     */
+    public List<Integer> getLMGroupIdByGatewayId(int gatewayId);
     
     public void updateDigiId(PaoIdentifier paoIdentifier, int digiId);
     
