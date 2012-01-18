@@ -88,7 +88,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
             
             /*
              * Close the current dialog and perform the cancel action.  By default this 
-             * will trigger a 'yukon_dialog_confirm_cancel' event on the #yukon_dialog_confirm element
+             * will trigger a 'yukonDialogConfirmCancel' event on the #yukon_dialog_confirm element
              */
             cancel: function(){
                 return this._default._cancel_action; 
@@ -103,7 +103,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
             
             /*
              * Close the current dialog and perform the ok action.  By default this 
-             * will trigger a 'yukon_dialog_confirm_ok' event on the #yukon_dialog_confirm element
+             * will trigger a 'yukonDialogConfirmOk' event on the #yukon_dialog_confirm element
              */
             ok: function(){
                 return this._default._ok_action;
@@ -174,7 +174,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 _ok_action: function(event){
                     var _self = Yukon.Dialog.ConfirmationManager;
                     if(_self._current_dialog){
-                        _self._current_dialog.trigger("yukon_dialog_confirm_ok");
+                        _self._current_dialog.trigger("yukonDialogConfirmOk");
                         _self._current_dialog.dialog('destroy');
                         _self._current_dialog = null;
                     }
@@ -183,7 +183,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 _cancel_action: function(event){
                     var _self = Yukon.Dialog.ConfirmationManager;
                     if(_self._current_dialog){
-                        _self._current_dialog.trigger("yukon_dialog_confirm_cancel");
+                        _self._current_dialog.trigger("yukonDialogConfirmCancel");
                         _self._current_dialog.dialog('destroy');
                         _self._current_dialog = null;
                     }
