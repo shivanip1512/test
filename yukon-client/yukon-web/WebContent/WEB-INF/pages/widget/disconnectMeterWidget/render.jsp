@@ -58,11 +58,11 @@
     
     <%-- CONNECT/DISCONNECT BUTTONS --%>
     <span id="connectSpan" style="${connectStyle}">
-		<ct:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect"/>
+		<ct:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect" showConfirm="true"/>
     </span>
     
     <span id="disconnectSpan" style="${disconnectStyle}">
-		<ct:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect"/>
+		<ct:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect" showConfirm="true"/>
     </span>
 </div>
 <br>
