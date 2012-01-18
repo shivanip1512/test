@@ -583,8 +583,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     com.cannontech.database.data.stars.report.ServiceCompany.retrieveAllServiceCompanies( getEnergyCompanyId() );
             
             serviceCompanies = new ArrayList<LiteServiceCompany>();
-            for (int i = 0; i < companies.length; i++)
+
+            for (int i=0; i<companies.length; i++) {
                 serviceCompanies.add( (LiteServiceCompany)StarsLiteFactory.createLite(companies[i]) );
+            }
             
             CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyId() );
         }
@@ -1877,6 +1879,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         };
     }
     
+    public void resetServiceCompanyInfo() {
+        this.serviceCompanies = null;
+    }
+
     public void resetEnergyCompanyInfo() {
         this.name = null;
     }

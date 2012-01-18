@@ -125,6 +125,14 @@ public class LiteStarsEnergyCompanyFactory {
                 energyCompany.clearHierarchy();
             }
         });
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY,
+                                                              new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                energyCompany.resetServiceCompanyInfo();
+            }
+        });
     }
     
     // DI Setter
