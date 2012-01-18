@@ -53,13 +53,6 @@ public interface StarsInventoryBaseService {
             LiteYukonUser user);
 
     /**
-     * Initializes the default Thermostat Schedule on the account.
-     * @param lmHardware
-     * @param energyCompany
-     */
-    public void initThermostatSchedule(LiteStarsLMHardware lmHardware, LiteStarsEnergyCompany energyCompany);
-
-    /**
      * Maps the static load group, if static load group mapping exists
      * @param lmHardware
      * @param energyCompany

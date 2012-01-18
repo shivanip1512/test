@@ -475,10 +475,6 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 starsInventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, device.getDeviceId());
             }
             
-            if (hardwareType.isThermostat() && lmHardware.getAccountID() > 0) {
-                starsInventoryBaseService.initThermostatSchedule(lmHardware, energyCompany);
-            }
-            
             if (VersionTools.staticLoadGroupMappingExists()) {
                 starsInventoryBaseService.initStaticLoadGroup(lmHardware, energyCompany);
             }

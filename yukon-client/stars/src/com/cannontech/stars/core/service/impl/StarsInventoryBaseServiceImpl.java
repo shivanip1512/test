@@ -91,11 +91,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 // create LMHardware here
                 liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
                                                                energyCompany.getEnergyCompanyId());
-
-                // if Thermostat, initialize the default schedule
-                if (lmHw.isThermostat()) {
-                    initThermostatSchedule(lmHw, energyCompany);
-                }
             }
         }
         // existing inventory
@@ -157,26 +152,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                                               customerAccount.getAccountNumber());
         
         return liteInv;
-    }
-
-    @Override
-    public void initThermostatSchedule(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
-
-        // get the default Thermostat Schedule for the energyCompany
-        int thermostatDefId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
-                                                                        YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
-                                                                        lmHw.getLmHardwareTypeID());
-        HardwareType hwType = HardwareType.valueOf(thermostatDefId);
-        
-        if(SchedulableThermostatType.isSchedulableThermostatType(hwType)){
-            AccountThermostatSchedule schedule = thermostatService.getAccountThermostatScheduleTemplate(lmHw.getAccountID(), SchedulableThermostatType.getByHardwareType(hwType));
-            schedule.setAccountId(lmHw.getAccountID());
-            schedule.setScheduleName(lmHw.getDeviceLabel());
-            accountThermostatScheduleDao.save(schedule);
-        } else {
-            log.warn("HardwareType \"" + hwType.toString() + "\"is not a ScheduleableThermostatType." + 
-                     "Unable to initialize schedule.");
-        }
     }
 
     @Override

@@ -242,7 +242,7 @@
     <entry key="yukon.web.modules.operator.thermostat.schedules.deleteConfirm.title">Confirm Delete</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.deleteConfirm.message">Are you sure?</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.createNewSchedule">Create New Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostat.schedules.noSchedules">There are no saved schedules.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.noSchedules">There are no compatible schedules.</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.help.title">Thermostat Schedule Hints and Details</entry>
@@ -252,7 +252,7 @@
     <entry key="yukon.web.modules.operator.thermostat.schedules.createSchedule.title">Create Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.sendConfirm.title">Send Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.sendConfirm.message">Are you sure you want to send this schedule?</entry>
-    <entry key="yukon.web.modules.operator.thermostat.schedules.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedules.noSchedulesHelper">There are no compatible schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.name">Schedule Name:</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.modeHint">Select the which days of the week you want specific control over the customer's Thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostat.schedules.title">Saved Schedules</entry>
@@ -271,7 +271,7 @@
     <entry key="yukon.web.modules.consumer.savedSchedules.help.title">Thermostat Schedule Hints and Details</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.sendConfirm.title">Send Schedule</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.sendConfirm.message">Are you sure you want to send this schedule?</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.noSchedulesHelper">There are no compatible schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.name">Schedule Name:</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.modeHint">Select the which days of the week you want specific control over your Thermostat.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.title">Saved Schedules</entry>
@@ -286,7 +286,7 @@
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.createSchedule.title">Create Schedule</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.sendConfirm.title">Send Schedule</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.sendConfirm.message">Are you sure you want to send this schedule?</entry>
-    <entry key="yukon.web.modules.adminSetup.schedules.EDIT.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
+    <entry key="yukon.web.modules.adminSetup.schedules.EDIT.noSchedulesHelper">There are no compatible schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.name">Schedule Name:</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.modeHint">Select the which days of the week you want specific control over your Thermostat.</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.title">Saved Schedules</entry>

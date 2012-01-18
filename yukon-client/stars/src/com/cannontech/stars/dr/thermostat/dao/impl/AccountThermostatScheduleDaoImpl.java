@@ -256,13 +256,6 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		}
 	}
 	
-	//SAVE AND MAP TO THERMOSTATS
-	@Override
-	public void saveAndMapToThermostats(AccountThermostatSchedule ats, List<Integer> thermostatIds){
-	    save(ats);
-	    mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
-	}
-	
 	// ALL SCHEDULES FOR ACCOUNT BY TYPE
 	@Override
 	public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type) {

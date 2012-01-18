@@ -249,35 +249,6 @@ public class CreateLMHardwareAction implements ActionBase {
 					
 					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
-					
-					if (liteHw.isThermostat()) {
-						// Get the energy company default schedule and save a copy for this
-						// thermostat
-						
-//						ThermostatScheduleDao thermostatScheduleDao = 
-//							YukonSpringHook.getBean(
-//									"thermostatScheduleDao", ThermostatScheduleDao.class);
-						
-						int lmHardwareTypeID = liteHw.getLmHardwareTypeID();
-						int typeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(
-													energyCompany, 
-													YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
-													lmHardwareTypeID);
-						HardwareType hardwareType = HardwareType.valueOf(typeDefinitionId);
-						AccountThermostatScheduleDao accountThermostatScheduleDao = YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
-						SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.getByHardwareType(hardwareType);
-						AccountThermostatSchedule schedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByType(energyCompany.getLiteID(), schedulableThermostatType);
-//						ThermostatSchedule schedule = 
-//							thermostatScheduleDao.getCopyOfEnergyCompanyDefaultSchedule(
-//								energyCompany, hardwareType);
-						
-						schedule.setAccountId(liteHw.getAccountID());
-						schedule.setScheduleName(liteHw.getDeviceLabel());
-			            accountThermostatScheduleDao.save(schedule);
-//						schedule.setInventoryId(liteHw.getInventoryID());
-//						thermostatScheduleDao.save(schedule, energyCompany);
-						
-					}
 					liteInv = liteHw;
 				}
 				else {
