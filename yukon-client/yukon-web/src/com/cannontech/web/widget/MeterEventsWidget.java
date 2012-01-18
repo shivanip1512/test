@@ -93,10 +93,10 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
                 events.add(new EventHolder(entry.getValue(), pointName));
             }
         }
-        
+
         Collections.sort(events, Collections.reverseOrder());
-        events = events.subList(0, 10);
-        
+        events = events.subList(0, 10 > events.size() ? events.size() : 10);
+
         return events;
     }
 }
