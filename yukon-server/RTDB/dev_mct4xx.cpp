@@ -2166,6 +2166,18 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
 using namespace Config;
 
+void Mct4xxDevice::insertConfigReadOutMessage(const char *commandString, const OUTMESS &outMessageTemplate, OutMessageList &outList)
+{
+    OUTMESS *readOutMessage = new OUTMESS(outMessageTemplate);
+    readOutMessage->Priority         -= 1;//decrease for read. Only want read after a successful write.
+    strcpy(readOutMessage->Request.CommandStr, commandString);
+    if( strstr(outMessageTemplate.Request.CommandStr, "noqueue") )
+    {
+        strcat(readOutMessage->Request.CommandStr, " noqueue");
+    }
+    outList.push_back(readOutMessage);
+}
+
 int Mct4xxDevice::executePutConfigRelays (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     return NoMethod;
@@ -2240,9 +2252,8 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
             if (getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
             {
                 OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-                OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                OutMessage->Priority             += 1;//return to normal
+
+                insertConfigReadOutMessage("getconfig install timezone", *OutMessage, outList);
             }
         }
     }
@@ -2307,9 +2318,8 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
             if(getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
             {
                 OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-                OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                OutMessage->Priority             += 1;//return to normal
+
+                insertConfigReadOutMessage("getconfig install spid", *OutMessage, outList);
             }
         }
     }
@@ -2381,9 +2391,8 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
             OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
             OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+
+            insertConfigReadOutMessage("getconfig install configbyte", *OutMessage, outList);
         }
     }
     else
@@ -2447,9 +2456,8 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
             if(getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
                 OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-                OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                OutMessage->Priority             += 1;//return to normal
+
+                insertConfigReadOutMessage("getconfig install timeadjusttolerance", *OutMessage, outList);
             }
         }
     }

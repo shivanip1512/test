@@ -3069,14 +3069,13 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NORMAL && ! strstr(OutMessage->Request.CommandStr, "lpchannel 34") )
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
             OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+
+            insertConfigReadOutMessage("getconfig install lpchannel 12", *OutMessage, outList);
         }
 
         if( ! readsOnly )
@@ -3157,14 +3156,13 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NORMAL && ! strstr(OutMessage->Request.CommandStr, "lpchannel 12") )
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
             OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+
+            insertConfigReadOutMessage("getconfig install lpchannel 34", *OutMessage, outList);
         }
     }
     else
@@ -3238,9 +3236,8 @@ int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &p
             OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
             OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+
+            insertConfigReadOutMessage("getconfig install relays", *OutMessage, outList);
         }
     }
     else
@@ -3304,9 +3301,8 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
             OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
             OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+
+            insertConfigReadOutMessage("getconfig install demandlp", *OutMessage, outList);
         }
     }
     else
@@ -3378,16 +3374,19 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
             OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
             OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-            if (getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
+            if( ! strstr(OutMessage->Request.CommandStr, "precannedtable spid") )
             {
-                OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Read;
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                insertConfigReadOutMessage("getconfig install precannedtable nospid", *OutMessage, outList);
             }
 
-            OutMessage->Priority             += 1;//return to normal
+            if( ! strstr(OutMessage->Request.CommandStr, "precannedtable nospid")
+                && getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt) )
+            {
+                OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Read;
+
+                insertConfigReadOutMessage("getconfig install precannedtable spid", *OutMessage, outList);
+            }
         }
     }
     else
