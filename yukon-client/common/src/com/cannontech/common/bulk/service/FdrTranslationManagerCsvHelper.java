@@ -7,6 +7,8 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.model.FdrExportData;
+import com.cannontech.common.bulk.model.FdrExportDataRow;
 import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -21,22 +23,9 @@ import com.google.common.collect.Lists;
 public class FdrTranslationManagerCsvHelper {
     private PaoDao paoDao;
     private PointDao pointDao;
-    
-    public static final String ACTION = "ACTION";
-    public static final String DEVICE_NAME = "DEVICE_NAME";
-    public static final String DEVICE_TYPE = "DEVICE_TYPE";
-    public static final String POINT_NAME = "POINT_NAME";
-    public static final String DIRECTION = "DIRECTION";
+
     public static final String POINTTYPE = "POINTTYPE";
-    
-    private static final int DEVICE_NAME_COL = 0;
-    private static final int DEVICE_TYPE_COL = 1;
-    private static final int POINT_NAME_COL = 2;
-    private static final int DIRECTION_COL = 3;
-    private static final int DEFAULT_COLS_FOR_EXPORT = 4;
-    
-    private static final String[] defaultImportColumnHeaders = {ACTION, DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION};
-    
+
     /**
      * Uppercase the option label
      * Replace spaces and slashes with underscores 
@@ -52,24 +41,32 @@ public class FdrTranslationManagerCsvHelper {
     }
     
     /**
-     * Adds DEVICE_NAME, DEVICE_TYPE, POINT_NAME, DIRECTION (but not ACTION) to the specified list. 
+     * Adds all exported default column headers to the specified list.
+     * @see FdrCsvHeader
      */
-    public void addDefaultColumnsToList(List<String> list) {
-        list.add(DEVICE_NAME);
-        list.add(DEVICE_TYPE);
-        list.add(POINT_NAME);
-        list.add(DIRECTION);
+    public void addDefaultExportColumnsToList(List<String> list) {
+        for(FdrCsvHeader header : FdrCsvHeader.values()) {
+            if(header.isExported()) {
+                list.add(header.toString());
+            }
+        }
+        list.add(FdrCsvHeader.DEVICE_NAME.toString());
+        list.add(FdrCsvHeader.DEVICE_TYPE.toString());
+        list.add(FdrCsvHeader.POINT_NAME.toString());
+        list.add(FdrCsvHeader.DIRECTION.toString());
     }
     
     /**
-     * Determines if the given string matches any of the default fdr column names.
+     * Determines if the given string matches any of the default FDR column names.
+     * @see FdrCsvHeader
      */
     public boolean matchesDefaultColumn(String header) {
-        return header.equals(ACTION)
-            || header.equals(DEVICE_NAME) 
-            || header.equals(DEVICE_TYPE) 
-            || header.equals(POINT_NAME) 
-            || header.equals(DIRECTION);
+        for(FdrCsvHeader defaultHeader : FdrCsvHeader.values()) {
+            if(defaultHeader.toString().equals(header)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -97,44 +94,40 @@ public class FdrTranslationManagerCsvHelper {
     }
     
     /**
-     * Takes a 2D String array (which must already contain a header row) and adds all
-     * values from the translation list.
+     * Takes an FdrExportData that already contains a header row and adds all
+     * values from the translation list as FdrExportDataRows.
      */
-    public void populateExportArray(String[][] dataGrid, List<FdrTranslation> translationsList) {
-        for(int i = 0; i < translationsList.size(); i++) {
-            FdrTranslation translation = translationsList.get(i);
-            String translationName = translation.getFdrInterfaceType().toString();
-            
-            //Add default column values
+    public void populateExportData(FdrExportData data, List<FdrTranslation> translationsList) {
+        for(FdrTranslation translation : translationsList) {
             LitePoint point = pointDao.getLitePoint(translation.getPointId());
             LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
-            String deviceName = pao.getPaoName();
-            String deviceType = pao.getPaoType().getPaoTypeName();
-            String pointName = point.getPointName();
-            String direction = translation.getDirection().getValue();
-            dataGrid[i+1][DEVICE_NAME_COL] = deviceName;
-            dataGrid[i+1][DEVICE_TYPE_COL] = deviceType;
-            dataGrid[i+1][POINT_NAME_COL] = pointName;
-            dataGrid[i+1][DIRECTION_COL] = direction;
+            
+            //Add default column values
+            FdrExportDataRow row = new FdrExportDataRow();
+            row.setDeviceName(pao.getPaoName());
+            row.setDeviceType(pao.getPaoType().getPaoTypeName());
+            row.setDirection(translation.getDirection().getValue());
+            row.setPointName(point.getPointName());
             
             //Iterate through interface-specific columns
-            for(int j = DEFAULT_COLS_FOR_EXPORT; j < dataGrid[0].length; j++) {
+            for(String formattedColumnHeader : data.getInterfaceHeaders()) {
                 //If the translation has a value for a given column, add it
-                String formattedColumnHeader = dataGrid[0][j];
                 boolean matchFound = false;
                 for(Map.Entry<String, String> option : translation.getParameterMap().entrySet()) {
+                    String translationName = translation.getFdrInterfaceType().toString();
                     String translationPart = formatOptionForColumnHeader(option.getKey(), translationName);
                     if(translationPart.equals(formattedColumnHeader)) {
-                        dataGrid[i+1][j] = option.getValue();
+                        row.addInterfaceValue(option.getValue());
                         matchFound = true;
                     }
                 }
                 
                 //If the translation does not have a value for a given column, add an empty string
                 if(!matchFound) {
-                    dataGrid[i+1][j] = "";
+                    row.addInterfaceValue("");
                 }
             }
+            data.addRow(row);
         }
     }
     
@@ -144,12 +137,12 @@ public class FdrTranslationManagerCsvHelper {
      */
     public String checkForMissingDefaultImportHeaders(List<String> headers) {
         String returnValue = null;
-        for(String defaultHeader : defaultImportColumnHeaders) {
-            if(!headers.contains(defaultHeader)) {
+        for(FdrCsvHeader defaultHeader : FdrCsvHeader.values()) {
+            if(!headers.contains(defaultHeader.toString())) {
                 if(returnValue != null) {
                     returnValue += ", " + defaultHeader;
                 } else {
-                    returnValue = defaultHeader;
+                    returnValue = defaultHeader.toString();
                 }
             }
         }
@@ -186,7 +179,7 @@ public class FdrTranslationManagerCsvHelper {
         for(FdrInterfaceType fdrInterface : interfaceInfo.getInterfaces()) {
             String interfaceName = fdrInterface.toString();
             //a. Get list of all columns required for each interface
-            List<FdrInterfaceOption> options = FdrInterfaceOption.getByInterface(fdrInterface);
+            FdrInterfaceOption[] options = fdrInterface.getInterfaceOptions();
             //b. Check headers for all columns for each interface
             for(FdrInterfaceOption option : options) {
                 if(!headers.contains(option.toString())) {

@@ -1,18 +1,20 @@
 package com.cannontech.common.bulk.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class FdrImportFileInterfaceInfo {
-    private List<FdrInterfaceType> interfacesInFile = Lists.newArrayList();
+    private Set<FdrInterfaceType> interfacesInFile = Sets.newHashSet();
     private List<Integer> columnsToIgnore = Lists.newArrayList();
     
     public FdrImportFileInterfaceInfo() {
     }
     
-    public List<FdrInterfaceType> getInterfaces() {
+    public Set<FdrInterfaceType> getInterfaces() {
         return interfacesInFile;
     }
     

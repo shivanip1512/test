@@ -9,7 +9,6 @@ import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
 import com.cannontech.common.exception.ImportFileFormatException;
 
 public interface FdrTranslationManagerService {
-
     /**
      * Gets a List of FdrTranslations from the database. If the filterString is
      * "AllInterfaces", all interfaces will be returned. Otherwise, filterString

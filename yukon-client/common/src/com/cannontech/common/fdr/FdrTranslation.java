@@ -13,7 +13,6 @@ public class FdrTranslation {
 	private int pointId;
 	private FdrDirection direction;
 	private FdrInterfaceType fdrInterfaceType;
-	private String destination;
 	private String translation;
 	
 	protected Map<String,String> parameterMap;
@@ -48,10 +47,7 @@ public class FdrTranslation {
 
 	/**
 	 * This getter is hiding the complexity of what to put in the Destination column in the database.
-	 * 
 	 * It requires fdrInterfaceType and paramaterMap to be not null and populated.
-	 * 
-	 * @return
 	 */
 	public String getDestination() {
 	    if (fdrInterfaceType.isDestinationInOptions()) {
@@ -84,8 +80,6 @@ public class FdrTranslation {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((destination == null) ? 0 : destination.hashCode());
-		result = prime * result
 				+ ((direction == null) ? 0 : direction.hashCode());
 		result = prime * result + pointId;
 		result = prime * result
@@ -104,11 +98,6 @@ public class FdrTranslation {
 		if (getClass() != obj.getClass())
 			return false;
 		final FdrTranslation other = (FdrTranslation) obj;
-		if (destination == null) {
-			if (other.destination != null)
-				return false;
-		} else if (!destination.equals(other.destination))
-			return false;
 		if (direction == null) {
 			if (other.direction != null)
 				return false;

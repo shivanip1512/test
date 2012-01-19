@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.TranslationImportCallbackResult;
+import com.cannontech.common.bulk.model.FdrExportData;
 import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
 import com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper;
@@ -68,26 +69,18 @@ public class FdrTranslationManagerController {
     @RequestMapping
     public String report(ModelMap model, HttpServletResponse response, String reportInterface) throws IOException {
         List<String> formattedHeaders = Lists.newArrayList();
-        fdrTranslationManagerCsvHelper.addDefaultColumnsToList(formattedHeaders);
+        fdrTranslationManagerCsvHelper.addDefaultExportColumnsToList(formattedHeaders);
         
         List<FdrTranslation> filteredTranslationsList = fdrTranslationManagerService.getFilteredTranslationList(reportInterface);
         
         //Add all headers for each translation type to the headers list
         fdrTranslationManagerCsvHelper.addHeadersFromTranslations(formattedHeaders, filteredTranslationsList);
         
-        //Create data array with dimensions [# of translations + 1][headers]
-        String[][] dataGrid = new String[filteredTranslationsList.size()+1][];
-        for(int i = 0; i < dataGrid.length; i++) {
-            dataGrid[i] = new String[formattedHeaders.size()];
-        }
-        
-        //Insert headers row
-        for(int i = 0; i < formattedHeaders.size(); i++) {
-            dataGrid[0][i] = formattedHeaders.get(i);
-        }
+        FdrExportData exportData = new FdrExportData();
+        exportData.setHeaderRow(formattedHeaders);
         
         //Insert translation data
-        fdrTranslationManagerCsvHelper.populateExportArray(dataGrid, filteredTranslationsList);
+        fdrTranslationManagerCsvHelper.populateExportData(exportData, filteredTranslationsList);
         
         //Set up CSV stream
         response.setContentType("text/csv");
@@ -99,7 +92,7 @@ public class FdrTranslationManagerController {
         CSVWriter csvWriter = new CSVWriter(writer);
         
         //Write array values to csv
-        for(String[] line : dataGrid) {
+        for(String[] line : exportData.asArrays()) {
             csvWriter.writeNext(line);
         }
         csvWriter.close();

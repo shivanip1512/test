@@ -7,110 +7,255 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.Lists;
 
 public enum FdrInterfaceType implements DatabaseRepresentationSource {
-    INET(1, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    ACS(2, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    VALMET(3, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL, 
-            FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT}),
-    CYGNET(4, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    STEC(5, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    RCCS(6, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    TRISTATE(7, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    RDEX(8, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    SYSTEM(9, new FdrDirection[] {
-            FdrDirection.LINK_STATUS}),
-    DSM2IMPORT(10, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    TELEGYR(11, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    TEXTIMPORT(12, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL, 
-            FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT}),
-    TEXTEXPORT(13, new FdrDirection[] {
-            FdrDirection.SEND}),       
+    INET(1, new FdrInterfaceOption[] {
+                FdrInterfaceOption.INET_DEVICE,
+                FdrInterfaceOption.INET_POINT,
+                FdrInterfaceOption.INET_DESTINATION_SOURCE
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    ACS(2, new FdrInterfaceOption[] {
+                FdrInterfaceOption.ACS_CATEGORY,
+                FdrInterfaceOption.ACS_REMOTE,
+                FdrInterfaceOption.ACS_POINT
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    VALMET(3, new FdrInterfaceOption[] {
+                FdrInterfaceOption.VALMET_POINT
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL, 
+                FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT
+            }),
+    CYGNET(4, new FdrInterfaceOption[] {
+                FdrInterfaceOption.CYGNET_POINTID
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    STEC(5, new FdrInterfaceOption[] {
+                FdrInterfaceOption.STEC_POINT
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    RCCS(6, new FdrInterfaceOption[] {
+                FdrInterfaceOption.RCCS_DEVICE,
+                FdrInterfaceOption.RCCS_POINT,
+                FdrInterfaceOption.RCCS_DESTINATION_SOURCE
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    TRISTATE(7, new FdrInterfaceOption[] {
+                FdrInterfaceOption.TRISTATE_POINT
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    RDEX(8, new FdrInterfaceOption[] {
+                FdrInterfaceOption.RDEX_TRANSLATION,
+                FdrInterfaceOption.RDEX_DESTINATION_SOURCE
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    SYSTEM(9, new FdrInterfaceOption[] {
+                FdrInterfaceOption.SYSTEM_CLIENT
+            },
+            new FdrDirection[] {
+                FdrDirection.LINK_STATUS
+            }),
+    DSM2IMPORT(10, new FdrInterfaceOption[] {
+                FdrInterfaceOption.DSM2IMPORT_POINT
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    TELEGYR(11, new FdrInterfaceOption[] {
+                FdrInterfaceOption.TELEGYR_POINT,
+                FdrInterfaceOption.TELEGYR_INTERVAL_SEC
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    TEXTIMPORT(12, new FdrInterfaceOption[] {
+                FdrInterfaceOption.TEXTIMPORT_POINT_ID,
+                FdrInterfaceOption.TEXTIMPORT_DRIVEPATH,
+                FdrInterfaceOption.TEXTIMPORT_FILENAME
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL, 
+                FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT
+            }),
+    TEXTEXPORT(13, new FdrInterfaceOption[] {
+                FdrInterfaceOption.TEXTEXPORT_POINT_ID
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND
+            }),       
     //ID 14 NOT USED
     //ID 15 NOT USED
-    LODESTAR_STD(16, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    LODESTAR_ENH(17, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    DSM2FILEIN(18, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    XA21LM(19, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.SEND}),
-    BEPC(20, new FdrDirection[] {
-            FdrDirection.SEND}),
-    PI(21, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    LIVEDATA(22, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    ACSMULTI(23, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL}),
-    WABASH(24, new FdrDirection[] {
-            FdrDirection.SEND}),
-    TRISTATESUB(25, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.SEND}),
-    OPC(26, new FdrDirection[] {
-            FdrDirection.RECEIVE, 
-            FdrDirection.SEND}),
-    MULTISPEAK_LM(27, new FdrDirection[] {
-            FdrDirection.RECEIVE}),
-    DNPSLAVE(28, new FdrDirection[] {
-            FdrDirection.SEND}),
-    VALMETMULTI(29, new FdrDirection[] {
-            FdrDirection.SEND, 
-            FdrDirection.SEND_FOR_CONTROL, 
-            FdrDirection.RECEIVE, 
-            FdrDirection.RECEIVE_FOR_CONTROL, 
-            FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT}),
-    ;
+    LODESTAR_STD(16, new FdrInterfaceOption[] {
+                FdrInterfaceOption.LODESTAR_STD_CUSTOMER,
+                FdrInterfaceOption.LODESTAR_STD_CHANNEL,
+                FdrInterfaceOption.LODESTAR_STD_DRIVEPATH,
+                FdrInterfaceOption.LODESTAR_STD_FILENAME
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    LODESTAR_ENH(17, new FdrInterfaceOption[] {
+                FdrInterfaceOption.LODESTAR_ENH_CUSTOMER,
+                FdrInterfaceOption.LODESTAR_ENH_CHANNEL,
+                FdrInterfaceOption.LODESTAR_ENH_DRIVEPATH,
+                FdrInterfaceOption.LODESTAR_ENH_FILENAME
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    DSM2FILEIN(18, new FdrInterfaceOption[] {
+                FdrInterfaceOption.DSM2FILEIN_OPTION_NUMBER,
+                FdrInterfaceOption.DSM2FILEIN_POINT_ID
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    XA21LM(19, new FdrInterfaceOption[] {
+                FdrInterfaceOption.XA21LM_TRANSLATION
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.SEND
+            }),
+    BEPC(20, new FdrInterfaceOption[] {
+                FdrInterfaceOption.BEPC_COOP_ID,
+                FdrInterfaceOption.BEPC_FILENAME
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND
+            }),
+    PI(21, new FdrInterfaceOption[] {
+                FdrInterfaceOption.PI_TAG_NAME,
+                FdrInterfaceOption.PI_PERIOD_SEC
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    LIVEDATA(22, new FdrInterfaceOption[] {
+                FdrInterfaceOption.LIVEDATA_ADDRESS,
+                FdrInterfaceOption.LIVEDATA_DATA_TYPE
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    ACSMULTI(23, new FdrInterfaceOption[] {
+                FdrInterfaceOption.ACSMULTI_CATEGORY,
+                FdrInterfaceOption.ACSMULTI_REMOTE,
+                FdrInterfaceOption.ACSMULTI_POINT,
+                FdrInterfaceOption.ACSMULTI_DESTINATION_SOURCE
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL
+            }),
+    WABASH(24, new FdrInterfaceOption[] {
+                FdrInterfaceOption.WABASH_SCHEDNAME,
+                FdrInterfaceOption.WABASH_PATH,
+                FdrInterfaceOption.WABASH_FILENAME
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND
+            }),
+    TRISTATESUB(25, new FdrInterfaceOption[] {
+                FdrInterfaceOption.TRISTATESUB_POINT
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.SEND
+            }),
+    OPC(26, new FdrInterfaceOption[] {
+                FdrInterfaceOption.OPC_SERVER_NAME,
+                FdrInterfaceOption.OPC_OPC_GROUP,
+                FdrInterfaceOption.OPC_OPC_ITEM
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE, 
+                FdrDirection.SEND
+            }),
+    MULTISPEAK_LM(27, new FdrInterfaceOption[] {
+                FdrInterfaceOption.MULTISPEAK_LM_OBJECTID
+            },
+            new FdrDirection[] {
+                FdrDirection.RECEIVE
+            }),
+    DNPSLAVE(28, new FdrInterfaceOption[] {
+                FdrInterfaceOption.DNPSLAVE_MASTERID,
+                FdrInterfaceOption.DNPSLAVE_SLAVEID,
+                FdrInterfaceOption.DNPSLAVE_OFFSET,
+                FdrInterfaceOption.DNPSLAVE_DESTINATION_SOURCE,
+                FdrInterfaceOption.DNPSLAVE_MULTIPLIER
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND
+            }),
+    VALMETMULTI(29, new FdrInterfaceOption[] {
+                FdrInterfaceOption.VALMETMULTI_POINT,
+                FdrInterfaceOption.VALMETMULTI_DESTINATION_SOURCE,
+                FdrInterfaceOption.VALMETMULTI_PORT
+            },
+            new FdrDirection[] {
+                FdrDirection.SEND, 
+                FdrDirection.SEND_FOR_CONTROL, 
+                FdrDirection.RECEIVE, 
+                FdrDirection.RECEIVE_FOR_CONTROL, 
+                FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT
+            });
     
-    private int position;
-    private FdrDirection[] supportedDirections;
+    private final int position;
+    private final FdrInterfaceOption[] options;
+    private final FdrDirection[] supportedDirections;
     
-    //This comparator is designed to let us sort FdrInterfaceTypes by name, rather than natural enum order
+    /**
+     * This comparator is designed to let us sort FdrInterfaceTypes by name, rather than 
+     * natural enum order.
+     */
     public static final Comparator<FdrInterfaceType> alphabeticalComparator = new Comparator<FdrInterfaceType>() {
         public int compare(FdrInterfaceType typeOne, FdrInterfaceType typeTwo) {
             return typeOne.name().compareTo(typeTwo.name());
         }
     };
     
-    FdrInterfaceType(int position, FdrDirection[] supportedDirections) {
+    FdrInterfaceType(int position, FdrInterfaceOption[] options, FdrDirection[] supportedDirections) {
         this.position = position;
+        this.options = options;
         this.supportedDirections = supportedDirections;
     }
     
@@ -120,7 +265,21 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
     public int getValue() {
         return position;
     }
-
+    
+    /**
+     * @return the options used by this interface.
+     */
+    public FdrInterfaceOption[] getInterfaceOptions() {
+        return options;
+    }
+    
+    /**
+     * @return the options used by this interface, as a List
+     */
+    public List<FdrInterfaceOption> getInterfaceOptionsList() {
+        return Lists.newArrayList(options);
+    }
+    
     /**
      * This or the lack of this indicates a special case where the Destination field is utilized 
      * instead of defaulted to the interface name.
@@ -135,7 +294,6 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
      * @return the destination option if this interface has one, otherwise null.
      */
     public FdrInterfaceOption getDestinationOption() {
-        List<FdrInterfaceOption> options = getInterfaceOptions();
         for(FdrInterfaceOption option : options) {
             if(option.isDestinationOption()) {
                 return option;
@@ -149,20 +307,6 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
      */
     public FdrDirection[] getSupportedDirections() {
         return supportedDirections;
-    }
-    
-    /**
-     * @return a List of the FdrInterfaceOptions for this FdrInterfaceType.
-     */
-    public List<FdrInterfaceOption> getInterfaceOptions() {
-        List<FdrInterfaceOption> optionList = Lists.newArrayList();
-        FdrInterfaceOption[] options = FdrInterfaceOption.values();
-        for(FdrInterfaceOption option : options) {
-            if(option.getInterfaceType() == this) {
-                optionList.add(option);
-            }
-        }
-        return optionList;
     }
     
     /**

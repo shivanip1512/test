@@ -32,7 +32,7 @@
         <c:if test="${ignoreInvalidColumns}">
             <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.import.ignoringInvalidColumns"/>
         </c:if>
-        <br>
+        <br><br>
         <div>
             <tags:resultProgressBar totalCount="${result.totalItems}"
                 countKey="FDR_TRANSLATION_IMPORT/${resultId}/COMPLETED_LINES"

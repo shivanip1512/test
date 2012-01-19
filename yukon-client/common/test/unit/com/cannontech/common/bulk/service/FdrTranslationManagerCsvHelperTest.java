@@ -31,7 +31,7 @@ private static FdrTranslationManagerCsvHelper helper;
     public void testAddDefaultColumnsToList() {
         String[] array = {"ONE", "TWO"};
         List<String> list = Lists.newArrayList(array);
-        helper.addDefaultColumnsToList(list);
+        helper.addDefaultExportColumnsToList(list);
         
         Assert.assertTrue(list.contains("ONE"));
         Assert.assertTrue(list.contains("TWO"));
