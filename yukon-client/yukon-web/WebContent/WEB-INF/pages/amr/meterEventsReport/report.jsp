@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
 
@@ -16,6 +17,11 @@
 	            jQuery('#filterPopup').show();
 	        }
 	        
+	        jQuery("#resetButton").click(function () {
+	        	jQuery("#csvForm").attr("action", "reset");
+	        	jQuery("#csvForm").submit();
+	        });
+
 	        jQuery(".selectedDevicesLink").hover(function() {
 	        	jQuery(".deviceMagIcon .magnifier").toggleClass("magnifier_hovered");
 	        });
@@ -111,7 +117,7 @@
 	    		treeChildrenGroups.push({title: meteringTitle, isFolder: true, children: meteringNodes});
 	    	}
 
-	    	var treeChildren = [{title: allTitle, isFolder: true, children: treeChildrenGroups}];
+	    	var treeChildren = [{title: allTitle, isFolder: true, expand: true, children: treeChildrenGroups}];
 	    	
 	    	jQuery("#eventTree").dynatree({
 	    		checkbox: true,
@@ -142,7 +148,15 @@
         	return false;
         }
     </script>
-	
+
+	<dialog:inline nameKey="filter.onlyActiveEvents.help" okEvent="none" on="#activeEventsHelp" options="{'modal' : false, 'resizable' : false}">
+		<cti:msg2 key=".filter.onlyActiveEvents.help.text" htmlEscape="false"/>
+	</dialog:inline>
+
+	<dialog:inline nameKey="filter.onlyLatestEvents.help" okEvent="none" on="#latestEventsHelp" options="{'modal' : false, 'resizable' : false}">
+		<cti:msg2 key=".filter.onlyLatestEvents.help.text" htmlEscape="false"/>
+	</dialog:inline>
+
 	<form:form id="eventsFilterForm" action="report" method="get"commandName="backingBean">
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
@@ -159,11 +173,13 @@
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyActiveEvents">
-							<form:checkbox path="onlyActiveEvents" />
+							<form:checkbox path="onlyActiveEvents" cssClass="fl"/>
+							<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
-							<form:checkbox path="onlyLatestEvent" id="onlyLatestEvent" />
+							<form:checkbox path="onlyLatestEvent" cssClass="fl"/>
+							<a id="latestEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
@@ -197,8 +213,7 @@
 				</i:simplePopup>
 				<div class="pageActionArea">
 					<cti:button nameKey="update" type="submit" styleClass="f_blocker" />
-					<cti:button nameKey="reset" type="submit" name="clear"
-						styleClass="f_blocker" />
+					<cti:button nameKey="reset" styleClass="f_blocker" id="resetButton"/>
 				</div>
 			</cti:dataGridCell>
 
@@ -221,15 +236,17 @@
 								</c:choose>
 							</span>
 							<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
+								<c:if test="${isDeviceGroup}">
+									<span class="viewGroupLink fr">
+										<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+											<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
+										</cti:url>
+										(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
+									</span>
+								</c:if>
 								<span class="fr deviceMagIcon">
 									<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
 								</span>
-							</c:if>
-							<c:if test="${isDeviceGroup}">
-								<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
-									<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
-								</cti:url>
-								(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
 							</c:if>
 						</tags:nameValue2>
 			
@@ -293,7 +310,7 @@
 					    </c:choose>
 					</td>
 					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
-	                <td>${event.pointName}</td>
+	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
 					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
 				</tr>
 			</c:forEach>

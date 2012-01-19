@@ -22,17 +22,15 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
     private Date toDate = new Date();
     private Date fromDate = new DateTime().minus(Duration.standardDays(7)).toDate();
     private Map<BuiltInAttribute, Boolean> meterEventTypesMap;
-    private boolean onlyActiveEvents;
-    private boolean onlyLatestEvent;
+    private boolean onlyActiveEvents = true;
+    private boolean onlyLatestEvent = true;
     private boolean includeDisabledPaos;
 
     public MeterEventsReportFilterBackingBean() {
-        setDescending(true);
         meterEventTypesMap = Maps.newHashMapWithExpectedSize(MeterEventStatusTypeGroupings.getAll().size());
         for (BuiltInAttribute attr : MeterEventStatusTypeGroupings.getAll()) {
             meterEventTypesMap.put(attr, false);
         }
-        setItemsPerPage(10);
     }
 
     public DeviceCollection getDeviceCollection() {

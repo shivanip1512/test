@@ -145,8 +145,8 @@ public class MeterEventsReportController {
         setupReportFromFilter(backingBean, userContext, model);
     }
 
-    @RequestMapping(params = "clear")
-    public String clear(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
+    @RequestMapping
+    public String reset(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupModelMap(new MeterEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
         return "meterEventsReport/report.jsp";
@@ -252,19 +252,6 @@ public class MeterEventsReportController {
                                      YukonUserContext userContext, ModelMap model) {
         
         List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
-        DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(events, userContext);
-        model.addAttribute("collectionFromReportResults", collectionFromReportResults);
-
-        SearchResult<MeterReportEvent> filterResult = new SearchResult<MeterReportEvent>();
-        filterResult.setBounds(backingBean.getStartIndex(),
-                               backingBean.getItemsPerPage(),
-                               events.size());
-
-        events = events.subList(backingBean.getStartIndex(),
-                                          backingBean.getStartIndex() + 
-                                          backingBean.getItemsPerPage() > events.size() ?
-                                          events.size() : backingBean.getStartIndex() +
-                                          backingBean.getItemsPerPage());
         
         for (MeterReportEvent meterReportEvent : events) {
             String valueString = pointFormattingService.getValueString(meterReportEvent.getPointValueHolder(), Format.VALUE, userContext);
@@ -280,6 +267,20 @@ public class MeterEventsReportController {
         } else {
             Collections.sort(events, Collections.reverseOrder(getDateComparator()));
         }
+
+        DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(events, userContext);
+        model.addAttribute("collectionFromReportResults", collectionFromReportResults);
+
+        SearchResult<MeterReportEvent> filterResult = new SearchResult<MeterReportEvent>();
+        filterResult.setBounds(backingBean.getStartIndex(),
+                               backingBean.getItemsPerPage(),
+                               events.size());
+
+        events = events.subList(backingBean.getStartIndex(),
+                                          backingBean.getStartIndex() + 
+                                          backingBean.getItemsPerPage() > events.size() ?
+                                          events.size() : backingBean.getStartIndex() +
+                                          backingBean.getItemsPerPage());
         
         filterResult.setResultList(events);
         model.addAttribute("filterResult", filterResult);

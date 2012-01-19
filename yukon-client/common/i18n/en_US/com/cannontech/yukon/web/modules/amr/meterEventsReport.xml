@@ -26,7 +26,18 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateFrom">From</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateTo">To</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents">Only Active Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents.help.title">Only Active Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents.help.text"><![CDATA[
+    	Only display past events that have an active state.
+    	<br><br>
+    	An active event usually means the meter has
+    	<br> gone from a normal state to a different specific state.
+   	]]></entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvent">Only Latest Event</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvents.help.title">Only Latest Events</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvents.help.text"><![CDATA[
+    	Only display the most recent event for each type of event that has occurred.
+   	]]></entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.includeDisabledDevices">Include Disabled Devices</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.eventTypesRow">Event Types</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.all">All</entry>
@@ -35,6 +46,7 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.tamper">Tamper</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.outage">Outage</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.metering">Metering</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.helpText">Help</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableTitle.title">Meter Events</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText">Device Name</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceType.linkText">Device Type</entry>

@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <div id="${widgetParameters.widgetId}_events">
     <c:choose>
@@ -24,7 +25,7 @@
                     <c:forEach items="${valueMap}" var="entry">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
                             <td><cti:formatDate type="BOTH" value="${entry.pointValueQualityHolder.pointDataTimeStamp}"/></td>
-                            <td>${entry.pointName}</td>
+                            <td><spring:escapeBody>${entry.pointName}</spring:escapeBody></td>
                             <td class="eventStatus<cti:pointValueFormatter value="${entry.pointValueQualityHolder}" format="VALUE"/>">
                                 <cti:pointValueFormatter value="${entry.pointValueQualityHolder}" format="VALUE"/>
                             </td>

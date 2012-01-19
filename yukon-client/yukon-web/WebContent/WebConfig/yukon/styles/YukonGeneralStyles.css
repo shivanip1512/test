@@ -1471,6 +1471,13 @@ select:focus {
     cursor: not-allowed;
 }
 
+.icon_help {
+	background: transparent url(../Icons/help.gif) top left no-repeat;
+}
+.icon_help:hover {
+	background: transparent url(../Icons/help_over.gif) top left no-repeat;
+}
+
 .magnifier {
 	background: transparent url(../Icons/magnifier.gif) top left no-repeat;
 }
@@ -1681,6 +1688,7 @@ div.scrollingContainer {
     background: none repeat scroll 0 0 white;
     border: 3px solid #CCCCCC;
   	-webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
     float: right;
     min-height: 2em;

@@ -96,10 +96,8 @@ public enum BuiltInAttribute implements Attribute {
     PASSWORD_TABLE_CRC_ERROR("Password Table Crc Error"),
     POTENTIAL_INDICATOR_WARNING("Potential Indicator Warning"),
     POWER_FAIL_DATA_SAVE_ERROR("Power Fail Data Save Error"),
-    POWER_FAILURE("Power Failure"),
     PQM_TEST_FAILURE_WARNING("Pqm Test Failure Warning"),
     RAM_ERROR("Ram Error"),
-    REVERSE_ROTATION("Reverse Rotation"),
     REVERSED_AGGREGATE("Reversed Aggregate"),
     REVERSED_PHASE_A("Reversed Phase A"),
     REVERSED_PHASE_C("Reversed Phase C"),
@@ -116,7 +114,6 @@ public enum BuiltInAttribute implements Attribute {
     SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR("Service Disconnect Switch Sensor Error"),
     STUCK_SWITCH("Stuck Switch"),
     TABLE_CRC_ERROR("Table Crc Error"),
-    TAMPER_DETECT("Tamper Detect"),
     TIME_ADJUSTMENT("Time Adjustment"),
     UNCONFIGURED("Unconfigured"),
     UNPROGRAMMED("Unprogrammed"),
@@ -160,10 +157,10 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(PASSWORD_TABLE_CRC_ERROR);
         builder.add(POTENTIAL_INDICATOR_WARNING);
         builder.add(POWER_FAIL_DATA_SAVE_ERROR);
-        builder.add(POWER_FAILURE);
+        builder.add(POWER_FAIL_FLAG);             //[PLC & RFN] Shared
         builder.add(PQM_TEST_FAILURE_WARNING);
         builder.add(RAM_ERROR);
-        builder.add(REVERSE_ROTATION);
+        builder.add(REVERSE_POWER_FLAG);          //[PLC & RFN] Shared
         builder.add(REVERSED_AGGREGATE);
         builder.add(REVERSED_PHASE_A);
         builder.add(REVERSED_PHASE_C);
@@ -176,7 +173,7 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
         builder.add(STUCK_SWITCH);
         builder.add(TABLE_CRC_ERROR);
-        builder.add(TAMPER_DETECT);
+        builder.add(TAMPER_FLAG);                 //[PLC & RFN] Shared
         builder.add(TIME_ADJUSTMENT);
         builder.add(UNCONFIGURED);
         builder.add(UNPROGRAMMED);

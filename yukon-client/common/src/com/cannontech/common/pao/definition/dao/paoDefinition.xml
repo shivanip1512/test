@@ -5118,7 +5118,7 @@
             <attribute name="POWER_FAIL_DATA_SAVE_ERROR">
                 <basicLookup point="Power Fail Data Save Error" />
             </attribute>
-            <attribute name="POWER_FAILURE">
+            <attribute name="POWER_FAIL_FLAG"> <!-- Shared (PLC & RFN) Attribute -->
                 <basicLookup point="Power Failure" />
             </attribute>
             <attribute name="PQM_TEST_FAILURE_WARNING">
@@ -5127,7 +5127,7 @@
             <attribute name="RAM_ERROR">
                 <basicLookup point="Ram Error" />
             </attribute>
-            <attribute name="REVERSE_ROTATION">
+            <attribute name="REVERSE_POWER_FLAG"> <!-- Shared (PLC & RFN) Attribute -->
                 <basicLookup point="Reverse Rotation" />
             </attribute>
             <attribute name="REVERSED_AGGREGATE">
@@ -5166,7 +5166,7 @@
             <attribute name="TABLE_CRC_ERROR">
                 <basicLookup point="Table Crc Error" />
             </attribute>
-            <attribute name="TAMPER_DETECT">
+            <attribute name="TAMPER_FLAG"> <!-- Shared (PLC & RFN) Attribute -->
                 <basicLookup point="Tamper Detect" />
             </attribute>
             <attribute name="TIME_ADJUSTMENT">

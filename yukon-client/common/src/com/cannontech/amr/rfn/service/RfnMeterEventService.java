@@ -19,6 +19,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -31,8 +32,8 @@ public class RfnMeterEventService {
     @Autowired private List<RfnArchiveRequestProcessorBase> processors;
 
     private Map<RfnConditionType, RfnArchiveRequestProcessorBase> processorsMap;
-    private Map<Boolean, Integer> clearedStateMap = ImmutableMap.of(Boolean.TRUE, 0,
-                                                                    Boolean.FALSE, 1);
+    private Map<Boolean, Integer> clearedStateMap = ImmutableMap.of(Boolean.TRUE, EventStatus.CLEARED.getRawState(),
+                                                                    Boolean.FALSE, EventStatus.ACTIVE.getRawState());
     
     @PostConstruct
     public void initialize() {
@@ -65,15 +66,7 @@ public class RfnMeterEventService {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
             if (eventAttr.isRfnEventStatusType()) {
-                
-                Map<RfnConditionDataType, Object> eventData = event.getEventData();
-                Boolean cleared = false;
-                if (eventData != null) {
-                    Object thing = eventData.get(RfnConditionDataType.CLEARED);
-                    if (thing != null) cleared = (Boolean)thing;
-                }
-                int rawEventStatusState = clearedStateMap.get(cleared);
-                
+                int rawEventStatusState = getRawClearedStateForEvent(event);
                 processAttributePointData(meter, pointDatas, eventAttr, event.getTimeStamp(), rawEventStatusState);
                 return true;
             }
@@ -83,6 +76,17 @@ public class RfnMeterEventService {
         return false;
     }
     
+    public <T extends RfnEvent> int getRawClearedStateForEvent(T event) {
+        Map<RfnConditionDataType, Object> eventData = event.getEventData();
+        Boolean cleared = false;
+        if (eventData != null) {
+            Object thing = eventData.get(RfnConditionDataType.CLEARED);
+            if (thing != null) cleared = (Boolean)thing;
+        }
+        int rawEventStatusState = clearedStateMap.get(cleared);
+        return rawEventStatusState;
+    }
+
     /**
      * Creates a point for the passed in Attribute if one doesn't exist, then gets that point
      * so we can properly build up a pointData object, which then gets assigned to our

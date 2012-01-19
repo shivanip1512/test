@@ -136,6 +136,8 @@ div.resultBar > div {
 	width: 100%;
 }
 
+#eventsFilterForm .icon_help,
+.viewGroupLink,
 .deviceMagIcon {
 	margin-left: 5px;
 }
