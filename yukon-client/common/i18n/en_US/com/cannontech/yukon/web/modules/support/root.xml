@@ -209,6 +209,7 @@
     <entry key="yukon.web.modules.support.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>
 
     <entry key="yukon.web.modules.support.rfnTest.pageName">RFN Test</entry>
+    <entry key="yukon.web.modules.support.rfnTest.numEventsSent">{0,choice,0#no events sent|1#{0} event sent successfully|1&lt;{0} events sent successfully}</entry>
     <entry key="yukon.web.modules.support.rfnTest.sendEvent.title">RFN Event Archive Request Test</entry>
     <entry key="yukon.web.modules.support.rfnTest.sendAlarm.title">RFN Alarm Archive Request Test</entry>
     <entry key="yukon.web.modules.support.rfnTest.tests.title">Archive Request Tests</entry>

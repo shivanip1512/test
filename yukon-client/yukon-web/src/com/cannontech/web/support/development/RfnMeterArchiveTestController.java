@@ -11,6 +11,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -34,7 +35,9 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
@@ -133,14 +136,25 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping
-    public String sendEvent(@ModelAttribute TestEvent event, ModelMap model) {
+    public String sendEvent(@ModelAttribute TestEvent event, ModelMap model, FlashScope flashScope) {
+        int numEventsSent = 0;
         for (int i = event.getSerialFrom(); i <= event.getSerialTo(); i++) {
             for (int j=0; j < event.getNumEventPerMeter(); j++) {
                 buildAndSendEvent(event, i);
+                numEventsSent++;
             }
             for (int j=0; j < event.getNumAlarmPerMeter(); j++) {
                 buildAndSendAlarm(event, i);
+                numEventsSent++;
             }
+        }
+        
+        if (numEventsSent > 0) {
+            MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
+            flashScope.setConfirm(createMessage);
+        } else {
+            MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
+            flashScope.setError(createMessage);
         }
         
         return setupEventAlarmAttributes(model, event);
