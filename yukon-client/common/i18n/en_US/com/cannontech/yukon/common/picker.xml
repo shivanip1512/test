@@ -44,7 +44,7 @@
 <entry key="yukon.web.picker.applianceCategoryProgramPicker.dialogTitle">Select Program</entry>
 <entry key="yukon.web.picker.programForEnrollmentPicker.dialogTitle">Select Program</entry>
 
-<entry key="yukon.web.picker.lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker.dialogTitle">Select Program</entry>
+<entry key="yukon.web.picker.lmProgramPicker.dialogTitle">Select Program</entry>
 <entry key="yukon.web.picker.lmGroupPaoPermissionCheckingPicker.dialogTitle">Select Group</entry>
 <entry key="yukon.web.picker.lmControlAreaPaoPermissionCheckingPicker.dialogTitle">Select Control Area</entry>
 <entry key="yukon.web.picker.lmScenarioPaoPermissionCheckingPicker.dialogTitle">Select Scenario</entry>

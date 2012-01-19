@@ -193,7 +193,7 @@ function updateFieldsFromBackingBean() {
             </tags:bind>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".programs">
-            <tags:pickerDialog id="programPicker" type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+            <tags:pickerDialog id="programPicker" type="lmProgramPicker"
                 destinationFieldName="programId" extraArgs="${energyCompanyId}"
                 endAction="programsChosen" multiSelectMode="true" linkType="selection"
                 allowEmptySelection="true"

@@ -32,7 +32,7 @@ submitForm = function() {
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".programs">
             <tags:bind path="programIds">
-                <tags:pickerDialog type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+                <tags:pickerDialog type="lmProgramPicker"
                     id="programPicker" selectionProperty="paoName"
                     destinationFieldName="programIds" initialIds="${optOutSurveyDto.programIds}"
                     multiSelectMode="true" linkType="selection" useInitialIdsIfEmpty="true"

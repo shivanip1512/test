@@ -1792,7 +1792,7 @@
     
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
     
-    <bean name="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker">
+    <bean name="lmProgramPicker" class="com.cannontech.web.picker.v2.LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker">
     	<property name="permission" value="LM_VISIBLE"/>
     	<property name="sqlFilters">
             <list>

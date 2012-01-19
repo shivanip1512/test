@@ -539,7 +539,7 @@ function makeFirstSelectedFilterValueVisible() {
 	                    		if(filter.isMultiSelect()) {
 	                    		%>
 	                    			
-	                   			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+	                   			<tags:pickerDialog  type="lmProgramPicker"
 	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
 				                                 	id="programPicker" 
 				                                 	multiSelectMode="true"
@@ -555,7 +555,7 @@ function makeFirstSelectedFilterValueVisible() {
 	                    		} else {
 	                    		%>
 	                    			
-	                   			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+	                   			<tags:pickerDialog  type="lmProgramPicker"
 	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
 			                                 		id="programPicker" 
 			                                 		multiSelectMode="false"

@@ -91,7 +91,7 @@
                                     <input type="hidden" id="disabledProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
                                     <input type="hidden" id="disabledProgramName" name="programName" value="">
                                     
-                                    <tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+                                    <tags:pickerDialog  type="lmProgramPicker"
                                                          id="disabledProgramPicker" 
                                                          destinationFieldId="disabledProgramPaoId"
                                                          styleClass="simpleLink"
@@ -136,7 +136,7 @@
 				        			<input type="hidden" id="cancelOptOutsProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
 				        			<input type="hidden" id="cancelOptOutsProgramName" name="programName" value="">
 				        			
-				        			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+				        			<tags:pickerDialog  type="lmProgramPicker"
 						                                 id="cancelOptOutsProgramPicker" 
 						                                 destinationFieldId="cancelOptOutsProgramPaoId"
 						                                 styleClass="simpleLink"
@@ -207,7 +207,7 @@
 				        			<input type="hidden" id="disabledCountProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
 				        			<input type="hidden" id="disabledCountProgramName" name="programName" value="">
 				        			
-				        			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+				        			<tags:pickerDialog  type="lmProgramPicker"
 						                                 id="disabledCountProgramPicker" 
 						                                 destinationFieldId="disabledCountProgramPaoId"
 						                                 styleClass="simpleLink"

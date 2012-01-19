@@ -132,7 +132,7 @@
                                         
                                         <c:when test="${rule.ruleType eq 'PROGRAM'}">
                                             <form:hidden path="filterRules[${row.index}].programIds" id="programIds_${row.index}"/>
-                                            <tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+                                            <tags:pickerDialog  type="lmProgramPicker"
                                                     id="loadProgramPicker_${row.index}" selectionProperty="paoName"
                                                     multiSelectMode="true"
                                                     extraArgs="${energyCompanyId}"
