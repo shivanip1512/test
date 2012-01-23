@@ -53,7 +53,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const CtiTime& getNotifyInactiveTime() const;
     const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
-    bool getAdjustNotificationPending() const;
+    bool isAdjustNotificationPending() const;
     
     bool getIsRampingIn();
     bool getIsRampingOut();
@@ -163,7 +163,7 @@ private:
     
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
-    bool _notify_adjust_enabled;
+    bool _adjustment_notification_enabled;
 
     std::string _message_subject;
     std::string _message_header;
@@ -181,7 +181,7 @@ private:
     CtiTime _directstoptime;
     CtiTime _notify_active_time;
     CtiTime _notify_inactive_time;
-    bool    _notify_adjust_pending;
+    bool    _adjustment_notification_pending;
 
     CtiTime _startedrampingout;
     BOOL _constraint_override;

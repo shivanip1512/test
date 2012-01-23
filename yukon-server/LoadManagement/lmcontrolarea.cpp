@@ -2349,7 +2349,7 @@ void CtiLMControlArea::handleNotification(CtiTime currentTime, CtiMultiMsg* mult
                 currentLMDirectProgram->dumpDynamicData();
             }
 
-            if( currentLMDirectProgram->getAdjustNotificationPending() )
+            if( currentLMDirectProgram->isAdjustNotificationPending() )
             {
                 currentLMDirectProgram->notifyGroupsOfAdjustment(multiNotifMsg);
             }

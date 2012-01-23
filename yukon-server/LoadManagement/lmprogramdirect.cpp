@@ -74,8 +74,8 @@ _lastgroupcontrolled(0),
 _controlActivatedByStatusTrigger(false),
 _curLogID(0),
 _insertDynamicDataFlag(false),
-_notify_adjust_enabled(false),
-_notify_adjust_pending(false)
+_adjustment_notification_enabled(false),
+_adjustment_notification_pending(false)
 {
 }
 
@@ -85,7 +85,7 @@ _notify_inactive_time(gInvalidCtiTime),
 _startedrampingout(gInvalidCtiTime),
 _constraint_override(false),
 _announced_program_constraint_violation(false),
-_notify_adjust_pending(false)
+_adjustment_notification_pending(false)
 {
     restore(rdr);
 }
@@ -226,9 +226,9 @@ const CtiTime& CtiLMProgramDirect::getNotifyActiveTime() const
 }
 
 // This is set when notification is needed and cleared when that notification goes out
-bool CtiLMProgramDirect::getAdjustNotificationPending() const
+bool CtiLMProgramDirect::isAdjustNotificationPending() const
 {
-    return _notify_adjust_pending;
+    return _adjustment_notification_pending;
 }
 
 /*----------------------------------------------------------------------------
@@ -544,7 +544,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setNotifyActiveTime(const CtiTime& notif
 void CtiLMProgramDirect::setAdjustNotificationPending(bool adjustNeedsToBeSent)
 {
     // Note that unlike the times, this is not sent to the clients and dirty does not need to be set
-    _notify_adjust_pending = adjustNeedsToBeSent;
+    _adjustment_notification_pending = adjustNeedsToBeSent;
 }
 
 /*----------------------------------------------------------------------------
@@ -5401,7 +5401,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _directstoptime = right._directstoptime;
         _notify_active_time = right._notify_active_time;
         _notify_inactive_time = right._notify_inactive_time;
-        _notify_adjust_pending = right._notify_adjust_pending;
+        _adjustment_notification_pending = right._adjustment_notification_pending;
         _trigger_offset = right._trigger_offset;
         _trigger_restore_offset = right._trigger_restore_offset;
         _startedrampingout = right._startedrampingout;
@@ -5474,10 +5474,9 @@ void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
         // NotifyAdjust is represented by -1 = false, 1 = true in the database.
         int notifyAdjust;
         rdr["notifyadjust"] >> notifyAdjust;
-        _notify_adjust_enabled = notifyAdjust > 0 ? true : false;
+        _adjustment_notification_enabled = (notifyAdjust == 1);
     }
     
-
     if( !rdr["currentgearnumber"].isNull() )
     {
         rdr["currentgearnumber"] >> _currentgearnumber;
@@ -6076,7 +6075,7 @@ void CtiLMProgramDirect::scheduleStartNotification(const CtiTime& start_time)
  */
 void CtiLMProgramDirect::requestAdjustNotification(const CtiTime& stop_time)
 {
-    if( _notify_adjust_enabled && stop_time > CtiTime::now() && getNotifyActiveTime() < CtiTime::now() )
+    if( _adjustment_notification_enabled && stop_time > CtiTime::now() && getNotifyActiveTime() < CtiTime::now() )
     {
         setAdjustNotificationPending(true);
 
