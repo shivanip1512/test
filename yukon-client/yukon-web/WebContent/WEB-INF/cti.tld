@@ -1909,8 +1909,35 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
-    
-      <tag>
+
+    <tag>
+        <name>item</name>
+        <tag-class>com.cannontech.web.taglib.ListItemTag</tag-class>
+        <description>Use this inside a list tag to represent a single item in the list.</description>
+        <body-content>scriptless</body-content>
+        <attribute>
+            <name>value</name>
+            <description>Specify the value of the item.  If not specified, the body will be used.</description>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>list</name>
+        <tag-class>com.cannontech.web.taglib.ListTag</tag-class>
+        <description>Use this create a list of items.  This list could be used for a list of
+            arguments to a i18n key.</description>
+        <body-content>scriptless</body-content>
+        <attribute>
+            <name>var</name>
+            <description>Specify the name of the variable put the list in.</description>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+  <tag>
     <description>
         Adds a parameter to a containing 'import' tag's URL.
         Copied from JSTL because the JstlCoreTLV checks don't allow param to be
