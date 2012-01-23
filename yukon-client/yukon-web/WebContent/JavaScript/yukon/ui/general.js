@@ -49,7 +49,7 @@ Yukon.ui = {
         // close popup on submit event
         
         // close popup on submit event
-        jQuery("button.f_closePopupOnSubmit").live('click', function(event){
+        jQuery(document).delegate("button.f_closePopupOnSubmit", 'click', function(event){
             jQuery(event).closest('.popUpDiv').hide();
         });
         
@@ -109,8 +109,7 @@ Yukon.ui = {
     },
     
     block: function(event){
-       var target = jQuery(event.currentTarget);
-       var blockElement = target.closest(".f_block_this");
+       var blockElement = jQuery(event.currentTarget).closest(".f_block_this");
        if(blockElement[0]){
            Yukon.uiUtils.elementGlass.show(blockElement[0]);
        }else{

@@ -23,7 +23,7 @@
 
 <script type="text/javascript">
 jQuery(function(){
-    debug(Yukon.Dialog.ConfirmationManager.add({
+    Yukon.Dialog.ConfirmationManager.add({
         on: '${on}',
         strings:{
             title: "${dialogTitleMsg}",
@@ -31,6 +31,6 @@ jQuery(function(){
             ok: "${okBtnMsg}",
             cancel: "${cancelBtnMsg}"
         }
-    }));
+    });
 });
 </script>
