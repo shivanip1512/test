@@ -1,6 +1,8 @@
 package com.cannontech.cbc.cyme.impl;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,7 +11,13 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
@@ -35,6 +43,10 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.enums.Phase;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, PointDataListener {
@@ -48,6 +60,7 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
     private ZoneDao zoneDao;
     private SimplePointAccessDao simplePointAccessDao;
     private SubstationBusDao substationBusDao;
+    private ResourceLoader resourceLoader;
 
     private static ObjectMapper<Node, CymeResultCap> cymeCapBankNodeMapper = new ObjectMapper<Node, CymeResultCap>() {
         
@@ -172,7 +185,165 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
             }
         }
     }
+    
+    private enum ElementType {
+        LINE("OverheadLines"),
+        CABLE("Cables"),
+        REGULATOR("Regulators"),
+        TRANSFORMER("Transformers"),
+        CAPACITOR("ShuntCapacitors");
+        
+        private String classValue;
+        
+        private ElementType(String classValue) {
+            this.classValue = classValue;
+        }
+        
+        public static  ElementType getForClass(String classValue) {
+            for (ElementType type : values()) {
+                if (type.classValue.equals(classValue)) return type;
+            }
+            throw new IllegalArgumentException("Invalid class type: " + classValue);
+        }
+    }
+    
+    private enum ValueType {
+        TO_NODE_ID("ToNodeId"),
+        FROM_NODE_ID("FromNodeId"),
+        EQ_CODE("EqCode"),
+        EQ_ID("EqId"),
+        EQ_NO("EqNo"),
+        FEEDER_ID("FeederId"),
+        BUS_ID("BusId"),
+        SUB_NETWORK_ID("SubNetworkId"),
+        IS_LTC("XfoIsLTC");
+        
+        private String value;
+        
+        private ValueType(String value) {
+            this.value = value;
+        }
+        
+        public static  ValueType getForValue(String value) {
+            for (ValueType type : values()) {
+                if (type.value.equals(value)) return type;
+            }
+            throw new IllegalArgumentException("Invalid value type: " + value);
+        }
+    }
+    
+    private class CymeElement {
+        private Map<ValueType, String> values = Maps.newEnumMap(ValueType.class);
+        public Map<ValueType, String> getValues() {
+            return values;
+        }
+        public void setValues(Map<ValueType, String> values) {
+            this.values = values;
+        }
+    }
+    
+    @PostConstruct
+    public void testModel() throws JDOMException, IOException {
+        String modelFile = "classpath:com/cannontech/cbc/cyme/testing/yukonTopology.xml";
+        Resource model = resourceLoader.getResource(modelFile);
+        
+        SAXBuilder saxBuilder = new SAXBuilder();
+        Document modelDoc = saxBuilder.build(model.getInputStream());
+        
+        Element rootElement = modelDoc.getRootElement();
+        Element tabularResult = rootElement.getChild("TabularReportBody").getChild("TabularResults").getChild("TabularResult");
+        Element networkIds = tabularResult.getChild("NetworkIDs");
+        
+        Iterable<Element> feedersAndStation = getElementChildren(networkIds, "NetworkID");
+        Set<String> feederNames = Sets.newHashSetWithExpectedSize(Iterables.size(feedersAndStation));
+        String substationName = null;
+        Iterator<Element> fdrSubIter = feedersAndStation.iterator();
+        while (fdrSubIter.hasNext()) {
+            Element elem = fdrSubIter.next();
+            
+            // Check for Substation
+            String name = elem.getText();
+            if (!fdrSubIter.hasNext()) {
+                substationName = name;
+            } else {
+                // This is a feeder name
+                feederNames.add(name);
+            }
+            
+        }
+        
+        logger.debug("Substation: " + substationName);
+        logger.debug("Feeders: " + feederNames);
+        
+        Element tabularResultTypes = tabularResult.getChild("TabularResultTypes");
+        ListMultimap<ElementType, CymeElement> typeMap = getTypeMap(tabularResultTypes);
+//        for (ElementType elementType : typeMap.keySet()) {
+//            for (CymeElement elem : typeMap.get(elementType)) {
+//                for (ValueType valueType : elem.getValues().keySet()) {
+//                    logger.debug(valueType + ": " + elem.getValues().get(valueType));
+//                }
+//            }
+//        }
+        
+        // transformers
+        List<CymeElement> cymeBuses = typeMap.get(ElementType.TRANSFORMER);
+        Set<Bus> buses = Sets.newHashSet();
+        for (CymeElement cymeElement : cymeBuses) {
+            Bus bus = new Bus();
+            bus.setName(cymeElement.getValues().get(ValueType.EQ_ID));
+            buses.add(bus);
+        }
+        
+        
+        
+    }
+    
+    private abstract class Thing {
+        private String name;
+        public void setName(String name) {this.name = name;}
+        public String getName() {return name;}
+    }
+    
+    private class Bus extends Thing {
+        Set<Feeder> feeders = Sets.newHashSet();
+    }
+    
+    private class Feeder extends Thing {
+        Set<Bank> banks = Sets.newHashSet();
+    }
+    
+    private class Bank extends Thing {
+    }
+    
+    private ListMultimap<ElementType, CymeElement> getTypeMap(Element tabularResultTypes) {
+        ListMultimap<ElementType, CymeElement> typeMap = ArrayListMultimap.create();
+        Iterable<Element> types = getElementChildren(tabularResultTypes, "TabularResultType");
+        
+        for (Element type : types) {
+            
+            ElementType elementType = ElementType.getForClass(type.getAttributeValue("class"));
+            Iterable<Element> rows = getElementChildren(type.getChild("TabularResultRows"), "TabularResultRow");
+            
+            for (Element row : rows) {
+                
+                CymeElement element = new CymeElement();
+                Iterable<Element> values = getElementChildren(row.getChild("TabularValues"), "TabularValue");
+                
+                for (Element value : values) {
+                    ValueType valueType = ValueType.getForValue(value.getAttributeValue("header"));
+                    element.getValues().put(valueType, value.getTextTrim());
+                }
+                
+                typeMap.put(elementType, element);
+            }
+        }
+        return typeMap;
+    }
 
+    public static Iterable<Element> getElementChildren(Element element, String name) {
+        return Iterables.filter(element.getChildren(name), Element.class);
+    }
+    
     // TODO
     // private String buildLowerTapSimulationXML
     // private String buildRaiseTapSimulationXML
@@ -216,4 +387,10 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
     public void setSimplePointAccessDao(SimplePointAccessDao simplePointAccessDao) {
         this.simplePointAccessDao = simplePointAccessDao;
     }
+    
+    @Autowired
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+    
 }
