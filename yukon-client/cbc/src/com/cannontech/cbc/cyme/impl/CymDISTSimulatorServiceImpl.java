@@ -242,6 +242,7 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
         }
     }
     
+    /* 
     @PostConstruct
     public void testModel() throws JDOMException, IOException {
         String modelFile = "classpath:com/cannontech/cbc/cyme/testing/yukonTopology.xml";
@@ -277,13 +278,13 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
         
         Element tabularResultTypes = tabularResult.getChild("TabularResultTypes");
         ListMultimap<ElementType, CymeElement> typeMap = getTypeMap(tabularResultTypes);
-//        for (ElementType elementType : typeMap.keySet()) {
-//            for (CymeElement elem : typeMap.get(elementType)) {
-//                for (ValueType valueType : elem.getValues().keySet()) {
-//                    logger.debug(valueType + ": " + elem.getValues().get(valueType));
-//                }
-//            }
-//        }
+        for (ElementType elementType : typeMap.keySet()) {
+            for (CymeElement elem : typeMap.get(elementType)) {
+                for (ValueType valueType : elem.getValues().keySet()) {
+                    logger.debug(valueType + ": " + elem.getValues().get(valueType));
+                }
+            }
+        }
         
         // transformers
         List<CymeElement> cymeBuses = typeMap.get(ElementType.TRANSFORMER);
@@ -339,6 +340,7 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
         }
         return typeMap;
     }
+    */
 
     public static Iterable<Element> getElementChildren(Element element, String name) {
         return Iterables.filter(element.getChildren(name), Element.class);
