@@ -33,7 +33,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -79,7 +78,6 @@ public class ZigBeeHardwareController {
     private @Autowired YukonUserContextMessageSourceResolver messageSourceResolver;
     private @Autowired ZigbeeEventLogService zigbeeEventLogService;
     private @Autowired PaoDao paoDao;
-    private @Autowired NextValueHelper nextValueHelper;
     
     @RequestMapping
     public ModelAndView refresh(YukonUserContext context, int deviceId) {
@@ -354,11 +352,6 @@ public class ZigBeeHardwareController {
             Set<Integer> inventoryIds = Sets.newHashSet(1);
             inventoryIds.add(inventoryId);
             textMessage.setInventoryIds(inventoryIds);
-            
-            //Needs a unique id.
-            int messageId = nextValueHelper.getNextValue("ZBControlEvent");
-            textMessage.setMessageId(messageId);
-            //We are not tracking these Id's yet. They will be needed to cancel any messages being displayed.
             
             zigbeeWebService.sendTextMessage(textMessage);
             

@@ -23,6 +23,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
@@ -49,6 +50,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
 
+    @Autowired private NextValueHelper nextValueHelper;
     private RestOperations restTemplate;
     private GatewayDeviceDao gatewayDeviceDao;
     private ZigbeeDeviceDao zigbeeDeviceDao;
@@ -413,6 +415,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
         
     private void sendTextMessage(List<ZigbeeDevice> gateways, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        //Needs a unique id.
+        int messageId = nextValueHelper.getNextValue("ZBControlEvent");
+        message.setMessageId(messageId);
+        //We are not tracking these Id's yet. They will be needed to cancel any messages being displayed.
+        
         String xml = digiXMLBuilder.buildTextMessage(gateways, message);
         String source;
         

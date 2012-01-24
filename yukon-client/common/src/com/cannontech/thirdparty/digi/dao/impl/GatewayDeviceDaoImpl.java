@@ -269,14 +269,20 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public List<ZigbeeDevice> getZigbeeGatewaysForInventoryIds(Collection<Integer> inventoryIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT ZG.DeviceId,ZG.MacAddress,YPO.Type,YPO.PaoName");
-        sql.append("FROM LMHardwareControlGroup LMHCG");
-        sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
-        sql.append(  "JOIN ZBGatewayToDeviceMapping ZB on ZB.DeviceId = IB.DeviceId");
-        sql.append(  "JOIN ZBGateway ZG on ZG.DeviceId = ZB.GatewayId");
-        sql.append(  "JOIN YukonPaObject YPO on ZG.DeviceId = YPO.PaObjectId");
+        sql.append("SELECT ZBG.DeviceId, ZBG.MacAddress, YPO.Type, YPO.PaoName");
+        sql.append("FROM InventoryBase IB");
+        sql.append(  "JOIN ZBGateway ZBG on ZBG.DeviceId = IB.DeviceId");
+        sql.append(  "JOIN YukonPaObject YPO on ZBG.DeviceId = YPO.PaObjectId");
         sql.append("WHERE IB.InventoryId").in(inventoryIds);
-        sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
+        sql.append("UNION");
+        sql.append("SELECT ZBG2.DeviceId, ZBG2.MacAddress, YPO2.Type, YPO2.PaoName");
+        sql.append("FROM InventoryBase IB2");
+        sql.append(  "JOIN ZBEndPoint ZBEP on ZBEP.DeviceId = IB2.DeviceId");
+        sql.append(  "JOIN ZBGatewayToDeviceMapping ZBGTDM on ZBGTDM.DeviceId = ZBEP.DeviceId");
+        sql.append(  "JOIN ZBGateway ZBG2 on ZBG2.DeviceId = ZBGTDM.GatewayId");
+        sql.append(  "JOIN YukonPaObject YPO2 on ZBG2.DeviceId = YPO2.PaObjectId");
+        sql.append("WHERE IB2.InventoryId").in(inventoryIds);
+
         
         return yukonJdbcTemplate.query(sql,zigbeeDeviceRowMapper); 
     }
