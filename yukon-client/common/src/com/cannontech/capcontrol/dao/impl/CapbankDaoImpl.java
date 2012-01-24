@@ -182,11 +182,9 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		// This guy looks rough.
 		SqlStatementBuilder assignSql = new SqlStatementBuilder();
-		
-		assignSql.insertInto("CCFeederBankList");
-		assignSql.append("(FeederID, DeviceID, ControlOrder, CloseOrder, TripOrder)");
-		assignSql.append(   "SELECT " + feederId + ", " + capbankId + ", MAX(ControlOrder) + 1,");
-		assignSql.append(      "MAX(CloseOrder) + 1, 1");
+		//Manually building this query because of the inner select. .insertInto() method generates bad grammar sql.
+		assignSql.append("INSERT INTO CCFeederBankList (FeederID, DeviceID, ControlOrder, CloseOrder, TripOrder) ");
+		assignSql.append(   "SELECT " + feederId + ", " + capbankId + ", MAX(ControlOrder) + 1,MAX(CloseOrder) + 1, 1");
 		assignSql.append(   "FROM CCFeederBankList");
 		assignSql.append(   "WHERE FeederID").eq(feederId);
 		
