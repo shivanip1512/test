@@ -5341,6 +5341,13 @@
                 <unitofmeasure value="kVA"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="108">
+                <init>false</init>
+                <name>Coincident Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
         </points>
     </pao>
     
