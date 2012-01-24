@@ -661,7 +661,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         return missingProperties;
     }
     
-    public String getPropertyValue(YukonRoleProperty property, LiteYukonGroup liteYukonGroup) {
+    private String getPropertyValue(YukonRoleProperty property, LiteYukonGroup liteYukonGroup) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT 0 isUser, value, ygr.groupid");
         sql.append("FROM YukonGroupRole YGR");

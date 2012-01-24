@@ -16,6 +16,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -263,7 +264,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
     @Override
-	@Transactional
+    @Transactional(propagation=Propagation.SUPPORTS)
 	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -289,7 +290,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
     @Override
-    @Transactional
+    @Transactional(propagation=Propagation.SUPPORTS)
     public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -312,7 +313,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
     }
 
     @Override
-	@Transactional
+    @Transactional(propagation=Propagation.SUPPORTS)
 	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -338,7 +339,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
     @Override
-    @Transactional
+    @Transactional(propagation=Propagation.SUPPORTS)
     public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -362,6 +363,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
     }
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public List<OverrideHistory> getOptOutHistoryByLogUserId(int logUserId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
