@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="./TextMessageResult.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This is the response returned for a sent text message.  The sending of a text message is done through the sendTextMessageRequest.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="SendTextMessageResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="textMessageResultList">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="textMessageResult" type="yukon:TextMessageResult" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="sendTextMessageResponse" type="yukon:SendTextMessageResponse"/>
+
+</xsd:schema>

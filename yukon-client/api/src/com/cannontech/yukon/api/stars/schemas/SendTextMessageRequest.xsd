@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="./TextMessage.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This web service sends a text message to a thermostat.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="SendTextMessageRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="textMessageList">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="textMessage" type="yukon:TextMessage" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="sendTextMessageRequest" type="yukon:SendTextMessageRequest"/>
+
+</xsd:schema>

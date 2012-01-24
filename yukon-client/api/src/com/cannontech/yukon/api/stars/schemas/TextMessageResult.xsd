@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This is a text message object used by the send text message response.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="TextMessageResult">
+        <xsd:sequence>
+            <xsd:element name="serialNumber" type="yukon:SerialNumber" maxOccurs="unbounded"/>
+            <xsd:element name="message" type="xsd:string"/>
+            <xsd:choice>
+                <xsd:element name="success" />
+                <xsd:element name="failure" type="yukon:Failure" />
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+</xsd:schema>
