@@ -1694,6 +1694,7 @@ div.scrollingContainer {
     min-height: 2em;
     padding: 5px;
     width: 274px;
+    font-size: 12px;
 }
 .pointingPopup_chevron {
 	border-top: 10px solid transparent;

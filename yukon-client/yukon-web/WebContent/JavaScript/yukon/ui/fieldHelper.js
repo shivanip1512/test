@@ -66,11 +66,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
              if (!defaultField.length) {
                  return;
              }
-             if (inputField.val() == defaultField.val()) {
-                 inputField.removeClass('usingNonDefaultValue');
-             } else {
-                 inputField.addClass('usingNonDefaultValue');
-             }
+             inputField.toggleClass("usingNonDefaultVaule", inputField.val() != defaultField.val());
          },
          
          focusInput: function(event){
@@ -110,7 +106,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
                      popupString.push('</div>');
                  popupString.push('</div>');
                  
-                 document.body.insert(popupString.join(''));
+                 jQuery('body').append(popupString.join(''));
              }
              
              var target = jQuery(event.currentTarget);
@@ -127,6 +123,6 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
     };
 }
 
-Event.observe(window, 'load', function() {
-    Yukon.FieldHelper.init();
+jQuery(document).ready(function() {
+  Yukon.FieldHelper.init();
 });
