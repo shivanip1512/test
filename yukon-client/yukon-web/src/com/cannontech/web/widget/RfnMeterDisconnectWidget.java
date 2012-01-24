@@ -72,6 +72,15 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         return "rfnMeterDisconnectWidget/result.jsp";
     }
     
+    @RequestMapping
+    public String query(ModelMap model, HttpServletRequest request) throws Exception {
+        model.addAttribute("command", "query");
+        setupRenderModel(model, request);
+        setupSendCommandModel(request, model, RfnMeterDisconnectStatusType.QUERY);
+        
+        return "rfnMeterDisconnectWidget/result.jsp";
+    }
+    
     private void setupRenderModel(ModelMap model, HttpServletRequest request) throws Exception {
         RfnMeter meter = rfnMeterDao.getForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
         model.addAttribute("meter", meter);
@@ -106,9 +115,12 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
 
             @Override
             public void receivedSuccess(RfnMeterDisconnectState state) {
-                // state will only be used as the state of the meter when doing
+                // State will only be used as the state of the meter when doing
                 // a 'QUERY' command for now.  This may change based on what
                 // NM will decide to set this as for connect/disconnect/arm commands.
+                // For now we assume that if the user clicked the disconnect button and
+                // the response was successful we set the state to disconnect regardless
+                // of what NM has set the state to in the success message.
                 model.addAttribute("responseSuccess", true);
                 if (action == RfnMeterDisconnectStatusType.QUERY) {
                     publishPointData(state.getRawState(), meter);
