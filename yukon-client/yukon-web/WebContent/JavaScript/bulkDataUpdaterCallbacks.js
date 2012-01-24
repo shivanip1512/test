@@ -99,6 +99,9 @@ function setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCoun
 
 function updateTotalCount(pbarId, totalCount) {
     var progressContainer = getProgressBarContainer(pbarId);
+    if (progressContainer == null) {
+        return;
+    }
     progressContainer.down('.progressBarTotal').innerHTML = totalCount;
 }
 
