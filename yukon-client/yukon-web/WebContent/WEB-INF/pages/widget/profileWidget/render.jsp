@@ -134,7 +134,7 @@
                 <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
             </td>
             <td class="last" align="right">
-                <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/> <!--  labelBusy=".viewReport"/> -->
+                <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/>
             </td>
         </tr>
         <tr>
