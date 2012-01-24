@@ -38,6 +38,7 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.transform.JDOMSource;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
 import org.springframework.xml.transform.TransformerObjectSupport;
@@ -55,6 +56,7 @@ import org.w3c.dom.NodeList;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
+import com.google.common.collect.Lists;
 
 /**
  * Implementation of {@link XPathOperations} that uses JAXP 1.3. JAXP 1.3 is part of Java SE since 1.5.
@@ -141,7 +143,15 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     
     public Boolean evaluateAsBoolean(String expression, Boolean defaultValue) {
         Node result = evaluateAsNode(expression);
-        return result == null ? defaultValue : Boolean.valueOf(result.getTextContent());
+        if (result == null) {
+            return defaultValue;
+        }
+        
+        if (result.getNodeValue() == null) {
+            return true;
+        }
+        
+        return Boolean.valueOf(result.getTextContent());
     }
 
     public Node evaluateAsNode(String expression) throws XPathException {
@@ -186,14 +196,25 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 	/**
      * Evaluate value at expression as a Long.
      * Returns null if the expression defines a node that does not exists.
-     * @param expression
-     * @return
      * @throws XPathException
      */
     public Long evaluateAsLong(String expression) throws XPathException {
+        return evaluateAsLong(expression, null);
+    }
+    
+    /**
+     * Evaluate value at expression as a Long.
+     * Returns the defaultValue if the expression defines a node that does not exists.
+     * @throws XPathException
+     */
+    public Long evaluateAsLong(String expression, Long defaultValue) throws XPathException {
         
-    	Double num = evaluateNumber(expression);
-        return num == null ? null : num.longValue();
+        Double num = evaluateNumber(expression);
+        if (num == null) {
+            return defaultValue;
+        }
+        
+        return num.longValue();
     }
     
     /**
@@ -257,6 +278,29 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
 
     /**
+     * Parse an element for a Duration. If the the element doesn't exist or doesn't represent a
+     * valid Duration, it returns null. 
+     * @throws XPathException
+     */
+    public Duration evaluateAsDuration(String expression) throws XPathException {
+        return evaluateAsDuration(expression, null);
+    }
+
+    /**
+     * Parse an element for an Duration. If the the element doesn't exist or doesn't represent a
+     * valid Duration, it returns the supplied defaultValue.
+     * @throws XPathException
+     */
+    public Duration evaluateAsDuration(String expression, Duration defaultValue) throws XPathException {
+        Long durationInFloat = evaluateAsLong(expression);
+        if (durationInFloat == null) {
+            return defaultValue;
+        }
+
+        return new Duration(durationInFloat);
+    }
+    
+    /**
      * Parse an element for an Instant. If the the element doesn't exist or doesn't represent a
      * valid date, it returns null. Otherwise it creates a Date object from the string and uses the
      * Date to generate an Instant.
@@ -280,6 +324,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 
         return new Instant(date);
     }
+
     /**
      * Parse an element for a date. If the element does not exists or is empty, return null.
      * Otherwise return a Date object for the date string in the element.
@@ -321,9 +366,9 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
     }
 
-    public List evaluate(String expression, NodeMapper nodeMapper) throws XPathException {
+    public List<Object> evaluate(String expression, NodeMapper nodeMapper) throws XPathException {
         NodeList nodes = (NodeList) evaluate(expression, XPathConstants.NODESET);
-        List results = new ArrayList(nodes.getLength());
+        List<Object> results = Lists.newArrayListWithExpectedSize(nodes.getLength());
         for (int i = 0; i < nodes.getLength(); i++) {
             try {
                 results.add(nodeMapper.mapNode(nodes.item(i), i));

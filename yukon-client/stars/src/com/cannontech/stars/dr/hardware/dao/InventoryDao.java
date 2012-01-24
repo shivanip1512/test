@@ -128,4 +128,11 @@ public interface InventoryDao {
      */
     public SearchResult<InventorySearchResult> search(InventorySearch inventorySearch, Collection<Integer> ecIds, int start, int pageCount, boolean starsMeters);
 
+    /**
+     * This method is a performance method.  This allows us to get a huge map of serial numbers to inventory ids, which can be
+     * used to convert a bunch of serial numbers from the web service to their respective inventory Id.  This method will cut down on 
+     * the amount of dao hits, but will force the user to use a map call to get the inventoryId for each serial number. 
+     */
+    public Map<String, Integer> getSerialNumberToInventoryIdMap(Collection<String> serialNumbers, int energyCompanyId);
+
 }

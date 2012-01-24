@@ -44,6 +44,7 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -518,6 +519,28 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public Map<String, Integer> getSerialNumberToInventoryIdMap(Collection<String> serialNumbers, int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT LMHB.ManufacturerSerialNumber, LMHB.InventoryId");
+        sql.append("FROM LMHardwareBase LMHB");
+        sql.append(  "JOIN ECToInventoryMapping ECTIM ON ECTIM.InventoryId = LMHB.InventoryId");
+        sql.append("WHERE LMHB.ManufacturerSerialNumber").in(serialNumbers);
+        sql.append(  "AND ECTIM.EnergyCompanyId").eq_k(energyCompanyId);
+        
+        final Map<String, Integer> serialNumberToInventoryMap = Maps.newHashMapWithExpectedSize(serialNumbers.size()); 
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                String serialNumber = rs.getString("ManufacturerSerialNumber");
+                int inventoryId = rs.getInt("InventoryId");
+                serialNumberToInventoryMap.put(serialNumber, inventoryId);
+            }
+        });
+
+        return serialNumberToInventoryMap;
+    }
+
+    @Override
     public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> yukonInventory) {
         DisplayableLmHardwareRowMapper mapper = new DisplayableLmHardwareRowMapper();
         
@@ -752,5 +775,4 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return results;
     }
-    
 }
