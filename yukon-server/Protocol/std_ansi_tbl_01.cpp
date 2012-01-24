@@ -44,19 +44,6 @@ using std::string;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable01::CtiAnsiTable01( bool sn_flag, bool id_form ) :
-    _hw_version_number(0),
-    _hw_revision_number(0),
-    _fw_version_number(0),
-    _fw_revision_number(0),
-    _serialNumberFlag(sn_flag),
-    _idForm(id_form)
-{
-    memset( _manufacturer, 0, sizeof(_manufacturer) );
-    memset( _ed_model,     0, sizeof(_ed_model) );
-
-    memset( &_mfg_serial_number, 0, sizeof(_mfg_serial_number) );
-}
 
 CtiAnsiTable01::CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form ) :
     _serialNumberFlag(sn_flag),
@@ -276,64 +263,6 @@ string CtiAnsiTable01::getResolvedSerialNumber( void )
    return string(ret);
 }
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable01::generateResultPiece( BYTE **dataBlob )
-{
-    memcpy(*dataBlob, (void *)&_manufacturer, sizeof( _manufacturer ));
-    *dataBlob += sizeof( _manufacturer );
-    memcpy(*dataBlob, (void *)&_ed_model, sizeof(_ed_model));
-    *dataBlob += sizeof( _ed_model );
-
-    if( _serialNumberFlag == false )
-    {
-       if( _idForm == false )
-       {
-          memcpy(*dataBlob, (void *)&_mfg_serial_number, 16 * sizeof( char ));
-          *dataBlob += 16;
-       }
-       else
-       {
-          memcpy(*dataBlob, (void *)&_mfg_serial_number, 8 * sizeof( BCD ));
-          *dataBlob += 8;
-       }
-    }
-    else
-    {
-       memcpy( *dataBlob, (void *)&_mfg_serial_number, sizeof( UINT64 ));
-       *dataBlob += sizeof (UINT64);
-    }
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable01::decodeResultPiece( BYTE **dataBlob )
-{
-    memcpy( (void *)&_manufacturer, *dataBlob, 4 * sizeof( unsigned char ));
-    *dataBlob += 4 * sizeof( unsigned char );
-
-    memcpy( (void *)&_ed_model, *dataBlob, 8 * sizeof( unsigned char ));
-    *dataBlob += 8 * sizeof( unsigned char );
-
-
-    if( _serialNumberFlag == false )
-    {
-       if( _idForm == false )
-       {
-          memcpy( (void *)&_mfg_serial_number, *dataBlob, 16 * sizeof( char ));
-          *dataBlob += 16;
-       }
-       else
-       {
-          memcpy( (void *)&_mfg_serial_number, *dataBlob, 8 * sizeof( BCD ));
-          *dataBlob += 8;
-       }
-    }
-    else
-    {
-       memcpy( (void *)&_mfg_serial_number, *dataBlob, sizeof( UINT64 ));
-       *dataBlob += sizeof (UINT64);
-    }
-}
 
 
 int CtiAnsiTable01::getFWVersionNumber()

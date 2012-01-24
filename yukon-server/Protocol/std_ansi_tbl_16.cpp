@@ -48,13 +48,6 @@ using std::string;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable16::CtiAnsiTable16( int nbr_constants )
-{
-   _numberOfConstants = nbr_constants;
-
-   _source_link = NULL;
-}
-
 CtiAnsiTable16::CtiAnsiTable16( BYTE *dataBlob, int nbr_constants )
 {
    int   index;
@@ -108,32 +101,6 @@ SOURCE_LINK_BFLD CtiAnsiTable16::getSourceLink(int aOffset)
     }
 
     return (ret);
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable16::generateResultPiece( BYTE **dataBlob )
-{
-    for( int index = 0; index < _numberOfConstants; index++ )
-    {
-        memcpy( *dataBlob, ( void *)&_source_link[index], sizeof( SOURCE_LINK_BFLD ));
-        *dataBlob += sizeof( SOURCE_LINK_BFLD );
-    }
-
-
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable16::decodeResultPiece( BYTE **dataBlob )
-{
-    _source_link = new SOURCE_LINK_BFLD[_numberOfConstants];
-
-    for( int index = 0; index < _numberOfConstants; index++ )
-    {
-        memcpy(( void *)&_source_link[index], *dataBlob, sizeof( SOURCE_LINK_BFLD ));
-        *dataBlob += sizeof( SOURCE_LINK_BFLD );
-    }
 }
 
 bool CtiAnsiTable16::getUOMEntryFlag( int index )

@@ -24,14 +24,8 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable33::CtiAnsiTable33() :
-    _nbrPriDispListItems(0),
-    _nbrPriDispLists(0)
-{
-    memset( &_priDispListTable, 0, sizeof(PRI_DISP_LIST_RCD) );
-}
 
-CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems  )
+CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems, bool lsbDataOrder )
 {
     _nbrPriDispLists = nbrPriDispLists;
     _nbrPriDispListItems = nbrPriDispListItems;
@@ -46,6 +40,10 @@ CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nb
     _priDispListTable.priDispSources = new UINT16[_nbrPriDispListItems];
     for (int i = 0; i < _nbrPriDispListItems; i++)
     {
+        if (!lsbDataOrder)
+        {
+            reverseOrder(dataBlob, sizeof(UINT16));
+        }
          memcpy((void *)&_priDispListTable.priDispSources[i], dataBlob, sizeof(UINT16));
          dataBlob += sizeof(UINT16);    //2 bytes
     }
@@ -107,12 +105,34 @@ void CtiAnsiTable33::printResult( const string& deviceName )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << " ** Primary Display List Table ** "<<endl;
-        dout << "        Display Source[ ] : ";
+        dout << "        Display Source[ ] OnTime OffTime HoldTime DefaultList NbrListItems" <<endl;
     }
-    for (int i = 0; i < _nbrPriDispLists; i++)
+   /* for (int i = 0; i < _nbrPriDispLists; i++)
     {
-
+        {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout << "          " << i << "    " 
+                                     <<_priDispListTable.priDispList[i].dispScroll1.onTime << "    "     
+                                     <<_priDispListTable.priDispList[i].dispScroll1.offTime << "    "    
+                                     <<_priDispListTable.priDispList[i].dispScroll2.holdTime << "    "   
+                                     <<_priDispListTable.priDispList[i].dispScroll2.defaultList << "    "
+                                     <<_priDispListTable.priDispList[i].nbrListItems << "    " << endl;           
+        }
+        
     }
+
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "        Primary Display Source [ ] " <<endl;
+    }
+    for (int i = 0; i < _nbrPriDispListItems; i++)
+    {
+        
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "          " <<  _priDispListTable.priDispSources[i] << endl;
+    }*/
+
+
 
 
 }

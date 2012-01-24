@@ -102,8 +102,6 @@ public:
    virtual ~CtiAnsiTable055();
 
    CtiAnsiTable055& operator=(const CtiAnsiTable055& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 
 };

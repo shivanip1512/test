@@ -28,8 +28,7 @@ class IM_EX_PROT CtiAnsiTable12 : public CtiAnsiTableBase
 {
 public:
 
-   CtiAnsiTable12( int num_entries );
-   CtiAnsiTable12( BYTE *dataBlob, int num_entries );
+   CtiAnsiTable12( BYTE *dataBlob, int num_entries, bool lsbDataOrder = true );
    virtual ~CtiAnsiTable12();
    CtiAnsiTable12& operator=(const CtiAnsiTable12& aRef);
 
@@ -107,8 +106,6 @@ public:
     int getSegmentation(int index);
     bool getHarmonicFlag(int index);
 
-    void generateResultPiece( BYTE **dataBlob );
-    void decodeResultPiece( BYTE **dataBlob );
     void printResult(const std::string& deviceName);
 
 

@@ -16,11 +16,9 @@ CtiANSIApplication::CtiANSIApplication() :
     _requestedState(identified),
     _prot_version(0),
     _currentTable(NULL),
+    _currentTableSize(1024),
     _totalBytesInTable(0),
     _initialOffset(0),
-    _lpMode(false),
-    _lpTempBigTable(NULL),
-    _sizeOfLpTable(0),
     _tableComplete(false),
     _currentTableID(0),
     _currentTableOffset(0),
@@ -67,7 +65,6 @@ void CtiANSIApplication::init( void )
     _requestedState = identified;
     _readComplete = false;
     _readFailed = false;
-    _lpMode = false;
     _partialProcessLPDataFlag = false;
     _lpByteCount = 0;
 
@@ -78,7 +75,8 @@ void CtiANSIApplication::init( void )
         delete _currentTable;
         _currentTable = NULL;
     }
-    _currentTable = CTIDBG_new BYTE[1024];
+    _currentTableSize = 1024;
+    _currentTable = CTIDBG_new BYTE[_currentTableSize];
     getDatalinkLayer().init();
 
     if (_ansiDeviceType == kv2)
@@ -103,11 +101,8 @@ void CtiANSIApplication::terminateSession( void )
     _currentState = getNextState (_requestedState);
     setRetries (MAXRETRIES);
     setTableComplete (false);
-    memset( _currentTable, NULL, sizeof( *_currentTable ) );
-    if (_lpMode == true)
-    {
-        memset(_lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
-    }
+    //memset( _currentTable, 0, sizeof( *_currentTable ) );
+    
     _totalBytesInTable = 0;
 }
 //=========================================================================================================================================
@@ -117,14 +112,10 @@ void CtiANSIApplication::destroyMe( void )
 {
     if( _currentTable != NULL )
     {
-        delete []_currentTable;
+        delete _currentTable;
         _currentTable = NULL;
     }
-    if( _lpTempBigTable != NULL )
-    {
-        delete []_lpTempBigTable;
-        _lpTempBigTable = NULL;
-    }
+   
     if (_parmPtr != NULL)
     {
         delete []_parmPtr;
@@ -421,6 +412,13 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 
 void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation )
 {
+    if (_currentTable != NULL)
+    {
+        delete _currentTable;
+        _currentTable = NULL;
+    }
+    _currentTable = CTIDBG_new BYTE[_currentTableSize];
+
 
     _currentTableID = aID;
     _currentTableOffset = aOffset;
@@ -431,11 +429,6 @@ void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigne
     // initialize everything here for the next table
     setRetries (MAXRETRIES);
     setTableComplete (false);
-    memset( _currentTable, NULL, sizeof( *_currentTable ) );
-    if (_lpMode == true)
-    {
-        memset(_lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
-    }
     _totalBytesInTable = 0;
     _initialOffset = aOffset;
 
@@ -559,96 +552,44 @@ bool CtiANSIApplication::analyzePacket()
                      retFlag = false;
                      break;
                  }
-                 if (_lpMode)
-                 {
-                     int overHeadByteCount = 0;
-                     int headerOffset = 0;
-                     if (getDatalinkLayer().getPacketPart())
-                     {
-                         if (getDatalinkLayer().getPacketFirst())
-                         {
-                             if (getDatalinkLayer().getPacketBytesReceived() >= 11)
-                             {
-                                 overHeadByteCount = 11; //header(6),crc(2),length(2),response(1)
-                                 headerOffset = 9;
-                            if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
-                            {
-                                 getDatalinkLayer().alternateToggle();
-                            }
-                         }
-                         }
-                        else if (getDatalinkLayer().getSequence() == 0)
-                         {
-                              // move the data into storage
-                             if (getDatalinkLayer().getPacketBytesReceived() >= 9)
-                             {
-                                 overHeadByteCount = 9;//header(6),crc(2),cksm(1)
-                                 headerOffset = 6;
-                             }
-                         }
-                         else
-                         {
-                              // move the data into storage
-                             if (getDatalinkLayer().getPacketBytesReceived() >= 8)
-                             { 
-                                 overHeadByteCount = 8;//header(6),crc(2)
-                                 headerOffset = 6;
-                             }
-                         }
-                     }
-                     else
-                     {
-                         if (getDatalinkLayer().getPacketBytesReceived() >= 12)
-                         {
-                             overHeadByteCount = 12;
-                             headerOffset = 9;
-                         }
-                     }
-                         memcpy (_lpTempBigTable+_totalBytesInTable,
-                         getDatalinkLayer().getCurrentPacket()+headerOffset,
-                         getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount); //header(6),crc(2),length(2),response(1)
-
-                     _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount;
-
-                 }
-                 else if (getDatalinkLayer().getPacketPart())
+                 if (getDatalinkLayer().getPacketPart())
                  {
                      int overHeadByteCount = 0;
                      int headerOffset = 0;
 
                      
-                        if (getDatalinkLayer().getPacketFirst())
-                        {
-                            // move the data into storage
+                    if (getDatalinkLayer().getPacketFirst())
+                    {
+                        // move the data into storage
                          if (getDatalinkLayer().getPacketBytesReceived() >= 11)
                          {
                              overHeadByteCount = 11; //header(6),crc(2),length(2),response(1)
                              headerOffset = 9;
                          }
-                            if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
-                            {
-                                 getDatalinkLayer().alternateToggle();
-                            }
-                        
-                        }
-                        else if (getDatalinkLayer().getSequence() == 0)
+                        if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                         {
-                             // move the data into storage
+                             getDatalinkLayer().alternateToggle();
+                        }
+                    
+                    }
+                    else if (getDatalinkLayer().getSequence() == 0)
+                    {
+                         // move the data into storage
                          if (getDatalinkLayer().getPacketBytesReceived() >= 9)
                          {
                              overHeadByteCount = 9;//header(6),crc(2),cksm(1)
                              headerOffset = 6;
                          }
-                        }
-                        else
-                        {
-                             // move the data into storage
+                    }
+                    else
+                    {
+                         // move the data into storage
                          if (getDatalinkLayer().getPacketBytesReceived() >= 8)
                          {   
                              overHeadByteCount = 8;//header(6),crc(2)
                              headerOffset = 6;
-                        }
-                     }
+                         }
+                    }
                      memcpy (_currentTable+_totalBytesInTable,
                          getDatalinkLayer().getCurrentPacket()+headerOffset,
                          getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount); //header(6),crc(2),length(2),response(1)
@@ -960,14 +901,12 @@ void CtiANSIApplication::identificationData( BYTE *aPacket)
 
 BYTE* CtiANSIApplication::getCurrentTable( )
 {
-    if (_lpMode)
-    {
-        return (_lpTempBigTable);
-    }
-    else
-    {
-        return (_currentTable);
-    }
+    return _currentTable;
+}
+
+void CtiANSIApplication::setCurrentTableSize(int tableSize)
+{
+    _currentTableSize = tableSize;
 }
 
 CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES current )
@@ -977,7 +916,7 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
    switch( current )
    {
    case identified:
-      next = negotiated;
+      next = timingSet;
       break;
 
    case negotiated:
@@ -1126,28 +1065,6 @@ int CtiANSIApplication::getRetries( void )
 }
 
 
-void CtiANSIApplication::setLPDataMode( bool value, int sizeOfLpTable )
-{
-    _lpMode = value;
-    _sizeOfLpTable = sizeOfLpTable;
-    if (_lpMode)
-    {
-        if (_lpTempBigTable != NULL)
-        {
-            delete []_lpTempBigTable;
-            _lpTempBigTable = NULL;
-        }
-        _lpTempBigTable = CTIDBG_new BYTE[_sizeOfLpTable];
-    }
-    else
-    {
-        if (_lpTempBigTable != NULL)
-        {
-            delete []_lpTempBigTable;
-            _lpTempBigTable = NULL;
-        }
-    }
-}
 
 void CtiANSIApplication::populateParmPtr(BYTE *value, int size)
 {

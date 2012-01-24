@@ -428,8 +428,8 @@ void CtiProtocolANSI::reinitialize( void )
        _lpOffset = 0;
        _lpNbrFullBlocks = 0;
        _lpLastBlockSize = 0;
-
-       _ansiAbortOperation = FALSE;
+       _currentTableNotAvailableFlag = false;
+       _ansiAbortOperation = false;
 
        if (!_stdTblsAvailable.empty())
        {
@@ -627,30 +627,22 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                }
            }
            // anything else to do
-           if ((_index+1) < _header->numTablesRequested)
+           do
            {
                _index++;
+               if (_index >= _header->numTablesRequested)
+               {
+                   if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
+                   {
+                       printResults();
+                   }
+                    // done with tables, do the termination etc
+                    getApplicationLayer().terminateSession();
+                    return( done ); //just a val
+               }
                updateBytesExpected ();
-
-               if (!_currentTableNotAvailableFlag)
-               {
-                   prepareApplicationLayer();
-               }
-               else
-               {
-                   _currentTableNotAvailableFlag = false;
-               }
-
-           }
-           else
-           {
-               if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
-               {
-                   printResults();
-               }
-                // done with tables, do the termination etc
-                getApplicationLayer().terminateSession();
-            }
+           } while( _currentTableNotAvailableFlag );
+           prepareApplicationLayer();
         }
 
         return( done ); //just a val
@@ -677,24 +669,25 @@ void CtiProtocolANSI::prepareApplicationLayer()
       _tables[_index].tableID += 0x0800;
     }
 
-    if (//getApplicationLayer().getAnsiDeviceType() != CtiANSIApplication::focus &&
-       (_tables[_index].tableID == Constants ||
+    if (_tables[_index].tableID == Constants ||
         _tables[_index].tableID == CurrentRegisterData ||
-        _tables[_index].tableID == FrozenRegisterData))
+        _tables[_index].tableID == FrozenRegisterData)
     {
-        getApplicationLayer().setLPDataMode( true, _tables[_index].bytesExpected );
+         getApplicationLayer().setCurrentTableSize(_tables[_index].bytesExpected);
     }
 
     if (_tables[_index].tableID >= LoadProfileDataSet1 && _tables[_index].tableID <= LoadProfileDataSet4)
     {
-        getApplicationLayer().setLPDataMode( true, _table61->getLPMemoryLength() );
+        getApplicationLayer().setCurrentTableSize( _table61->getLPMemoryLength());
         _tables[_index].tableOffset = _lpOffset;
 
     }
     else
     {
         _tables[_index].tableOffset = 0;
+        getApplicationLayer().setCurrentTableSize(1024);
     }
+    
     getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
                                          _tables[_index].tableOffset,
                                          _tables[_index].bytesExpected,
@@ -1014,7 +1007,8 @@ void CtiProtocolANSI::convertToTable(  )
                            _table12 = NULL;
                        }
                        _table12 = new CtiAnsiTable12( getApplicationLayer().getCurrentTable(),
-                                                             _table11->getNumberUOMEntries() );
+                                                             _table11->getNumberUOMEntries(), 
+                                                            (_table00->getRawDataOrder() == 0)  );
                        if( _table12 != NULL &&  getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
                        {
                            _table12->printResult(getAnsiDeviceName());
@@ -1034,8 +1028,9 @@ void CtiProtocolANSI::convertToTable(  )
                            _table13 = new CtiAnsiTable13( getApplicationLayer().getCurrentTable(),
                                                                   _table11->getNumberDemandControlEntries(),
                                                                   _table11->getRawPFExcludeFlag(),
-                                                                          _table11->getRawSlidingDemandFlag(),
-                                                                          _table11->getRawResetExcludeFlag() );
+                                                                  _table11->getRawSlidingDemandFlag(),
+                                                                  _table11->getRawResetExcludeFlag(),
+                                                                  (_table00->getRawDataOrder() == 0) );
                            if( _table13 != NULL &&  getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                            {
                                _table13->printResult(getAnsiDeviceName());
@@ -1083,7 +1078,6 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table00->getRawNIFormat2(),
                                                                (_table00->getRawDataOrder() == 0) );
 
-                           getApplicationLayer().setLPDataMode( false, 0 );
                            if( _table15 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                            {
                                _table15->printResult(getAnsiDeviceName());
@@ -1172,7 +1166,6 @@ void CtiProtocolANSI::convertToTable(  )
                                                                   23,
                                                                 (_table00->getRawDataOrder() == 0));
 
-                           getApplicationLayer().setLPDataMode( false, 0 );
                            if( _table23 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                            {
                                _table23->printResult(getAnsiDeviceName());
@@ -1204,7 +1197,6 @@ void CtiProtocolANSI::convertToTable(  )
                                                                           _table00->getRawNIFormat2(),
                                                                           _table00->getRawTimeFormat(),
                                                                           _table21->getSeasonInfoFieldFlag() );
-                            getApplicationLayer().setLPDataMode( false, 0 );
                             if( _frozenRegTable != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                             {
                                 _frozenRegTable->printResult(getAnsiDeviceName());
@@ -1263,7 +1255,8 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table31;
                            _table31 = NULL;
                        }
-                       _table31 = new CtiAnsiTable31( getApplicationLayer().getCurrentTable());
+                       _table31 = new CtiAnsiTable31( getApplicationLayer().getCurrentTable(),
+                                                      (_table00->getRawDataOrder() == 0));
 
                        if( _table31 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                       {
@@ -1282,7 +1275,7 @@ void CtiProtocolANSI::convertToTable(  )
                        {
                            _table32 = new CtiAnsiTable32( getApplicationLayer().getCurrentTable(),
                                                                  _table31->getNbrDispSources(),
-                                                                  _table31->getWidthDispSources() );
+                                                                 _table31->getWidthDispSources() );
 
                            if( _table32 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                            {
@@ -1301,8 +1294,9 @@ void CtiProtocolANSI::convertToTable(  )
                        if( _table31 != NULL )
                        {
                            _table33 = new CtiAnsiTable33( getApplicationLayer().getCurrentTable(),
-                                                                  _table31->getNbrPriDispLists(),
-                                                                      _table31->getNbrPriDispListItems());
+                                                                 _table31->getNbrPriDispLists(),
+                                                                 _table31->getNbrPriDispListItems(),
+                                                                (_table00->getRawDataOrder() == 0));
 
                            if( _table33 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                            {
@@ -1380,7 +1374,7 @@ void CtiProtocolANSI::convertToTable(  )
                       {
                           _table62 = new CtiAnsiTable62( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags(), _table61->getLPDataSetInfo(),
                                                              _table61->getLPScalarDivisorFlag(1), _table61->getLPScalarDivisorFlag(2), _table61->getLPScalarDivisorFlag(3),
-                                                             _table61->getLPScalarDivisorFlag(4),  _table00->getRawStdRevisionNo() );
+                                                             _table61->getLPScalarDivisorFlag(4),  _table00->getRawStdRevisionNo(), (_table00->getRawDataOrder() == 0)  );
                           if( _table62 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                           {
                               _table62->printResult(getAnsiDeviceName());
@@ -1457,7 +1451,6 @@ void CtiProtocolANSI::convertToTable(  )
                                                                (_table00->getRawDataOrder() == 0), _table63->isDataBlockOrderDecreasing(1),
                                                                 _table63->isDataBlockOrderDecreasing(1));
 
-                        getApplicationLayer().setLPDataMode( false, 0 );
 
                         if (_invalidLastLoadProfileTime && _table64 != NULL)
                         {
@@ -2069,7 +2062,7 @@ void CtiProtocolANSI::receiveCommResult( INMESS *InMessage )
 ////////////////////////////////////////////////////////////////////////////////////
 // Demand - KW, KVAR, KVA, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timestamp )
+bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timestamp, bool frozen )
 {
     try
     {
@@ -2113,8 +2106,16 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                     }
 
                     // will bring back value in KW/KVAR ...
-                    *value = _table23->getDemandValue(x, ansiTOURate) * multiplier ;
-                    *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
+                    if( frozen )
+                    {
+                        *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) * multiplier;
+                        *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                    }
+                    else
+                    {
+                        *value = _table23->getDemandValue(x, ansiTOURate) * multiplier ;
+                        *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
+                    }
                     if (_table52 != NULL)
                     {
                         *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
@@ -2124,7 +2125,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard< CtiLogger > doubt_guard( dout );
-                        dout << " *value =   "<<*value<<endl;
+                        dout << (frozen ? " frozen value =   " : " value =   ")<<*value<<endl;
                     }
                     break;
                 }
@@ -2145,7 +2146,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
 ////////////////////////////////////////////////////////////////////////////////////
 // Summations = Energy - KWH, KVARH, KVAH, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
+bool CtiProtocolANSI::retreiveSummation( int offset, double *value,  double *timestamp, bool frozen )
 {
     try
     {
@@ -2202,7 +2203,17 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
                                 {
                                     multiplier *= (_table12->getResolvedMultiplier(summationSelect[x]) / 1000);
                                 }
-                                *value = _table23->getSummationsValue(x, ansiTOURate) * multiplier;
+                                if( frozen )
+                                {
+                                    *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) * multiplier;
+                                    *timestamp = _frozenRegTable->getEndDateTime();
+                                }
+                                else
+                                {
+                                    *value = _table23->getSummationsValue(x, ansiTOURate) * multiplier;
+                                    *timestamp = CtiTime().seconds();
+                                }
+
                                 success = true;
                                 if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                 {
@@ -2226,167 +2237,6 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-// Demand - KW, KVAR, KVA, etc...
-////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *timestamp )
-{
-    bool success = false;
-    if( _ansiAbortOperation )
-    {
-        return success;
-    }
-
-    try
-    {
-        unsigned char * demandSelect;
-        int ansiOffset;
-        int ansiTOURate;
-        int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
-
-        ansiOffset = getUnitsOffsetMapping(offset);
-        ansiTOURate = getRateOffsetMapping(offset);
-
-        demandSelect = _table22->getDemandSelect();
-        for (int x = 0; x < _table21->getNumberDemands(); x++)
-        {
-            if ((int) demandSelect[x] != 255)
-            {
-                if (_table12->getRawTimeBase(demandSelect[x]) == 4 &&
-                    _table12->getRawIDCode(demandSelect[x]) == ansiOffset)
-                {
-                    success = true;
-                    double multiplier = 1;
-                    if (_table16->getDemandCtrlFlag(demandSelect[x]) )
-                    {
-                        if (_table15 != NULL)
-                        {
-                            multiplier *= _table15->getElecMultiplier((demandSelect[x]%20));
-                        }
-                        if(ansiDeviceType == CtiANSIApplication::kv2 || ansiDeviceType == CtiANSIApplication::kv)
-                        {
-                            multiplier /= 1000000000;
-                        }
-                    }
-                    if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
-                    {
-                        // will bring back value in KW/KVAR ...
-                        multiplier *= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
-
-                    }
-
-                    *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) * multiplier;
-                    *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                    if (_table52 != NULL)
-                    {
-                        *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                    }
-                    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                    {
-                        CtiLockGuard< CtiLogger > doubt_guard( dout );
-                        dout << " *value =   "<<*value<<endl;
-                    }
-                    break;
-                }
-
-            }
-        }
-        demandSelect = NULL;
-
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-    return success;
-}
-////////////////////////////////////////////////////////////////////////////////////
-// Summations = Energy - KWH, KVARH, KVAH, etc...
-////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double *timestamp)
-{
-    bool success = false;
-    if( _ansiAbortOperation )
-    {
-        return success;
-    }
-
-    unsigned char* summationSelect;
-    int ansiOffset;
-    int ansiTOURate;
-    int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
-
-    /* Watts = 0, Vars = 1, VA = 2, etc */
-    ansiOffset = getUnitsOffsetMapping(offset);
-    ansiTOURate = getRateOffsetMapping(offset);
-
-    try
-    {
-        if (_table22 != NULL)
-        {
-            /* returns pointer to list of summation Selects */
-            summationSelect = _table22->getSummationSelect();
-
-            if (_table21 != NULL)
-            {
-                for (int x = 0; x < _table21->getNumberSummations(); x++)
-                {
-                    if ((int) summationSelect[x] != 255)
-                    {
-                        if (_table12 != NULL)
-                        {
-                            if (_table12->getRawTimeBase(summationSelect[x]) == 0 &&
-                                _table12->getRawIDCode(summationSelect[x]) == ansiOffset)
-                            {
-                                double multiplier = 1;
-                                if (_table16 != NULL  && _table23 != NULL)
-                                {
-                                    if (_table16->getConstantsFlag(summationSelect[x]) &&
-                                        !_table16->getConstToBeAppliedFlag(summationSelect[x]))
-                                    {
-                                        if (_table15 != NULL)
-                                        {
-                                            multiplier *= _table15->getElecMultiplier(summationSelect[x]);
-                                        }
-                                    }
-                                    if(ansiDeviceType == CtiANSIApplication::kv2 || ansiDeviceType == CtiANSIApplication::kv)
-                                    {
-                                        multiplier /= 1000000000;
-                                    }
-                                }
-                                if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
-                                {
-                                    multiplier *= (_table12->getResolvedMultiplier(summationSelect[x])/1000);
-                                }
-                                success = true;
-
-                                *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) * multiplier;
-                                *timestamp = _frozenRegTable->getEndDateTime();
-
-                                if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                                {
-                                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                    dout << " *value =   "<<*value<<endl;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-
-    summationSelect = NULL;
-    return success;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

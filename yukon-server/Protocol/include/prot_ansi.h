@@ -319,10 +319,8 @@ class IM_EX_PROT CtiProtocolANSI
     virtual int getDaysOnBatteryReading();
     virtual bool retreiveMfgPresentValue( int offset, double *value );
 
-    bool retreiveSummation( int offset, double *value );
-    bool retreiveDemand( int offset, double *value, double *time );
-    bool retreiveFrozenSummation( int offset, double *value, double *time );
-    bool retreiveFrozenDemand( int offset, double *value, double *time );
+    bool retreiveSummation( int offset, double *value, double *time, bool frozen = false );
+    bool retreiveDemand( int offset, double *value, double *time, bool frozen = false );
     bool retreivePresentValue( int offset, double *value );
     bool retreivePresentDemand( int offset, double *value );
     bool retreiveLPDemand( int offset, int dataSet );

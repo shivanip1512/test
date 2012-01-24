@@ -23,6 +23,12 @@ typedef union
 
 typedef union
 {
+   UCHAR    ch[8];
+   long long   int48;
+} BYTEINT48;
+
+typedef union
+{
    UCHAR    ch[4];
    float      u32;
 } BYTEFLOAT32;
@@ -33,6 +39,11 @@ typedef union
    short    u16;
 } BYTEUINT16;
 
+typedef union
+{
+   UCHAR    ch[4];
+   short    u32;
+} BYTEUINT32;
 
 
 #define BCD                unsigned char
@@ -146,13 +157,13 @@ private:
 
 public:
 
+   void reverseOrder(  BYTE *source, int length );
    int toDoubleParser( BYTE *source, double &result, int format, bool dataOrderLSB = true);
    int fromDoubleParser ( double &result, BYTE *source, int format,  bool dataOrderLSB = true );
    int toUint32STime( BYTE *source, ULONG &result, int format );
    ULONG BCDtoBase10( UCHAR* buffer, ULONG len );
    int toUint32LTime( BYTE *source, ULONG &result, int format );
    int toTime( BYTE *source, ULONG &result, int format );
-   int toUint16Parser( BYTE *source, ULONG &result, bool dataOrderLSB);
 
    CtiAnsiTableBase();
    virtual ~CtiAnsiTableBase();

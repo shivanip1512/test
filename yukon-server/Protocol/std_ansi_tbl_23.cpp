@@ -60,30 +60,6 @@ using std::string;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable23::CtiAnsiTable23( int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
-                                bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2,
-                                int timefmat, int tableNbr,  bool lsbDataOrder) :
-    _nbr_demand_resets(0),
-    _tier_data_block(NULL),
-    _totSize(0),
-    _ocNums(occur),
-    _sumNums(summations),
-    _demandNums(demands),
-    _coinNums(coinValues),
-    _tierNums(tier),
-    _format1(format1),
-    _format2(format2),
-    _reset(reset_flag),
-    _time(time_flag),
-    _cumd(cum_demand_flag),
-    _cumcont(cum_cont_flag),
-    _timefmt(timefmat),
-    _tablePrintNumber(0),
-    _lsbDataOrder(lsbDataOrder)
-{
-    memset( &_tot_data_block, 0, sizeof(DATA_BLK_RCD) );
-}
-
 CtiAnsiTable23::CtiAnsiTable23( BYTE *dataBlob, int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
                                             bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr,  bool lsbDataOrder )
 {
@@ -382,89 +358,6 @@ int CtiAnsiTable23::getTotSize( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTable23::generateResultPiece( BYTE **dataBlob )
-{
-    int dummy = 0;
-
-     //part 1
-    if( _reset == true )
-    {
-       memcpy(  *dataBlob, (void *)&_nbr_demand_resets, sizeof( unsigned char ));
-       *dataBlob += sizeof( unsigned char);
-       dummy += 1;
-    }
-    //part 2
-    retrieveSummations(*dataBlob, _tot_data_block, dummy);
-    *dataBlob += dummy;
-
-    retrieveDemandsRecord(*dataBlob, _tot_data_block, dummy);
-    *dataBlob += dummy;
-
-    retrieveCoincidentsRecord(*dataBlob, _tot_data_block, dummy);
-    *dataBlob += dummy;
-
-    for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
-    {
-        retrieveSummations(*dataBlob, _tier_data_block[tierIndex], dummy);
-        *dataBlob += dummy;
-
-        retrieveDemandsRecord(*dataBlob, _tier_data_block[tierIndex], dummy);
-        *dataBlob += dummy;
-
-        retrieveCoincidentsRecord(*dataBlob, _tier_data_block[tierIndex], dummy);
-        *dataBlob += dummy;
-    }
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable23::decodeResultPiece( BYTE **dataBlob )
-{
-   int dummy = 0;
-
-    //part 1
-   if( _reset == true )
-   {
-      memcpy( (void *)&_nbr_demand_resets, *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char);
-      dummy += 1;
-   }
-   else
-      _nbr_demand_resets = NULL;
-
-   //part 2
-   _tot_data_block.summations = new double[_sumNums];
-   populateSummations(*dataBlob, &_tot_data_block, dummy);
-   *dataBlob += dummy;
-
-
-   _tot_data_block.demands = new DEMANDS_RCD[_demandNums];
-   _tot_data_block.coincidents = new COINCIDENTS_RCD[_coinNums];
-
-   populateDemandsRecord(*dataBlob, &_tot_data_block, dummy);
-   *dataBlob += dummy;
-
-   populateCoincidentsRecord(*dataBlob, &_tot_data_block, dummy);
-   *dataBlob += dummy;
-
-   _tier_data_block = new DATA_BLK_RCD[_tierNums];
-   for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
-   {
-       _tier_data_block[tierIndex].summations = new double[_sumNums];
-       populateSummations(*dataBlob, &_tier_data_block[tierIndex], dummy);
-       *dataBlob += dummy;
-
-       _tier_data_block[tierIndex].demands = new DEMANDS_RCD[_demandNums];
-       _tier_data_block[tierIndex].coincidents = new COINCIDENTS_RCD[_coinNums];
-       populateDemandsRecord(*dataBlob, &_tier_data_block[tierIndex], dummy);
-       *dataBlob += dummy;
-
-       populateCoincidentsRecord(*dataBlob, &_tier_data_block[tierIndex], dummy);
-       *dataBlob += dummy;
-   }
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
 void CtiAnsiTable23::populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
 {
     int index, bytes;
@@ -503,8 +396,6 @@ void CtiAnsiTable23::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_b
 
       if( _cumd == true )
       {
-         //_tot_data_block.demands[index].cum_demand = new double;
-
          bytes = toDoubleParser( dataBlob, data_block->demands[index].cum_demand, _format1, _lsbDataOrder );
          dataBlob += bytes;
          offset += bytes;
@@ -514,8 +405,6 @@ void CtiAnsiTable23::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_b
 
       if( _cumcont == true )
       {
-         //_tot_data_block.demands[index].cont_cum_demand = new double;
-
          bytes = toDoubleParser( dataBlob, data_block->demands[index].cont_cum_demand, _format1, _lsbDataOrder );
          dataBlob += bytes;
          offset += bytes;
@@ -547,88 +436,6 @@ void CtiAnsiTable23::populateCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD *da
        for( cnt = 0; cnt < _ocNums; cnt++ )
        {
           bytes = toDoubleParser( dataBlob, data_block->coincidents[index].coincident_values[cnt], _format2, _lsbDataOrder );
-          dataBlob += bytes;
-          offset += bytes;
-       }
-    }
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable23::retrieveSummations( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
-{
-    int index, bytes;
-    offset = 0;
-
-    for( index = 0; index < _sumNums; index++ )
-    {
-       bytes = fromDoubleParser( data_block.summations[index], dataBlob, _format1 );
-       dataBlob += bytes;
-       offset += bytes;
-    }
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable23::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
-{
-    int index, cnt, bytes;
-    offset = 0;
-
-    for( index = 0; index < _demandNums; index++ )
-    {
-       if( _time == true )
-       {
-          for( cnt = 0; cnt < _ocNums; cnt++ )
-          {
-            // bytes = toUint32STime( dataBlob, data_block.demands[index].event_time[cnt], _timefmt );
-             //dataBlob += bytes;
-            // offset += bytes;
-              {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout << "  *****JULIE **** Uh Oh...  " << endl;
-              }
-          }
-       }
-
-       if( _cumd == true )
-       {
-          //_tot_data_block.demands[index].cum_demand = new double;
-
-          bytes = fromDoubleParser( data_block.demands[index].cum_demand, dataBlob, _format1 );
-          dataBlob += bytes;
-          offset += bytes;
-       }
-
-       if( _cumcont == true )
-       {
-          //_tot_data_block.demands[index].cont_cum_demand = new double;
-
-          bytes = fromDoubleParser( data_block.demands[index].cont_cum_demand, dataBlob, _format1 );
-          dataBlob += bytes;
-          offset += bytes;
-       }
-
-       for( cnt = 0; cnt < _ocNums; cnt++ )
-       {
-          bytes = fromDoubleParser( data_block.demands[index].demand[cnt], dataBlob, _format2 );
-          dataBlob += bytes;
-          offset += bytes;
-       }
-    }
-
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable23::retrieveCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
-{
-    int index, cnt, bytes;
-    offset = 0;
-
-    for( index = 0; index < _coinNums; index++ )
-    {
-       for( cnt = 0; cnt < _ocNums; cnt++ )
-       {
-          bytes = fromDoubleParser( data_block.coincidents[index].coincident_values[cnt], dataBlob, _format2 );
           dataBlob += bytes;
           offset += bytes;
        }

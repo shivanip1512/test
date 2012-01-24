@@ -36,13 +36,10 @@ private:
 
 public:
 
-   CtiAnsiTable92(  );
    CtiAnsiTable92( BYTE *dataBlob );
 
    virtual ~CtiAnsiTable92();
 
    CtiAnsiTable92& operator=(const CtiAnsiTable92& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 };

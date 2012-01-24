@@ -51,8 +51,7 @@ private:
 
 public:
 
-   CtiAnsiTable33( );
-   CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems );
+   CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItem, bool lsbDataOrder=true );
    virtual ~CtiAnsiTable33();
    CtiAnsiTable33& operator=(const CtiAnsiTable33& aRef);
    void printResult( const std::string& deviceName );

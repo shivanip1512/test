@@ -50,14 +50,6 @@ using std::endl;
 //then, for each one, allocate howevermany source id's (again from table 11)
 //=========================================================================================================================================
 
-CtiAnsiTable14::CtiAnsiTable14( int dataCtrlLen, int numDataCtrlEntries )
-{
-    _controlLength = dataCtrlLen;
-    _controlEntries = numDataCtrlEntries;
-
-    _data_control_record.data_rcd = NULL;
-}
-
 CtiAnsiTable14::CtiAnsiTable14( BYTE *dataBlob, int dataCtrlLen, int numDataCtrlEntries )
 {
    int   index;
@@ -121,55 +113,6 @@ CtiAnsiTable14& CtiAnsiTable14::operator=(const CtiAnsiTable14& aRef)
    {
    }
    return *this;
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-
-
-void CtiAnsiTable14::decodeResultPiece( BYTE **dataBlob )
-{
-
-   if( _controlEntries != 0 )
-   {
-      _data_control_record.data_rcd = new DATA_RCD[_controlEntries];
-
-      for(int index = 0; index < _controlEntries; index++ )
-      {
-         if( _controlLength != 0 )
-         {
-            _data_control_record.data_rcd[index].source_id = new unsigned char[_controlLength];
-
-            for(int cnt = 0; cnt < _controlLength; cnt++ )
-            {
-               memcpy( (void *)&_data_control_record.data_rcd[index].source_id[cnt], *dataBlob, sizeof( unsigned char ));
-               *dataBlob += sizeof( unsigned char );
-            }
-         }
-      }
-   }
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable14::generateResultPiece( BYTE **dataBlob )
-{
-   //if( _controlEntries != 0 )
-   //{
-   //   _data_control_record.data_rcd = new DATA_RCD[_controlEntries];
-
-      for( int index = 0; index < _controlEntries; index++ )
-      {
-         if( _controlLength != 0 )
-         {
-           // _data_control_record.data_rcd[index].source_id = new unsigned char[_controlLength];
-
-            for( int cnt = 0; cnt < _controlLength; cnt++ )
-            {
-               memcpy( *dataBlob, (void *)&_data_control_record.data_rcd[index].source_id[cnt], sizeof( unsigned char ));
-               *dataBlob += sizeof( unsigned char );
-            }
-         }
-      }
-   //}
 }
 
 //=========================================================================================================================================

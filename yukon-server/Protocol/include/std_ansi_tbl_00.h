@@ -102,15 +102,12 @@ public:
 
     std::string getNonIntegerFormat( int aFormat );
 
-    void generateResultPiece( BYTE **dataBlob );
-    void decodeResultPiece( BYTE **dataBlob );
     void printResult( const std::string& deviceName );
 
-    CtiAnsiTable00( );
-   CtiAnsiTable00( BYTE *dataBlob );
-
-   virtual ~CtiAnsiTable00();
-
-   CtiAnsiTable00& operator=(const CtiAnsiTable00& aRef);
+    CtiAnsiTable00( BYTE *dataBlob );
+   
+    virtual ~CtiAnsiTable00();
+   
+    CtiAnsiTable00& operator=(const CtiAnsiTable00& aRef);
 
 };

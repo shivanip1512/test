@@ -51,19 +51,6 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable22::CtiAnsiTable22( int num_sums, int num_demands, int num_coins ) :
-    _summation_select(NULL),
-    _demand_select(NULL),
-    _set(NULL),
-    _coincident_select(NULL),
-    _coin_demand_assoc(NULL),
-    _demandSelectSize(0),
-    _totalTableSize(0),
-    _numSums(num_sums),
-    _numDemands(num_demands),
-    _numCoins(num_coins)
-{
-}
 
 CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, int num_coins )
 {
@@ -207,85 +194,6 @@ int CtiAnsiTable22::getTotalTableSize( void )
 }
 
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable22::generateResultPiece( BYTE **dataBlob )
-{
-
-    int index;
-
-   for( index = 0; index < _numSums; index++ )
-   {
-      memcpy( *dataBlob, (void *)&_summation_select[index], sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   for( index = 0; index < _numDemands; index++ )
-   {
-      memcpy( *dataBlob, (void *)&_demand_select[index], sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   memcpy( *dataBlob, _set, (( _numDemands +7)/8));
-   *dataBlob += ((_numDemands +7)/8);
-
-   for( index = 0; index < _numCoins; index++ )
-   {
-      memcpy( *dataBlob, (void *)&_coincident_select[index], sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   for( index = 0; index < _numCoins; index++ )
-   {
-      memcpy( *dataBlob, (void *)&_coin_demand_assoc[index], sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable22::decodeResultPiece( BYTE **dataBlob )
-{
-    int index;
-
-    _summation_select = new unsigned char[_numSums];
-
-   for( index = 0; index < _numSums; index++ )
-   {
-      memcpy( (void *)&_summation_select[index], *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   _demand_select = new unsigned char[_numDemands];
-
-   for( index = 0; index < _numDemands; index++ )
-   {
-      memcpy( (void *)&_demand_select[index], *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   _demandSelectSize = sizeof( unsigned char ) * _numDemands;
-
-   _set = new unsigned char[( _numDemands +7)/8];
-   memcpy( _set, *dataBlob, (( _numDemands +7)/8));
-   *dataBlob += ((_numDemands +7)/8);
-
-   _coincident_select = new unsigned char[_numCoins];
-
-   for( index = 0; index < _numCoins; index++ )
-   {
-      memcpy( (void *)&_coincident_select[index], *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   _coin_demand_assoc = new unsigned char[_numCoins];
-
-   for( index = 0; index < _numCoins; index++ )
-   {
-      memcpy( (void *)&_coin_demand_assoc[index], *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-}
 //=========================================================================================================================================
 //=========================================================================================================================================
 void CtiAnsiTable22::printResult( const string& deviceName )

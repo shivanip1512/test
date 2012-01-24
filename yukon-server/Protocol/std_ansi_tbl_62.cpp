@@ -19,72 +19,26 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable62::CtiAnsiTable62( bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
-                                        bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
-                                        int stdVersionNumber  )
-{
-
-    _lp_ctrl_tbl.lp_sel_set1 = NULL;
-    _lp_ctrl_tbl.scalars_set1 = NULL;
-    _lp_ctrl_tbl.divisor_set1 = NULL;
-
-    _lp_ctrl_tbl.lp_sel_set2 = NULL;
-    _lp_ctrl_tbl.scalars_set2 = NULL;
-    _lp_ctrl_tbl.divisor_set2 = NULL;
-
-    _lp_ctrl_tbl.lp_sel_set3 = NULL;
-    _lp_ctrl_tbl.scalars_set3 = NULL;
-    _lp_ctrl_tbl.divisor_set3 = NULL;
-
-    _lp_ctrl_tbl.lp_sel_set4 = NULL;
-    _lp_ctrl_tbl.scalars_set4 = NULL;
-    _lp_ctrl_tbl.divisor_set4 = NULL;
-
-    int offset = 0;
-    for (int x = 0; x < 4; x++)
-    {
-        _lpCtrlDataSetUsed[x] = dataSetUsedFlag[x];
-
-
-        if (_lpCtrlDataSetUsed[x])
-        {
-            _numChansSet[x] = lp_data_set_info[offset].nbr_chns_set;
-            offset++;
-        } else
-            _numChansSet[x] = 0;
-    }
-
-    _scalarDivisorFlagSet[0] = scalarDivisorFlag1;
-    _scalarDivisorFlagSet[1] = scalarDivisorFlag2;
-    _scalarDivisorFlagSet[2] = scalarDivisorFlag3;
-    _scalarDivisorFlagSet[3] = scalarDivisorFlag4;
-
-    _stdVerNumber = stdVersionNumber;
-
-}
-
-
-
 
 CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info,
                                         bool scalarDivisorFlag1, bool scalarDivisorFlag2, bool scalarDivisorFlag3,
-                                        bool scalarDivisorFlag4, int stdVersionNumber)
+                                        bool scalarDivisorFlag4, int stdVersionNumber, bool lsbDataOrder )
 {
-    _lp_ctrl_tbl.lp_sel_set1 = NULL;
-    _lp_ctrl_tbl.scalars_set1 = NULL;
-    _lp_ctrl_tbl.divisor_set1 = NULL;
+    _lp_ctrl_tbl.lp_sel[0].lp_sel_set = NULL;
+    _lp_ctrl_tbl.lp_sel[0].scalars_set = NULL;
+    _lp_ctrl_tbl.lp_sel[0].divisor_set = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set2 = NULL;
-    _lp_ctrl_tbl.scalars_set2 = NULL;
-    _lp_ctrl_tbl.divisor_set2 = NULL;
+    _lp_ctrl_tbl.lp_sel[1].lp_sel_set = NULL;
+    _lp_ctrl_tbl.lp_sel[1].scalars_set = NULL;
+    _lp_ctrl_tbl.lp_sel[1].divisor_set = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set3 = NULL;
-    _lp_ctrl_tbl.scalars_set3 = NULL;
-    _lp_ctrl_tbl.divisor_set3 = NULL;
+    _lp_ctrl_tbl.lp_sel[2].lp_sel_set = NULL;
+    _lp_ctrl_tbl.lp_sel[2].scalars_set = NULL;
+    _lp_ctrl_tbl.lp_sel[2].divisor_set = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set4 = NULL;
-    _lp_ctrl_tbl.scalars_set4 = NULL;
-    _lp_ctrl_tbl.divisor_set4 = NULL;
+    _lp_ctrl_tbl.lp_sel[3].lp_sel_set = NULL;
+    _lp_ctrl_tbl.lp_sel[3].scalars_set = NULL;
+    _lp_ctrl_tbl.lp_sel[3].divisor_set = NULL;
 
     int index;
     int offset = 0;
@@ -109,119 +63,36 @@ CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_S
 
     _stdVerNumber = stdVersionNumber;
 
-    if (_lpCtrlDataSetUsed[0])
+    for (int x = 0; x < 4; x++)
     {
-        _lp_ctrl_tbl.lp_sel_set1 = new LP_SOURCE_SEL_RCD[_numChansSet[0]];
-
-        for ( index = 0; index < _numChansSet[0]; index++ )
+    
+        if (_lpCtrlDataSetUsed[x])
         {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set1[index], dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde1, dataBlob, sizeof( unsigned char ));
-        dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[0])
-        {
-            _lp_ctrl_tbl.scalars_set1 = new UINT16[_numChansSet[0]];
-            _lp_ctrl_tbl.divisor_set1 = new UINT16[_numChansSet[0]];
+            _lp_ctrl_tbl.lp_sel[x].lp_sel_set = new LP_SOURCE_SEL_RCD[_numChansSet[0]];
 
             for ( index = 0; index < _numChansSet[0]; index++ )
             {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set1[index], dataBlob, sizeof( UINT16 ));
-                dataBlob +=  sizeof( UINT16 );
+                memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].lp_sel_set[index], dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
+                dataBlob += sizeof( LP_SOURCE_SEL_RCD );
             }
-            for ( index = 0; index < _numChansSet[0]; index++ )
+            memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].int_fmt_cde, dataBlob, sizeof( unsigned char ));
+            dataBlob +=  sizeof( unsigned char );
+
+            if (_scalarDivisorFlagSet[x])
             {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set1[index], dataBlob, sizeof( UINT16 ) );
-                dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[1])
-    {
-        _lp_ctrl_tbl.lp_sel_set2 = new LP_SOURCE_SEL_RCD[_numChansSet[1]];
+                _lp_ctrl_tbl.lp_sel[x].scalars_set = new UINT16[_numChansSet[0]];
+                _lp_ctrl_tbl.lp_sel[x].divisor_set = new UINT16[_numChansSet[0]];
 
-        for ( index = 0; index < _numChansSet[1]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set2[index], dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde2, dataBlob, sizeof( unsigned char ));
-        dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[1])
-        {
-            _lp_ctrl_tbl.scalars_set2 = new UINT16[_numChansSet[1]];
-            _lp_ctrl_tbl.divisor_set2 = new UINT16[_numChansSet[1]];
-
-            for ( index = 0; index < _numChansSet[1]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set2[index], dataBlob, sizeof( UINT16 ));
-                dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[1]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set2[index], dataBlob, sizeof( UINT16 ) );
-                dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[2])
-    {
-        _lp_ctrl_tbl.lp_sel_set3 = new LP_SOURCE_SEL_RCD[_numChansSet[2]];
-
-        for ( index = 0; index < _numChansSet[2]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set3[index], dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde3, dataBlob, sizeof( unsigned char ));
-        dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[2])
-        {
-            _lp_ctrl_tbl.scalars_set3 = new UINT16[_numChansSet[2]];
-            _lp_ctrl_tbl.divisor_set3 = new UINT16[_numChansSet[2]];
-
-            for ( index = 0; index < _numChansSet[2]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set3[index], dataBlob, sizeof( UINT16 ));
-                dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[2]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set3[index], dataBlob, sizeof( UINT16 ) );
-                dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[3])
-    {
-        _lp_ctrl_tbl.lp_sel_set4 = new LP_SOURCE_SEL_RCD[_numChansSet[3]];
-
-        for ( index = 0; index < _numChansSet[3]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set4[index], dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde4, dataBlob, sizeof( unsigned char ));
-        dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[3])
-        {
-            _lp_ctrl_tbl.scalars_set4 = new UINT16[_numChansSet[3]];
-            _lp_ctrl_tbl.divisor_set4 = new UINT16[_numChansSet[3]];
-
-            for ( index = 0; index < _numChansSet[3]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set4[index], dataBlob, sizeof( UINT16 ));
-                dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[3]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set4[index], dataBlob, sizeof( UINT16 ) );
-                dataBlob +=  sizeof( UINT16 ) ;
+                for ( index = 0; index < _numChansSet[0]; index++ )
+                {
+                    memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].scalars_set[index], dataBlob, sizeof( UINT16 ));
+                    dataBlob +=  sizeof( UINT16 );
+                }
+                for ( index = 0; index < _numChansSet[0]; index++ )
+                {
+                    memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].divisor_set[index], dataBlob, sizeof( UINT16 ) );
+                    dataBlob +=  sizeof( UINT16 ) ;
+                }
             }
         }
     }
@@ -233,69 +104,25 @@ CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_S
 
 CtiAnsiTable62::~CtiAnsiTable62()
 {
-    if (_lp_ctrl_tbl.lp_sel_set1 != NULL)
+    for (int x = 0; x < 4; x++)
     {
-        delete []_lp_ctrl_tbl.lp_sel_set1;
-        _lp_ctrl_tbl.lp_sel_set1 = NULL;
-    }
-    if (_lp_ctrl_tbl.scalars_set1 != NULL)
-    {
-        delete []_lp_ctrl_tbl.scalars_set1;
-        _lp_ctrl_tbl.scalars_set1 = NULL;
-    }
-    if (_lp_ctrl_tbl.divisor_set1 != NULL)
-    {
-        delete []_lp_ctrl_tbl.divisor_set1;
-        _lp_ctrl_tbl.divisor_set1 = NULL;
-    }
-
-    if (_lp_ctrl_tbl.lp_sel_set2 != NULL)
-    {
-        delete  []_lp_ctrl_tbl.lp_sel_set2;
-        _lp_ctrl_tbl.lp_sel_set2 = NULL;
-    }
-    if (_lp_ctrl_tbl.scalars_set2 != NULL)
-    {
-        delete []_lp_ctrl_tbl.scalars_set2;
-        _lp_ctrl_tbl.scalars_set2 = NULL;
-    }
-    if (_lp_ctrl_tbl.divisor_set2 != NULL)
-    {
-        delete []_lp_ctrl_tbl.divisor_set2;
-        _lp_ctrl_tbl.divisor_set2 = NULL;
+        if (_lp_ctrl_tbl.lp_sel[x].lp_sel_set != NULL)
+        {
+            delete []_lp_ctrl_tbl.lp_sel[x].lp_sel_set;
+            _lp_ctrl_tbl.lp_sel[x].lp_sel_set = NULL;
+        }
+        if (_lp_ctrl_tbl.lp_sel[x].scalars_set != NULL)
+        {
+            delete []_lp_ctrl_tbl.lp_sel[x].scalars_set;
+            _lp_ctrl_tbl.lp_sel[x].scalars_set = NULL;
+        }
+        if (_lp_ctrl_tbl.lp_sel[x].divisor_set != NULL)
+        {
+            delete []_lp_ctrl_tbl.lp_sel[x].divisor_set;
+            _lp_ctrl_tbl.lp_sel[x].divisor_set = NULL;
+        }
     }
 
-    if (_lp_ctrl_tbl.lp_sel_set3 != NULL)
-    {
-        delete  []_lp_ctrl_tbl.lp_sel_set3;
-        _lp_ctrl_tbl.lp_sel_set3 = NULL;
-    }
-    if (_lp_ctrl_tbl.scalars_set3 != NULL)
-    {
-        delete []_lp_ctrl_tbl.scalars_set3;
-        _lp_ctrl_tbl.scalars_set3 = NULL;
-    }
-    if (_lp_ctrl_tbl.divisor_set3 != NULL)
-    {
-        delete []_lp_ctrl_tbl.divisor_set3;
-        _lp_ctrl_tbl.divisor_set3 = NULL;
-    }
-
-    if (_lp_ctrl_tbl.lp_sel_set4 != NULL)
-    {
-        delete []_lp_ctrl_tbl.lp_sel_set4;
-        _lp_ctrl_tbl.lp_sel_set4 = NULL;
-    }
-    if (_lp_ctrl_tbl.scalars_set4 != NULL)
-    {
-        delete []_lp_ctrl_tbl.scalars_set4;
-        _lp_ctrl_tbl.scalars_set4 = NULL;
-    }
-    if (_lp_ctrl_tbl.divisor_set4 != NULL)
-    {
-        delete []_lp_ctrl_tbl.divisor_set4;
-        _lp_ctrl_tbl.divisor_set4 = NULL;
-    }
 }
 
 //=========================================================================================================================================
@@ -309,231 +136,6 @@ CtiAnsiTable62& CtiAnsiTable62::operator=(const CtiAnsiTable62& aRef)
     return *this;
 }
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable62::generateResultPiece( BYTE **dataBlob )
-{
-    int index;
-    if (_lpCtrlDataSetUsed[0])
-    {
-        for ( index = 0; index < _numChansSet[0]; index++ )
-        {
-            memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.lp_sel_set1[index], sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.int_fmt_cde1, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[0])
-        {
-            for ( index = 0; index < _numChansSet[0]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.scalars_set1[index], sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[0]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.divisor_set1[index], sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[1])
-    {
-        for ( index = 0; index < _numChansSet[1]; index++ )
-        {
-            memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.lp_sel_set2[index], sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.int_fmt_cde2, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[1])
-        {
-            for ( index = 0; index < _numChansSet[1]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.scalars_set2[index], sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[1]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.divisor_set2[index], sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[2])
-    {
-        for ( index = 0; index < _numChansSet[2]; index++ )
-        {
-            memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.lp_sel_set3[index], sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.int_fmt_cde3, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[2])
-        {
-            for ( index = 0; index < _numChansSet[2]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.scalars_set3[index], sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[2]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.divisor_set3[index], sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[3])
-    {
-        for ( index = 0; index < _numChansSet[3]; index++ )
-        {
-            memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.lp_sel_set4[index], sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.int_fmt_cde4, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[3])
-        {
-            for ( index = 0; index < _numChansSet[3]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.scalars_set4[index], sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[3]; index++ )
-            {
-                memcpy( *dataBlob, (void *)&_lp_ctrl_tbl.divisor_set4[index], sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable62::decodeResultPiece( BYTE **dataBlob )
-{
-    int index;
-    if (_lpCtrlDataSetUsed[0])
-    {
-        _lp_ctrl_tbl.lp_sel_set1 = new LP_SOURCE_SEL_RCD[_numChansSet[0]];
-
-        for ( index = 0; index < _numChansSet[0]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set1[index], *dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde1, *dataBlob, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[0])
-        {
-            _lp_ctrl_tbl.scalars_set1 = new UINT16[_numChansSet[0]];
-            _lp_ctrl_tbl.divisor_set1 = new UINT16[_numChansSet[0]];
-
-            for ( index = 0; index < _numChansSet[0]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set1[index], *dataBlob, sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[0]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set1[index], *dataBlob, sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[1])
-    {
-        _lp_ctrl_tbl.lp_sel_set2 = new LP_SOURCE_SEL_RCD[_numChansSet[1]];
-
-        for ( index = 0; index < _numChansSet[1]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set2[index], *dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde2, *dataBlob, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[1])
-        {
-            _lp_ctrl_tbl.scalars_set2 = new UINT16[_numChansSet[1]];
-            _lp_ctrl_tbl.divisor_set2 = new UINT16[_numChansSet[1]];
-
-            for ( index = 0; index < _numChansSet[1]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set2[index], *dataBlob, sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[1]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set2[index], *dataBlob, sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[2])
-    {
-        _lp_ctrl_tbl.lp_sel_set3 = new LP_SOURCE_SEL_RCD[_numChansSet[2]];
-
-        for ( index = 0; index < _numChansSet[2]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set3[index], *dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde3, *dataBlob, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[2])
-        {
-            _lp_ctrl_tbl.scalars_set3 = new UINT16[_numChansSet[2]];
-            _lp_ctrl_tbl.divisor_set3 = new UINT16[_numChansSet[2]];
-
-            for ( index = 0; index < _numChansSet[2]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set3[index], *dataBlob, sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[2]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set3[index], *dataBlob, sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-    if (_lpCtrlDataSetUsed[3])
-    {
-        _lp_ctrl_tbl.lp_sel_set4 = new LP_SOURCE_SEL_RCD[_numChansSet[3]];
-
-        for ( index = 0; index < _numChansSet[3]; index++ )
-        {
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel_set4[index], *dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-            *dataBlob += sizeof( LP_SOURCE_SEL_RCD );
-        }
-        memcpy( (void *)&_lp_ctrl_tbl.int_fmt_cde4, *dataBlob, sizeof( unsigned char ));
-        *dataBlob +=  sizeof( unsigned char );
-
-        if (_scalarDivisorFlagSet[3])
-        {
-            _lp_ctrl_tbl.scalars_set4 = new UINT16[_numChansSet[3]];
-            _lp_ctrl_tbl.divisor_set4 = new UINT16[_numChansSet[3]];
-
-            for ( index = 0; index < _numChansSet[3]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.scalars_set4[index], *dataBlob, sizeof( UINT16 ));
-                *dataBlob +=  sizeof( UINT16 );
-            }
-            for ( index = 0; index < _numChansSet[3]; index++ )
-            {
-                memcpy( (void *)&_lp_ctrl_tbl.divisor_set4[index], *dataBlob, sizeof( UINT16 ) );
-                *dataBlob +=  sizeof( UINT16 ) ;
-            }
-        }
-    }
-}
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -570,50 +172,17 @@ void CtiAnsiTable62::printResult( const string& deviceName )
     }
 }
 
-void CtiAnsiTable62::printLPSelSet(int set, int numChans)
+void CtiAnsiTable62::printLPSelSet(int index, int numChans)
 {
-    LP_SOURCE_SEL_RCD *tempSourceSelRcd = NULL;
-    UINT8 tempIntSel = 0;
     int x;
-
-    switch (set+1)
     {
-    case 1:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set1;
-            tempIntSel = _lp_ctrl_tbl.int_fmt_cde1;
-            break;
-        }
-    case 2:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set2;
-            tempIntSel = _lp_ctrl_tbl.int_fmt_cde2;
-            break;
-        }
-    case 3:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set3;
-            tempIntSel = _lp_ctrl_tbl.int_fmt_cde3;
-            break;
-        }
-    case 4:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set4;
-            tempIntSel = _lp_ctrl_tbl.int_fmt_cde4;
-            break;
-        }
-    default:
-        break;
-
-    }
-{
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "       EndRdgFlg:  ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(bool)tempSourceSelRcd[x].chnl_flag.end_rdg_flag;
+        dout << " "<<(bool)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.end_rdg_flag;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -622,7 +191,7 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(bool)tempSourceSelRcd[x].chnl_flag.no_multiplier_flag;
+        dout << " "<<(bool)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.no_multiplier_flag;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -631,7 +200,7 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)tempSourceSelRcd[x].chnl_flag.lp_algorithm;
+        dout << " "<<(int)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.lp_algorithm;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -640,7 +209,7 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)tempSourceSelRcd[x].lp_source_sel;
+        dout << " "<<(int)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].lp_source_sel;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -649,49 +218,16 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int) tempSourceSelRcd[x].end_blk_rdg_source_select;
+        dout << " "<<(int) _lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].end_blk_rdg_source_select;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       IntFmtCde: "<<(int)tempIntSel<<endl;
+        dout <<endl<< "       IntFmtCde: "<<(int)_lp_ctrl_tbl.lp_sel[index].int_fmt_cde<<endl;
     }
 }
-void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)
+void CtiAnsiTable62::printScalarsDivisorSet(int index, int numChans)
 {
-    UINT16 *tempScalarsSet = NULL;
-    UINT16 *tempDivisorSet = NULL;
     int x;
-
-    switch (set+1)
-    {
-    case 1:
-        {
-            tempScalarsSet = _lp_ctrl_tbl.scalars_set1;
-            tempDivisorSet = _lp_ctrl_tbl.divisor_set1;
-            break;
-        }
-    case 2:
-        {
-            tempScalarsSet = _lp_ctrl_tbl.scalars_set1;
-            tempDivisorSet = _lp_ctrl_tbl.divisor_set1;
-            break;
-        }
-    case 3:
-        {
-            tempScalarsSet = _lp_ctrl_tbl.scalars_set1;
-            tempDivisorSet = _lp_ctrl_tbl.divisor_set1;
-            break;
-        }
-    case 4:
-        {
-            tempScalarsSet = _lp_ctrl_tbl.scalars_set1;
-            tempDivisorSet = _lp_ctrl_tbl.divisor_set1;
-            break;
-        }
-    default:
-        break;
-
-    }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout <<"       Scalars Set: ";
@@ -699,7 +235,7 @@ void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<tempScalarsSet[x];
+        dout << " "<<_lp_ctrl_tbl.lp_sel[index].scalars_set[x];
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -708,7 +244,7 @@ void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<tempDivisorSet[x];
+        dout << " "<<_lp_ctrl_tbl.lp_sel[index].divisor_set[x];
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -720,105 +256,23 @@ void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)
 bool  CtiAnsiTable62::getNoMultiplierFlag(int setNbr)
 {
     bool retVal = false;
-    switch (setNbr)
-    {
-        case 1:
-            {
-                retVal = (bool)_lp_ctrl_tbl.lp_sel_set1->chnl_flag.no_multiplier_flag;
-                break;
-            }
-        case 2:
-            {
-                retVal = (bool)_lp_ctrl_tbl.lp_sel_set2->chnl_flag.no_multiplier_flag;
-                break;
-            }
-        case 3:
-            {
-                retVal = (bool)_lp_ctrl_tbl.lp_sel_set3->chnl_flag.no_multiplier_flag;
-                break;
-            }
-        case 4:
-            {
-                retVal = (bool)_lp_ctrl_tbl.lp_sel_set4->chnl_flag.no_multiplier_flag;
-                break;
-            }
-        default:
-            break;
+    return (bool)_lp_ctrl_tbl.lp_sel[setNbr - 1].lp_sel_set[0].chnl_flag.no_multiplier_flag;
 
-    }
-
-    return retVal;
 }
 UINT8 CtiAnsiTable62::getIntervalFmtCde(int setNbr)
 {
-    UINT8 retVal = 0;
-    switch (setNbr)
-    {
-    case 1:
-        {
-            retVal = _lp_ctrl_tbl.int_fmt_cde1;
-            break;
-        }
-    case 2:
-        {
-            retVal = _lp_ctrl_tbl.int_fmt_cde2;
-            break;
-        }
-    case 3:
-        {
-            retVal = _lp_ctrl_tbl.int_fmt_cde3;
-            break;
-        }
-    case 4:
-        {
-            retVal = _lp_ctrl_tbl.int_fmt_cde4;
-            break;
-        }
-    default:
-        break;
-
-    }
-
-    return retVal;
+    return _lp_ctrl_tbl.lp_sel[setNbr - 1].int_fmt_cde;
 }
 
 UINT8* CtiAnsiTable62::getLPDemandSelect(int setNbr)
 {
     UINT8 *lpSrcSel = NULL;
-    LP_SOURCE_SEL_RCD *tempSourceSelRcd = NULL;
-    int x;
 
-    switch (setNbr)
+    int index = setNbr - 1;
+    lpSrcSel = new UINT8[_numChansSet[index]]; //needs to be deallocated
+    for (int x = 0; x < _numChansSet[index]; x++)
     {
-    case 1:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set1;
-        }
-        break;
-    case 2:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set2;
-        }
-        break;
-    case 3:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set3;
-        }
-        break;
-    case 4:
-        {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set4;
-        }
-        break;
-    default:
-        break;
-    }
-
-    lpSrcSel = new UINT8[_numChansSet[setNbr-1]]; //needs to be deallocated?
-    for (x = 0; x < _numChansSet[setNbr-1]; x++)
-    {
-        //(void *)&lpSrcSel[x] = tempSourceSelRcd[x].lp_source_sel;
-        memcpy(lpSrcSel + x, (void *)&(tempSourceSelRcd[x].lp_source_sel), sizeof (UINT8));
+        memcpy(lpSrcSel + x, (void *)&(_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].lp_source_sel), sizeof (UINT8));
     }
     return lpSrcSel;
 }

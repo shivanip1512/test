@@ -33,16 +33,13 @@ class IM_EX_PROT CtiAnsiTable16 : public CtiAnsiTableBase
 {
 public:
 
-   CtiAnsiTable16( int num_sources );
    CtiAnsiTable16( BYTE *dataBlob, int num_sources );
    virtual ~CtiAnsiTable16();
    CtiAnsiTable16& operator=(const CtiAnsiTable16& aRef);
 
 
    SOURCE_LINK_BFLD getSourceLink ( int aOffset );
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
    bool getUOMEntryFlag( int index );
    bool getDemandCtrlFlag( int index );
    bool getDataCtrlFlag( int index );

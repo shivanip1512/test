@@ -832,14 +832,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     case OFFSET_RATE_D_KVAH:
                     case OFFSET_RATE_E_KVAH:
                     {
-                        if (archiveFlag & CMD_FLAG_FROZEN)
-                        {
-                            gotValue = getKV2Protocol().retreiveFrozenSummation( x, &value, &timestamp );
-                        }
-                        else
-                        {
-                            gotValue = getKV2Protocol().retreiveSummation( x, &value );
-                        }
+                        gotValue = getKV2Protocol().retreiveSummation( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
                         break;
                     }
                     case OFFSET_PEAK_KW_OR_RATE_A_KW:
@@ -863,14 +856,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     case OFFSET_RATE_E_KVA:
                     case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
                     {
-                        if (archiveFlag & CMD_FLAG_FROZEN)
-                        {
-                            gotValue = getKV2Protocol().retreiveFrozenDemand( x, &value, &timestamp );
-                        }
-                        else
-                        {
-                            gotValue = getKV2Protocol().retreiveDemand( x, &value, &timestamp );
-                        }
+                        gotValue = getKV2Protocol().retreiveDemand( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
                         break;
                     }
                     case OFFSET_LOADPROFILE_KW:

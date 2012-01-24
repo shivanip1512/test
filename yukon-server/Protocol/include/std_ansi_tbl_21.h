@@ -65,12 +65,9 @@ public:
    bool getCumDemandFlag( void );
    bool getContCumDemandFlag( void );
 
-   CtiAnsiTable21( );
    CtiAnsiTable21( BYTE *dataBlob );
    virtual ~CtiAnsiTable21();
    CtiAnsiTable21& operator=(const CtiAnsiTable21& aRef);
 
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 };

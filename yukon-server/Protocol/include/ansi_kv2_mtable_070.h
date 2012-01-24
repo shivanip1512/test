@@ -64,8 +64,6 @@ public:
     USHORT  getDisplayScalar(void);
     DisplayUnits_e getDemandDisplayUnits(void);
 
-    void generateResultPiece( BYTE **dataBlob );
-    void decodeResultPiece( BYTE **dataBlob );
     void printResult(  );
 
     int getRawDateFormat( void );

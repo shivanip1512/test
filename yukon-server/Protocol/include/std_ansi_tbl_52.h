@@ -80,15 +80,12 @@ private:
 
 public:
 
-   CtiAnsiTable52(int timefmat  );
    CtiAnsiTable52( BYTE *dataBlob, int timefmat );
 
    virtual ~CtiAnsiTable52();
 
    CtiAnsiTable52& operator=(const CtiAnsiTable52& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 
    CtiTime getClkCldrTime();
    CtiDate getClkCldrDate();

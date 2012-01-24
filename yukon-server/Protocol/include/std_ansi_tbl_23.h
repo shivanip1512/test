@@ -76,8 +76,6 @@ public:
    bool getTime( void );
    bool getCumd( void );
    bool getCumcont( void );
-   CtiAnsiTable23( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat, int tableNbr, bool lsbDataOrder = true );
    CtiAnsiTable23( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat, int tableNbr,  bool lsbDataOrder = true);
    virtual ~CtiAnsiTable23();
@@ -87,8 +85,6 @@ public:
    void printDemands( DATA_BLK_RCD data_block );
    void printCoincidents( DATA_BLK_RCD data_block );
 
-   void decodeResultPiece( BYTE **dataBlob );
-   void generateResultPiece( BYTE **dataBlob );
    void populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset );
    void populateDemandsRecord(BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset);
    void populateCoincidentsRecord(BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset);

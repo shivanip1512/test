@@ -90,11 +90,8 @@ private:
 public:
     PROC_RESP_RCD _proc_resp_tbl;
 
-    void generateResultPiece( BYTE **dataBlob );
-    void decodeResultPiece( BYTE **dataBlob );
     void printResult( const std::string& deviceName );
 
-    CtiAnsiTable08( );
     CtiAnsiTable08( BYTE *dataBlob );
 
     virtual ~CtiAnsiTable08();

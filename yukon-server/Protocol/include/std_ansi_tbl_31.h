@@ -40,8 +40,8 @@ private:
 
 public:
 
-   CtiAnsiTable31( );
-   CtiAnsiTable31( BYTE *dataBlob );
+   CtiAnsiTable31( BYTE *dataBlob, bool lsbDataOrder = true );
+
    virtual ~CtiAnsiTable31();
    CtiAnsiTable31& operator=(const CtiAnsiTable31& aRef);
    void printResult( const std::string& deviceName );

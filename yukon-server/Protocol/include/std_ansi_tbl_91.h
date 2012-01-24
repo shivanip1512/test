@@ -53,15 +53,12 @@ private:
 
 public:
 
-   CtiAnsiTable91(  );
    CtiAnsiTable91( BYTE *dataBlob );
 
    virtual ~CtiAnsiTable91();
 
    CtiAnsiTable91& operator=(const CtiAnsiTable91& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 
    int getBitRate();
    int getNbrSetupStrings();

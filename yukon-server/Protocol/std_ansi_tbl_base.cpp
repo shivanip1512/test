@@ -87,24 +87,18 @@ CtiAnsiTableBase& CtiAnsiTableBase::operator=(const CtiAnsiTableBase& aRef)
    }
    return *this;
 }
-int CtiAnsiTableBase::toUint16Parser( BYTE *source, ULONG &result, bool dataOrderLSB)
+
+void CtiAnsiTableBase::reverseOrder(  BYTE *source, int length )
 {
+    BYTE* tempArray = new BYTE[length];
+    memcpy ((void *)tempArray, source, length );
 
-    ULONG tempShort;
-    if (dataOrderLSB)
+    for (int x = 0; x < length; x++)
     {
-        tempShort = ((long) source[1] * (0x100)) +
-                    (long) source[0];
+        source[x] = tempArray[length - (x + 1)];
     }
-    else
-    {
-        tempShort = ((long)source[0] * (0x100)) +
-                    (long)source[1];
-    }
-    result = tempShort;
-    return  sizeof( unsigned char )* 2;
+    delete []tempArray;
 }
-
 
 
 //=========================================================================================================================================
@@ -121,16 +115,18 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
    BYTEFLOAT64 flipFloat;
    long tempLong;
    double   tempDbl;
-   double   multer = 1;
    int      offset = 0;
 
    switch( format )
    {
-   case ANSI_NI_FORMAT_FLOAT64:
-      //float64
-       {
-           if (dataOrderLSB) //data order LSB
+       case ANSI_NI_FORMAT_FLOAT64:
+           //float64
            {
+               offset = sizeof( unsigned char ) * 8;
+               if (!dataOrderLSB) 
+               {
+                   reverseOrder(  source, offset );
+               }
                flipFloat.ch[7] = source[7];
                flipFloat.ch[6] = source[6];
                flipFloat.ch[5] = source[5];
@@ -140,361 +136,133 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
                flipFloat.ch[1] = source[1];
                flipFloat.ch[0] = source[0];
 
-               tempDbl = flipFloat.u64;
-
-
+               result = flipFloat.u64;
            }
-           else
+           break;
+
+       case ANSI_NI_FORMAT_FLOAT32:
+           //float32
            {
-
-               flipFloat.ch[7] = source[0];
-               flipFloat.ch[6] = source[1];
-               flipFloat.ch[5] = source[2];
-               flipFloat.ch[4] = source[3];
-               flipFloat.ch[3] = source[4];
-               flipFloat.ch[2] = source[5];
-               flipFloat.ch[1] = source[6];
-               flipFloat.ch[0] = source[7];
-
-               tempDbl = flipFloat.u64;
-           }
-           result = tempDbl;
-           offset = sizeof( unsigned char )*8;
-       }
-      break;
-
-   case ANSI_NI_FORMAT_FLOAT32:
-       //float32
-       {
-
-            if (dataOrderLSB) //data order LSB
-            {
+               offset = sizeof( unsigned char ) * 4;
+               if (!dataOrderLSB) 
+               {
+                   reverseOrder(  source, offset );
+               }
+               
                float32.ch[3] = source[3];
                float32.ch[2] = source[2];
                float32.ch[1] = source[1];
                float32.ch[0] = source[0];
-            }
-            else
-            {
-               float32.ch[3] = source[0];
-               float32.ch[2] = source[1];
-               float32.ch[1] = source[2];
-               float32.ch[0] = source[3];
-            }
 
-           //result = (double)float32.u32;
-           result = float32.u32;
-           offset = sizeof( unsigned char ) * 4;
+               result = float32.u32;
+           }
+           break;
 
+       case ANSI_NI_FORMAT_ARRAY12_CHAR:
+          //array-12 char
+          break;
 
-       }
-       break;
+       case ANSI_NI_FORMAT_ARRAY6_CHAR:
+          //array-6 char
+          break;
 
-   case ANSI_NI_FORMAT_ARRAY12_CHAR:
-      //array-12 char
-      break;
+       case ANSI_NI_FORMAT_INT32_IMPLIED:
+          //int32 w/implied dec. pt. 4<->5th digits
+          break;
 
-   case ANSI_NI_FORMAT_ARRAY6_CHAR:
-      //array-6 char
-      break;
+       case ANSI_NI_FORMAT_ARRAY6_BCD:
+          //array-6-bcd
+          break;
 
-   case ANSI_NI_FORMAT_INT32_IMPLIED:
-      //int32 w/implied dec. pt. 4<->5th digits
-      break;
+       case ANSI_NI_FORMAT_ARRAY4_BCD:
+          //array-4-bcd
+          break;
 
-   case ANSI_NI_FORMAT_ARRAY6_BCD:
-      //array-6-bcd
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY4_BCD:
-      //array-4-bcd
-      break;
-
-   case ANSI_NI_FORMAT_INT24:
-      //int24
-       if (dataOrderLSB)
-       {
-           tempLong = ((long) source[2] * (0x10000)) +
-                      ((long) source[1] * (0x100)) +
-                       (long) source[0];
-       }
-       else
-       {
-           tempLong = ((long)source[0] * (0x10000)) +
-                      ((long)source[1] * (0x100)) +
-                       (long)source[2];
-       }
-       result = tempLong;
-       offset = sizeof( unsigned char ) * 3;
-      break;
-
-   case ANSI_NI_FORMAT_INT32:
-      //int32
-       if (dataOrderLSB)
-       {
-           tempLong = ((long) source[3] * (0x1000000)) +
-                      ((long) source[2] * (0x10000)) +
-                      ((long) source[1] * (0x100)) +
-                       (long) source[0];
-       }
-       else
-       {
-           tempLong = ((long)source[0] * (0x1000000)) +
-                          ((long)source[1] * (0x10000)) +
-                          ((long)source[2] * (0x100)) +
-                           (long)source[3];
-       }
-       result = tempLong;
-       offset = sizeof( long );
-      break;
-
-   case ANSI_NI_FORMAT_INT40:
-      //int40
-       {
-           if (dataOrderLSB)
+       case ANSI_NI_FORMAT_INT24:
            {
+               //int24
+               offset = sizeof( unsigned char ) * 3;
+               if (!dataOrderLSB) 
+               {
+                   reverseOrder(  source, offset );
+               }
+               tempLong = ((long) source[2] * (0x10000)) +
+                          ((long) source[1] * (0x100)) +
+                           (long) source[0];
+               
+               result = tempLong;
+           }
+          break;
+
+       case ANSI_NI_FORMAT_INT32:
+          {
+              //int32
+               offset = sizeof( long );
+               if (!dataOrderLSB) 
+               {
+                   reverseOrder(  source, offset );
+               }
+               tempLong = ((long) source[3] * (0x1000000)) +
+                          ((long) source[2] * (0x10000)) +
+                          ((long) source[1] * (0x100)) +
+                           (long) source[0];
+               
+               result = tempLong;
+          }
+          break;
+
+       case ANSI_NI_FORMAT_INT40:
+           {
+               //int40
+               offset = sizeof( unsigned char ) * 5;
+               if (!dataOrderLSB) 
+               {
+                   reverseOrder(  source, offset );
+               }
                tempDbl = ((double) source[5] * (0x10000000000)) +
                          ((double) source[4] * (0x100000000)) +
                          ((double) source[3] * (0x1000000)) +
                          ((double) source[2] * (0x10000)) +
                          ((double) source[1] * (0x100)) +
                          (double) source[0];
+               
+               result = tempDbl;
            }
-           else
-           {
-               tempDbl = ((double)source[0] * (0x10000000000)) +
-                         ((double)source[1] * (0x100000000)) +
-                         ((double)source[2] * (0x1000000)) +
-                         ((double)source[3] * (0x10000)) +
-                         ((double)source[4] * (0x100)) +
-                         (double)source[5];
-           }
-           result = tempDbl;
-           offset = sizeof( unsigned char )*5;
-       }
+           break;
 
-       break;
+       case ANSI_NI_FORMAT_INT48:
+          {
+              //int48
+               offset = sizeof( unsigned char ) * 6;
+               if (!dataOrderLSB) 
+               {
+                   reverseOrder(  source, offset );
+               }
+               BYTEINT48 byteInt48; 
+               byteInt48.ch[7] = source[5];
+               byteInt48.ch[6] = source[4];
+               byteInt48.ch[5] = source[3];
+               byteInt48.ch[4] = source[2];
+               byteInt48.ch[3] = source[1];
+               byteInt48.ch[2] = source[0];
+               byteInt48.ch[1] = 0;
+               byteInt48.ch[0] = 0;
 
-   case ANSI_NI_FORMAT_INT48:
-      {
-          //NOTE: need to figure out if this order is correct
-          //int48
-          //tempDbl = source[0] * multer;
+               result = byteInt48.int48 >> 16;
+          }
+          break;
 
-           if (dataOrderLSB)
-           {
-               tempDbl = ((double) source[5] * (0x10000000000)) +
-                         ((double) source[4] * (0x100000000)) +
-                         ((double) source[3] * (0x1000000)) +
-                         ((double) source[2] * (0x10000)) +
-                         ((double) source[1] * (0x100)) +
-                         (double) source[0];
-           }
-           else
-           {
-               tempDbl = ((double)source[0] * (0x10000000000)) +
-                         ((double)source[1] * (0x100000000)) +
-                         ((double)source[2] * (0x1000000)) +
-                         ((double)source[3] * (0x10000)) +
-                         ((double)source[4] * (0x100)) +
-                         (double)source[5];
-           }
-           result = tempDbl;
-           offset = sizeof( unsigned char )*6;
-      }
-      break;
+       case ANSI_NI_FORMAT_INT64:
+          //int64
+          break;
 
-   case ANSI_NI_FORMAT_INT64:
-      //int64
-      break;
+       case ANSI_NI_FORMAT_ARRAY8_BCD:
+          //array-8-bcd
+          break;
 
-   case ANSI_NI_FORMAT_ARRAY8_BCD:
-      //array-8-bcd
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY21_CHAR:
-      //array-21-char
-      break;
-
-   }
-   return( offset );
-}
-
-
-//=========================================================================================================================================
-//this guy converts raw bytes from the meter to doubles so we have a set size to work with
-//all the tables have access to him
-//
-// NOTE:  Data order from standard table 0 will need to be used in final definition  !!!!
-//
-//=========================================================================================================================================
-
-int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format, bool dataOrderLSB )
-{
-   BYTEFLOAT32  float32;
-   long tempLong;
-   double   tempDbl;
-   BYTEFLOAT64 flipFloat;
-   //double   resultDbl;
-   double   multer = 1;
-   int      offset = 0;
-
-   switch( format )
-   {
-   case ANSI_NI_FORMAT_FLOAT64:
-       {   //float64
-
-           tempDbl = source;
-           if (dataOrderLSB)
-           {
-               flipFloat.u64 = tempDbl;
-               result[0] = flipFloat.ch[0];
-               result[1] = flipFloat.ch[1];
-               result[2] = flipFloat.ch[2];
-               result[3] = flipFloat.ch[3];
-               result[4] = flipFloat.ch[4];
-               result[5] = flipFloat.ch[5];
-               result[6] = flipFloat.ch[6];
-               result[7] = flipFloat.ch[7];
-
-
-           }
-           else
-           {
-
-               flipFloat.u64 = tempDbl;
-               result[0] = flipFloat.ch[7];
-               result[1] = flipFloat.ch[6];
-               result[2] = flipFloat.ch[5];
-               result[3] = flipFloat.ch[4];
-               result[4] = flipFloat.ch[3];
-               result[5] = flipFloat.ch[2];
-               result[6] = flipFloat.ch[1];
-               result[7] = flipFloat.ch[0];
-           }
-           offset = sizeof( unsigned char )*8;
-      }
-      break;
-
-   case ANSI_NI_FORMAT_FLOAT32:
-      //float32
-       float32.u32 = source;
-       if (dataOrderLSB)
-       {
-           result[0] = float32.ch[0];
-           result[1] = float32.ch[1];
-           result[2] = float32.ch[2];
-           result[3] = float32.ch[3];
-       }
-       else
-       {
-           result[0] = float32.ch[3];
-           result[1] = float32.ch[2];
-           result[2] = float32.ch[1];
-           result[3] = float32.ch[0];
-       }
-       offset = sizeof( unsigned char )*4;
-
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY12_CHAR:
-      //array-12 char
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY6_CHAR:
-      //array-6 char
-      break;
-
-   case ANSI_NI_FORMAT_INT32_IMPLIED:
-      //int32 w/implied dec. pt. 4<->5th digits
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY6_BCD:
-      //array-6-bcd
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY4_BCD:
-      //array-4-bcd
-      break;
-
-   case ANSI_NI_FORMAT_INT24:
-      //int24
-      break;
-
-   case ANSI_NI_FORMAT_INT32:
-      //int32
-       tempLong = (long)source;
-       if (dataOrderLSB)
-       {
-           result[3] = tempLong / 0x1000000;
-           tempLong =  tempLong - (result[3] * 0x1000000);
-           result[2] = tempLong / 0x10000;
-           tempLong =  tempLong - (result[2] * 0x10000);
-           result[1] = tempLong / 0x100;
-           tempLong =  tempLong - (result[1] * 0x100);
-           result[0] = tempLong;
-       }
-       else
-       {
-           result[0] = tempLong / 0x1000000;
-           tempLong =  tempLong - (result[0] * 0x1000000);
-           result[1] = tempLong / 0x10000;
-           tempLong =  tempLong - (result[1] * 0x10000);
-           result[2] = tempLong / 0x100;
-           tempLong =  tempLong - (result[2] * 0x100);
-           result[3] = tempLong;
-       }
-       offset = sizeof( long );
-       break;
-
-   case ANSI_NI_FORMAT_INT40:
-      //int40
-      break;
-
-   case ANSI_NI_FORMAT_INT48:
-       tempDbl = source;
-       if (dataOrderLSB)
-       {
-           result[5] = tempDbl / 0x10000000000;
-           tempDbl =  tempDbl - (result[5] * 0x10000000000);
-           result[4] = tempDbl / 0x100000000;
-           tempDbl =  tempDbl - (result[4] * 0x100000000);
-           result[3] = tempDbl / 0x1000000;
-           tempDbl =  tempDbl - (result[3] * 0x1000000);
-           result[2] = tempDbl / 0x10000;
-           tempDbl =  tempDbl - (result[2] * 0x10000);
-           result[1] = tempDbl / 0x100;
-           tempDbl =  tempDbl - (result[1] * 0x100);
-           result[0] = tempDbl;
-       }
-       else
-       {
-           result[0] = tempDbl / 0x10000000000;
-           tempDbl =  tempDbl - (result[0] * 0x10000000000);
-           result[1] = tempDbl / 0x100000000;
-           tempDbl =  tempDbl - (result[1] * 0x100000000);
-           result[2] = tempDbl / 0x1000000;
-           tempDbl =  tempDbl - (result[2] * 0x1000000);
-           result[3] = tempDbl / 0x10000;
-           tempDbl =  tempDbl - (result[3] * 0x10000);
-           result[4] = tempDbl / 0x100;
-           tempDbl =  tempDbl - (result[4] * 0x100);
-           result[5] = tempDbl;
-       }
-       offset = sizeof( unsigned char )*6;
-      break;
-
-   case ANSI_NI_FORMAT_INT64:
-      //int64
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY8_BCD:
-      //array-8-bcd
-      break;
-
-   case ANSI_NI_FORMAT_ARRAY21_CHAR:
-      //array-21-char
-      break;
+       case ANSI_NI_FORMAT_ARRAY21_CHAR:
+          //array-21-char
+          break;
 
    }
    return( offset );
@@ -509,7 +277,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 {
    ULONG    temp;
 
-   unsigned       year = 0;
+   unsigned year = 0;
    unsigned month = 0;
    unsigned day = 0;
    unsigned hour = 0;

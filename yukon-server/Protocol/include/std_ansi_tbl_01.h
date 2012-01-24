@@ -39,10 +39,10 @@ private:
 
 public:
 
-    CtiAnsiTable01( bool sn_flag, bool id_form  );
-   CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form );
-   virtual ~CtiAnsiTable01();
-   CtiAnsiTable01& operator=(const CtiAnsiTable01& aRef);
+
+    CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form );
+    virtual ~CtiAnsiTable01();
+    CtiAnsiTable01& operator=(const CtiAnsiTable01& aRef);
 
     std::string getRawManufacturer( void );
     std::string getResolvedManufacturer( void );
@@ -52,8 +52,6 @@ public:
     std::string getResolvedSerialNumber( void );
 
     void printResult(const std::string& deviceName );
-    void generateResultPiece( BYTE **dataBlob );
-    void decodeResultPiece( BYTE **dataBlob );
 
     int getFWVersionNumber();
     int getFWRevisionNumber();

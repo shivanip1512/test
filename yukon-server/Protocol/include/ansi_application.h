@@ -111,6 +111,7 @@ class IM_EX_PROT CtiANSIApplication
     bool generate( CtiXfer &xfer );
     void initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation );
     BYTE* getCurrentTable( void );
+    void setCurrentTableSize(int tableSize);
 
 
     bool decode( CtiXfer &xfer, int aCommStatus  );
@@ -131,7 +132,6 @@ class IM_EX_PROT CtiANSIApplication
 
     CtiANSIApplication &setRetries( int trysLeft );
     int getRetries( void );
-    void setLPDataMode( bool value, int sizeOfLpTable );
 
     void populateParmPtr(BYTE *value, int size);
     void setProcBfld( TBL_IDB_BFLD value);
@@ -164,26 +164,19 @@ class IM_EX_PROT CtiANSIApplication
        ANSI_STATES           _requestedState;
        CtiANSIDatalink   _datalinkLayer;
 
-       int              _prot_version;
-       BYTE              *_currentTable;
-       int               _totalBytesInTable;
-       int               _initialOffset;
-
-       /* JULIE TEMP */
-       bool _lpMode;
-       BYTE *_lpTempBigTable;
-       int _sizeOfLpTable;
-
-       /* END JULIE TEMP */
-
-       bool             _tableComplete;
+       int               _prot_version;
+       BYTE               *_currentTable;
+       int                _currentTableSize;
+       int                _totalBytesInTable;
+       int                _initialOffset;
+       bool               _tableComplete;
 
 
-       short                  _currentTableID;
-       int                  _currentTableOffset;
-       unsigned int        _currentBytesExpected;
-       BYTE                  _currentType;
-       BYTE                  _currentOperation;
+       short              _currentTableID;
+       int                _currentTableOffset;
+       unsigned int       _currentBytesExpected;
+       BYTE               _currentType;
+       BYTE               _currentOperation;
 
        TBL_IDB_BFLD         _currentProcBfld;
        BYTE                 *_parmPtr;

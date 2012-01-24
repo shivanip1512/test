@@ -22,27 +22,16 @@ struct LP_SOURCE_SEL_RCD
     UINT8 lp_source_sel;
     UINT8 end_blk_rdg_source_select;
 };
+struct LP_SELECTION_SET
+{
+    LP_SOURCE_SEL_RCD *lp_sel_set;
+    UINT8 int_fmt_cde;
+    UINT16 *scalars_set;
+    UINT16 *divisor_set;
+};
 struct LP_DATA_SELECTION_RCD
 {
-    LP_SOURCE_SEL_RCD *lp_sel_set1;
-    UINT8 int_fmt_cde1;
-    UINT16 *scalars_set1;
-    UINT16 *divisor_set1;
-
-    LP_SOURCE_SEL_RCD *lp_sel_set2;
-    UINT8 int_fmt_cde2;
-    UINT16 *scalars_set2;
-    UINT16 *divisor_set2;
-
-    LP_SOURCE_SEL_RCD *lp_sel_set3;
-    UINT8 int_fmt_cde3;
-    UINT16 *scalars_set3;
-    UINT16 *divisor_set3;
-
-    LP_SOURCE_SEL_RCD *lp_sel_set4;
-    UINT8 int_fmt_cde4;
-    UINT16 *scalars_set4;
-    UINT16 *divisor_set4;
+    LP_SELECTION_SET lp_sel[4];
 };
 
 
@@ -62,20 +51,14 @@ private:
 
 public:
 
-   CtiAnsiTable62(bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
-                    bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
-                    int stdVersionNumber   );
-   CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
-                    bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
-                    int stdVersionNumber  );
+    CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
+                     bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
+                     int stdVersionNumber, bool lsbDataOrder = true  );
+    
+    virtual ~CtiAnsiTable62();
 
-   virtual ~CtiAnsiTable62();
-
-   CtiAnsiTable62& operator=(const CtiAnsiTable62& aRef);
-   void generateResultPiece( BYTE **dataBlob );
-   void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
-
+    CtiAnsiTable62& operator=(const CtiAnsiTable62& aRef);
+    void printResult( const std::string& deviceName);
 
     void printLPSelSet(int set, int numChans);
     void printScalarsDivisorSet(int set, int numChans);

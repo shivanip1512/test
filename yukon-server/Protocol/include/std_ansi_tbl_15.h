@@ -125,14 +125,11 @@ private:
 
 public:
 
-   CtiAnsiTable15( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2, bool lsbDataOrder = true );
    CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2, bool lsbDataOrder = true);
    virtual ~CtiAnsiTable15();
    CtiAnsiTable15& operator=(const CtiAnsiTable15& aRef);
 
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
    bool getSet1AppliedFlag(int index );
    bool getSet2AppliedFlag(int index );
 

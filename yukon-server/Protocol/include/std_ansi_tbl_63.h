@@ -53,15 +53,12 @@ private:
 
 public:
 
-   CtiAnsiTable63( bool *dataSetUsedFlag, bool lsbDataOrder = true  );
    CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbDataOrder = true );
 
    virtual ~CtiAnsiTable63();
 
    CtiAnsiTable63& operator=(const CtiAnsiTable63& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 
    UINT16 getNbrValidBlocks(int setNbr);
    UINT16 getLastBlkElmt(int setNbr);

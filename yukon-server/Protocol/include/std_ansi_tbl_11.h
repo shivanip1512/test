@@ -77,13 +77,10 @@ public:
    std::string getResolvedSlidingDemandFlag( void );
    std::string getResolvedThermalDemandFlag( void );
 
-   CtiAnsiTable11( );
    CtiAnsiTable11( BYTE *dataBlob );
    virtual ~CtiAnsiTable11();
    CtiAnsiTable11& operator=(const CtiAnsiTable11& aRef);
 
-   void generateResultPiece( BYTE **dataBlob );
-   void decodeResultPiece( BYTE **dataBlob );
    void printResult(const std::string& deviceName);
 
 

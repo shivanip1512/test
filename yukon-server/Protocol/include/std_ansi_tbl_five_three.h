@@ -21,14 +21,11 @@ private:
 
 public:
 
-   CtiAnsiTable53(int timefmat  );
    CtiAnsiTable53( BYTE *dataBlob, int timefmat );
 
    virtual ~CtiAnsiTable53();
 
    CtiAnsiTable53& operator=(const CtiAnsiTable53& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 
 };

@@ -48,43 +48,7 @@ using std::string;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable13::CtiAnsiTable13( int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
-{
-   _numberDemandCtrlEntries = nbr_demand_cntl_entries;
-   _pfExcludeFlag = pf_exclude;
-   _slidingDemandFlag = sliding_demand;
-   _resetExcludeFlag = reset_exclude;
-   /*if (reset_exclude)
-   {
-       _demand_control_record->reset_exclusion = 1;
-   }
-   if (pf_exclude)
-   {
-       _demand_control_record->excludes.p_fail_recogntn_tm = 1;
-       _demand_control_record->excludes.p_fail_exclusion = 1;
-       _demand_control_record->excludes.cold_load_pickup = 1;
-   }
-   */
-   _demand_control_record._int_control_rec = new INT_CONTROL_RCD[nbr_demand_cntl_entries];
-
-
-}
-/*CtiAnsiTableOneTwo::CtiAnsiTableOneTwo( BYTE *dataBlob, int num_uom_entries )
-{
-   int index;
-
-   _numUomEntries = num_uom_entries;
-   _uom_entries = new UOM_ENTRY_BFLD[num_uom_entries];
-
-   for( index = 0; index < num_uom_entries; index++ )
-   {
-      memcpy( (void *)&_uom_entries[index], dataBlob, sizeof( UOM_ENTRY_BFLD ));
-      dataBlob += sizeof( UOM_ENTRY_BFLD );
-   }
-
-} */
-
-CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
+CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude, bool lsbDataOrder )
 {
    int      index;
 
@@ -127,8 +91,12 @@ CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, boo
       }
       else
       {
-         memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, dataBlob, sizeof( unsigned char) *2 );
-         dataBlob += ( sizeof( unsigned char) *2 );
+          if(!lsbDataOrder)
+          {
+              reverseOrder(dataBlob, sizeof( unsigned char) * 2 );
+          }
+          memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, dataBlob, sizeof( unsigned char) *2 );
+          dataBlob += ( sizeof( unsigned char) *2 );
       }
    }
 }
@@ -156,109 +124,6 @@ CtiAnsiTable13& CtiAnsiTable13::operator=(const CtiAnsiTable13& aRef)
    return *this;
 }
 
-void CtiAnsiTable13::decodeResultPiece( BYTE **dataBlob )
-{
-   if( _resetExcludeFlag != false )
-   {
-      memcpy( (void *)&_demand_control_record.reset_exclusion, *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-   /*else
-      _demand_control_record->reset_exclusion = 500;      //invalid value
-     */
-   if( _pfExcludeFlag != false )
-   {
-      memcpy( (void *)&_demand_control_record.excludes.p_fail_recogntn_tm, *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-
-      memcpy( (void *)&_demand_control_record.excludes.p_fail_exclusion, *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-
-      memcpy( (void *)&_demand_control_record.excludes.cold_load_pickup, *dataBlob, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-
-   //*dataBlob += sizeof( unsigned char );
-  /* else
-   {
-      //default invalid vals
-      _demand_control_record->excludes.p_fail_recogntn_tm = 500;
-      _demand_control_record->excludes.p_fail_exclusion = 500;
-      _demand_control_record->excludes.cold_load_pickup = 500;
-   }*/
-
-   _demand_control_record._int_control_rec = new INT_CONTROL_RCD[_numberDemandCtrlEntries];
-   //memcpy( (void *)&_demand_control_record->_int_control_rec, *dataBlob, sizeof( USHORT ) * _numberDemandCtrlEntries);
-   //*dataBlob += (sizeof( USHORT ) * _numberDemandCtrlEntries);
-
-
-   for( int index = 0; index < _numberDemandCtrlEntries; index++ )
-   {
-      if( _slidingDemandFlag != false )
-      {
-         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.sub_int, *dataBlob, sizeof( unsigned char ));
-         *dataBlob += sizeof( unsigned char );
-
-         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, *dataBlob, sizeof( unsigned char ));
-         *dataBlob += sizeof( unsigned char );
-      }
-      else
-      {
-         memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, *dataBlob, sizeof( unsigned char) *2 );
-         *dataBlob += ( sizeof( unsigned char) *2 );
-      }
-   }
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable13::generateResultPiece( BYTE **dataBlob )
-{
-   if( _resetExcludeFlag != false )
-   {
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "_resetExcludeFlag != false" << endl;
-    }
-      memcpy(*dataBlob, (void *)&_demand_control_record.reset_exclusion, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-   if( _pfExcludeFlag != false )
-   {
-       {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "_pfExcludeFlag != false" << endl;
-    }
-      memcpy( *dataBlob, (void *)&_demand_control_record.excludes.p_fail_recogntn_tm, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-
-      memcpy( *dataBlob, (void *)&_demand_control_record.excludes.p_fail_exclusion, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-
-      memcpy( *dataBlob, (void *)&_demand_control_record.excludes.cold_load_pickup, sizeof( unsigned char ));
-      *dataBlob += sizeof( unsigned char );
-   }
-   for( int index = 0; index < _numberDemandCtrlEntries; index++ )
-   {
-      if( _slidingDemandFlag != false )
-      {
-          {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "_slidingDemandFlag != false" << endl;
-    }
-
-         memcpy( *dataBlob, (void *)&_demand_control_record._int_control_rec[index].cntl_rec.sub_int, sizeof( unsigned char ));
-         *dataBlob += sizeof( unsigned char );
-
-         memcpy( *dataBlob, (void *)&_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, sizeof( unsigned char ));
-         *dataBlob += sizeof( unsigned char );
-      }
-      else
-      {
-         memcpy( *dataBlob, (void *)&_demand_control_record._int_control_rec[index].int_length, sizeof( unsigned char) *2 );
-         *dataBlob += ( sizeof( unsigned char) *2 );
-      }
-   }
-}
 
 //=========================================================================================================================================
 //=========================================================================================================================================

@@ -32,14 +32,9 @@ private:
 
 public:
 
-   CtiAnsiTable14( int dataCtrlLen, int numDataCtrlEntries );
    CtiAnsiTable14( BYTE *dataBlob, int dataCtrlLen, int numDataCtrlEntries );
    virtual ~CtiAnsiTable14();
    CtiAnsiTable14& operator=(const CtiAnsiTable14& aRef);
    void printResult( const std::string& deviceName );
-
-   void decodeResultPiece( BYTE **dataBlob );
-   void generateResultPiece( BYTE **dataBlob );
-
 
 };

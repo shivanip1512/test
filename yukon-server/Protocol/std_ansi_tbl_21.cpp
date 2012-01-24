@@ -49,20 +49,6 @@ using std::string;
 using std::endl;
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable21::CtiAnsiTable21() :
-    _nbr_self_reads(0),
-    _nbr_summations(0),
-    _nbr_demands(0),
-    _nbr_coin_values(0),
-    _occur(0),
-    _tiers(0),
-    _nbr_present_demands(0),
-    _nbr_present_values(0),
-    _tier(0)
-{
-    memset( &_reg_func1_flags, 0, sizeof(REG_FUNC1_BFLD) );
-    memset( &_reg_func2_flags, 0, sizeof(REG_FUNC2_BFLD) );
-}
 
 CtiAnsiTable21::CtiAnsiTable21( BYTE *dataBlob ) :
     _tier(0)
@@ -238,77 +224,6 @@ bool CtiAnsiTable21::getContCumDemandFlag( void )
 }
 
 
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable21::generateResultPiece( BYTE **dataBlob )
-{
-    memcpy(*dataBlob, ( void *)&_reg_func1_flags, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_reg_func2_flags, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_nbr_self_reads, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_nbr_summations, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_nbr_demands, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_nbr_coin_values, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_occur, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_tiers, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_nbr_present_demands, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(*dataBlob, ( void *)&_nbr_present_values, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable21::decodeResultPiece( BYTE **dataBlob )
-{
-    memcpy(( void *)&_reg_func1_flags, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_reg_func2_flags, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_nbr_self_reads, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_nbr_summations, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_nbr_demands, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_nbr_coin_values, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_occur, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_tiers, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_nbr_present_demands, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-
-    memcpy(( void *)&_nbr_present_values, *dataBlob, sizeof( unsigned char ));
-    *dataBlob += sizeof( unsigned char);
-}
 //=========================================================================================================================================
 //=========================================================================================================================================
 void CtiAnsiTable21::printResult( const string& deviceName )

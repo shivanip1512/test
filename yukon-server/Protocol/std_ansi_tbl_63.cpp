@@ -19,15 +19,6 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable63::CtiAnsiTable63( bool *dataSetUsedFlag, bool lsbDataOrder)
-{
-    memset( &_lp_status_tbl, 0, sizeof(LP_STATUS_RCD) );
-
-    for (int x = 0; x < 4; x++)
-    {
-        _lpCtrlDataSetUsed[x] = dataSetUsedFlag[x];
-    }
-}
 
 CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbDataOrder)
 {
@@ -53,22 +44,27 @@ CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbD
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, dataBlob, sizeof( LP_SET_STATUS_BFLD ));
             dataBlob += sizeof( LP_SET_STATUS_BFLD );
 
-            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
-            _lp_status_tbl.lp_status_set[index].nbr_valid_blocks = tempLong;
-
-            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
-            _lp_status_tbl.lp_status_set[index].last_block_element = tempLong;
+            if (!lsbDataOrder)
+            {
+                reverseOrder(dataBlob, sizeof (short));
+                reverseOrder(dataBlob + 2, sizeof (short));
+            }
+            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, dataBlob, sizeof (short));
+            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, dataBlob + 2, sizeof (short));
+            dataBlob += (sizeof (short) * 2);
 
             double tempResult;
             dataBlob += toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
             _lp_status_tbl.lp_status_set[index].last_block_seq_nbr = tempResult;
 
-            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
-            _lp_status_tbl.lp_status_set[index].nbr_unread_blocks = tempLong;
-
-
-            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
-            _lp_status_tbl.lp_status_set[index].nbr_valid_int = tempLong;
+            if (!lsbDataOrder)
+            {
+                reverseOrder(dataBlob, sizeof (short));
+                reverseOrder(dataBlob + 2, sizeof (short));
+            }
+            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, dataBlob, sizeof (short));
+            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, dataBlob + 2, sizeof (short));
+            dataBlob += (sizeof (short) * 2);
 
             index+=1;
         }
@@ -97,74 +93,6 @@ CtiAnsiTable63& CtiAnsiTable63::operator=(const CtiAnsiTable63& aRef)
     {
     }
     return *this;
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable63::generateResultPiece( BYTE **dataBlob )
-{
-    int x;
-    int index = 0;
-
-    for (x = 0; x < 4; x++)
-    {
-        if (_lpCtrlDataSetUsed[x])
-        {
-            memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, sizeof( LP_SET_STATUS_BFLD ));
-            *dataBlob += sizeof( LP_SET_STATUS_BFLD );
-            memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].last_block_seq_nbr, sizeof( UINT32 ));
-            *dataBlob += sizeof( UINT32 );
-            memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            index+=1;
-        }
-
-    }
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable63::decodeResultPiece( BYTE **dataBlob )
-{
-    int x;
-    int cnt = 0;
-    int index = 0;
-
-    for (x = 0; x < 4; x++)
-    {
-        if (_lpCtrlDataSetUsed[x])
-            cnt++;
-    }
-
-    _lp_status_tbl.lp_status_set = new LP_SET_STATUS_RCD[cnt];
-
-    for (x = 0; x < 4; x++)
-    {
-        if (_lpCtrlDataSetUsed[x])
-        {
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, *dataBlob, sizeof( LP_SET_STATUS_BFLD ));
-            *dataBlob += sizeof( LP_SET_STATUS_BFLD );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_seq_nbr, *dataBlob, sizeof( UINT32 ));
-            *dataBlob += sizeof( UINT32 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 );
-
-            index+=1;
-        }
-
-    }
 }
 
 //=========================================================================================================================================

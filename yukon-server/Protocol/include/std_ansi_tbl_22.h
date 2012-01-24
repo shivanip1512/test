@@ -36,12 +36,9 @@ public:
    unsigned char* getDemandSelect( void );
    unsigned char* getSummationSelect( void );
 
-   CtiAnsiTable22(int num_sums, int num_demands, int num_coins );
    CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, int num_coins );
    virtual ~CtiAnsiTable22();
    CtiAnsiTable22& operator=(const CtiAnsiTable22& aRef);
 
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 };

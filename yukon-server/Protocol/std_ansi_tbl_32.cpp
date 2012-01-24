@@ -24,12 +24,6 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable32::CtiAnsiTable32() :
-    _displaySources(NULL),
-    _nbrDispSources(0),
-    _widthDispSources(0)
-{
-}
 
 CtiAnsiTable32::CtiAnsiTable32( BYTE *dataBlob, UINT16 nbrDispSources, UINT8 widthDispSources  )
 {
@@ -61,7 +55,7 @@ CtiAnsiTable32::~CtiAnsiTable32()
         {
             if (_displaySources[i].displaySource != NULL)
             {
-                delete  _displaySources[i].displaySource;
+                delete  []_displaySources[i].displaySource;
                 _displaySources[i].displaySource = NULL;
             }
         }
@@ -125,9 +119,10 @@ void CtiAnsiTable32::printResult( const string& deviceName )
         }
         for (int j = 0; j < _widthDispSources; j++)
         {
+            BYTE displaySrc = _displaySources[i].displaySource[j];
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << " "<<_displaySources[i].displaySource[j];
+                dout << " "<<(int)displaySrc;
             }
         }
         {

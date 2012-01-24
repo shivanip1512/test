@@ -560,14 +560,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                     case OFFSET_RATE_D_KVAH:
                     case OFFSET_RATE_E_KVAH:
                     {
-                        if (archiveFlag & CMD_FLAG_FROZEN)
-                        {
-                            gotValue = getANSIProtocol().retreiveFrozenSummation( x, &value, &timestamp );
-                        }
-                        else
-                        {
-                            gotValue = getANSIProtocol().retreiveSummation( x, &value );
-                        }
+                        gotValue = getANSIProtocol().retreiveSummation( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
                         break;
                     }
                     case OFFSET_PEAK_KW_OR_RATE_A_KW:
@@ -588,14 +581,8 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                     case OFFSET_RATE_D_KVA:
                     case OFFSET_RATE_E_KVA:
                     {
-                        if (archiveFlag & CMD_FLAG_FROZEN)
-                        {
-                            gotValue = getANSIProtocol().retreiveFrozenDemand( x, &value, &timestamp );
-                        }
-                        else
-                        {
-                            gotValue = getANSIProtocol().retreiveDemand( x, &value, &timestamp );
-                        }
+                        gotValue = getANSIProtocol().retreiveDemand( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
+                        
                         break;
                     }
                     case OFFSET_LOADPROFILE_KW:
@@ -748,6 +735,10 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
     
     _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
+    {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << " : " << _result_string;
+    }
     pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, (int) NormalQuality, pPoint->getType());
     if (archiveFlag & CMD_FLAG_UPDATE)
     {

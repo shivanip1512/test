@@ -20,38 +20,6 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable61::CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder )
-{
-    int x = 0;
-    int lpTbl[] = {64, 65, 66, 67};
-
-    _lpDataSetUsed[0] = false;
-    _lpDataSetUsed[1] = false;
-    _lpDataSetUsed[2] = false;
-    _lpDataSetUsed[3] = false;
-
-    if (dimStdTblsUsed > 8)
-    {
-        int y, yy;
-        while (x < 4)
-        {
-            y =   1;
-            for (yy = 0; yy < lpTbl[x]%8; yy++)
-            {
-                y = y*2;
-            }
-            if (stdTblsUsed[(lpTbl[x]/8)] & y)
-            {
-                _lpDataSetUsed[x] = true;
-            }
-            else
-                _lpDataSetUsed[x] = false;
-            x++;
-        }
-    }
-    _lp_tbl.lp_data_set_info = new LP_DATA_SET[4];
-}
-
 
 CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder )
 {
@@ -88,10 +56,13 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
     offset = toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
     _lp_tbl.lp_memory_len = tempResult;
     dataBlob += offset;
-    ULONG tempLong;
-    offset = toUint16Parser( dataBlob, tempLong, lsbDataOrder );
-    memcpy( (void *)&_lp_tbl.lp_flags, &tempLong, sizeof( unsigned char )*2);
-    dataBlob += offset;
+
+    if (!lsbDataOrder)
+    {
+        reverseOrder(dataBlob, sizeof( unsigned char )*2 );
+    }
+    memcpy( (void *)&_lp_tbl.lp_flags, dataBlob, sizeof( unsigned char )*2);
+    dataBlob += sizeof( unsigned char )*2;
     memcpy( (void *)&_lp_tbl.lp_fmats, dataBlob, sizeof( unsigned char ));
     dataBlob +=   sizeof( unsigned char );
 
@@ -102,25 +73,19 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
         if (_lpDataSetUsed[x])
         {
 
-            if (lsbDataOrder)
+            if (!lsbDataOrder)
             {
-                memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blks_set, dataBlob, sizeof(short));
-                memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, dataBlob+2, sizeof(short));
-
-                dataBlob += sizeof(short) * 2;
+                reverseOrder(dataBlob, sizeof(short) );
+                reverseOrder(dataBlob + 2, sizeof(short) );
             }
-            else
-            {
-                ULONG tempLong;
-                dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
-                _lp_tbl.lp_data_set_info[xx].nbr_blks_set = tempLong;
-                dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
-                _lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set = tempLong;
-            }
-             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_chns_set, dataBlob, sizeof( UINT8 ));
-             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].max_int_time_set, dataBlob+1, sizeof( UINT8 ));
-             dataBlob +=   sizeof( UINT8 ) * 2;
-             xx++;
+            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blks_set, dataBlob, sizeof(short));
+            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, dataBlob + 2, sizeof(short));
+            dataBlob += sizeof(short) * 2;
+            
+            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_chns_set, dataBlob, sizeof( UINT8 ));
+            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].max_int_time_set, dataBlob + 1, sizeof( UINT8 ));
+            dataBlob +=   sizeof( UINT8 ) * 2;
+            xx++;
         }
     }
 }
@@ -147,45 +112,6 @@ CtiAnsiTable61& CtiAnsiTable61::operator=(const CtiAnsiTable61& aRef)
    {
    }
    return *this;
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable61::generateResultPiece( BYTE **dataBlob )
-{
-    int xx = 0;
-
-    memcpy( *dataBlob, (void *)&_lp_tbl, sizeof( unsigned char ) * 7);
-    *dataBlob +=   sizeof( unsigned char ) * 7;
-    for (int x = 0; x < 4; x++)
-    {
-        if (_lpDataSetUsed[x])
-        {
-            memcpy( *dataBlob, (void *)&_lp_tbl.lp_data_set_info[xx], sizeof( LP_DATA_SET ));
-            *dataBlob +=   sizeof( LP_DATA_SET );
-            xx++;
-        }
-    }
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable61::decodeResultPiece( BYTE **dataBlob )
-{
-    int xx = 0;
-
-    memcpy( (void *)&_lp_tbl, *dataBlob, sizeof( unsigned char ) * 7);
-    *dataBlob +=   sizeof( unsigned char ) * 7;
-    for (int x = 0; x < 4; x++)
-    {
-        if (_lpDataSetUsed[x])
-        {
-            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx], *dataBlob, sizeof( LP_DATA_SET ));
-            *dataBlob +=   sizeof( LP_DATA_SET );
-            xx++;
-        }
-    }
-
 }
 
 //=========================================================================================================================================

@@ -42,16 +42,6 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable25::CtiAnsiTable25( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                                int f1, int f2, int timeformat, bool season ) :
-    _dateTimeFieldFlag(FALSE),
-    _seasonInfoFieldFlag(FALSE),
-    _endDateTime(0),
-    _season(0),
-    _prevDemandResetData(NULL)
-{
-}
-
 CtiAnsiTable25::CtiAnsiTable25( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                                 int f1, int f2, int timeformat, bool season )
 {

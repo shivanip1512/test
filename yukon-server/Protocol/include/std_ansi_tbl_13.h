@@ -39,27 +39,14 @@ class IM_EX_PROT CtiAnsiTable13 : public CtiAnsiTableBase
 
 public:
 
-   CtiAnsiTable13( int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
-   CtiAnsiTable13( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
+   CtiAnsiTable13( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude, bool lsbDataOrder = true );
    virtual ~CtiAnsiTable13();
    CtiAnsiTable13& operator=(const CtiAnsiTable13& aRef);
    void printResult( const std::string& deviceName );
 
-   void decodeResultPiece( BYTE **dataBlob );
-   void generateResultPiece( BYTE **dataBlob );
-
-
    bool getPFExcludeFlag();
    bool getSlidingDemandFlag();
    bool getResetExcludeFlag();
-   /*int getResetExclusion();
-   int getPFailRecogntnTm();
-   int getPFailExclusion();
-   int getColdLoadPickup();
-   int getCtrlRecordSubInt();
-   int getCtrlRecordIntMultiplier();
-   int getCtrlRecordIntLength();
-    */
 
 private:
 

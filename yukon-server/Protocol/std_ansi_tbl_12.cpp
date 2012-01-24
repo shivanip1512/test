@@ -72,23 +72,23 @@ const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_UNKNOWN = "Timebase not supported";
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable12::CtiAnsiTable12( int num_uom_entries )
-{
-   _numUomEntries = num_uom_entries;
-   _uom_entries = new UOM_ENTRY_BFLD[num_uom_entries];
-}
-
-CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries )
+CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries, bool lsbDataOrder )
 {
    int index;
 
    _numUomEntries = num_uom_entries;
    _uom_entries = new UOM_ENTRY_BFLD[num_uom_entries];
+   
 
    for( index = 0; index < num_uom_entries; index++ )
    {
-      memcpy( (void *)&_uom_entries[index], dataBlob, sizeof( UOM_ENTRY_BFLD ));
-      dataBlob += sizeof( UOM_ENTRY_BFLD );
+       if (!lsbDataOrder)
+       {
+           reverseOrder(dataBlob, sizeof( UOM_ENTRY_BFLD ));
+       }
+       memcpy( (void *)&_uom_entries[index], dataBlob, sizeof( UOM_ENTRY_BFLD ));
+       dataBlob += sizeof( UOM_ENTRY_BFLD );
+
    }
 
 }
@@ -116,23 +116,6 @@ CtiAnsiTable12& CtiAnsiTable12::operator=(const CtiAnsiTable12& aRef)
    return *this;
 }
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable12::generateResultPiece( BYTE **dataBlob )
-{
-    memcpy(*dataBlob, (void*)_uom_entries, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
-    //memcpy(*dataBlob, _uom_entries, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
-    *dataBlob += (sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
-
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable12::decodeResultPiece( BYTE **dataBlob )
-{
-    memcpy( (void*)_uom_entries, *dataBlob, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
-    *dataBlob += (sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
-}
 
 //=========================================================================================================================================
 //=========================================================================================================================================

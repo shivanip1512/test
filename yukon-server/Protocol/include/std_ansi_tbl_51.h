@@ -57,14 +57,11 @@ private:
 
 public:
 
-   CtiAnsiTable51(  );
    CtiAnsiTable51( BYTE *dataBlob );
 
    virtual ~CtiAnsiTable51();
 
    CtiAnsiTable51& operator=(const CtiAnsiTable51& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
 
 };

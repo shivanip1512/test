@@ -117,13 +117,6 @@ private:
 
 public:
 
-   CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
-                        bool closureStatusFlag, bool simpleIntervalStatusFlag,
-                        int numberBlockIntervalsSet, bool blockEndReadFlag,
-                        bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                        int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
-                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true,
-                        bool descBlockOrder = false, bool descIntervalOrder = false);
    CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
@@ -135,9 +128,7 @@ public:
    virtual ~CtiAnsiTable64();
 
    CtiAnsiTable64& operator=(const CtiAnsiTable64& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
    int populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob);
    void printIntervalFmtRecord(INT_FMT1_RCD intData);
 

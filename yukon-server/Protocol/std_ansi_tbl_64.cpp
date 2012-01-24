@@ -19,34 +19,6 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
-                                bool closureStatusFlag, bool simpleIntervalStatusFlag,
-                                int numberBlockIntervalsSet, bool blockEndReadFlag,
-                                bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt,
-                                int meterHour, bool timeZoneApplied, bool lsbDataOrder, bool descBlockOrder, bool descIntervalOrder  ) :
-    _nbrBlksSet1(numberBlocksSet),
-    _nbrChnsSet1(numberChansSet),
-    _closureStatusFlag(closureStatusFlag),
-    _simpleIntStatusFlag(simpleIntervalStatusFlag),
-    _nbrBlkIntsSet1(numberBlockIntervalsSet),
-    _blkEndReadFlag(blockEndReadFlag),
-    _blkEndPulseFlag(blockEndPulseFlag),
-    _extendedIntStatusFlag(extendedIntervalStatusFlag),
-    _maxIntvlTime(maxIntvlTime),
-    _intFmtCde1(intervalFmtCde),
-    _nbrValidInts(nbrValidInts),
-    _niFmt1(niFmt1),
-    _niFmt2(niFmt2),
-    _timeFmt(timeFmt),
-    _meterHour(meterHour),
-    _timeZoneApplied(timeZoneApplied),
-    _lsbDataOrder(lsbDataOrder),
-    _descBlockOrder(descBlockOrder),
-    _descIntervalOrder(descIntervalOrder)
-{
-    memset( &_lp_data_set1_tbl, 0, sizeof(LP_DATA_SET1_RCD) );
-}
 
 CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,
@@ -314,19 +286,6 @@ CtiAnsiTable64& CtiAnsiTable64::operator=(const CtiAnsiTable64& aRef)
    return *this;
 }
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable64::generateResultPiece( BYTE **dataBlob )
-{
-
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable64::decodeResultPiece( BYTE **dataBlob )
-{
-
-}
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -575,7 +534,6 @@ void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
         }
         else
         {
-            //if (blkSet == (_nbrBlksSet1-1) && blkIntvl < _nbrValidInts)
             if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts)
             {
                blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
@@ -624,41 +582,35 @@ double CtiAnsiTable64::getLPDemandValue ( int channel, int blkSet, int blkIntvl 
     {
         case 1:
         {
-            //retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet - 1].lp_int[blkIntvl - 1].int_data[channel - 1].u.s1.item;
             retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].int_data[channel].u.s1.item;
             break;
         }
         case 2:
         {
-            //retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet - 1].lp_int[blkIntvl - 1].int_data[channel - 1].u.s2.item;
             retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].int_data[channel].u.s2.item;
             break;
         }
 
         case 4:
         {
-            //retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet - 1].lp_int[blkIntvl - 1].int_data[channel - 1].u.s4.item;
             retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].int_data[channel].u.s4.item;
             break;
         }
 
         case 8:
         {
-            //retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet - 1].lp_int[blkIntvl - 1].int_data[channel - 1].u.s8.item;
             retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].int_data[channel].u.s8.item;
             break;
         }
 
         case 16:
         {
-            //retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet - 1].lp_int[blkIntvl - 1].int_data[channel - 1].u.s16.item;
             retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].int_data[channel].u.s16.item;
             break;
         }
 
         case 32:
         {
-            //retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet - 1].lp_int[blkIntvl - 1].int_data[channel - 1].u.s32.item;
             retVal = _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].int_data[channel].u.s32.item;
             break;
         }
@@ -673,10 +625,6 @@ double CtiAnsiTable64::getLPDemandValue ( int channel, int blkSet, int blkIntvl 
         default:
             break;
     }
-   /* {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " return val  "<<retVal<<endl;
-    } */
 
     return retVal;
 }

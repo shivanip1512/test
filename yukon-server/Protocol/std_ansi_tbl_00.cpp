@@ -42,38 +42,6 @@
 #include "logger.h"
 using namespace std;
 
-//=========================================================================================================================================
-//We've gotten all the data back from the device and we're going to fill up our table
-//Note: we have to use some of the pieces in this table to fill other pieces in this table..
-//
-//This will feel.... a little weird....
-//=========================================================================================================================================
-CtiAnsiTable00::CtiAnsiTable00( ) :
-    _nameplate_type(0),
-    _default_set_used(0),
-    _max_proc_parm_len(0),
-    _max_resp_data_len(0),
-    _std_version_no(0),
-    _std_revision_no(0),
-    _dim_std_tbls_used(0),
-    _dim_mfg_tbls_used(0),
-    _dim_std_proc_used(0),
-    _dim_mfg_proc_used(0),
-    _dim_mfg_status_used(0),
-    _nbr_pending(0),
-    _std_tbls_used(NULL),
-    _mfg_tbls_used(NULL),
-    _std_proc_used(NULL),
-    _mfg_proc_used(NULL),
-    _std_tbls_write(NULL),
-    _mfg_tbls_write(NULL)
-{
-    memset( &_control_1, 0, sizeof(FORMAT_CONTROL_1) );
-    memset( &_control_2, 0, sizeof(FORMAT_CONTROL_2) );
-    memset( &_control_3, 0, sizeof(FORMAT_CONTROL_3) );
-
-    memset( _device_class, 0, sizeof(_device_class) );
-}
 
 CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
     _nameplate_type(0),
@@ -175,79 +143,6 @@ CtiAnsiTable00& CtiAnsiTable00::operator=(const CtiAnsiTable00& aRef)
   {
   }
   return *this;
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable00::generateResultPiece( BYTE **dataBlob )
-{
-    //printResult();
-    memcpy (*dataBlob, ( void *)&_control_1, sizeof (FORMAT_CONTROL_1));
-    *dataBlob += sizeof (FORMAT_CONTROL_1);
-    memcpy (*dataBlob, ( void *)&_control_2, sizeof (FORMAT_CONTROL_2));
-    *dataBlob += sizeof (FORMAT_CONTROL_2);
-    memcpy (*dataBlob, ( void *)&_control_3, sizeof (FORMAT_CONTROL_3));
-    *dataBlob += sizeof (FORMAT_CONTROL_3);
-    memcpy( *dataBlob, ( void *)&_device_class[0], sizeof (unsigned char) * 16 );
-    *dataBlob += sizeof (unsigned char) * 16;
-
-
-    memcpy(*dataBlob,  _std_tbls_used, _dim_std_tbls_used );
-    *dataBlob += _dim_std_tbls_used;
-
-    memcpy(*dataBlob,  _mfg_tbls_used, _dim_mfg_tbls_used );
-    *dataBlob += _dim_mfg_tbls_used;
-
-    memcpy(*dataBlob,  _std_proc_used, _dim_std_proc_used );
-    *dataBlob += _dim_std_proc_used;
-
-    memcpy(*dataBlob,  _mfg_proc_used, _dim_mfg_proc_used );
-    *dataBlob += _dim_mfg_proc_used;
-
-    memcpy(*dataBlob,  _std_tbls_write, _dim_std_tbls_used );
-    *dataBlob += _dim_std_tbls_used;
-
-    memcpy(*dataBlob,  _mfg_tbls_write, _dim_mfg_status_used );
-    *dataBlob += _dim_mfg_status_used;
-}
-//=========================================================================================================================================
-//=========================================================================================================================================
-void CtiAnsiTable00::decodeResultPiece( BYTE **dataBlob )
-{
-    memcpy (( void *)&_control_1, *dataBlob, sizeof (FORMAT_CONTROL_1));
-    *dataBlob += sizeof (FORMAT_CONTROL_1);
-    memcpy (( void *)&_control_2, *dataBlob, sizeof (FORMAT_CONTROL_2));
-    *dataBlob += sizeof (FORMAT_CONTROL_2);
-    memcpy (( void *)&_control_3, *dataBlob, sizeof (FORMAT_CONTROL_3));
-    *dataBlob += sizeof (FORMAT_CONTROL_3);
-
-    memcpy(( void *)&_device_class[0], *dataBlob, sizeof (unsigned char) * 16 );
-    *dataBlob += sizeof (unsigned char) * 16;
-
-    _std_tbls_used = new unsigned char[_dim_std_tbls_used];
-    memcpy( _std_tbls_used, *dataBlob, _dim_std_tbls_used );
-    *dataBlob += _dim_std_tbls_used;
-
-    _mfg_tbls_used = new unsigned char[_dim_mfg_tbls_used];
-    memcpy( _mfg_tbls_used, *dataBlob, _dim_mfg_tbls_used );
-    *dataBlob += _dim_mfg_tbls_used;
-
-    _std_proc_used = new unsigned char[_dim_std_proc_used];
-    memcpy( _std_proc_used, *dataBlob, _dim_std_proc_used );
-    *dataBlob += _dim_std_proc_used;
-
-    _mfg_proc_used = new unsigned char[_dim_mfg_proc_used];
-    memcpy( _mfg_proc_used, *dataBlob, _dim_mfg_proc_used );
-    *dataBlob += _dim_mfg_proc_used;
-
-    _std_tbls_write = new unsigned char[_dim_std_tbls_used];
-    memcpy( _std_tbls_write, *dataBlob, _dim_std_tbls_used );
-    *dataBlob += _dim_std_tbls_used;
-
-    _mfg_tbls_write = new unsigned char[_dim_mfg_status_used];
-    memcpy( _mfg_tbls_write, *dataBlob, _dim_mfg_status_used );
-    *dataBlob += _dim_mfg_status_used;
-
 }
 //=========================================================================================================================================
 //=========================================================================================================================================

@@ -73,15 +73,12 @@ private:
 
 public:
 
-   CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder = true);
    CtiAnsiTable61(  BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder = true);
 
    virtual ~CtiAnsiTable61();
 
    CtiAnsiTable61& operator=(const CtiAnsiTable61& aRef);
-   void generateResultPiece( BYTE **dataBlob );
    void printResult( const std::string& deviceName);
-   void decodeResultPiece( BYTE **dataBlob );
    void printLPDataSetInfo( int set, int offset );
    LP_DATA_SET * getLPDataSetInfo();
    bool * getLPDataSetUsedFlags();

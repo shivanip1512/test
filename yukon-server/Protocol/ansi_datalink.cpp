@@ -316,25 +316,22 @@ void CtiANSIDatalink::decodePacketHeader( )
    setPacketFirst( false );
    setSequence( 0x00 );
 
-   packet++;
-   packet++;
+   packet++; //increment past <ack> or <nak>
 
-   if( packet[0] & 0x80 )
+   //packet[0] = 0xee <ansi header>
+
+   if( packet[1] & 0x80 )  //<cntl>
       setPacketPart( true );
 
-   if( packet[0] & 0x40 )
+   if( packet[1] & 0x40 )
       setPacketFirst( true );
 
-
-   packet++;                                          //increment past the <cntl>
-
-   if( packet[0] != 0x00 )
-      setSequence( packet[0] );
-   packet++;                                          //increment past the <seq_nbr>
+   if( packet[2] != 0x00 ) //<seq_nbr>
+      setSequence( packet[2] );
 
    //get the number of bytes in the data part
-   flip.ch[0] = packet[1];
-   flip.ch[1] = packet[0];
+   flip.ch[0] = packet[4]; //<length>
+   flip.ch[1] = packet[3];
    setExpectedBytes (flip.sh);
 }
 
@@ -349,7 +346,7 @@ void CtiANSIDatalink::buildIdentify( BYTE aServiceCode, CtiXfer &xfer )
 
    data = aServiceCode;
 
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), &data, 1, 0 );
 
    flip.sh = crc( 1 + HEADER_LEN, xfer.getOutBuffer() );
@@ -389,7 +386,7 @@ void CtiANSIDatalink::buildNegotiate(BYTE aServiceCode, CtiXfer &xfer )
    }
 
 
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), data, arraySize, 0 );
    flip.sh = crc( arraySize + HEADER_LEN, xfer.getOutBuffer() );
    xfer.getOutBuffer()[arraySize + HEADER_LEN] = flip.ch[1];
@@ -425,7 +422,7 @@ void CtiANSIDatalink::buildTiming(BYTE aServiceCode, CtiXfer &xfer )
    data[3] = 0x0a;                     //10 seconds response timeout
    data[4] = 0x03;                     //3 retries
 
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 5, 0 );
 
    flip.sh = crc( 5 + HEADER_LEN, xfer.getOutBuffer() );
@@ -481,7 +478,7 @@ void CtiANSIDatalink::buildLogOn(BYTE aServiceCode, CtiXfer &xfer )
    data[5] = 0x00;
    data[6] = 0x00;
    */
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 13, 0 );
 
    flip.sh = crc( 13 + HEADER_LEN, xfer.getOutBuffer() );
@@ -507,7 +504,7 @@ void CtiANSIDatalink::buildSecure(BYTE aServiceCode, CtiXfer &xfer, BYTE *passwo
    data[0] = aServiceCode;
    memcpy( &data[1], password, 20 );
 
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 21, 0 );
 
    flip.sh = crc( 21 + HEADER_LEN, xfer.getOutBuffer() );
@@ -535,7 +532,7 @@ void CtiANSIDatalink::buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer, BYTE *
    data[1] = 0x09; //length
    data[2] = 0x00; //key id ?????
    memcpy(&data[3], ini_auth_vector, 8);
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 11, 0 );
 
    flip.sh = crc( 11 + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
@@ -601,7 +598,7 @@ void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, short aTableID, BYTE aOp
       dataSize = 3;
   }
 
-  memset( xfer.getOutBuffer(), NULL, 100 );
+  memset( xfer.getOutBuffer(), 0, 100 );
   assemblePacket( xfer.getOutBuffer(), data, dataSize, 0 );
 
   flip.sh = crc( dataSize + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
@@ -716,7 +713,7 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    BYTE cksum = data[5 + dataSize];
    data[5 + dataSize] = ~cksum + 1;
 
-   memset( xfer.getOutBuffer(), NULL, 100 );
+   memset( xfer.getOutBuffer(), 0, 100 );
    assemblePacket( xfer.getOutBuffer(), data, arraySize, 0 );
 
    flip.sh = crc( arraySize + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
