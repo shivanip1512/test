@@ -11,10 +11,8 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.taglib.JsLibrary;
 import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
-import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.YukonTagSupport;
 
@@ -97,13 +95,6 @@ public class ButtonTag extends YukonTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
-        // Ensure the scripts we need are there if we can.
-        StandardPageTag spTag = StandardPageTag.find(getJspContext());
-        if (spTag != null) {
-            spTag.addScriptFile(JsLibrary.JQUERY.getPath()); //add the jQuery Library for posterity 
-            spTag.addScriptFile(JsLibrary.YUKON_UI.getPath()); //add button page redirect support 
-        }
-
         if (StringUtils.isBlank(id)) {
             id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "button");
         }
