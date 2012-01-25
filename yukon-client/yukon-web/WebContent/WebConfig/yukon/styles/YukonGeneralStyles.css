@@ -1724,3 +1724,20 @@ tr.ui-priority-secondary {
 .helpDialogContents {
     max-width: 800px;
  }
+
+/* 
+    typically the code class is meant to be used to wrap a <pre> tag.  E.g.
+    <div class="code">
+        <pre>some stuff that looks like code...</pre>
+    </div>
+ */
+ .code {
+    font-family: monospace;
+    font-size: 12px;
+    font-color: #333;
+    background-color: #ccc;
+    border: dashed 1px #666;
+    padding: 4px 8px;
+    overflow-x: auto;
+    margin: 10px;
+ }
