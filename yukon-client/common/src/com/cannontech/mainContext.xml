@@ -153,7 +153,6 @@
                <value>classpath:com/cannontech/yukon/web/modules/amr/disconnectMeterWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnMeterDisconnectWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/meterEventsWidget</value>
-               <value>classpath:com/cannontech/yukon/web/modules/widgets/touWidget</value>
                <value>classpath:com/cannontech/yukon/common/device/attributeRead</value>
                <value>classpath:com/cannontech/yukon/common/device/fdrTranslationManagement</value>
                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
@@ -162,7 +161,6 @@
                <value>classpath:com/cannontech/yukon/common/device/group</value>
                <value>classpath:com/cannontech/yukon/common/device/groupMeterRead</value>
                <value>classpath:com/cannontech/yukon/common/device/scheduledGroupRequestExecution</value>
-               <value>classpath:com/cannontech/yukon/common/vee</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateHome</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateResults</value>
@@ -190,7 +188,6 @@
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/warehouse</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/operatorLogin</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/maintenance</value>
-               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/encryption</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/metering</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/profile</value>
