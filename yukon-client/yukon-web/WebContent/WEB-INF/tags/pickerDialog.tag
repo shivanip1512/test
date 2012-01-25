@@ -87,6 +87,13 @@
         <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
         <cti:msg2 var="closeMsg" key=".close"/>
     </cti:msgScope>
+    <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
+        <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>
+        <div class="actionArea">
+            <input type="button" onclick="$('picker_${id}_selectedItemsPopup').hide()"
+                value="${closeMsg}"/>
+        </div>
+    </tags:simplePopup>
 </c:if>
 
 <span id="picker_${id}_inputArea">
@@ -131,13 +138,6 @@
                     <c:if test="${pageScope.multiSelectMode}">
                         <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" nameKey="zoom"/>
                     </c:if>
-                    <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
-                        <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>
-                        <div class="actionArea">
-                            <input type="button" onclick="$('picker_${id}_selectedItemsPopup').hide()"
-                                value="${closeMsg}"/>
-                        </div>
-                    </tags:simplePopup>
         	    </c:when>
         	    <c:otherwise>
                     <c:set var="anchorAttributes" value=""/>

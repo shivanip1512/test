@@ -44,7 +44,7 @@
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText">Select Devices</entry>
     
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroup">Select By Group</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTitle">Select devices by Device Group</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTitle">Select Devices by Device Group</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.rootLabel">Groups</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.submitButtonText">Select Device Group</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.cancelButtonText">Cancel</entry>
