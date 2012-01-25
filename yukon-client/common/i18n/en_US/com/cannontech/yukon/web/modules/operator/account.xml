@@ -101,11 +101,13 @@
     <entry key="yukon.web.modules.operator.account.customerGroup">Customer Group</entry>
     <entry key="yukon.web.modules.operator.account.loginEnabled">Enabled</entry>
     <entry key="yukon.web.modules.operator.account.userName">Username</entry>
+    <entry key="yukon.web.modules.operator.account.password">Password</entry>
     <entry key="yukon.web.modules.operator.account.newPassword">New Password</entry>
     <entry key="yukon.web.modules.operator.account.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.modules.operator.account.showPassword">Show Password</entry>
     <entry key="yukon.web.modules.operator.account.deleteLogin">Delete Login</entry>
     <entry key="yukon.web.modules.operator.account.generatePassword">Generate Password</entry>
+    <entry key="yukon.web.modules.operator.account.changePassword">Change Password</entry>
     
     <entry key="yukon.web.modules.operator.account.loginInfoError.invalidUsernameChange">User does not have access/permission to change username.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.usernameRequired">The username cannot be blank.</entry>
@@ -115,6 +117,9 @@
     <entry key="yukon.web.modules.operator.account.loginInfoError.invalidPasswordChange">User does not have access/permission to change password.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.passwordNoMatch">The passwords supplied do not match.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.passwordTooLong">Passwords can only be 64 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.account.loginInfoError.passwordTooShort">Supplied passwords are too short.</entry>
+    <entry key="yukon.web.modules.operator.account.passwordDialog.title">Change Password</entry>
+    <entry key="yukon.web.modules.operator.account.passwordDialog.ok">Save</entry>
     
     <!-- AccountGeneral Validation -->
     <entry key="yukon.web.modules.operator.accountGeneral.invalidPhoneNumber">Invalid Phone Number</entry>
@@ -237,5 +242,4 @@
     <entry key="yukon.web.modules.operator.accountImport.lineNo">Line Number</entry>
     <entry key="yukon.web.modules.operator.accountImport.errorMessage">Error Message</entry>
     <entry key="yukon.web.modules.operator.accountImport.importAccount">Import Account</entry>
-    
 </properties>

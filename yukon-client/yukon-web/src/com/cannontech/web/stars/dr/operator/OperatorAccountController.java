@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.cc.model.Group;
@@ -36,6 +40,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -53,6 +58,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -118,6 +124,7 @@ public class OperatorAccountController {
     private SystemEventLogService systemEventLogService;
     private ECMappingDao ecMappingDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -515,6 +522,7 @@ public class OperatorAccountController {
         accountGeneral.setAccountDto(accountDto);
         accountGeneral.setOperatorGeneralUiExtras(operatorGeneralUiExtras);
         accountGeneral.setLoginBackingBean(loginBackingBean);
+        model.addAttribute("passwordBean", loginBackingBean);
 
         model.addAttribute("accountGeneral", accountGeneral);
 	}
@@ -525,6 +533,69 @@ public class OperatorAccountController {
         response.setContentType("text/plain");
         String generatedPassword = RandomStringUtils.randomAlphanumeric(6);
         return new TextView(generatedPassword);
+    }
+    
+    /*
+     * The residentialLoginService authenticates the user for updating passwords on this account
+     */
+    @RequestMapping(method=RequestMethod.POST)
+    public @ResponseBody Map<String, ? extends Object> updatePassword(final @ModelAttribute LoginBackingBean loginBackingBean,
+                                                     BindingResult bindingResult,
+                                                     final int accountId,
+                                                     ModelMap modelMap,
+                                                     final YukonUserContext userContext,
+                                                     final AccountInfoFragment accountInfoFragment,
+                                                     HttpServletRequest request,
+                                                     HttpServletResponse response,
+                                                     final HttpSession session) throws ServletRequestBindingException{
+        
+        /* setup the required vars to determine if we can/should update the password for this login */
+        final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
+        final String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
+        
+        
+        /* Make sure the passwords match */
+        LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(residentialUser);
+        loginValidator.validate(loginBackingBean, bindingResult);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        /* 
+         * Update the password if: 
+         * 
+         * the user is not the default user
+         * the login is being edited (not created or viewed)
+         */
+        if(residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID 
+            && LoginModeEnum.EDIT.equals(LoginModeEnum.valueOf(loginMode))
+            && !bindingResult.hasErrors()) {
+            systemEventLogService.loginChangeAttemptedByOperator(userContext.getYukonUser(), residentialUser.getUsername());
+            
+            
+            /* Check to see if the user is trying to modify the default user */
+            checkEditingDefaultUser(loginBackingBean.getUsername());
+            
+            /* ensure that we are only updating passwords on existing accounts */
+            residentialLoginService.updateResidentialPassword(loginBackingBean, userContext, residentialUser);
+            
+            /* Added Event Log Message */
+            EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 
+                                     YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
+            
+            /* tell the browser this action passed */
+            response.setStatus(HttpServletResponse.SC_OK);
+            return Collections.singletonMap("flash", messageSourceAccessor.getMessage("yukon.web.changelogin.message.LOGIN_PASSWORD_CHANGED"));
+        }else{
+            /* tell the browser there was a problem */
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            JSONObject errorJSON = new JSONObject();
+            for (Object object : bindingResult.getAllErrors()) {
+                if(object instanceof FieldError) {
+                    FieldError fieldError = (FieldError) object;
+                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
+                }
+            }
+            return Collections.singletonMap("fieldErrors", errorJSON);
+        }
     }
     
 	// UPDATE ACCOUNT

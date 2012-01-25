@@ -71,6 +71,7 @@ public class LayoutController {
         //jquery MUST be included before any js library that commandeers the $ var.
         builder.add(JsLibrary.JQUERY.getPath()); 
         builder.add(JsLibrary.JQUERY_UI.getPath());
+        builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
         builder.add(JsLibrary.JQUERY_FORM.getPath());
 
         //add the other standard libs

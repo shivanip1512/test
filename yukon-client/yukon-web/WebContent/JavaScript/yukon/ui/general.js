@@ -129,6 +129,10 @@ Yukon.ui = {
         Yukon.uiUtils.pageGlass.hide();
     },
     
+    flashSuccess: function(markup){
+        jQuery("#Content").addMessage({message: markup, messageClass: "userMessage CONFIRM"});
+    },
+    
     formatPhone: function(input){
         // strip the input down to just numbers, then format
         var stripped = input.value.replace(/[^\d]/g, "");

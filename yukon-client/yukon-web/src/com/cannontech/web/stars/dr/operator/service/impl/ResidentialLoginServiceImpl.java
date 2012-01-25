@@ -91,14 +91,10 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                                         final YukonUserContext userContext, 
                                         final LiteYukonUser residentialUser,
                                         final int energyCompanyId) {
-
         transactionTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
-    
                 checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
-                
                 updateResidentialCustomerGroup(loginBackingBean.getLoginGroupName(), residentialUser);
-    
                 updateLoginStatus(loginBackingBean, residentialUser);
                 
                 if (!loginBackingBean.getUsername().equals(residentialUser.getUsername())) {
@@ -106,9 +102,18 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, userContext.getYukonUser());
                     yukonUserDao.changeUsername(userContext.getYukonUser(), residentialUser.getUserID(), loginBackingBean.getUsername());
                 }
-        
-                if (!StringUtils.isBlank(loginBackingBean.getPassword1()) 
-                        && !StringUtils.isBlank(loginBackingBean.getPassword2())) {
+                return null;
+            }
+        });
+    }
+    
+    @Override
+    public void updateResidentialPassword(final LoginBackingBean loginBackingBean,
+                                        final YukonUserContext userContext, 
+                                        final LiteYukonUser residentialUser) {
+        transactionTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                if (!StringUtils.isBlank(loginBackingBean.getPassword1()) && !StringUtils.isBlank(loginBackingBean.getPassword2())) {
                     
                     // Security checks for password change.
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
@@ -116,14 +121,12 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     if (!passwordSetSupported) {
                         throw new IllegalArgumentException("You cannot set the password on this style of account.");
                     }
-    
+                    
+                    /* Update the password */
                     authenticationService.setPassword(residentialUser, loginBackingBean.getPassword1());
                 }
-                
                 return null;
-        
             }
-    
         });
     }
     

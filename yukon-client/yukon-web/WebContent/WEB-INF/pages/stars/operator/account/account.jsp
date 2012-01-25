@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="operator" page="account.${mode}">
 
@@ -19,7 +20,7 @@
         <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
         <div class="actionArea">
             <cti:button nameKey="confirmDeleteOk" href="${deleteUrl}" styleClass="f_blocker" />
-            <cti:button nameKey="confirmDeleteCancel" onclick="$('confirmDeleteDialog').hide()" />
+            <cti:button nameKey="confirmDeleteCancel" onclick="jQuery('#confirmDeleteDialog').hide()" />
         </div>
     </i:simplePopup>
 
@@ -31,16 +32,18 @@
         <cti:msg2 key=".confirmDeleteLogin" arguments="${accountGeneral.accountDto.accountNumber}"/>
         <div class="actionArea">
             <cti:button nameKey="confirmDeleteOk" href="${deleteLoginUrl}" styleClass="f_blocker"/>
-            <cti:button nameKey="confirmDeleteCancel" onclick="$('confirmDeleteLoginDialog').hide()"/>
+            <cti:button nameKey="confirmDeleteCancel" onclick="jQuery('#confirmDeleteLoginDialog').hide()"/>
         </div>
     </i:simplePopup>
 
     <script type="text/javascript">
 
+        //YukonGeneral.js
     	alignTableColumnsByTable('#customerContactTable', '#serviceInformationTable');
     	alignTableColumnsByTable('#serviceAddressTable', '#billingAddressTable');
+    	//END YukonGeneral.js
     
-    	Event.observe(window, 'load', function() {
+    	jQuery(function() {
 
     		// commercial setup
     		// when in VIEW mode, don't show commercial values unless the account is commercial
@@ -53,101 +56,119 @@
         		// if sameAsAbove is checked on page load, we know the address fields all match, set them to disabled
         		toggleBillingAddress();
         		saveBillingToTempFields();
-        		var sameAsAbove = $('usePrimaryAddressForBillingCheckBox').checked;
+        		var sameAsAbove = document.getElementById('usePrimaryAddressForBillingCheckBox').checked;
         		if (sameAsAbove) {
         			setBillingFieldsDisabled(true);
         		}
     		}
     		
+    		jQuery(document).delegate("#passwordDialog", 'e_updatePassword', updatePassword);
+            jQuery(document).delegate("a.f_resetPasswordDialog", 'click', resetPasswordDialog);
     	});
 
     	function toggleCommercialInputs(isCommercial) {
-        	
-    		if (isCommercial) {
-				$('accountDto.companyName').disabled = false;
-				$('accountDto.commercialTypeEntryId').disabled = false;
-    		} else {
-				$('accountDto.companyName').disabled = true;
-				$('accountDto.commercialTypeEntryId').disabled = true;
-    		}
+		    document.getElementById('accountDto.companyName').disabled = !isCommercial;
+			document.getElementById('accountDto.commercialTypeEntryId').disabled = !isCommercial;
     	}
 
     	// when "same as above" is checked, it really does not matter what the billing fields contain, the controller will figure that out.
     	// this game is just to make the user feel warm and fuzzy
     	function toggleBillingAddress() {
-
-			var sameAsAbove = $('usePrimaryAddressForBillingCheckBox').checked;
-
-			if (sameAsAbove) {
-
+    	    //same as above?
+			if (jQuery('#usePrimaryAddressForBillingCheckBox').is(':checked')) {
 				saveBillingToTempFields();
-				
-				$('accountDto.billingAddress.locationAddress1').value = $('accountDto.streetAddress.locationAddress1').value;
-				$('accountDto.billingAddress.locationAddress2').value = $('accountDto.streetAddress.locationAddress2').value;
-				$('accountDto.billingAddress.cityName').value = $('accountDto.streetAddress.cityName').value;
-				$('accountDto.billingAddress.stateCode').value = $('accountDto.streetAddress.stateCode').value;
-				$('accountDto.billingAddress.zipCode').value = $('accountDto.streetAddress.zipCode').value;
-
+				document.getElementById('accountDto.billingAddress.locationAddress1').value = document.getElementById('accountDto.streetAddress.locationAddress1').value;
+				document.getElementById('accountDto.billingAddress.locationAddress2').value = document.getElementById('accountDto.streetAddress.locationAddress2').value;
+				document.getElementById('accountDto.billingAddress.cityName').value = document.getElementById('accountDto.streetAddress.cityName').value;
+				document.getElementById('accountDto.billingAddress.stateCode').value = document.getElementById('accountDto.streetAddress.stateCode').value;
+				document.getElementById('accountDto.billingAddress.zipCode').value = document.getElementById('accountDto.streetAddress.zipCode').value;
 				setBillingFieldsDisabled(true);
-				
 			} else {
-
-				$('accountDto.billingAddress.locationAddress1').value = $('temp_accountDto.billingAddress.locationAddress1').value;
-				$('accountDto.billingAddress.locationAddress2').value = $('temp_accountDto.billingAddress.locationAddress2').value;
-				$('accountDto.billingAddress.cityName').value = $('temp_accountDto.billingAddress.cityName').value;
-				$('accountDto.billingAddress.stateCode').value = $('temp_accountDto.billingAddress.stateCode').value;
-				$('accountDto.billingAddress.zipCode').value = $('temp_accountDto.billingAddress.zipCode').value;
-
+				document.getElementById('accountDto.billingAddress.locationAddress1').value = document.getElementById('temp_accountDto.billingAddress.locationAddress1').value;
+				document.getElementById('accountDto.billingAddress.locationAddress2').value = document.getElementById('temp_accountDto.billingAddress.locationAddress2').value;
+				document.getElementById('accountDto.billingAddress.cityName').value = document.getElementById('temp_accountDto.billingAddress.cityName').value;
+				document.getElementById('accountDto.billingAddress.stateCode').value = document.getElementById('temp_accountDto.billingAddress.stateCode').value;
+				document.getElementById('accountDto.billingAddress.zipCode').value = document.getElementById('temp_accountDto.billingAddress.zipCode').value;
 				setBillingFieldsDisabled(false);
 			}
     	}
 
     	function saveBillingToTempFields() {
-
-    		$('temp_accountDto.billingAddress.locationAddress1').value = $('accountDto.billingAddress.locationAddress1').value;
-			$('temp_accountDto.billingAddress.locationAddress2').value = $('accountDto.billingAddress.locationAddress2').value;
-			$('temp_accountDto.billingAddress.cityName').value = $('accountDto.billingAddress.cityName').value;
-			$('temp_accountDto.billingAddress.stateCode').value = $('accountDto.billingAddress.stateCode').value;
-			$('temp_accountDto.billingAddress.zipCode').value = $('accountDto.billingAddress.zipCode').value;
+    		document.getElementById('temp_accountDto.billingAddress.locationAddress1').value = document.getElementById('accountDto.billingAddress.locationAddress1').value;
+			document.getElementById('temp_accountDto.billingAddress.locationAddress2').value = document.getElementById('accountDto.billingAddress.locationAddress2').value;
+			document.getElementById('temp_accountDto.billingAddress.cityName').value = document.getElementById('accountDto.billingAddress.cityName').value;
+			document.getElementById('temp_accountDto.billingAddress.stateCode').value = document.getElementById('accountDto.billingAddress.stateCode').value;
+			document.getElementById('temp_accountDto.billingAddress.zipCode').value = document.getElementById('accountDto.billingAddress.zipCode').value;
     	}
 
     	function setBillingFieldsDisabled(disabled) {
-
-    		$$('input[id^="accountDto.billingAddress."]').each(function(el) {
-				el.disabled = disabled;
+    		jQuery('input[id^="accountDto.billingAddress."]').each(function() {
+				this.disabled = disabled;
 			});
     	}
 
     	function generatePassword() {
-            new Ajax.Request('/spring/stars/operator/account/generatePassword', {
-                onSuccess: function(response) {
-                     var generatedPassword = response.responseText;
-
-                     var password1 = $('loginBackingBean.password1');
-                     password1.value = generatedPassword;
-
-                     var password2 = $('loginBackingBean.password2');
-                     password2.value = generatedPassword;
-                 }
+            new jQuery.ajax({
+                    url: '/spring/stars/operator/account/generatePassword',
+                    success: function(data) {
+                         jQuery("#password1, #password2, #loginBackingBean\\.password1, #loginBackingBean\\.password2").each(function(){
+                             this.value = data;
+                         });
+                        // Check and show the password fields
+                        jQuery('#showPasswordCheckbox').attr('checked', true);
+                        showPassword();
+                     }
             });
 
-            // Check and show the password fields
-            var showPasswordCheckbox = $('showPasswordCheckbox');
-            showPasswordCheckbox.checked = true;
-            showPassword();
         }
 
         function showPassword() {
-            var showPasswordCheckbox = $('showPasswordCheckbox');
-            if (showPasswordCheckbox.checked) {
-                changeInputType('loginBackingBean.password1', 'text');
-                changeInputType('loginBackingBean.password2', 'text');
-            } else {
-                changeInputType('loginBackingBean.password1', 'password');
-                changeInputType('loginBackingBean.password2', 'password');
+            var type = jQuery("#showPasswordCheckbox:checked").length ? 'text' : 'password'; 
+            jQuery("#password1, #password2, #loginBackingBean\\.password1, #loginBackingBean\\.password2").each(function(){
+                this.type = type;
+            });
+        }
+        
+        function updatePassword(event){
+            jQuery("#passwordDialog").removeMessage();
+            jQuery("#passwordDialog .error").removeClass('error');
+            
+            if(jQuery("#password1").val().length == 0 && jQuery("#password2").val().length == 0){
+                jQuery("#passwordDialog").addMessage({
+                    message: '<i:inline key=".loginInfoError.passwordTooShort"/>', 
+                    messageClass: 'ERROR'});
+                jQuery("#password1, #password2").addClass('error');
+            }else if(jQuery("#password1").val() != jQuery("#password2").val()){
+                jQuery("#passwordDialog").addMessage({
+                    message: '<i:inline key=".loginInfoError.passwordNoMatch"/>', 
+                    messageClass: 'ERROR'});
+                jQuery("#password1, #password2").addClass('error');
+            }else{
+                jQuery("#updatePasswordForm").ajaxSubmit({
+                    dataType:  'json',
+                    success:    function(data){
+                        //reset the dialog and clear the errors
+                        jQuery("#passwordDialog").dialog('close');
+                        Yukon.ui.flashSuccess(data.flash);
+                    },
+                    error:      function(xhr){
+                        var data = jQuery.parseJSON(xhr.responseText);
+                        data = data.fieldErrors;
+                        if(data.password1 == data.password2){
+                            jQuery("#password1, #password2").addClass('error');
+                            delete data.password2;
+                        }
+                        jQuery("#passwordDialog").addMessage({message: data, messageClass: 'error'});
+                }});
             }
         }
-
+        
+        function resetPasswordDialog(){
+            var dialog = jQuery("#passwordDialog");
+            dialog.find("input:text, input:password").val("");
+            dialog.removeMessage();
+            dialog.find(".error").removeClass('error');
+        }
     </script>
     
 	<cti:msg2 var="naLabel" key="defaults.na"/>
@@ -293,8 +314,22 @@
                                 </tags:nameValue2>
                             </cti:checkRolesAndProperties>
                             
-                            <!-- Password Fields -->
-                            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <%-- The corresponding dialog (which contains a form) is at the end of the page.
+                            this was done to avoid the confusion of an appearent nested form.  jQuery UI
+                            (as of 1.8.16) will remove the specified element from the dom create a new element
+                            that represents the dialog at the end of the DOM and put the specifed element inside
+                            thus avoiding a nested form, but we are not guaranteed this to be true in the future.  --%>
+                            <cti:displayForPageEditModes modes="EDIT">
+                                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
+                                    <c:if test="${supportsPasswordSet}">
+                                        <tags:nameValue2 nameKey=".password">
+                                            <small><a href="javascript:void(0);" class="f_editPassword f_resetPasswordDialog"><i:inline key=".changePassword" /></a></small>
+                                        </tags:nameValue2>
+                                    </c:if>
+                                </cti:checkRolesAndProperties>
+                            </cti:displayForPageEditModes>
+
+                            <cti:displayForPageEditModes modes="CREATE">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                                     <c:if test="${supportsPasswordSet}">
                                         <tags:nameValue2 nameKey=".newPassword">
@@ -311,12 +346,13 @@
                                     </c:if>
                                 </cti:checkRolesAndProperties>
                             </cti:displayForPageEditModes>
-                            
                         </tags:nameValueContainer2>
                         
                         <cti:displayForPageEditModes modes="EDIT">
                             <c:if test="${loginMode eq 'EDIT'}">
-                                <span style="float:right;padding-top:3px;"><button type="button" onclick="$('confirmDeleteLoginDialog').show()"><i:inline key=".deleteLogin"/></button></span>
+                                <br/>
+                                <br/>
+                                <span style="float:right;padding-top:3px;"><button type="button" onclick="jQuery('#confirmDeleteLoginDialog').show()"><i:inline key=".deleteLogin"/></button></span>
                             </c:if>
                         </cti:displayForPageEditModes>
                         
@@ -334,7 +370,7 @@
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
-                    <button type="button" onclick="$('confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
+                    <button type="button" onclick="jQuery('#confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
  		            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
 			            <cti:param name="accountId" value="${accountId}"/>
 			        </cti:url>
@@ -355,7 +391,44 @@
                 <cti:button nameKey="edit" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
-	    
 	</form:form>
-    
+
+    <!-- Password Fields -->
+    <cti:displayForPageEditModes modes="EDIT">
+        <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
+            <c:if test="${supportsPasswordSet}">
+                <dialog:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f_editPassword" nameKey="passwordDialog">
+                    <form:form id="updatePasswordForm" commandName="passwordBean" action="/spring/stars/operator/account/updatePassword">
+                        <input type="hidden" name="accountId" value="${accountId}">
+                        <input type="hidden" name="loginMode" value="${loginMode}">
+
+                        <form:hidden path="userId" />
+                        <form:hidden path="loginGroupName" />
+                        <form:hidden path="loginEnabled" />
+                        <form:hidden path="username" />
+                        <form:hidden path="authType" />
+
+                        <tags:nameValueContainer2 id="passwordFields">
+                            <tags:nameValue2 nameKey=".newPassword">
+                                <tags:password path="password1" autocomplete="false" maxlength="64" />
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".confirmPassword">
+                                <tags:password path="password2" autocomplete="false" maxlength="64" />
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
+                                <button type="button" onclick="generatePassword();">
+                                    <i:inline key=".generatePassword" />
+                                </button>
+                                <br>
+                                <input id="showPasswordCheckbox" type="checkbox"
+                                    onclick="showPassword()" />
+                                <i:inline key=".showPassword" />
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </form:form>
+                </dialog:inline>
+            </c:if>
+        </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+
 </cti:standardPage>
