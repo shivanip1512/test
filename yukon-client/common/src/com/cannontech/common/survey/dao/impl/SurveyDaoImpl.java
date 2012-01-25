@@ -71,7 +71,7 @@ public class SurveyDaoImpl implements SurveyDao {
 
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Question getQuestionById(int surveyQuestionId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(questionRowMapper.getBaseQuery());
@@ -90,7 +90,7 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Question> getQuestionsBySurveyId(int surveyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(questionRowMapper.getBaseQuery());
@@ -129,7 +129,7 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public String getNextSurveyKey() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT surveyKey FROM survey");
@@ -138,7 +138,7 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public String getNextQuestionKey(int surveyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT questionKey FROM surveyQuestion");

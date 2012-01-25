@@ -29,7 +29,7 @@ public class RfnMeterDisconnectService {
      * The first is a status message indicating this is a known meter and a disconnect
      * will be tried, or a disconnect is not possible for this meter.  This response should come back within seconds.
      * 
-     *  The second response is the confirmation that the disconnect happened or and error ocurred.  
+     *  The second response is the confirmation that the disconnect happened or and error occurred.  
      *  This response is only expected if the first response was 'OK'.  
      *  This response can take anywhere from seconds to minutes to tens of minutes depending
      *  on network performance.

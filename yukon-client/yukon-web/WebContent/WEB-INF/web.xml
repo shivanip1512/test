@@ -172,6 +172,10 @@
 	<filter-mapping>
 		<filter-name>referrerPageFilter</filter-name>
 		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>referrerPageFilter</filter-name>
 		<url-pattern>/spring/capcontrol/*</url-pattern>
 	</filter-mapping>
 
@@ -245,13 +249,6 @@
 		</listener-class>
 	</listener>
 
-	<!-- Faces Listener, that does all the startup work (configuration, init). -->
-	<listener>
-		<listener-class>
-			org.apache.myfaces.webapp.StartupServletContextListener
-		</listener-class>
-	</listener>
-    
     <listener>
         <listener-class>com.cannontech.servlet.TimerTaskInitializer</listener-class>
     </listener>
@@ -1143,6 +1140,4 @@
 		<exception-type>java.lang.Throwable</exception-type>
 		<location>/internalError.jsp</location>
 	</error-page>
-
-
 </web-app>

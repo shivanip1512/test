@@ -246,7 +246,6 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         return applianceCategories;
     }
 
-    // DI Setters
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
@@ -276,5 +275,4 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
-
 }
