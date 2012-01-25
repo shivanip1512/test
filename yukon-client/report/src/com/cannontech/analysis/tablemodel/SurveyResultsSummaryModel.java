@@ -90,6 +90,8 @@ public class SurveyResultsSummaryModel extends SurveyResultsModelBase<SurveyResu
             startDate = new Instant(0);
         }
 
+        Set<Integer> programIdsToUse = Sets.newHashSet(getAuthorizedPrograms());
+        
         Multimap<SurveyResult, Integer> assignedProgramIdsBySurveyResult = ArrayListMultimap.create();
         Map<Integer, List<ProgramEnrollment>> enrollmentsBySurveyResultId = Maps.newHashMap();
         List<SurveyResult> surveyResults =
@@ -108,22 +110,19 @@ public class SurveyResultsSummaryModel extends SurveyResultsModelBase<SurveyResu
         }
 
         Map<Integer, ProgramHistorySummary> resultsByProgramHistoryId = Maps.newHashMap();
+        Map<Integer, ProgramControlHistory> programControlHistoriesById = Maps.newHashMap();
 
         Survey survey = surveyDao.getSurveyById(surveyId);
         Question question = surveyDao.getQuestionById(questionId);
         String baseKey = survey.getBaseKey(question);
-        Map<Integer, ProgramControlHistory> programControlHistoriesById = Maps.newHashMap();
         Map<Integer, Integer> programIdsByAssignedProgramId =
             assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIdsBySurveyResult.values());
-        Set<Integer> programIdsToUse = null;
-        if (programIds != null && !programIds.isEmpty()) {
-            programIdsToUse = Sets.newHashSet(programIds);
-        }
+
         for (SurveyResult result : surveyResults) {
             List<ProgramEnrollment> enrollments = enrollmentsBySurveyResultId.get(result.getSurveyResultId());
             for (ProgramEnrollment enrollment : enrollments) {
                 int programId = programIdsByAssignedProgramId.get(enrollment.getAssignedProgramId());
-                if (programIdsToUse == null || programIdsToUse.contains(programId)) {
+                if (programIdsToUse.contains(programId)) {
                     ProgramControlHistory hist =
                         loadControlProgramDao.findHistoryForProgramAtTime(programId, result.getWhenTaken());
                     if (hist == null) {

@@ -59,7 +59,7 @@
 <table class="resultsTable">
     <tr>
         <c:forEach var="ci" items="${columnInfo}">
-            <th style="text-align:${ci.columnAlignment};width:${ci.columnWidthPercentage}%">${ci.columnName}</th>
+            <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%"><i:inline key=".${ci.name}"/></th>
         </c:forEach>
     </tr>
     <c:forEach var="rowData" items="${data}">

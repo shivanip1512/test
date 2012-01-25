@@ -37,15 +37,15 @@ public class ReportsController extends MultiActionController  {
     	// get report definition, model
         //-----------------------------------------------------------------------------------------
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true); // note we do actually load data
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext); // note we do actually load data
         
         // BASE
     	ModelAndView mav = baseHtmlExtView(reportDefinition, reportModel, request, response);
     	
         // data
         //-----------------------------------------------------------------------------------------
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
         
         mav.addObject("pureHtml", true);
@@ -60,8 +60,9 @@ public class ReportsController extends MultiActionController  {
     	// get report definition, model
         //-----------------------------------------------------------------------------------------
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, false); // note we don't actually load data, that is the job of jsonData()
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, false, userContext); // note we don't actually load data, that is the job of jsonData()
         
         // BASE
     	ModelAndView mav = baseHtmlExtView(reportDefinition, reportModel, request, response);
@@ -154,7 +155,7 @@ public class ReportsController extends MultiActionController  {
         //-----------------------------------------------------------------------------------------
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
         
         // column layout lists
         //-----------------------------------------------------------------------------------------
@@ -188,7 +189,7 @@ public class ReportsController extends MultiActionController  {
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
         
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
         
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition","filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".csv\"");
@@ -212,7 +213,7 @@ public class ReportsController extends MultiActionController  {
                 
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
         
         //force download of PDF
         response.setContentType("application/pdf");

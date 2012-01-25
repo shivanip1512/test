@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,11 +25,12 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LoadableModel;
+import com.cannontech.analysis.tablemodel.ReportModelMetaInfo;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -142,7 +143,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     /* (non-Javadoc)
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
-    public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap, boolean loadData) throws Exception {
+    public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap, boolean loadData, YukonUserContext userContext) throws Exception {
         
         BareReportModel reportModel = reportDefinition.createBean();
         
@@ -151,7 +152,12 @@ public class SimpleReportServiceImpl implements SimpleReportService {
 
         InputUtil.applyProperties(inputRoot, reportModel, parameterMap);
         
-        // if model instanceof LoadalbleModel, load it
+        // if model instanceof ReportModelMetaInfo, get meta info & set the user context.
+        if (reportModel instanceof ReportModelMetaInfo){
+            ((ReportModelMetaInfo)reportModel).getMetaInfo(userContext);
+        }
+        
+        // if model instanceof LoadalbleModel, load it.
         if(loadData && reportModel instanceof LoadableModel) {
             ((LoadableModel)reportModel).loadData();
         }

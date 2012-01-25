@@ -173,6 +173,22 @@
 <entry key="yukon.web.modules.survey.report.pdfReport.hoverText">Generate PDF report.</entry>
 <entry key="yukon.web.modules.survey.report.pdfReport.label">PDF</entry>
 
+<!-- COLUMN HEADERS -->
+<!-- Survey Results Summary Report -->
+<entry key="yukon.web.modules.survey.report.controlBegin">Control Begin</entry>
+<entry key="yukon.web.modules.survey.report.controlEnd">Control End</entry>
+<entry key="yukon.web.modules.survey.report.reason">Reason</entry>
+<entry key="yukon.web.modules.survey.report.numDevicesOverridden"># Devices Overridden</entry>
+<entry key="yukon.web.modules.survey.report.loadProgram">Load Program</entry>
+<entry key="yukon.web.modules.survey.report.gear">Gear</entry>
+<!-- Survey Results Detail Report -->
+<entry key="yukon.web.modules.survey.report.accountNum">Account #</entry>
+<entry key="yukon.web.modules.survey.report.serialNum">Serial #</entry>
+<entry key="yukon.web.modules.survey.report.altTrackingNum">Alt. Tracking #</entry>
+<entry key="yukon.web.modules.survey.report.scheduledDate">Scheduled Date</entry>
+<entry key="yukon.web.modules.survey.report.startDate">Start Date</entry>
+<entry key="yukon.web.modules.survey.report.endDate">End Date</entry>
+
 <!-- OPT OUT SURVEY ADMINISTRATION -->
 
 <entry key="yukon.web.modules.optOutSurvey.moduleName">Opt Out Survey Administration</entry>

@@ -7,9 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.survey.dao.SurveyDao;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
@@ -18,19 +24,24 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase<T> implements ReportModelMetaInfo {
-    protected YukonJdbcTemplate yukonJdbcTemplate;
-    protected DateFormattingService dateFormattingService;
-    protected SurveyDao surveyDao;
-    protected OptOutSurveyDao optOutSurveyDao;
-    protected LoadControlProgramDao loadControlProgramDao;
-    protected EnrollmentDao enrollmentDao;
-    protected AssignedProgramDao assignedProgramDao;
-    protected YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    @Autowired protected YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired protected DateFormattingService dateFormattingService;
+    @Autowired protected SurveyDao surveyDao;
+    @Autowired protected OptOutSurveyDao optOutSurveyDao;
+    @Autowired protected LoadControlProgramDao loadControlProgramDao;
+    @Autowired protected EnrollmentDao enrollmentDao;
+    @Autowired protected AssignedProgramDao assignedProgramDao;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired protected ProgramDao programDao;
+    @Autowired protected PaoDao paoDao;
+    @Autowired protected PaoAuthorizationService paoAuthorizationService;
+    
     // inputs
+    protected YukonUserContext userContext;
     protected int surveyId;
     protected int questionId;
     protected List<Integer> answerIds;
@@ -43,10 +54,25 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
     private final static MessageSourceResolvable unansweredReason =
         new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
 
-    
+    protected Iterable<Integer> getAuthorizedPrograms() {
+        Iterable<PaoIdentifier> paos;
+        if (programIds == null || programIds.isEmpty()) {
+            paos = programDao.getAllProgramPaoIdentifiers();
+        } else {
+            paos = paoDao.getPaoIdentifiersForPaoIds(programIds);
+        }
+
+        paos = paoAuthorizationService.filterAuthorized(userContext.getYukonUser(), paos,
+                        Permission.LM_VISIBLE);
+
+        Iterable<Integer> programIdsToUse = Iterables.transform(paos, PaoUtils.getYukonPaoToPaoIdFunction());
+        return programIdsToUse;
+    }
 
     @Override
     public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
+        // Save the user context for use by the report later. 
+        this.userContext = userContext; 
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
@@ -149,44 +175,4 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
         return unansweredReason;
     }
     
-    // DI Setters
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
-        this.optOutSurveyDao = optOutSurveyDao;
-    }
-
-    @Autowired
-    public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
-        this.loadControlProgramDao = loadControlProgramDao;
-    }
-
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
-    }
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
 }

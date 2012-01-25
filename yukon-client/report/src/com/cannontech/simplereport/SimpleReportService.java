@@ -40,7 +40,8 @@ public interface SimpleReportService {
     public abstract BareReportModel getReportModel(
             YukonReportDefinition<? extends BareReportModel> reportDefinition,
             Map<String, String> parameterMap,
-            boolean loadData) throws Exception;
+            boolean loadData,
+            YukonUserContext userContext) throws Exception;
     
     public BareReportModel getStringReportModel(final YukonReportDefinition<? extends BareReportModel> reportDefinition,
             final BareReportModel reportModel,

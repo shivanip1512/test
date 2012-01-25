@@ -5,9 +5,9 @@ import com.cannontech.analysis.report.ColumnLayoutData;
 public class SurveyResultsDetailReportLayoutData implements ReportLayoutData {
     private final static ColumnLayoutData[] bodyColumns =
         new ColumnLayoutData[] {
-            new ColumnLayoutData("Account #", "accountNumber", 70),
-            new ColumnLayoutData("Serial #", "serialNumber", 70),
-            new ColumnLayoutData("Alt. Tracking #", "altTrackingNumber", 70),
+            new ColumnLayoutData("Account Num", "accountNumber", 70),
+            new ColumnLayoutData("Serial Num", "serialNumber", 70),
+            new ColumnLayoutData("Alt Tracking Num", "altTrackingNumber", 90),
             new ColumnLayoutData("Reason", "reason", 100),
             new ColumnLayoutData("Scheduled Date", "scheduledDate", 85, "DATEHM"),
             new ColumnLayoutData("Start Date", "startDate", 85, "DATEHM"),

@@ -167,7 +167,7 @@ public class SurveyReportController {
         model.addAttribute("inputMap", inputMap);
 
         BareReportModel reportModel =
-            simpleReportService.getReportModel(reportDefinition, inputMap, true);
+            simpleReportService.getReportModel(reportDefinition, inputMap, true, userContext);
 
         ColumnLayoutData[] bodyColumns = reportDefinition.getReportLayoutData().getBodyColumns();
         List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);
