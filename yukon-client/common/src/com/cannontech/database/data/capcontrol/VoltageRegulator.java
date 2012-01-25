@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
-import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoCategory;
@@ -14,21 +13,16 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.service.PaoCreationService;
-import com.cannontech.common.pao.service.PaoTemplate;
-import com.cannontech.common.pao.service.PaoTemplatePart;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
+import com.cannontech.common.pao.pojo.CompleteRegulator;
+import com.cannontech.common.pao.service.impl.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
-import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MutableClassToInstanceMap;
 
 public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDevice{
     private List<VoltageRegulatorPointMapping> pointMappings;
@@ -81,17 +75,14 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     public void update() throws java.sql.SQLException {
         super.update();
         
-        Integer paoId = getCapControlPAOID();
+        PaoPersistenceService paoPersistenceService = YukonSpringHook.getBean(PaoPersistenceService.class);
         
-        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        YukonPaObjectFields paObjectFields = new YukonPaObjectFields(getPAOName());
-        YNBoolean disabled = (getDisableFlag().equals(CtiUtilities.trueChar)) ? YNBoolean.YES : YNBoolean.NO;
-        paObjectFields.setDisabled(disabled);
-        paoFields.put(YukonPaObjectFields.class, paObjectFields);
-        paoFields.put(VoltageRegulatorFields.class, new VoltageRegulatorFields(keepAliveTimer, keepAliveConfig));
+        CompleteRegulator regulator = paoPersistenceService.retreivePao(getPaoIdentifier(), CompleteRegulator.class);
+        regulator.setDisabled(CtiUtilities.trueChar.equals(getDisableFlag()));
+        regulator.setKeepAliveConfig(keepAliveConfig);
+        regulator.setKeepAliveTimer(keepAliveTimer);
         
-        PaoCreationService paoCreationService = YukonSpringHook.getBean(PaoCreationService.class);
-        paoCreationService.updatePao(paoId, new PaoTemplate(getPaoIdentifier().getPaoType(), paoFields));
+        paoPersistenceService.updatePao(regulator);
         
         //Point Mappings
         ExtraPaoPointAssignmentDao eppad = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
 import com.cannontech.capcontrol.creation.CapControlImporterHierarchyCsvField;
@@ -23,7 +24,7 @@ import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlImportException;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
@@ -31,6 +32,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao {
+    private static final Logger log = YukonLogManager.getLogger(CapControlImporterFileDaoImpl.class);
 	
 	private Map<CapControlImporterCbcCsvField, Integer> getCbcHeaderRowMap(final String[] headerRow) {
 		Map<CapControlImporterCbcCsvField, Integer> headerColumnMap = Maps.newHashMap();
@@ -223,10 +225,10 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		
 	        		cbcImportData.add(cbcData);
 	        	} catch (CapControlFileImporterException e) {
-	        		CTILogger.error(e.getMessage());
+	        		log.error(e.getMessage());
 	        		results.add(new CbcImportResult(cbcData, CbcImportResultType.MISSING_DATA));
 	        	} catch (CapControlImportException e) {
-	        	    CTILogger.error(e.getMessage());
+	        	    log.error(e.getMessage());
 	        	    results.add(new CbcImportResult(cbcData, CbcImportResultType.INVALID_TYPE));
 	        	}
 	        	finally {
@@ -269,7 +271,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		
 	        		hierarchyImportData.add(data);
 	        	} catch (CapControlHierarchyFileImporterException e) {
-	        		CTILogger.error(e.getMessage());
+	        		log.error(e.getMessage());
 	        		results.add(new HierarchyImportResult(data, HierarchyImportResultType.MISSING_DATA));
 	        	} finally {
 	        		line = csvReader.readNext();

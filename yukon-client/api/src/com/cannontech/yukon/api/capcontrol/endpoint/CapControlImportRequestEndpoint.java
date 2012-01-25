@@ -37,7 +37,7 @@ import com.google.common.collect.Lists;
 public class CapControlImportRequestEndpoint {
 	private static final Logger log = YukonLogManager.getLogger(CapControlImportRequestEndpoint.class);
 
-	private CapControlImportService capControlImportService;
+	private @Autowired CapControlImportService capControlImportService;
 	
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
@@ -418,10 +418,5 @@ public class CapControlImportRequestEndpoint {
 		}
 		
 		return data;
-	}
-	
-	@Autowired
-	public void setCapControlImportService(CapControlImportService capControlImportService) {
-		this.capControlImportService = capControlImportService;
 	}
 }

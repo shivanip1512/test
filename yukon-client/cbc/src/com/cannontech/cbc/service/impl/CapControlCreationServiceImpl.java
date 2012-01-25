@@ -3,83 +3,50 @@ package com.cannontech.cbc.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.capcontrol.dao.providers.fields.AreaFields;
-import com.cannontech.capcontrol.dao.providers.fields.CapBankFields;
-import com.cannontech.capcontrol.dao.providers.fields.CapbankAdditionalFields;
-import com.cannontech.capcontrol.dao.providers.fields.DeviceCbcFields;
-import com.cannontech.capcontrol.dao.providers.fields.FeederFields;
-import com.cannontech.capcontrol.dao.providers.fields.SpecialAreaFields;
-import com.cannontech.capcontrol.dao.providers.fields.SubstationBusFields;
-import com.cannontech.capcontrol.dao.providers.fields.SubstationFields;
-import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.service.PaoCreationService;
-import com.cannontech.common.pao.service.PaoTemplate;
-import com.cannontech.common.pao.service.PaoTemplatePart;
-import com.cannontech.common.pao.service.providers.fields.DeviceAddressFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceDirectCommSettingsFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceScanRateFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceWindowFields;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
-import com.cannontech.database.YNBoolean;
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.MutableClassToInstanceMap;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.pojo.CompleteCapBank;
+import com.cannontech.common.pao.pojo.CompleteCapControlArea;
+import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
+import com.cannontech.common.pao.pojo.CompleteCapControlSpecialArea;
+import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
+import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
+import com.cannontech.common.pao.pojo.CompleteCbcBase;
+import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
+import com.cannontech.common.pao.pojo.CompleteRegulator;
+import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
+import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
+import com.cannontech.common.pao.service.impl.PaoPersistenceService;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
 
-    private PaoCreationService paoCreationService;
+    private @Autowired PaoPersistenceService paoPersistenceService;
+    private @Autowired PaoDefinitionDao paoDefinitionDao;
 	
     @Override
     @Transactional
     public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId) {
-    	ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-    	
-		// Create and set-up the YukonPaObjectFields
-		paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(name));
-		paoFields.put(DeviceFields.class, new DeviceFields());
-		
-		// Set up the fields based on the CBC type.
-		switch (paoType) {
-			case CBC_7020:
-			case CBC_7022:
-			case CBC_7023:
-			case CBC_7024:
-			case CBC_8020:
-			case CBC_8024:
-			case CBC_DNP:
-			case DNP_CBC_6510:
-				paoFields.put(DeviceScanRateFields.class, new DeviceScanRateFields());
-				paoFields.put(DeviceWindowFields.class, new DeviceWindowFields());
-				paoFields.put(DeviceDirectCommSettingsFields.class, new DeviceDirectCommSettingsFields(portId));
-				
-				if (paoType != PaoType.DNP_CBC_6510) {
-					paoFields.put(DeviceCbcFields.class, new DeviceCbcFields());
-				}
-				
-				paoFields.put(DeviceAddressFields.class, new DeviceAddressFields());
-				
-				break;
-
-			case CBC_7010:
-			case CBC_7011:
-			case CBC_7012:
-			case CBC_EXPRESSCOM:
-			case CBC_FP_2800:
-			case CAPBANKCONTROLLER:
-				paoFields.put(DeviceCbcFields.class, new DeviceCbcFields());
-				
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Import of " + name + " failed. Unknown CBC Type: " + paoType.getDbString());
-		}
-		
-        PaoTemplate paoTemplate = new PaoTemplate(paoType, paoFields);
+        CompleteCbcBase cbc;
         
-        return paoCreationService.createPao(paoTemplate);
+        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
+            cbc = new CompleteOneWayCbc();
+        } else if (paoDefinitionDao.isTagSupported(paoType, PaoTag.TWO_WAY_DEVICE)) {
+            cbc = new CompleteTwoWayCbc();
+            CompleteTwoWayCbc twoWayCbc = (CompleteTwoWayCbc)cbc;
+            twoWayCbc.setPortId(portId);
+        } else {
+            throw new IllegalArgumentException("Import of " + name + " failed. Unknown CBC Type: " + paoType.getDbString());
+        }
+        
+        cbc.setDisabled(disabled);
+        cbc.setPaoName(name);
+        
+        paoPersistenceService.createPao(cbc, paoType);
+        
+        return cbc.getPaoIdentifier();
     }
     
     @Override
@@ -111,59 +78,46 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	private PaoIdentifier createHierarchyObject(PaoType paoType, String name, boolean disabled) {
-		ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-		
-		// Create and set-up the YukonPaObjectFields
-		YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(name);
-		yukonPaObjectFields.setDisabled(YNBoolean.valueOf(disabled));
-		paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
-		
-		switch (paoType) {
-		case CAP_CONTROL_AREA:
-			paoFields.put(AreaFields.class, new AreaFields());
-			break;
-		case CAP_CONTROL_SPECIAL_AREA:
-			paoFields.put(SpecialAreaFields.class, new SpecialAreaFields());
-			break;
-		case CAP_CONTROL_SUBSTATION:
-			paoFields.put(SubstationFields.class, new SubstationFields());
-			break;
-		case CAP_CONTROL_SUBBUS:
-			paoFields.put(SubstationBusFields.class, new SubstationBusFields());
-			break;
-		case CAP_CONTROL_FEEDER:
-			paoFields.put(FeederFields.class, new FeederFields());
-			break;
-		case CAPBANK:
-			paoFields.put(CapBankFields.class, new CapBankFields());
-			paoFields.put(DeviceFields.class, new DeviceFields());
-			paoFields.put(CapbankAdditionalFields.class, new CapbankAdditionalFields());
-			break;	
-		default:
-			throw new IllegalArgumentException("Creation of hierarchy object " + name + " failed. Unknown type: " + paoType.getDbString());
-		}
-		
-        PaoTemplate paoTemplate = new PaoTemplate(paoType, paoFields);
-        
-        return paoCreationService.createPao(paoTemplate);
+	    CompleteYukonPaObject pao;
+	    
+	    switch(paoType) {
+	    case CAP_CONTROL_AREA:
+            pao = new CompleteCapControlArea();
+            break;
+        case CAP_CONTROL_SPECIAL_AREA:
+            pao = new CompleteCapControlSpecialArea();
+            break;
+        case CAP_CONTROL_SUBSTATION:
+            pao = new CompleteCapControlSubstation();
+            break;
+        case CAP_CONTROL_SUBBUS:
+            pao = new CompleteCapControlSubstationBus();
+            break;
+        case CAP_CONTROL_FEEDER:
+            pao = new CompleteCapControlFeeder();
+            break;
+        case CAPBANK:
+            pao = new CompleteCapBank();
+            break;  
+        default:
+            throw new IllegalArgumentException("Creation of hierarchy object " + name + " failed. Unknown type: " + paoType.getDbString());
+	    }
+	    
+	    pao.setPaoName(name);
+	    pao.setDisabled(disabled);
+	    
+	    paoPersistenceService.createPao(pao, paoType);
+	    
+	    return pao.getPaoIdentifier();
 	}
 	
 	private PaoIdentifier createRegulator(PaoType paoType, String name, boolean disabled) {
-		YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(name);
-		yukonPaObjectFields.setDisabled(YNBoolean.valueOf(disabled));
-	    VoltageRegulatorFields voltageRegulatorFields = new VoltageRegulatorFields(0,0);
-
-	    ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-	    paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
-	    paoFields.put(VoltageRegulatorFields.class, voltageRegulatorFields);
-
-	    PaoTemplate paoTemplate = new PaoTemplate(paoType, paoFields);
-        
-        return paoCreationService.createPao(paoTemplate);
-    }
-	
-	@Autowired
-	public void setPaoCreationService(PaoCreationService paoCreationService) {
-        this.paoCreationService = paoCreationService;
+	    CompleteRegulator regulator = new CompleteRegulator();
+	    regulator.setPaoName(name);
+	    regulator.setDisabled(disabled);
+	    
+	    paoPersistenceService.createPao(regulator, paoType);
+	    
+	    return regulator.getPaoIdentifier();
     }
 }

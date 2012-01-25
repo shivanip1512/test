@@ -9,29 +9,19 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.device.DeviceScanType;
-import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
-import com.cannontech.common.pao.service.providers.fields.DeviceAddressFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceScanRateFields;
-import com.cannontech.common.pao.service.providers.fields.DeviceWindowFields;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -161,116 +151,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         searchResult.setBounds(start, count, orphanCount);
 
         return searchResult;
-    }
-
-    @Override
-    public DeviceFields getDeviceData(PaoIdentifier paoIdentifier) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-
-        sql.append("SELECT AlarmInhibit, ControlInhibit");
-        sql.append("FROM Device");
-        sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
-
-        YukonRowMapper<DeviceFields> deviceRowMapper = new YukonRowMapper<DeviceFields>() {
-            public DeviceFields mapRow(YukonResultSet rs) throws SQLException {
-                DeviceFields deviceFields = new DeviceFields();
-
-                deviceFields.setAlarmInhibit(YNBoolean.valueOf(rs.getString("AlarmInhibit")));
-                deviceFields.setControlInhibit(YNBoolean.valueOf(rs.getString("ControlInhibit")));
-
-                return deviceFields;
-            }
-        };
-
-        DeviceFields deviceFields = yukonJdbcTemplate.queryForObject(sql, deviceRowMapper);
-
-        return deviceFields;
-    }
-
-    @Override
-    public DeviceScanRateFields getDeviceScanRateData(PaoIdentifier paoIdentifier) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-
-        sql.append("SELECT ScanType, IntervalRate, ScanGroup, AlternateRate");
-        sql.append("FROM DeviceScanRate");
-        sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
-
-        YukonRowMapper<DeviceScanRateFields> scanRateRowMapper =
-            new YukonRowMapper<DeviceScanRateFields>() {
-                public DeviceScanRateFields mapRow(YukonResultSet rs) throws SQLException {
-                    DeviceScanRateFields scanRateFields = new DeviceScanRateFields();
-
-                    scanRateFields.setAlternateRate(rs.getInt("AlternateRate"));
-                    scanRateFields.setIntervalRate(rs.getInt("IntervalRate"));
-                    scanRateFields.setScanGroup(rs.getInt("ScanGroup"));
-                    scanRateFields.setScanType(DeviceScanType.getForDbString(rs
-                        .getString("ScanType")));
-
-                    return scanRateFields;
-                }
-            };
-
-        DeviceScanRateFields scanRateFields =
-            yukonJdbcTemplate.queryForObject(sql, scanRateRowMapper);
-
-        return scanRateFields;
-    }
-
-    @Override
-    public DeviceWindowFields getDeviceWindowData(PaoIdentifier paoIdentifier) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-
-        sql.append("SELECT Type, WinOpen, WinClose, AlternateOpen, AlternateClose");
-        sql.append("FROM DeviceWindow");
-        sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
-
-        YukonRowMapper<DeviceWindowFields> windowFieldsRowMapper =
-            new YukonRowMapper<DeviceWindowFields>() {
-                @Override
-                public DeviceWindowFields mapRow(YukonResultSet rs) throws SQLException {
-                    DeviceWindowFields windowFields = new DeviceWindowFields();
-
-                    windowFields.setAlternateClose(rs.getInt("AlternateClose"));
-                    windowFields.setAlternateOpen(rs.getInt("AlternateOpen"));
-                    windowFields.setType(DeviceWindowType.getForDbString(rs.getString("Type")));
-                    windowFields.setWindowClose(rs.getInt("WinClose"));
-                    windowFields.setWindowOpen(rs.getInt("WinOpen"));
-
-                    return windowFields;
-                }
-            };
-
-        DeviceWindowFields windowFields =
-            yukonJdbcTemplate.queryForObject(sql, windowFieldsRowMapper);
-
-        return windowFields;
-    }
-
-    @Override
-    public DeviceAddressFields getDeviceAddressData(PaoIdentifier paoIdentifier) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-
-        sql.append("SELECT MasterAddress, SlaveAddress, PostCommWait");
-        sql.append("FROM DeviceAddress");
-        sql.append("WHERE DeviceID").eq(paoIdentifier.getPaoId());
-
-        YukonRowMapper<DeviceAddressFields> addressRowMapper =
-            new YukonRowMapper<DeviceAddressFields>() {
-                @Override
-                public DeviceAddressFields mapRow(YukonResultSet rs) throws SQLException {
-                    DeviceAddressFields addressFields = new DeviceAddressFields();
-
-                    addressFields.setMasterAddress(rs.getInt("MasterAddress"));
-                    addressFields.setPostCommWait(rs.getInt("PostCommWait"));
-                    addressFields.setSlaveAddress(rs.getInt("SlaveAddress"));
-
-                    return addressFields;
-                }
-            };
-
-        DeviceAddressFields addressFields = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
-
-        return addressFields;
     }
     
     @Autowired

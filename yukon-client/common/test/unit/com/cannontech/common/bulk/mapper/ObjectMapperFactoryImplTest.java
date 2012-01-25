@@ -16,7 +16,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -357,12 +356,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public Map<String, PaoIdentifier> findPaoIdentifiersByName(Iterable<String> names) {
             throw new UnsupportedOperationException("Method not implemented");
         }
-
-		@Override
-		public YukonPaObjectFields getYukonPaObjectData(PaoIdentifier paoIdentifier, String name) {
-			throw new UnsupportedOperationException("Method not implemented");
-		}
-
+        
 		@Override
 		public YukonPao findYukonPao(String paoName, PaoType paoType) {
 			throw new UnsupportedOperationException("Method not implemented");

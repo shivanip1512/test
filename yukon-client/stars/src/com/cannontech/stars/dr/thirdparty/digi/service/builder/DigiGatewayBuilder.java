@@ -16,36 +16,29 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.service.PaoCreationService;
-import com.cannontech.common.pao.service.PaoTemplate;
-import com.cannontech.common.pao.service.PaoTemplatePart;
-import com.cannontech.common.pao.service.providers.fields.DeviceFields;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
+import com.cannontech.common.pao.pojo.CompleteDigiGateway;
+import com.cannontech.common.pao.service.impl.PaoPersistenceService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.thirdparty.digi.dao.provider.fields.DigiGatewayFields;
-import com.cannontech.thirdparty.digi.dao.provider.fields.ZigbeeGatewayFields;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
-import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.MutableClassToInstanceMap;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     private Logger log = YukonLogManager.getLogger(DigiGatewayBuilder.class);
     
-    private GatewayDeviceDao gatewayDeviceDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
-    private AttributeService attributeService;
-    private PaoCreationService paoCreationService;
-    private ZigbeeWebService zigbeeWebService;
+    private @Autowired PaoPersistenceService paoPersistenceService;
+    private @Autowired GatewayDeviceDao gatewayDeviceDao;
+    private @Autowired StarsInventoryBaseDao starsInventoryBaseDao;
+    private @Autowired AttributeService attributeService;
+    private @Autowired ZigbeeWebService zigbeeWebService;
     
     @Override
     public void retrieveDevice(Hardware hardware) {
@@ -72,25 +65,17 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(Hardware hardware) {
-        //Build up all the fields for inserting a digiGateway.
-        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardware.getSerialNumber());
-        DigiGatewayFields digiGatewayFields = buildDigiGatewayFields(hardware);
-        ZigbeeGatewayFields zigbeeGatewayFields = buildZigbeeGatewayFields(hardware);
+        CompleteDigiGateway digiGateway = new CompleteDigiGateway();
+        digiGateway.setPaoName(hardware.getSerialNumber());
+        digiGateway.setDigiId(hardware.getCommissionedId());
+        digiGateway.setFirmwareVersion(hardware.getFirmwareVersion());
+        digiGateway.setMacAddress(hardware.getMacAddress());
         
-        //Build Template and call Pao Creation Service
-        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        paoFields.put(DigiGatewayFields.class, digiGatewayFields);
-        paoFields.put(ZigbeeGatewayFields.class, zigbeeGatewayFields);
-        paoFields.put(DeviceFields.class, new DeviceFields());
-        paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
-        
-        PaoTemplate paoTemplate = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);
-        
-        PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
+        paoPersistenceService.createPao(digiGateway, PaoType.DIGIGATEWAY);
         
         //Update the Stars table with the device id
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
-                                                                                 paoIdentifier.getPaoId());
+                                                          digiGateway.getPaoIdentifier().getPaoId());
     }
 
     @Override
@@ -108,7 +93,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Override
     @Transactional
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {   
-        paoCreationService.deletePao(pao.getPaoIdentifier());
+        paoPersistenceService.deletePao(pao.getPaoIdentifier());
     }
 
     @Override
@@ -142,61 +127,19 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-        ClassToInstanceMap<PaoTemplatePart> paoFields = MutableClassToInstanceMap.create();
-        paoFields.put(YukonPaObjectFields.class, new YukonPaObjectFields(hardware.getSerialNumber()));
-        paoFields.put(DeviceFields.class, new DeviceFields());
-        paoFields.put(DigiGatewayFields.class, buildDigiGatewayFields(hardware));
-        paoFields.put(ZigbeeGatewayFields.class, buildZigbeeGatewayFields(hardware));
+        PaoIdentifier digiIdentifier = new PaoIdentifier(hardware.getDeviceId(), PaoType.DIGIGATEWAY);
+        CompleteDigiGateway digiGateway = paoPersistenceService.retreivePao(digiIdentifier, CompleteDigiGateway.class);
         
-        PaoTemplate template = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);
+        digiGateway.setDigiId(hardware.getCommissionedId());
+        if (hardware.getFirmwareVersion() != null) {
+            digiGateway.setFirmwareVersion(hardware.getFirmwareVersion());
+        }
+        if (hardware.getMacAddress() != null) {
+            digiGateway.setMacAddress(hardware.getMacAddress());
+        }
         
-        paoCreationService.updatePao(hardware.getDeviceId(), template);
+        paoPersistenceService.updatePao(digiGateway);
         
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
     }
-
-    private DigiGatewayFields buildDigiGatewayFields(Hardware hardware) {
-        DigiGatewayFields fields = new DigiGatewayFields();
-
-        //The DigiId is set later after we commission the device on Digi
-        //Default to the value in hardwareDto
-        fields.setDigiId(hardware.getCommissionedId());
-        
-        return fields;
-    }    
-    
-    private ZigbeeGatewayFields buildZigbeeGatewayFields(Hardware hardware) {
-    	ZigbeeGatewayFields fields = new ZigbeeGatewayFields();
-    	
-    	fields.setFirmwareVersion(hardware.getFirmwareVersion());
-    	fields.setMacAddress(hardware.getMacAddress());
-    	
-    	return fields;
-    }
-    
-    @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setPaoCreationService(PaoCreationService paoCreationService) {
-        this.paoCreationService = paoCreationService;
-    }
-
-    @Autowired
-    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
-        this.zigbeeWebService = zigbeeWebService;
-    }
-
 }

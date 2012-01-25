@@ -48,8 +48,9 @@ public enum PaoTag {
 	ROUTE_ENCRYPTION("Supports Route Encryption"),
 	THREE_PHASE_VOLTAGE("Supports Three Phase Voltage"),
 	THREE_PHASE_CURRENT("Supports Three Phase Current"),
-	PAO_CREATION_SERVICE("PAO Creation Service Compatible", stringType()),
 	RFN_EVENTS("Supports Rfn Events"),
+	ONE_WAY_DEVICE("Supports One-Way Communication"),
+	TWO_WAY_DEVICE("Supports Two-Way Communication"),
 	;
 
 	private final String description;

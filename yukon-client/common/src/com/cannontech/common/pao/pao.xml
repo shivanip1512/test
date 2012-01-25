@@ -8,7 +8,7 @@
         This file defines beans that live under the com.cannontech.common.pao package.
     </description>
 
-    <bean id="paoCreationService" class="com.cannontech.common.pao.service.impl.PaoCreationServiceImpl"/>
+    <bean class="com.cannontech.common.pao.service.impl.PaoPersistenceServiceImpl"/>
     
     <bean class="com.cannontech.common.pao.service.providers.YukonPaObjectProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.YukonDeviceProvider"/>
@@ -17,7 +17,7 @@
     <bean class="com.cannontech.common.pao.service.providers.DeviceScanRateProvider"/>
     <bean class="com.cannontech.common.pao.service.providers.DeviceWindowProvider"/>
     
-    <bean id="paoCreationHelper" class="com.cannontech.common.pao.service.impl.PaoCreationHelper"/>
-    <bean id="paoSelectionDao" class="com.cannontech.common.pao.dao.impl.PaoSelectionDaoImpl"/>
-    <bean id="paoSelectionService" class="com.cannontech.common.pao.service.impl.PaoSelectionServiceImpl"/>
+    <bean class="com.cannontech.common.pao.service.impl.PaoCreationHelper"/>
+    <bean class="com.cannontech.common.pao.dao.impl.PaoSelectionDaoImpl"/>
+    <bean class="com.cannontech.common.pao.service.impl.PaoSelectionServiceImpl"/>
 </beans>

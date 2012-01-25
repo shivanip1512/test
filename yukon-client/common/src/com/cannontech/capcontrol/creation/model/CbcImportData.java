@@ -9,12 +9,12 @@ public class CbcImportData {
 	private final PaoType cbcType;
 	private String capBankName;
 	private final String commChannel;
-	private String scanEnabled;
+	private String scanEnabled; // Unused
 	private final int cbcSerialNumber;
 	private final int masterAddress;
 	private final int slaveAddress;
-	private int scanInterval;
-	private int altInterval;
+	private Integer scanInterval;
+	private Integer altInterval;
 	private final ImportAction importAction;
 	
 	public CbcImportData(String cbcName, ImportAction importAction, PaoType cbcType, String commChannel, 
@@ -70,7 +70,7 @@ public class CbcImportData {
 		return slaveAddress;
 	}
 	
-	public int getScanInterval() {
+	public Integer getScanInterval() {
 		return scanInterval;
 	}
 	
@@ -78,7 +78,7 @@ public class CbcImportData {
 		this.scanInterval = scanInterval;
 	}
 	
-	public int getAltInterval() {
+	public Integer getAltInterval() {
 		return altInterval;
 	}
 	
@@ -109,4 +109,12 @@ public class CbcImportData {
 	public void setScanEnabled(String scanEnabled) {
 		this.scanEnabled = scanEnabled;
 	}
+
+    public void setScanInterval(Integer scanInterval) {
+        this.scanInterval = scanInterval;
+    }
+
+    public void setAltInterval(Integer altInterval) {
+        this.altInterval = altInterval;
+    }
 }

@@ -28,7 +28,6 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -39,7 +38,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -753,34 +751,4 @@ public final class PaoDaoImpl implements PaoDao {
 
     	return result;
     }
-
-	@Override
-	public YukonPaObjectFields getYukonPaObjectData(PaoIdentifier paoIdentifier, String paoName) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("SELECT Description, DisableFlag, PAOStatistics");
-		sql.append("FROM YukonPAObject");
-		sql.append("WHERE PAObjectID").eq(paoIdentifier.getPaoId());
-		
-		YukonRowMapper<YukonPaObjectFields> paoRowMapper = new YukonRowMapper<YukonPaObjectFields>() {
-			@Override
-			public YukonPaObjectFields mapRow(YukonResultSet rs) throws SQLException {
-				YukonPaObjectFields paObjectFields = new YukonPaObjectFields(null); // Set name after?
-				
-				YNBoolean disabled = YNBoolean.valueOf(rs.getString("DisableFlag"));
-						
-				paObjectFields.setDisabled(disabled);
-				paObjectFields.setDescription(rs.getString("Description"));
-				paObjectFields.setStatistics(rs.getString("PAOStatistics"));
-				
-				return paObjectFields;
-			}
-		};
-		
-		YukonPaObjectFields paObjectFields = yukonJdbcTemplate.queryForObject(sql, paoRowMapper);
-		
-		paObjectFields.setName(paoName);
-		
-		return paObjectFields;
-	}
 }

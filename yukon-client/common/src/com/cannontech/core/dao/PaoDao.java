@@ -9,7 +9,6 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -195,6 +194,4 @@ public interface PaoDao {
      * Returns true if the name is available for the PAO type's PAO class and PAO category
      */
     public boolean isNameAvailable(String paoName, PaoType paoType);
-    
-    public YukonPaObjectFields getYukonPaObjectData(PaoIdentifier paoIdentifier, String paoName);
 }

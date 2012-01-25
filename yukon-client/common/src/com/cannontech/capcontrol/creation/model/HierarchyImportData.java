@@ -1,17 +1,16 @@
 package com.cannontech.capcontrol.creation.model;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 	
 public class HierarchyImportData {
 	
 	private final PaoType paoType;
 	private final String name;
 	private final ImportAction importAction;
-	private String parent = null;
-	private String description = CtiUtilities.STRING_DASH_LINE;
-	private String mapLocationId = "0";
-	private boolean disabled = false;
+	private String parent;
+	private String description;
+	private String mapLocationId;
+	private Boolean disabled;
 	
 	public HierarchyImportData(PaoType paoType, String name, ImportAction importAction) {
 	    this.paoType = paoType;
