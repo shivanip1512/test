@@ -12,54 +12,34 @@
 <cti:msg var="mustSelect" key="yukon.dr.consumer.allThermostats.mustSelect" />
 <script>
 
-    var currentType = null;
-
-    function checkboxChanged(box, thermostatId, type){
+    //INIT
+    jQuery(function(){
+        jQuery(document).delegate(".f_thermostatSelectionChanged", 'change', thermostatSelectionChanged);
+        thermostatSelect(jQuery("input[data-thermostat-type]:checked")[0]);
+    });
     
-        if(currentType == null) {
-            currentType = type;
-        } else if(currentType != type) {
-            // Cannot check thermostats of different type
-        
-            alert('${twoTypes}');
-            
-            // Uncheck checkbox and return
-            $(box).checked = null;
-            return;
-        }
+    function thermostatSelectionChanged(event){
+        thermostatSelect(event.currentTarget);
+    };
     
-        var checked = $F(box) == 'on';
+    function thermostatSelect(elem){
+        var target = jQuery(elem);
+        var checkedElements = jQuery("input[data-thermostat-type]:checked");
         
-        var currentIds = $F('thermostatIds')
-        if(currentIds == null || currentIds == '') {
-            currentIds = new Array();
-        } else {
-            currentIds = currentIds.split(',');
+        if(checkedElements.length){
+            jQuery('input[data-thermostat-type][data-thermostat-type!="'+ target.attr("data-thermostat-type") +'"]').attr("disabled", true);
+            jQuery("input:submit").removeAttr("disabled");
+        }else{
+            jQuery("input[data-thermostat-type]").removeAttr("disabled");
+            jQuery("input:submit").attr("disabled", true);
         }
         
-        if(checked) {
-            currentIds[currentIds.length] = thermostatId;
-        } else {
-            currentIds = currentIds.without(thermostatId);
-        }
-        
-        if(currentIds.length == 0) {
-            currentType = null;
-        }
-        
-        $('thermostatIds').value = currentIds.join();
-        
-    }
-    
-     function checkSelected() {
-        if($F('thermostatIds').blank()) {
-            alert('${mustSelect}');
-            return false;
-        } else {
-            return true;
-        }
-     }
-
+        var currentIds = [];
+        jQuery(checkedElements).each(function(){
+            currentIds.push(this.value);
+        });
+        jQuery('#thermostatIds').val(currentIds.join());
+    };
 </script>
 
     <h3>
@@ -88,7 +68,7 @@
                 <c:forEach var="thermostat" items="${thermostats}">
                     <tr>
                         <td>
-                            <input type="checkbox" onclick="checkboxChanged(this, ${thermostat.id}, '${thermostat.type}')" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
+                            <input type="checkbox" data-thermostat-type="${thermostat.type}" value="${thermostat.id}" class="f_thermostatSelectionChanged" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
                         </td>
                         <td style="text-align: left; padding-left: 10px;">
                             <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
