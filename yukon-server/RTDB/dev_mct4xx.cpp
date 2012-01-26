@@ -276,7 +276,7 @@ unsigned char Mct4xxDevice::crc8( const unsigned char *buf, unsigned int len )
 }
 
 
-Mct4xxDevice::point_info Mct4xxDevice::getAccumulatorData(const unsigned char *buf, unsigned len, const unsigned char *freeze_counter) const
+Mct4xxDevice::point_info Mct4xxDevice::decodePulseAccumulator(const unsigned char *buf, unsigned len, const unsigned char *freeze_counter)
 {
     return freeze_counter ?
         getData(buf, len, ValueType_FrozenAccumulator) :
@@ -298,7 +298,7 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const 
         error_code = error_code << 8 | buf[i];
     }
 
-    retval.freeze_bit = value & 0x01;
+    retval.freeze_bit = 0;
 
     switch( vt )
     {
@@ -309,8 +309,6 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const 
             {
                 return getDataError(error_code, error_codes);
             }
-
-            value &= ~0x01; // clear the low bit
 
             break;
         }

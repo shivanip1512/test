@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "cmd_mct410_hourlyRead.h"
-#include "dev_mct4xx.h"
+#include "dev_mct410.h"
 
 #include "ctidate.h"
 #include "dsm2err.h"
@@ -119,7 +119,7 @@ DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const payload_
 
 
 //  throws CommandException
-CtiDeviceSingle::point_info Mct410HourlyReadCommand::extractMidnightKwh(const payload_t &payload) const
+Mct410Device::point_info Mct410HourlyReadCommand::extractMidnightKwh(const payload_t &payload) const
 {
     //  we have to manually check this here because we're using Mct4xxDevice::getData(), which only knows pointers
     if( payload.size() < 13 )
@@ -131,9 +131,9 @@ CtiDeviceSingle::point_info Mct410HourlyReadCommand::extractMidnightKwh(const pa
 }
 
 
-CtiDeviceSingle::point_info Mct410HourlyReadCommand::getAccumulatorData(const unsigned char *buf, const unsigned len) const
+Mct410Device::point_info Mct410HourlyReadCommand::getAccumulatorData(const unsigned char *buf, const unsigned len) const
 {
-    return Mct4xxDevice::getData(buf, len, Mct4xxDevice::ValueType_Accumulator);
+    return Mct410Device::decodePulseAccumulator(buf, len, 0);
 }
 
 

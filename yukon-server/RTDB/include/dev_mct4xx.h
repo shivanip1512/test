@@ -222,9 +222,10 @@ protected:
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const = 0;
 
     //  overridden by the 410, 420, and 470 so they can use the same peak/TOU decode function
-    virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter = 0) const = 0;
-    //  overridden by the 420
-    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter = 0) const;
+    virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const = 0;
+    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const = 0;
+
+    static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len) = 0;

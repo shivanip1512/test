@@ -195,6 +195,7 @@ protected:
     };
 
     virtual point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
+    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
 
     point_info getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const;
 
@@ -516,6 +517,8 @@ public:
     virtual void changeDeviceConfig(Config::DeviceConfigSPtr config);
 
     virtual void DecodeDatabaseReader(RowReader &rdr);
+
+    static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 };
 
 }

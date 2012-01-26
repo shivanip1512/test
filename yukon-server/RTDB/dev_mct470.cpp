@@ -864,6 +864,26 @@ Mct470Device::point_info Mct470Device::getDemandData(const unsigned char *buf, c
     return getData(buf, len, ValueType_PulseDemand);
 }
 
+
+Mct470Device::point_info Mct470Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+{
+    return decodePulseAccumulator(buf, len, freeze_counter);
+}
+
+
+Mct470Device::point_info Mct470Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
+{
+    point_info pi = Mct4xxDevice::decodePulseAccumulator(buf, len, freeze_counter);
+
+    const long value = static_cast<long>(pi.value);
+
+    pi.freeze_bit  = value &  0x01;
+    pi.value       = value & ~0x01;
+
+    return pi;
+}
+
+
 Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const
 {
     PointQuality_t quality = NormalQuality;
@@ -3589,7 +3609,7 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
                         InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                     {
                         //  normal KWH read, nothing too special
-                        pi = getAccumulatorData(DSt->Message + offset, 3);
+                        pi = getAccumulatorData(DSt->Message + offset, 3, 0);
                     }
                     else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                     {

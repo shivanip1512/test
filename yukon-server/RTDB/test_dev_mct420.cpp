@@ -1,5 +1,8 @@
 #include "dev_mct420.h"
 #include "devicetypes.h"
+#include "pt_analog.h"
+#include "pt_accum.h"
+#include "pt_status.h"
 #include "utility.h"  //  for delete_container
 
 #define BOOST_TEST_MAIN
@@ -26,6 +29,10 @@ struct test_Mct420Device : Mct420Device
 
     using Mct4xxDevice::getUsageReportDelay;
 
+    using Mct420Device::executeGetValue;
+
+    using Mct420Device::decodeGetValueDailyRead;
+
     using Mct420Device::decodeDisconnectConfig;
     using Mct420Device::decodeDisconnectStatus;
     using Mct420Device::isProfileTablePointerCurrent;
@@ -42,8 +49,71 @@ struct test_Mct420Device : Mct420Device
         {
             case test_Feature_DisconnectCollar: return isSupported(Feature_DisconnectCollar);
             case test_Feature_HourlyKwh:        return isSupported(Feature_HourlyKwh);
-            default:  return false;  //  to eliminate compile warning C4715
         }
+
+        return false;
+    }
+
+    typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
+    typedef std::map<CtiPointType_t, PointOffsetMap> PointTypeOffsetMap;
+
+    PointTypeOffsetMap points;
+
+    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type)
+    {
+        CtiPointSPtr point = points[type][offset];
+
+        if( point )
+        {
+            return point;
+        }
+
+        unsigned point_count = 0;
+
+        for each( const std::pair<CtiPointType_t, PointOffsetMap> &p in points )
+        {
+            point_count += p.second.size();
+        }
+
+        switch( type )
+        {
+            case AnalogPointType:
+            {
+                Test_CtiPointAnalog *analog = new Test_CtiPointAnalog();
+                analog->setPointOffset(offset);
+                analog->setDeviceID(reinterpret_cast<long>(&points));
+                analog->setID(point_count);
+                analog->setMultiplier(1);
+                analog->setDataOffset(0);
+                point.reset(analog);
+            }
+            break;
+
+            case PulseAccumulatorPointType:
+            case DemandAccumulatorPointType:
+            {
+                Test_CtiPointAccumulator *accumulator = new Test_CtiPointAccumulator();
+                accumulator->setPointOffset(offset);
+                accumulator->setDeviceID(reinterpret_cast<long>(&points));
+                accumulator->setID(point_count);
+                accumulator->setMultiplier(1);
+                accumulator->setDataOffset(0);
+                point.reset(accumulator);
+            }
+            break;
+
+            case StatusPointType:
+            {
+                Test_CtiPointStatus *status = new Test_CtiPointStatus();
+                status->setPointOffset(offset);
+                status->setDeviceID(reinterpret_cast<long>(&points));
+                status->setID(point_count);
+                point.reset(status);
+            }
+            break;
+        }
+
+        return point;
     }
 };
 
@@ -227,13 +297,13 @@ BOOST_AUTO_TEST_CASE(test_dev_mct420_decodeDisconnectStatus)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_getMct4xxAccumulatorData)
+BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
 {
     unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
 
     CtiDeviceSingle::point_info pi;
 
-    pi = Mct420Device::getMct420AccumulatorData(kwh_read, 3);
+    pi = Mct420Device::decodePulseAccumulator(kwh_read, 3, 0);
 
     BOOST_CHECK_EQUAL( pi.value,      512 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -241,7 +311,7 @@ BOOST_AUTO_TEST_CASE(test_getMct4xxAccumulatorData)
 
     kwh_read[2] = 0x01;
 
-    pi = Mct420Device::getMct420AccumulatorData(kwh_read, 3);
+    pi = Mct420Device::decodePulseAccumulator(kwh_read, 3, 0);
 
     BOOST_CHECK_EQUAL( pi.value,      513 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -409,6 +479,833 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
+
+struct getvalueDailyReads_helper : beginExecuteRequest_helper
+{
+    test_Mct420CL mct420;
+    OUTMESS *om;
+
+    getvalueDailyReads_helper()
+    {
+        om = new OUTMESS;
+    }
+
+    ~getvalueDailyReads_helper()
+    {
+        delete om;
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_0kwh)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            //  The rest are initialized to 0
+            im.Buffer.DSt.Message[2] = 0x01;
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 6 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
+                }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_underflow)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00 };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 6 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), OverflowQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), OverflowQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), OverflowQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 1.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 3.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
+                }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_normal_deltas)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05 };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 6 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 243 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 248 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 252 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 255 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 257 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 258 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
+                }
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_bad_first_kwh)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x3f, 0xfa, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04 };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 5 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 248 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 252 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 255 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 257 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 258 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_bad_first_delta)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x3f, 0xfa, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04 };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 5 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 248 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 252 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 255 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 257 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 258 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_large_deltas)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x01, 0x00, 0x00, 0x3f, 0x9f, 0x3f, 0xa0, 0x3f, 0xa1, 0x3f, 0xfa, 0x3f, 0xff };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 3 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 32961 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 49249 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 65536 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
+                }
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_all_deltas_bad)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x00, 0x01, 0x02, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 1 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 258 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
+                }
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_all_bad)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0xff, 0xff, 0xfa };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            BOOST_CHECK_EQUAL( points.size(), 0 );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_daily_reads_all_bad_but_last)
+    {
+        CtiTime timenow;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x3f, 0xfa, 0x12, 0x34, 0x56 };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 1 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0x123456 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+            }
+        }
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()

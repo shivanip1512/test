@@ -7,9 +7,9 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-CtiDeviceSingle::point_info Mct420HourlyReadCommand::getAccumulatorData(const unsigned char *buf, const unsigned len) const
+Mct420Device::point_info Mct420HourlyReadCommand::getAccumulatorData(const unsigned char *buf, const unsigned len) const
 {
-    return Mct420Device::getMct420AccumulatorData(buf, len);
+    return Mct420Device::decodePulseAccumulator(buf, len, 0);
 }
 
 }

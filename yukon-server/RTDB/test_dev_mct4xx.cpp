@@ -17,6 +17,8 @@ struct test_Mct4xxDevice : Mct4xxDevice
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
     point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
+    point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
     point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
     long getLoadProfileInterval(unsigned channel)
@@ -75,8 +77,8 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 
     pi = dev.getData_FrozenAccumulator(kwh_read, 3);
 
-    BOOST_CHECK_EQUAL( pi.value,      256 ); // Still should be 256, we round down!
-    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.value,      257 );  //  we don't round or set the freeze bit by default
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
 
@@ -97,8 +99,8 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_accumulator)
 
     pi = dev.getData_Accumulator(kwh_read, 3);
 
-    BOOST_CHECK_EQUAL( pi.value,      512 ); // Still should be 512, we round down!
-    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.value,      513 );  //  we don't round or set the freeze bit by default
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
 
@@ -119,8 +121,8 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_frozen_accumulator)
 
     pi = dev.getData_FrozenAccumulator(kwh_read, 3);
 
-    BOOST_CHECK_EQUAL( pi.value,      2320 ); // Still should be 2320, we round down!
-    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.value,      2321 );  //  we don't round or set the freeze bit by default
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
 

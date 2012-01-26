@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <string>
-
 #include "logger.h"
 #include "numstr.h"
 #include "dllyukon.h"  //  for ResolveStateName()
@@ -14,6 +12,8 @@
 #include "pt_status.h"
 
 #include "portglob.h"
+
+#include <stack>
 
 using namespace std;
 
@@ -239,7 +239,27 @@ Mct410Device::point_info Mct410Device::getDemandData(const unsigned char *buf, c
         getData(buf, len, ValueType_DynamicDemand);
 }
 
-Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const
+
+Mct410Device::point_info Mct410Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+{
+    return Mct410Device::decodePulseAccumulator(buf, len, freeze_counter);
+}
+
+
+Mct410Device::point_info Mct410Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
+{
+    point_info pi = Mct4xxDevice::decodePulseAccumulator(buf, len, freeze_counter);
+
+    const long value = static_cast<long>(pi.value);
+
+    pi.freeze_bit  = value &  0x01;
+    pi.value       = value & ~0x01;
+
+    return pi;
+}
+
+
+Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -296,7 +316,7 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, const u
 
     if( vt == ValueType_FrozenDynamicDemand )
     {
-        //  clear the bottom bit
+        //  clear the bottom bit - that's the freeze bit
         value &= ~1;
     }
 
@@ -304,9 +324,9 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, const u
     {
         case ValueType_Voltage:                     min_error = 0xffffffe0; break;
 
-        case ValueType_OutageCount:
-        case ValueType_AccumulatorDelta:            min_error = 0xfffffffa; break;
+        case ValueType_OutageCount:                 min_error = 0xfffffffa; break;
 
+        case ValueType_AccumulatorDelta:
         case ValueType_DynamicDemand:
         case ValueType_FrozenDynamicDemand:
         case ValueType_LoadProfile_DynamicDemand:
@@ -2655,7 +2675,7 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
                         //  normal KWH read, nothing too special
                         tags = TAG_POINT_MUST_ARCHIVE;
 
-                        pi = getAccumulatorData(DSt->Message + offset, 3);
+                        pi = getAccumulatorData(DSt->Message + offset, 3, 0);
 
                         pointTime -= pointTime.seconds() % 60;
                     }
@@ -2771,7 +2791,7 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiM
                     //  normal KWH read, nothing too special
                     tags = TAG_POINT_MUST_ARCHIVE;
 
-                    pi = getAccumulatorData(DSt->Message + offset, 3);
+                    pi = getAccumulatorData(DSt->Message + offset, 3, 0);
 
                     pointTime -= pointTime.seconds() % 60;
                 }
@@ -3393,56 +3413,61 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                boost::optional<unsigned> base_reading;
+                boost::optional<point_info> kwh;
                 unsigned channel = 0;
 
-                //  I process the multi-day values in reverse from how I want to return them,
-                //    so I'm using this vector as temporary LIFO storage
-                vector<point_info> days;
+                //  I have to process the readings newest-to-oldest, but I want to send them oldest-to-newest
+                std::stack<point_info> daily_readings;
 
                 for( unsigned day = 0; day < 6; ++day )
                 {
-                    const unsigned char * const pos = DSt->Message + (day * 2) + (base_reading ? 1 : 0);
+                    const unsigned char * const pos = DSt->Message + (day * 2) + (kwh ? 1 : 0);
 
-                    point_info reading;
+                    bool bad_delta = ((pos[0] & 0x3f == 0x3f) && pos[1] == 0xfa);
 
-                    //  if we don't have a reference reading yet, and this is a valid reference reading...
-                    if( !base_reading
-                        && ((*(pos)     & 0x3f) != 0x3f ||
-                            (*(pos + 1) & 0xff) != 0xfa) )
+                    if( kwh || bad_delta )
                     {
-                        reading = getAccumulatorData(pos, 3);
-
-                        base_reading = reading.value;
-                    }
-                    else
-                    {
+                        //  Read the channel out of the high bits of the delta if we haven't already
                         if( !channel )
                         {
-                            channel = ((*pos & 0xc0) >> 6) + 1;
+                            channel = 1 + ((*pos & 0xc0) >> 6);
 
                             setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
                         }
 
-                        reading = getData(pos, 2, ValueType_AccumulatorDelta);
+                        point_info delta = getData(pos, 2, ValueType_AccumulatorDelta);
 
-                        if( base_reading && reading.quality != InvalidQuality )
+                        if( ! kwh || delta.quality != NormalQuality )
                         {
-                            if( *base_reading < reading.value )
+                            //  This is a bad delta - put it on the list unmodified
+                            daily_readings.push(delta);
+                        }
+                        else
+                        {
+                            if( kwh->quality == NormalQuality )
                             {
-                                base_reading = 0;
-                                reading.value = 0;
-                                reading.quality = OverflowQuality;
-                                reading.description = "Underflow";
+                                if( kwh->value < delta.value  )
+                                {
+                                    kwh->value = 0;
+                                    kwh->quality = OverflowQuality;
+                                    kwh->description = "Underflow";
+                                }
+                                else
+                                {
+                                    kwh->value -= delta.value;
+                                }
                             }
-                            else
-                            {
-                                reading.value = *base_reading -= reading.value;
-                            }
+
+                            daily_readings.push(*kwh);
                         }
                     }
+                    else
+                    {
+                        //  get the un-rounded data, we'll round it when we send the pointdata
+                        kwh = Mct4xxDevice::decodePulseAccumulator(pos, 3, 0);
 
-                    days.push_back(reading);
+                        daily_readings.push(*kwh);
+                    }
                 }
 
                 if( channel != _daily_read_info.request.channel )
@@ -3457,15 +3482,23 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                     //  we reset the retry count any time there's a success
                     _daily_read_info.request.multi_day_retries = -1;
 
-                    while( !days.empty() )
+                    while( !daily_readings.empty() )
                     {
+                        point_info pi = daily_readings.top();
+
+                        if( isMct410(getType()) )
+                        {
+                            //  round down to make this match the MCT-410's normal kWh readings
+                            pi.value -= static_cast<long>(pi.value) % 2;
+                        }
+
                         insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
-                                              days.back(), consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
+                                              pi, consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
                                               0.1, TAG_POINT_MUST_ARCHIVE);
 
                         ++_daily_read_info.request.begin;
 
-                        days.pop_back();
+                        daily_readings.pop();
                     }
 
                     if( _daily_read_info.request.begin < _daily_read_info.request.end )
@@ -3608,7 +3641,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                                               outage_count, "Blink Counter",  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
                     }
 
-                    point_info reading = getAccumulatorData(DSt->Message + 0, 3);
+                    point_info reading = getAccumulatorData(DSt->Message + 0, 3, 0);
 
                     point_info peak = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 

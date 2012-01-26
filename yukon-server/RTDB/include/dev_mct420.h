@@ -53,7 +53,7 @@ protected:
 
 public:
 
-    static point_info getMct420AccumulatorData(const unsigned char *buf, const unsigned len);
+    static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 };
 
 }

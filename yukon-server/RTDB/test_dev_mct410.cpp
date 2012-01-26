@@ -212,6 +212,28 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
+{
+    unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
+
+    CtiDeviceSingle::point_info pi;
+
+    pi = Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
+
+    BOOST_CHECK_EQUAL( pi.value,      512 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x01;
+
+    pi = Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
+
+    BOOST_CHECK_EQUAL( pi.value,      512 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+
+
 BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 {
     test_Mct410IconDevice dev;
@@ -657,6 +679,118 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         }
     }
 
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_daily_reads_underflow)
+    {
+        CtiTime timenow;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00 };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 6 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), OverflowQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), OverflowQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), OverflowQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 2.0 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
+                }
+            }
+        }
+    }
+
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_daily_reads_normal_deltas)
     {
         CtiTime timenow;
@@ -716,7 +850,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 243 );  //  if rounding were working right, this would be 242
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 242 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
@@ -743,7 +877,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 255 );  //  if rounding were working right, this would be 254
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 254 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
@@ -752,7 +886,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 257 );  //  if rounding were working right, this would be 256
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 256 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
                 }
@@ -845,7 +979,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 255 );  //  if rounding were working right, this would be 254
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 254 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
@@ -854,7 +988,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 257 );  //  if rounding were working right, this would be 256
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 256 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
@@ -947,7 +1081,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 255 );  //  if rounding were working right, this would be 254
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 254 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
@@ -956,7 +1090,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 257 );  //  if rounding were working right, this would be 256
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 256 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
@@ -968,6 +1102,90 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
                     BOOST_CHECK_EQUAL( pdata->getValue(), 258 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_daily_reads_large_deltas)
+    {
+        CtiTime timenow;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
+
+            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x01, 0x00, 0x00, 0x3f, 0x9f, 0x3f, 0xa0, 0x3f, 0xa1, 0x3f, 0xfa, 0x3f, 0xff };
+
+            std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_CHECK_EQUAL( points.size(), 3 );
+
+                const CtiDate Midnight(timenow);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 32960 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 49248 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 65536 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
                 }
             }
         }
