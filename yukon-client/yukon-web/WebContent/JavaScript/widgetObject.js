@@ -177,9 +177,7 @@ function JsWidgetObject(shortName, parameters) {
     		jQuery("#" + useContainer).html(data);
     	},
     	complete: function() {
-    		if ($(actionSpan) != null) {
-    			$(actionSpan).getElementsBySelector('.actionLinkAnchor').invoke('show');
-    		}
+    		jQuery("#" + actionSpan + " .actionLinkAnchor").show();
     	}
     });
 
