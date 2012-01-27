@@ -3,8 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<c:set var="tree_id" value="deviceGroupWidgetTreePopup" />
-
 <script type="text/javascript">
     
     // to submit widget form once the hidden groupIds field has been set
@@ -14,7 +12,7 @@
     
 </script>
 
-<div id="currentGroups" class="scrollingContainer">
+<div id="currentGroups">
     <jsp:include page="/WEB-INF/pages/widget/deviceGroupWidget/currentGroups.jsp" />
 </div>
 

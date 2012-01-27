@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,6 +48,11 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
     private RolePropertyDao rolePropertyDao;
+    
+    @PostConstruct
+    public void init() {
+        setLazyLoad(true);
+    }
 
     /**
      * This method renders the default deviceGroupWidget

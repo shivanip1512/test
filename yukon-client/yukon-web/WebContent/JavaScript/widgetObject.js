@@ -1,42 +1,74 @@
-JsWidgetObject = Class.create();
 
-JsWidgetObject.prototype = { 
-  initialize: function (shortName, parameters) {
-    // Don't use $() up here because this is called before page is fully loaded
-    this.shortName = shortName;
-    this.parameters = parameters;
-    this.container = "widgetContainer_" + this.parameters.widgetId;
-    this.linkInfo = $H();
-  },
+// TODO: Update the rest of this file to use jQuery
+// Currently the only jQuery in here are the .ajax calls (except for doPeriodicRefresh)
 
-  render: function() {
+function JsWidgetObject(shortName, parameters) { 
+  // Don't use $() up here because this is called before page is fully loaded
+  this.shortName = shortName;
+  this.parameters = parameters;
+  this.container = "widgetContainer_" + this.parameters.widgetId;
+  this.linkInfo = {};
+
+  this.render = function() {
     var url = "/spring/widget/" + this.shortName + "/render";
-    new Ajax.Updater(this.container, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
-  },
+    var params = this.getWidgetParameters();
+    var _self = this;
+
+    jQuery.ajax({
+    	url: url,
+    	data: params,
+    	success: function(data, status, xhr) {
+    		_self.onSuccess(xhr);
+    		jQuery("#" + _self.container).html(data);
+    	}
+    });
+  };
   
-  onSuccess: function(transport, json) {
+  this.onSuccess = function(xhr) {
+	  this.parameters = getHeaderJSON(xhr);
+	  // this helps prevent this from growing like crazy each time the widget is refreshed
+	  this.linkInfo = {};
+  };
+  
+  this.onSuccessPeriodic = function(transport, json) {
     this.parameters = json;
     // this helps prevent this from growing like crazy each time the widget is refreshed
-    this.linkInfo = $H();
-  },
+    this.linkInfo = {};
+  };
   
-  doDirectActionRefresh: function(cmd) {
+  this.doDirectActionRefresh = function(cmd) {
     $(this.container).getElementsBySelector('input').invoke('disable');
     
-    params = this.getWidgetParameters();
-    
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(this.container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
-  },
+    var params = this.getWidgetParameters();
+    var _self = this;
+    
+    jQuery.ajax({
+    	url: url,
+    	data: params,
+    	success: function(data, status, xhr) {
+    		_self.onSuccess(xhr);
+    		jQuery("#" + _self.container).html(data);
+    	}
+    });
+  };
   
-  doDirectActionContainerRefresh: function(cmd, container) {
-    $(container).getElementsBySelector('input').invoke('disable');
-    
-    params = this.getWidgetParameters();
+  this.doDirectActionContainerRefresh = function(cmd, container) {
+    $(container).getElementsBySelector('input, button').invoke('disable');
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
-  },
+    var params = this.getWidgetParameters();
+    var _self = this;
+    
+    jQuery.ajax({
+    	url: url,
+    	data: params,
+    	success: function(data, status, xhr) {
+    		_self.onSuccess(xhr);
+    		jQuery("#" + container).html(data);
+    	}
+    });
+  };
   
   /**
    * args = {
@@ -46,7 +78,7 @@ JsWidgetObject.prototype = {
    *    key = 
    * }
    */
-  doActionRefresh: function(args) {
+  this.doActionRefresh = function(args) {
       var defaultButtonText = $(args.buttonID).down('span').innerHTML;
       $(args.buttonID).down('span').innerHTML = args.waitingText;
     $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
@@ -54,22 +86,28 @@ JsWidgetObject.prototype = {
     $(container).getElementsBySelector('input').invoke('disable');
     $(container).getElementsBySelector('button').invoke('disable');
     
-    var that = this;
-    var localSuccess = function(transport, json) {
+    var _self = this;
+    var localSuccess = function(xhr) {
         $(args.buttonID).down('span').innerHTML = defaultButtonText;
         $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
         $(container).getElementsBySelector('input').invoke('enable');
         $(container).getElementsBySelector('button').invoke('enable');
-        that.onSuccess(transport, json);
+        _self.onSuccess(xhr);
     }
     
-    newParams = $H(this.linkInfo.get(args.key));
-    oldParams = this.getWidgetParameters();
-    oldParams.update(newParams);
+    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
     
     var url = "/spring/widget/" + this.shortName + "/" + args.command;
-    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
-  },
+
+    jQuery.ajax({
+    	url: url,
+    	data: oldParams,
+    	success: function(data, status, xhr) {
+    		localSuccess(xhr);
+    		jQuery("#" + _self.container).html(data);
+    	}
+    });
+  };
   
   /**
    * args = {
@@ -80,7 +118,7 @@ JsWidgetObject.prototype = {
    *    key = 
    * }
    */
-  doActionUpdate: function(args) {
+  this.doActionUpdate = function(args) {
     var defaultButtonText = $(args.buttonID).down('span').innerHTML;
     $(args.buttonID).down('span').innerHTML = args.waitingText;
     $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
@@ -93,30 +131,35 @@ JsWidgetObject.prototype = {
         $(container).getElementsBySelector('button').invoke('enable');
     }
     
-    newParams = $H(this.linkInfo.get(args.key));
-    oldParams = this.getWidgetParameters();
-    oldParams.update(newParams);
+    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
     
     var url = "/spring/widget/" + this.shortName + "/" + args.command;
-    new Ajax.Updater(args.containerID, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
-  },
+
+    jQuery.ajax({
+    	url: url,
+    	data: oldParams,
+    	success: function(data) {
+    		localSuccess();
+    		jQuery("#" + args.containerID).html(data);
+    	}
+    });
+  };
   
-  setParameter: function(name, value){
+  this.setParameter = function(name, value){
   	this.parameters[name] = value;
-  },
+  };
 
-  setupLink: function(key, jsonData){
-  	this.linkInfo.set(key, jsonData);
-  },
+  this.setupLink = function(key, jsonData){
+  	this.linkInfo[key] = jsonData;
+  };
 
-  doActionLinkRefresh: function(cmd, actionSpan, waitingLabel, key, container) {
+  this.doActionLinkRefresh = function(cmd, actionSpan, waitingLabel, key, container) {
+	$(actionSpan).getElementsBySelector('.actionLinkAnchor').invoke('hide');
     $(actionSpan).getElementsBySelector('.widgetAction_waiting').invoke('show');
     $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
     $(this.container).getElementsBySelector('input').invoke('disable');
     
-    newParams = $H(this.linkInfo.get(key));
-    oldParams = this.getWidgetParameters();
-    oldParams.update(newParams);
+    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
     
@@ -124,26 +167,40 @@ JsWidgetObject.prototype = {
     if (container == undefined || container == '') {
         useContainer = this.container;
     }
-    new Ajax.Updater(useContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+
+    var _self = this;
+    jQuery.ajax({
+    	url: url,
+    	data: oldParams,
+    	success: function(data, status, xhr) {
+    		_self.onSuccess(xhr);
+    		jQuery("#" + useContainer).html(data);
+    	},
+    	complete: function() {
+    		if ($(actionSpan) != null) {
+    			$(actionSpan).getElementsBySelector('.actionLinkAnchor').invoke('show');
+    		}
+    	}
+    });
+
     $(this.container).getElementsBySelector('input').invoke('enable');
-  },
+  };
   
-  doPeriodicRefresh: function(cmd, newParams, period, container) {
+  this.doPeriodicRefresh = function(cmd, newParams, period, container) {
       var containerToUse = container;
       if (container == undefined || container == '') {
           containerToUse = this.container;
       }
-      oldParams = this.getWidgetParameters();
-      oldParams.update(newParams);
+      oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
       
       var url = "/spring/widget/" + this.shortName + "/" + cmd;
-      return new Ajax.PeriodicalUpdater(containerToUse, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this), 'frequency': period});
-  },
+      return new Ajax.PeriodicalUpdater(containerToUse, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccessPeriodic.bind(this), 'frequency': period});
+  };
   
   /**
    * @returns   {Hash}
    */
-  getWidgetParameters: function() {
+  this.getWidgetParameters = function() {
     var container = $(this.container);
     var theseParameters = {};
     
@@ -177,20 +234,17 @@ JsWidgetObject.prototype = {
       }
     }
     
-    var mergedParameters = $H(this.parameters);
-    mergedParameters.update(theseParameters);
+    var mergedParameters = jQuery.extend(true, theseParameters, this.parameters);
     return mergedParameters;
-  },
+  };
   
   
-  doActionPopup: function(cmd, actionSpan, key, dialogId, width, height) {
-	    newParams = $H(this.linkInfo.get(key));
-	    oldParams = this.getWidgetParameters();
-	    oldParams.update(newParams);
-	    
+  this.doActionPopup = function(cmd, actionSpan, key, dialogId, width, height) {
+	    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
+
 	    var url = "/spring/widget/" + this.shortName + "/" + cmd;
 
 	    openSimpleDialog(dialogId, url, key, oldParams, width, height);
-  }
+  };
 
-};
+}

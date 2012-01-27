@@ -400,3 +400,13 @@ function changeInputType(inputElement, inputType) {
         input2.type = inputType;
     input.parentNode.replaceChild(input2,input);
 }
+
+function getHeaderJSON(xhr) {
+	var json;
+	try { json = xhr.getResponseHeader('X-Json') }
+	catch(e) {}
+
+	if (json) {
+		return eval('(' + json + ')');
+	}
+}

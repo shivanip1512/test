@@ -26,7 +26,7 @@
 				<jsp:doBody/>
 			</c:when>
 			<c:otherwise>
-				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${pageScope.container}')"><jsp:doBody/></a>
+				<a class="actionLinkAnchor" title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${pageScope.container}')"><jsp:doBody/></a>
 			</c:otherwise>
 		</c:choose>
 	</span>
