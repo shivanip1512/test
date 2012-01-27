@@ -1729,6 +1729,10 @@ tr.ui-priority-secondary {
     max-width: 800px;
  }
 
+.marginBottom {
+    margin-bottom: 20px;
+}
+
 /* 
     typically the code class is meant to be used to wrap a <pre> tag.  E.g.
     <div class="code">

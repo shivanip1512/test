@@ -20,4 +20,15 @@ public interface ExportReportGeneratorService {
      * @return list
      */
     public List<String> generateReport(List<Meter> meters, ExportFormat format, Date stopDate, YukonUserContext userContext);
+    
+    /**
+     * Generates preview.
+     *
+     * @param meter
+     * @param previewUOMValue
+     * @param format
+     * @param userContext
+     * @return list
+     */
+    public List<String> generatePreview(Meter meter, String previewUOMValue, ExportFormat format, YukonUserContext userContext);
 }

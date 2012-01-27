@@ -141,3 +141,7 @@ div.resultBar > div {
 .deviceMagIcon {
 	margin-left: 5px;
 }
+
+div.attributeSetupContainer {
+    min-width: 500px;
+}

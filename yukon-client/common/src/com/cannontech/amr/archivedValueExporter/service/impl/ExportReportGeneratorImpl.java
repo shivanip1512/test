@@ -1,7 +1,5 @@
 package com.cannontech.amr.archivedValueExporter.service.impl;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +7,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
@@ -18,8 +18,10 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -28,58 +30,108 @@ import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
-public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
+public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
 
     @Autowired private AttributeService attributeService;
     @Autowired private UnitMeasureDao unitMeasureDao;
-
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
 
-    static double previewValue = 1234546.00;
-    static String previewQuality = "Normal";
-    static Date previewDate = new Timestamp(System.currentTimeMillis());
-    static String previewUOMValue = "kW";
+    private static String SKIP_RECORD = "SKIP_RECORD_SKIP_RECORD";
 
-    public List<String> generateReport(List<Meter> meters, ExportFormat format, Date stopDate,
-                                       YukonUserContext userContext) {
+    private static double previewValue = 1234546.00;
+    private static PointQuality previewQuality = PointQuality.Normal;
+    private static int fakeDeviceId = -1;
+    
+    private Meter previewMeter;
+    private String previewUOMValue;
 
-        boolean isPreview = (stopDate == null);
+   
+
+    public List<String> generatePreview(Meter meter, String previewUOMValue, ExportFormat format, YukonUserContext userContext) {
+        previewMeter = meter;
+        previewMeter.setDeviceId(fakeDeviceId);
+        this.previewUOMValue = previewUOMValue;
         List<String> report = Lists.newArrayList();
-        //<field id, device data>
-        Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData = new HashMap<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>>();
-        if(!isPreview){
-            //For each Export Field that has an Field Type of Attribute, get the Device Data and store it an a map
-            attributeData = getAttributeData(meters,format,stopDate);
-        }
-        //Build report rows
-        //add header
+        // Build report rows
+        // add header
         if (StringUtils.isNotEmpty(format.getHeader())) {
             report.add(format.getHeader());
         }
-        for (Meter meter : meters) {
-            //for each meter create a row
-            String dataRow = getDataRow(format, meter, isPreview, userContext, stopDate, attributeData);
-            report.add(dataRow);
-        }
-        //add footer
+        Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData =
+            getPreviewAttributeData(format);
+        String dataRow =
+            getDataRow(format, meter, userContext.getJodaTimeZone(), attributeData);
+        report.add(dataRow);
+        // add footer
         if (StringUtils.isNotEmpty(format.getFooter())) {
             report.add(format.getFooter());
         }
         return report;
     }
-    
-    private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getAttributeData(List<Meter> meters,ExportFormat format, Date stopDate){
-        Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData = new HashMap<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>>();
-        for (ExportField field: format.getFields()) {
-            if(field.getFieldType() == FieldType.ATTRIBUTE ){
-                
+
+    public List<String> generateReport(List<Meter> meters, ExportFormat format, Date stopDate,
+                                       YukonUserContext userContext) {
+
+        DateTime stopDateTime = new DateTime(stopDate, userContext.getJodaTimeZone());
+        List<String> report = Lists.newArrayList();
+        // <field id, device data>
+        Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData =
+            getAttributeData(meters, format, stopDateTime);
+        // Build report rows
+        // add header
+        if (StringUtils.isNotEmpty(format.getHeader())) {
+            report.add(format.getHeader());
+        }
+        for (Meter meter : meters) {
+            // for each meter create a row
+            String dataRow =
+                getDataRow(format, meter, userContext.getJodaTimeZone(), attributeData);
+            if (!dataRow.equals(SKIP_RECORD)) {
+                report.add(dataRow);
+            }
+        }
+        // add footer
+        if (StringUtils.isNotEmpty(format.getFooter())) {
+            report.add(format.getFooter());
+        }
+        return report;
+    }
+
+    private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getPreviewAttributeData(ExportFormat format) {
+        Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData =
+            new HashMap<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>>();
+        for (ExportField field : format.getFields()) {
+            if (field.getFieldType() == FieldType.ATTRIBUTE) {
+                ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
+                    ArrayListMultimap.create();
+                PointData value = new PointData();
+                value.setPointQuality(previewQuality);
+                value.setTime(new Date());
+                value.setValue(previewValue);
+                attributeDataValues.put(previewMeter.getPaoIdentifier(), value);
+                attributeData.put(field.getFieldId(), attributeDataValues);
+            }
+        }
+        return attributeData;
+    }
+
+    private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getAttributeData(List<Meter> meters,
+                                                                                                ExportFormat format,
+                                                                                                DateTime stopDate) {
+        Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData =
+            new HashMap<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>>();
+        for (ExportField field : format.getFields()) {
+            if (field.getFieldType() == FieldType.ATTRIBUTE) {
+
                 Order order = null;
                 OrderBy orderBy = null;
-                
+
                 switch (field.getAttribute().getDataSelection()) {
                 case EARLIEST:
                     order = Order.FORWARD;
@@ -98,13 +150,12 @@ public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
                     orderBy = OrderBy.TIMESTAMP;
                     break;
                 }
-
-                Date startDate = getStartDate(field.getAttribute(), stopDate);
+                DateTime startDate = getStartDate(field.getAttribute(), stopDate);
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
                     rawPointHistoryDao.getLimitedAttributeData(meters,
                                                                field.getAttribute().getAttribute(),
-                                                               startDate,
-                                                               stopDate,
+                                                               startDate.toDate(),
+                                                               stopDate.toDate(),
                                                                1,
                                                                false,
                                                                Clusivity.EXCLUSIVE_INCLUSIVE,
@@ -113,16 +164,17 @@ public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
                 attributeData.put(field.getFieldId(), attributeDataValues);
             }
         }
-        return attributeData;        
+        return attributeData;
     }
-    
-    private String getDataRow(ExportFormat format, Meter meter, boolean isPreview,
-                              YukonUserContext userContext, Date stopDate, Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
+
+    private String getDataRow(ExportFormat format,
+                              Meter meter,
+                              DateTimeZone timeZone,
+                              Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
         StringBuilder dataRow = new StringBuilder();
-        boolean skipRecord = false;
         for (int i = 0; i < format.getFields().size(); i++) {
             ExportField field = format.getFields().get(i);
-            String value = getValue(meter, field, isPreview, stopDate, userContext, attributeData);
+            String value = getValue(meter, field, timeZone, attributeData);
             if (StringUtils.isEmpty(value)) {
                 // missing value
                 switch (field.getMissingAttribute()) {
@@ -132,14 +184,10 @@ public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
                     value = field.getMissingAttributeValue();
                     break;
                 case SKIP_RECORD:
-                    skipRecord = true;
-                    break;
+                    return SKIP_RECORD;
                 }
             }
-            if (!skipRecord) {
-                String formattedValue = ExportValueFormatter.padValue(field, value);
-                dataRow.append(formattedValue);
-            }
+            dataRow.append(field.padValue(value));
             if (i != format.getFields().size() - 1) {
                 dataRow.append(format.getDelimiter());
             }
@@ -149,9 +197,7 @@ public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
 
     private String getValue(Meter meter,
                             ExportField field,
-                            boolean isPreview,
-                            Date stopDate,
-                            YukonUserContext userContext,
+                            DateTimeZone timeZone,
                             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
         String value = "";
         switch (field.getFieldType()) {
@@ -170,31 +216,33 @@ public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
         case ROUTE:
             value = meter.getRoute();
             break;
-     /*  case RF_MANUFACTURER:
-        case RF_MODEL:
-        case RF_SERIAL_NUMBER:
-            break;*/
+        /*
+         * case RF_MANUFACTURER:
+         * case RF_MODEL:
+         * case RF_SERIAL_NUMBER:
+         * break;
+         */
         case ATTRIBUTE:
             PointValueQualityHolder pointValueQualityHolder =
                 findPointValueQualityHolder(meter, field, attributeData);
             switch (field.getAttributeField()) {
             case UNIT_OF_MEASURE:
-                value = getUOMValue(meter, field, isPreview);
+                value = getUOMValue(meter, field);
                 break;
             case VALUE:
-                value = getValue(field, isPreview, userContext, pointValueQualityHolder);
+                value = getValue(field, pointValueQualityHolder);
                 break;
             case TIMESTAMP:
-                value = getTimestamp(field, isPreview, userContext, pointValueQualityHolder);
+                value = getTimestamp(field, timeZone, pointValueQualityHolder);
                 break;
             case QUALITY:
-                value = getQuality(field, isPreview, pointValueQualityHolder);
+                value = getQuality(field, pointValueQualityHolder);
                 break;
             }
         }
         return value;
     }
-    
+
     private PointValueQualityHolder findPointValueQualityHolder(Meter meter,
                                                                 ExportField field,
                                                                 Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
@@ -213,72 +261,60 @@ public class ExportReportGenaratorImpl implements ExportReportGeneratorService {
         return pointValueQualityHolder;
     }
 
-    private String getQuality(ExportField field, boolean isPreview,PointValueQualityHolder pointValueQualityHolder) {
+    private String getQuality(ExportField field, PointValueQualityHolder pointValueQualityHolder) {
         String value = "";
-        if (isPreview) {
-            value = previewQuality;
-        } else if (pointValueQualityHolder != null) {
+        if (pointValueQualityHolder != null) {
             value = pointValueQualityHolder.getPointQuality().getDescription();
         }
         return value;
     }
 
-    private String getValue(ExportField field, boolean isPreview,
-                            YukonUserContext userContext,
+    private String getValue(ExportField field,
                             PointValueQualityHolder pointValueQualityHolder) {
         String formattedValue = "";
-        if (isPreview) {
-            formattedValue = ExportValueFormatter.formatValue(previewValue, field);
-        } else if (pointValueQualityHolder != null) {
-            formattedValue = ExportValueFormatter.formatValue(pointValueQualityHolder.getValue(), field);
+        if (pointValueQualityHolder != null) {
+            formattedValue = field.formatValue(pointValueQualityHolder.getValue());
         }
         return formattedValue;
 
     }
 
-    private String getTimestamp(ExportField field, boolean isPreview,
-                                YukonUserContext userContext,
+    private String getTimestamp(ExportField field,
+                                DateTimeZone timeZone,
                                 PointValueQualityHolder pointValueQualityHolder) {
         String formattedValue = "";
-        if (isPreview) {
-            formattedValue =
-                ExportValueFormatter.formatTimestamp(new DateTime(previewDate, userContext
-                    .getJodaTimeZone()), field);
-        } else if (pointValueQualityHolder != null) {
+        if (pointValueQualityHolder != null) {
             DateTime date = new DateTime(pointValueQualityHolder.getPointDataTimeStamp(),
-                                         userContext.getJodaTimeZone());
-            formattedValue = ExportValueFormatter.formatTimestamp(date, field);
+                                         timeZone);
+            formattedValue = field.formatTimestamp(date);
         }
         return formattedValue;
 
     }
 
-    private String getUOMValue(Meter meter, ExportField field, boolean isPreview) {
+    private String getUOMValue(Meter meter, ExportField field) {
         String valueString = "";
-        if (isPreview) {
-            valueString = previewUOMValue;
-        } else {
-            try {
+        try {
+            if (meter.getDeviceId() == fakeDeviceId) {
+                valueString = previewUOMValue;
+            } else {
                 LitePoint point =
                     attributeService.getPointForAttribute(meter, field.getAttribute()
                         .getAttribute());
                 LiteUnitMeasure unitMeasure =
                     unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
                 valueString = unitMeasure.getUnitMeasureName();
-
-            } catch (IllegalUseOfAttribute e) {
-                // missing value
             }
+
+        } catch (IllegalUseOfAttribute e) {
+            // missing value
         }
         return valueString;
 
     }
 
-    private Date getStartDate(ExportAttribute attribute, Date stopDate) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(stopDate);
-        cal.add(Calendar.DATE, -1 * attribute.getDaysPrevious());
-        return cal.getTime();
+    private DateTime getStartDate(ExportAttribute attribute, DateTime stopDate) {
+        return stopDate.minus(Period.days(attribute.getDaysPrevious()));
     }
 
 }

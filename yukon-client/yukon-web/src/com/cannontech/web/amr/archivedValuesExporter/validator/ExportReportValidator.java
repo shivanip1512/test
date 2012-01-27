@@ -1,16 +1,13 @@
 package com.cannontech.web.amr.archivedValuesExporter.validator;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterBackingBean;
+import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterController;
 
 public class ExportReportValidator extends SimpleValidator<ArchivedValuesExporterBackingBean> {
-    private static final String endDate =
-        "yukon.web.modules.amr.archivedValueExporter.formatError.endDateRequired";
+    private static final String endDateRequiredMsgKey = ArchivedValuesExporterController.baseKey +"formatError.endDateRequired";
 
     public ExportReportValidator() {
         super(ArchivedValuesExporterBackingBean.class);
@@ -18,11 +15,8 @@ public class ExportReportValidator extends SimpleValidator<ArchivedValuesExporte
 
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
-       try{
-           SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-           sdf.parse(target.getEndDate());
-        }catch(ParseException e){
-            errors.reject(endDate);
+        if (target.getEndDate() == null) {
+            errors.reject(endDateRequiredMsgKey);
         }
     }
 }

@@ -14,8 +14,4 @@ public enum AttributeField implements DisplayableEnum {
     public String getFormatKey() {
         return keyPrefix + "attributeField." + name();
     }
-
-    public String getKey() {
-        return name();
-    }
 }

@@ -14,8 +14,4 @@ public enum MissingAttribute implements DisplayableEnum {
         return keyPrefix + "missingAttribute." + name();
     }
 
-    public String getKey() {
-        return name();
-    }
-
 }

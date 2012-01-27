@@ -7,6 +7,7 @@
 
     <script type="text/javascript">
     jQuery(document).ready(function() {
+        // function location: exporter.jsp
         renderPopup();
     });
     </script>
@@ -27,15 +28,24 @@
                 <tags:nameValue2 nameKey=".field">
                     <form:select id="fieldSelect" path="selectedFieldId">
                         <c:forEach var="field" items="${backingBean.fieldSelect}">
-                            <form:option value="${field.fieldId}" data-fieldType="${field.type.key}" title="${field.displayName}">
-                                <cti:msg2 key="${field}" />
-                                <c:if test="${field.type == 'ATTRIBUTE'}"> (<cti:msg2 key="${field.attribute.dataSelection}" />, ${field.attribute.daysPrevious}) </c:if>
+                            <form:option value="${field.fieldId}" data-fieldType="${field.type}" title="${field.displayName}">
+                                 <c:if test="${field.type != 'ATTRIBUTE'}">
+                                    <cti:msg2 key="${field}"/>
+                                </c:if>
+                                <c:if test="${field.type == 'ATTRIBUTE'}">
+                                    <cti:list var="arguments">
+                                        <cti:item><cti:msg2 key="${field}"/></cti:item>
+                                        <cti:item><cti:msg2 key="${field.attribute.dataSelection}"/></cti:item>
+                                        <cti:item value="${field.attribute.daysPrevious}"/>
+                                    </cti:list>
+                                    <cti:msg2 key=".attributeFieldOption" arguments="${arguments}"/>
+                                </c:if>
                             </form:option>
                         </c:forEach>
                     </form:select>
                     <form:select path="exportField.attributeField">
                         <c:forEach var="attributeField" items="${attributeFields}">
-                            <form:option value="${attributeField}" title="${attributeField}">
+                            <form:option value="${attributeField}">
                                 <cti:msg2 key="${attributeField}" />
                             </form:option>
                         </c:forEach>
@@ -48,7 +58,7 @@
                 <tags:nameValue2 nameKey=".roundingMode" rowClass="ATTRIBUTE_VALUE">
                     <form:select path="exportField.roundingMode">
                         <c:forEach var="roundingMode" items="${roundingModes}">
-                            <form:option value="${roundingMode}" title="${roundingMode}">${roundingMode}</form:option>
+                            <form:option value="${roundingMode}"><cti:msg2 key="${roundingMode}"/></form:option>
                         </c:forEach>
                     </form:select>
                  <a id="helperRounding" href="javascript:void(0);"><cti:img nameKey="helpRoundingMode" styleClass="hoverableImage" /> </a>
@@ -56,14 +66,14 @@
                 <tags:nameValue2 nameKey=".readingPattern" rowClass="ATTRIBUTE_VALUE">
                     <select name="patternSelect" id="patternSelect" data-selection="#patternSelect" data-field-to-display="#readingPattern" data-skip-disable="true">
                         <option value="###.###" <c:if test="${backingBean.valuePattern ==  '###.###'}">selected="selected" </c:if>>
-                            <i:inline key=".###.###" />
+                            <cti:msg2 key=".###.###" />
                         </option>
                         <option value="####.##" <c:if test="${backingBean.valuePattern  == '####.##'}">selected="selected" </c:if>>
-                            <i:inline key=".####.##" />
+                            <cti:msg2 key=".####.##" />
                         </option>
                         <option value="Custom"
                             <c:if test="${backingBean.valuePattern  !=  '####.##' && not empty backingBean.valuePattern && backingBean.valuePattern  != '###.###'}">selected="selected" </c:if>>
-                            <i:inline key=".custom" />
+                            <cti:msg2 key=".custom" />
                         </option>
                     </select>
                     <tags:input id="readingPattern" path="valuePattern" size="10" maxlength="30" />
@@ -100,22 +110,21 @@
                     rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
                     <form:select id="padSideSelect" path="exportField.padSide" data-selection="#padSideSelect" data-field-to-display="#padCharSelectFields">
                         <c:forEach var="padSide" items="${padSide}">
-                            <form:option value="${padSide}" title="${padSide}">
-                                <i:inline key="${padSide}" />
+                            <form:option value="${padSide}">
+                                <cti:msg2 key="${padSide}"/>
                             </form:option>
                         </c:forEach>
                     </form:select>  &nbsp
                         <div id="padCharSelectFields" class="di">
                         <select id="padCharSelect" data-selection="#padCharSelect" data-field-to-display="#padChar">
-
                             <option value="" <c:if test="${backingBean.exportField.padChar == ' '}">selected="selected" </c:if>>
-                                <i:inline key=".space" />
+                                <cti:msg2 key=".space" />
                             </option>
                             <option value="0" <c:if test="${backingBean.exportField.padChar == '0'}">selected="selected" </c:if>>
-                                <i:inline key=".zero" />
+                                <cti:msg2 key=".zero" />
                             </option>
                             <option value="Custom" <c:if test="${backingBean.exportField.padChar  !=  '0' && not empty backingBean.exportField.padChar}">selected="selected" </c:if>>
-                                <i:inline key=".custom" />
+                                <cti:msg2 key=".custom" />
                             </option>
                         </select>
                         <tags:input id="padChar" path="exportField.padChar" size="1" maxlength="1 " inputClass="Custom" />
@@ -130,12 +139,11 @@
                     rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
                     <form:select id="unsupportedFieldSelect" path="exportField.missingAttribute" data-selection="#unsupportedFieldSelect" data-field-to-display="#fixedValue">
                         <c:forEach var="missingAttribute" items="${missingAttribute}">
-                            <form:option value="${missingAttribute}" title="${missingAttribute}">
-                                <i:inline key="${missingAttribute}" />
+                            <form:option value="${missingAttribute}">
+                                <cti:msg2 key="${missingAttribute}" />
                             </form:option>
                         </c:forEach>
                     </form:select>
-                    </select>
                     <tags:input id="fixedValue" path="exportField.missingAttributeValue" size="10" maxlength="30" />
                 </tags:nameValue2>
             </tags:nameValueContainer2>

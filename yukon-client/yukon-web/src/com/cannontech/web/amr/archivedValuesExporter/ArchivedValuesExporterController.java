@@ -37,6 +37,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -44,10 +45,14 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
@@ -56,6 +61,7 @@ import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValida
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportReportValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -72,15 +78,16 @@ public class ArchivedValuesExporterController {
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private MeterDao meterDao;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
-    private Meter previewMeter;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
 
-    public ArchivedValuesExporterController() {
-        previewMeter = new Meter();
-        previewMeter.setMeterNumber("12345470");
-        previewMeter.setName("MCT-410CL");
-        previewMeter.setAddress("60220872");
-        previewMeter.setRoute("CCU 38 Prairie");
-    }
+    private static String previewUOMValueKey = baseKey + "previewUOMValue";
+    private static String previewMeterNumberKey = baseKey + "previewMeterNumber";
+    private static String previewMeterNameKey = baseKey + "previewMeterName";
+    private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
+    private static String previewMeterRouteKey = baseKey + "previewMeterRoute";
 
     @ModelAttribute("attributes")
     public BuiltInAttribute[] getAttributes() {
@@ -108,8 +115,8 @@ public class ArchivedValuesExporterController {
     }
 
     @ModelAttribute("roundingModes")
-    public List<String> getRoundingModes() {
-        return getRoundModes();
+    public YukonRoundingMode[] getRoundingModes() {
+        return YukonRoundingMode.values();
     }
 
     @RequestMapping
@@ -126,8 +133,12 @@ public class ArchivedValuesExporterController {
             format = getFirstFormat(backingBean.getAllFormats());
         }
         backingBean.setFormat(format);
-        backingBean.setPreview(exportReportGeneratorService.generateReport(Collections
-            .singletonList(previewMeter), backingBean.getFormat(), null, userContext));
+        backingBean.setPreview(exportReportGeneratorService
+            .generatePreview(getLocalizedPreviewMeter(userContext),
+                             getLocalizedPreviewUOMValue(userContext),
+                             backingBean.getFormat(),
+                             userContext));
+        model.addAttribute("editMode", PageEditMode.EDIT);
         return view;
     }
 
@@ -173,7 +184,7 @@ public class ArchivedValuesExporterController {
                          @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
                          YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-        ExportFormatHelper.defaultFormat(backingBean);
+        backingBean.resetFormat();
         return getView(model, request, PageEditMode.CREATE, backingBean, userContext);
     }
 
@@ -262,7 +273,7 @@ public class ArchivedValuesExporterController {
     public String ajaxEditField(ModelMap model,
                                     @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
         if (backingBean.getRowIndex() == -1) {
-            ExportFormatHelper.defaultField(backingBean);
+            backingBean.resetField();
             backingBean.setPageNameKey("addField");
         } else {
             backingBean.setExportField(backingBean.getSelectedField());
@@ -318,6 +329,7 @@ public class ArchivedValuesExporterController {
                 format = archiveValuesExportFormatDao.update(backingBean.getFormat());
             }
             backingBean.setSelectedFormatId(format.getFormatId());
+            model.addAttribute("editMode", PageEditMode.EDIT);
         }
         return getView(model, request, mode, backingBean, userContext);
     }
@@ -345,12 +357,16 @@ public class ArchivedValuesExporterController {
             new EnumPropertyEditor<PadSide>(PadSide.class);
         EnumPropertyEditor<MissingAttribute> missingAttributeFieldEditor =
             new EnumPropertyEditor<MissingAttribute>(MissingAttribute.class);
-
+        EnumPropertyEditor<YukonRoundingMode> roundingModeEditor =
+                new EnumPropertyEditor<YukonRoundingMode>(YukonRoundingMode.class);
+     
         binder.registerCustomEditor(Attribute.class, attributeEditor);
         binder.registerCustomEditor(FieldType.class, fieldTypeEditor);
         binder.registerCustomEditor(AttributeField.class, attributeFieldEditor);
         binder.registerCustomEditor(MissingAttribute.class, missingAttributeFieldEditor);
         binder.registerCustomEditor(PadSide.class, padSideFieldEditor);
+        binder.registerCustomEditor(YukonRoundingMode.class, roundingModeEditor);
+        binder.registerCustomEditor(Date.class, "endDate", datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATE, userContext));
     }
 
     private void addDeviceCollectionAttribute(ModelMap model, HttpServletRequest request,
@@ -376,28 +392,16 @@ public class ArchivedValuesExporterController {
         addDeviceCollectionAttribute(model, request, backingBean);
         if (mode == PageEditMode.VIEW) {
             backingBean.setAllFormats(archiveValuesExportFormatDao.getAllFormats());
-            if (backingBean.getEndDate() == null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-                backingBean.setEndDate(sdf.format(new Date()));
-            }
         }
-        backingBean.setPreview(exportReportGeneratorService.generateReport(Collections
-            .singletonList(previewMeter), backingBean.getFormat(), null, userContext));
+        backingBean.setTimezone(userContext.getJodaTimeZone());
+        backingBean.setPreview(exportReportGeneratorService
+            .generatePreview(getLocalizedPreviewMeter(userContext),
+                             getLocalizedPreviewUOMValue(userContext),
+                             backingBean.getFormat(),
+                             userContext));
         return "archivedValuesExporter/exporter.jsp";
     }
-
-    private static List<String> getRoundModes() {
-        List<String> roundingModeStrs = new ArrayList<String>();
-        Set<RoundingMode> roundingModeExcludeList = Collections.singleton(RoundingMode.UNNECESSARY);
-        RoundingMode[] roundingModes = RoundingMode.values();
-        for (RoundingMode roundingMode : roundingModes) {
-            if (!roundingModeExcludeList.contains(roundingMode)) {
-                roundingModeStrs.add(roundingMode.toString());
-            }
-        }
-        return roundingModeStrs;
-    }
-
+    
     private ExportFormat getFirstFormat(List<ExportFormat> formats) {
         ExportFormat format = null;
         if (!formats.isEmpty()) {
@@ -430,30 +434,30 @@ public class ArchivedValuesExporterController {
             List<String> report =
                 exportReportGeneratorService.generateReport(meters,
                                                             format,
-                                                            parseEndDate(backingBean.getEndDate()),
+                                                            backingBean.getEndDate(),
                                                             userContext);
             String fileName = getFileName(backingBean.getEndDate(), format.getFormatName());
             setupResponse(response, fileName);
             createReportFile(response, report);
             return  "";
         }
+        String view = getView(model, request, PageEditMode.VIEW, backingBean, userContext);
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
         flashScope.setError(messages);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
         backingBean.setFormat(format);
-        return getView(model, request, PageEditMode.VIEW, backingBean, userContext);
+        model.addAttribute("editMode", PageEditMode.EDIT);
+        backingBean.setPreview(exportReportGeneratorService
+                               .generatePreview(getLocalizedPreviewMeter(userContext),
+                                                getLocalizedPreviewUOMValue(userContext),
+                                                backingBean.getFormat(),
+                                                userContext));
+        return view;
     }
 
-    private Date parseEndDate(String endDate) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        Date date = sdf.parse(endDate);
-        return date;
-    }
-
-    private String getFileName(String endDate, String formatName) throws ParseException {
-        Date date = parseEndDate(endDate);
+    private String getFileName(Date endDate, String formatName) throws ParseException {
         SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
-        String fileNameDateFormatString = fileNameDateFormat.format(date);
+        String fileNameDateFormatString = fileNameDateFormat.format(endDate);
         String fileName =
             ServletUtil.makeWindowsSafeFileName(formatName + fileNameDateFormatString) + ".txt";
         return fileName;
@@ -474,5 +478,21 @@ public class ArchivedValuesExporterController {
             writer.newLine();
         }
         writer.close();
+    }
+    
+    public Meter getLocalizedPreviewMeter(YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Meter previewMeter = new Meter();
+        previewMeter.setMeterNumber(messageSourceAccessor.getMessage(previewMeterNumberKey));
+        previewMeter.setName(messageSourceAccessor.getMessage(previewMeterNameKey));
+        previewMeter.setAddress(messageSourceAccessor.getMessage(previewMeterAddressKey));
+        previewMeter.setRoute(messageSourceAccessor.getMessage(previewMeterRouteKey));
+        previewMeter.setPaoType(PaoType.MCT420CL);
+        return previewMeter;
+    }
+    
+    public String getLocalizedPreviewUOMValue(YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        return messageSourceAccessor.getMessage(previewUOMValueKey);
     }
 }

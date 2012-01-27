@@ -441,18 +441,18 @@
         <page name="archivedValueExporter.VIEW" type="BASIC">
             <menu></menu>
             <link>/spring/amr/archivedValuesExporter/view</link>
-                <pages>
-                    <page name="archivedValueExporter.EDIT" type="DETAIL">
-                        <menu></menu>
-                    </page>
-                    <page name="archivedValueExporter.CREATE" type="DETAIL">
-                        <menu></menu>
-                    </page>
-                </pages>
+            <pages>
+                <page name="archivedValueExporter.EDIT" type="DETAIL">
+                    <menu></menu>
+                </page>
+                <page name="archivedValueExporter.CREATE" type="DETAIL">
+                    <menu></menu>
+                </page>
                 <page name="archivedValueExporter.selectDevices" type="BASIC">
                     <menu></menu>
                     <link>/spring/amr/archivedValueExporter/selectDevices</link>
                 </page>
+            </pages>
         </page>
         <page name="analysis.home" type="BASIC">
             <menu></menu>

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttributeDao;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
@@ -28,7 +27,6 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
     @Autowired  private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
-    @Transactional
     public ExportAttribute create(ExportAttribute attribute) {
         attribute.setAttributeId(nextValueHelper.getNextValue(TABLE_NAME));
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -43,7 +41,6 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
     }
     
     @Override
-    @Transactional
     public boolean deleteByFormatId(int formatId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM");

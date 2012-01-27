@@ -1,6 +1,5 @@
 package com.cannontech.web.amr.archivedValuesExporter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,6 +8,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
@@ -17,8 +20,11 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.LazyList;
+import com.cannontech.roles.yukon.BillingRole;
 import com.google.common.collect.Lists;
 
 public class ArchivedValuesExporterBackingBean{
@@ -42,8 +48,8 @@ public class ArchivedValuesExporterBackingBean{
 
     private String popupToOpen;
     private int rowIndex = -1;
-    private String preview;
-    private String endDate;
+    private List<String> preview;
+    private Date endDate;
     private String pageNameKey;
     private String timezone;
 
@@ -55,8 +61,7 @@ public class ArchivedValuesExporterBackingBean{
                 fieldSelect.add(field);
             }
         }
-        SimpleDateFormat timezoneFormat = new java.text.SimpleDateFormat("z");
-        timezone = timezoneFormat.format(new Date());
+        endDate = new Date();
     }
 
     public DeviceCollection getDeviceCollection() {
@@ -280,7 +285,7 @@ public class ArchivedValuesExporterBackingBean{
         }
         if (exportField.getFieldType() == FieldType.ATTRIBUTE 
             && exportField.getAttributeField() != AttributeField.VALUE) {
-                exportField.setRoundingMode("");
+                exportField.setRoundingMode(null);
         }
     }
 
@@ -315,28 +320,29 @@ public class ArchivedValuesExporterBackingBean{
         } 
         return fieldType;
     }
+    
+    public  void resetFormat() {
+        setFormat(new ExportFormat());
+        getFormat().setDelimiter(",");
+    }
+    
+    public void resetField() {
+        setExportField(new ExportField());
+        setRowIndex(-1);
+        setSelectedFieldId(0);
+        getExportField().setMissingAttributeValue("Leave Blank");
+        String roundingMode =
+            ClientSession.getInstance().getRolePropertyValue(BillingRole.DEFAULT_ROUNDING_MODE);
+        getExportField().setRoundingMode(YukonRoundingMode.valueOf(roundingMode));
+    }
+    
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public String getPreview() {
-        return preview;
-    }
-
-    public void setPreview(List<String> preview) {
-        StringBuilder report = new StringBuilder();
-        for (int i = 0; i < preview.size(); i++) {
-            report.append(preview.get(i));
-            if (i != preview.size() - 1) {
-                report.append("<BR>");
-            }
-        }
-        this.preview = report.toString();
     }
 
     public String getPageNameKey() {
@@ -374,5 +380,21 @@ public class ArchivedValuesExporterBackingBean{
 
     public String getTimezone() {
         return timezone;
+    }
+    
+    public void setTimezone(DateTimeZone dateTimeZone){
+        if (timezone == null) {
+            DateTime dt = new DateTime(dateTimeZone);
+            DateTimeFormatter fmt = DateTimeFormat.forPattern("z");
+            timezone = fmt.print(dt);
+        }
+    }
+
+    public List<String> getPreview() {
+        return preview;
+    }
+
+    public void setPreview(List<String> preview) {
+        this.preview = preview;
     }
 }

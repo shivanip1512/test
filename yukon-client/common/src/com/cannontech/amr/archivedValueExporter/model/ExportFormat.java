@@ -2,6 +2,8 @@ package com.cannontech.amr.archivedValueExporter.model;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.util.LazyList;
 
 public class ExportFormat {
@@ -60,4 +62,28 @@ public class ExportFormat {
     public void addAttribute(ExportAttribute attribute) {
         attributes.add(attribute);
     }
+    
+    /**
+     * Formats header for display in generated report
+     * 
+     * @return 
+     */
+  /*  public String formatHeader() {
+        if (!StringUtils.isEmpty(header)) {
+            return header + System.getProperty("line.separator");
+        }
+        return "";
+    }*/
+
+    /**
+     * Formats footer for display in generated report
+     * 
+     * @return
+     */
+   /* public String formatFooter() {
+        if (!StringUtils.isEmpty(footer)) {
+            return  System.getProperty("line.separator") + footer;
+        }
+        return "";
+    }*/
 }

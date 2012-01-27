@@ -1,7 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="x" uri="http://java.sun.com/jstl/xml"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -9,7 +8,7 @@
 
 
 <cti:standardPage page="archivedValueExporter.${mode}" module="amr">
-<script type="text/javascript">
+    <script type="text/javascript">
     function ajaxSubmitForm(rowIndex, action, dialogSelector) {
         jQuery("#exporterForm input[name=rowIndex]").val(rowIndex);
         jQuery('#exporterForm').ajaxSubmit({'target' : dialogSelector, 'url' : action});
@@ -215,6 +214,10 @@
             var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
             ajaxSubmitForm(rowIndex, 'ajaxEditField', '#fieldDialog');
         });
+        jQuery('.editFieldBtn').click(function(event) {
+            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+            ajaxSubmitForm(rowIndex, 'ajaxEditField', '#fieldDialog');
+        });
         jQuery('.removeAttributeBtn').click(function(event) {
             var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'removeAttribute');
@@ -230,6 +233,9 @@
         jQuery('.upFieldBtn').click(function(event) {
             var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'moveFieldUp');
+        });
+        jQuery('.selectDevices').click(function(event) {
+            submitForm(-1, 'selectDevices');
         });
         function editAttributeOkPressed() {
             jQuery('#attributeDialog').dialog('close');
@@ -271,16 +277,16 @@
         jQuery('#cancelBtn').click(function(event) {
             submitForm(-1, 'cancel');
         });
-        jQuery('#selectDevicesBtn1').click(function(event) {
+        jQuery('#selectDevicesBtn2').click(function(event) {
             submitForm(-1, 'selectDevices');
         });
-        jQuery('#selectDevicesBtn2').click(function(event) {
+        jQuery('#selectDevicesBtn1').click(function(event) {
             submitForm(-1, 'selectDevices');
         });
         jQuery('#generateReportBtn').click(function(event) {
             submitForm(-1, 'generateReport');
         });
-        jQuery(document).delegate('#yukon_dialog_confirm', 'yukon_dialog_confirm_ok', function(event) {
+        jQuery(document).delegate('#yukon_dialog_confirm', 'yukonDialogConfirmOk', function(event) {
             event.preventDefault();
             Yukon.Dialog.ConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
@@ -293,11 +299,11 @@
                 readingPattern.val(value)
             }
         });
+        
     });
 </script>
 
     <cti:includeScript link="/JavaScript/yukonGeneral.js" />
-    <cti:includeScript link="SCRIPTACULOUS_EFFECTS" />
 
     <div id="attributeDialog">
         <c:if test="${backingBean.popupToOpen == 'addAttributePopup'}">
@@ -341,141 +347,147 @@
             </div>
         </dialog:inline>
 
-        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-            <cti:dataGridCell>
-                <cti:displayForPageEditModes modes="VIEW">
-                    <div class="smallBoldLabel notesSection">
-                        <c:choose>
-                            <c:when test="${deviceCollection ==  null}">
-                                <i:inline key=".noSelectedDevice" />
-                            </c:when>
-                            <c:otherwise>
-                                <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
-                            </c:otherwise>
-                        </c:choose>
-                        &nbsp &nbsp
-                        <cti:button id="selectDevicesBtn1" nameKey="selectDevices" />
-                    </div>
-                    <tags:nameValueContainer2 id="formatContainer">
-                        <tags:nameValue2 nameKey=".format">
-                            <c:if test="${not empty backingBean.allFormats}">
-                                <form:select path="selectedFormatId" onchange="submitForm(-1, 'view')">
-                                    <c:forEach var="format" items="${backingBean.allFormats}">
-                                        <form:option value="${format.formatId}" title="${format.formatId}">${format.formatName}</form:option>
-                                    </c:forEach>
-                                </form:select>
-                            </c:if>
-           
-                           &nbsp&nbsp <c:if test="${not empty backingBean.allFormats}">
-                                <cti:button id="copyBtn" nameKey="copy" styleClass="f_blocker" />
-                            </c:if>&nbsp <cti:button id="createBtn" nameKey="create" styleClass="f_blocker" />&nbsp
-                            <c:if test="${not empty backingBean.allFormats}">
-                                <cti:button id="editBtn" nameKey="edit" styleClass="f_blocker" />
-                            </c:if>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <br>
-                    <c:if test="${not empty backingBean.allFormats}">
-                        <tags:boxContainer2 nameKey="generateReport">
-                            <tags:nameValueContainer2>
-                                <tags:nameValue2 nameKey=".endDate">
-                                    <tags:dateInputCalendar fieldId="endDate" fieldName="endDate" fieldValue="${backingBean.endDate}"></tags:dateInputCalendar>
-                                    <i:inline key=".timezone" />${backingBean.timezone}
-                                    <c:choose>
-                                        <c:when test="${empty deviceCollection}">
-                                             <cti:button id="selectDevicesBtn2" nameKey="selectDevices" />
-                                        </c:when>
-                                        <c:otherwise>
-                                            <cti:button id="generateReportBtn" nameKey="generateReport" />
-                                        </c:otherwise>
-                                    </c:choose>
-                                </tags:nameValue2>
-                            </tags:nameValueContainer2>
-                        </tags:boxContainer2>
-                    </c:if>
+        <cti:displayForPageEditModes modes="VIEW">
 
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="VIEW">
+            <div class="smallBoldLabel notesSection marginBottom">
+                <c:choose>
+                    <c:when test="${deviceCollection ==  null}">
+                        <i:inline key=".noSelectedDevice" />
+                    </c:when>
+                    <c:otherwise>
+                    <div class="fl">
+                        <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
+                    </div>
+                        <cti:button nameKey="edit" styleClass="selectDevices fl" renderMode="image"  />
+                    </c:otherwise>
+                </c:choose>
+                &nbsp &nbsp
+                <c:if test="${empty deviceCollection}">
+                    <cti:button id="selectDevicesBtn1" nameKey="selectDevices" />
+                </c:if>
+            </div>
+            <tags:boxContainer2 nameKey="generateReport" styleClass="marginBottom">
+                <tags:nameValueContainer2 id="formatContainer" tableClass="marginBottom clear">
+                    <tags:nameValue2 nameKey=".format">
+                        <c:if test="${not empty backingBean.allFormats}">
+                            <form:select path="selectedFormatId" onchange="submitForm(-1, 'view')">
+                                <c:forEach var="format" items="${backingBean.allFormats}">
+                                    <form:option value="${format.formatId}" title="${format.formatId}">${format.formatName}</form:option>
+                                </c:forEach>
+                            </form:select>
+                        </c:if>
+                        <cti:button id="createBtn" nameKey="create" styleClass="f_blocker" renderMode="image" />
+                        <c:if test="${not empty backingBean.allFormats}">
+                            <cti:button id="copyBtn" nameKey="copy" styleClass="f_blocker" renderMode="image" />
+                            <cti:button id="editBtn" nameKey="edit" styleClass="f_blocker" renderMode="image" />
+                        </c:if>
+                    </tags:nameValue2>
                     <c:if test="${not empty backingBean.allFormats}">
-                        <br>
-                        <tags:boxContainer2 nameKey="preview">
-                   ${backingBean.preview}
-        </tags:boxContainer2>
-                        <br>
+                        <tags:nameValue2 nameKey=".endDate">
+                            <tags:setFormEditMode mode="${editMode}" />
+                            <tags:dateInputCalendar fieldId="endDate" fieldName="endDate" fieldValue="${backingBean.endDate}" springInput="true"></tags:dateInputCalendar>
+                            <tags:setFormEditMode mode="${mode}" />
+                            <i:inline key=".timezone" arguments="${backingBean.timezone}" />
+                            <c:choose>
+                                <c:when test="${empty deviceCollection}">
+                                    <cti:button id="selectDevicesBtn2" nameKey="selectDevices" />
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:button id="generateReportBtn" nameKey="generateReport" />
+                                </c:otherwise>
+                            </c:choose>
+                        </tags:nameValue2>
                     </c:if>
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="EDIT,CREATE">
-                    <tags:boxContainer2 nameKey="formatSettings">
-                        <tags:nameValueContainer2>
-                            <tags:inputNameValue nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
-                            <tags:nameValue2 nameKey=".delimiter">
-                                <select name="delimiterSelect" id="delimiterSelect" data-selection="#delimiterSelect" data-field-to-display="#delimiter" data-skip-disable="true">
-                                    <option value="," <c:if test="${backingBean.format.delimiter == ','}">selected="selected" </c:if>>
-                                        <i:inline key=".comma" />
-                                    </option>
-                                    <option value=";" <c:if test="${backingBean.format.delimiter ==  ';'}">selected="selected" </c:if>>
-                                        <i:inline key=".semicolon" />
-                                    </option>
-                                    <option value=":" <c:if test="${backingBean.format.delimiter  == ':'}">selected="selected" </c:if>>
-                                        <i:inline key=".colon" />
-                                    </option>
-                                    <option value="Custom"
-                                        <c:if test="${backingBean.format.delimiter  !=  ',' && backingBean.format.delimiter  != ';' && backingBean.format.delimiter  != ':'}">selected="selected" </c:if>>
-                                        <i:inline key=".custom" />
-                                    </option>
-                                </select>
-                                <tags:input id="delimiter" path="format.delimiter" size="1" maxlength="1" />
-                            </tags:nameValue2>
-                            <tags:inputNameValue nameKey=".header" path="format.header" size="100" maxlength="255" />
-                            <tags:inputNameValue nameKey=".footer" path="format.footer" size="100" maxlength="255" />
-                        </tags:nameValueContainer2>
-                    </tags:boxContainer2>
-                    <br>
-                    <tags:boxContainer2 nameKey="attributeSetup" id="attributes">
-                        <table class="compactResultsTable">
-                            <tr>
-                                <th class="nonwrapping"><i:inline key=".attribute" /></th>
-                                <th class="nonwrapping"><i:inline key=".dataSelection" /></th>
-                                <th class="nonwrapping"><i:inline key=".daysPrevious" /></th>
-                                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <th class="nonwrapping"><i:inline key=".actions" /></th>
-                                </cti:displayForPageEditModes>
-                            </tr>
-                            <c:set var="format" value="${backingBean.format}" />
-                            <c:forEach var="attribute" items="${backingBean.format.attributes}" varStatus="row">
-                                <tr data-row-index="${row.index}">
-                                    <td class="nonwrapping"><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
-                                            path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
-                                            path="format.attributes[${row.index}].daysPrevious" /> ${fn:escapeXml(attribute.attribute.description)}</td>
-                                    <td class="nonwrapping"><cti:msg2 key="${attribute.dataSelection}" /></td>
-                                    <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${attribute.daysPrevious}</spring:escapeBody>
-                                    </td>
-                                    <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                        <td class="nonwrapping"><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
-                                                styleClass="removeAttributeBtn f_blocker" renderMode="image" /></td>
-                                    </cti:displayForPageEditModes>
-                                </tr>
-                            </c:forEach>
+                </tags:nameValueContainer2>
+            </tags:boxContainer2>
+
+            <c:if test="${not empty backingBean.allFormats}">
+            <tags:boxContainer2 nameKey="preview" styleClass="marginBottom">
+                <div class="code">
+                <!-- Please do not format this code -->
+                    <pre><c:forEach var="preview" items="${backingBean.preview}">${preview}
+</c:forEach></pre>
+                </div>
+            </tags:boxContainer2>
+            </c:if>
+        </cti:displayForPageEditModes>
+
+
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <tags:boxContainer2 nameKey="formatSettings" styleClass="marginBottom">
+                <tags:nameValueContainer2>
+                    <tags:inputNameValue nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
+                    <tags:nameValue2 nameKey=".delimiter">
+                        <select name="delimiterSelect" id="delimiterSelect" data-selection="#delimiterSelect" data-field-to-display="#delimiter" data-skip-disable="true">
+                            <option value="," <c:if test="${backingBean.format.delimiter == ','}">selected="selected" </c:if>>
+                                <i:inline key=".comma" />
+                            </option>
+                            <option value=";" <c:if test="${backingBean.format.delimiter ==  ';'}">selected="selected" </c:if>>
+                                <i:inline key=".semicolon" />
+                            </option>
+                            <option value=":" <c:if test="${backingBean.format.delimiter  == ':'}">selected="selected" </c:if>>
+                                <i:inline key=".colon" />
+                            </option>
+                            <option value="Custom"
+                                <c:if test="${backingBean.format.delimiter  !=  ',' && backingBean.format.delimiter  != ';' && backingBean.format.delimiter  != ':'}">selected="selected" </c:if>>
+                                <i:inline key=".custom" />
+                            </option>
+                        </select>
+                        <tags:input id="delimiter" path="format.delimiter" size="1" maxlength="1" />
+                    </tags:nameValue2>
+                    <tags:inputNameValue nameKey=".header" path="format.header" size="100" maxlength="255" />
+                    <tags:inputNameValue nameKey=".footer" path="format.footer" size="100" maxlength="255" />
+                </tags:nameValueContainer2>
+            </tags:boxContainer2>
+
+
+
+            <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="marginBottom attributeSetupContainer">
+                <table class="compactResultsTable">
+                    <tr>
+                        <th class="nonwrapping"><i:inline key=".attribute" /></th>
+                        <th class="nonwrapping"><i:inline key=".dataSelection" />
+                        </th>
+                        <th class="nonwrapping"><i:inline key=".daysPrevious" />
+                        </th>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <th class="nonwrapping"><i:inline key=".actions" />
+                            </th>
+                        </cti:displayForPageEditModes>
+                    </tr>
+                    <c:set var="format" value="${backingBean.format}" />
+                    <c:forEach var="attribute" items="${backingBean.format.attributes}" varStatus="row">
+                        <tr data-row-index="${row.index}">
+                            <td class="nonwrapping"><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
+                                    path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
+                                    path="format.attributes[${row.index}].daysPrevious" /> ${fn:escapeXml(attribute.attribute.description)}</td>
+                            <td class="nonwrapping"><cti:msg2 key="${attribute.dataSelection}" />
+                            </td>
+                            <td class="nonwrapping">${fn:escapeXml(attribute.daysPrevious)}</td>
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                <tr>
-                                    <td align="right" colspan="4"><br>
-                                    <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
-                                    </td>
-                                </tr>
+                                <td class="nonwrapping"><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
+                                        styleClass="removeAttributeBtn f_blocker" renderMode="image" />
+                                </td>
                             </cti:displayForPageEditModes>
-                        </table>
-                    </tags:boxContainer2>
-                    <br>
-                </cti:displayForPageEditModes>
-            </cti:dataGridCell>
-        </cti:dataGrid>
+                        </tr>
+                    </c:forEach>
+                    <cti:displayForPageEditModes modes="CREATE,EDIT">
+                        <tr>
+                            <td align="right" colspan="4"><br> <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
+                            </td>
+                        </tr>
+                    </cti:displayForPageEditModes>
+                </table>
+            </tags:boxContainer2>
+        </cti:displayForPageEditModes>
+
         <c:if test="${(not empty backingBean.allFormats && mode == 'VIEW') || (mode != 'VIEW')}">
-            <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields">
+            <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields" styleClass="marginBottom">
                 <table class="compactResultsTable">
                     <tr>
                         <th class="nonwrapping"><i:inline key=".field" /></th>
                         <th class="nonwrapping"><i:inline key=".missingValue" /></th>
-                        <th class="nonwrapping"><i:inline key=".roundingMode" /></th>
+                        <th class="nonwrapping"><i:inline key=".rounding" /></th>
                         <th class="nonwrapping"><i:inline key=".pattern" /></th>
                         <th class="nonwrapping"><i:inline key=".fieldSize" /></th>
                         <th class="nonwrapping"><i:inline key=".padding" /></th>
@@ -485,11 +497,12 @@
                         <th class="nonwrapping"></th>
                     </tr>
                     <c:forEach var="field" items="${backingBean.format.fields}" varStatus="row">
-                        <tr data-row-index="${row.index}">
-                            <td class="nonwrapping"><i:inline key="${field}" /> <c:if test="${field.fieldType == 'ATTRIBUTE'}"> - <i:inline key="${field.attributeField}" />
+                        <tr data-row-index="${row.index}" class="<tags:alternateRow odd="" even="altRow"/>">
+                            <td class="nonwrapping"><i:inline key="${field}" /> <c:if test="${field.fieldType == 'ATTRIBUTE'}">(<cti:msg2 key="${field.attribute.dataSelection}" />,${field.attribute.daysPrevious}) - <i:inline key="${field.attributeField}" />
                                 </c:if></td>
-                            <td class="nonwrapping"><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody></td>
-                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${field.roundingMode}</spring:escapeBody>
+                            <td class="nonwrapping"><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody>
+                            </td>
+                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><i:inline key="${field.roundingMode}" /></spring:escapeBody>
                             </td>
                             <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${field.pattern}</spring:escapeBody>
                             </td>
@@ -504,15 +517,15 @@
                             <td class="nonwrapping"><cti:msg2 key="${field.padSide}" />&nbsp&nbsp${field.padChar}</td>
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <td class="nonwrapping"><c:choose>
-                                        <c:when test="${row.index == 0}">
-                                            <cti:button nameKey="up.disabled" styleClass="upFieldBtn f_blocker" renderMode="image" />
+                                        <c:when test="${row.first}">
+                                            <cti:button nameKey="up.disabled" renderMode="image" disabled="true"/>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:button nameKey="up" styleClass="upFieldBtn f_blocker" renderMode="image" />
                                         </c:otherwise>
                                     </c:choose> <c:choose>
-                                        <c:when test="${row.index == fn:length(backingBean.format.fields)-1}">
-                                            <cti:button nameKey="down.disabled" styleClass="downFieldBtn f_blocker" renderMode="image" />
+                                        <c:when test="${row.last}">
+                                            <cti:button nameKey="down.disabled" renderMode="image" disabled="true"/>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:button nameKey="down" styleClass="downFieldBtn f_blocker" renderMode="image" />
@@ -537,21 +550,25 @@
                             <tags:hidden path="format.fields[${row.index}].missingAttributeValue" />
                         </tr>
                     </c:forEach>
+                    
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <tr>
-                            <td align="right" colspan="7"><br>
-                            <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" />
-                            </td>
+                            <td align="right" colspan="7"><br> <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" /></td>
                         </tr>
                     </cti:displayForPageEditModes>
+                    
                 </table>
             </tags:boxContainer2>
         </c:if>
+        
         <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <br>
             <tags:boxContainer2 nameKey="preview">
-               ${backingBean.preview}
-        </tags:boxContainer2>
+                <div class="code">
+                <!-- Please do not format this code -->
+                    <pre><c:forEach var="preview" items="${backingBean.preview}">${preview}
+</c:forEach></pre>
+                </div>
+            </tags:boxContainer2>
             <div class="pageActionArea">
                 <cti:button id="saveBtn" nameKey="save" styleClass="f_blocker" />
                 <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${format.formatName}" />

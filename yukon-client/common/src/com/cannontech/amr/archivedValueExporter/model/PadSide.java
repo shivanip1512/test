@@ -13,8 +13,4 @@ public enum PadSide implements DisplayableEnum {
     public String getFormatKey() {
         return keyPrefix + "padSide." + name();
     }
-
-    public String getKey() {
-        return name();
-    }
 }

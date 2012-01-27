@@ -1,14 +1,11 @@
 package com.cannontech.amr.archivedValueExporter.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttributeDao;
@@ -95,10 +92,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE FormatID").eq(formatId);
-            List <ExportFormat> formats = yukonJdbcTemplate.query(sql, rowMapper);
-            if(!formats.isEmpty()){
-                format  = formats.get(0);
-            }
+            format = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("The format id supplied does not exist.");
         }
@@ -137,9 +131,9 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
                 final ExportFormat format = new ExportFormat();
                 format.setFormatId(rs.getInt("FormatID"));
                 format.setFormatName(rs.getStringSafe("FormatName"));
-                format.setDelimiter(rs.getStringSafe("Delimiter"));
-                format.setHeader(rs.getStringSafe("Header"));
-                format.setFooter(rs.getStringSafe("Footer"));
+                format.setDelimiter(SqlUtils.convertDbValueToString(rs.getString("Delimiter")));
+                format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
+                format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
                 format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
                 format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
                 return format ;

@@ -16,6 +16,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -53,17 +54,21 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             }
             String attributeField = "";
             if (field.getAttributeField() != null) {
-                attributeField = SqlUtils.convertStringToDbValue(field.getAttributeField().name());
+                attributeField = field.getAttributeField().name();
             }
+            attributeField = SqlUtils.convertStringToDbValue(attributeField);
             String pattern = SqlUtils.convertStringToDbValue(field.getPattern());
             int maxLength = field.getMaxLength();
             String padChar = SqlUtils.convertStringToDbValue(field.getPadChar());
-            String padSide = "";
+            String padSide = SqlUtils.convertStringToDbValue("");
             if(field.getPadSide() != null){
                 padSide = field.getPadSide().name();
             }
-            String roundingMode = SqlUtils.convertStringToDbValue(field.getRoundingMode());
-            String missingAttribute = "";
+            String roundingMode = SqlUtils.convertStringToDbValue("");
+            if(field.getRoundingMode() != null){
+                roundingMode = field.getRoundingMode().name();
+            }
+            String missingAttribute =  SqlUtils.convertStringToDbValue("");
             if(field.getMissingAttribute() != null){
                 missingAttribute  = field.getMissingAttribute().name();
             }
@@ -77,7 +82,6 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
     }
 
     @Override
-    @Transactional
     public boolean deleteByFormatId(int formatId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM");
@@ -111,7 +115,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     field.setFieldId(rs.getInt("FieldID"));
                     field.setFormatId(rs.getInt("FormatID"));
                     field.setFieldType(rs.getEnum("FieldType", FieldType.class));
-                    if (StringUtils.isNotBlank(rs.getString("AttributeID"))) {
+                    if (StringUtils.isNotBlank(SqlUtils.convertDbValueToString(rs.getString("AttributeID")))) {
                         final ExportAttribute attribute = new ExportAttribute();
                         attribute.setFormatId(rs.getInt("FormatID"));
                         attribute.setAttributeId(rs.getInt("AttributeID"));
@@ -121,17 +125,18 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                         field.setAttribute(attribute);
                         field.setAttributeField(rs.getEnum("AttributeField", AttributeField.class));
                     }
-                    field.setPattern(rs.getStringSafe("Pattern"));
+                    field.setPattern(SqlUtils.convertDbValueToString(rs.getString("Pattern")));
                     field.setMaxLength(rs.getInt("MaxLength"));
-                    field.setPadChar(rs.getStringSafe("PadChar"));
-                    if(!StringUtils.isEmpty(rs.getString("PadSide"))){
+                    field.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
+                    if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("PadSide")))){
                         field.setPadSide(rs.getEnum("PadSide", PadSide.class));
                     }
-                    field.setRoundingMode(rs.getStringSafe("RoundingMode"));
-                    field.setMissingAttributeValue(rs.getStringSafe("MissingAttributeValue"));
-                    if (!StringUtils.isEmpty(rs.getString("MissingAttribute"))) {
-                        field.setMissingAttribute(rs.getEnum("MissingAttribute",
-                                                             MissingAttribute.class));
+                    if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("RoundingMode")))){
+                        field.setRoundingMode(rs.getEnum("RoundingMode", YukonRoundingMode.class));
+                    };
+                    field.setMissingAttributeValue(SqlUtils.convertDbValueToString(rs.getString("MissingAttributeValue")));
+                    if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("MissingAttribute")))) {
+                        field.setMissingAttribute(rs.getEnum("MissingAttribute",MissingAttribute.class));
                     }
                     return field;
                 }
