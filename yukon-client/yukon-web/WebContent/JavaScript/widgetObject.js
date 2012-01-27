@@ -19,7 +19,7 @@ function JsWidgetObject(shortName, parameters) {
     	data: params,
     	success: function(data, status, xhr) {
     		_self.onSuccess(xhr);
-    		jQuery("#" + _self.container).html(data);
+    		jQuery(document.getElementById(_self.container)).html(data);
     	}
     });
   };
@@ -48,7 +48,7 @@ function JsWidgetObject(shortName, parameters) {
     	data: params,
     	success: function(data, status, xhr) {
     		_self.onSuccess(xhr);
-    		jQuery("#" + _self.container).html(data);
+    		jQuery(document.getElementById(_self.container)).html(data);
     	}
     });
   };
@@ -65,7 +65,7 @@ function JsWidgetObject(shortName, parameters) {
     	data: params,
     	success: function(data, status, xhr) {
     		_self.onSuccess(xhr);
-    		jQuery("#" + container).html(data);
+    		jQuery(document.getElementById(container)).html(data);
     	}
     });
   };
@@ -104,7 +104,7 @@ function JsWidgetObject(shortName, parameters) {
     	data: oldParams,
     	success: function(data, status, xhr) {
     		localSuccess(xhr);
-    		jQuery("#" + _self.container).html(data);
+    		jQuery(document.getElementById(_self.container)).html(data);
     	}
     });
   };
@@ -140,7 +140,7 @@ function JsWidgetObject(shortName, parameters) {
     	data: oldParams,
     	success: function(data) {
     		localSuccess();
-    		jQuery("#" + args.containerID).html(data);
+    		jQuery(document.getElementById(args.containerID)).html(data);
     	}
     });
   };
@@ -174,7 +174,7 @@ function JsWidgetObject(shortName, parameters) {
     	data: oldParams,
     	success: function(data, status, xhr) {
     		_self.onSuccess(xhr);
-    		jQuery("#" + useContainer).html(data);
+    		jQuery(document.getElementById(useContainer)).html(data);
     	},
     	complete: function() {
     		jQuery("#" + actionSpan + " .actionLinkAnchor").show();
