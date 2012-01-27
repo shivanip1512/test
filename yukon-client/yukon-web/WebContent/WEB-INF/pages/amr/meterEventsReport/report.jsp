@@ -6,9 +6,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
+
+	<cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
 
     <script type="text/javascript">
 	    jQuery(document).ready(function() {
@@ -149,14 +150,6 @@
         }
     </script>
 
-	<dialog:inline nameKey="filter.onlyActiveEvents.help" okEvent="none" on="#activeEventsHelp" options="{'modal' : false, 'resizable' : false}">
-		<cti:msg2 key=".filter.onlyActiveEvents.help.text" htmlEscape="false"/>
-	</dialog:inline>
-
-	<dialog:inline nameKey="filter.onlyLatestEvents.help" okEvent="none" on="#latestEventsHelp" options="{'modal' : false, 'resizable' : false}">
-		<cti:msg2 key=".filter.onlyLatestEvents.help.text" htmlEscape="false"/>
-	</dialog:inline>
-
 	<form:form id="eventsFilterForm" action="report" method="get"commandName="backingBean">
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
@@ -174,12 +167,18 @@
 			
 						<tags:nameValue2 nameKey=".filter.onlyActiveEvents">
 							<form:checkbox path="onlyActiveEvents" cssClass="fl"/>
-							<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+							<span class="focusableFieldHolder">
+								<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+							</span>
+				            <span class="focusedFieldDescription"><i:inline key=".filter.onlyActiveEvents.help.text"/></span>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
 							<form:checkbox path="onlyLatestEvent" cssClass="fl"/>
-							<a id="latestEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+							<span class="focusableFieldHolder">
+								<a id="latestEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+							</span>
+							<span class="focusedFieldDescription"><i:inline key=".filter.onlyLatestEvents.help.text"/></span>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
@@ -225,16 +224,6 @@
 					<tags:nameValueContainer2>
 						<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">
 							<c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}"/>
-							<span class="selectedDevicesLink anchorUnderlineHover">
-								<c:choose>
-									<c:when test="${isDeviceGroup}">
-										<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
-									</c:when>
-									<c:otherwise>
-										<cti:msg key="${backingBean.deviceCollection.description}" />
-									</c:otherwise>
-								</c:choose>
-							</span>
 							<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
 								<c:if test="${isDeviceGroup}">
 									<span class="viewGroupLink fr">
@@ -248,6 +237,16 @@
 									<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
 								</span>
 							</c:if>
+							<span class="selectedDevicesLink anchorUnderlineHover">
+								<c:choose>
+									<c:when test="${isDeviceGroup}">
+										<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
+									</c:when>
+									<c:otherwise>
+										<cti:msg key="${backingBean.deviceCollection.description}" />
+									</c:otherwise>
+								</c:choose>
+							</span>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevicesCount">

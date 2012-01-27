@@ -27,15 +27,10 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateTo">To</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents">Only Active Events</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents.help.title">Only Active Events</entry>
-    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents.help.text"><![CDATA[
-    	Only display past events that have an active state.
-    	<br><br>
-    	An active event usually means the meter has
-    	<br> gone from a normal state to a different specific state.
-   	]]></entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyActiveEvents.help.text">Only display past events that have an active state. An active event usually means the meter has gone from a normal state to a different specific state.</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvent">Only Latest Event</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvents.help.title">Only Latest Events</entry>
-    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvents.help.text">Only display the most recent event for each type of event that has occurred</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyLatestEvents.help.text">Only display the most recent state for each type of event that has occurred</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.includeDisabledDevices">Include Disabled Devices</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.eventTypesRow">Event Types</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.tree.all">All</entry>

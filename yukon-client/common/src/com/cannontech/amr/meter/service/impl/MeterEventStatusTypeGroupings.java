@@ -98,6 +98,9 @@ public class MeterEventStatusTypeGroupings {
     
     private static void buildTamperTypes() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
+        //PLC
+        builder.add(BuiltInAttribute.ZERO_USAGE_FLAG);
+
         //PLC & RFN
         builder.add(BuiltInAttribute.REVERSE_POWER_FLAG);
         builder.add(BuiltInAttribute.TAMPER_FLAG);
@@ -106,9 +109,6 @@ public class MeterEventStatusTypeGroupings {
     
     private static void buildOutageTypes() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
-        //PLC
-        builder.add(BuiltInAttribute.ZERO_USAGE_FLAG);
-
         //PLC & RFN
         builder.add(BuiltInAttribute.POWER_FAIL_FLAG);
         

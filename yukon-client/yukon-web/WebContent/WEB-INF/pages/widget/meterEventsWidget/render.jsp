@@ -40,9 +40,11 @@
     		<cti:param name="collectionType" value="idList"/>
     		<cti:param name="idList.ids" value="${deviceId}"/>
     	</cti:url>
-    	<a href="${meterEventsReportUrl}" class="meterEventsReportLink">
-    		<i:inline key=".allEvents"/>
-   		</a>
+		<c:if test="${not empty valueMap}">
+	    	<a href="${meterEventsReportUrl}" class="meterEventsReportLink">
+	    		<i:inline key=".allEvents"/>
+	   		</a>
+   		</c:if>
         <tags:widgetActionUpdate hide="false" method="render" nameKey="refresh" container="${widgetParameters.widgetId}_events"/>
     </div>
 </div>
