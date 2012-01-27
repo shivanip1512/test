@@ -8,13 +8,13 @@
     <xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
     
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-            This is a text message object used by the send text message response.
-        </xsd:documentation>
-    </xsd:annotation>
-    
     <xsd:complexType name="TextMessageResult">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This is a text message object used by the send text message response.
+            </xsd:documentation>
+        </xsd:annotation>
+        
         <xsd:sequence>
             <xsd:element name="serialNumber" type="yukon:SerialNumber" maxOccurs="unbounded"/>
             <xsd:element name="message" type="xsd:string"/>

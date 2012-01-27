@@ -8,13 +8,13 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="./TextMessage.xsd"/>
     
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-            This web service sends a text message to a thermostat.
-        </xsd:documentation>
-    </xsd:annotation>
-    
     <xsd:complexType name="SendTextMessageRequest">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This web service sends a text message to a thermostat.
+            </xsd:documentation>
+        </xsd:annotation>
+        
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>

@@ -8,13 +8,13 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="./TextMessageResult.xsd"/>
     
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-            This is the response returned for a sent text message.  The sending of a text message is done through the sendTextMessageRequest.
-        </xsd:documentation>
-    </xsd:annotation>
-    
     <xsd:complexType name="SendTextMessageResponse">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This is the response returned for a sent text message.  The sending of a text message is done through the sendTextMessageRequest.
+            </xsd:documentation>
+        </xsd:annotation>
+    
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
