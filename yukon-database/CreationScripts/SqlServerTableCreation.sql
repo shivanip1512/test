@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/4/2012 4:18:41 PM                          */
+/* Created on:     1/27/2012 1:45:31 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9515,6 +9515,7 @@ INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Cont
 INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Controls access to Validation Processing');
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
+INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');

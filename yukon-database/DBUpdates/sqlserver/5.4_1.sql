@@ -19,6 +19,10 @@ GO
 /* @error ignore-end */
 /* End YUK-10536 */
 
+/* Start YUK-10565 */
+INSERT INTO YukonRoleProperty VALUES (-20219, -202, 'Meter Events', 'false', 'Controls access to Meter Events.');
+/* End YUK-10565 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
