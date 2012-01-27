@@ -24,12 +24,12 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
                  var self = Yukon.FieldHelper;
                  
                  //setup select elements
-                 jQuery('.focusableFieldHolder select').bind('blur', self.blurSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur', self.blurSelect);
                  jQuery('.focusableFieldHolder select').bind('change', self.focusSelect);
-                 jQuery('.focusableFieldHolder select').bind('focus', self.focusSelect);
-                 jQuery('.focusableFieldHolder select').bind('active', self.focusSelect);
-                 jQuery('.focusableFieldHolder select').bind('mouseenter', self.showTooltip);
-                 jQuery('.focusableFieldHolder select').bind('mouseleave', self.blurSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus', self.focusSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('active', self.focusSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseenter', self.showTooltip);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseleave', self.blurSelect);
                  
                  //setup input elements
                  jQuery('.focusableFieldHolder input').bind('blur', self.blurInput);
@@ -45,6 +45,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
          },
          
          blurInput: function(event){
+        	 clearTimeout(Yukon.FieldHelper._timeout);
              var inputField = jQuery(event.currentTarget);
              var defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
              jQuery('#descriptionPopup').hide();
@@ -60,6 +61,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
          },
          
          blurSelect: function(event){
+        	 clearTimeout(Yukon.FieldHelper._timeout);
              var inputField = jQuery(event.currentTarget);
              var defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
              jQuery('#descriptionPopup').hide();
