@@ -18,6 +18,7 @@
     <cti:msg2 var="titleMsg" key=".title"/>
     <cti:msg2 var="okBtnMsg" key=".ok"/>
     <cti:msg2 var="cancelBtnMsg" key=".cancel"/>
+    <cti:msg2 var="closeBtnMsg" key=".close"/>
 </cti:msgScope>
 
 <c:if test="${empty pageScope.id}">
@@ -35,8 +36,11 @@ function open_${id}() {
         </c:if>
         okButton.click = function() { dialogDiv.trigger('${okEvent}'); }
         buttons.push(okButton);
+        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
     </c:if>
-    buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+    <c:if test="${okEvent == 'none'}">
+        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+    </c:if>
     var dialogOpts = {
             'title' : '${titleMsg}',
             'position' : 'center',

@@ -36,6 +36,7 @@
     <cti:msg2 var="titleMsg" key=".title"/>
     <cti:msg2 var="okBtnMsg" key=".ok"/>
     <cti:msg2 var="cancelBtnMsg" key=".cancel"/>
+    <cti:msg2 var="closeBtnMsg" key=".close"/>
 </cti:msgScope>
 
 <script type="text/javascript">
@@ -47,7 +48,9 @@ jQuery(document).ready(function() {
         okButton.click = function() { dialogDiv.trigger('${okEvent}'); }
         buttons.push(okButton);
     </c:if>
-    buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+    <c:if test="${okEvent == 'none'}">
+        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+    </c:if>
     var dialogOpts = {
             'title' : '${titleMsg}',
             'position' : 'center',
