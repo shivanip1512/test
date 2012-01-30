@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    
+    <xsd:complexType name="ManualThermostatSetting">
+        <xsd:sequence>
+            <xsd:element name="serialNumber" type="yukon:SerialNumber" maxOccurs="unbounded"/>
+            <xsd:element name="mode" type="yukon:ThermostatMode" />
+            <xsd:element name="fanState" type="yukon:ThermostatFan"/>
+            <xsd:element name="temperature" type="yukon:Temperature"/>
+            <xsd:element name="holdTemperature" type="xsd:boolean" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+</xsd:schema>

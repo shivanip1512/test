@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sendManualThermostatSettingRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../SendManualThermostatSettingRequest.xsd"
+           version="1.0">
+    
+    <manualThermostatSettingList>
+        <manualThermostatSetting>
+            <serialNumber>98765400011</serialNumber>
+            <mode>Heat</mode>
+            <fanState>Auto</fanState>
+            <temperature unit="F">76</temperature>
+        </manualThermostatSetting>
+    </manualThermostatSettingList>
+</sendManualThermostatSettingRequest>

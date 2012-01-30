@@ -33,4 +33,36 @@
             <xsd:restriction base="xsd:anyType" />
         </xsd:complexContent>
     </xsd:complexType>
+    
+    <xsd:simpleType name="ThermostatMode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Auto" />
+            <xsd:enumeration value="Cool" />
+            <xsd:enumeration value="Heat" />
+            <xsd:enumeration value="Off" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="ThermostatFan">
+            <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="Auto" />
+                <xsd:enumeration value="Circulate" />
+                <xsd:enumeration value="On" />
+            </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Temperature">
+        <xsd:simpleContent >
+            <xsd:extension base="xsd:float">
+                <xsd:attribute name="unit">
+                    <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:pattern value="F|C" />
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
 </xsd:schema>

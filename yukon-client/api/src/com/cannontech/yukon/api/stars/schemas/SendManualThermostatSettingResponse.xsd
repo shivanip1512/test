@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="./TextMessageResult.xsd"/>
+    
+    <xsd:complexType name="SendManualThermostatSettingResponse">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This is the response returned from sending a manually thermostat setting command.  The sending of the manual thermostat setting command is is done through the sendManualThermostatSettingRequest.
+            </xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="manualThermostatSettingList">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:choice>
+                                    <xsd:element name="success" />
+                                    <xsd:element name="failure" type="yukon:Failure" />
+                                </xsd:choice>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="sendManualThermostatSettingResponse" type="yukon:SendManualThermostatSettingResponse"/>
+
+</xsd:schema>
