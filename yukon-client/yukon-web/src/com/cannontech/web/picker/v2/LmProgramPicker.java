@@ -10,7 +10,7 @@ import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
 
-public class LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker extends PaoPermissionCheckingPicker {
+public class LmProgramPicker extends PaoPermissionCheckingPicker {
 	private LmProgramForEnergyCompanyIdFilterFactory energyCompanyFlterFactory;
 
 	@Override
