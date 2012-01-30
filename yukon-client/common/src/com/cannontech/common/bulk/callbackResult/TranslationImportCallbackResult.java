@@ -26,6 +26,10 @@ public class TranslationImportCallbackResult extends CollectingBulkProcessorCall
         this.resultsId = resultsId;
     }
     
+    public String getResultsId() {
+        return resultsId;
+    }
+    
     public List<String> getHeaders() {
         return headers;
     }
