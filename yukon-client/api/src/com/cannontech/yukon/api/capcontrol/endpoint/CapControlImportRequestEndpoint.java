@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.xml.validation.XmlValidationException;
+import org.springframework.xml.xpath.XPathException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.creation.model.CapControlXmlImport;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
@@ -30,6 +34,7 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.collect.Lists;
 
@@ -43,26 +48,50 @@ public class CapControlImportRequestEndpoint {
     
 	@PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="capControlImportRequest")
 	public Element invoke(Element capControlImportRequest, LiteYukonUser user) {
-		XmlVersionUtils.verifyYukonMessageVersion(capControlImportRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-		Element response = new Element("capControlImportResponse", ns);
-		
-		SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(capControlImportRequest);
-
-		List<HierarchyImportResult> hierarchyResults = performHierarchyImport(requestTemplate);
-		List<CbcImportResult> cbcResults = performCbcImport(requestTemplate);
-		
-		Element hierarchyList = createHierarchyResponseElement(hierarchyResults);
-		Element cbcList = createCbcResponseElement(cbcResults);
-		
-		if (hierarchyList != null) {
-		    response.addContent(hierarchyList);
-		}
-		
-		if (cbcList != null) {
-		    response.addContent(cbcList);
-		}
-		
-		return response;
+	    log.debug("import request received");
+	    
+	    XmlVersionUtils.verifyYukonMessageVersion(capControlImportRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        Element response = new Element("capControlImportResponse", ns);
+	    try {
+    		SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(capControlImportRequest);
+    
+    		List<HierarchyImportResult> hierarchyResults = performHierarchyImport(requestTemplate);
+    		List<CbcImportResult> cbcResults = performCbcImport(requestTemplate);
+    		
+    		Element hierarchyList = createHierarchyResponseElement(hierarchyResults);
+    		Element cbcList = createCbcResponseElement(cbcResults);
+    		
+    		if (hierarchyList != null) {
+    		    response.addContent(hierarchyList);
+    		}
+    		
+    		if (cbcList != null) {
+    		    response.addContent(cbcList);
+    		}
+	    } catch (XmlValidationException xmle) {
+            log.error("XML validation error", xmle);
+            Element error = XMLFailureGenerator.generateFailure(response, xmle, "InvalidResponseType",
+                                                                xmle.getMessage());
+            response.addContent(error);
+        } catch (XPathException xpe) {
+            log.error("XML validation error", xpe);
+            Element error = XMLFailureGenerator.generateFailure(response, xpe, "XmlParseError",
+                                                                xpe.getMessage());
+            response.addContent(error);
+        } catch (DOMException dome) {
+            log.error("XML validation error", dome);
+            Element error = XMLFailureGenerator.generateFailure(response, dome, "XmlParseError",
+                                                                dome.getMessage());
+            response.addContent(error);
+        } catch (Exception exception) {
+            log.error("other error", exception);
+            Element error = XMLFailureGenerator.generateFailure(response, exception, "OtherError",
+                                                                exception.getMessage());
+            response.addContent(error);
+        }
+        
+        log.debug("returning response");
+        return response;
 	}
 	
 	private Element createHierarchyResponseElement(List<HierarchyImportResult> results) {
@@ -415,6 +444,21 @@ public class CapControlImportRequestEndpoint {
 		String mapLocationId = hierarchyTemplate.evaluateAsString("y:mapLocationId");
 		if (mapLocationId != null) {
 			data.setMapLocationId(mapLocationId);
+		}
+		
+		String opState = hierarchyTemplate.evaluateAsString("y:operationalState");
+		if (opState != null) {
+		    try {
+		        BankOpState bankOpState = BankOpState.getStateByName(opState);
+		        data.setBankOpState(bankOpState);
+		    } catch (IllegalArgumentException e) {
+		        throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_OPERATIONAL_STATE);
+		    }
+		}
+		
+		Integer capBankSize = hierarchyTemplate.evaluateAsInt("y:capBankSize");
+		if (capBankSize != null) {
+		    data.setCapBankSize(capBankSize);
 		}
 		
 		return data;

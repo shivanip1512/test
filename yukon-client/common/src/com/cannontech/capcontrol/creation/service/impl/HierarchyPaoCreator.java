@@ -66,6 +66,12 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
             if (data.getMapLocationId() != null) {
                 pao.setMapLocationId(data.getMapLocationId());
             }
+            if (data.getBankOpState() != null) {
+                pao.setOperationalState(data.getBankOpState());
+            }
+            if (data.getCapBankSize() != null) {
+                pao.setBankSize(data.getCapBankSize());
+            }
             populateYukonPaObjectData(pao, data);
             return pao;
         }

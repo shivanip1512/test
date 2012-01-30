@@ -43,6 +43,8 @@
             <description>Import Test</description>
             <disabled>N</disabled>
             <mapLocationId>T1S1SS1F1C1</mapLocationId>
+            <operationalState>StandAlone</operationalState>
+            <capBankSize>42</capBankSize>
         </capBank>
     </hierarchyList>
     

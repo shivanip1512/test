@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
 import com.cannontech.capcontrol.creation.CapControlImporterHierarchyCsvField;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
@@ -195,6 +196,21 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			data.setParent(line[parentColumn]);
 		}
 		
+		Integer opStateColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.OPERATIONAL_STATE);
+		if (opStateColumn != null && !StringUtils.isBlank(line[opStateColumn])) {
+		    try {
+		        BankOpState bankOpState = BankOpState.getStateByName(line[opStateColumn]);
+		        data.setBankOpState(bankOpState);
+		    } catch (IllegalArgumentException e) {
+		        throw new CapControlImportException("Operational State field contained invalid data.");
+		    }
+		}
+		
+		Integer capBankSizeColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.CAPBANK_SIZE);
+		if (capBankSizeColumn != null && !StringUtils.isBlank(line[capBankSizeColumn])) {
+		    data.setCapBankSize(Integer.valueOf(line[capBankSizeColumn]));
+		}
+		
 		return data;
 	}
 	
@@ -273,6 +289,9 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        	} catch (CapControlHierarchyFileImporterException e) {
 	        		log.error(e.getMessage());
 	        		results.add(new HierarchyImportResult(data, HierarchyImportResultType.MISSING_DATA));
+	        	} catch (CapControlImportException e) {
+	        	    log.error(e.getMessage());
+	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.MISSING_DATA));
 	        	} finally {
 	        		line = csvReader.readNext();
 	        	}

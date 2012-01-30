@@ -13,6 +13,8 @@ public enum CapControlImporterHierarchyCsvField {
 	DISABLED("Disabled", false),
 	MAP_LOCATION_ID("MapLocationId", false),
 	IMPORT_ACTION("Import Action", true),
+	OPERATIONAL_STATE("Operational State", false),
+	CAPBANK_SIZE("Capbank Size", false),
 	;
 	
 	private final String columnName;

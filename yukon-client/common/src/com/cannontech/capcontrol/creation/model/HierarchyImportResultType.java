@@ -14,6 +14,7 @@ public enum HierarchyImportResultType implements DatabaseRepresentationSource {
 	INVALID_TYPE("Invalid Hierarchy Type"),
 	INVALID_IMPORT_ACTION("Invalid Import Action"),
 	INVALID_DISABLED_VALUE("Invalid Disabled Value"),
+	INVALID_OPERATIONAL_STATE("Invalid Capbank Operational State"),
 	MISSING_DATA("Missing Data"),
 	OBJECT_EXISTS("Object Already Exists"),
 	NO_SUCH_OBJECT("Object Doesn't Exist"),

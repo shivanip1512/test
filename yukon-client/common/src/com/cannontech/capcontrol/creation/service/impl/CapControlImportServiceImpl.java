@@ -344,6 +344,12 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (hierarchyImportData.getMapLocationId() != null) {
                 capBank.setMapLocationId(hierarchyImportData.getMapLocationId());
             }
+            if (hierarchyImportData.getBankOpState() != null) {
+                capBank.setOperationalState(hierarchyImportData.getBankOpState());
+            }
+            if (hierarchyImportData.getCapBankSize() != null) {
+                capBank.setBankSize(hierarchyImportData.getCapBankSize());
+            }
             
             break;
         default:

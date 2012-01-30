@@ -40,10 +40,21 @@
 					<xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 					<xsd:element name="disabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 					<xsd:element name="mapLocationId" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+                    <xsd:element name="operationalState" minOccurs="0" maxOccurs="1" type="yukon:CapBankOperationalState"/>
+                    <xsd:element name="capBankSize" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+    
+    <xsd:simpleType name="CapBankOperationalState">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Fixed"/>
+            <xsd:enumeration value="Switched"/>
+            <xsd:enumeration value="StandAlone"/>
+            <xsd:enumeration value="Uninstalled"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 	
 	<xsd:simpleType name="ImportAction">
         <xsd:restriction base="xsd:string">
