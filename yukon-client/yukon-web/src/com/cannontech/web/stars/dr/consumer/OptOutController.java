@@ -186,23 +186,24 @@ public class OptOutController extends AbstractConsumerController {
         }
 
         model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
-        boolean hasDeviceSelection =
-            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
-        boolean blanketDevices = (optOutableInventories.size() == 1 && !hasDeviceSelection);
+        
+        model.addAttribute("displayableInventories", displayableInventories);
+        model.addAttribute("optOutCounts", optOutCounts);
+        
+        boolean shouldOptOutAllDevices =
+            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_ALL_DEVICES, user);
+
+        // blanketDevices:  case 1: exactly 1 device - don't show individual device selection
+        //                  case 2: more than one device AND RESIDENTIAL_..._DEVICES property set FALSE - show individual selection
+        boolean blanketDevices = ((optOutableInventories.size() == 1) || (optOutableInventories.size() > 1 && shouldOptOutAllDevices));
         if (blanketDevices) {
             Integer[] inventoryIds = new Integer[optOutableInventories.size()];
             for (int index = 0; index < optOutableInventories.size(); index++) {
                 inventoryIds[index] = optOutableInventories.get(index).getInventoryId();
             }
-            optOutBackingBean.setInventoryIds(inventoryIds);
-           
-            return optOutQuestions(customerAccount, userContext,  
-                                   optOutBackingBean, bindingResult,
-                                   flashScope, model);
-        }
 
-        model.addAttribute("displayableInventories", displayableInventories);
-        model.addAttribute("optOutCounts", optOutCounts);
+            return "consumer/optout/confirmOptOutAllDevices.jsp";
+        }
         return "consumer/optout/optOutDeviceSelection.jsp";
     }
 

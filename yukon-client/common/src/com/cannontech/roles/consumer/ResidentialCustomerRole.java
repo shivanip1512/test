@@ -39,7 +39,7 @@ public interface ResidentialCustomerRole {
 	
     public static final int SIGN_OUT_ENABLED = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 199;
     public static final int CREATE_LOGIN_FOR_ACCOUNT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 200;
-    public static final int OPT_OUT_DEVICE_SELECTION = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 201;
+    public static final int OPT_OUT_ALL_DEVICES = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 201;
     public static final int ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 202;
     public static final int ENROLLMENT_PER_DEVICE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 203;
 }

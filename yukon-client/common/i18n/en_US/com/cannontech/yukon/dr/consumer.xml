@@ -353,7 +353,7 @@
     <entry key="yukon.dr.consumer.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
     <entry key="yukon.dr.consumer.optout.allDevicesCurrentlyOptedOut">All of the devices are already opted out for today.</entry>
     
-    <!-- confirmCancle.jsp -->
+    <!-- confirmCancel.jsp -->
     <entry key="yukon.dr.consumer.optout.confirmCancel.question">Are you sure you want to cancel the opt out for {0}?</entry>
     <entry key="yukon.dr.consumer.optout.cancelOptOut">Cancel Opt Out</entry>
     <entry key="yukon.dr.consumer.optout.noCancelOptOut">Don't Cancel Opt Out</entry>
@@ -379,6 +379,14 @@
     <entry key="yukon.dr.consumer.optoutlist.save">Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.cancel">Cancel</entry>
 
+    <!--  confirmOptOutAllDevices.jsp -->
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.description">The following programs will be opted out:</entry>
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.hardware">Hardware</entry>
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.programAssigned">Program Assigned</entry>
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.save">Opt Out</entry>
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.cancel">Cancel</entry>
+    
     <!--  optOutConfirm.jsp -->
     <entry key="yukon.dr.consumer.optoutconfirm.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutconfirm.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
