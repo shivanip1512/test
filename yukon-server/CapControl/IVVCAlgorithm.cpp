@@ -228,20 +228,20 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            bool hasStaleData           = checkForStaleData( request, timeNow, subbus );
+            bool invalidData            = validatePointDataReceived( request, timeNow, subbus );
             bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
 
-            if ( hasStaleData || hasAutoModeRegulator )
+            if ( invalidData || hasAutoModeRegulator )
             {
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                    if ( hasStaleData )
+                    if ( invalidData )
                     {
                         dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                             << "  Analysis Interval: Stale Data." << std::endl;
+                             << "  Analysis Interval: Invalid Data." << std::endl;
                     }
 
                     if ( hasAutoModeRegulator )
@@ -652,23 +652,27 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 }//execute
 
 
-bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus)
+/*
+    This guy will run a validation check on the received point data request.
+        We are looking for non-stale data and that all of the required BusPower points are present and accounted for.
+*/
+bool IVVCAlgorithm::validatePointDataReceived( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus )
 {
     using namespace Cti::Messaging::CapControl;
 
     const long subbusId = subbus->getPaoId();
 
-    bool hasStaleData = false;
+    bool hasStaleOrIncompleteData = false;
 
     DataCheckResult result;
 
     if ( request->hasRequestType( CbcRequestType ) )
     {
-        result = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
+        result = checkDataStatuses( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleData = true;
+            hasStaleOrIncompleteData = true;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -683,11 +687,11 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
 
     if ( request->hasRequestType( RegulatorRequestType ) )
     {
-        result = checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
+        result = checkDataStatuses( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleData = true;
+            hasStaleOrIncompleteData = true;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -702,11 +706,11 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
 
     if ( request->hasRequestType( OtherRequestType ) )
     {
-        result = checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
+        result = checkDataStatuses( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleData = true;
+            hasStaleOrIncompleteData = true;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -719,13 +723,74 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
         }
     }
 
-    if ( request->hasRequestType( BusPowerRequestType ) )
+    // check that all BusPower points exist
+
+    bool missingBusPowerPoint = false;
+
+    PointValueMap valueMap = request->getPointValues( BusPowerRequestType );
+
+    // check watt point
+
+    long busWattPointId = subbus->getCurrentWattLoadPointId();
+
+    if ( busWattPointId > 0 )
     {
-        result = checkForStaleData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
+        if ( valueMap.count( busWattPointId ) == 0 )
+        {
+            // the watt point attached to the bus is missing from the point data request
+            missingBusPowerPoint = true;
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - IVVC Analysis Error: Missing Watt Point Data Request for Bus: "
+                 << subbus->getPaoName() << std::endl;
+        }
+    }
+    else
+    {
+        // there is no watt point attached to the bus.
+        missingBusPowerPoint = true;
+
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Bus: " << subbus->getPaoName() << std::endl;
+    }
+
+    // check var point(s)
+
+    PointIdList busVarPointIds = subbus->getCurrentVarLoadPoints();
+
+    for each ( long busVarPointId in busVarPointIds )
+    {
+        if ( busVarPointId > 0 )
+        {
+            if ( valueMap.count( busVarPointId ) == 0 )
+            {
+                // the var point attached to the bus is missing from the point data request
+                missingBusPowerPoint = true;
+
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Analysis Error: Missing Var Point Data Request for Bus: "
+                     << subbus->getPaoName() << std::endl;
+            }
+        }
+        else
+        {
+            // there is no var point attached to the bus.
+            missingBusPowerPoint = true;
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName() << std::endl;
+        }
+    }
+
+    // if all points are attached to the bus and present in the request --> validate them for their statuses
+
+    if ( ! missingBusPowerPoint )
+    {
+        result = checkDataStatuses( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleData = true;
+            hasStaleOrIncompleteData = true;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -737,23 +802,12 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
                                                                                  100.0 ) );
         }
     }
-    else    // subbus is missing watt or var points.
-    {
-        hasStaleData = true;
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-            dout << CtiTime() << " - IVVC: " << subbus->getPaoName()
-                 << " - Missing Bus Watt or Var points.  Cannot perform analysis." << std::endl;
-        }
-    }
-
-    return hasStaleData;
+    return ( hasStaleOrIncompleteData || missingBusPowerPoint );
 }
 
 
-IVVCAlgorithm::DataCheckResult IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
+IVVCAlgorithm::DataCheckResult IVVCAlgorithm::checkDataStatuses(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
 {
     double ratio = request->ratioComplete(pointRequestType);
     if (ratio < desiredRatio)
