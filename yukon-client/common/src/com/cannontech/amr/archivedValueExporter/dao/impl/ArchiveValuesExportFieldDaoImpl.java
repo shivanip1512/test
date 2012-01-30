@@ -52,11 +52,10 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             if (field.getFieldType().equals(FieldType.ATTRIBUTE)) {
                 attributeID = field.getAttribute().getAttributeId();
             }
-            String attributeField = "";
+            String attributeField = SqlUtils.convertStringToDbValue("");
             if (field.getAttributeField() != null) {
                 attributeField = field.getAttributeField().name();
             }
-            attributeField = SqlUtils.convertStringToDbValue(attributeField);
             String pattern = SqlUtils.convertStringToDbValue(field.getPattern());
             int maxLength = field.getMaxLength();
             String padChar = SqlUtils.convertStringToDbValue(field.getPadChar());

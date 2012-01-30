@@ -36,12 +36,22 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ExportReportGeneratorImpl.
+ */
 public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
 
     @Autowired private AttributeService attributeService;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
 
+    /*The value to be returned in case the meter information we
+    were looking for was not found, and the user elected to skip the record.
+    This string is defined as SKIP_RECORD_SKIP_RECORD because the value SKIP_RECORD might be selected
+    as a Fixed Value, and SKIP_RECORD_SKIP_RECORD is longer than the 20 characters allowed for MissingAttributeValue, thus
+    making it impossible to be used as Fixed Value. 
+    */
     private static String SKIP_RECORD = "SKIP_RECORD_SKIP_RECORD";
 
     private static double previewValue = 1234546.00;
@@ -75,6 +85,7 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return report;
     }
 
+
     public List<String> generateReport(List<Meter> meters, ExportFormat format, Date stopDate,
                                        YukonUserContext userContext) {
 
@@ -103,6 +114,13 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return report;
     }
 
+    /**
+     * This method builds preview attribute data from localized preview values. 
+     * The values are hardcoded in ArchivedValuesExporterController. 
+     *
+     * @param format
+     * @return 
+     */
     private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getPreviewAttributeData(ExportFormat format) {
         Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData =
             new HashMap<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>>();
@@ -121,6 +139,16 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return attributeData;
     }
 
+    /**
+     * This method builds attribute data. For each field with a field type of an attribute, the meter data is gathered.
+     * Format defines the rules on how the data should be selected. After the data is selected, it is stored in map with the key 
+     * - fieldId and the values - the data for all the devices (meters) selected by the user.
+     *
+     * @param meters
+     * @param format
+     * @param stopDate
+     * @return 
+     */
     private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getAttributeData(List<Meter> meters,
                                                                                                 ExportFormat format,
                                                                                                 DateTime stopDate) {
@@ -167,6 +195,16 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return attributeData;
     }
 
+    /**
+     * Builds the data row for the report. If the the value was not found, and a user
+     * selected to skip a record, it returns "SKIP_RECORD_SKIP_RECORD".
+     *
+     * @param format
+     * @param meter
+     * @param timeZone
+     * @param attributeData
+     * @return 
+     */
     private String getDataRow(ExportFormat format,
                               Meter meter,
                               DateTimeZone timeZone,
@@ -181,8 +219,10 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                 case LEAVE_BLANK:
                     break;
                 case FIXED_VALUE:
+                    // User have selected a missing attribute value to display in case value was not found
                     value = field.getMissingAttributeValue();
                     break;
+                    //Skipping the record
                 case SKIP_RECORD:
                     return SKIP_RECORD;
                 }
@@ -195,6 +235,15 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return dataRow.toString();
     }
 
+    /**
+     * Gets the value to display in the report. Returns "" if the value was not found.
+     *
+     * @param meter
+     * @param field
+     * @param timeZone
+     * @param attributeData
+     * @return
+     */
     private String getValue(Meter meter,
                             ExportField field,
                             DateTimeZone timeZone,
@@ -243,6 +292,16 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return value;
     }
 
+    /**
+     * Finds point value quality holder for a meter. This method looks at the attribute map. First, it finds the collection
+     * of meter data by the fieldId, then it finds point value quality holder using the paoIdentifier from the meter. 
+     * If Point value quality holder was not found, null is returned.
+     *
+     * @param meter
+     * @param field
+     * @param attributeData
+     * @return
+     */
     private PointValueQualityHolder findPointValueQualityHolder(Meter meter,
                                                                 ExportField field,
                                                                 Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
@@ -261,6 +320,13 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return pointValueQualityHolder;
     }
 
+    /**
+     * Gets the quality. Returns "" if the quality was not found.
+     *
+     * @param field
+     * @param pointValueQualityHolder
+     * @return 
+     */
     private String getQuality(ExportField field, PointValueQualityHolder pointValueQualityHolder) {
         String value = "";
         if (pointValueQualityHolder != null) {
@@ -269,6 +335,13 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         return value;
     }
 
+    /**
+     * Gets the value. Returns "" if the value was not found.
+     *
+     * @param field the field
+     * @param pointValueQualityHolder
+     * @return the value
+     */
     private String getValue(ExportField field,
                             PointValueQualityHolder pointValueQualityHolder) {
         String formattedValue = "";
@@ -279,6 +352,14 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
 
     }
 
+    /**
+     * Gets the timestamp. Returns "" if the timestamp was not found.
+     *
+     * @param field
+     * @param timeZone
+     * @param pointValueQualityHolder
+     * @return
+     */
     private String getTimestamp(ExportField field,
                                 DateTimeZone timeZone,
                                 PointValueQualityHolder pointValueQualityHolder) {
@@ -292,6 +373,13 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
 
     }
 
+    /**
+     * Gets the UOM value. Returns "" if the value was not found. If the meter.getDeviceId() is -1, returns the preview value.
+     *
+     * @param meter
+     * @param field
+     * @return
+     */
     private String getUOMValue(Meter meter, ExportField field) {
         String valueString = "";
         try {
@@ -313,6 +401,13 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
 
     }
 
+    /**
+     * Gets the start date.
+     *
+     * @param attribute
+     * @param stopDate
+     * @return
+     */
     private DateTime getStartDate(ExportAttribute attribute, DateTime stopDate) {
         return stopDate.minus(Period.days(attribute.getDaysPrevious()));
     }

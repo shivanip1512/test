@@ -65,6 +65,9 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".readingPattern" rowClass="ATTRIBUTE_VALUE">
                     <select name="patternSelect" id="patternSelect" data-selection="#patternSelect" data-field-to-display="#readingPattern" data-skip-disable="true">
+                        <option value="#####" <c:if test="${backingBean.valuePattern ==  '#####'}">selected="selected" </c:if>>
+                            <cti:msg2 key=".#####" />
+                        </option>
                         <option value="###.###" <c:if test="${backingBean.valuePattern ==  '###.###'}">selected="selected" </c:if>>
                             <cti:msg2 key=".###.###" />
                         </option>
@@ -72,7 +75,7 @@
                             <cti:msg2 key=".####.##" />
                         </option>
                         <option value="Custom"
-                            <c:if test="${backingBean.valuePattern  !=  '####.##' && not empty backingBean.valuePattern && backingBean.valuePattern  != '###.###'}">selected="selected" </c:if>>
+                            <c:if test="${backingBean.valuePattern  !=  '####.##' && not empty backingBean.valuePattern && backingBean.valuePattern  != '###.###' && backingBean.valuePattern  != '#####'}">selected="selected" </c:if>>
                             <cti:msg2 key=".custom" />
                         </option>
                     </select>
@@ -81,11 +84,11 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".timestampPattern" rowClass="ATTRIBUTE_TIMESTAMP">
                     <select id="timestampPatternSelect" data-selection="#timestampPatternSelect" data-field-to-display="#timestampPattern" data-skip-disable="true">
-                        <option value="dd/MM/yyyy" <c:if test="${backingBean.timestampPattern ==  'dd/MM/yyyy' || empty backingBean.timestampPattern}">selected="selected" </c:if>>
-                            <cti:msg2 key=".dd/MM/yyyy" />
-                        </option>
-                        <option value="MM/dd/yyyy" <c:if test="${backingBean.timestampPattern  == 'MM/dd/yyyy'}">selected="selected" </c:if>>
+                         <option value="MM/dd/yyyy" <c:if test="${backingBean.timestampPattern  == 'MM/dd/yyyy' || empty backingBean.timestampPattern}">selected="selected" </c:if>>
                             <cti:msg2 key=".MM/dd/yyyy" />
+                        </option>
+                        <option value="dd/MM/yyyy" <c:if test="${backingBean.timestampPattern ==  'dd/MM/yyyy'}">selected="selected" </c:if>>
+                            <cti:msg2 key=".dd/MM/yyyy" />
                         </option>
                         <option value="hh:mm:ss a" <c:if test="${backingBean.timestampPattern  == 'hh:mm:ss a'}">selected="selected" </c:if>>
                             <cti:msg2 key=".hh:mm:ss a" />

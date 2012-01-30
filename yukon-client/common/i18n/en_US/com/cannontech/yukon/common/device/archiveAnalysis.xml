@@ -203,10 +203,11 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.colon">Colon ( : )</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.custom">Custom</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noFormat">No Format</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.#####">#####</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.###.###">###.###</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.####.##">####.##</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.dd/MM/yyyy">dd/MM/yyyy</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.MM/dd/yyyy">MM/dd/yyyy</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dd/MM/yyyy">dd/MM/yyyy</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.hh:mm:ss a">hh:mm:ss a</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.HH:mm:ss">HH:mm:ss</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.space">Space</entry>

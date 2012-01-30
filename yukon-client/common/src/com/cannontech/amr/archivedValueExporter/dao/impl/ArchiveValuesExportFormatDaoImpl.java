@@ -154,7 +154,12 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         };
         return mapper;
     }
-        
+     
+    /**
+     * Creates attributes and fields.
+     *
+     * @param format
+     */
     private void createAttributesAndFields(ExportFormat format){
         archiveValuesExportFieldDao.deleteByFormatId(format.getFormatId());
         archiveValuesExportAttributeDao.deleteByFormatId(format.getFormatId());
@@ -168,6 +173,12 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         archiveValuesExportFieldDao.create(format.getFields());
     }
     
+    /**
+     * Gets all attributes by formatId
+     *
+     * @param format
+     * @param attribute
+     */
     private List<ExportField> getExportFieldsByAttributeId(ExportFormat format, ExportAttribute attribute){
         List<ExportField> exportFields = new ArrayList<ExportField>();
         for(ExportField field:format.getFields()){
@@ -178,6 +189,11 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         return exportFields;
     }
     
+    /**
+     * Updates attributes with formatId
+     *
+     * @param format
+     */
     private void updateAttributesWithFormatId(ExportFormat format){
         if(!format.getAttributes().isEmpty()){
             for(ExportAttribute attribute: format.getAttributes()){
@@ -186,12 +202,23 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         }
     }
     
+    /**
+     * Updates fields with formatId
+     *
+     * @param format
+     */
     private void updateFieldsWithFormatId(ExportFormat format){
         for (ExportField field : format.getFields()) {
             field.setFormatId(format.getFormatId());
         }
     }
     
+    /**
+     * Updates fields with attributeId
+     * 
+     * @param exportField
+     * @param newAttribute
+     */
     private void updateFieldsWithAttributeId(List<ExportField> exportFields, ExportAttribute newAttribute){
         for (ExportField field : exportFields) {
             field.setAttribute(newAttribute);
