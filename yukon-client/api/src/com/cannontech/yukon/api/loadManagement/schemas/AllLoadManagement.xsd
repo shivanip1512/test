@@ -7,7 +7,6 @@
             
     <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-    <xsd:include schemaLocation="../../common/schemas/Failure.xsd" />
     <xsd:include schemaLocation="CancelAllCurrentOverridesRequest.xsd" />
     <xsd:include schemaLocation="CancelAllCurrentOverridesResponse.xsd" />
     <xsd:include schemaLocation="CountOverridesTowardsLimitRequest.xsd" />

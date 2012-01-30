@@ -6,7 +6,6 @@
             elementFormDefault="qualified" version="1.0">
     
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-	<xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
     <xsd:include schemaLocation="ScenarioProgramsList.xsd"/>
     
     <xsd:complexType name="ListAllScenarioProgramsResponse">

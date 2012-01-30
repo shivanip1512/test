@@ -7,7 +7,6 @@
             
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"></xsd:include>
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"></xsd:include>
-    <xsd:include schemaLocation="../../common/schemas/Failure.xsd"></xsd:include>
 
     <xsd:include schemaLocation="ControllableDevice.xsd"></xsd:include>
     <xsd:include schemaLocation="ControllableDeviceResult.xsd"></xsd:include>

@@ -5,7 +5,7 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified" version="1.0">
 	
-    <xsd:include schemaLocation="./Failure.xsd"/>
+    <xsd:include schemaLocation="./YukonMessage.xsd"/>
     <xsd:include schemaLocation="./Types.xsd"/>
 
     <xsd:annotation>

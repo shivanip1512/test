@@ -11,9 +11,9 @@ import org.springframework.core.style.ToStringCreator;
 
 public class CommandDefinition implements Comparable<CommandDefinition> {
 
-	String name = null;
-    List<String> commandStringList = new ArrayList<String>();
-    Set<PointIdentifier> affectedPointList = new HashSet<PointIdentifier>();
+	private String name = null;
+	private List<String> commandStringList = new ArrayList<String>();
+	private Set<PointIdentifier> affectedPointList = new HashSet<PointIdentifier>();
 
     public CommandDefinition(String name) {
 		super();

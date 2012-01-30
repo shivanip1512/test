@@ -6,7 +6,7 @@
             
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">
-            General type definitions for yukon message elements
+            General type definitions for Yukon message elements.
         </xsd:documentation>
 	</xsd:annotation>
     
@@ -33,7 +33,15 @@
             <xsd:restriction base="xsd:anyType" />
         </xsd:complexContent>
     </xsd:complexType>
-    
+
+    <xsd:complexType name="ReturnToken">
+        <xsd:annotation>
+            <xsd:documentation>Used in requests to indicate that the requester wants the web
+            service to return a token instead of blocking.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="tokenExpires" type="xsd:dateTime"/>
+    </xsd:complexType>
+
     <xsd:simpleType name="ThermostatMode">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Auto" />

@@ -7,7 +7,6 @@
             
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"></xsd:include>
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"></xsd:include>
-    <xsd:include schemaLocation="../../common/schemas/Failure.xsd"></xsd:include>
     <xsd:include schemaLocation="../../common/schemas/CustomerAccount.xsd"></xsd:include>
     <xsd:include schemaLocation="../../common/schemas/CustomerAccountResult.xsd"></xsd:include>
 

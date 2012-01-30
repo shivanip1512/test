@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api" 
+            elementFormDefault="qualified" version="1.0">
+            
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+            General type definitions for Yukon message elements pertaining specifically to PAOs.
+        </xsd:documentation>
+	</xsd:annotation>
+    
+    <xsd:complexType name="DeviceGroup">
+        <xsd:attribute name="value" use="required" type="xsd:string"/>
+    </xsd:complexType>
+    <xsd:complexType name="PaoName">
+        <xsd:attribute name="value" use="required" type="xsd:string"/>
+    </xsd:complexType>
+    <xsd:complexType name="MeterNumber">
+        <xsd:attribute name="value" use="required" type="xsd:string"/>
+    </xsd:complexType>
+    <xsd:complexType name="CarrierAddress">
+        <xsd:attribute name="value" use="required" type="xsd:unsignedInt"/>
+    </xsd:complexType>
+    <xsd:complexType name="PaoId">
+        <xsd:attribute name="value" use="required" type="xsd:int"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="PaoCollection">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="deviceGroup" maxOccurs="unbounded" type="yukon:DeviceGroup"/>
+            <xsd:element name="paoName" maxOccurs="unbounded" type="yukon:PaoName"/>
+            <xsd:element name="meterNumber" maxOccurs="unbounded" type="yukon:MeterNumber"/>
+            <xsd:element name="carrierAddress" maxOccurs="unbounded" type="yukon:CarrierAddress"/>
+            <xsd:element name="paoId" maxOccurs="unbounded" type="yukon:PaoId"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="Pao">
+        <xsd:choice>
+            <xsd:element name="paoName" type="yukon:PaoName"/>
+            <xsd:element name="meterNumber" type="yukon:MeterNumber"/>
+            <xsd:element name="carrierAddress" type="yukon:CarrierAddress"/>
+            <xsd:element name="paoId" type="yukon:PaoId"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+</xsd:schema>

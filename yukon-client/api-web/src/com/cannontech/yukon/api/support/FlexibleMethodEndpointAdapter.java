@@ -34,11 +34,11 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableSet;
 
 public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter {
-    private YukonUserDao yukonUserDao;
-    private AuthDao authDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private AuthDao authDao;
 
     private static final Class<?> validParameterTypesArray[] = {Element.class, LiteYukonUser.class, YukonUserContext.class};
-    private Set<Class<?>> validParameterTypes = ImmutableSet.of(validParameterTypesArray);
+    private Set<Class<?>> validParameterTypes = ImmutableSet.copyOf(validParameterTypesArray);
 
     protected boolean supportsInternal(MethodEndpoint methodEndpoint) {
         Method method = methodEndpoint.getMethod();
@@ -47,7 +47,7 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         Element.class.isAssignableFrom(method.getReturnType());
 
         Class<?>[] parameterTypes = method.getParameterTypes();
-        Set<Class<?>> parameterTypesSet = ImmutableSet.of(parameterTypes);
+        Set<Class<?>> parameterTypesSet = ImmutableSet.copyOf(parameterTypes);
 
         boolean goodParameters = validParameterTypes.containsAll(parameterTypesSet);
 
@@ -137,16 +137,4 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         }
         return yukonUser;
     }
-
-
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
-
 }
