@@ -36,4 +36,6 @@ public interface MeteringRole {
     public static final int STATUS_POINT_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 17; // -20217
     /** Access to Porter Response Processing Monitoring */
     public static final int PORTER_RESPONSE_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 18; // -20218
+    /** Access to Meter Events features */
+    public static final int METER_EVENTS = OperatorRoleDefs.METERING_PROPERTYID_BASE - 19; // -20219
 }

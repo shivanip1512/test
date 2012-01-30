@@ -11,7 +11,7 @@
     <cti:checkRolesAndProperties value="PHASE_DETECT">
         <a href="${phaseDetectUrl}"><i:inline key=".phaseDetect"/></a><br/>
     </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP">
+    <cti:checkRolesAndProperties value="METER_EVENTS">
         <a href="${meterEventsReportUrl}"><i:inline key=".meterEventsReport"/></a><br/>
     </cti:checkRolesAndProperties>
 </div>
