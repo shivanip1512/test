@@ -72,11 +72,9 @@ public class OperatorThermostatManualController {
         
         // single thermostat
         if (thermostatIdsList.size() == 1) {
-            event = customerEventDao.getLastManualEvent(inventoryId);
             modelMap.addAttribute("pageNameSuffix", "single");
         // multiple thermostats
         } else {
-            event = new ThermostatManualEvent();
             modelMap.addAttribute("pageNameSuffix", "multiple");
         }
         
@@ -84,6 +82,7 @@ public class OperatorThermostatManualController {
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         String temperatureUnit = customer.getTemperatureUnit();
         modelMap.addAttribute("temperatureUnit", temperatureUnit);
+        event = customerEventDao.getLastManualEvent(inventoryId);
         modelMap.addAttribute("event", event);
         
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
