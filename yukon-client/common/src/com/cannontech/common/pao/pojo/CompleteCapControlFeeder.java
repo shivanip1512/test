@@ -3,9 +3,8 @@ package com.cannontech.common.pao.pojo;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
-import com.cannontech.database.YNBoolean;
 
-@YukonPao(tableName="CapControlFeeder", idColumnName="FeederId", paoTypes=PaoType.CAP_CONTROL_FEEDER)
+@YukonPao(idColumnName="FeederId", paoTypes=PaoType.CAP_CONTROL_FEEDER)
 public class CompleteCapControlFeeder extends CompleteYukonPaObject {
     private int currentVarLoadPointId = 0;
     private int currentWattLoadPointId = 0;
@@ -13,9 +12,9 @@ public class CompleteCapControlFeeder extends CompleteYukonPaObject {
     private int phaseB = 0;
     private int phaseC = 0;
     private String mapLocationId = "0";
-    private YNBoolean multiMonitorControl = YNBoolean.NO;
-    private YNBoolean usePhaseData = YNBoolean.NO;
-    private YNBoolean controlFlag = YNBoolean.NO;
+    private boolean multiMonitorControl = false;
+    private boolean usePhaseData = false;
+    private boolean controlFlag = false;
 
     @YukonPaoField
     public int getCurrentVarLoadPointId() {
@@ -72,29 +71,29 @@ public class CompleteCapControlFeeder extends CompleteYukonPaObject {
     }
 
     @YukonPaoField
-    public YNBoolean getMultiMonitorControl() {
+    public boolean getMultiMonitorControl() {
         return multiMonitorControl;
     }
 
-    public void setMultiMonitorControl(YNBoolean multiMonitorControl) {
+    public void setMultiMonitorControl(boolean multiMonitorControl) {
         this.multiMonitorControl = multiMonitorControl;
     }
 
     @YukonPaoField
-    public YNBoolean getUsePhaseData() {
+    public boolean getUsePhaseData() {
         return usePhaseData;
     }
 
-    public void setUsePhaseData(YNBoolean usePhaseData) {
+    public void setUsePhaseData(boolean usePhaseData) {
         this.usePhaseData = usePhaseData;
     }
 
     @YukonPaoField
-    public YNBoolean getControlFlag() {
+    public boolean getControlFlag() {
         return controlFlag;
     }
 
-    public void setControlFlag(YNBoolean controlFlag) {
+    public void setControlFlag(boolean controlFlag) {
         this.controlFlag = controlFlag;
     }
 
@@ -112,16 +111,15 @@ public class CompleteCapControlFeeder extends CompleteYukonPaObject {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((controlFlag == null) ? 0 : controlFlag.hashCode());
+        result = prime * result + (controlFlag ? 1231 : 1237);
         result = prime * result + currentVarLoadPointId;
         result = prime * result + currentVoltLoadPointId;
         result = prime * result + currentWattLoadPointId;
         result = prime * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result =
-            prime * result + ((multiMonitorControl == null) ? 0 : multiMonitorControl.hashCode());
+        result = prime * result + (multiMonitorControl ? 1231 : 1237);
         result = prime * result + phaseB;
         result = prime * result + phaseC;
-        result = prime * result + ((usePhaseData == null) ? 0 : usePhaseData.hashCode());
+        result = prime * result + (usePhaseData ? 1231 : 1237);
         return result;
     }
 

@@ -8,7 +8,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
 
-@YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId")
+@YukonPao(idColumnName="PaObjectId")
 public class CompleteYukonPaObject implements com.cannontech.common.pao.YukonPao {
     private PaoIdentifier paoIdentifier;
 

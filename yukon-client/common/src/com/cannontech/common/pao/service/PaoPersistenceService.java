@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.service.impl;
+package com.cannontech.common.pao.service;
 
 import java.util.List;
 

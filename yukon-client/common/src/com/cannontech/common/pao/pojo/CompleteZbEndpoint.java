@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(tableName="ZbEndpoint", idColumnName="DeviceId", paoTypes=PaoType.ZIGBEE_ENDPOINT)
+@YukonPao(idColumnName="DeviceId", paoTypes=PaoType.ZIGBEE_ENDPOINT)
 public class CompleteZbEndpoint extends CompleteDevice {
     private String installCode;
     private String macAddress;

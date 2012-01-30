@@ -4,7 +4,7 @@ import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 
-@YukonPaoPart(tableName = "DeviceScanRate", idColumnName = "deviceId")
+@YukonPaoPart(idColumnName = "deviceId")
 public class CompleteDeviceScanRate {
     private int intervalRate = 300;
     private int scanGroup = 0;

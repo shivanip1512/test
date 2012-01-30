@@ -10,23 +10,51 @@ import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.cannontech.common.pao.annotation.YukonPaoPart;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.google.common.base.Function;
 
-public class DbFieldMapping {
-    private static final Logger log = YukonLogManager.getLogger(DbFieldMapping.class);
-    
-    public static Function<DbFieldMapping, String> colNameOfField =
-        new Function<DbFieldMapping, String>() {
-        @Override
-        public String apply(DbFieldMapping input) {
-            return input.dbColumnName;
-        }
-    };
+/**
+ * This class is used to store the information about methods annotated with the 
+ * {@link YukonPaoField} annotation.
+ */
+/*package*/ class PaoFieldMetaData {
+    private static final Logger log = YukonLogManager.getLogger(PaoFieldMetaData.class);
 
+    public static Function<PaoFieldMetaData, String> colNameOfField =
+        new Function<PaoFieldMetaData, String>() {
+            @Override
+            public String apply(PaoFieldMetaData input) {
+                return input.dbColumnName;
+            }
+        };
+
+    /**
+     * Stores the information about the annotated property of the Complete class (generally a 
+     * getter method) and is used to retrieve the getter and setter methods for the retrieval 
+     * and saving processes for a Complete class object.
+     */
     private PropertyDescriptor propertyDescriptor;
+    
+    /**
+     * Used to map a class's annotated property to a specific column name in the database. 
+     * This value is retrieved from the <code>columnName</code> property of the 
+     * {@link YukonPaoField} annotation. In many cases, it is omitted on the YukonPaoField 
+     * annotation and the default value of <code>propertyDescriptor.getName()</code> is used,
+     * but in special cases where the column name doesn't match what we refer to the field
+     * as in the code, dbColumnName tells the {@link PaoPersistenceService} how to get the 
+     * data from the Complete object to its rightful column in the database.
+     */
     private String dbColumnName;
+    
+    /**
+     * Specifies whether or not the annotated field corresponds to a class which is defined
+     * as a {@link YukonPaoPart}.
+     */
     private boolean isPaoPart;
 
     void updateField(Object newInstance, YukonResultSet rs) throws SQLException {
@@ -77,8 +105,8 @@ public class DbFieldMapping {
 
     @Override
     public String toString() {
-        return "DbFieldMapping [propertyDescriptor=" + propertyDescriptor + ", dbColumnName="
-               + dbColumnName + "]";
+        return "PaoFieldMetaData [propertyDescriptor=" + propertyDescriptor + ", dbColumnName="
+               + dbColumnName + ", isPaoPart=" + isPaoPart + "]";
     }
 
     public PropertyDescriptor getPropertyDescriptor() {

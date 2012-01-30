@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
@@ -39,6 +41,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 
@@ -53,6 +57,14 @@ public class CapControlImportController {
 	
 	private ConcurrentMap<String, List<CapControlImportResolvable>> resultsLookup = 
 	                                    new MapMaker().expireAfterWrite(12, TimeUnit.HOURS).makeMap();
+	
+	private static Function<CapControlImporterCbcCsvField, String> colNameOfField =
+	        new Function<CapControlImporterCbcCsvField, String>() {
+        @Override
+        public String apply(CapControlImporterCbcCsvField input) {
+            return input.getColumnName();
+        }
+    };
 	
 	public static class CapControlImportResolvable {
 	    private final YukonMessageSourceResolvable message;
@@ -177,7 +189,9 @@ public class CapControlImportController {
 	    		processCbcImport(cbcImportData, results);
         	} catch (CapControlCbcFileImportException e) {
         		log.error(e.getMessage());
-        		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", e.getColumns()));
+        		Iterable<String> colNames = Iterables.transform(e.getColumns(), colNameOfField);
+                String columnString = StringUtils.join(colNames.iterator(), ", ");
+        		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", columnString));
         		return "tools/capcontrolImport.jsp";
         	} catch (CapControlImportException e) { 
         		log.error(e.getMessage());

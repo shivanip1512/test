@@ -3,9 +3,8 @@ package com.cannontech.common.pao.pojo;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
-import com.cannontech.database.YNBoolean;
 
-@YukonPao(tableName="CapControlSubstationBus", idColumnName="SubstationBusId", paoTypes=PaoType.CAP_CONTROL_SUBBUS)
+@YukonPao(idColumnName="SubstationBusId", paoTypes=PaoType.CAP_CONTROL_SUBBUS)
 public class CompleteCapControlSubstationBus extends CompleteYukonPaObject {
     private int currentVarLoadPointId = 0;
     private int currentWattLoadPointId = 0;
@@ -16,10 +15,10 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPaObject {
     private int phaseB = 0;
     private int phaseC = 0;
     private int voltReductionPointId = 0;
-    private YNBoolean controlFlag = YNBoolean.NO;
-    private YNBoolean dualBusEnabled = YNBoolean.NO;
-    private YNBoolean multiMonitorControl = YNBoolean.NO;
-    private YNBoolean usePhaseData = YNBoolean.NO;
+    private boolean controlFlag = false;
+    private boolean dualBusEnabled = false;
+    private boolean multiMonitorControl = false;
+    private boolean usePhaseData = false;
     private int disableBusPointId = 0;
 
     @YukonPaoField
@@ -104,38 +103,38 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPaObject {
     }
 
     @YukonPaoField
-    public YNBoolean getControlFlag() {
+    public boolean getControlFlag() {
         return controlFlag;
     }
 
-    public void setControlFlag(YNBoolean controlFlag) {
+    public void setControlFlag(boolean controlFlag) {
         this.controlFlag = controlFlag;
     }
 
     @YukonPaoField
-    public YNBoolean getDualBusEnabled() {
+    public boolean getDualBusEnabled() {
         return dualBusEnabled;
     }
 
-    public void setDualBusEnabled(YNBoolean dualBusEnabled) {
+    public void setDualBusEnabled(boolean dualBusEnabled) {
         this.dualBusEnabled = dualBusEnabled;
     }
 
     @YukonPaoField
-    public YNBoolean getMultiMonitorControl() {
+    public boolean getMultiMonitorControl() {
         return multiMonitorControl;
     }
 
-    public void setMultiMonitorControl(YNBoolean multiMonitorControl) {
+    public void setMultiMonitorControl(boolean multiMonitorControl) {
         this.multiMonitorControl = multiMonitorControl;
     }
 
     @YukonPaoField
-    public YNBoolean getUsePhaseData() {
+    public boolean getUsePhaseData() {
         return usePhaseData;
     }
 
-    public void setUsePhaseData(YNBoolean usePhaseData) {
+    public void setUsePhaseData(boolean usePhaseData) {
         this.usePhaseData = usePhaseData;
     }
 
@@ -165,19 +164,18 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPaObject {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + altSubId;
-        result = prime * result + ((controlFlag == null) ? 0 : controlFlag.hashCode());
+        result = prime * result + (controlFlag ? 1231 : 1237);
         result = prime * result + currentVarLoadPointId;
         result = prime * result + currentVoltLoadPointId;
         result = prime * result + currentWattLoadPointId;
         result = prime * result + disableBusPointId;
-        result = prime * result + ((dualBusEnabled == null) ? 0 : dualBusEnabled.hashCode());
+        result = prime * result + (dualBusEnabled ? 1231 : 1237);
         result = prime * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result =
-            prime * result + ((multiMonitorControl == null) ? 0 : multiMonitorControl.hashCode());
+        result = prime * result + (multiMonitorControl ? 1231 : 1237);
         result = prime * result + phaseB;
         result = prime * result + phaseC;
         result = prime * result + switchPointId;
-        result = prime * result + ((usePhaseData == null) ? 0 : usePhaseData.hashCode());
+        result = prime * result + (usePhaseData ? 1231 : 1237);
         result = prime * result + voltReductionPointId;
         return result;
     }

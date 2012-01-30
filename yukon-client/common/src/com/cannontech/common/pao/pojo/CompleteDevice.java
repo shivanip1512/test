@@ -3,7 +3,7 @@ package com.cannontech.common.pao.pojo;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(tableName="Device", idColumnName="DeviceId")
+@YukonPao(idColumnName="DeviceId")
 public class CompleteDevice extends CompleteYukonPaObject {
     private boolean alarmInhibit = false;
     private boolean controlInhibit = false;

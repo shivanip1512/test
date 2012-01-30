@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface YukonPaoPart {
-    public abstract String tableName() default ":auto";
-    public abstract String idColumnName() default ":auto";
+    public abstract String tableName() default YukonPao.AUTO_DETECT;
+    public abstract String idColumnName() default YukonPao.AUTO_DETECT;
 }

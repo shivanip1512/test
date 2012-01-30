@@ -14,12 +14,11 @@ import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
 import com.cannontech.common.pao.pojo.CompleteCapControlSpecialArea;
 import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
 import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
-import com.cannontech.common.pao.pojo.CompleteCbcBase;
 import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
 import com.cannontech.common.pao.pojo.CompleteRegulator;
 import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
 import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
-import com.cannontech.common.pao.service.impl.PaoPersistenceService;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
 
@@ -29,95 +28,64 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     @Override
     @Transactional
     public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId) {
-        CompleteCbcBase cbc;
+        CompleteYukonPaObject pao;
         
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
-            cbc = new CompleteOneWayCbc();
+            pao = new CompleteOneWayCbc();
         } else if (paoDefinitionDao.isTagSupported(paoType, PaoTag.TWO_WAY_DEVICE)) {
-            cbc = new CompleteTwoWayCbc();
-            CompleteTwoWayCbc twoWayCbc = (CompleteTwoWayCbc)cbc;
+            CompleteTwoWayCbc twoWayCbc = new CompleteTwoWayCbc();
+            pao = twoWayCbc;
             twoWayCbc.setPortId(portId);
         } else {
             throw new IllegalArgumentException("Import of " + name + " failed. Unknown CBC Type: " + paoType.getDbString());
         }
         
-        cbc.setDisabled(disabled);
-        cbc.setPaoName(name);
+        pao.setDisabled(disabled);
+        pao.setPaoName(name);
         
-        paoPersistenceService.createPao(cbc, paoType);
+        paoPersistenceService.createPao(pao, paoType);
         
-        return cbc.getPaoIdentifier();
+        return pao.getPaoIdentifier();
     }
     
     @Override
     @Transactional
 	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled) {
-        PaoIdentifier pao = null;
+        CompleteYukonPaObject pao;
         switch(paoType) {
 
             case CAP_CONTROL_SPECIAL_AREA :
-            case CAP_CONTROL_AREA :
-            case CAP_CONTROL_SUBSTATION :
-            case CAP_CONTROL_SUBBUS :
-            case CAP_CONTROL_FEEDER :
-            case CAPBANK :
-            	pao = createHierarchyObject(paoType, name, disabled);
+                pao = new CompleteCapControlSpecialArea();
                 break;
-                
+            case CAP_CONTROL_AREA :
+                pao = new CompleteCapControlArea();
+                break;
+            case CAP_CONTROL_SUBSTATION :
+                pao = new CompleteCapControlSubstation();
+                break;
+            case CAP_CONTROL_SUBBUS :
+                pao = new CompleteCapControlSubstationBus();
+                break;
+            case CAP_CONTROL_FEEDER :
+                pao = new CompleteCapControlFeeder();
+                break;
+            case CAPBANK :
+                pao = new CompleteCapBank();
+                break;
             case LOAD_TAP_CHANGER:
             case GANG_OPERATED:
             case PHASE_OPERATED:
-                pao = createRegulator(paoType, name, disabled);
+                pao = new CompleteRegulator();
                 break;
-                
             default:
                 throw new UnsupportedOperationException("Import of " + name + " failed. Unknown Pao Type: " + paoType.getDbString());
         }
         
-        return pao;
-    }
-	
-	private PaoIdentifier createHierarchyObject(PaoType paoType, String name, boolean disabled) {
-	    CompleteYukonPaObject pao;
-	    
-	    switch(paoType) {
-	    case CAP_CONTROL_AREA:
-            pao = new CompleteCapControlArea();
-            break;
-        case CAP_CONTROL_SPECIAL_AREA:
-            pao = new CompleteCapControlSpecialArea();
-            break;
-        case CAP_CONTROL_SUBSTATION:
-            pao = new CompleteCapControlSubstation();
-            break;
-        case CAP_CONTROL_SUBBUS:
-            pao = new CompleteCapControlSubstationBus();
-            break;
-        case CAP_CONTROL_FEEDER:
-            pao = new CompleteCapControlFeeder();
-            break;
-        case CAPBANK:
-            pao = new CompleteCapBank();
-            break;  
-        default:
-            throw new IllegalArgumentException("Creation of hierarchy object " + name + " failed. Unknown type: " + paoType.getDbString());
-	    }
-	    
-	    pao.setPaoName(name);
-	    pao.setDisabled(disabled);
-	    
-	    paoPersistenceService.createPao(pao, paoType);
-	    
-	    return pao.getPaoIdentifier();
-	}
-	
-	private PaoIdentifier createRegulator(PaoType paoType, String name, boolean disabled) {
-	    CompleteRegulator regulator = new CompleteRegulator();
-	    regulator.setPaoName(name);
-	    regulator.setDisabled(disabled);
-	    
-	    paoPersistenceService.createPao(regulator, paoType);
-	    
-	    return regulator.getPaoIdentifier();
+        pao.setPaoName(name);
+        pao.setDisabled(disabled);
+        
+        paoPersistenceService.createPao(pao, paoType);
+        
+        return pao.getPaoIdentifier();
     }
 }

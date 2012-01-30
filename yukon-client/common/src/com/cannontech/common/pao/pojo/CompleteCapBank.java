@@ -6,7 +6,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
 
-@YukonPao(tableName = "CapBank", idColumnName = "deviceId", paoTypes=PaoType.CAPBANK)
+@YukonPao(idColumnName = "deviceId", paoTypes=PaoType.CAPBANK)
 public class CompleteCapBank extends CompleteDevice {
     private BankOpState operationalState = BankOpState.SWITCHED;
     private int controlDeviceId = 0;

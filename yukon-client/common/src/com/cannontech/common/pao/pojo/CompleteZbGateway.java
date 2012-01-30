@@ -3,7 +3,7 @@ package com.cannontech.common.pao.pojo;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(tableName="ZbGateway", idColumnName="DeviceId")
+@YukonPao(idColumnName="DeviceId")
 public class CompleteZbGateway extends CompleteDevice {
     private String firmwareVersion;
     private String macAddress;

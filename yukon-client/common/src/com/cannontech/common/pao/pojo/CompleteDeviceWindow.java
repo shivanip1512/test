@@ -4,7 +4,7 @@ import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 
-@YukonPaoPart(tableName="DeviceWindow", idColumnName="deviceId")
+@YukonPaoPart(idColumnName="deviceId")
 public class CompleteDeviceWindow {
     private DeviceWindowType type = DeviceWindowType.SCAN;
     private int windowOpen = 0;

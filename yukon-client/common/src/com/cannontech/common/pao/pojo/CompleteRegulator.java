@@ -2,13 +2,15 @@ package com.cannontech.common.pao.pojo;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
+import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(tableName="Regulator", idColumnName="RegulatorId", 
+@YukonPao(idColumnName="RegulatorId", 
           paoTypes={PaoType.LOAD_TAP_CHANGER, PaoType.GANG_OPERATED, PaoType.PHASE_OPERATED})
 public class CompleteRegulator extends CompleteYukonPaObject {
     private int keepAliveTimer;
     private int keepAliveConfig;
 
+    @YukonPaoField
     public int getKeepAliveTimer() {
         return keepAliveTimer;
     }
@@ -17,6 +19,7 @@ public class CompleteRegulator extends CompleteYukonPaObject {
         this.keepAliveTimer = keepAliveTimer;
     }
 
+    @YukonPaoField
     public int getKeepAliveConfig() {
         return keepAliveConfig;
     }

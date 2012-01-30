@@ -7,7 +7,7 @@ import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 
-@YukonPaoPart(tableName = "CapBankAdditional", idColumnName = "deviceId")
+@YukonPaoPart(idColumnName = "deviceId")
 public class CompleteCapBankAdditional {
     private int maintenanceAreaId = 0;
     private int poleNumber = 0;
@@ -28,7 +28,7 @@ public class CompleteCapBankAdditional {
     private boolean extAntenna = false;
     private boolean maintenanceRequired = false;
 
-    @YukonPaoField(columnName="MaintenanceAreaId")
+    @YukonPaoField
     public int getMaintenanceAreaId() {
         return maintenanceAreaId;
     }
@@ -37,7 +37,7 @@ public class CompleteCapBankAdditional {
         this.maintenanceAreaId = maintenanceAreaId;
     }
 
-    @YukonPaoField(columnName="PoleNumber")
+    @YukonPaoField
     public int getPoleNumber() {
         return poleNumber;
     }
@@ -46,7 +46,7 @@ public class CompleteCapBankAdditional {
         this.poleNumber = poleNumber;
     }
 
-    @YukonPaoField(columnName="CommStrength")
+    @YukonPaoField
     public int getCommStrength() {
         return commStrength;
     }
@@ -55,7 +55,7 @@ public class CompleteCapBankAdditional {
         this.commStrength = commStrength;
     }
 
-    @YukonPaoField(columnName="Latitude")
+    @YukonPaoField
     public double getLatitude() {
         return latitude;
     }
@@ -64,7 +64,7 @@ public class CompleteCapBankAdditional {
         this.latitude = latitude;
     }
 
-    @YukonPaoField(columnName="Longitude")
+    @YukonPaoField
     public double getLongitude() {
         return longitude;
     }
@@ -91,7 +91,7 @@ public class CompleteCapBankAdditional {
         this.lastInspection = lastInspection;
     }
 
-    @YukonPaoField(columnName="OpCountResetDate")
+    @YukonPaoField
     public Date getOpCountResetDate() {
         return opCountResetDate;
     }
@@ -109,7 +109,7 @@ public class CompleteCapBankAdditional {
         this.cbcInstallDate = cbcInstallDate;
     }
 
-    @YukonPaoField(columnName="CapBankConfig")
+    @YukonPaoField
     public String getCapbankConfig() {
         return capbankConfig;
     }
@@ -118,7 +118,7 @@ public class CompleteCapBankAdditional {
         this.capbankConfig = capbankConfig;
     }
 
-    @YukonPaoField(columnName="CommMedium")
+    @YukonPaoField
     public String getCommMedium() {
         return commMedium;
     }
@@ -127,7 +127,7 @@ public class CompleteCapBankAdditional {
         this.commMedium = commMedium;
     }
 
-    @YukonPaoField(columnName="DriveDirections")
+    @YukonPaoField
     public String getDriveDirections() {
         return driveDirections;
     }
@@ -136,7 +136,7 @@ public class CompleteCapBankAdditional {
         this.driveDirections = driveDirections;
     }
 
-    @YukonPaoField(columnName="PotentialTransformer")
+    @YukonPaoField
     public String getPotentialTransformer() {
         return potentialTransformer;
     }
@@ -145,7 +145,7 @@ public class CompleteCapBankAdditional {
         this.potentialTransformer = potentialTransformer;
     }
 
-    @YukonPaoField(columnName="OpTeamComments")
+    @YukonPaoField
     public String getOpTeamComments() {
         return opTeamComments;
     }
@@ -154,7 +154,7 @@ public class CompleteCapBankAdditional {
         this.opTeamComments = opTeamComments;
     }
 
-    @YukonPaoField(columnName="AntennaType")
+    @YukonPaoField
     public String getAntennaType() {
         return antennaType;
     }
@@ -163,7 +163,7 @@ public class CompleteCapBankAdditional {
         this.antennaType = antennaType;
     }
 
-    @YukonPaoField(columnName="OtherComments")
+    @YukonPaoField
     public String getOtherComments() {
         return otherComments;
     }
@@ -172,7 +172,7 @@ public class CompleteCapBankAdditional {
         this.otherComments = otherComments;
     }
 
-    @YukonPaoField(columnName="ExtAntenna")
+    @YukonPaoField
     public boolean isExtAntenna() {
         return extAntenna;
     }

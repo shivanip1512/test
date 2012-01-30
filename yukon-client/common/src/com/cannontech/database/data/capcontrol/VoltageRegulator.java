@@ -14,7 +14,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.pojo.CompleteRegulator;
-import com.cannontech.common.pao.service.impl.PaoPersistenceService;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;

@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(tableName="CapControlArea", idColumnName="areaId", paoTypes=PaoType.CAP_CONTROL_AREA)
+@YukonPao(idColumnName="areaId", paoTypes=PaoType.CAP_CONTROL_AREA)
 public class CompleteCapControlArea extends CompleteYukonPaObject {
     private int voltReductionPointId;
 

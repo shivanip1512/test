@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(tableName="DigiGateway", idColumnName="DeviceId", paoTypes=PaoType.DIGIGATEWAY)
+@YukonPao(idColumnName="DeviceId", paoTypes=PaoType.DIGIGATEWAY)
 public class CompleteDigiGateway extends CompleteZbGateway {
     private int digiId;
     

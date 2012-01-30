@@ -3,7 +3,7 @@ package com.cannontech.common.pao.pojo;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 
-@YukonPaoPart(tableName = "DeviceAddress", idColumnName = "deviceId")
+@YukonPaoPart(idColumnName = "deviceId")
 public class CompleteDeviceAddress {
     private int masterAddress;
     private int slaveAddress;

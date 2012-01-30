@@ -29,10 +29,11 @@ import com.cannontech.common.pao.pojo.CompleteCapControlArea;
 import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
 import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
 import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
+import com.cannontech.common.pao.pojo.CompleteCbcBase;
 import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
 import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
 import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
-import com.cannontech.common.pao.service.impl.PaoPersistenceService;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -67,31 +68,21 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Override
     @Transactional
     public void createCbc(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException {
-        YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
-        if (pao != null) {
+        YukonPao yukonPao = retrieveCbcPao(cbcImportData.getCbcName());
+        if (yukonPao != null) {
             // We were told to add a device that already exists. This is an error!
             results.add(new CbcImportResult(cbcImportData, CbcImportResultType.DEVICE_EXISTS));
             return;
         }
         
-        String capBankName = cbcImportData.getCapBankName();
-        Integer parentId = null;
-        if (capBankName != null) {
-            parentId = getParentId(capBankName, PaoType.CAPBANK);
-        }
+        Integer parentId = getParentId(cbcImportData);
         
-        int paoId;
-        
+        CompleteCbcBase pao;
         if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
-            CompleteOneWayCbc cbc = new CompleteOneWayCbc();
-            cbc.setPaoName(cbcImportData.getCbcName());
-            cbc.setSerialNumber(cbcImportData.getCbcSerialNumber());
-            paoPersistenceService.createPao(cbc, cbcImportData.getCbcType());
-            paoId = cbc.getPaObjectId();
+            pao = new CompleteOneWayCbc();
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
-            CompleteTwoWayCbc cbc = new CompleteTwoWayCbc();
-            cbc.setPaoName(cbcImportData.getCbcName());
-            cbc.setSerialNumber(cbcImportData.getCbcSerialNumber());
+            pao = new CompleteTwoWayCbc();
+            CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             if (cbcImportData.getAltInterval() != null) {
@@ -109,14 +100,18 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
                 return;
             }
-            
-            paoPersistenceService.createPao(cbc, cbcImportData.getCbcType());
-            paoId = cbc.getPaObjectId();
         } else {
             results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
             return;
         }
 
+        pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        pao.setPaoName(cbcImportData.getCbcName());
+        
+        paoPersistenceService.createPao(pao, cbcImportData.getCbcType());
+        
+        int paoId = pao.getPaObjectId();
+        
         // parentId would still be null if no parent was specified.
         if (parentId != null) {
             capbankControllerDao.assignController(parentId, paoId);
@@ -142,33 +137,21 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             return;
         }
         
-        String capBankName = cbcImportData.getCapBankName();
-        Integer parentId = null;
-        if (capBankName != null) {
-            parentId = getParentId(capBankName, PaoType.CAPBANK);
-        }
+        Integer parentId = getParentId(cbcImportData);
         
         PaoIdentifier templateIdentifier = templatePao.getPaoIdentifier();
         // Get a copy of the points from the template to copy to the new CBC.
-        int templatePaoId = templatePao.getPaoIdentifier().getPaoId();
+        int templatePaoId = templateIdentifier.getPaoId();
         List<PointBase> copyPoints = pointDao.getPointsForPao(templatePaoId);
         
-        int paoId;
-        CompleteYukonPaObject template;
+        CompleteCbcBase template;
         if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.ONE_WAY_DEVICE)) {
             template = paoPersistenceService.retreivePao(templateIdentifier, CompleteOneWayCbc.class);
-            CompleteOneWayCbc cbc = (CompleteOneWayCbc)template;
-            cbc.setPaoName(cbcImportData.getCapBankName());
-            cbc.setSerialNumber(cbcImportData.getCbcSerialNumber());
-            paoPersistenceService.createPaoWithCustomPoints(cbc, cbcImportData.getCbcType(), copyPoints);
-            paoId = cbc.getPaObjectId();
         } else if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.TWO_WAY_DEVICE)) {
             template = paoPersistenceService.retreivePao(templateIdentifier, CompleteTwoWayCbc.class);
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)template;
-            cbc.setPaoName(cbcImportData.getCapBankName());
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            cbc.setSerialNumber(cbcImportData.getCbcSerialNumber());
             
             YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
                                                        PaoCategory.PORT, PaoClass.PORT);
@@ -185,14 +168,18 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (cbcImportData.getScanInterval() != null) {
                 cbc.setIntervalRate(cbcImportData.getScanInterval());
             }
-            
-            paoPersistenceService.createPaoWithCustomPoints(cbc, cbcImportData.getCbcType(), copyPoints);
-            paoId = cbc.getPaObjectId();
         } else {
             results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_PARENT));
             return;
         }
 
+        template.setPaoName(cbcImportData.getCbcName());
+        template.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        
+        paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
+        
+        int paoId = template.getPaObjectId();
+        
         if (parentId != null) {
             capbankControllerDao.assignController(parentId, paoId);
         }
@@ -203,26 +190,21 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Override
     @Transactional
     public void updateCbc(CbcImportData cbcImportData, List<CbcImportResult> results) throws NotFoundException {
-        YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
-        if (pao == null) {
+        YukonPao yukonPao = retrieveCbcPao(cbcImportData.getCbcName());
+        if (yukonPao == null) {
             // We were told to update a device that doesn't exist. This is an error!
             results.add(new CbcImportResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
-        String capBankName = cbcImportData.getCapBankName();
-        Integer parentId = null;
-        if (capBankName != null) {
-            parentId = getParentId(capBankName, PaoType.CAPBANK);
-        }
+        Integer parentId = getParentId(cbcImportData);
 
+        CompleteCbcBase pao;
         if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
-            CompleteOneWayCbc cbc = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteOneWayCbc.class);
-            cbc.setSerialNumber(cbcImportData.getCbcSerialNumber());
-            paoPersistenceService.updatePao(cbc);
+            pao = paoPersistenceService.retreivePao(yukonPao.getPaoIdentifier(), CompleteOneWayCbc.class);
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
-            CompleteTwoWayCbc cbc = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteTwoWayCbc.class);
-            cbc.setSerialNumber(cbcImportData.getCbcSerialNumber());
+            pao = paoPersistenceService.retreivePao(yukonPao.getPaoIdentifier(), CompleteTwoWayCbc.class);
+            CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             
@@ -241,18 +223,29 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
                 return;
             }
-            
-            paoPersistenceService.updatePao(cbc);
         } else {
             results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_TYPE));
             return;
         }
+        
+        pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        
+        paoPersistenceService.updatePao(pao);
 
         if (parentId != null) {
-            capbankControllerDao.assignController(parentId, pao.getPaoIdentifier().getPaoId());
+            capbankControllerDao.assignController(parentId, yukonPao.getPaoIdentifier().getPaoId());
         }
 
         results.add(new CbcImportResult(cbcImportData, CbcImportResultType.SUCCESS));
+    }
+
+    private Integer getParentId(CbcImportData cbcImportData) {
+        String capBankName = cbcImportData.getCapBankName();
+        Integer parentId = null;
+        if (capBankName != null) {
+            parentId = getParentId(capBankName, PaoType.CAPBANK);
+        }
+        return parentId;
     }
 
     @Override
@@ -351,6 +344,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (hierarchyImportData.getMapLocationId() != null) {
                 capBank.setMapLocationId(hierarchyImportData.getMapLocationId());
             }
+            
             break;
         default:
             results.add(new HierarchyImportResult(hierarchyImportData,
@@ -360,6 +354,9 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
         if (hierarchyImportData.getDescription() != null) {
             completePao.setDescription(hierarchyImportData.getDescription());
+        }
+        if (hierarchyImportData.isDisabled() != null) {
+            completePao.setDisabled(hierarchyImportData.isDisabled());
         }
         
         paoPersistenceService.updatePao(completePao);
