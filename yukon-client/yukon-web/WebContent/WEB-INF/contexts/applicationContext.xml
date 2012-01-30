@@ -206,6 +206,7 @@
 	<bean id="deviceGroupWidget"
     	class="com.cannontech.web.widget.DeviceGroupWidget">
     	<property name="title" value="Device Groups"/>
+		<property name="lazyLoad" value="true" />
     	<property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -294,6 +295,7 @@
     <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
         <property name="title" value="Meter Events"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
+		<property name="lazyLoad" value="true" />
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>

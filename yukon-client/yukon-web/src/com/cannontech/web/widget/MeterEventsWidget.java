@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,11 +33,6 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     @Autowired PaoDao paoDao;
     @Autowired MeterEventLookupService meterEventLookupService;
     @Autowired PointDao pointDao;
-    
-    @PostConstruct
-    public void init() {
-        setLazyLoad(true);
-    }
 
     public class EventHolder implements Comparable<EventHolder> {
         private PointValueQualityHolder pointValueQualityHolder;
