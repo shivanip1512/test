@@ -13,6 +13,7 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProhibitConsumerOverridesRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
@@ -53,7 +54,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     	// test with unauthorized user
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
-    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, null, reqSchemaResource);
+    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, null, null, reqSchemaResource);
         LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
@@ -75,22 +76,53 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
-        Assert.assertFalse("changeProhibitStateForToday called with true, expected false", 
-        		mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
 
         
-        // test with program name
+        // test with program name - 1.1 backwards compatibility
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
-                XmlVersionUtils.YUKON_MSG_VERSION_1_1, "Program1", reqSchemaResource);
+                XmlVersionUtils.YUKON_MSG_VERSION_1_1, "Program1", null, reqSchemaResource);
         user = new LiteYukonUser();
         respElement = impl.invoke(requestElement, user);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-
-        Assert.assertFalse("changeProhibitStateForToday called with true, expected false", 
-                           mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
+        
+        // test with program name - comms enabled
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
+                XmlVersionUtils.YUKON_MSG_VERSION_1_2, "Program1", OptOutEnabled.DISABLED_WITH_COMM, reqSchemaResource);
+        user = new LiteYukonUser();
+        respElement = impl.invoke(requestElement, user);
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
+        
+        // test with program name - opts + comms disabled
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
+                XmlVersionUtils.YUKON_MSG_VERSION_1_1, "Program1", OptOutEnabled.DISABLED_WITHOUT_COMM, reqSchemaResource);
+        user = new LiteYukonUser();
+        respElement = impl.invoke(requestElement, user);
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITHOUT_COMM, mockOptOutService.getLastValueCalled());
+        
+        // test with program name - opts + comms enabled
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
+                XmlVersionUtils.YUKON_MSG_VERSION_1_1, "Program1", OptOutEnabled.ENABLED, reqSchemaResource);
+        user = new LiteYukonUser();
+        respElement = impl.invoke(requestElement, user);
+        
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        Assert.assertEquals(OptOutEnabled.ENABLED, mockOptOutService.getLastValueCalled());
 
         // create template and parse response data
         template = YukonXml.getXPathTemplateForElement(respElement);
@@ -102,10 +134,10 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     
     private class MockOptOutService extends OptOutServiceAdapter {
 
-    	private Boolean lastValueCalled = null;
+    	private OptOutEnabled lastValueCalled = null;
     	private String programName = null;
 
-    	public Boolean getLastValueCalled() {
+    	public OptOutEnabled getLastValueCalled() {
 			return lastValueCalled;
 		}
 
@@ -114,12 +146,12 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     	}
 
     	@Override
-    	public void changeOptOutEnabledStateForToday(LiteYukonUser user, boolean optOutsEnabled) {
+    	public void changeOptOutEnabledStateForToday(LiteYukonUser user, OptOutEnabled optOutsEnabled) {
     		this.lastValueCalled = optOutsEnabled;
     	}
     	
     	@Override
-        public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
+        public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, OptOutEnabled optOutsEnabled,
                                                                   String programName) throws ProgramNotFoundException {
     	    this.lastValueCalled = optOutsEnabled;
     	    this.programName = programName;

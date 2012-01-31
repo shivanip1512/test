@@ -32,6 +32,25 @@
     <entry key="yukon.dr.consumer.general.oddsForControlEmail">My e-mail address is:</entry>
     <entry key="yukon.dr.consumer.general.updateOddsForControl">Update</entry>
     <entry key="yukon.dr.consumer.general.oddsForControlEmailWarning">You must provide an email address.</entry>
+    <entry key="yukon.web.modules.consumer.general.optOutsDisabledWarning"><![CDATA[
+     Energy Company has suspended access to some online features normally available. The following item will be temporarily unavailable:
+    <ul>
+        <li>The Override (Opt Out) link has been removed.</li>
+    </ul>
+    <br/>
+    For more information please contact your Energy Company.
+    ]]></entry>
+    <entry key="yukon.web.modules.consumer.general.optOutsAndCommuncationDisabledWarning"><![CDATA[
+     Energy Company has suspended access to some online features normally available. The following items will be temporarily unavailable:
+    <ul>
+        <li>The Override (Opt Out) link has been removed.</li>
+        <li>Access to program or change your thermostat from this site has been removed.</li>
+        <li>The ability to change program enrollment has been removed</li>
+    </ul>
+    <br/>
+    For more information please contact your Energy Company.
+    ]]></entry>
+    <entry key="yukon.web.modules.consumer.general.optOutsDisabledWarningTitle">Temporary Limited Access to Features</entry>
     
     <!--  contacts.jsp -->
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
@@ -85,6 +104,12 @@
     <entry key="yukon.dr.consumer.innercompletecontrolhistory.endDate">End Date</entry>
     <entry key="yukon.dr.consumer.innercompletecontrolhistory.controlDuration">Control Duration</entry>
     <entry key="yukon.dr.consumer.innercompletecontrolhistory.noControlDuringPeriod">There has been no control during this period.</entry>
+    
+    <!-- thermostatDisabled.jsp -->
+    <entry key="yukon.web.modules.consumer.thermostatDisabled.header">Thermostat Functionality Disabled</entry>
+    <entry key="yukon.web.modules.consumer.thermostatDisabled.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.web.modules.consumer.thermostatDisabled.msg">Thermostat functionality is currently disabled.</entry>
+    <entry key="yukon.web.modules.consumer.thermostatDisabled.home">Home</entry>
     
     <!--  thermostat.jsp -->
     <entry key="yukon.web.modules.consumer.thermostat.header">Thermostat - Manual</entry>
@@ -271,6 +296,12 @@
     <entry key="yukon.dr.consumer.contactus.header">Questions - Utility</entry>
     <entry key="yukon.dr.consumer.contactus.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.contactus.main"></entry>
+    
+    <!-- enrollmentDisabled.jsp -->
+    <entry key="yukon.web.modules.consumer.enrollmentDisabled.header">Enrollment Disabled</entry>
+    <entry key="yukon.web.modules.consumer.enrollmentDisabled.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.web.modules.consumer.enrollmentDisabled.msg">Enrollment is currently disabled.</entry>
+    <entry key="yukon.web.modules.consumer.enrollmentDisabled.home">Home</entry>
 
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>
@@ -359,10 +390,10 @@
     <entry key="yukon.dr.consumer.optout.noCancelOptOut">Don't Cancel Opt Out</entry>
 
     <!-- optOutDisabled.jsp -->
-    <entry key="yukon.dr.consumer.optoutdisabled.header">Opt Out Disabled</entry>
-    <entry key="yukon.dr.consumer.optoutdisabled.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
-    <entry key="yukon.dr.consumer.optoutdisabled.msg">Opt Outs are currently disabled.</entry>
-    <entry key="yukon.dr.consumer.optoutdisabled.home">Home</entry>
+    <entry key="yukon.web.modules.consumer.optoutdisabled.header">Opt Out Disabled</entry>
+    <entry key="yukon.web.modules.consumer.optoutdisabled.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.web.modules.consumer.optoutdisabled.msg">Opt Outs are currently disabled.</entry>
+    <entry key="yukon.web.modules.consumer.optoutdisabled.home">Home</entry>
     
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.consumer.optoutlist.header">Programs - Opt Out</entry>

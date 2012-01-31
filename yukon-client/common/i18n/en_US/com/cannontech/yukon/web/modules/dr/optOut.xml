@@ -13,8 +13,12 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.futureOptOuts">Future Opt Outs</entry>
 
     <entry key="yukon.web.modules.dr.optOutAdmin.title">Opt Out Admin</entry>
+    
     <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.ENABLED">Enabled</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.DISABLED">Disabled</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.DISABLED_WITH_COMM">Opt Outs Disabled, Communications Enabled</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.DISABLED_WITHOUT_COMM">Opt Outs Disabled, Communications Disabled</entry>
+    
+    
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.title">Disable Consumer Opt Out Ability for Today</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.note.label">Note</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.note.text">All program Opt Outs will be enabled/disabled unless a specific program is selected.</entry>
@@ -22,7 +26,9 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.programName">Program Name</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.enabled">Consumer's Ability to Opt Out</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton">Prohibit Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton">Allow Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton">Allow Opt Outs &amp; Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton">Prohibit Opt Outs &amp; Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableCommsButton">Allow Communications</entry>
 
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.title">Cancel Current Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.note.label">Note:</entry>

@@ -15,6 +15,7 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -28,15 +29,17 @@ public class ProhibitConsumerOverridesRequestEndpoint {
 	private RolePropertyDao rolePropertyDao;
     
 	private String programNameExpressionStr = "/y:prohibitConsumerOverridesRequest/y:programName";
+	private String actionExpressionStr = "/y:prohibitConsumerOverridesRequest/y:action";
 	
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="prohibitConsumerOverridesRequest")
     public Element invoke(Element prohibitConsumerOverridesRequest, LiteYukonUser user) throws Exception {
         
-        XmlVersionUtils.verifyYukonMessageVersion(prohibitConsumerOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+        XmlVersionUtils.verifyYukonMessageVersion(prohibitConsumerOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1, XmlVersionUtils.YUKON_MSG_VERSION_1_2);
         String version = XmlVersionUtils.getYukonMessageVersion(prohibitConsumerOverridesRequest);
         
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(prohibitConsumerOverridesRequest);
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
+        String action = requestTemplate.evaluateAsString(actionExpressionStr);
         
         // init response
         Element resp = new Element("prohibitConsumerOverridesResponse", ns);
@@ -51,11 +54,11 @@ public class ProhibitConsumerOverridesRequestEndpoint {
             
             if (StringUtils.isBlank(programName)) {
                 starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
-                optOutService.changeOptOutEnabledStateForToday(user, false);
+                optOutService.changeOptOutEnabledStateForToday(user, OptOutEnabled.valueOf(action));
 
             } else {
                 starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByApi(user, programName);
-                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, false, programName);
+                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, OptOutEnabled.valueOf(action), programName);
             }
             
             resultElement = XmlUtils.createStringElement("success", ns, "");

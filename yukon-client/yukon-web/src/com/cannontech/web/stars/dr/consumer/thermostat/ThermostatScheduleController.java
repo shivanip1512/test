@@ -40,6 +40,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -61,13 +62,14 @@ import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleV
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 public class ThermostatScheduleController extends AbstractThermostatController {
-    private AccountEventLogService accountEventLogService;
-    private InventoryDao inventoryDao;
-    private CustomerDao customerDao;
-    private ThermostatService thermostatService;
-    private OperatorThermostatHelper operatorThermostatHelper;
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private ThermostatEventHistoryDao thermostatEventHistoryDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private OptOutStatusService optOutStatusService;
+    @Autowired private OperatorThermostatHelper operatorThermostatHelper;
+    @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
+    @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping(value = "send", method = RequestMethod.POST)
@@ -79,6 +81,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                YukonUserContext yukonUserContext,
                                FlashScope flashScope,
                                ModelMap map) throws NotAuthorizedException, ServletRequestBindingException, IllegalArgumentException {
+        
+        if(isCommunicationDisabled(yukonUserContext.getYukonUser())){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
+        
         // retrieve the schedule
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
@@ -109,6 +116,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                             YukonUserContext yukonUserContext,
                             ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
+        
+        if(isCommunicationDisabled(yukonUserContext.getYukonUser())){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
 
         accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostatIds);
 
@@ -186,6 +197,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                          FlashScope flashScope,
                          ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
     	
+        if(isCommunicationDisabled(user)){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
+        
     	List<Integer> thermostatIdsList = getThermostatIds(request);
     	
     	AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
@@ -213,6 +228,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                          LiteYukonUser user,
                          FlashScope flashScope,
                          ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
+        
+        if(isCommunicationDisabled(user)){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
         
         List<Integer> thermostatIdsList = getThermostatIds(request);
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
@@ -250,6 +269,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                             FlashScope flashScope,
                                             ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException, IllegalArgumentException {
         
+        if(isCommunicationDisabled(user)){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write("");
+        }
+        
         JSONObject returnJSON = new JSONObject();
         customerDao.setTemperatureUnit(account.getCustomerId(), temperatureUnit);
         
@@ -273,6 +299,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                            FlashScope flashScope,
                            HttpServletRequest request) throws NotAuthorizedException, ServletRequestBindingException, IOException {
 
+        if(isCommunicationDisabled(yukonUserContext.getYukonUser())){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write("");
+        }
+        
         LiteYukonUser user = yukonUserContext.getYukonUser();
         
         JSONObject returnJSON = new JSONObject();
@@ -335,39 +368,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         PrintWriter writer = response.getWriter();
         writer.write(returnJSON.toString());
     }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
     
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-
-    @Autowired
-    public void setThermostatService(ThermostatService thermostatService) {
-        this.thermostatService = thermostatService;
-    }
-    
-    @Autowired
-    public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
-        this.operatorThermostatHelper = operatorThermostatHelper;
-    }
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-    }
-    
-    @Autowired
-    public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
-        this.thermostatEventHistoryDao = thermostatEventHistoryDao;
+    private boolean isCommunicationDisabled(LiteYukonUser user){
+        return !optOutStatusService.getOptOutEnabled(user).isCommunicationEnabled();
     }
 }

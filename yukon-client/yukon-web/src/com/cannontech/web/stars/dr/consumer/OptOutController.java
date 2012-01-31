@@ -66,17 +66,17 @@ public class OptOutController extends AbstractConsumerController {
 	
 	private static int MAX_NUMBER_OF_OPT_OUT_HISTORY = 6;
 	
-	private AccountEventLogService accountEventLogService;
-    private RolePropertyDao rolePropertyDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private LMHardwareBaseDao lmHardwareBaseDao;
-    private OptOutService optOutService; 
-    private OptOutEventDao optOutEventDao;
-    private OptOutStatusService optOutStatusService;
-    private OptOutSurveyService optOutSurveyService;
-    private SurveyDao surveyDao;
-    private SurveyService surveyService;
-    private OptOutControllerHelper helper;
+	@Autowired private AccountEventLogService accountEventLogService;
+	@Autowired private RolePropertyDao rolePropertyDao;
+	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+	@Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+	@Autowired private OptOutService optOutService; 
+	@Autowired private OptOutEventDao optOutEventDao;
+	@Autowired private OptOutStatusService optOutStatusService;
+	@Autowired private OptOutSurveyService optOutSurveyService;
+	@Autowired private SurveyDao surveyDao;
+	@Autowired private SurveyService surveyService;
+	@Autowired private OptOutControllerHelper helper;
 
     private static class StartDateException extends IllegalArgumentException {
         private final static long serialVersionUID = 1L;
@@ -90,7 +90,7 @@ public class OptOutController extends AbstractConsumerController {
     public String view(@ModelAttribute CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap model) {
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	if (!optOutStatusService.getOptOutEnabled(user)) {
+    	if (!optOutStatusService.getOptOutEnabled(user).isOptOutEnabled()) {
     	    return "consumer/optout/optOutDisabled.jsp";
     	}
     	
@@ -148,7 +148,7 @@ public class OptOutController extends AbstractConsumerController {
             BindingResult bindingResult, FlashScope flashScope, ModelMap model,
             YukonUserContext userContext) throws CommandCompletionException {
     	final LiteYukonUser user = userContext.getYukonUser();
-        if (!optOutStatusService.getOptOutEnabled(user)) {
+        if (!optOutStatusService.getOptOutEnabled(user).isOptOutEnabled()) {
             return "consumer/optout/optOutDisabled.jsp";
         }
 
@@ -220,7 +220,7 @@ public class OptOutController extends AbstractConsumerController {
             @ModelAttribute OptOutBackingBean optOutBackingBean,
             BindingResult bindingResult, FlashScope flashScope, ModelMap model) throws CommandCompletionException {
     	LiteYukonUser user = userContext.getYukonUser();
-        if (!optOutStatusService.getOptOutEnabled(user)) {
+        if (!optOutStatusService.getOptOutEnabled(user).isOptOutEnabled()) {
             return "consumer/optout/optOutDisabled.jsp";
         }
 
@@ -409,7 +409,7 @@ public class OptOutController extends AbstractConsumerController {
         
     	// Make sure opt outs are enabled for the user
     	LiteYukonUser user = userContext.getYukonUser();
-        if (!optOutStatusService.getOptOutEnabled(user)) {
+        if (!optOutStatusService.getOptOutEnabled(user).isCommunicationEnabled()) {
             return "consumer/optout/optOutDisabled.jsp";
         }
     	
@@ -472,61 +472,4 @@ public class OptOutController extends AbstractConsumerController {
                                     "startDate",
                                     datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
     }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(
-            DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-
-    @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setOptOutService(OptOutService optOutService) {
-		this.optOutService = optOutService;
-	}
-    
-    @Autowired
-    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
-		this.optOutEventDao = optOutEventDao;
-	}
-    
-    @Autowired
-    public void setOptOutStatusService(OptOutStatusService optOutStatusService) {
-		this.optOutStatusService = optOutStatusService;
-	}
-
-    @Autowired
-    public void setOptOutSurveyService(OptOutSurveyService optOutSurveyService) {
-        this.optOutSurveyService = optOutSurveyService;
-    }
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setHelper(OptOutControllerHelper helper) {
-        this.helper = helper;
-    }
-
-    @Autowired
-    public void setSurveyService(SurveyService surveyService) {
-        this.surveyService = surveyService;
-    }
-    
 }

@@ -105,12 +105,14 @@ public interface StarsEventLogService {
     // Enabling/Disabling the Ability for Customers To Opt Out service level
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "stars.optOutAdmin")
     public void optOutUsageEnabledToday(@Arg(ArgEnum.username) LiteYukonUser user,
-                                        boolean outOutsEnabled);
+                                        boolean outOutsEnabled,
+                                        boolean communicationsEnabled);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "stars.optOutAdmin")
     public void optOutUsageEnabledTodayForProgram(@Arg(ArgEnum.username) LiteYukonUser user,
                                                   @Arg(ArgEnum.programName) String programName,
-                                                  boolean outOutsEnabled);
+                                                  boolean optOutsEnabled,
+                                                  boolean communicationsEnabled);
 
     // Counting/Not Counting Opt Outs
     @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.optOutAdmin")

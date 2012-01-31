@@ -2,14 +2,15 @@ package com.cannontech.stars.dr.optout.model;
 
 
 public class OptOutEnabledTemporaryOverride extends OptOutTemporaryOverride {
-    private int optOutValue;
+    private OptOutEnabled optOutEnabled;
     
     public OptOutEnabled getOptOutEnabled() {
-        return OptOutEnabled.valueOf(optOutValue);
+        return optOutEnabled;
     }
     
-    public void setOptOutValue(int optOutValue) {
-        this.optOutValue = optOutValue;
+    public void setOptOutValue(OptOutEnabled optOutEnabled) {
+        this.optOutEnabled = optOutEnabled;
     }
+    
     
 }

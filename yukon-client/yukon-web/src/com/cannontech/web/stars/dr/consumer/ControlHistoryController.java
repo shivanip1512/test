@@ -19,6 +19,7 @@ import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
+import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -27,25 +28,25 @@ import com.google.common.collect.ListMultimap;
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
 @Controller
 public class ControlHistoryController extends AbstractConsumerController {
-    private static final String viewName = "consumer/controlhistory/controlHistory.jsp";
-    private ControlHistoryService controlHistoryService;
+    private static final String viewNamePrefix = "consumer/controlhistory/";
+    
+    @Autowired private ControlHistoryService controlHistoryService;
     
     @RequestMapping(value = "/consumer/controlhistory", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext userContext, ModelMap map) {
-        
+            YukonUserContext yukonUserContext, ModelMap map) {
         List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
         
         ListMultimap<Integer, ControlHistory> controlHistoryMap = 
-                controlHistoryDao.getControlHistory(customerAccount.getAccountId(), userContext, ControlPeriod.PAST_DAY, false);
+                controlHistoryDao.getControlHistory(customerAccount.getAccountId(), yukonUserContext, ControlPeriod.PAST_DAY, false);
 
         programEnrollmentService.removeNonEnrolledPrograms(programList, controlHistoryMap);
 
         boolean isNotEnrolled = programList.size() == 0;
         map.addAttribute("isNotEnrolled", isNotEnrolled);
         
-        if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
+        if (isNotEnrolled) return viewNamePrefix + "controlHistory.jsp"; // if there are no programs enrolled there is nothing more to show
 
         Map<Integer, Duration> totalDurationMap = 
             controlHistoryService.calculateTotalDuration(controlHistoryMap);
@@ -54,11 +55,11 @@ public class ControlHistoryController extends AbstractConsumerController {
         List<DisplayableProgram> displayablePrograms = 
             displayableProgramDao.getAllControlHistorySummary(
                                       customerAccount.getAccountId(), 
-                                      userContext, 
+                                      yukonUserContext, 
                                       ControlPeriod.PAST_DAY, false);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
-        return viewName;
+        return viewNamePrefix + "controlHistory.jsp";
     }
     
     @RequestMapping(value = "/consumer/controlhistory/completeHistoryView", method = RequestMethod.GET)
@@ -82,7 +83,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         ControlPeriod[] controlPeriods = ControlPeriod.values();
         map.addAttribute("controlPeriods", controlPeriods);
         
-        return "consumer/controlhistory/completeControlHistory.jsp";
+        return viewNamePrefix + "completeControlHistory.jsp";
     }
     
     @RequestMapping(value = "/consumer/controlhistory/innerCompleteHistoryView")
@@ -102,13 +103,6 @@ public class ControlHistoryController extends AbstractConsumerController {
         
         map.addAttribute("consumer", true);
         
-        return "consumer/controlhistory/innerCompleteControlHistory.jsp";
+        return viewNamePrefix + "innerCompleteControlHistory.jsp";
     }
-    
-    @Autowired
-    public void setControlHistoryService(
-            ControlHistoryService controlHistoryService) {
-        this.controlHistoryService = controlHistoryService;
-    }
-    
 }

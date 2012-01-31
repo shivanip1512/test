@@ -59,6 +59,7 @@
             </xsd:restriction>
     </xsd:simpleType>
 
+
     <xsd:complexType name="Temperature">
         <xsd:simpleContent >
             <xsd:extension base="xsd:float">
@@ -73,4 +74,11 @@
         </xsd:simpleContent>
     </xsd:complexType>
     
+    <xsd:simpleType name="OptOutType">
+            <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="ENABLED" />
+                <xsd:enumeration value="DISABLED_WITH_COMM" />
+                <xsd:enumeration value="DISABLED_WITHOUT_COMM" />
+            </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

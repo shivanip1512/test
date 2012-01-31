@@ -7,6 +7,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
 
 /**
@@ -44,7 +45,7 @@ public interface OptOutTemporaryOverrideDao {
 	 * @param stopDate - Date to stop temporary change
 	 * @param enabled - True if temp enable opt outs
 	 */
-	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, boolean enabled);
+	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, OptOutEnabled enabled);
 
     /**
      * Method used to set the opt out enabled state to a given value for the time period supplied
@@ -54,7 +55,7 @@ public interface OptOutTemporaryOverrideDao {
      * @param enabled - True if temp enable opt outs
      */
 	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, 
-                                          boolean enabled, int webpublishingProgramId);
+                                          OptOutEnabled enabled, int webpublishingProgramId);
 	
 	/**
 	 * Method used to set the opt out counts state to a given value for the time period supplied

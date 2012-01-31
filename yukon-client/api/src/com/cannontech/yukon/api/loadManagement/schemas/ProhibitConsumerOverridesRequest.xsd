@@ -3,7 +3,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api"
-            elementFormDefault="qualified" version="1.1">
+            elementFormDefault="qualified" version="1.2">
 	
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     
@@ -23,8 +23,12 @@
                             <xsd:documentation>Program name is not required.  If not provided, behavior should be applied across overrides, regardless of enrolled program.</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="action" type="xsd:string" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Action is not required.  If not provided, only Opt Outs will be prohibited (this preserves backwards compatibility).</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                 </xsd:sequence>
-            
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

@@ -3,18 +3,14 @@ package com.cannontech.stars.dr.optout.model;
 import java.util.Comparator;
 
 public class OptOutCountsTemporaryOverride extends OptOutTemporaryOverride {
-    private int optOutValue;
-    
-    public int getOptOutValue() {
-        return optOutValue;
-    }
+    private OptOutCounts counting;
 
     public OptOutCounts getOptOutCounts() {
-        return OptOutCounts.valueOf(optOutValue);
+        return this.counting;
     }
 
-    public void setOptOutValue(int optOutValue) {
-        this.optOutValue = optOutValue;
+    public void setCounting(OptOutCounts counting) {
+        this.counting = counting;
     }
     
     public static Comparator<OptOutCountsTemporaryOverride> getStartTimeComparator() {

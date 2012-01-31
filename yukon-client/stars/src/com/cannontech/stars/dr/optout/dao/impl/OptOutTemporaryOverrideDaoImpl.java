@@ -18,7 +18,9 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
@@ -64,7 +66,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT *");
 		sql.append("FROM OptOutTemporaryOverride");
-		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.ENABLED);
+		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.OPT_OUTS);
 		sql.append("  AND StartDate").lte(now);
 		sql.append("  AND StopDate").gt(now);
 		sql.append("  AND EnergyCompanyId").eq(energyCompanyId);
@@ -85,7 +87,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM OptOutTemporaryOverride");
-        sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.ENABLED);
+        sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.OPT_OUTS);
         sql.append("  AND StartDate").lte(now);
         sql.append("  AND StopDate").gt(now);
         sql.append("  AND EnergyCompanyId").eq(energyCompanyId);
@@ -117,16 +119,16 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 				user, 
 				startDate, 
 				stopDate, 
-				counts,
+				OptOutCounts.valueOf(counts),
 				webpublishingProgramId);
 	}
 
 	@Override
 	@Transactional
-	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, boolean enabled) {
+	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, OptOutEnabled enabled) {
 
 		this.setTemporaryOverrideValue(
-				OptOutTemporaryOverrideType.ENABLED, 
+				OptOutTemporaryOverrideType.OPT_OUTS, 
 				user, 
 				startDate, 
 				stopDate, 
@@ -138,9 +140,9 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
     @Override
     @Transactional
     public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, 
-                                          boolean enabled, int webpublishingProgramId) {
+                                          OptOutEnabled enabled, int webpublishingProgramId) {
 
-        this.setTemporaryOverrideValue(OptOutTemporaryOverrideType.ENABLED, 
+        this.setTemporaryOverrideValue(OptOutTemporaryOverrideType.OPT_OUTS, 
                                        user, 
                                        startDate, 
                                        stopDate, 
@@ -184,7 +186,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		sql.append("INSERT INTO OptOutTemporaryOverride");
 		sql.append("(OptOutTemporaryOverrideId, UserId, EnergyCompanyId, OptOutType, StartDate, StopDate, OptOutValue, ProgramId)");
 		sql.append("VALUES (?,?,?,?,?,?,?,?)");
-		yukonJdbcTemplate.update(sql.toString(), id, user.getUserID(), energyCompanyID, typeString, startDate, stopDate, value, webpublishingProgramId);
+		yukonJdbcTemplate.update(sql.toString(), id, user.getUserID(), energyCompanyID, typeString, startDate, stopDate, String.valueOf(value), webpublishingProgramId);
 	}
 	
 	// Row Mappers
@@ -200,7 +202,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
             result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             result.setStartDate(rs.getInstant("StartDate"));
             result.setStopDate(rs.getInstant("StopDate"));
-            result.setOptOutValue(rs.getInt("OptOutValue"));
+            result.setOptOutValue(OptOutEnabled.valueOf(rs.getStringSafe("OptOutValue")));
             result.setAssignedProgramId(rs.getNullableInt("ProgramId"));
             
             return result;
@@ -219,7 +221,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	        result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
 	        result.setStartDate(rs.getInstant("StartDate"));
 	        result.setStopDate(rs.getInstant("StopDate"));
-	        result.setOptOutValue(rs.getInt("OptOutValue"));
+	        result.setCounting(OptOutCounts.valueOf(rs.getStringSafe("OptOutValue")));
 	        result.setAssignedProgramId(rs.getNullableInt("ProgramId"));
 	        
 	        return result;

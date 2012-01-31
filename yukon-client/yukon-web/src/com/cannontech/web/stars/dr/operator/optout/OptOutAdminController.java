@@ -128,38 +128,22 @@ public class OptOutAdminController {
 		return "operator/optout/optOutAdmin.jsp";
     }
     
-    @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="enable", method = RequestMethod.POST)
-    public String enableOptOutsToday(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
-        // Log enable opt outs for today attempt
-        if (StringUtils.isNotBlank(programName)) {
-            starsEventLogService.enablingOptOutUsageForTodayByProgramAttemptedByOperator(user, programName);
-        } else {
-            starsEventLogService.enablingOptOutUsageForTodayAttemptedByOperator(user);
-        }
-        
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, user);
-    	
-        if (StringUtils.isNotBlank(programName)) {
-            
-            try {
-                
-                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, true, programName);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyEnabledOptOuts", programName));
-                
-            } catch (ProgramNotFoundException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
-            }
-
-        } else {
-            optOutService.changeOptOutEnabledStateForToday(user, true);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyEnabledOptOuts.allPrograms"));
-        }
-        
-    	return "redirect:/spring/stars/operator/optOut/admin";
+    @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="enableOptOuts", method = RequestMethod.POST)
+    public String enableOptOutsAndCommsToday(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
+        return toggleOptOutsToday(user, map, programName, OptOutEnabled.ENABLED, flashScope);
     }
     
-    @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="disable", method = RequestMethod.POST)
+    @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="disableOptOuts", method = RequestMethod.POST)
     public String disableOptOutsToday(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
+    	return toggleOptOutsToday(user, map, programName, OptOutEnabled.DISABLED_WITH_COMM, flashScope);
+    }
+    
+    @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="disableOptOutsAndComms", method = RequestMethod.POST)
+    public String disableOptOutAndCommsToday(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
+        return toggleOptOutsToday(user, map, programName, OptOutEnabled.DISABLED_WITHOUT_COMM, flashScope);
+    }
+    
+    private String toggleOptOutsToday(LiteYukonUser user, ModelMap map, String programName, OptOutEnabled optOutEnabled, FlashScope flashScope) throws Exception {
         // Log disable opt outs for today attempt
         if (StringUtils.isNotBlank(programName)) {
             starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByOperator(user, programName);
@@ -169,11 +153,11 @@ public class OptOutAdminController {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, user);
         
-    	if (StringUtils.isNotBlank(programName)) {
+        if (StringUtils.isNotBlank(programName)) {
             
             try {
                 
-                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, false, programName);
+                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, optOutEnabled, programName);
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyDisabledOptOuts", programName));
                 
             } catch (ProgramNotFoundException e) {
@@ -181,11 +165,11 @@ public class OptOutAdminController {
             }
 
         } else {
-            optOutService.changeOptOutEnabledStateForToday(user, false);
+            optOutService.changeOptOutEnabledStateForToday(user, optOutEnabled);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyDisabledOptOuts.allPrograms"));
         }
-    	
-    	return "redirect:/spring/stars/operator/optOut/admin";
+        
+        return "redirect:/spring/stars/operator/optOut/admin";
     }
 
     @RequestMapping(value = "/operator/optOut/admin/cancelAllOptOuts", method = RequestMethod.POST)

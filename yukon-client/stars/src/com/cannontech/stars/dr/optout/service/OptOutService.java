@@ -16,6 +16,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
@@ -126,7 +127,7 @@ public interface OptOutService {
 	 * @param user - User making change
 	 * @param optOutsEnabled - True if opt outs should be allowed for the rest of the day.
 	 */
-	public void changeOptOutEnabledStateForToday(LiteYukonUser user, boolean optOutsEnabled);
+	public void changeOptOutEnabledStateForToday(LiteYukonUser user, OptOutEnabled optOutsEnabled);
 	
 
     /**
@@ -138,7 +139,7 @@ public interface OptOutService {
      * @param programName
      * @throws ProgramNotFoundException if program name isn't found
      */
-    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled, String programName) throws ProgramNotFoundException;
+    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, OptOutEnabled optOutsEnabled, String programName) throws ProgramNotFoundException;
 	
 	/**
 	 * Method to get the opt out counts for the given inventory/account pair

@@ -1402,7 +1402,7 @@
                 <value>ALLOW|/|WEB_CLIENT</value>
                 <value>ALLOW|/index.jsp|WEB_CLIENT</value>
                 <value>ALLOW|/home|WEB_CLIENT</value>
-                <value>DENY|/spring/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
+                <value>ALLOW|/spring/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
                                                 
                 <value>ALLOW|/spring/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/spring/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
@@ -1490,6 +1490,11 @@
         <property name="inventoryDao" ref="inventoryDao" />
         <property name="customerAccountDao" ref="customerAccountDao" />
         <property name="rolePropertyDao" ref="rolePropertyDao"/>
+        <property name="optOutStatusService" ref="optOutStatusService" />
+    </bean>
+    
+    <bean id="enrollmentMenuOption" class="com.cannontech.web.menu.option.producer.EnrollmentMenuOptionProducer">
+        <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
     
     <bean id="faqMenuOption" class="com.cannontech.web.menu.option.producer.FaqMenuOptionProducer"/>

@@ -80,7 +80,6 @@
                         <br>
                     
                         <form action="/spring/stars/operator/optOut/admin/setDisabled" method="post">
-                                
                             <table style="padding:10px;background-color:#EEE;width:100%;">
                                 <tr><td>
                                     <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction"/>
@@ -105,10 +104,12 @@
                                      
                                 </td></tr>
                             </table>
-                            <br>
+                            <br/>
+                                <input type="submit" name="disableOptOuts" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.disableOptOutsButton" />" class="formSubmit first">
+                                <input type="submit" name="disableOptOutsAndComms" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" />" class="formSubmit last">
                             
-                            <input type="submit" name="disable" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.disableOptOutsButton" />" class="formSubmit">
-                            <input type="submit" name="enable" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.enableOptOutsButton" />" class="formSubmit">
+                                <input type="submit" name="enableOptOuts" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.enableOptOutsButton" />" class="formSubmit first">
+                                <input type="submit" name="disableOptOuts" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.enableCommsButton" />" class="formSubmit last">
                         </form>       
                     </tags:boxContainer2>
                 </cti:checkProperty>

@@ -3,7 +3,8 @@
 
 <cti:url var="generalUrl" value="/spring/stars/consumer/general"/>
 
-<cti:standardPage module="consumer" page="optoutdisabled">
+<cti:standardPage module="consumer" page="thermostatDisabled">
+    <cti:standardMenu />
     <h3><i:inline key=".header"/></h3>
     <div align="center">
         <i:inline key=".msg"/>

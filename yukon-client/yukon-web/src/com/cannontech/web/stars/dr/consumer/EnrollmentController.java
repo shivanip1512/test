@@ -25,6 +25,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.Displayab
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
@@ -37,15 +38,19 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
-    private AccountEventLogService accountEventLogService;
-    private DisplayableEnrollmentDao displayableEnrollmentDao;
-    private EnrollmentDao enrollmentDao;
-    private EnrollmentHelperService enrollmentHelperService;
-    private WebSecurityChecker webSecurityChecker;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private DisplayableEnrollmentDao displayableEnrollmentDao;
+    @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private EnrollmentHelperService enrollmentHelperService;
+    @Autowired private OptOutStatusService optOutStatusService;
+    @Autowired private WebSecurityChecker webSecurityChecker;
     
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
     public String view(@ModelAttribute CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
+        if(isCommunicationDisabled(yukonUserContext)){
+            return "consumer/enrollment/enrollmentDisabled.jsp";
+        }
         List<DisplayableEnrollment> enrollments = 
             displayableEnrollmentDao.find(customerAccount.getAccountId());
         map.addAttribute("enrollments", enrollments);
@@ -55,15 +60,21 @@ public class EnrollmentController extends AbstractConsumerController {
 
     @RequestMapping(value = "/consumer/enrollment/enroll", method=RequestMethod.GET)
     public String enroll(ModelMap model,
-            @ModelAttribute CustomerAccount customerAccount,
-            int assignedProgramId, HttpSession session,
-            YukonUserContext userContext) {
+                         @ModelAttribute CustomerAccount customerAccount,
+                         int assignedProgramId,
+                         HttpSession session,
+                         YukonUserContext yukonUserContext) {
+        
+        if(isCommunicationDisabled(yukonUserContext)){
+            return "consumer/enrollment/enrollmentDisabled.jsp";
+        }
+        
         DisplayableEnrollmentProgram displayableEnrollmentProgram = 
             displayableEnrollmentDao.getProgram(customerAccount.getAccountId(), assignedProgramId);
 
         boolean perDeviceEnrollment =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE,
-                                          userContext.getYukonUser());
+                                          yukonUserContext.getYukonUser());
         if (perDeviceEnrollment && displayableEnrollmentProgram.getInventory().size() > 1) {
             model.addAttribute("displayableEnrollmentProgram", displayableEnrollmentProgram);
             return "consumer/enrollment/selectHardware.jsp";
@@ -78,7 +89,7 @@ public class EnrollmentController extends AbstractConsumerController {
             // Log Attempt
             EnrollmentEventLoggingData eventLoggingData = enrollmentHelperService.getEventLoggingData(programEnrollment);
             
-            accountEventLogService.enrollmentAttemptedByConsumer(userContext.getYukonUser(), 
+            accountEventLogService.enrollmentAttemptedByConsumer(yukonUserContext.getYukonUser(), 
                                                                  customerAccount.getAccountNumber(), 
                                                                  eventLoggingData.getManufacturerSerialNumber(), 
                                                                  eventLoggingData.getProgramName(), 
@@ -90,15 +101,21 @@ public class EnrollmentController extends AbstractConsumerController {
         
         return saveChanges(model, assignedProgramId,
                            customerAccount.getAccountId(), updatedEnrollments,
-                           session, userContext);
+                           session, yukonUserContext);
     }
 
     @RequestMapping(value = "/consumer/enrollment/enrollSelectedHardware", method=RequestMethod.POST)
     public String enrollSelectedHardware(ModelMap model,
-            @ModelAttribute CustomerAccount customerAccount,
-            int assignedProgramId, Integer[] inventoryIds, HttpSession session,
-            YukonUserContext userContext) {
+                                         @ModelAttribute CustomerAccount customerAccount,
+                                         int assignedProgramId,
+                                         Integer[] inventoryIds,
+                                         HttpSession session,
+                                         YukonUserContext yukonUserContext) {
         webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
+        
+        if(isCommunicationDisabled(yukonUserContext)){
+            return "consumer/enrollment/enrollmentDisabled.jsp";
+        }
 
         DisplayableEnrollmentProgram displayableEnrollmentProgram =
             displayableEnrollmentDao.getProgram(
@@ -123,14 +140,20 @@ public class EnrollmentController extends AbstractConsumerController {
 
         return saveChanges(model, assignedProgramId,
                            customerAccount.getAccountId(), updatedEnrollments,
-                           session, userContext);
+                           session, yukonUserContext);
     }
 
     @RequestMapping(value = "/consumer/enrollment/unenroll", method=RequestMethod.GET)
     public String unenroll(ModelMap model,
-            @ModelAttribute CustomerAccount customerAccount,
-            int assignedProgramId, HttpSession session,
-            YukonUserContext userContext) {
+                           @ModelAttribute CustomerAccount customerAccount,
+                           int assignedProgramId,
+                           HttpSession session,
+                           YukonUserContext yukonUserContext) {
+        
+        if(isCommunicationDisabled(yukonUserContext)){
+            return "consumer/enrollment/enrollmentDisabled.jsp";
+        }
+        
         DisplayableEnrollmentProgram displayableEnrollmentProgram =
             displayableEnrollmentDao.getProgram(
                 customerAccount.getAccountId(), assignedProgramId);
@@ -144,7 +167,7 @@ public class EnrollmentController extends AbstractConsumerController {
             // Log Attempt
             EnrollmentEventLoggingData eventLoggingData = enrollmentHelperService.getEventLoggingData(programEnrollment);
             
-            accountEventLogService.unenrollmentAttemptedByConsumer(userContext.getYukonUser(), 
+            accountEventLogService.unenrollmentAttemptedByConsumer(yukonUserContext.getYukonUser(), 
                                                                    customerAccount.getAccountNumber(),
                                                                    eventLoggingData.getManufacturerSerialNumber(), 
                                                                    eventLoggingData.getProgramName(), 
@@ -154,7 +177,11 @@ public class EnrollmentController extends AbstractConsumerController {
         
         return saveChanges(model, assignedProgramId,
                            customerAccount.getAccountId(), updatedEnrollments,
-                           session, userContext);
+                           session, yukonUserContext);
+    }
+    
+    private boolean isCommunicationDisabled(YukonUserContext user){
+        return !optOutStatusService.getOptOutEnabled(user.getYukonUser()).isCommunicationEnabled();
     }
 
     private ProgramEnrollment makeProgramEnrollment(
@@ -205,30 +232,5 @@ public class EnrollmentController extends AbstractConsumerController {
         }
 
         return conflictingEnrollments;
-    }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setDisplayableEnrollmentDao(DisplayableEnrollmentDao displayableEnrollmentDao) {
-        this.displayableEnrollmentDao = displayableEnrollmentDao;
-    }
-
-    @Autowired
-    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
-        this.webSecurityChecker = webSecurityChecker;
-    }
-
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
-    @Autowired
-    public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
-        this.enrollmentHelperService = enrollmentHelperService;
     }
 }

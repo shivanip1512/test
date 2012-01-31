@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 
 public class LoadManagementTestUtils {
 
@@ -343,6 +344,7 @@ public class LoadManagementTestUtils {
     public static Element createProhibitOverridesRequestElement(
     		String version,
     		String programName,
+    		OptOutEnabled optOutEnabled,
     		Resource requestSchemaResource) {
     	
     	Element requestElement = null;
@@ -354,6 +356,11 @@ public class LoadManagementTestUtils {
 
         if (programName != null) {
             Element tmpElement = XmlUtils.createStringElement("programName", ns, programName);
+            requestElement.addContent(tmpElement);
+        }
+        
+        if (optOutEnabled != null) {
+            Element tmpElement = XmlUtils.createStringElement("action", ns, optOutEnabled.toString());
             requestElement.addContent(tmpElement);
         }
     	

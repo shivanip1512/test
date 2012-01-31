@@ -3,4 +3,7 @@
 <prohibitConsumerOverridesRequest xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ProhibitConsumerOverridesRequest.xsd"
-           version="1.0" />
+           version="1.2">
+           <programName>Digi SEP Test Program</programName>
+           <action>DISABLED_WITHOUT_COMM</action>
+</prohibitConsumerOverridesRequest>

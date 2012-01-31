@@ -28,6 +28,14 @@
 
     <h3><cti:msg key="yukon.dr.consumer.general.header" /></h3>
     <br>
+    <c:if test="${not empty optOutDisabledKey}">
+        <cti:msg2 var="warning" key=".optOutsDisabledWarningTitle" />
+        <tags:boxContainer title="${warning}" hideEnabled="false">
+            <cti:msg2 key=".${optOutDisabledKey}" htmlEscape="false"/>
+        </tags:boxContainer>
+        <br>
+        <br>
+    </c:if>
     <div id="description"><cti:msg key="yukon.dr.consumer.general.description" /></div>
     <br>
     <br>
@@ -99,6 +107,7 @@
         </tags:boxContainer>
         <br>
         <br>
+        
         <c:if test="${showNotification}">
 	        <cti:msg key="yukon.dr.consumer.general.oddsForControlTitle" var="oddsTitle" />
 	        <tags:boxContainer title="${oddsTitle}" hideEnabled="false">

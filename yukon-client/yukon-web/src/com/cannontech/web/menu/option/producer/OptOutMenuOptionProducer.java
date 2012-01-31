@@ -26,7 +26,7 @@ public class OptOutMenuOptionProducer extends DynamicMenuOptionProducer {
     	List<MenuOption> menuOptions = new ArrayList<MenuOption>();
     	
         // Generate a menu option if opt out is enabled
-    	boolean optOutEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser());
+    	boolean optOutEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser()).isOptOutEnabled();
     	if(optOutEnabled) {
     		YukonMessageSourceResolvable resolvable = 
     			new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.programs.optOut");

@@ -88,6 +88,7 @@ import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
@@ -622,18 +623,18 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-	public void changeOptOutEnabledStateForToday(LiteYukonUser user, boolean optOutsEnabled) {
+	public void changeOptOutEnabledStateForToday(LiteYukonUser user, OptOutEnabled optOutsEnabled) {
 
 		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
 
     	optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
-        starsEventLogService.optOutUsageEnabledToday(user, optOutsEnabled);
+        starsEventLogService.optOutUsageEnabledToday(user, optOutsEnabled.isOptOutEnabled(), optOutsEnabled.isCommunicationEnabled());
 	}
 
     @Override
-    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
+    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, OptOutEnabled optOutsEnabled,
                                                               String programName) throws ProgramNotFoundException {
 
         if (StringUtils.isBlank(programName)) {
@@ -655,7 +656,7 @@ public class OptOutServiceImpl implements OptOutService {
         
         // Temporarily update enabled state
         optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled, webpublishingProgramId);
-        starsEventLogService.optOutUsageEnabledTodayForProgram(user, programName, optOutsEnabled);
+        starsEventLogService.optOutUsageEnabledTodayForProgram(user, programName, optOutsEnabled.isOptOutEnabled(), optOutsEnabled.isCommunicationEnabled());
         
     }
     

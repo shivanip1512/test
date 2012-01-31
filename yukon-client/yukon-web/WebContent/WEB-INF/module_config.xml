@@ -676,13 +676,12 @@
             <option name="controlHistory">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
-              <link>/spring/stars/consumer/controlhistory</link>
+                <link>/spring/stars/consumer/controlhistory</link>
             </option>
-            <option name="enrollment">
+            <dynamicOptions bean="enrollmentMenuOption">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
-              <link>/spring/stars/consumer/enrollment</link>
-            </option>
+            </dynamicOptions>
             <dynamicOptions bean="optOutMenuOption">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT" />

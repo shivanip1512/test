@@ -17,6 +17,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
@@ -64,12 +65,12 @@ public class OptOutServiceAdapter implements OptOutService {
 
 	@Override
 	public void changeOptOutEnabledStateForToday(LiteYukonUser user,
-			boolean optOutsEnabled) {
+			OptOutEnabled optOutsEnabled) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 	
     @Override
-    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
+    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, OptOutEnabled optOutsEnabled,
                                                               String programName) throws ProgramNotFoundException {
         throw new UnsupportedOperationException("not implemented");
     }

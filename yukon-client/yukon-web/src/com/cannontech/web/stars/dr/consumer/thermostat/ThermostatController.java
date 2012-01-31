@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
@@ -27,12 +28,18 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @Controller
 public class ThermostatController extends AbstractThermostatController {
 
-    private InventoryDao inventoryDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private OptOutStatusService optOutStatusService;
 
     @RequestMapping(value = "/consumer/thermostat/view/all", method = RequestMethod.GET)
-    public String viewAll(@ModelAttribute("customerAccount") CustomerAccount account, 
-            ModelMap map) {
-
+    public String viewAll(@ModelAttribute("customerAccount") CustomerAccount account,
+                          LiteYukonUser user,
+                          ModelMap map) {
+        
+        if(isCommunicationDisabled(user)){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
+        
         List<Thermostat> thermostats = inventoryDao.getThermostatsByAccount(account);
         map.addAttribute("thermostats", thermostats);
 
@@ -41,9 +48,15 @@ public class ThermostatController extends AbstractThermostatController {
 
     @RequestMapping(value = "/consumer/thermostat/view/allSelected", method = RequestMethod.POST)
     public String allSelected(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
-            @ModelAttribute("customerAccount") CustomerAccount account,
-            LiteYukonUser user, HttpServletRequest request, ModelMap map) {
+                              @ModelAttribute("customerAccount") CustomerAccount account,
+                              LiteYukonUser user, 
+                              HttpServletRequest request, 
+                              ModelMap map) {
 
+        if(isCommunicationDisabled(user)){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
+        
         if(StringUtils.isBlank(thermostatIds.toString())) {
             return "redirect:/spring/stars/consumer/thermostat/view/all";
         }
@@ -64,10 +77,9 @@ public class ThermostatController extends AbstractThermostatController {
         
         return "redirect:/spring/stars/consumer/thermostat/view";
     }
-
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
+    
+    private boolean isCommunicationDisabled(LiteYukonUser user){
+        return !optOutStatusService.getOptOutEnabled(user).isCommunicationEnabled();
     }
 
 }

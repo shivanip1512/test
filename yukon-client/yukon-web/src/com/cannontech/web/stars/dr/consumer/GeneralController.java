@@ -25,6 +25,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -33,8 +34,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class GeneralController extends AbstractConsumerController {
     private static final String viewName = "consumer/general.jsp";
     
-    private ContactDao contactDao;
-    private ContactNotificationDao contactNotificationDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private OptOutStatusService optOutStatusService;
 
     @RequestMapping(value = "/consumer/general", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -82,6 +84,14 @@ public class GeneralController extends AbstractConsumerController {
         	}
         }
         map.addAttribute("showNotification", showNotification);
+        if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isOptOutEnabled() ||
+                !optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
+            if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
+                map.addAttribute("optOutDisabledKey", "optOutsAndCommuncationDisabledWarning");
+            }else{
+                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
+            }
+        }
         
         return viewName;
     }
@@ -122,15 +132,4 @@ public class GeneralController extends AbstractConsumerController {
     	
     	return "redirect:/spring/stars/consumer/general";
     }
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-		this.contactDao = contactDao;
-	}
-    
-    @Autowired
-    public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-		this.contactNotificationDao = contactNotificationDao;
-	}
-    
 }

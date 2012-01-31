@@ -26,6 +26,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
@@ -47,12 +48,13 @@ import com.cannontech.web.stars.dr.operator.hardware.validator.ThermostatValidat
 @Controller
 public class ThermostatManualController extends AbstractThermostatController {
     @Autowired private AccountEventLogService accountEventLogService;
-    @Autowired private InventoryDao inventoryDao;
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerEventDao customerEventDao;
+    @Autowired private InventoryDao inventoryDao;
     @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
-    @Autowired private ThermostatService thermostatService;
+    @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
+    @Autowired private ThermostatService thermostatService;
     
     private final int NUMBER_OF_HISTORY_ROWS_TO_DISPLAY = 6;
     
@@ -61,6 +63,10 @@ public class ThermostatManualController extends AbstractThermostatController {
                        LiteYukonUser user, 
                        ModelMap map,
                        HttpServletRequest request) throws Exception {
+        
+        if(isCommunicationDisabled(user)){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
         
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
@@ -103,6 +109,9 @@ public class ThermostatManualController extends AbstractThermostatController {
                             BindingResult bindingResult, FlashScope flashScope,
                             YukonUserContext userContext)  {
         LiteYukonUser user = userContext.getYukonUser();
+        if(isCommunicationDisabled(user)){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
         int inventoryId = thermostat.getId();
         // They are only allowed to change the label so we read the old thermostat from the
         // database and just change the one field they're allowed to change.
@@ -136,7 +145,9 @@ public class ThermostatManualController extends AbstractThermostatController {
                          FlashScope flashScope, YukonUserContext userContext, 
                          HttpServletRequest request, ModelMap map) 
     throws Exception {
-
+        if(isCommunicationDisabled(userContext.getYukonUser())){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
         Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
         executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, flashScope, map);
 
@@ -146,7 +157,10 @@ public class ThermostatManualController extends AbstractThermostatController {
     @RequestMapping(value = "/consumer/thermostat/runProgram", method = RequestMethod.POST)
     public String runProgram(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, YukonUserContext userContext,
                              HttpServletRequest request, FlashScope flashScope, ModelMap map) throws Exception {
-
+        
+        if(isCommunicationDisabled(userContext.getYukonUser())){
+            return "consumer/thermostat/thermostatDisabled.jsp";
+        }
         // Log run program attempt
         CustomerAccount account = getCustomerAccount(request);
         List<String> serialNumbers =  lmHardwareBaseDao.getSerialNumberForInventoryIds(thermostatIds);
@@ -217,6 +231,10 @@ public class ThermostatManualController extends AbstractThermostatController {
         // Manually put thermsotatIds into model for redirect
         map.addAttribute("thermostatIds", thermostatIds.toString());
 	}
+	
+	private boolean isCommunicationDisabled(LiteYukonUser user){
+        return !optOutStatusService.getOptOutEnabled(user).isCommunicationEnabled();
+    }
 
     /**
      * This method takes care of setting up the flash scope message that comes back from running a manual event command.

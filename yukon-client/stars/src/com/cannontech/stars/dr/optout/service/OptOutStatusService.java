@@ -26,7 +26,7 @@ public interface OptOutStatusService {
 	 * @param user - User to get value for
 	 * @return True if opt outs are enabled, False if disabled
 	 */
-	public boolean getOptOutEnabled(LiteYukonUser user);
+	public OptOutEnabled getOptOutEnabled(LiteYukonUser user);
 
     /**
      * Return all OptOutTemporaryOverride settings where programId != null (and OptOutType==ENABLED).

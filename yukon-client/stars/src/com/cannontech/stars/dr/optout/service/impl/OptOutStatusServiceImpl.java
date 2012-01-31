@@ -23,6 +23,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
@@ -54,9 +55,11 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		
 		OptOutCountsTemporaryOverride rolePropSetting = new OptOutCountsTemporaryOverride();
-		boolean optOutCounts = rolePropertyDao.checkProperty(YukonRoleProperty.OPT_OUTS_COUNT, null);
-		int optOutCountsValues = optOutCounts ? 1 : 0;
-		rolePropSetting.setOptOutValue(optOutCountsValues);
+		if(rolePropertyDao.checkProperty(YukonRoleProperty.OPT_OUTS_COUNT, null)){
+		    rolePropSetting.setCounting(OptOutCounts.COUNT);
+		}else{
+		    rolePropSetting.setCounting(OptOutCounts.DONT_COUNT);
+		}
 		rolePropSetting.setStartDate(new Instant());
 		
 		OptOutCountsTemporaryOverride nullProgramIdSetting = null;
@@ -101,7 +104,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
     @Override
     public OptOutEnabled getDefaultOptOutEnabled(LiteYukonUser user) {
         // Get the default value for the system without taking into effect temporary overrides.
-        OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(isSystemOptOutEnabledForOperator(user));
+        OptOutEnabled optOutEnabled = isSystemOptOutEnabledForOperator(user);
 
         LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
         OptOutEnabledTemporaryOverride energyCompanyOptOutTemporaryOverride = 
@@ -117,7 +120,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
     }
 	
 	@Override
-	public boolean getOptOutEnabled(LiteYukonUser user) {
+	public OptOutEnabled getOptOutEnabled(LiteYukonUser user) {
 
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 
@@ -144,49 +147,37 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		                programIdOptOutTemporaryOverrideMap.get(lmHardwareControlGroup.getProgramId());
 		            
 		            // Opt Outs are disabled for this account.
-		            OptOutEnabled optOutEnabled = optOutTemporaryOverride.getOptOutEnabled();
-		            if (optOutEnabled == OptOutEnabled.DISABLED) {
-		                return false;
-		            }
-		            
+		            return optOutTemporaryOverride.getOptOutEnabled();
 		        // The program was not found in the override list. Now check the global entry.  
 		        } else {
 		            if (energyCompanyOptOutTemporaryOverride != null) {
     		            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
-    		            OptOutEnabled optOutEnabled = energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
-    		            if (optOutEnabled == OptOutEnabled.DISABLED) {
-    		                return false;
-    		            } 
+    		            return energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
 		            }
 		        }
 		    } 
 		    
-		    return true;
+		    return OptOutEnabled.ENABLED;
 
         // Checking to see if there is an energy company wide override.  If there has been, check to 
 		// see if opt outs are enabled or disabled energy company wide.
         } else if (energyCompanyOptOutTemporaryOverride != null) {
-
-            OptOutEnabled optOutEnabled = energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
-            if (optOutEnabled == OptOutEnabled.DISABLED) {
-                return false;
-            }
-            return  true;
-		    
+            return energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
 		// There were no temporary opt out overrides.  Use the role property value.
 		} else {
-
-		    boolean optOutEnabled = false;
 			boolean isOperator = energyCompanyService.isOperator(user);
 
 			if (isOperator) {
-			    optOutEnabled = isSystemOptOutEnabledForOperator(user);
+			    return isSystemOptOutEnabledForOperator(user);
 			} else {
 				// Residential user - check role prop value
-				optOutEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+				if(rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, user)){
+				    return OptOutEnabled.ENABLED;
+				}else{
+				    return OptOutEnabled.DISABLED_WITH_COMM;
+				}
+				
 			}
-
-			return optOutEnabled;
 		}
 	}
 
@@ -213,14 +204,11 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
      * This method checks to see if opt outs are enabled for an energy company
      * through an operator user.
      */
-	private boolean isSystemOptOutEnabledForOperator(LiteYukonUser user) {
-	    boolean optOutEnabled = false;
-	    
+	private OptOutEnabled isSystemOptOutEnabledForOperator(LiteYukonUser user) {
         // If user is operator - there is no way to determine the 'master' optout enabled
         // state if there are multiple residential customer groups, so just grab the
         // first one in the list and use that as the default current state
 	    YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-
         List<LiteYukonGroup> residentialCustomerGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
 
         if (residentialCustomerGroups.size() > 0) {
@@ -229,11 +217,12 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
             String enabled = 
                 roleDao.getRolePropValueGroup(group, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT,
                                               new Boolean(false).toString());
-
-            optOutEnabled = !CtiUtilities.isFalse(enabled);
+            if(!CtiUtilities.isFalse(enabled)){ //true
+                return OptOutEnabled.ENABLED;
+            }
         }
-        
-        return optOutEnabled;
+        //pre addition of the communications toggle, this was the equivalent default value
+        return OptOutEnabled.ENABLED;
 	}
 	
 	/**

@@ -4,42 +4,26 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum OptOutEnabled implements DisplayableEnum {
 
-	ENABLED{
-		@Override
-		public boolean isEnabled() {
-			return true;
-		}
-	}, 
-	DISABLED {
-		@Override
-		public boolean isEnabled() {
-			return false;
-		}
-	};
-
-	public static OptOutEnabled valueOf(boolean enabled) {
-		if (enabled) {
-			return ENABLED;
-		} else {
-			return DISABLED;
-		}
-	}
+    //Column varChar(25)
+	ENABLED (true, true), 
+	DISABLED_WITH_COMM (false, true),
+	DISABLED_WITHOUT_COMM (false, false);
 	
-	/**
-	 * This method takes the optOutValue of an optOutTemporaryOverride object and creates a 
-     * OptOutEnabled enum value.
-	 */
-	public static OptOutEnabled valueOf(int enabled) {
-        if (enabled == 1) {
-            return ENABLED;
-        } else if (enabled == 0) {
-            return DISABLED;
-        } else {
-            throw new IllegalArgumentException("Invalid opt out enabled value: "+enabled);
-        }
+	private boolean optOutEnabled;
+	private boolean communicationEnabled;
+	
+	private OptOutEnabled(boolean optOutEnabled, boolean communicationEnabled) {
+	    this.optOutEnabled = optOutEnabled;
+	    this.communicationEnabled = communicationEnabled;
     }
 	
-	public abstract boolean isEnabled();
+	public boolean isOptOutEnabled(){
+	    return this.optOutEnabled;
+	}
+	
+	public boolean isCommunicationEnabled(){
+	    return this.communicationEnabled;
+	}
 	
 	private final static String keyPrefix = "yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.";
 
