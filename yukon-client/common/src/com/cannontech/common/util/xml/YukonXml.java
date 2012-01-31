@@ -37,18 +37,18 @@ public class YukonXml {
         return requestElement;
     }
 
-    public static SimpleXPathTemplate getXPathTemplateForNode(Node node) {
+    public static YukonXPathTemplate getXPathTemplateForNode(Node node) {
         
-        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        YukonXPathTemplate template = new YukonXPathTemplate();
         template.setContext(new DOMSource(node));
         template.setNamespaces(getYukonNamespaceAsProperties());
         
         return template;
     }
 
-    public static SimpleXPathTemplate getXPathTemplateForElement(Element element) {
+    public static YukonXPathTemplate getXPathTemplateForElement(Element element) {
         
-        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        YukonXPathTemplate template = new YukonXPathTemplate();
         template.setContext(new JDOMSource(element));
         template.setNamespaces(getYukonNamespaceAsProperties());
         
