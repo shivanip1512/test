@@ -239,7 +239,19 @@ bool CtiMCSchedule::Insert()
 
     if( getScheduleID() == 0 )
     {
-        setScheduleID(PAOIdGen());
+        INT newId = PAOIdGen();
+
+        if (newId != 0)
+        {
+            setScheduleID(newId);
+        }
+        else
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return false;
+        }
     }
 
     bool ret = _pao_table.Insert();

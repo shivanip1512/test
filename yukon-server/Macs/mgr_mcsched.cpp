@@ -221,6 +221,14 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
     // We have to assign it a schedule id
     long id = nextScheduleID();
 
+    if ( id == 0 )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+        return NULL;
+    }
+
     CtiMCSchedule* sched_to_add = (CtiMCSchedule*) sched.replicateMessage();
     sched_to_add->setScheduleID( id );
 

@@ -1604,11 +1604,6 @@ INT RecordDynamicData()
 
         vector< CtiTableDeviceScanData > dirtyData;
 
-        /*
-         *  We will be going with the idea that a minimal duration locking of the Manager is KEY KEY KEY here.
-         */
-        ScannerDeviceManager.apply(applyGenerateScannerDataRows, (void*)&dirtyData);
-
         Cti::Database::DatabaseConnection   conn;
 
         if ( ! conn.isValid() )
@@ -1618,6 +1613,11 @@ INT RecordDynamicData()
 
             return NOTNORMAL;
         }
+
+        /*
+         *  We will be going with the idea that a minimal duration locking of the Manager is KEY KEY KEY here.
+         */
+        ScannerDeviceManager.apply(applyGenerateScannerDataRows, (void*)&dirtyData);
 
         conn.beginTransaction();
 

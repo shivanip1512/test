@@ -1701,8 +1701,19 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         if( jobId > 0 )
         {
             requestLogId = SynchronizedIdGen("DeviceReadRequestLog", 1);
-            deviceReadLog.setRequestLogId(requestLogId);
-            deviceReadLog.Insert();
+
+            if ( requestLogId != 0 )
+            {
+                deviceReadLog.setRequestLogId(requestLogId);
+                deviceReadLog.Insert();
+            }
+            else
+            {
+                std::string errorMsg( "**** ERROR **** Invalid Connection to Database.  __FILE__ (__LINE__)" );
+                WriteOutput( errorMsg.c_str() );
+
+                return TCL_ERROR;
+            }
         }
     }
 

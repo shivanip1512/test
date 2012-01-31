@@ -1857,6 +1857,16 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
 
     vector<CtiTableDynamicPaoInfo *> dirty_info;
 
+    Cti::Database::DatabaseConnection   conn;
+
+    if ( ! conn.isValid() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+        return;
+    }
+
     spiterator dev_itr = begin(),
                dev_end = end();
 
@@ -1871,16 +1881,6 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
         try
         {
             bool status;
-
-            Cti::Database::DatabaseConnection   conn;
-
-            if ( ! conn.isValid() )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return;
-            }
 
             Cti::Database::DatabaseReader       rdr(conn, sql);
             rdr.execute();

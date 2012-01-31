@@ -532,10 +532,19 @@ void CtiMCServer::preScriptFunction(CtiInterpreter *interp)
     if( interp != NULL && (tclInterpreter = interp->getTclInterpreter()) != NULL )
     {
         ULONG logId = SynchronizedIdGen("DeviceReadJobLog", 1);
-        Tcl_SetVar(tclInterpreter, "DeviceReadLogId", (char *)CtiNumStr(logId).toString().c_str(), 0);
 
-        CtiTblDeviceReadJobLog jobLogTable(logId, interp->getScheduleId() , CtiTime::now(), CtiTime::now());
-        jobLogTable.Insert();
+        if ( logId != 0 )
+        {
+            Tcl_SetVar(tclInterpreter, "DeviceReadLogId", (char *)CtiNumStr(logId).toString().c_str(), 0);
+
+            CtiTblDeviceReadJobLog jobLogTable(logId, interp->getScheduleId() , CtiTime::now(), CtiTime::now());
+            jobLogTable.Insert();
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        }
     }
 }
 
