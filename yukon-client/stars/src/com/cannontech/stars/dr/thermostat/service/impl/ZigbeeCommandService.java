@@ -1,9 +1,9 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -14,7 +14,6 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.model.ZigbeeTextMessageDto;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -37,14 +36,12 @@ import com.google.common.collect.ImmutableSetMultimap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
-import com.google.common.collect.Sets;
 
 public class ZigbeeCommandService extends AbstractCommandExecutionService {
     
     private @Autowired InventoryDao inventoryDao;
     private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
     private @Autowired ZigbeeWebService zigbeeWebService;
-    private @Autowired NextValueHelper nextValueHelper;
     
     private final SetMultimap<TimeOfWeek, String> dayLetterLookup;
     {
@@ -77,18 +74,12 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                  * is not available for stats not assigned to a gateway in Jackson's new consumer pages.  */
                 throw new CommandCompletionException("Device not assigned to a gateway");
             }
+
             message.setGatewayId(gatewayId);
             message.setInventoryId(stat.getId());
             message.setMessage(command);
             message.setStartTime(new Instant());
-            
-            //Needs a unique id. Not tracked, we don't need to cancel these messages.
-            int messageId = nextValueHelper.getNextValue("ZBControlEvent");
-            message.setMessageId(messageId);
-            
-            Set<Integer> inventoryIds = Sets.newHashSet(1);
-            inventoryIds.add(stat.getId());
-            message.setInventoryIds(inventoryIds);
+            message.setInventoryIds(Collections.singleton(stat.getId()));
             
             zigbeeWebService.sendManualAdjustment(message);
         } catch (ZigbeeClusterLibraryException e) {
@@ -122,14 +113,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                     message.setInventoryId(stat.getId());
                     message.setMessage(command);
                     message.setStartTime(new Instant());
-                    
-                    //Needs a unique id.
-                    int messageId = nextValueHelper.getNextValue("ZBControlEvent");
-                    message.setMessageId(messageId);
-                    
-                    Set<Integer> inventoryIds = Sets.newHashSet(1);
-                    inventoryIds.add(stat.getId());
-                    message.setInventoryIds(inventoryIds);
+                    message.setInventoryIds(Collections.singleton(stat.getId()));
                     
                     zigbeeWebService.sendManualAdjustment(message);
                 }
