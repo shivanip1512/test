@@ -225,7 +225,7 @@ public class CapControlImportController {
 	
 	@RequestMapping(method=RequestMethod.POST)
 	public String importHierarchyFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
-		List<HierarchyImportResult> results = new ArrayList<HierarchyImportResult>();
+		List<HierarchyImportResult> results = Lists.newArrayList();
 		
 		MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
         MultipartFile dataFile = mRequest.getFile("dataFile");

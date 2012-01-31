@@ -28,6 +28,7 @@ import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.exception.CapControlImportException;
 import com.cannontech.capcontrol.exception.CbcImporterWebServiceException;
 import com.cannontech.capcontrol.exception.HierarchyImporterWebServiceException;
+import com.cannontech.capcontrol.exception.ImporterInvalidOpStateException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -119,6 +120,7 @@ public class CapControlImportRequestEndpoint {
             }
 		
 			response.setAttribute(new Attribute("success", result.getResultType().isSuccess().toString()));
+			response.setAttribute(new Attribute("errorCode", Integer.toString(result.getResultType().getErrorCode())));
 			
 			hierarchyRepsonse.addContent(response);
 		}
@@ -151,6 +153,7 @@ public class CapControlImportRequestEndpoint {
             }
 			
 			response.setAttribute(new Attribute("success", result.getResultType().isSuccess().toString()));
+			response.setAttribute(new Attribute("errorCode", Integer.toString(result.getResultType().getErrorCode())));
 			
 			cbcResponse.addContent(response);
 		}
@@ -452,7 +455,7 @@ public class CapControlImportRequestEndpoint {
 		        BankOpState bankOpState = BankOpState.getStateByName(opState);
 		        data.setBankOpState(bankOpState);
 		    } catch (IllegalArgumentException e) {
-		        throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_OPERATIONAL_STATE);
+		        throw new ImporterInvalidOpStateException(name);
 		    }
 		}
 		

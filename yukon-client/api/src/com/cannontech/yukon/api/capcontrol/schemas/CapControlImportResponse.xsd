@@ -12,6 +12,7 @@
 			<xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 		</xsd:sequence>
 		<xsd:attribute name="success" use="required" type="xsd:boolean"/>
+        <xsd:attribute name="errorCode" use="required" type="xsd:int"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="HierarchyImportResponse">
@@ -20,6 +21,7 @@
 			<xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
 		</xsd:sequence>
 		<xsd:attribute name="success" use="required" type="xsd:boolean"/>
+        <xsd:attribute name="errorCode" use="required" type="xsd:int"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="HierarchyResponseList">

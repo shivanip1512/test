@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <capControlImportResponse xmlns="http://yukon.cannontech.com/api"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportResponse.xsd"
-    version="1.0">
-
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportResponse.xsd"
+           version="1.0">
+           
     <hierarchyResponseList>
-        <hierarchyImportResponse success="true">
-            <resultDetail>Remove succeeded for object with name "ImportArea".</resultDetail>
+        <hierarchyImportResponse errorCode="0" success="true">
+            <resultDetail>Add succeeded for object with name "ImportArea".</resultDetail>
         </hierarchyImportResponse>
-        <hierarchyImportResponse success="true">
-            <resultDetail>Remove succeeded for object with name "ImportSub".</resultDetail>
+        <hierarchyImportResponse errorCode="8" success="false">
+            <hierarchyImportResultType>Object Doesn't Exist</hierarchyImportResultType>
+            <resultDetail>Update failed for object with name "ImportSub".</resultDetail>
         </hierarchyImportResponse>
-        <hierarchyImportResponse success="true">
-            <resultDetail>Remove succeeded for object with name "ImportSubBus".</resultDetail>
+        <hierarchyImportResponse errorCode="4" success="false">
+            <hierarchyImportResultType>Invalid Disabled Value</hierarchyImportResultType>
         </hierarchyImportResponse>
-        <hierarchyImportResponse success="true">
-            <resultDetail>Remove succeeded for object with name "ImportFeeder".</resultDetail>
+        <hierarchyImportResponse errorCode="8" success="false">
+            <hierarchyImportResultType>Object Doesn't Exist</hierarchyImportResultType>
+            <resultDetail>Remove failed for object with name "ImportFeeder".</resultDetail>
         </hierarchyImportResponse>
-        <hierarchyImportResponse success="false">
+        <hierarchyImportResponse errorCode="7" success="false">
             <hierarchyImportResultType>Object Already Exists</hierarchyImportResultType>
             <resultDetail>Add failed for object with name "ImportCapBank".</resultDetail>
         </hierarchyImportResponse>
     </hierarchyResponseList>
-    
     <cbcResponseList>
-        <cbcImportResponse success="true">
-            <resultDetail>Remove succeeded for CBC with name "CBC Import 1".</resultDetail>
+        <cbcImportResponse errorCode="8" success="false">
+            <cbcImportResultType>Object Doesn't Exist</cbcImportResultType>
+            <resultDetail>Remove failed for CBC with name "CBC Import 1".</resultDetail>
         </cbcImportResponse>
-        <cbcImportResponse success="true">
+        <cbcImportResponse errorCode="0" success="true">
             <resultDetail>Update succeeded for CBC with name "CBC Import 2".</resultDetail>
         </cbcImportResponse>
     </cbcResponseList>
-
 </capControlImportResponse>

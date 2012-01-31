@@ -25,6 +25,9 @@ import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlImportException;
+import com.cannontech.capcontrol.exception.ImporterInvalidDisabledValueException;
+import com.cannontech.capcontrol.exception.ImporterInvalidOpStateException;
+import com.cannontech.capcontrol.exception.ImporterInvalidPaoTypeException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
@@ -93,7 +96,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			try {
 				paoType = PaoType.getForDbString(type);
 			} catch (IllegalArgumentException e) {
-				throw new CapControlImportException("Import of " + name + " failed. Unknown Type: " + type);
+				throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Unknown Type: " + type);
 			}
 			
 			if (PaoType.isCbc(paoType)) {
@@ -139,8 +142,8 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				return cbcData;
 			} else {
 			    // They gave us a valid PaoType, only it wasn't a valid CBC type. Yell!
-			    throw new CapControlImportException("Import of " + name + " failed. Invalid CBC " +
-			                                        "PaoType of " + paoType.getDbString() + " provided.");
+			    throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Invalid CBC " +
+			                                              "PaoType of " + paoType.getDbString() + " provided.");
 			}
 		} else {
 		    /* This is a little icky, but we only needed the name and 
@@ -149,25 +152,29 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		}
 	}
 	
-	private HierarchyImportData createHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap) {
-		PaoType paoType;
-		
-		String name = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.NAME)];
-		String ccType = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.TYPE)];	
-		
-		try {
-			paoType = PaoType.getForDbString(ccType);
-		} catch (IllegalArgumentException i) {
-			throw new CapControlImportException("Import of " + name + " failed. Unknown Type: " + ccType);
-		}
-		
-		// There are required fields we KNOW are here. Set them, then try the non-requireds.
-		String action = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.IMPORT_ACTION)];
-		ImportAction importAction = ImportAction.getForDbString(action);
-		
-		// We got everything we need, lets make the HierarchyImportData object.
-		HierarchyImportData data = new HierarchyImportData(paoType, name, importAction);
-		
+	private HierarchyImportData createHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap) 
+	                        throws ImporterInvalidPaoTypeException {
+	    PaoType paoType;
+        
+        String name = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.NAME)];
+        String ccType = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.TYPE)];    
+        
+        try {
+            paoType = PaoType.getForDbString(ccType);
+        } catch (IllegalArgumentException i) {
+            throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Unknown Type: " + ccType);
+        }
+        
+        // There are required fields we KNOW are here. Set them, then try the non-requireds.
+        String action = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.IMPORT_ACTION)];
+        ImportAction importAction = ImportAction.getForDbString(action);
+        
+        // We got everything we need, lets make the HierarchyImportData object.
+        return new HierarchyImportData(paoType, name, importAction);
+	}
+	
+	private void populateHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap,
+                                           HierarchyImportData data) {
 		Integer descColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.DESCRIPTION);
 		if (descColumn != null && !StringUtils.isBlank(line[descColumn])) {
 			data.setDescription(line[descColumn]);
@@ -181,8 +188,8 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			} else if (disabled.equalsIgnoreCase("N")) {
 				data.setDisabled(false);
 			} else {
-				throw new CapControlImportException("Disabled field contained invalid data. Please " +
-													"change to 'Y' or 'N'");
+				throw new ImporterInvalidDisabledValueException("Disabled field contained invalid data. Please " +
+													            "change to 'Y' or 'N'");
 			}
 		}
 		
@@ -202,7 +209,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		        BankOpState bankOpState = BankOpState.getStateByName(line[opStateColumn]);
 		        data.setBankOpState(bankOpState);
 		    } catch (IllegalArgumentException e) {
-		        throw new CapControlImportException("Operational State field contained invalid data.");
+		        throw new ImporterInvalidOpStateException("Operational state field contained invalid data.");
 		    }
 		}
 		
@@ -210,8 +217,6 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		if (capBankSizeColumn != null && !StringUtils.isBlank(line[capBankSizeColumn])) {
 		    data.setCapBankSize(Integer.valueOf(line[capBankSizeColumn]));
 		}
-		
-		return data;
 	}
 	
 	@Override
@@ -242,12 +247,11 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		cbcImportData.add(cbcData);
 	        	} catch (CapControlFileImporterException e) {
 	        		log.error(e.getMessage());
-	        		results.add(new CbcImportResult(cbcData, CbcImportResultType.MISSING_DATA));
-	        	} catch (CapControlImportException e) {
+	        		results.add(new CbcImportResult(null, CbcImportResultType.MISSING_DATA));
+	        	} catch (ImporterInvalidPaoTypeException e) {
 	        	    log.error(e.getMessage());
 	        	    results.add(new CbcImportResult(cbcData, CbcImportResultType.INVALID_TYPE));
-	        	}
-	        	finally {
+	        	} finally {
 	        		line = csvReader.readNext();
 	        	}
 	        }
@@ -282,16 +286,24 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        	try {
 	        		validateHierarchyImporterRow(headerColumnMap, line, missingColumns);
 	        	
-	        		// Create the data from the line.
 	        		data = createHierarchyImportData(line, headerColumnMap);
+	        		
+	        		// Create the data from the line.
+	        		populateHierarchyImportData(line, headerColumnMap, data);
 	        		
 	        		hierarchyImportData.add(data);
 	        	} catch (CapControlHierarchyFileImporterException e) {
 	        		log.error(e.getMessage());
-	        		results.add(new HierarchyImportResult(data, HierarchyImportResultType.MISSING_DATA));
-	        	} catch (CapControlImportException e) {
+	        		results.add(new HierarchyImportResult(null, HierarchyImportResultType.MISSING_DATA));
+	        	} catch (ImporterInvalidDisabledValueException e) {
 	        	    log.error(e.getMessage());
-	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.MISSING_DATA));
+	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_DISABLED_VALUE));
+	            } catch (ImporterInvalidOpStateException e) {
+	        	    log.error(e.getMessage());
+	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_OPERATIONAL_STATE));
+	        	} catch (ImporterInvalidPaoTypeException e) {
+	        	    log.error(e.getMessage());
+                    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_TYPE));
 	        	} finally {
 	        		line = csvReader.readNext();
 	        	}

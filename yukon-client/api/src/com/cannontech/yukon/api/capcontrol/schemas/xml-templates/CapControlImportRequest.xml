@@ -6,14 +6,14 @@
            version="1.0">
 
     <hierarchyList>
-        <area action="Remove">
+        <area action="Add">
             <name>ImportArea</name>
             <description>Import Test</description>
             <disabled>N</disabled>
             <mapLocationId>T1</mapLocationId>
         </area>
         
-        <substation action="Remove">
+        <substation action="Update">
             <name>ImportSub</name>
             <parent>ImportArea</parent>
             <description>Import Test</description>
@@ -25,7 +25,7 @@
             <name>ImportSubBus</name>
             <parent>ImportSub</parent>
             <description>Import Test</description>
-            <disabled>N</disabled>
+            <disabled>F</disabled>
             <mapLocationId>T1S1SS1</mapLocationId>
         </substationBus>
         
@@ -44,7 +44,7 @@
             <disabled>N</disabled>
             <mapLocationId>T1S1SS1F1C1</mapLocationId>
             <operationalState>StandAlone</operationalState>
-            <capBankSize>42</capBankSize>
+            <capBankSize>1200</capBankSize>
         </capBank>
     </hierarchyList>
     

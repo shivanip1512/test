@@ -71,7 +71,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao yukonPao = retrieveCbcPao(cbcImportData.getCbcName());
         if (yukonPao != null) {
             // We were told to add a device that already exists. This is an error!
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.DEVICE_EXISTS));
+            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
             return;
         }
         
@@ -133,7 +133,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao != null) {
             // The object we're trying to make already exists.
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.DEVICE_EXISTS));
+            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
             return;
         }
         
