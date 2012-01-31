@@ -158,7 +158,7 @@ public class OptOutAdminController {
             try {
                 
                 optOutService.changeOptOutEnabledStateForTodayByProgramName(user, optOutEnabled, programName);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyDisabledOptOuts", programName));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm." + optOutEnabled.toString(), programName));
                 
             } catch (ProgramNotFoundException e) {
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
@@ -166,7 +166,7 @@ public class OptOutAdminController {
 
         } else {
             optOutService.changeOptOutEnabledStateForToday(user, optOutEnabled);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyDisabledOptOuts.allPrograms"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm."+ optOutEnabled.toString() +".allPrograms"));
         }
         
         return "redirect:/spring/stars/operator/optOut/admin";
