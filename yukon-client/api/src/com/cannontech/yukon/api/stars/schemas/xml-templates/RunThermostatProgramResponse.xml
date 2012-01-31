@@ -3,7 +3,5 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../RunThermostatProgramResponse.xsd"
            version="1.0">
-    <serialNumber>98765400011</serialNumber>
-    <serialNumber>98765400012</serialNumber>
     <success/>
 </runThermostatProgramResponse>

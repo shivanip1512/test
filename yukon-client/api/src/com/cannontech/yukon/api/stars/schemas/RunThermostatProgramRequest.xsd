@@ -8,13 +8,13 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
     
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-            This web service sends a command to the list of thermostats, which causes them to  to run their thermostat program.
-        </xsd:documentation>
-    </xsd:annotation>
-    
     <xsd:complexType name="RunThermostatProgramRequest">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This web service sends a command to the list of thermostats, which causes them to run their thermostat program.
+            </xsd:documentation>
+        </xsd:annotation>
+    
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
