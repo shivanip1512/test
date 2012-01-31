@@ -926,7 +926,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
                     /* Build the message */
-                    Length = prot305.buildMessage(CtiProtocolSA305::ModeNumericPage, NewOutMessage->Buffer.TAPSt.Message);
+                    Length = prot305.buildNumericPageMessage(NewOutMessage->Buffer.TAPSt.Message);
 
                     NewOutMessage->OutLength            = Length;
                     NewOutMessage->Buffer.TAPSt.Length  = Length;
@@ -951,7 +951,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     NewOutMessage->EventCode = RESULT | ENCODED;
                     NewOutMessage->Buffer.SASt._groupType = SA305;
 
-                    NewOutMessage->Buffer.SASt._bufferLen = prot305.buildMessage(CtiProtocolSA305::ModeHex, (char*)(NewOutMessage->Buffer.SASt._buffer));
+                    NewOutMessage->Buffer.SASt._bufferLen = prot305.buildHexMessage((char*)(NewOutMessage->Buffer.SASt._buffer));
                     NewOutMessage->OutLength = NewOutMessage->Buffer.SASt._bufferLen;
 
                     ::memcpy(NewOutMessage->Buffer.SASt._code305, (char*)(NewOutMessage->Buffer.SASt._buffer) ,NewOutMessage->Buffer.SASt._bufferLen);

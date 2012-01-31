@@ -8,6 +8,7 @@
 #include "porter.h"
 #include "protocol_sa.h"
 #include "prot_sa3rdparty.h"
+#include "prot_sa305.h"
 #include "numstr.h"
 #include "ctistring.h"
 
@@ -466,7 +467,6 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                 X205CMD x205cmd;
                 CtiVerificationReport *report;
                 int tms_result;
-                bool bad_code = false;
 
                 memset((void*)&sacode, 0, sizeof(SA_CODE));
 
@@ -476,61 +476,73 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - error in CtiProtocolSA3rdParty::procTMSmsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    bad_code = true;
+                    tms_result = TMS_EXCEPTION;
                 }
 
-                //  this way, we acknowledge the code even if it made procTMSmsg() pop
-                if( bad_code || tms_result == TMS_CODE)
+                if( tms_result == TMS_CODE )
                 {
-                    if( !bad_code )
+                    CtiString codestr("-");
+                    string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
+                    CtiVerificationBase::Protocol prot_type = CtiVerificationBase::Protocol_Invalid;
+                    switch(sacode.type)
                     {
-                        CtiString codestr("-");
-                        string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
-                        CtiVerificationBase::Protocol prot_type = CtiVerificationBase::Protocol_Invalid;
-                        switch(sacode.type)
-                        {
-                        case GOLAY:
-                            prot_type = CtiVerificationBase::Protocol_Golay;
-                            codestr = sacode.code;
-                            break;
-                        case SADIG:
-                            prot_type = CtiVerificationBase::Protocol_SADigital;
-                            codestr = sacode.code;
-                            break;
-                        case SA205:
-                            prot_type = CtiVerificationBase::Protocol_SA205;
-                            codestr = sacode.code;
-                            codestr.padFront(6, "0");
-                            break;
-                        case SA305:
-                            prot_type = CtiVerificationBase::Protocol_SA305;
-                            codestr = sacode.code;
-                            break;
-                        }
-
-                        _codes_received++;
-
-                        report = CTIDBG_new CtiVerificationReport(prot_type, getID(), codestr, second_clock::universal_time(), cmdStr);
-                        _verification_objects.push(report);
+                    case GOLAY:
+                        prot_type = CtiVerificationBase::Protocol_Golay;
+                        codestr = sacode.code;
+                        break;
+                    case SADIG:
+                        prot_type = CtiVerificationBase::Protocol_SADigital;
+                        codestr = sacode.code;
+                        break;
+                    case SA205:
+                        prot_type = CtiVerificationBase::Protocol_SA205;
+                        codestr = sacode.code;
+                        codestr.padFront(6, "0");
+                        break;
                     }
 
-                    //  this is a bit of a hack based on watching port traces of successful comms
-                    //    the LRC is copied from the last inbound and tagged after an "ACK" message type
+                    _codes_received++;
+
+                    report = CTIDBG_new CtiVerificationReport(prot_type, getID(), codestr, second_clock::universal_time(), cmdStr);
+                    _verification_objects.push(report);
+                }
+                else if( tms_result == TMS_UNKNOWN )
+                {
+                    string codestr;
+                    string cmdStr;
+
+                    if( tryDecodeAsSA305(_inbound, HeaderLength + _code_len, codestr, cmdStr) )
+                    {
+                        _codes_received++;
+
+                        report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_SA305, getID(), codestr, second_clock::universal_time(), cmdStr);
+                        _verification_objects.push(report);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - unknown code received by device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else if( tms_result == TMS_EXCEPTION )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - error in CtiProtocolSA3rdParty::procTMSmsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                if( tms_result == TMS_EMPTY )
+                {
+                    _state = State_Complete;
+                }
+                else
+                {
+                    //  the LRC is copied from the last inbound and tagged after an "ACK" message type
                     _outbound.Buffer.OutMessage[0] = 'B';
                     _outbound.Buffer.OutMessage[1] = 'F';
                     _outbound.Buffer.OutMessage[2] = _inbound[_code_len+6];
                     _outbound.Buffer.OutMessage[3] = _inbound[_code_len+7];
 
                     _state = State_Ack;
-                }
-                else // if( tms_result == TMS_EMPTY )
-                {
-                    _state = State_Complete;
                 }
 
                 break;
@@ -544,6 +556,41 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
     }
 
     return status;
+}
+
+
+bool CtiDeviceRTM::tryDecodeAsSA305(const UCHAR *abuf, const INT len, string &code, string &cmd)
+{
+    std::vector<unsigned char> buffer;
+
+    if( len % 2 || len < 12 )
+    {
+        return false;
+    }
+
+    //  Convert from ASCII digits to bytes
+    for( int i = 0; i < len; i += 2 )
+    {
+        char num[3] = { abuf[i], abuf[i+1], 0 };
+
+        buffer.push_back(strtoul(num, NULL, 16));
+    }
+
+    //  Two example 305 inbounds.
+    //    The 305 message starts after the 30 31 (0x01) on the second line,
+    //    so that's why we start at the 5th byte.
+    /*
+    42 31 32 41 30 33 30 37
+    30 31 39 30 39 31 30 46 45 30 32 30 35 30
+
+    42 31 32 41 30 33 30 37
+    30 32 39 30 39 31 30 46 45 30 32 30 35 33
+    */
+
+/*
+    CtiProtocolSA305 prot(&buffer[5], buffer.size() - 5);
+*/
+    return false;
 }
 
 

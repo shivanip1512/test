@@ -8,7 +8,7 @@
 #include "dsm2.h"
 #include "pointtypes.h"
 
-class IM_EX_PROT CtiProtocolSA305
+class IM_EX_PROT CtiProtocolSA305 : boost::noncopyable
 {
 protected:
 
@@ -79,11 +79,8 @@ private:
 
 
     std::vector< BYTE > _messageBits;  // Store it as bits.  Not sure if this will cost me in the long run...
-    int _messageCount;
 
-    void addBits(unsigned int src, int num=32);
-    void setBit(unsigned int offset, BYTE bit);
-    void setBits(unsigned int offset, unsigned int src, int num=32);
+    void addBits(unsigned int src, int num);
     UINT getBits(unsigned int &offset, int len) const;
 
     void resetMessage();
@@ -103,102 +100,29 @@ private:
      */
     int solveStrategy(CtiCommandParser &parse);
 
-    static bool _noCRC;
-
     std::string _bitStr;
 
-    static std::string _strategyStr[64];
+    static const std::string _strategyStr[64];
+
+    unsigned char addBitToCRC(unsigned char crc, unsigned char bit); // bit is 0 or 1
+    void appendCRCToMessage();
+
+    void setStartBits(int val);
 
 public:
 
-    enum
-    {
-        ModeUnspecified = 0,
-        ModeOctal,              // Every three bits are converted into an octal value.
-        ModeHex,                // Every eight bits are converted into a hex value.
-        ModeSerial,             // Data is churned out the port in a serial fashion.
-        ModeNumericPage         // Every three bits are converted into an octal value and added to char '0' to be sent as a page.
-    };
-
     CtiProtocolSA305();
     CtiProtocolSA305(BYTE *bytestr, UINT bytelen);
-    CtiProtocolSA305(const CtiProtocolSA305& aRef);
-
-    virtual ~CtiProtocolSA305();
-    CtiProtocolSA305& operator=(const CtiProtocolSA305& aRef);
 
     int parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage);
-    void dumpBits() const;
-
-    int getStartBits() const;
-    CtiProtocolSA305& setStartBits(int val);
-
-    int getPadBits() const;                 // Two bit prequel used for rtcTargets.
-    CtiProtocolSA305& setPadBits(int val);
-
-    int getSerial() const;
-    CtiProtocolSA305& setSerial(int val);
-
-    int getGroup() const;
-    CtiProtocolSA305& setGroup(int val);
-
-    int getDivision() const;
-    CtiProtocolSA305& setDivision(int val);
-
-    int getSubstation() const;
-    CtiProtocolSA305& setSubstation(int val);
-
-    int getUtility() const;
-    CtiProtocolSA305& setUtility(int val);
-
-    // This is a convienence function and sets both the family and member as a 7-bit quantity.
-    CtiProtocolSA305& setRatePackage(int val);
-
-    int getRateFamily() const;
-    CtiProtocolSA305& setRateFamily(int val);
-
-    int getRateMember() const;
-    CtiProtocolSA305& setRateMember(int val);
-
-    int getRateHierarchy() const;
-    CtiProtocolSA305& setRateHierarchy(int val);
-
-    int getStrategy() const;
-    CtiProtocolSA305& setStrategy(int val);
-
-    int getFunctions() const;
-    CtiProtocolSA305& setFunctions(int val);
-
-    int getPriority() const;
-    CtiProtocolSA305& setPriority(int val);
-
-    int getDataType() const;
-    CtiProtocolSA305& setDataType(int val);
-
-    int getData() const;
-    CtiProtocolSA305& setData(int val);
-
-    float getPeriod() const;
-    CtiProtocolSA305& setPeriod(float val);
-
-    float getPercentageOff() const;
-    CtiProtocolSA305& setPercentageOff(float val);
-
-    unsigned char addBitToCRC(unsigned char crc, unsigned char bit); // bit is 0 or 1
-    unsigned char addOctalCharToCRC(unsigned char crc, unsigned char ch); // octal char
-    void testCRC(char* testData);
-    void appendCRCToMessage();
 
     bool messageReady() const;
-    int getMessageLength(int mode) const;      // Returns the length in characters of this message.
-    int buildMessage(int mode, CHAR *buffer) const;      // Returns the length in characters of this message.
+    int buildNumericPageMessage(CHAR *buffer) const;      // Returns the length in characters of this message.
+    int buildHexMessage(CHAR *buffer) const;      // Returns the length in characters of this message.
 
-    CtiProtocolSA305& setTransmitterAddress( int val );
-
-    CtiProtocolSA305& setTransmitterType( int trans );
-    CtiProtocolSA305& setRTCResponse( bool bv = true ); // Should the RTC respond to commands.
+    void setTransmitterAddress( int val );
+    void setTransmitterType( int trans );
 
     std::string getBitString() const;
-    std::string  asString() const;
-
+    std::string asString() const;
 };

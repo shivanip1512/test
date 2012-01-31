@@ -69,6 +69,7 @@ X205CMD;
 #define TMS_CODE  20
 #define TMS_UNKNOWN  21
 #define TMS_LRC_ERROR 22
+#define TMS_EXCEPTION 99
 
 /* define code buffer sizes */
 #define CODESZ 6

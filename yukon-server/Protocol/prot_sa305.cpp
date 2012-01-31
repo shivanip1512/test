@@ -1,101 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_sa305
-*
-* Date:   3/8/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/03/15 18:53:26 $
-*
-* HISTORY      :
-* $Log: prot_sa305.cpp,v $
-* Revision 1.23  2006/03/15 18:53:26  cplender
-* SA326 LCRs will enable their adaptive algorithm if they are controlled via a truecycle gear.
-*
-* Revision 1.22  2006/03/06 21:44:55  cplender
-* Added syntax and code for the adaptive alg. and for the frequency change putconfig.
-*
-* Revision 1.21  2006/01/03 20:23:38  tspar
-* Moved non RW string utilities from rwutil.h to utility.h
-*
-* Revision 1.20  2005/12/20 17:19:56  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.19.2.3  2005/08/12 19:54:04  jliu
-* Date Time Replaced
-*
-* Revision 1.19.2.2  2005/07/14 22:27:01  jliu
-* RWCStringRemoved
-*
-* Revision 1.19.2.1  2005/07/12 21:08:42  jliu
-* rpStringWithoutCmpParser
-*
-* Revision 1.19  2005/05/31 21:05:55  cplender
-* the cycle "count" is now one based to match versacom and expresscom parse syntax.
-* Control history was off by one repeat prior to this checkin.
-*
-* Revision 1.18  2005/05/13 16:12:48  cplender
-* Changes to try to support GRE Verification.
-*
-* Revision 1.17  2005/05/11 19:33:32  cplender
-* Protocol should not send bytes if message did not parse correctly.
-*
-* Revision 1.16  2005/05/04 20:49:33  cplender
-* Adjusted coldload and tamper detect code for the SA stuff.
-*
-* Revision 1.15  2005/04/27 13:41:13  cplender
-* 305 cycles were not choosing 7.5 minute periods correctly.
-*
-* Revision 1.14  2005/03/16 20:11:51  cplender
-* Altered restore and terminate behavior for SA305.
-*
-* Revision 1.13  2005/03/14 01:17:00  cplender
-* Grab resore and terminate in the protocol.
-*
-* Revision 1.12  2005/02/24 13:58:40  cplender
-* Make certain rate is displayed in the decode.
-*
-* Revision 1.11  2005/02/17 23:35:45  cplender
-* Modified the cycling selection to aim for control percentage, not period.
-*
-* Revision 1.10  2005/02/17 19:02:58  mfisher
-* Removed space before CVS comment header, moved #include "precompiled.h"
-//#include "yukon.h" after CVS header
-*
-* Revision 1.9  2005/02/10 23:23:57  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.8  2005/01/04 22:16:03  cplender
-* Completed the asString() method.
-*
-* Revision 1.7  2004/12/14 22:25:15  cplender
-* Various to wring out config commands.  Should be pretty good.
-*
-* Revision 1.6  2004/11/24 17:11:16  cplender
-* Working on the configuration of SA receivers.
-*
-* Revision 1.5  2004/11/17 23:42:38  cplender
-* Complete 305 for RTC transmitter
-*
-* Revision 1.4  2004/11/08 14:40:39  cplender
-* 305 Protocol should send controls on RTCs now.
-*
-* Revision 1.3  2004/11/05 17:25:58  cplender
-*
-* Getting 305s to work
-*
-* Revision 1.2  2004/04/29 19:58:49  cplender
-* Initial sa protocol/load group support
-*
-* Revision 1.1  2004/03/18 19:46:43  cplender
-* Added code to support the SA305 protocol and load group
-*
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "cparms.h"
@@ -107,7 +9,7 @@
 
 using namespace std;
 
-string CtiProtocolSA305::_strategyStr[64] =
+const string CtiProtocolSA305::_strategyStr[64] =
 {
     string("Strategy 00: n/a"),
     string("Strategy 01: 7.5 / 7.5"),
@@ -199,39 +101,8 @@ _flags(0),
 _dataType(0),
 _data(0),
 _period(0),
-_percentageOff(0),
-_messageCount(0)
+_percentageOff(0)
 {
-}
-
-CtiProtocolSA305::CtiProtocolSA305(const CtiProtocolSA305& aRef) :
-_padBits(0),
-_startBits(4),
-_transmitterType(0),
-_transmitterAddress(0),
-_messageReady(false),
-_addressUsage(0),
-_serial(-1),
-_group(-1),
-_division(-1),
-_substation(-1),
-_utility(-1),
-_rateFamily(0),
-_rateMember(0),
-_rateHierarchy(0),
-_priority(0),
-_strategy(0),
-_functions(0),
-_rtcResponse(0x00),
-_repetitions(0),
-_flags(0),
-_dataType(0),
-_data(0),
-_period(0),
-_percentageOff(0),
-_messageCount(0)
-{
-    *this = aRef;
 }
 
 CtiProtocolSA305::CtiProtocolSA305(BYTE *bytestr, UINT bytelen) :
@@ -258,29 +129,12 @@ _flags(0),
 _dataType(0),
 _data(0),
 _period(0),
-_percentageOff(0),
-_messageCount(0)
+_percentageOff(0)
 {
     for(int i = 0; i < bytelen; i++)
     {
         addBits(bytestr[i], 8);
     }
-}
-
-CtiProtocolSA305::~CtiProtocolSA305()
-{
-}
-
-CtiProtocolSA305& CtiProtocolSA305::operator=(const CtiProtocolSA305& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 /*
@@ -1128,27 +982,6 @@ void CtiProtocolSA305::addBits(unsigned int src, int num)
     _bitStr += " ";
 }
 
-void CtiProtocolSA305::setBit(unsigned int offset, BYTE bit)
-{
-    if(_messageBits.size() >= offset)
-    {
-        _messageBits[offset] = (bit ? 1 : 0);
-    }
-}
-
-void CtiProtocolSA305::setBits(unsigned int offset, unsigned int src, int num)
-{
-    BYTE bit;
-    int i;
-
-    for(i = 0; i < num; i++)
-    {
-        bit = (src & (0x80000000 >> (32 - num + i)) ? 1 : 0);
-        if(_messageBits.size() >= offset+i) _messageBits[offset+i] = (bit ? 1 : 0);
-    }
-
-    _bitStr += " ";
-}
 
 UINT CtiProtocolSA305::getBits(unsigned int &offset, int len) const
 {
@@ -1161,227 +994,10 @@ UINT CtiProtocolSA305::getBits(unsigned int &offset, int len) const
             val |= (_messageBits[offset+i] ? 1 : 0);
         }
 
-        #if 0
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Getting " << len << " bits of data from " << offset << " as " << val << endl;
-        }
-        #endif
-
         offset += len;
     }
 
     return val;
-}
-
-void CtiProtocolSA305::dumpBits() const
-{
-    vector< BYTE >::const_iterator itr;
-
-    {
-        int cnt = 0;
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
-        {
-            if(*itr)
-                dout << "1";
-            else
-                dout << "0";
-
-            if(++cnt >= 3)
-            {
-                dout << " ";
-                cnt = 0;
-            }
-        }
-
-        dout << endl;
-
-
-        int bc = 0;
-        int val;
-
-        cnt = 0;
-
-        for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
-        {
-            bc <<= 1;
-            bc |= (*itr ? 1 : 0);
-
-            if(++cnt >= 3)
-            {
-                dout << " " << bc << "  ";
-                cnt = 0;
-                val = 0;
-                bc = 0;
-            }
-        }
-
-        dout << endl;
-    }
-}
-
-
-int CtiProtocolSA305::getSerial() const
-{
-    return _serial;
-}
-
-CtiProtocolSA305& CtiProtocolSA305::setSerial(int val)
-{
-    _serial = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getGroup() const
-{
-    return _group;
-}
-
-CtiProtocolSA305& CtiProtocolSA305::setGroup(int val)
-{
-    _group = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getDivision() const
-{
-    return _division;
-}
-CtiProtocolSA305& CtiProtocolSA305::setDivision(int val)
-{
-    _division = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getSubstation() const
-{
-    return _substation;
-}
-CtiProtocolSA305& CtiProtocolSA305::setSubstation(int val)
-{
-    _substation = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getUtility() const
-{
-    return _utility;
-}
-CtiProtocolSA305& CtiProtocolSA305::setUtility(int val)
-{
-    _utility = val;
-    return *this;
-}
-
-CtiProtocolSA305& CtiProtocolSA305::setRatePackage(int val)
-{
-    _rateMember = (val & 0x0000000f);
-    _rateFamily = (val & 0x00000070) >> 4;
-
-    return *this;
-}
-
-int CtiProtocolSA305::getRateFamily() const
-{
-    return _rateFamily;
-}
-CtiProtocolSA305& CtiProtocolSA305::setRateFamily(int val)
-{
-    _rateFamily = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getRateMember() const
-{
-    return _rateMember;
-}
-CtiProtocolSA305& CtiProtocolSA305::setRateMember(int val)
-{
-    _rateMember = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getRateHierarchy() const
-{
-    return _rateHierarchy;
-}
-CtiProtocolSA305& CtiProtocolSA305::setRateHierarchy(int val)
-{
-    _rateHierarchy = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getStrategy() const
-{
-    return _strategy;
-}
-CtiProtocolSA305& CtiProtocolSA305::setStrategy(int val)
-{
-    _strategy = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getFunctions() const
-{
-    return _functions;
-}
-CtiProtocolSA305& CtiProtocolSA305::setFunctions(int val)
-{
-    _functions = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getPriority() const
-{
-    return _priority;
-}
-CtiProtocolSA305& CtiProtocolSA305::setPriority(int val)
-{
-    _priority = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getDataType() const
-{
-    return _dataType;
-}
-CtiProtocolSA305& CtiProtocolSA305::setDataType(int val)
-{
-    _dataType = val;
-    return *this;
-}
-
-int CtiProtocolSA305::getData() const
-{
-    return _data;
-}
-CtiProtocolSA305& CtiProtocolSA305::setData(int val)
-{
-    _data = val;
-    return *this;
-}
-
-float CtiProtocolSA305::getPeriod() const
-{
-    return _period;
-}
-CtiProtocolSA305& CtiProtocolSA305::setPeriod(float val)
-{
-    _period = val;
-    return *this;
-}
-
-float CtiProtocolSA305::getPercentageOff() const
-{
-    return _percentageOff;
-}
-CtiProtocolSA305& CtiProtocolSA305::setPercentageOff(float val)
-{
-    _percentageOff = val;
-    return *this;
 }
 
 
@@ -1395,31 +1011,6 @@ unsigned char CtiProtocolSA305::addBitToCRC(unsigned char crc, unsigned char bit
         crc^=0x48;
 
     return(crc);
-}
-
-unsigned char CtiProtocolSA305::addOctalCharToCRC(unsigned char crc, unsigned char ch) // octal char
-{
-    int i=0;
-    ch-='0';
-    for (i=0; i<3; i++)
-    {
-        crc = addBitToCRC(crc, ch&0x04?1:0);
-        ch<<=1;
-    }
-    return(crc);
-}
-
-void CtiProtocolSA305::testCRC(char* testData)
-{
-    unsigned i;
-    unsigned char crc=0;
-    for (i=0; i<::strlen(testData)-3; i++)
-        crc = addOctalCharToCRC(crc,testData[i]);
-    // shift in one false 0
-    crc = addBitToCRC(crc, 0);
-    printf("%o\r\n",crc);
-
-    return;
 }
 
 void CtiProtocolSA305::appendCRCToMessage()
@@ -1441,181 +1032,46 @@ bool CtiProtocolSA305::messageReady() const
     return _messageReady;
 }
 
-int CtiProtocolSA305::getMessageLength(int mode) const      // Returns the length in characters of this message.
-{
-    int length = 0;
-
-    if(messageReady())
-    {
-        switch(mode)
-        {
-        case ModeUnspecified:
-            {
-                break;
-            }
-        case ModeNumericPage:
-            {
-                int cnt = _messageBits.size();
-                length = cnt/3 + ((cnt%3)?1:0);
-                if(_transmitterType == TYPE_RTC)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ERROR Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " RTCs should not execute this code!" << endl;
-                    }
-                }
-                break;
-            }
-        case ModeHex:
-            {
-                int cnt = _messageBits.size();
-                length = cnt/8 + ((cnt%8)?1:0);
-                if(_transmitterType == TYPE_RTC)
-                {
-                    length += 5;    // RTC overhead
-                }
-                break;
-            }
-        case ModeSerial:
-        default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
-            }
-        }
-    }
-
-    return length;
-}
-
-int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns the length in characters of this message.
+int CtiProtocolSA305::buildNumericPageMessage(CHAR *buffer) const      // Returns the length in characters of this message.
 {
     int bufpos = 0;
 
     if(messageReady())
     {
-        switch(mode)
+        unsigned pos = 0;
+        int ich = 0;
+        CHAR ch;
+
+        vector< BYTE >::const_iterator itr;
+
+        if(_transmitterType == TYPE_RTC)
         {
-        case ModeUnspecified:
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  RTCs should never execute this code" << endl;
+        }
+
+        for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+        {
+            ich<<=1;
+            ich|=(*itr?1:0);
+            if(++pos >= 3)  // ch is ready!
             {
-                break;
+                pos = 0;
+                buffer[bufpos++] = '0' + ich;
+                ich = 0;
             }
-        case ModeNumericPage:
+        }
+
+        // Pad out any remaining bits!
+        while(pos != 0)
+        {
+            ich<<=1;
+            if(++pos >= 3)  // ch is ready!
             {
-                unsigned pos = 0;
-                int ich = 0;
-                CHAR ch;
-
-                vector< BYTE >::const_iterator itr;
-
-                if(_transmitterType == TYPE_RTC)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ERROR ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  RTCs should never execute this code" << endl;
-                    }
-                }
-
-                for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
-                {
-                    ich<<=1;
-                    ich|=(*itr?1:0);
-                    if(++pos >= 3)  // ch is ready!
-                    {
-                        pos = 0;
-                        buffer[bufpos++] = '0' + ich;
-                        ich = 0;
-                    }
-                }
-
-                // Pad out any remaining bits!
-                while(pos != 0)
-                {
-                    ich<<=1;
-                    if(++pos >= 3)  // ch is ready!
-                    {
-                        pos = 0;
-                        buffer[bufpos++] = '0' + ich;
-                        ich = 0;
-                        break;
-                    }
-                }
-
-                break;
-            }
-        case ModeHex:
-            {
-                int packagedBits = _messageBits.size();
-                unsigned rtc_crc = 0;
-                unsigned pos = 0;
-                int ich = 0;
-                CHAR ch;
-
-                if(_transmitterType == TYPE_RTC)
-                {
-                    int ltf = _messageBits.size() / 8 + (_messageBits.size() % 8 ? 1 : 0);
-
-                    buffer[bufpos++] = (CHAR)(0xa0 | (0x0f & _transmitterAddress));         // byte 1 of the RTC preamble
-                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
-                    buffer[bufpos++] = (CHAR)(0x29 | (0x10 & _rtcResponse));                // byte 2 of the RTC preamble
-                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
-                    buffer[bufpos++] = (CHAR)(3);                                           // 305 protocol is "3" per rtc spec
-                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
-                    buffer[bufpos++] = (CHAR)(ltf);                                         // Length to follow not including the CRC
-                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
-                }
-
-                vector< BYTE >::const_iterator itr;
-
-                int i;
-                for( i = 0, itr = _messageBits.begin();
-                     i < packagedBits && itr != _messageBits.end();
-                     itr++, i++ )
-                {
-                    ich<<=1;
-                    ich|=(*itr ? 0x01 : 0x00);
-                    if(++pos >= 8)  // ch is ready!
-                    {
-                        pos = 0;
-                        buffer[bufpos++] = ich;
-                        rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
-                        ich = 0;
-                    }
-                }
-
-                // Pad out any remaining bits!
-                while(pos != 0)
-                {
-                    ich<<=1;
-                    if(++pos >= 8)  // ch is ready!
-                    {
-                        pos = 0;
-                        buffer[bufpos++] = ich;
-                        rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
-                        ich = 0;
-                        break;
-                    }
-                }
-
-                if(_transmitterType == TYPE_RTC)
-                {
-                    buffer[bufpos++] = (CHAR)(rtc_crc);                                         // Record the CRC
-                }
-
-                break;
-            }
-        case ModeSerial:
-        default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                pos = 0;
+                buffer[bufpos++] = '0' + ich;
+                ich = 0;
                 break;
             }
         }
@@ -1624,44 +1080,86 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
     return bufpos;
 }
 
-CtiProtocolSA305& CtiProtocolSA305::setTransmitterType( int trans )
+int CtiProtocolSA305::buildHexMessage(CHAR *buffer) const      // Returns the length in characters of this message.
+{
+    int bufpos = 0;
+
+    if(messageReady())
+    {
+        int packagedBits = _messageBits.size();
+        unsigned rtc_crc = 0;
+        unsigned pos = 0;
+        int ich = 0;
+        CHAR ch;
+
+        if(_transmitterType == TYPE_RTC)
+        {
+            int ltf = _messageBits.size() / 8 + (_messageBits.size() % 8 ? 1 : 0);
+
+            buffer[bufpos++] = (CHAR)(0xa0 | (0x0f & _transmitterAddress));         // byte 1 of the RTC preamble
+            rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
+            buffer[bufpos++] = (CHAR)(0x29 | (0x10 & _rtcResponse));                // byte 2 of the RTC preamble
+            rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
+            buffer[bufpos++] = (CHAR)(3);                                           // 305 protocol is "3" per rtc spec
+            rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
+            buffer[bufpos++] = (CHAR)(ltf);                                         // Length to follow not including the CRC
+            rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
+        }
+
+        vector< BYTE >::const_iterator itr;
+
+        int i;
+        for( i = 0, itr = _messageBits.begin();
+             i < packagedBits && itr != _messageBits.end();
+             itr++, i++ )
+        {
+            ich<<=1;
+            ich|=(*itr ? 0x01 : 0x00);
+            if(++pos >= 8)  // ch is ready!
+            {
+                pos = 0;
+                buffer[bufpos++] = ich;
+                rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
+                ich = 0;
+            }
+        }
+
+        // Pad out any remaining bits!
+        while(pos != 0)
+        {
+            ich<<=1;
+            if(++pos >= 8)  // ch is ready!
+            {
+                pos = 0;
+                buffer[bufpos++] = ich;
+                rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
+                ich = 0;
+                break;
+            }
+        }
+
+        if(_transmitterType == TYPE_RTC)
+        {
+            buffer[bufpos++] = (CHAR)(rtc_crc);                                         // Record the CRC
+        }
+    }
+
+    return bufpos;
+}
+
+void CtiProtocolSA305::setTransmitterType( int trans )
 {
     _transmitterType = trans;
-    return *this;
-}
-CtiProtocolSA305& CtiProtocolSA305::setRTCResponse( bool bv )
-{
-    if(bv)
-        _rtcResponse = 0x10;
-    else
-        _rtcResponse = 0x00;
-    return *this;
 }
 
-CtiProtocolSA305& CtiProtocolSA305::setTransmitterAddress( int val )
+void CtiProtocolSA305::setTransmitterAddress( int val )
 {
     _transmitterAddress = val;
-    return *this;
 }
 
-int CtiProtocolSA305::getStartBits() const
-{
-    return _startBits;
-}
-CtiProtocolSA305& CtiProtocolSA305::setStartBits(int val)
+void CtiProtocolSA305::setStartBits(int val)
 {
     _startBits = val & 0x00000007;  // Three bits
-    return *this;
-}
-
-int CtiProtocolSA305::getPadBits() const
-{
-    return _padBits;
-}
-CtiProtocolSA305& CtiProtocolSA305::setPadBits(int val)
-{
-    _padBits = val & 0x00000003;  // Two bits.
-    return *this;
 }
 
 string CtiProtocolSA305::getBitString() const
