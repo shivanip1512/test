@@ -381,7 +381,7 @@
 
     <!--  confirmOptOutAllDevices.jsp -->
     <entry key="yukon.dr.consumer.confirmOptOutAllDevices.header">Programs - Opt Out</entry>
-    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.description">The following programs will be opted out:</entry>
+    <entry key="yukon.dr.consumer.confirmOptOutAllDevices.description">The following hardware will be opted out:</entry>
     <entry key="yukon.dr.consumer.confirmOptOutAllDevices.hardware">Hardware</entry>
     <entry key="yukon.dr.consumer.confirmOptOutAllDevices.programAssigned">Program Assigned</entry>
     <entry key="yukon.dr.consumer.confirmOptOutAllDevices.save">Opt Out</entry>
