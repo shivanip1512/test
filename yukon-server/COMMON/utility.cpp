@@ -466,6 +466,15 @@ INT SynchronizedIdGen(string name, int values_needed)
     {
         // In this case, we poke at the PAO table
         DatabaseConnection connection;
+
+        if ( ! connection.isValid() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return 0;
+        }
+
         connection.beginTransaction();
 
         static const string updaterSql = "update sequencenumber set lastvalue = lastvalue + ?"

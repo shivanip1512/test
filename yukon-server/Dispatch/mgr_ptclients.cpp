@@ -800,6 +800,14 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
 
     list<CtiTablePointDispatch>::iterator updateListIter;
 
+    if ( ! conn.isValid() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+        return;
+    }
+
     conn.beginTransaction();
 
     {

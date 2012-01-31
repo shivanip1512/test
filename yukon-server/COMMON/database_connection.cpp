@@ -27,6 +27,11 @@ DatabaseConnection::operator SAConnection*()
     return connection;
 }
 
+bool DatabaseConnection::isValid() const
+{
+    return ( connection != NULL );
+}
+
 void DatabaseConnection::beginTransaction()
 {
     try

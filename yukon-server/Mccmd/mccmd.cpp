@@ -2525,6 +2525,14 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
     {
         Cti::Database::DatabaseConnection   conn;
 
+        if ( ! conn.isValid() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return NOTNORMAL;
+        }
+
         conn.beginTransaction();
 
         try

@@ -32,6 +32,8 @@ public:
     
     virtual ~DatabaseConnection();
 
+    bool isValid() const;
+
     void beginTransaction();
     bool commitTransaction();
 };

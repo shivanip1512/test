@@ -2996,6 +2996,14 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
             {
                 Cti::Database::DatabaseConnection   conn;
 
+                if ( ! conn.isValid() )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                    return;
+                }
+
                 conn.beginTransaction();
 
                 try
@@ -3172,6 +3180,14 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
             {
                 bool success = true;
                 Cti::Database::DatabaseConnection   conn;
+
+                if ( ! conn.isValid() )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                    return;
+                }
 
                 conn.beginTransaction();
 
@@ -6147,6 +6163,14 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
         CtiTableRawPointHistory *pTblEntry;
 
         Cti::Database::DatabaseConnection   conn;
+
+        if ( ! conn.isValid() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return 0;
+        }
 
         conn.beginTransaction();
 

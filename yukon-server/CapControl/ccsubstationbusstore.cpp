@@ -972,8 +972,16 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
         if( _ccSubstationBuses->size() > 0 )
         {
             CtiTime currentDateTime = CtiTime();
-            string dynamicCapControl("dynamicCapControl");
+
             Cti::Database::DatabaseConnection conn;
+
+            if ( ! conn.isValid() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return;
+            }
 
             conn.beginTransaction();
             {

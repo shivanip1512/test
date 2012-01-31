@@ -565,6 +565,14 @@ void CtiTagManager::processDynamicQueue()
         {
             Cti::Database::DatabaseConnection   conn;
 
+            if ( ! conn.isValid() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return;
+            }
+
             TagTblDynamicMap_t::iterator itr;
             conn.beginTransaction();
 
@@ -603,6 +611,14 @@ void CtiTagManager::processTagLogQueue()
             CtiTableTagLog *pTag = 0;
 
             Cti::Database::DatabaseConnection   conn;
+
+            if ( ! conn.isValid() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return;
+            }
 
             conn.beginTransaction();
 

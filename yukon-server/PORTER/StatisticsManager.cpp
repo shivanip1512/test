@@ -302,6 +302,14 @@ void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsign
     {
         Database::DatabaseConnection conn;
 
+        if ( ! conn.isValid() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return;
+        }
+
         conn.beginTransaction();
 
         unsigned records_inspected = 0, dirty_records = 0, rows_written = 0;
