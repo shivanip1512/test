@@ -5699,7 +5699,7 @@
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
-                <init>false</init>
+                <init>true</init>
                 <name>Reed Switch Communication</name>
                 <stategroup value="TrueFalse"/>
             </point>
@@ -5815,7 +5815,7 @@
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
-            	<init>false</init>
+            	<init>true</init>
                 <name>Reed Switch Communication</name>
                 <stategroup value="TrueFalse"/>
             </point>
