@@ -53,10 +53,10 @@ public class CommandDefinition implements Comparable<CommandDefinition> {
 	}
 
 	public boolean affectsPoint(PointIdentifier pointTemplate) {
-
-		for(PointIdentifier identifier: affectedPointList) {
-			if( identifier.isComparableTo(pointTemplate))
+        for (PointIdentifier identifier : affectedPointList) {
+            if (identifier.equals(pointTemplate)) {
 				return true;
+            }
 		}
 		return false;
     }
