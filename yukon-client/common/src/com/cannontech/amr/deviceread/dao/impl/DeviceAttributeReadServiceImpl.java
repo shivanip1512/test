@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
@@ -40,7 +41,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     
     private AttributeService attributeService;
     
-    private ImmutableMap<DeviceAttributeReadStrategyType, DeviceAttributeReadStrategy> strategies = ImmutableMap.of();
+    private ImmutableMap<StrategyType, DeviceAttributeReadStrategy> strategies = ImmutableMap.of();
     
     @Override
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
@@ -52,7 +53,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
         // loop through each PaoType and strategy
         for (PaoType paoType : paoTypes.keySet()) {
-            for (DeviceAttributeReadStrategyType strategy : strategies.keySet()) {
+            for (StrategyType strategy : strategies.keySet()) {
                 DeviceAttributeReadStrategy impl = strategies.get(strategy);
                 if (impl.canRead(paoType)) {
                     ImmutableCollection<? extends YukonPao> immutableCollection = paoTypes.get(paoType);
@@ -77,8 +78,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         log.debug("initiateRead of %s called for %.3s and %s", type, devices, attributes);
         
         // this will represent the "plan" for how all of the input devices will be read
-        Map<DeviceAttributeReadStrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
-            Maps.newEnumMap(DeviceAttributeReadStrategyType.class);
+        Map<StrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
+            Maps.newEnumMap(StrategyType.class);
         
         // we need to resolve the attributes first to figure out which physical devices we'll be reading
         final List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(devices, attributes);
@@ -90,8 +91,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         
         // loop through each PaoType and strategy, add applicable PaoIdentifiers to the plan
         for (PaoType paoType : byPhysicalPaoType.keySet()) {
-            DeviceAttributeReadStrategyType foundStrategy = null;
-            for (DeviceAttributeReadStrategyType strategy : strategies.keySet()) {
+            StrategyType foundStrategy = null;
+            for (StrategyType strategy : strategies.keySet()) {
                 DeviceAttributeReadStrategy impl = strategies.get(strategy);
                 if (impl.canRead(paoType)) {
                     foundStrategy = strategy;
@@ -152,7 +153,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             
         };
         
-        for (DeviceAttributeReadStrategyType strategy : thePlan.keySet()) {
+        for (StrategyType strategy : thePlan.keySet()) {
             DeviceAttributeReadStrategy impl = strategies.get(strategy);
             Collection<PaoMultiPointIdentifier> devicesForThisStrategy = thePlan.get(strategy);
             
@@ -162,7 +163,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
     @Autowired
     public void setStrategies(List<DeviceAttributeReadStrategy> strategyList) {
-        Builder<DeviceAttributeReadStrategyType, DeviceAttributeReadStrategy> builder = ImmutableMap.builder();
+        Builder<StrategyType, DeviceAttributeReadStrategy> builder = ImmutableMap.builder();
         for (DeviceAttributeReadStrategy strategy : strategyList) {
             builder.put(strategy.getType(), strategy);
         }

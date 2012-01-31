@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 
-public class CommandRequestExecutionDefaults {
+public final class CommandRequestExecutionDefaults {
     private static class ExecutionInfo {
         public ExecutionInfo(boolean defaultNoqueue, int defaultPriority, boolean scheduled) {
             this.defaultNoqueue = defaultNoqueue;

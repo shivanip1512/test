@@ -8,7 +8,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 
-public class PaoPointIdentifier implements Serializable {
+public final class PaoPointIdentifier implements Serializable {
     private PaoIdentifier paoIdentifier;
     private PointIdentifier pointIdentifier;
     

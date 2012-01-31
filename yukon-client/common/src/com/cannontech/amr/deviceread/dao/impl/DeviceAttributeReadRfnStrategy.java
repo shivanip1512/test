@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
@@ -35,8 +36,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     private RfnMeterDao rfnMeterDao;
     
     @Override
-    public DeviceAttributeReadStrategyType getType() {
-        return DeviceAttributeReadStrategyType.RF;
+    public StrategyType getType() {
+        return StrategyType.RF;
     }
     
     @Override

@@ -1,5 +1,6 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.PaoType;
@@ -12,7 +13,7 @@ public interface DeviceAttributeReadStrategy {
      * Each strategy implementation should have a type in the DeviceAttributeReadStrategyType enum.
      * This returns that type for this strategy implementation.
      */
-    public DeviceAttributeReadStrategyType getType();
+    public StrategyType getType();
     
     /**
      * This associates the strategy with a subset of PaoTypes. It is up to the author of the

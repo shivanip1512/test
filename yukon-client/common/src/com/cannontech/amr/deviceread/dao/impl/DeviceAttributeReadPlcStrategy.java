@@ -3,6 +3,7 @@ package com.cannontech.amr.deviceread.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
@@ -25,8 +26,8 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
     private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     
     @Override
-    public DeviceAttributeReadStrategyType getType() {
-        return DeviceAttributeReadStrategyType.PLC;
+    public StrategyType getType() {
+        return StrategyType.PLC;
     }
     
     @Override

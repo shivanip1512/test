@@ -8,6 +8,9 @@ import com.cannontech.common.pao.YukonPao;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
+/**
+ * This class represents a Set of points which all pertain to the same PAO.
+ */
 public final class PaoMultiPointIdentifier {
     private final PaoIdentifier paoIdentifier;
     private final Set<PointIdentifier> pointIdentifiers;

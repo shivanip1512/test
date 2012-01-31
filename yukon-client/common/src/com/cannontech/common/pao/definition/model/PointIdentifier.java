@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 
-public class PointIdentifier implements Comparable<PointIdentifier>, Serializable {
+public final class PointIdentifier implements Comparable<PointIdentifier>, Serializable {
     private int offset;
     private PointType type;
     
@@ -22,17 +22,6 @@ public class PointIdentifier implements Comparable<PointIdentifier>, Serializabl
         this.type = PointType.getForId(type);
     }
 
-    /**
-     * @param type
-     * @param offset
-     * @deprecated Use the PointType Enum version.
-     */
-    @Deprecated
-    public PointIdentifier(String type, int offset) {
-        this.offset = offset;
-        this.type = PointType.getForString(type);
-    }
-    
     public PointIdentifier(PointType type, int offset) {
     	this.offset = offset;
     	this.type = type;
@@ -95,21 +84,7 @@ public class PointIdentifier implements Comparable<PointIdentifier>, Serializabl
             .append(getOffset(), o.getOffset())
             .toComparison();
     }
-    
-    /**
-     * @param identifier
-     * @return
-     * @deprecated This does the same thing as equals, but in an unsafe way
-     */
-    @Deprecated
-    public boolean isComparableTo(PointIdentifier identifier) {
-    	if( offset != identifier.getOffset())
-    		return false;
-    	if( type != identifier.getPointType())
-    		return false;
-    	return true;
-    }
-    
+
     /**
      * Helper method to create a pointIdentifier from a litePoint
      * @param litePoint
