@@ -6,7 +6,6 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-    <xsd:include schemaLocation="./TextMessageResult.xsd"/>
     
     <xsd:complexType name="SendTextMessageResponse">
         <xsd:annotation>
@@ -21,7 +20,10 @@
                     <xsd:element name="textMessageResultList">
                         <xsd:complexType>
                             <xsd:sequence>
-                                <xsd:element name="textMessageResult" type="yukon:TextMessageResult" maxOccurs="unbounded"/>
+                                <xsd:choice>
+                                    <xsd:element name="success" />
+                                    <xsd:element name="failure" type="yukon:Failure" />
+                                </xsd:choice>
                             </xsd:sequence>
                         </xsd:complexType>
                     </xsd:element>

@@ -22,7 +22,6 @@
     <xsd:include schemaLocation="SendManualThermostatSettingRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="SendTextMessageRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="TextMessage.xsd"></xsd:include>
-    <xsd:include schemaLocation="TextMessageResult.xsd"></xsd:include>
     <xsd:include schemaLocation="UnenrollmentResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateControllableDevicesRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateControllableDevicesResponse.xsd"></xsd:include>
