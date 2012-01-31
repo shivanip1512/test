@@ -20,6 +20,7 @@ import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
@@ -53,23 +54,56 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     private Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
 
-    private AccountEventLogService accountEventLogService;
-    private CustomerDao customerDao;
-    private CustomerEventDao customerEventDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private InventoryDao inventoryDao;
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    private CommandServiceFactory commandServiceFactory;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private CustomerEventDao customerEventDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
+    @Autowired private CommandServiceFactory commandServiceFactory;
+    @Autowired  private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+
+    @Override
+    public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature temperature, ThermostatMode thermostatMode,
+                                                          ThermostatFanState fanState, boolean hold, CustomerAccount account, LiteYukonUser user) {
+
+        ThermostatManualEvent thermostatManualEvent = new ThermostatManualEvent();
+        thermostatManualEvent.setThermostatId(thermostatId);
+        thermostatManualEvent.setPreviousTemperature(temperature);
+        thermostatManualEvent.setMode(thermostatMode);
+        thermostatManualEvent.setFanState(fanState);
+        thermostatManualEvent.setHoldTemperature(hold);
+        thermostatManualEvent.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
+        thermostatManualEvent.setAction(CustomerAction.MANUAL_OPTION);
+        
+        // Execute manual event and get result
+        return executeManual(account, thermostatManualEvent, user);
+
+    }
+
+    @Override
+    public ThermostatManualEventResult runProgram(int thermostatId, LiteYukonUser user) {
+        
+        CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(thermostatId);
+
+        ThermostatManualEvent runProgramEvent = new ThermostatManualEvent();
+        runProgramEvent.setThermostatId(thermostatId);
+        runProgramEvent.setRunProgram(true);
+        runProgramEvent.setMode(ThermostatMode.DEFAULT);
+        runProgramEvent.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
+        runProgramEvent.setAction(CustomerAction.MANUAL_OPTION);
+        
+        return executeManual(customerAccount, runProgramEvent, user);
+    }
     
     @Override
     @Transactional
-    public ThermostatManualEventResult executeManual(CustomerAccount account, ThermostatManualEvent event, YukonUserContext context) {
+    public ThermostatManualEventResult executeManual(CustomerAccount account, ThermostatManualEvent event, LiteYukonUser user) {
 
         Integer thermostatId = event.getThermostatId();
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        LiteYukonUser user = context.getYukonUser();
 
         // Make sure the device is available
         if (!thermostat.isAvailable()) {
@@ -96,7 +130,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         // Log manual event into activity log
-        accountEventLogService.thermostatManuallySet(user, account.getAccountNumber(), serialNumber);
+        accountEventLogService.thermostatManuallySet(user, serialNumber);
 
         logManualEventActivity(thermostat, event, user.getUserID(), account.getAccountId(), account.getCustomerId());
         
@@ -116,7 +150,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         ThermostatCommandExecutionService service = commandServiceFactory.getCommandService(thermostat.getType());
         service.doManualAdjustment(event, thermostat, user);
     }
-
+    
     @Override
     public AccountThermostatSchedule getAccountThermostatScheduleTemplate(int accountId, SchedulableThermostatType type) {
     	
@@ -472,57 +506,6 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
     }
     
-    @Override
-    public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
-                                                                  boolean hold, 
-                                                                  boolean runProgram, 
-                                                                  Temperature temperature, 
-                                                                  String mode, 
-                                                                  String fan, 
-                                                                  CustomerAccount account, 
-                                                                  YukonUserContext context) {
-       ThermostatManualEventResult message = null;
-       boolean failed = false;
-       
-       for (Integer thermostatId : thermostatIds) {
-           // Build up manual event from submitted params
-           ThermostatManualEvent event = new ThermostatManualEvent();
-           event.setThermostatId(thermostatId);
-           event.setHoldTemperature(hold);
-           event.setPreviousTemperature(temperature);
-           event.setRunProgram(runProgram);
-           event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
-           event.setAction(CustomerAction.MANUAL_OPTION);
-
-           // Mode and fan can be blank
-           if (runProgram) {
-               event.setMode(ThermostatMode.DEFAULT);
-           } else if (!StringUtils.isBlank(mode)) {
-               ThermostatMode thermostatMode = ThermostatMode.valueOf(mode);
-               event.setMode(thermostatMode);
-           }
-           if (!StringUtils.isBlank(fan)) {
-               ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
-               event.setFanState(fanState);
-           }
-
-           // Execute manual event and get result
-           message = executeManual(account, event, context);
-
-           if (message.isFailed()) {
-               failed = true;
-           }
-       }
-
-       // If there was a failure and we are processing multiple thermostats,
-       // set error to generic multiple error
-       if (failed && thermostatIds.size() > 1) {
-           message = ThermostatManualEventResult.MULTIPLE_ERROR;
-       }
-       
-       return message;
-   }
-    
     /**
      * Helper method to log the manual event to the activity log
      * @param thermostat - Thermostat for manual event
@@ -579,51 +562,5 @@ public class ThermostatServiceImpl implements ThermostatService {
     public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModesByAccountId(int accountId) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
         return getAllowedThermostatScheduleModes(yukonEnergyCompany);
-    }
-    
-    // DI Setters
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-    
-    @Autowired
-    public void setCustomerEventDao(CustomerEventDao customerEventDao) {
-        this.customerEventDao = customerEventDao;
-    }
-
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-    }
-    
-    @Autowired
-    public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
-        this.thermostatEventHistoryDao = thermostatEventHistoryDao;
-    }
-    
-    @Autowired
-    public void setCommandServiceFactory(CommandServiceFactory commandServiceFactory) {
-        this.commandServiceFactory = commandServiceFactory;
-    }
-
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
     }
 }

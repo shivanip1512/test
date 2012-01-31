@@ -71,6 +71,7 @@ import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -541,6 +542,18 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
+    public List<Integer> getInventoryIds(Collection<String> serialNumbers, int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT LMHB.InventoryId");
+        sql.append("FROM LMHardwareBase LMHB");
+        sql.append(  "JOIN ECToInventoryMapping ECTIM ON ECTIM.InventoryId = LMHB.InventoryId");
+        sql.append("WHERE LMHB.ManufacturerSerialNumber").in(serialNumbers);
+        sql.append(  "AND ECTIM.EnergyCompanyId").eq_k(energyCompanyId);
+        
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+    }
+    
+    @Override
     public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> yukonInventory) {
         DisplayableLmHardwareRowMapper mapper = new DisplayableLmHardwareRowMapper();
         
@@ -774,5 +787,16 @@ public class InventoryDaoImpl implements InventoryDao {
         results.setBounds(start, pageCount, total);
         
         return results;
+    }
+
+    @Override
+    public List<String> getThermostatLabels(List<Integer> thermostatIds) {
+        List<String> thermostatLabels = Lists.newArrayListWithCapacity(thermostatIds.size());
+        for(Integer thermostatId : thermostatIds) {
+            Thermostat thermostat = getThermostatById(thermostatId);
+            thermostatLabels.add(thermostat.getLabel());
+        }
+
+        return thermostatLabels;
     }
 }

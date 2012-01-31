@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.dao.CustomerDao;
@@ -22,10 +22,12 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
+import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
@@ -42,21 +44,20 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @RequestMapping(value = "/operator/thermostatManual/*")
 public class OperatorThermostatManualController {
     
-	private InventoryDao inventoryDao;
-	private CustomerEventDao customerEventDao;
-	private CustomerDao customerDao;
-	private CustomerAccountDao customerAccountDao;
-	private ThermostatService thermostatService;
-	private OperatorThermostatHelper operatorThermostatHelper;
-	private ThermostatEventHistoryDao thermostatEventHistoryDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private InventoryDao inventoryDao;
+	@Autowired private CustomerEventDao customerEventDao;
+	@Autowired private CustomerDao customerDao;
+	@Autowired private CustomerAccountDao customerAccountDao;
+	@Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+	@Autowired private ThermostatService thermostatService;
+	@Autowired private OperatorThermostatHelper operatorThermostatHelper;
+	@Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
 	
 	// VIEW
 	@RequestMapping
-    public String view(String thermostatIds,
-				    		 ModelMap modelMap,
-					         FlashScope flashScope,
-					         AccountInfoFragment accountInfoFragment,
-					         HttpServletRequest request) {
+    public String view(String thermostatIds, ModelMap modelMap, FlashScope flashScope, 
+                       AccountInfoFragment accountInfoFragment, HttpServletRequest request) {
 
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		
@@ -106,16 +107,9 @@ public class OperatorThermostatManualController {
 	
 	// SAVE
 	@RequestMapping
-    public String save(String thermostatIds,
-    		    		String mode, 
-    		    		String fan, 
-    		    		String temperatureUnit,
-    		    		Double temperature,
-    		    		YukonUserContext userContext,
-    		            HttpServletRequest request, 
-    		            ModelMap modelMap,
-    		            FlashScope flashScope,
-    			        AccountInfoFragment accountInfoFragment) {
+    public String save(String thermostatIds, String mode, String fan, String temperatureUnit, Double temperature,
+                       YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
+                       FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 	    
 	    Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
 		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
@@ -123,56 +117,49 @@ public class OperatorThermostatManualController {
         return "redirect:view";
     }
 	
-	// RUN PROGRAM
 	@RequestMapping
-    public String runProgram(String thermostatIds,
-				    		String mode, 
-				    		String fan, 
-				    		String temperatureUnit,
-				    		Double temperature,
-				    		YukonUserContext userContext,
-				            HttpServletRequest request, 
-				            ModelMap modelMap,
-				            FlashScope flashScope,
-					        AccountInfoFragment accountInfoFragment) {
+    public String runProgram(String thermostatIds, YukonUserContext userContext, ModelMap modelMap,
+                             FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
+	    List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 
-	    Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
-		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
-		
-        return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
+        // Log run program attempt
+	    CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+        List<String> serialNumbers =  lmHardwareBaseDao.getSerialNumberForInventoryIds(thermostatIdsList);
+        for (String serialNumber : serialNumbers) {
+            accountEventLogService.thermostatRunProgramAttemptedByOperator(userContext.getYukonUser(), customerAccount.getAccountNumber(), serialNumber);
+        }
+	    
+        // Send out run program commands
+        ThermostatManualEventResult result = null;
+        for (int thermostatId : thermostatIdsList) {
+            result = thermostatService.runProgram(thermostatId, userContext.getYukonUser());
+            
+            if (result.isFailed() && thermostatIdsList.size() > 1) {
+                result = ThermostatManualEventResult.MULTIPLE_ERROR;
+                break;
+            }
+        }
+
+	    setConfirmationMessage(flashScope, thermostatIdsList, result);
+	    return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
     }
 	
-    private void executeManualEvent(String thermostatIds,
-				    		String mode, 
-				    		String fan, 
-				    		String temperatureUnit,
-				    		Temperature temperature,
-				    		YukonUserContext userContext,
-				            HttpServletRequest request, 
-				            ModelMap modelMap,
-				            FlashScope flashScope,
-					        AccountInfoFragment accountInfoFragment) {
+    private void executeManualEvent(String thermostatIds, String mode, String fan, String temperatureUnit, Temperature temperature,
+                                    YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
+                                    FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
 		thermostatService.logOperatorThermostatManualSaveAttempt(thermostatIdsList, userContext, customerAccount);
         ThermostatMode thermostatMode = thermostatService.getThermostatModeFromString(mode);
-        
+        ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
         thermostatService.updateTempUnitForCustomer(temperatureUnit, customerAccount.getCustomerId());
         
-        // See if the run program button was clicked
-        String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request, "runProgram", null);
-        boolean runProgram = runProgramButtonClicked != null;
-        
-        //temperature must be validated if mode is heat or cool and the run program
-        //button was not pressed
-        boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
-        ThermostatManualEventResult message = null;
         
         //Validate temperature for mode and thermostat type
-        if(needsTempValidation) {
+        if(thermostatMode.isHeatOrCool()) {
             ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, temperature, thermostatMode);
             
             if(limitMessage != null) {
@@ -186,54 +173,33 @@ public class OperatorThermostatManualController {
         if(isValid) {
             boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
             
-            message = thermostatService.setupAndExecuteManualEvent(thermostatIdsList, hold, runProgram, temperature, mode, fan, customerAccount, userContext);
-            
-            // Add thermostat labels to message
-            List<String> thermostatLabels = new ArrayList<String>();
-            for(Integer thermostatId : thermostatIdsList) {
-            	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-            	thermostatLabels.add(thermostat.getLabel());
+            // Send out manual thermostat commands
+            ThermostatManualEventResult result = ThermostatManualEventResult.MANUAL_SUCCESS;
+            for (int thermostatId : thermostatIdsList) {
+                
+                result = thermostatService.executeManualEvent(thermostatId, temperature, thermostatMode, fanState, hold,  customerAccount, userContext.getYukonUser());
+                if (result.isFailed() && thermostatIdsList.size() > 1) {
+                    result = ThermostatManualEventResult.MULTIPLE_ERROR;
+                    break;
+                }
             }
-            String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-            String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + message.name();
-            MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
-            
-        	flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
+
+            setConfirmationMessage(flashScope, thermostatIdsList,  result);
         }
     }
-    
-	@Autowired
-	public void setInventoryDao(InventoryDao inventoryDao) {
-		this.inventoryDao = inventoryDao;
-	}
-	
-	@Autowired
-	public void setCustomerEventDao(CustomerEventDao customerEventDao) {
-		this.customerEventDao = customerEventDao;
-	}
-	
-	@Autowired
-	public void setCustomerDao(CustomerDao customerDao) {
-		this.customerDao = customerDao;
-	}
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-	
-	@Autowired
-	public void setThermostatService(ThermostatService thermostatService) {
-		this.thermostatService = thermostatService;
-	}
-	
-	@Autowired
-	public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
-		this.operatorThermostatHelper = operatorThermostatHelper;
-	}
-	
-	@Autowired
-	public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
-	    this.thermostatEventHistoryDao = thermostatEventHistoryDao;
-	}
+
+    /**
+     * This method takes care of setting up the flash scope message that comes back from running a manual event command.
+     */
+    private void setConfirmationMessage(FlashScope flashScope, List<Integer> thermostatIds, ThermostatManualEventResult result) {
+        // Add thermostat labels to message
+        List<String> thermostatLabels =  inventoryDao.getThermostatLabels(thermostatIds);
+        
+        // Setup flash scope message
+        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
+        String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + result.name();
+        MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
+        
+        flashScope.setMessage(messageResolvable, result.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
+    }
 }

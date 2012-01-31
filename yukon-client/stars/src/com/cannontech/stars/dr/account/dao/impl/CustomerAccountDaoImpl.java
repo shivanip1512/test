@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +48,11 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingBean {
 	
@@ -259,6 +263,48 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         
         return account;
+    }
+    
+    @Override
+    public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CA.*, IB.InventoryId");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
+        sql.append("WHERE IB.InventoryId").in(inventoryIds);
+        
+        final Map<Integer, CustomerAccount> inventoryIdToCustomerAccount = Maps.newHashMap();
+        yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                CustomerAccount customerAccount = rowMapper.mapRow(rs, rs.getRow());
+                inventoryIdToCustomerAccount.put(rs.getInt("InventoryId"), customerAccount);
+            }
+        });
+        
+        return inventoryIdToCustomerAccount;
+    }
+    
+    @Override
+    public SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CA.*, IB.InventoryId");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
+        sql.append("WHERE IB.InventoryId").in(inventoryIds);
+        
+        final SetMultimap<CustomerAccount, Integer> accountToInventoryIds = HashMultimap.create();
+        yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                CustomerAccount customerAccount = rowMapper.mapRow(rs, rs.getRow());
+                accountToInventoryIds.put(customerAccount, rs.getInt("InventoryId"));
+            }
+        });
+        
+        return accountToInventoryIds;
     }
     
     @Override
@@ -537,5 +583,4 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
     }
-    
 }

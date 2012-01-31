@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.account.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.collect.SetMultimap;
 
 public interface CustomerAccountDao {
 
@@ -46,6 +48,20 @@ public interface CustomerAccountDao {
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId);
     
     public CustomerAccount getAccountByInventoryId(int inventoryId);
+    
+    /**
+     * This method is a performance method.  This allows us to get a huge multimap of inventory ids to customer accounts.
+     * This method will cut down on the amount of dao hits, 
+     * but will force the user to use a map call to get the inventoryIds for each customer account. 
+     */
+    public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds);
+
+    /**
+     * This method is a performance method.  This allows us to get a huge multimap of customer accounts to inventory ids.
+     * This method will cut down on the amount of dao hits, 
+     * but will force the user to use a map call to get the inventoryIds for each customer account. 
+     */
+    public SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds);
     
     /**
      * Returns a map of InventoryIds to AccountIds.

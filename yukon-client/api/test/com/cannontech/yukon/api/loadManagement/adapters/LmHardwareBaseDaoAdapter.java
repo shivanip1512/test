@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.adapters;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -60,4 +61,8 @@ public class LmHardwareBaseDaoAdapter implements LMHardwareBaseDao {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public List<String> getSerialNumberForInventoryIds(Collection<Integer> inventoryId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

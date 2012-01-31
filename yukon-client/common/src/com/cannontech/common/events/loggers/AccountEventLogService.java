@@ -358,10 +358,41 @@ public interface AccountEventLogService {
                                                             @Arg(ArgEnum.scheduleName) String scheduleName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatScheduleSendDefaultAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                            @Arg(ArgEnum.serialNumber) String serialNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatScheduleSendAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                            @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatScheduleDeleteAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                             @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                             @Arg(ArgEnum.scheduleName) String scheduleName);
 
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatRunProgramAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatRunProgramAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatRunProgramAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
+    public void thermostatManualSetAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                       int temperature,
+                                                       String mode,
+                                                       String fanSetting,
+                                                       boolean holdTemperature);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatManualSetAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
@@ -390,8 +421,7 @@ public interface AccountEventLogService {
                                           @Arg(ArgEnum.scheduleName) String scheduleName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.thermostat")
-    public void thermostatManuallySet(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                      @Arg(ArgEnum.accountNumber) String accountNumber, 
+    public void thermostatManuallySet(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                       @Arg(ArgEnum.serialNumber) String serialNumber);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.thermostat")

@@ -8,6 +8,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
@@ -25,12 +26,10 @@ public interface ThermostatService {
      * Method used to perform a manual event on a thermostat
      * @param account - Account for thermostat
      * @param event - Manual event to be performed
-     * @param userContext - User context for manual event
+     * @param user - User for manual event
      * @return Status of manual event execution
      */
-    public ThermostatManualEventResult executeManual(
-            CustomerAccount account, ThermostatManualEvent event,
-            YukonUserContext userContext);
+    public ThermostatManualEventResult executeManual(CustomerAccount account, ThermostatManualEvent event, LiteYukonUser user);
 
     /**
      * Gets an AccountThermostatSchedule based off the energy company default schedule for the given type.
@@ -57,17 +56,17 @@ public interface ThermostatService {
     public void addMissingScheduleEntriesForDefaultSchedules(AccountThermostatSchedule ats);    
     
     /**
-     * Prepares a ThermostatManualEvent for each thermostat being controlled, then attempts to
-     * execute those events.
+     * Attempts to execute the ThermostatManualEvent supplied.
      */
-    public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
-                                                                   boolean hold, 
-                                                                   boolean runProgram, 
-                                                                   Temperature temperature, 
-                                                                   String mode, 
-                                                                   String fan, 
-                                                                   CustomerAccount account, 
-                                                                   YukonUserContext userContext);
+    public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature temperature, ThermostatMode thermostatMode,
+                                                          ThermostatFanState fanState, boolean hold, CustomerAccount account, LiteYukonUser user);
+    
+    /**
+     * This method reverts the piece of inventory to it's thermostat program. This should be used instead of
+     * calling setupAndExecuteManualEvent directly.
+     */
+    public ThermostatManualEventResult runProgram(int thermostatIds, LiteYukonUser user);
+    
     /**
      * Log a consumer's attempt to send manual thermostat settings.
      */

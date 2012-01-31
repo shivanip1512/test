@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.hardware.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -70,5 +71,10 @@ public interface LMHardwareBaseDao {
      * Returns the serial number for the inventory with the given inventory id. 
      */
     public String getSerialNumberForInventoryId(int inventoryId);
+
+    /**
+     * Returns the serial numbers for the supplied inventoryIds. 
+     */
+    public List<String> getSerialNumberForInventoryIds(Collection<Integer> inventoryId);
     
 }

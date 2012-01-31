@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.adapters;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.collect.SetMultimap;
 
 public class CustomerAccountDaoAdapter implements CustomerAccountDao{
 
@@ -128,4 +130,13 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

@@ -47,8 +47,7 @@ public interface InventoryDao {
      * Get a map of inventoryId -> hardware summary for all of the passed in
      * inventory ids.
      */
-    public Map<Integer, HardwareSummary> findHardwareSummariesById(
-            Iterable<Integer> inventoryIds);
+    public Map<Integer, HardwareSummary> findHardwareSummariesById(Iterable<Integer> inventoryIds);
     
     /**
      * Method to get a list of thermostat summary based on an account id
@@ -63,6 +62,11 @@ public interface InventoryDao {
      * @return The thermostat
      */
     public Thermostat getThermostatById(int thermostatId);
+
+    /**
+     * This method gets a list of all of the thermostat labels of the supplied thermostatIds.
+     */
+    public List<String> getThermostatLabels(List<Integer> thermostatIds);
     
     /**
      * Method to update the label of a thermostat
@@ -135,4 +139,8 @@ public interface InventoryDao {
      */
     public Map<String, Integer> getSerialNumberToInventoryIdMap(Collection<String> serialNumbers, int energyCompanyId);
 
+    /**
+     * This method allows us to pass in a list of serial numbers and get back a list of all of the inventory ids that exist in the system.
+     */
+    public List<Integer> getInventoryIds(Collection<String> serialNumbers, int energyCompanyId);
 }

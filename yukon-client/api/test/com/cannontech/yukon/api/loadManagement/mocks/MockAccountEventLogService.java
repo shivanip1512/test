@@ -310,6 +310,11 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
+    public void thermostatManualSetAttemptedByApi(LiteYukonUser yukonUser, String serialNumber, int temperature,
+                                                  String mode, String fanSetting, boolean holdTemperature) {
+    }
+
+    @Override
     public void thermostatManualSetAttemptedByOperator(LiteYukonUser yukonUser,
                                                        String accountNumber, String serialNumber) {
     }
@@ -335,8 +340,7 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void thermostatManuallySet(LiteYukonUser yukonUser, String accountNumber,
-                                      String serialNumber) {
+    public void thermostatManuallySet(LiteYukonUser yukonUser, String serialNumber) {
     }
 
     @Override
@@ -350,4 +354,23 @@ public class MockAccountEventLogService implements AccountEventLogService{
                                               String newScheduleName) {
     }
 
+    @Override
+    public void thermostatRunProgramAttemptedByApi(LiteYukonUser yukonUser, String serialNumber) {
+    }
+
+    @Override
+    public void thermostatRunProgramAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber, String serialNumber) {
+    }
+
+    @Override
+    public void thermostatRunProgramAttemptedByConsumer(LiteYukonUser yukonUser, String accountNumber, String serialNumber) {
+    }
+
+    @Override
+    public void thermostatScheduleSendDefaultAttemptedByApi(LiteYukonUser yukonUser, String serialNumber) {
+    }
+
+    @Override
+    public void thermostatScheduleSendAttemptedByApi(LiteYukonUser yukonUser, String serialNumber, String scheduleName) {
+    }
 }

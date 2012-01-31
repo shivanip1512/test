@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -28,6 +30,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     private LMHardwareEventDao lmHardwareEventDao;
     private InventoryBaseDao inventoryBaseDao;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    
     private static final YukonRowMapper<LMHardwareBase> rowMapper = new YukonRowMapper<LMHardwareBase>() {
         public LMHardwareBase mapRow(YukonResultSet rs) throws SQLException {
             LMHardwareBase hardwareBase = new LMHardwareBase();
@@ -155,11 +158,23 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT HB.ManufacturerSerialNumber SerialNumber");
         sql.append("FROM InventoryBase IB");
-        sql.append(  "JOIN LMHardwareBase HB on HB.InventoryId = IB.InventoryId");
+        sql.append(  "JOIN LMHardwareBase HB ON HB.InventoryId = IB.InventoryId");
         sql.append("WHERE IB.InventoryId").eq(inventoryId);
         
         String serialNumber = yukonJdbcTemplate.queryForString(sql);
         return serialNumber;
+    }
+
+    @Override
+    public List<String> getSerialNumberForInventoryIds(Collection<Integer> inventoryIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT HB.ManufacturerSerialNumber SerialNumber");
+        sql.append("FROM InventoryBase IB");
+        sql.append(  "JOIN LMHardwareBase HB ON HB.InventoryId = IB.InventoryId");
+        sql.append("WHERE IB.InventoryId").in(inventoryIds);
+        
+        List<String> serialNumbers = yukonJdbcTemplate.query(sql, new StringRowMapper());
+        return serialNumbers;
     }
     
     @Autowired
@@ -191,5 +206,4 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
-    
 }
