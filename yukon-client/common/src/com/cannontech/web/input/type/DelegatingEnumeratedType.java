@@ -1,8 +1,9 @@
 package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
-import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
  * Implementation of input type which represents a list input type. This class
@@ -10,14 +11,14 @@ import java.util.List;
  */
 public class DelegatingEnumeratedType<T> extends BaseEnumeratedType<T> {
 
-    private List<InputOption> optionList = new ArrayList<InputOption>();
+    private List<InputOptionProvider> optionList = Lists.newArrayList();
     private InputType<T> enumeratedType;
 
-    public List<InputOption> getOptionList() {
+    public List<InputOptionProvider> getOptionList() {
         return optionList;
     }
 
-    public void setOptionList(List<InputOption> optionList) {
+    public void setOptionList(List<InputOptionProvider> optionList) {
         this.optionList = optionList;
     }
 

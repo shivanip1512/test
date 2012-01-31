@@ -12,6 +12,7 @@ import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.type.BaseEnumeratedType;
 import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.InputOption;
+import com.cannontech.web.input.type.InputOptionProvider;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.LongType;
@@ -37,9 +38,9 @@ public class InputTypeFactory {
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
         BaseEnumeratedType<T> type = new BaseEnumeratedType<T>() {
             
-            private ImmutableList<InputOption> optionList;
+            private ImmutableList<InputOptionProvider> optionList;
             {
-                Builder<InputOption> builder = ImmutableList.builder();
+                Builder<InputOptionProvider> builder = ImmutableList.builder();
                 T[] enumConstants = enumClass.getEnumConstants();
                 for (T entry : enumConstants) {
                     InputOption inputOption = new InputOption();
@@ -51,7 +52,7 @@ public class InputTypeFactory {
             }
 
             @Override
-            public List<InputOption> getOptionList() {
+            public List<InputOptionProvider> getOptionList() {
                 return optionList;
             }
 

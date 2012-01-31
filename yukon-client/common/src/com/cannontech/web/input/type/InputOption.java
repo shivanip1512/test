@@ -3,7 +3,7 @@ package com.cannontech.web.input.type;
 /**
  * Class which represents an input option to be used with a drop down box
  */
-public class InputOption {
+public class InputOption implements InputOptionProvider {
 
     private String value = null;
     private String text = null;

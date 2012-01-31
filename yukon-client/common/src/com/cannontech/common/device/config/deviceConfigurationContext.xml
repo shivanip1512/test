@@ -1577,42 +1577,15 @@
 							<property name="enumeratedType" ref="inputIntegerType" />
 							<property name="optionList">
 								<list>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="None" />
-										<property name="value" value="0" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="S4" />
-										<property name="value" value="1" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="Alpha A3" />
-										<property name="value" value="2" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="Alpha P+" />
-										<property name="value" value="3" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="GEKV" />
-										<property name="value" value="4" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="GEKV2" />
-										<property name="value" value="5" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="Sentinel" />
-										<property name="value" value="6" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="DNP" />
-										<property name="value" value="7" />
-									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="GEKV2C" />
-										<property name="value" value="8" />
-									</bean>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">NONE</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">S4</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">ALPHA_A3</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">ALPHA_PPLUS</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">GEKV</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">GEKV2</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">SENTINAL</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">DNP</value>
+                                    <value type="com.cannontech.common.device.config.model.ElectronicMeter">GEKV2C</value>
 								</list>
 							</property>
 						</bean>

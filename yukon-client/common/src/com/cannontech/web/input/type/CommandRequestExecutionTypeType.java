@@ -2,20 +2,20 @@ package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.device.DeviceRequestType;
+import com.google.common.collect.Lists;
 
 
 public class CommandRequestExecutionTypeType extends BaseEnumeratedType<DeviceRequestType> {
 
-    private List<InputOption> optionList = new ArrayList<InputOption>();
+    private List<InputOptionProvider> optionList = Lists.newArrayList();
     
-    public List<InputOption> getOptionList() {
+    public List<InputOptionProvider> getOptionList() {
 
         // re-get available routes
-        optionList = new ArrayList<InputOption>();
+        optionList = Lists.newArrayList();
         DeviceRequestType[] types = DeviceRequestType.values();
         for (DeviceRequestType type : types) {
             

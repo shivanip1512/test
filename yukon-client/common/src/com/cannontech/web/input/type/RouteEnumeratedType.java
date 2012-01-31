@@ -1,13 +1,13 @@
 package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.google.common.collect.Lists;
 
 /**
  * Implementation of input type which represents a list input type. This class
@@ -17,13 +17,13 @@ public class RouteEnumeratedType extends BaseEnumeratedType<String> {
 
     
     private PaoDao paoDao = null;
-    private List<InputOption> optionList = new ArrayList<InputOption>();
+    private List<InputOptionProvider> optionList = Lists.newArrayList();
     private InputType<String> enumeratedType;
     
-    public List<InputOption> getOptionList() {
+    public List<InputOptionProvider> getOptionList() {
 
         // re-get available routes
-        optionList = new ArrayList<InputOption>();
+        optionList = Lists.newArrayList();
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
         for (LiteYukonPAObject route : routes) {
             

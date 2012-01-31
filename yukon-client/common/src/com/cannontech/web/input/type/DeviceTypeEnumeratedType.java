@@ -1,14 +1,13 @@
 package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 /**
@@ -19,13 +18,13 @@ public class DeviceTypeEnumeratedType extends BaseEnumeratedType<Integer> {
 
     
     private PaoDefinitionService paoDefinitionService = null;
-    private List<InputOption> optionList = new ArrayList<InputOption>();
+    private List<InputOptionProvider> optionList = Lists.newArrayList();
     private InputType<Integer> enumeratedType;
     
-    public List<InputOption> getOptionList() {
+    public List<InputOptionProvider> getOptionList() {
 
         // re-get available routes
-        optionList = new ArrayList<InputOption>();
+        optionList = Lists.newArrayList();
 
         Multimap<String, PaoDefinition> deviceGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
         for (String key : deviceGroupMap.keySet()) {
