@@ -22,13 +22,15 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.title">Disable Consumer Opt Out Ability for Today</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.note.label">Note</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.note.text">All program Opt Outs will be enabled/disabled unless a specific program is selected.</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms">Current Consumer Ability to Opt Out</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms">Current Consumer Ability to Opt Out and Send Other Communications</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.programName">Program Name</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.enabled">Consumer's Ability to Opt Out</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton">Prohibit Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton">Allow Opt Outs &amp; Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton">Prohibit Opt Outs &amp; Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableCommsButton">Allow Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.enabled">Consumer's Ability to Opt Out and Send Other Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton.label">Prohibit Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton.hoverText">Prohibits Opt Outs but Allows Other Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton.label">Allow Opt Outs &amp; Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton.hoverText">Allow both Opt Outs and Other Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton.label">Prohibit Opt Outs &amp; Communications</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton.hoverText">Prohibits both Opt Outs and Other Communications</entry>
 
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.title">Cancel Current Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.note.label">Note:</entry>

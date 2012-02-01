@@ -105,11 +105,14 @@
                                 </td></tr>
                             </table>
                             <br/>
-                                <input type="submit" name="disableOptOuts" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.disableOptOutsButton" />" class="formSubmit first">
-                                <input type="submit" name="disableOptOutsAndComms" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" />" class="formSubmit last">
-                            
-                                <input type="submit" name="enableOptOuts" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.enableOptOutsButton" />" class="formSubmit first">
-                                <input type="submit" name="disableOptOuts" value="<cti:msg2 key=".disableOptOuts.currentDisabledPrograms.enableCommsButton" />" class="formSubmit last">
+                            <div class="box fl">
+                                <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" styleClass="formSubmit"/>
+                                <br>
+                                <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" styleClass="formSubmit"/>
+                            </div>
+                            <div class="box fl">
+                                <cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" styleClass="formSubmit"/>
+                            </div>
                         </form>       
                     </tags:boxContainer2>
                 </cti:checkProperty>
