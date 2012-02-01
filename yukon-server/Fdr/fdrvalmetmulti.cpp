@@ -41,7 +41,7 @@ using namespace Fdr::Valmet;
 /** global used to start the interface by c functions **/
 CtiFDR_ValmetMulti * valmetMultiInterface;
 
-const CHAR * CtiFDR_ValmetMulti::KEY_LISTEN_PORT_NUMBER = "FDR_VALMET_PORT_NUMBER";
+const CHAR * CtiFDR_ValmetMulti::KEY_LISTEN_PORT_NUMBER = "FDR_VALMETMULTI_PORT_NUMBER";
 const CHAR * CtiFDR_ValmetMulti::KEY_TIMESTAMP_WINDOW = "FDR_VALMETMULTI_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_ValmetMulti::KEY_DB_RELOAD_RATE = "FDR_VALMETMULTI_DB_RELOAD_RATE";
 const CHAR * CtiFDR_ValmetMulti::KEY_QUEUE_FLUSH_RATE = "FDR_VALMETMULTI_QUEUE_FLUSH_RATE";
@@ -59,14 +59,39 @@ CtiFDR_ValmetMulti::CtiFDR_ValmetMulti()
 : CtiFDRScadaServer(string(FDR_VALMETMULTI)),
     _helper(NULL)
 {
+    //Set to prevent the normal connection thread.
+    setSingleListeningPort(false);
     init();
     _helper = new CtiFDRScadaHelper<CtiValmetPortId>(this);
 }
 
-
 CtiFDR_ValmetMulti::~CtiFDR_ValmetMulti()
 {
     delete _helper;
+}
+
+
+BOOL CtiFDR_ValmetMulti::run( void )
+{
+
+    // load up the base class
+    CtiFDRScadaServer::run();
+
+    //Need List of port numbers to listen on.
+    //Load a listener on each port
+    CtiFDRSocketServer::startMultiListeners(_portsToListen);
+
+    return TRUE;
+}
+
+BOOL CtiFDR_ValmetMulti::stop( void )
+{
+    //Stop all listener threads happens in CtiFDRSocketServer
+
+    // stop the base class
+    CtiFDRScadaServer::stop();
+
+    return TRUE;
 }
 
 /*************************************************
@@ -172,7 +197,11 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
         CtiValmetPortId valmetPortId;
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
-        valmetPortId.ServerName = pointDestination.getDestination();
+
+        if (valmetPortId.PortNumber != 0)
+        {
+            _portsToListen.insert(valmetPortId.PortNumber);
+        }//else case is a problem and we should handle it... return?
 
         int pointId = translationPoint->getPointID();
         string upperPointName = pointName;
@@ -220,7 +249,6 @@ void CtiFDR_ValmetMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPo
         CtiValmetPortId valmetPortId;
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
-        valmetPortId.ServerName = pointDestination.getDestination();
 
         if (!recvList)
         {
@@ -259,6 +287,30 @@ CtiFDRClientServerConnection* CtiFDR_ValmetMulti::createNewConnection(SOCKET new
     sendAllPoints(newConnection);
 
     return newConnection;
+}
+
+
+CtiFDRClientServerConnection* CtiFDR_ValmetMulti::findConnectionForDestination(const CtiFDRDestination destination) const
+{
+    // Port match needs to happen for ValmetMulti.
+    int destPort = atoi(destination.getTranslationValue("Port").c_str());
+
+    // Because new connections are put on the end of the list,
+    // we want to search the list backwards so that we find
+    // the newest connection that matches the destination.
+    // Any prior connections are assumed to be a failed connection and the newest the reconnection.
+    // IF we have 2 computers connecting at the same port, we WILL starve the older connections.
+    ConnectionList::const_reverse_iterator myIter;
+
+    for (myIter = _connectionList.rbegin(); myIter != _connectionList.rend(); ++myIter)
+    {
+        if ((*myIter)->getPortNumber() == destPort)
+        {
+            return (*myIter);
+        }
+    }
+
+    return NULL;
 }
 
 bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& destination,

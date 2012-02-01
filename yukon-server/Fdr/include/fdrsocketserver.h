@@ -51,11 +51,20 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int  getLinkTimeout() const;
         void setLinkTimeout(const int linkTimeout);
 
+        void setSingleListeningPort(const unsigned short singleListeningPort);
+
         typedef std::list<CtiFDRClientServerConnection*> ConnectionList;
+
+        void startMultiListeners(std::set<int> ports);
+        void stopAllListeners();
+
+        virtual CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
+
+
 
     protected:
         void clearFailedLayers();
-        SOCKET createBoundListener();
+        SOCKET createBoundListener(unsigned short listeningPort);
 
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection) = 0;
 
@@ -70,24 +79,25 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
                                                char** buffer,
                                                unsigned int& bufferSize) = 0;
 
+        ConnectionList  _connectionList;
     private:
         bool loadList(std::string& aDirection,  CtiFDRPointList& aList);
 
-        RWThreadFunction  _threadConnection;
-        void threadFunctionConnection(void);
+        std::list<RWThreadFunction> _threadConnections;
+        void threadFunctionConnection(unsigned short listeningPort);
 
         RWThreadFunction  _threadHeartbeat;
         void threadFunctionSendHeartbeat(void);
 
-        ConnectionList  _connectionList;
-        CtiMutex _connectionListMutex;
-        CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
 
-        SOCKET _listenerSocket;
+        CtiMutex _connectionListMutex;
+
         unsigned short _portNumber;
         int _pointTimeVariation;
         int _timestampReasonabilityWindow;
         int _linkTimeout;
+
+        bool _singleListeningPort;
 
         std::string direction;
         HANDLE _shutdownEvent;

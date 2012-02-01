@@ -35,12 +35,12 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 // Constructors, Destructor, and Operators
 CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
     CtiFDRInterface(name),
-    _listenerSocket(NULL),
     _portNumber(0),
     _pointTimeVariation(0),
     _timestampReasonabilityWindow(0),
     _linkTimeout(0),
-    _shutdownEvent(0)
+    _shutdownEvent(0),
+    _singleListeningPort(true)
 {
     // init these lists so they have something
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
@@ -96,16 +96,9 @@ BOOL CtiFDRSocketServer::init( void )
         return FALSE;
     }
 
-    // start up the socket layer
-
-    _threadConnection = rwMakeThreadFunction(*this,
-                                            &CtiFDRSocketServer::threadFunctionConnection);
-
-    _threadHeartbeat = rwMakeThreadFunction(*this,
-                                            &CtiFDRSocketServer::threadFunctionSendHeartbeat);
+    _threadHeartbeat = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionSendHeartbeat);
 
     _shutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
 
     return TRUE;
 }
@@ -121,8 +114,25 @@ BOOL CtiFDRSocketServer::run( void )
     // because the class wasn't fully constructed.)
     loadTranslationLists();
 
-    // startup our interfaces
-    _threadConnection.start();
+    // start up the socket layer
+    if (_singleListeningPort)
+    {
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Configured to run on a single port: " << getPortNumber() << endl;
+        }
+        RWThreadFunction thr = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber());
+        thr.start();
+        //_threadConnections.push_back(thr);
+    } else { //Else this will be fired up later by the extending classes
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Configured to run on multiple ports. Handled in extending code" << endl;
+        }
+    }
+
     _threadHeartbeat.start();
 
     // log this now so we dont' have to everytime one comes in
@@ -138,14 +148,11 @@ BOOL CtiFDRSocketServer::run( void )
 
 BOOL CtiFDRSocketServer::stop( void )
 {
-    closesocket(_listenerSocket);
     SetEvent(_shutdownEvent);
-    _threadConnection.requestCancellation();
     _threadHeartbeat.requestCancellation();
-
-    _threadConnection.join();
     _threadHeartbeat.join();
 
+    stopAllListeners();
 
     // iterate through connections, shutting each one down.
     CtiLockGuard<CtiMutex> guard(_connectionListMutex);
@@ -153,13 +160,27 @@ BOOL CtiFDRSocketServer::stop( void )
          myIter != _connectionList.end();
          ++myIter) {
         (*myIter)->stop();
-
     }
 
     // stop the base class
     CtiFDRInterface::stop();
 
     return TRUE;
+}
+
+void CtiFDRSocketServer::startMultiListeners(std::set<int> ports)
+{
+    for each (int port in ports)
+    {
+        RWThreadFunction thr1 = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, port);
+        thr1.start();
+        //_threadConnections.push_back(thr1);
+    }
+}
+
+void CtiFDRSocketServer::stopAllListeners()
+{
+    //Placeholder to loop and stop all listeners once I figure out how to store them in a list.
 }
 
 bool CtiFDRSocketServer::loadTranslationLists()
@@ -341,29 +362,30 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
     }
 }
 
-void CtiFDRSocketServer::threadFunctionConnection( void )
+void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
+    SOCKET listenerSocket;
 
     try {
+
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL) {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "threadFunctionConnection initializing" << endl;
         }
         while (true) {
 
-            _listenerSocket = createBoundListener();
-            if (_listenerSocket == NULL) {
+            listenerSocket = createBoundListener(listeningPort);
+            if (listenerSocket == NULL) {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Failed to open listener socket"
-                       << endl;
+                    logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
                 }
             } else {
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Listening for connection on port " << getPortNumber() << endl;
+                    logNow() << "Listening for connection on port " << listeningPort << endl;
                 }
 
                 while (true) {
@@ -371,7 +393,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                     SOCKADDR_IN returnAddr;
                     int returnLength = sizeof (returnAddr);
                     SOCKET tmpConnection = NULL;
-                    tmpConnection = accept(_listenerSocket,
+                    tmpConnection = accept(listenerSocket,
                                            (struct sockaddr *) &returnAddr,
                                            &returnLength);
                     // when this thread is to be shutdown, requestCancellation()
@@ -422,8 +444,6 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                     }
                 } // accept loop
 
-                closesocket(_listenerSocket);
-
             } // else listener != null
             // If we get here, we probably weren't asked to shutdown, but encountered
             // an error (almost certainly network related). Double check the shutdown
@@ -447,13 +467,15 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
         logNow() << "Fatal Error: CtiFDRSocketServer::threadFunctionConnection is dead!" << endl;
     }
 
+    closesocket(listenerSocket);
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "threadFunctionConnection shutdown" << endl;
     }
 }
 
-SOCKET CtiFDRSocketServer::createBoundListener() {
+SOCKET CtiFDRSocketServer::createBoundListener(unsigned short listeningPort) {
 
     SOCKET listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (listener == INVALID_SOCKET) {
@@ -489,7 +511,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
     sockaddr_in socketAddr;
     socketAddr.sin_family = AF_INET;
     socketAddr.sin_addr.s_addr = INADDR_ANY; // allow connections from any interface
-    socketAddr.sin_port = htons(getPortNumber());
+    socketAddr.sin_port = htons(listeningPort);
 
     int bindresult = bind(listener, (SOCKADDR*)&socketAddr, sizeof(socketAddr));
     if (bindresult == SOCKET_ERROR) {
@@ -537,8 +559,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << "Control point " << *point
-                    << " was not sent because a database reload triggered the send" << endl;
+                logNow() << "Control point " << *point << " was not sent because a database reload triggered the send" << endl;
             }
             continue;
         }
@@ -564,9 +585,10 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             // IP differentiated only by port number, so we need to check if this port
             // is correct before sending out all the points.
             int portNum = atoi(dest.getTranslationValue("Port").c_str());
-            bool portValid = !portNum || portNum == connection->getPortNumber();
+            //bool portValid = !portNum || portNum == connection->getPortNumber();
+            bool portValid = portNum == connection->getPortNumber();
 
-            if (destination == connection->getName() && portValid)
+            if (portValid)
             {
                 if (!connection->isRegistered()) {
                     continue;
@@ -710,19 +732,15 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
 
 CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(const CtiFDRDestination destination) const
 {
-    // Port match needs to happen for ValmetMulti.
-    int destPort = atoi(destination.getTranslationValue("Port").c_str());
-
     // Because new connections are put on the end of the list,
     // we want to search the list backwards so that we find
     // the newest connection that matches the destination
     // (eventually the older connections will timeout, but
     // that could take a while).
     ConnectionList::const_reverse_iterator myIter;
-    for (myIter = _connectionList.rbegin(); myIter != _connectionList.rend(); ++myIter) 
+    for (myIter = _connectionList.rbegin(); myIter != _connectionList.rend(); ++myIter)
     {
-        bool portValid = !destPort || destPort == (*myIter)->getPortNumber();
-        if ((*myIter)->getName() == destination.getDestination() && portValid) 
+        if ((*myIter)->getName() == destination.getDestination())
         {
             return (*myIter);
         }
@@ -770,3 +788,7 @@ void CtiFDRSocketServer::setLinkTimeout(const int linkTimeout)
     _linkTimeout = linkTimeout;
 }
 
+void CtiFDRSocketServer::setSingleListeningPort(const unsigned short singleListeningPort)
+{
+    _singleListeningPort = singleListeningPort;
+}

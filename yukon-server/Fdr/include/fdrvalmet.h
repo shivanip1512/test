@@ -39,7 +39,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         static const CHAR * KEY_TIMESYNC_VARIATION;
         static const CHAR * KEY_LINK_TIMEOUT;
         static const CHAR * KEY_SCAN_DEVICE_POINTNAME;
-        static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME; 
+        static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME;
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);

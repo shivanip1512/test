@@ -83,7 +83,7 @@ enum {  Valmet_Invalid = 0,
         Valmet_Closed=2,
         Valmet_Indeterminate=3};
 
-typedef ValmetInterface<16> ValmetInterface_t;
+typedef ValmetInterface<32> ValmetInterface_t;
 typedef ValmetInterface<32> ValmetExtendedInterface_t;
 
 
