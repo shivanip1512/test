@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -24,6 +25,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -54,7 +56,7 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
     private final static MessageSourceResolvable unansweredReason =
         new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
 
-    protected Iterable<Integer> getAuthorizedPrograms() {
+    protected Set<Integer> getAuthorizedPrograms() {
         Iterable<PaoIdentifier> paos;
         if (programIds == null || programIds.isEmpty()) {
             paos = programDao.getAllProgramPaoIdentifiers();
@@ -66,7 +68,7 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
                         Permission.LM_VISIBLE);
 
         Iterable<Integer> programIdsToUse = Iterables.transform(paos, PaoUtils.getYukonPaoToPaoIdFunction());
-        return programIdsToUse;
+        return ImmutableSet.copyOf(programIdsToUse);
     }
 
     @Override

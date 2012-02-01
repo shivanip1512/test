@@ -72,8 +72,8 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
             startDate = new Instant(0);
         }
 
-        boolean reportIsFiltered = programIds != null && !programIds.isEmpty();
-        Set<Integer> programIdsToUse = Sets.newHashSet(getAuthorizedPrograms());
+        boolean filteringByProgram = programIds != null && !programIds.isEmpty();
+        Set<Integer> programIdsToUse = getAuthorizedPrograms();
 
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
@@ -133,8 +133,6 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
                         // The LM program is visible to this user.
                         programsControlledDuringOptOut.add(hist);
                     }
-                } else {
-                    // There was no history or this LM program is not visible to this user.
                 }
             }
             
@@ -150,23 +148,15 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
             } else {
                 // The programsControlledDuringOptOut list can be empty for two reasons:
                 //   a) There was no relevant control.
-                //   b) There was control but not for any programs we care about/are allowed to see.  
-
-                if (reportIsFiltered) {
-                    // Don't show, there is user-selected filtering and no control history for this result.
-                    continue;
-                } else {
-                    if (!programControlHistoryExists) {
-                        // a) Add 'No control', there is no relevant control for this result & no user-selected filtering.
-                        ModelRow programRow = buildRowBasis(baseKey, result, hardwareSummariesById,
-                                accountsByAccountId);
-                        programRow.loadProgram =  noControlDuringOptOut;
-                        programRow.gear = "";
-                        data.add(programRow);
-                    } else {
-                        // b) Skip this row, user does not have permission to view this result.
-                        continue;
-                    }
+                //   b) There was control but not for any programs we care about/are allowed to see.
+                // So, we need to add a "no control" row if there was indeed no control and we are
+                // not filtering by program.
+                if (!filteringByProgram && !programControlHistoryExists) {
+                    ModelRow programRow = buildRowBasis(baseKey, result, hardwareSummariesById,
+                            accountsByAccountId);
+                    programRow.loadProgram =  noControlDuringOptOut;
+                    programRow.gear = "";
+                    data.add(programRow);
                 }
             }
         }

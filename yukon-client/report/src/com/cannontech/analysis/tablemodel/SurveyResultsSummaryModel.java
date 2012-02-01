@@ -90,7 +90,7 @@ public class SurveyResultsSummaryModel extends SurveyResultsModelBase<SurveyResu
             startDate = new Instant(0);
         }
 
-        Set<Integer> programIdsToUse = Sets.newHashSet(getAuthorizedPrograms());
+        Set<Integer> programIdsToUse = getAuthorizedPrograms();
         
         Multimap<SurveyResult, Integer> assignedProgramIdsBySurveyResult = ArrayListMultimap.create();
         Map<Integer, List<ProgramEnrollment>> enrollmentsBySurveyResultId = Maps.newHashMap();

@@ -7,7 +7,7 @@ public class SurveyResultsDetailReportLayoutData implements ReportLayoutData {
         new ColumnLayoutData[] {
             new ColumnLayoutData("Account Num", "accountNumber", 70),
             new ColumnLayoutData("Serial Num", "serialNumber", 70),
-            new ColumnLayoutData("Alt Tracking Num", "altTrackingNumber", 90),
+            new ColumnLayoutData("Alt Tracking Num", "altTrackingNumber", 70),
             new ColumnLayoutData("Reason", "reason", 100),
             new ColumnLayoutData("Scheduled Date", "scheduledDate", 85, "DATEHM"),
             new ColumnLayoutData("Start Date", "startDate", 85, "DATEHM"),
