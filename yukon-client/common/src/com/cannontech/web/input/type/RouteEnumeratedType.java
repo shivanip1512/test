@@ -23,8 +23,8 @@ public class RouteEnumeratedType extends BaseEnumeratedType<String> {
     public List<InputOptionProvider> getOptionList() {
 
         // re-get available routes
-        optionList = Lists.newArrayList();
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
+        optionList = Lists.newArrayListWithCapacity(routes.length);
         for (LiteYukonPAObject route : routes) {
             
             String routeName = route.getPaoName();
