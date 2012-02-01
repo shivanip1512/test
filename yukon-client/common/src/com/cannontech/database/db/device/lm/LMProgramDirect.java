@@ -11,7 +11,7 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	private Integer deviceID = null;
 	private Integer notifyActiveOffset = new Integer(-1);
 	private Integer notifyInactiveOffset = new Integer(-1);
-	private Integer notifyAdjust = new Integer(-1);
+	private Integer notifyAdjust = NOTIFY_ADJUST_DISABLED;
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
@@ -27,6 +27,9 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
 
 	public static final String TABLE_NAME = "LMProgramDirect";
+	
+    public static final Integer NOTIFY_ADJUST_ENABLED = 1;
+	public static final Integer NOTIFY_ADJUST_DISABLED = -1;
 
 /**
  * LMGroupVersacomSerial constructor comment.

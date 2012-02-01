@@ -11,6 +11,7 @@ import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.lm.LMProgramDirect;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
@@ -32,9 +33,6 @@ public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gu
 	private javax.swing.JCheckBox jCheckBoxEnableStop = null;
 	private javax.swing.JCheckBox jCheckBoxNotifyAdjust = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
-	
-	private static final Integer NOTIFY_ADJUST_ENABLED = 1;
-	private static final Integer NOTIFY_ADJUST_DISABLED = -1;
 	
 	class IvjEventHandler implements javax.swing.event.CaretListener, java.awt.event.ActionListener 
 	{
@@ -194,9 +192,9 @@ public Object getValue(Object o)
 		program.getDirectProgram().setNotifyInactiveOffset(new Integer(-1));
 
 	if (getJCheckBoxNotifyAdjust().isSelected()) {                                 
-        program.getDirectProgram().setNotifyAdjust(NOTIFY_ADJUST_ENABLED);           // The values of these class defined variables have been  
+        program.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_ENABLED);           // The values of these class defined variables have been  
 	} else {                                                                         // chosen so that the data written to the database is  
-        program.getDirectProgram().setNotifyAdjust(NOTIFY_ADJUST_DISABLED);          // consistent with the format of the other Notify columns.  
+        program.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);          // consistent with the format of the other Notify columns.  
 	}
 
     // Create Status point
@@ -541,11 +539,11 @@ public void setValue(Object o)
 	if(numStop.intValue() != -1)
 		getJTextFieldNotifyInactiveOffset().setText( new Integer(program.getDirectProgram().getNotifyInactiveOffset().intValue() / 60).toString() );
 	
-	if (program.getDirectProgram().getNotifyAdjust() == NOTIFY_ADJUST_ENABLED.intValue()) {
+	if (program.getDirectProgram().getNotifyAdjust() == LMProgramDirect.NOTIFY_ADJUST_ENABLED.intValue()) {
 	    getJCheckBoxNotifyAdjust().setSelected(true);
 	    getJLabelNotifyAdjust().setEnabled(true);
 	}
-	if (program.getDirectProgram().getNotifyAdjust() == NOTIFY_ADJUST_DISABLED.intValue()) {
+	if (program.getDirectProgram().getNotifyAdjust() == LMProgramDirect.NOTIFY_ADJUST_DISABLED.intValue()) {
 	    getJCheckBoxNotifyAdjust().setSelected(false);
 	    getJLabelNotifyAdjust().setEnabled(false);
 	}
