@@ -75,24 +75,27 @@ public class ThermostatManualController extends AbstractThermostatController {
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         map.addAttribute("thermostat", thermostat);
 
-        ThermostatManualEvent event;
         if (thermostatIds.size() == 1) {
             // single thermostat selected
-            int thermostatId = thermostatIds.get(0);
-
             YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.label",
                                                                                        thermostat.getLabel());
             map.addAttribute("thermostatLabel", resolvable);
-
-            event = customerEventDao.getLastManualEvent(thermostatId);
         } else {
             // multiple thermostats selected
             YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.multipleLabel");
             map.addAttribute("thermostatLabel", resolvable);
-
+        }
+        
+        ThermostatManualEvent event = null;
+        for (Integer thermostatId : thermostatIds) {
+            event = customerEventDao.getLastManualEvent(thermostatId);
+            if (event.getEventId() != null) {
+                break;
+            }
+        }
+        if (event == null || event.getEventId() == null) {
             event = new ThermostatManualEvent();
         }
-
         map.addAttribute("event", event);
         
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getLastNEventsByThermostatIds(thermostatIds, NUMBER_OF_HISTORY_ROWS_TO_DISPLAY);
