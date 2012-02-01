@@ -90,7 +90,7 @@ public class OperatorThermostatManualController {
                 break;
             }
         }
-        if (event != null && event.getEventId() == null) {
+        if (event == null || event.getEventId() == null) {
             event = new ThermostatManualEvent();
         }
         modelMap.addAttribute("event", event);
