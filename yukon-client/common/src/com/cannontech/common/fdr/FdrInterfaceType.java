@@ -228,7 +228,6 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
             }),
     VALMETMULTI(29, new FdrInterfaceOption[] {
                 FdrInterfaceOption.VALMETMULTI_POINT,
-                FdrInterfaceOption.VALMETMULTI_DESTINATION_SOURCE,
                 FdrInterfaceOption.VALMETMULTI_PORT
             },
             new FdrDirection[] {

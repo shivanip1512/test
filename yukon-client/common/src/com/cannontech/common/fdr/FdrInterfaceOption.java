@@ -64,7 +64,6 @@ public enum FdrInterfaceOption {
     DNPSLAVE_DESTINATION_SOURCE("Destination/Source", FdrOptionType.TEXT, true, null),
     DNPSLAVE_MULTIPLIER("Multiplier", FdrOptionType.TEXT, false, new String[]{"1.0"}),
     VALMETMULTI_POINT("Point", FdrOptionType.TEXT, false, null),
-    VALMETMULTI_DESTINATION_SOURCE("Destination/Source", FdrOptionType.TEXT, true, null),
     VALMETMULTI_PORT("Port", FdrOptionType.TEXT, false, null);
     
     private final String optionLabel;
