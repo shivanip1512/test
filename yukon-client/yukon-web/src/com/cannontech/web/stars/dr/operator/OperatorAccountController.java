@@ -522,7 +522,9 @@ public class OperatorAccountController {
         accountGeneral.setAccountDto(accountDto);
         accountGeneral.setOperatorGeneralUiExtras(operatorGeneralUiExtras);
         accountGeneral.setLoginBackingBean(loginBackingBean);
-        model.addAttribute("passwordBean", loginBackingBean);
+        if(!StringUtils.isEmpty(loginBackingBean.getUsername())){
+            model.addAttribute("passwordBean", loginBackingBean);
+        }
 
         model.addAttribute("accountGeneral", accountGeneral);
 	}

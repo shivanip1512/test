@@ -315,13 +315,13 @@
                             </cti:checkRolesAndProperties>
                             
                             <%-- The corresponding dialog (which contains a form) is at the end of the page.
-                            this was done to avoid the confusion of an appearent nested form.  jQuery UI
-                            (as of 1.8.16) will remove the specified element from the dom create a new element
-                            that represents the dialog at the end of the DOM and put the specifed element inside
+                            this was done to avoid the confusion of an apparent nested form.  jQuery UI
+                            (as of 1.8.16) will remove the specified element from the DOM create a new element
+                            that represents the dialog at the end of the DOM and put the specified element inside
                             thus avoiding a nested form, but we are not guaranteed this to be true in the future.  --%>
                             <cti:displayForPageEditModes modes="EDIT">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                                    <c:if test="${supportsPasswordSet}">
+                                    <c:if test="${supportsPasswordSet and not empty passwordBean}">
                                         <tags:nameValue2 nameKey=".password">
                                             <small><a href="javascript:void(0);" class="f_editPassword f_resetPasswordDialog"><i:inline key=".changePassword" /></a></small>
                                         </tags:nameValue2>
@@ -329,9 +329,9 @@
                                 </cti:checkRolesAndProperties>
                             </cti:displayForPageEditModes>
 
-                            <cti:displayForPageEditModes modes="CREATE">
+                            <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                                    <c:if test="${supportsPasswordSet}">
+                                    <c:if test="${supportsPasswordSet and empty passwordBean}">
                                         <tags:nameValue2 nameKey=".newPassword">
                                             <tags:password path="loginBackingBean.password1" autocomplete="false"/>
                                         </tags:nameValue2>
@@ -396,7 +396,7 @@
     <!-- Password Fields -->
     <cti:displayForPageEditModes modes="EDIT">
         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-            <c:if test="${supportsPasswordSet}">
+            <c:if test="${supportsPasswordSet and not empty passwordBean}">
                 <dialog:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f_editPassword" nameKey="passwordDialog">
                     <form:form id="updatePasswordForm" commandName="passwordBean" action="/spring/stars/operator/account/updatePassword">
                         <input type="hidden" name="accountId" value="${accountId}">
