@@ -134,11 +134,6 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 					cbcData.setAltInterval(Integer.decode(line[altColumn]));
 				}
 				
-				Integer scanEnabledColumn = headerColumnMap.get(CapControlImporterCbcCsvField.SCAN_ENABLED);
-				if (scanEnabledColumn != null && !StringUtils.isBlank(line[scanEnabledColumn])) {
-					cbcData.setScanEnabled(line[scanEnabledColumn]);
-				}
-				
 				return cbcData;
 			} else {
 			    // They gave us a valid PaoType, only it wasn't a valid CBC type. Yell!

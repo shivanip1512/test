@@ -9,7 +9,6 @@ public class CbcImportData {
 	private final PaoType cbcType;
 	private String capBankName;
 	private final String commChannel;
-	private String scanEnabled; // Unused
 	private final int cbcSerialNumber;
 	private final int masterAddress;
 	private final int slaveAddress;
@@ -100,14 +99,6 @@ public class CbcImportData {
 	
 	public boolean isTemplate() {
 		return templateName != null;
-	}
-
-	public String getScanEnabled() {
-		return scanEnabled;
-	}
-
-	public void setScanEnabled(String scanEnabled) {
-		this.scanEnabled = scanEnabled;
 	}
 
     public void setScanInterval(Integer scanInterval) {

@@ -373,11 +373,6 @@ public class CapControlImportRequestEndpoint {
 			cbcImportData.setCapBankName(capBankName);
 		}
 		
-		String scanEnabled = cbcTemplate.evaluateAsString("y:scanEnabled");
-		if (scanEnabled != null) {
-			cbcImportData.setScanEnabled(scanEnabled);
-		}
-		
 		Integer scanInterval = cbcTemplate.evaluateAsInt("y:scanInterval");
 		if (scanInterval != null) {
 			cbcImportData.setScanInterval(scanInterval);
