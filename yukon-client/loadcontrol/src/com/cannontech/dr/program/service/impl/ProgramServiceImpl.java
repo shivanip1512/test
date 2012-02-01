@@ -427,7 +427,16 @@ public class ProgramServiceImpl implements ProgramService {
         }
         
     }
-
+    
+    @Override
+    public void disableAndSupressRestoration(int programId) {
+        Message msg = new LMCommand(LMCommand.EMERGENCY_DISABLE_PROGRAM, programId, 0, 0.0);
+        loadControlClientConnection.write(msg);
+        
+        DisplayablePao program = getProgram(programId);
+        demandResponseEventLogService.programDisabled(program.getName());
+    }
+    
     @Autowired
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;

@@ -70,6 +70,25 @@
                                                                labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
                                 <br>
                                 
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="scenarioId" value="${scenarioId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.scenarioDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="scenarioId" value="${scenarioId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.scenarioDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.scenarioDetail.actions.disablePrograms"/>
+                                <br>
+                                
                             </tags:dynamicChooseOption>
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>

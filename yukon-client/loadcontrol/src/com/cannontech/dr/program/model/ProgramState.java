@@ -2,11 +2,12 @@ package com.cannontech.dr.program.model;
 
 import java.util.Map;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum ProgramState {
+public enum ProgramState implements DisplayableEnum{
     ACTIVE(LMProgramBase.STATUS_FULL_ACTIVE),
     PARTIALLY_ACTIVE(LMProgramBase.STATUS_ACTIVE),
     INACTIVE(LMProgramBase.STATUS_INACTIVE),
@@ -18,7 +19,8 @@ public enum ProgramState {
     STOPPING(LMProgramBase.STATUS_STOPPING),
     NON_CONTROL(LMProgramBase.STATUS_NON_CNTRL),
     ;
-
+    
+    private final String keyPrefix = "yukon.web.modules.dr.program.value.STATE.";
     private int programStateId;
 
     private ProgramState(int programStateId) {
@@ -36,5 +38,10 @@ public enum ProgramState {
 
     public static ProgramState valueOf(int stateId) {
         return lookupByLegacyId.get(stateId);
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return keyPrefix + name();
     }
 }

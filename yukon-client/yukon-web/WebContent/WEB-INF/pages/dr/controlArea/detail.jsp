@@ -138,6 +138,16 @@
                                 </span>
                                 <br>
                                 <span class="disabledAction" title="${disabledMessage}">
+                                	<cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.disabled"/>
+                                	<cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                	<cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.disabled"/>
+                                	<cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                                 </span>
@@ -198,6 +208,24 @@
                                     dialogId="drDialog" actionUrl="${sendDisableUrl}"
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                <br>
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
                                 <br>
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
@@ -276,6 +304,24 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
+                                <br>
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
@@ -353,6 +399,24 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
+                                <br>
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
@@ -427,6 +491,24 @@
                                     dialogId="drDialog" actionUrl="${sendEnableUrl}"
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                <br>
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
                                 <br>
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
@@ -503,6 +585,24 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
+                                <br>
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
@@ -577,6 +677,24 @@
                                     dialogId="drDialog" actionUrl="${sendDisableUrl}"
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                <br>
+                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
+                                <br>
+                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="enable" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
                                 <br>
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>

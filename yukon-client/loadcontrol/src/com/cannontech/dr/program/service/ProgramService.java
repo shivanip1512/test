@@ -84,6 +84,16 @@ public interface ProgramService {
                                     boolean overrideConstraints);
     
     public void changeGear(int programId, int gearNumber);
-
+    
+    /**
+     * Sends an enable or disable program command to the load management service
+     * for the program with the specified id.
+     */
     public void setEnabled(int programId, boolean isEnabled);
+    
+    /**
+     * Sends an emergency disable program command to the load management service
+     * for the program with the specified id.
+     */
+    public void disableAndSupressRestoration(int programId);
 }

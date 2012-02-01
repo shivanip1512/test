@@ -280,6 +280,29 @@
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested">Scenario stop requested.</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopRequested">Control area stop requested.</entry>
 
+<!-- sendEnableDisablePrograms.jsp -->
+<entry key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title">Enable Programs</entry>
+<entry key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.confirmQuestion">Are you sure you want to enable programs in {0}?</entry>
+<entry key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.programSelectTitle">Select Programs to Enable</entry>
+<entry key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.enableAllPrograms">Enable All Programs</entry>
+<entry key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.programsEnabledConfirmation">{0} programs enabled.</entry>
+
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title">Disable Programs</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.confirmQuestion">Are you sure you want to disable programs in {0}?</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.programSelectTitle">Select Programs to Disable</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.programName">Program</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.gears">Current Gear</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.currentState">State</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.disableAllPrograms">Disable All Programs</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.supressRestoration">Suppress Sending Restoration Commands</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.noProgramsSelected">No programs selected.</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.noPrograms.controlArea">No programs in this control area.</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.noPrograms.scenario">No programs in this scenario.</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.invalidParent">No valid scenario or control area id.</entry>
+<entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.programsDisabledConfirmation">{0} programs disabled.</entry>
+
 <!-- getChangeGearValue.jsp -->
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.title">Send Change Gear</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.instructions">Please select the gear to change to for program {0}.</entry>
@@ -400,6 +423,16 @@
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled">/WebConfig/yukon/Icons/control_stop_blue_disabled.png</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.alt">Stop Scenario</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.disablePrograms">Disable Programs</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.disableProgramsIcon">/WebConfig/yukon/Icons/disable.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.disableProgramsIcon.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.disableProgramsIcon.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.disableProgramsIcon.alt">Click to Disable Programs</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.enablePrograms">Enable Programs</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon">/WebConfig/yukon/Icons/enable.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon.alt">Click to Enable Programs</entry>
 
 
 <!-- Control Area List -->
@@ -486,6 +519,16 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled">There are no triggers on this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.alt">Reset Peak</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms">Disable Programs</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon">/WebConfig/yukon/Icons/disable.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.alt">Click to Disable Programs</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms">Enable Programs</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon">/WebConfig/yukon/Icons/enable.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.alt">Click to Enable Programs</entry>
 
 
 <!-- Program List -->
