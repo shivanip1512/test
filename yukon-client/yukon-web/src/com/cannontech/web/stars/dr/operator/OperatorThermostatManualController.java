@@ -61,7 +61,7 @@ public class OperatorThermostatManualController {
 
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		
-        ThermostatManualEvent event;
+        ThermostatManualEvent event = null;
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdsList.get(0));
         
         //The selected thermostats should all be of the same (or at least compatible) types.  The page
@@ -83,7 +83,16 @@ public class OperatorThermostatManualController {
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         String temperatureUnit = customer.getTemperatureUnit();
         modelMap.addAttribute("temperatureUnit", temperatureUnit);
-        event = customerEventDao.getLastManualEvent(inventoryId);
+        
+        for (Integer thermostatId : thermostatIdsList) {
+            event = customerEventDao.getLastManualEvent(thermostatId);
+            if (event.getEventId() != null) {
+                break;
+            }
+        }
+        if (event != null && event.getEventId() == null) {
+            event = new ThermostatManualEvent();
+        }
         modelMap.addAttribute("event", event);
         
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
