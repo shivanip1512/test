@@ -2451,6 +2451,8 @@ void CtiLMControlArea::updateStateFromPrograms()
 
   Updates the start/stop time of all the timed programs in this control
   area based on both program and control area windows
+ 
+  Now also schedules start and stop notifications.
 
   If a manual control was received, this will not override it.
 ----------------------------------------------------------------------------*/
@@ -2481,6 +2483,17 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
             {
                 lm_direct->setDirectStartTime(resultStart);
                 lm_direct->setDirectStopTime(resultStop);
+
+                if( lm_direct->isControlling() )
+                {   // If we are controlling already, we dont want to send another start message. This happens
+                    // when the control window is moved around.
+                    lm_direct->scheduleStopNotificationForTimedControl(resultStop);
+                }
+                else
+                {
+                    lm_direct->scheduleNotificationForTimedControl(resultStart, resultStop);
+                }
+
                 setUpdatedFlag(TRUE);
             }
         }

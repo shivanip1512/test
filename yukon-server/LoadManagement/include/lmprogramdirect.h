@@ -135,8 +135,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     bool terminateGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
 
     void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
+    void scheduleNotificationForTimedControl(const CtiTime& start_time, const CtiTime& stop_time);
     void scheduleStartNotification(const CtiTime& start_time);
     void scheduleStopNotification(const CtiTime& stop_time);
+    void scheduleStopNotificationForTimedControl(const CtiTime& stop_time);
 
     virtual void setLastUser(const std::string& user);
     virtual void setChangeReason(const std::string& reason);

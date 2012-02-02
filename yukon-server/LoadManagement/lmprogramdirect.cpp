@@ -5033,7 +5033,7 @@ bool CtiLMProgramDirect::startTimedProgram(CtiTime currentTime, long secondsFrom
 
     CtiTime startTime = currentTime;
     CtiTime endTime = controlWindow->getAvailableStopTime(); // This is likely wrong, not changing during refactor.
-    if( !getConstraintOverride() && !con_checker.checkManualProgramConstraints(startTime.seconds(), endTime.seconds()) )
+    if( !getConstraintOverride() && !con_checker.checkAutomaticProgramConstraints(startTime.seconds(), endTime.seconds()) )
     {
         if( !_announced_program_constraint_violation )
         {
@@ -6045,6 +6045,18 @@ void CtiLMProgramDirect::scheduleNotification(const CtiTime&  start_time, const 
 }
 
 /**
+ * Sets up the notification of groups given a start (active) and a stop (inactive) time
+ * If this program isn't set to do notifications then this will do nothing. 
+ * Only to be called for timed control. Timed control limits how
+ * stop notifications work. 
+ */
+void CtiLMProgramDirect::scheduleNotificationForTimedControl(const CtiTime&  start_time, const CtiTime& stop_time)
+{
+    scheduleStartNotification(start_time);
+    scheduleStopNotificationForTimedControl(stop_time);
+}
+
+/**
  * Sets up the notification of groups give a start time
  * If this program isn't set to do start (active) notifications then this will do nothing
  */
@@ -6055,12 +6067,16 @@ void CtiLMProgramDirect::scheduleStartNotification(const CtiTime& start_time)
     {
         CtiTime notifyStartTime(start_time);
         notifyStartTime.addSeconds(-1*getNotifyActiveOffset());
-        setNotifyActiveTime(CtiTime(notifyStartTime));
 
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        if( notifyStartTime != getNotifyActiveTime() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;
+            setNotifyActiveTime(notifyStartTime);
+    
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " - " << getPAOName() << " going to notify of start @: " << notifyStartTime.asString() << endl;
+            }
         }
     }
 }
@@ -6082,7 +6098,7 @@ void CtiLMProgramDirect::requestAdjustNotification(const CtiTime& stop_time)
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " - " << " going to notify of adjustment" << endl;
+            dout << CtiTime() << " - " << getPAOName() << " going to notify of adjustment" << endl;
         }
     }
 }
@@ -6098,15 +6114,54 @@ void CtiLMProgramDirect::scheduleStopNotification(const CtiTime& stop_time)
     {
         CtiTime notifyStopTime(stop_time);
         notifyStopTime.addSeconds(getNotifyInactiveOffset());
-        setNotifyInactiveTime(CtiTime(notifyStopTime));
 
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        if( notifyStopTime != getNotifyInactiveTime() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+            setNotifyInactiveTime(notifyStopTime);
+    
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " - " << getPAOName() << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+            }
         }
     }
 }
+
+/** 
+ * Timed version of scheduleStopNotification(). Will not 
+ * schedule a message for after the timed stop. If a stop is set
+ * to go after the expected stop, it will be scheduled for the 
+ * expected stop. 
+ *  
+ * Sets up the notification of groups give a stop time If this 
+ * program isn't set to do stop (inactive) notifications then 
+ * this will do nothing 
+ */
+void CtiLMProgramDirect::scheduleStopNotificationForTimedControl(const CtiTime& stop_time)
+{
+    // -1 indicates we shouldn't notify on inactive
+    if( getNotifyInactiveOffset() != -1 )
+    {
+        CtiTime notifyStopTime(stop_time);
+        if( getNotifyInactiveOffset() < 0 )
+        {
+            notifyStopTime.addSeconds(getNotifyInactiveOffset());
+        }
+
+        if( notifyStopTime != getNotifyInactiveTime() )
+        {
+            setNotifyInactiveTime(notifyStopTime);
+    
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " - " << getPAOName() << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+            }
+        }
+    }
+}
+
 
 bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh)
 {
