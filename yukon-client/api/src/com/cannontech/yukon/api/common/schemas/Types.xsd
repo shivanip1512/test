@@ -81,4 +81,13 @@
                 <xsd:enumeration value="DISABLED_WITHOUT_COMM" />
             </xsd:restriction>
     </xsd:simpleType>
+
+    <xsd:simpleType name="HardwareClass">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SWITCH" />
+            <xsd:enumeration value="THERMOSTAT" />
+            <xsd:enumeration value="METER" />
+            <xsd:enumeration value="GATEWAY" />
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

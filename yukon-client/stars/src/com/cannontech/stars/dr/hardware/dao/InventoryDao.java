@@ -41,6 +41,14 @@ public interface InventoryDao {
     
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId);
     
+    /**
+     * Get a List of specific types of hardware for an account 
+     * @param accountId
+     * @param hardwareTypes
+     * @return
+     */
+    public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId, Set<HardwareType> hardwareTypes);
+    
     public HardwareSummary findHardwareSummaryById(int inventoryId);
 
     /**

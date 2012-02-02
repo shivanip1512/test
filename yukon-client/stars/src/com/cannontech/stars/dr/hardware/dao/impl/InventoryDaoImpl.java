@@ -220,6 +220,25 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId, Set<HardwareType> hardwareTypes) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append(    "lmhb.manufacturerSerialNumber,");
+        sql.append(    "le.yukonDefinitionId hardwareDefinitionId");
+        sql.append("FROM inventoryBase ib");
+        sql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
+        sql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId");
+        sql.append("WHERE ib.accountID").eq(accountId);
+        sql.append(" AND lmhb.LMHardwareTypeID IN ");
+        sql.append(" (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(hardwareTypes).append(")");
+        
+        List<HardwareSummary> hardwareList = yukonJdbcTemplate.query(sql, hardwareSummaryRowMapper);
+        
+        return hardwareList;
+    }
+    
+    @Override
     public HardwareSummary findHardwareSummaryById(int inventoryId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    <xsd:include schemaLocation="./HardwareSummary.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This web service logs a user into their account.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="HardwareSummaryListResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+               <xsd:sequence>
+                    <xsd:element name="hardwareSummaryList">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="hardwareSummary" type="yukon:HardwareSummary" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="failure" type="yukon:Failure" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="hardwareSummaryListResponse" type="yukon:HardwareSummaryListResponse"/>
+
+</xsd:schema>

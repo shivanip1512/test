@@ -117,4 +117,21 @@
         <property name="locationUri" value="/soap/ami" />
         <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
+
+    <bean id="consumer" class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+        <property name="schemaCollection">
+            <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
+                <property name="xsds">
+                    <list>
+                        <value>classpath:com/cannontech/yukon/api/consumer/schemas/AllConsumer.xsd</value>
+                    </list>
+                </property>
+                <property name="inline" value="true" />
+            </bean>
+        </property>
+        <property name="serviceName" value="consumerService" />
+        <property name="portTypeName" value="consumerPort" />
+        <property name="locationUri" value="/soap/consumer" />
+        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
+    </bean>
 </beans>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Web service for obtaining hardware summary for a given account.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="HardwareSummaryListRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="hardwareClass" type="yukon:HardwareClass" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="hardwareSummaryListRequest" type="yukon:HardwareSummaryListRequest"/>
+    
+</xsd:schema>

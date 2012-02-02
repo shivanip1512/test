@@ -29,6 +29,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableSet;
@@ -36,8 +38,9 @@ import com.google.common.collect.ImmutableSet;
 public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private AuthDao authDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
 
-    private static final Class<?> validParameterTypesArray[] = {Element.class, LiteYukonUser.class, YukonUserContext.class};
+    private static final Class<?> validParameterTypesArray[] = {Element.class, LiteYukonUser.class, YukonUserContext.class, CustomerAccount.class};
     private Set<Class<?>> validParameterTypes = ImmutableSet.copyOf(validParameterTypesArray);
 
     protected boolean supportsInternal(MethodEndpoint methodEndpoint) {
@@ -92,6 +95,9 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
                     TimeZone userTimeZone = authDao.getUserTimeZone(yukonUser);
                     YukonUserContext yukonUserContext = new SimpleYukonUserContext(yukonUser, Locale.ENGLISH, userTimeZone, ThemeUtils.getDefaultThemeName());
                     thisArgument = yukonUserContext;
+                } else if(CustomerAccount.class.equals(parameter)){
+                    CustomerAccount customerAccount = getCustomerAccount(messageContext);
+                    thisArgument = customerAccount;
                 }
 
                 if (thisArgument == null) {
@@ -136,5 +142,24 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
             throw new NotFoundException("User " + userName + " is not known");
         }
         return yukonUser;
+    }
+    
+    public CustomerAccount getCustomerAccount(MessageContext messageContext) {
+        QName userQName = new QName(YukonXml.getYukonNamespace().getURI(), "yukonUser");
+        String userName = SoapHeaderElementUtil.findElementValue(messageContext.getRequest(), userQName);
+
+        if (userName == null) {
+            throw new NotAuthorizedException("Service requires username header");
+        }
+        LiteYukonUser yukonUser = yukonUserDao.findUserByUsername(userName);
+        if (yukonUser == null) {
+            throw new NotFoundException("User " + userName + " is not known");
+        }
+        
+        CustomerAccount customerAccount = customerAccountDao.getCustomerAccount(yukonUser);
+        if(customerAccount == null) {
+            throw new NotFoundException("No account associated with " + userName);
+        }
+        return customerAccount;
     }
 }
