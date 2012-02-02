@@ -30,9 +30,9 @@ public class UserLoginRequestEndpoint {
     @Autowired private RolePropertyDao rolePropertyDao;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="userLoginRequest")
-    public Element invoke(Element updateAccountsRequest) throws Exception {
-        XmlVersionUtils.verifyYukonMessageVersion(updateAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(updateAccountsRequest);
+    public Element invoke(Element userLoginRequest) throws Exception {
+        XmlVersionUtils.verifyYukonMessageVersion(userLoginRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(userLoginRequest);
         
         //build response
         Element response = new Element("userLoginResponse", ns);
@@ -48,11 +48,11 @@ public class UserLoginRequestEndpoint {
             response.addContent(XmlUtils.createIntegerElement("sessionTimeoutLength", ns, rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.SESSION_TIMEOUT, user)));
             
         } catch (BadAuthenticationException e) {
-            Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "UserNotAuthenticated", e.getMessage());
+            Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "UserNotAuthenticated", e.getMessage());
             response.addContent(fe);
             return response;
         }  catch (Exception e) {
-            Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "OtherException", e.getMessage());
+            Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "OtherException", e.getMessage());
             response.addContent(fe);
             log.error(e.getMessage(), e);
         }
