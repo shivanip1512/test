@@ -15,14 +15,11 @@ public interface GroupCommandExecutor {
 
 	/**
 	 * Execute a command on a collection of devices.
-	 * Will send standard {@link CommandRequestDevice} requests.
-	 * @param deviceCollection
+     * Will send standard {@link CommandRequestDevice} requests.
 	 * @param commandRequestExecutionType defaults to CommandRequestExecutionType.GROUP_COMMAND if null
 	 * @param callback custom code to be called on command completion
 	 */
-    public String execute(DeviceCollection deviceCollection, String command,
-                          DeviceRequestType commandRequestExecutionType,
-                          SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
+    public String execute(DeviceCollection deviceCollection, String command, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
     /**
      * Execute a command on a collection of devices.
@@ -30,10 +27,11 @@ public interface GroupCommandExecutor {
      * @param commandRequestExecutionType defaults to CommandRequestExecutionType.GROUP_COMMAND if null
      * @param callback custom code to be called on command completion
      */
-    public String execute(DeviceCollection deviceCollection, List<CommandRequestDevice> requests,
+    public String execute(DeviceCollection deviceCollection, String command,
+                          List<CommandRequestDevice> requests,
                           DeviceRequestType commandRequestExecutionType,
                           SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
-    
+
     public List<GroupCommandResult> getCompleted();
     public List<GroupCommandResult> getCompletedByType(DeviceRequestType type);
 
