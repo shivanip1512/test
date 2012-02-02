@@ -19,7 +19,6 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public Temperature getPreviousTemperature() {
         return previousTemperature;
     }
-
     public void setPreviousTemperature(Temperature previousTemperature) {
         this.previousTemperature = previousTemperature;
     }
@@ -27,7 +26,6 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public boolean isHoldTemperature() {
         return holdTemperature;
     }
-
     public void setHoldTemperature(boolean holdTemperature) {
         this.holdTemperature = holdTemperature;
     }
@@ -35,11 +33,9 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public ThermostatMode getMode() {
         return mode;
     }
-
     public void setMode(ThermostatMode mode) {
         this.mode = mode;
     }
-
     public String getModeString() {
         if (mode == null) {
             return "";
@@ -51,11 +47,9 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public ThermostatFanState getFanState() {
         return fanState;
     }
-
     public void setFanState(ThermostatFanState fanState) {
         this.fanState = fanState;
     }
-
     public String getFanStateString() {
         if (fanState == null) {
             return "";
@@ -67,9 +61,7 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public boolean isRunProgram() {
         return runProgram;
     }
-
     public void setRunProgram(boolean runProgram) {
         this.runProgram = runProgram;
     }
-
 }
