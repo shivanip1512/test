@@ -12,5 +12,8 @@
 
     <xsd:include schemaLocation="HardwareSummaryListRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="HardwareSummaryListResponse.xsd"></xsd:include>
+
+    <xsd:include schemaLocation="UserLoginRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="UserLoginResponse.xsd"></xsd:include>
     
 </xsd:schema>

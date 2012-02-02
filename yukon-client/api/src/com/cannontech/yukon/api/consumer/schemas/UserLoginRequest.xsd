@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/CustomerAccount.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            User Login schema to support logging in a user via a proxy.  Accepts a username and password.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="UserLoginRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="username" type="xsd:string"/>
+                    <xsd:element name="password" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="userLoginRequest" type="yukon:UserLoginRequest"/>
+    
+</xsd:schema>
