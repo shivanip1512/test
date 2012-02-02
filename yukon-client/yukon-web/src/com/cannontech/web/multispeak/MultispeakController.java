@@ -69,7 +69,7 @@ public class MultispeakController {
             map.addAttribute("isCreateNew", true);  //flag for altering form fields for create vs edit/view
         } else {
             
-            Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId");
+            Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
             if( vendorId != null) {
                 mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             }
