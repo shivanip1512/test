@@ -122,17 +122,16 @@ BOOL CtiFDRSocketServer::run( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Configured to run on a single port: " << getPortNumber() << endl;
         }
-        RWThreadFunction thr = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber());
-        thr.start();
-        //_threadConnections.push_back(thr);
-    } else { //Else this will be fired up later by the extending classes
-        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Configured to run on multiple ports. Handled in extending code" << endl;
-        }
+        _threadSingleConnection = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber());
+        _threadSingleConnection.start();
+    } 
+    else if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "Configured to run on multiple ports. Handled in extending code" << endl;
     }
 
+    // startup our interfaces
     _threadHeartbeat.start();
 
     // log this now so we dont' have to everytime one comes in
@@ -148,11 +147,26 @@ BOOL CtiFDRSocketServer::run( void )
 
 BOOL CtiFDRSocketServer::stop( void )
 {
+    {
+        CtiLockGuard<CtiMutex> guard(_socketMutex);
+        for (PortSocketMap_itr iter = _socketConnections.begin();
+             iter != _socketConnections.end();
+             iter++)
+        {
+            closesocket(*iter->second);
+        }
+    }
+
     SetEvent(_shutdownEvent);
+
+    if(_singleListeningPort)
+    {
+        _threadSingleConnection.requestCancellation();
+        _threadSingleConnection.join();
+    }
+
     _threadHeartbeat.requestCancellation();
     _threadHeartbeat.join();
-
-    stopAllListeners();
 
     // iterate through connections, shutting each one down.
     CtiLockGuard<CtiMutex> guard(_connectionListMutex);
@@ -166,21 +180,6 @@ BOOL CtiFDRSocketServer::stop( void )
     CtiFDRInterface::stop();
 
     return TRUE;
-}
-
-void CtiFDRSocketServer::startMultiListeners(std::set<int> ports)
-{
-    for each (int port in ports)
-    {
-        RWThreadFunction thr1 = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, port);
-        thr1.start();
-        //_threadConnections.push_back(thr1);
-    }
-}
-
-void CtiFDRSocketServer::stopAllListeners()
-{
-    //Placeholder to loop and stop all listeners once I figure out how to store them in a list.
 }
 
 bool CtiFDRSocketServer::loadTranslationLists()
@@ -374,18 +373,35 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort 
             logNow() << "threadFunctionConnection initializing" << endl;
         }
         while (true) {
+            // We may have gotten to this point because of a socket being closed on 
+            // shutdown. Check to see if we're supposed to be exiting, otherwise 
+            // continue forward and attempt to forge a new connection.
+            pSelf.serviceCancellation( );
+            DWORD waitResult = WaitForSingleObject(_shutdownEvent, 2000);
+            if (waitResult == WAIT_OBJECT_0)
+            {
+                // shutdown event
+                break;
+            }
+            // just in case
+            pSelf.serviceCancellation( );
 
             listenerSocket = createBoundListener(listeningPort);
             if (listenerSocket == NULL) {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
             } else {
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Listening for connection on port " << listeningPort << endl;
+                }
+
+                // Keep track of the socket.
+                {
+                    CtiLockGuard<CtiMutex> guard(_socketMutex);
+                    _socketConnections.erase(listeningPort); // Remove the last guy if we had a bad connection.
+                    _socketConnections.insert(std::make_pair(listeningPort, &listenerSocket));
                 }
 
                 while (true) {
@@ -444,20 +460,9 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort 
                     }
                 } // accept loop
 
-            } // else listener != null
-            // If we get here, we probably weren't asked to shutdown, but encountered
-            // an error (almost certainly network related). Double check the shutdown
-            // then sleep for a bit and then try it all again.
-            pSelf.serviceCancellation( );
-            DWORD waitResult = WaitForSingleObject(_shutdownEvent, 2000);
-            if (waitResult == WAIT_OBJECT_0)
-            {
-                // shutdown event
-                break;
-            }
-            // just in case
-            pSelf.serviceCancellation( );
+                closesocket(listenerSocket);
 
+            } // else listener != null
         } // thread loop
     } catch ( RWCancellation &cancellationMsg ) {
         // fall through
@@ -466,8 +471,6 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Fatal Error: CtiFDRSocketServer::threadFunctionConnection is dead!" << endl;
     }
-
-    closesocket(listenerSocket);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -586,7 +589,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             // is correct before sending out all the points.
             int portNum = atoi(dest.getTranslationValue("Port").c_str());
             //bool portValid = !portNum || portNum == connection->getPortNumber();
-            bool portValid = portNum == connection->getPortNumber();
+            bool portValid = (portNum == connection->getPortNumber());
 
             if (portValid)
             {
@@ -788,7 +791,7 @@ void CtiFDRSocketServer::setLinkTimeout(const int linkTimeout)
     _linkTimeout = linkTimeout;
 }
 
-void CtiFDRSocketServer::setSingleListeningPort(const unsigned short singleListeningPort)
+void CtiFDRSocketServer::setSingleListeningPort(bool singleListeningPort)
 {
     _singleListeningPort = singleListeningPort;
 }

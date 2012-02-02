@@ -88,7 +88,10 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
     private:
 
-        std::set<int> _portsToListen;
+        void startMultiListeners();
+        void stopMultiListeners();
+
+        std::set<int> _listeningPortNumbers;
 
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
         static const CHAR * KEY_TIMESTAMP_WINDOW;
@@ -104,7 +107,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME;
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
-        std::list<RWThreadFunction> listeningConnections;
+
+        std::vector<RWThreadFunction> _listenerThreads;
 
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;

@@ -51,16 +51,9 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int  getLinkTimeout() const;
         void setLinkTimeout(const int linkTimeout);
 
-        void setSingleListeningPort(const unsigned short singleListeningPort);
+        void setSingleListeningPort(bool singleListeningPort);
 
         typedef std::list<CtiFDRClientServerConnection*> ConnectionList;
-
-        void startMultiListeners(std::set<int> ports);
-        void stopAllListeners();
-
-        virtual CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
-
-
 
     protected:
         void clearFailedLayers();
@@ -79,18 +72,26 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
                                                char** buffer,
                                                unsigned int& bufferSize) = 0;
 
+        void threadFunctionConnection(unsigned short listeningPort);
+
         ConnectionList  _connectionList;
+
+        CtiMutex _socketMutex;
+
+        typedef std::map<unsigned short, SOCKET*> PortSocketMap;
+        typedef PortSocketMap::iterator PortSocketMap_itr;
+
+        PortSocketMap _socketConnections;
     private:
         bool loadList(std::string& aDirection,  CtiFDRPointList& aList);
 
-        std::list<RWThreadFunction> _threadConnections;
-        void threadFunctionConnection(unsigned short listeningPort);
+        RWThreadFunction _threadSingleConnection;
 
-        RWThreadFunction  _threadHeartbeat;
+        RWThreadFunction _threadHeartbeat;
         void threadFunctionSendHeartbeat(void);
 
-
         CtiMutex _connectionListMutex;
+        CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
 
         unsigned short _portNumber;
         int _pointTimeVariation;

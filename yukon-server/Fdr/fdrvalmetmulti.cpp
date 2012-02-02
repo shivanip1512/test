@@ -59,7 +59,6 @@ CtiFDR_ValmetMulti::CtiFDR_ValmetMulti()
 : CtiFDRScadaServer(string(FDR_VALMETMULTI)),
     _helper(NULL)
 {
-    //Set to prevent the normal connection thread.
     setSingleListeningPort(false);
     init();
     _helper = new CtiFDRScadaHelper<CtiValmetPortId>(this);
@@ -70,28 +69,47 @@ CtiFDR_ValmetMulti::~CtiFDR_ValmetMulti()
     delete _helper;
 }
 
-
-BOOL CtiFDR_ValmetMulti::run( void )
+BOOL CtiFDR_ValmetMulti::run( void ) 
 {
-
     // load up the base class
     CtiFDRScadaServer::run();
 
-    //Need List of port numbers to listen on.
     //Load a listener on each port
-    CtiFDRSocketServer::startMultiListeners(_portsToListen);
+    startMultiListeners();
 
     return TRUE;
 }
 
 BOOL CtiFDR_ValmetMulti::stop( void )
 {
-    //Stop all listener threads happens in CtiFDRSocketServer
-
     // stop the base class
     CtiFDRScadaServer::stop();
 
+    //Stop all listener threads happens in CtiFDRSocketServer
+    stopMultiListeners();
+
     return TRUE;
+}
+
+void CtiFDR_ValmetMulti::startMultiListeners()
+{
+    for each(int port in _listeningPortNumbers)
+    {
+        RWThreadFunction thr = rwMakeThreadFunction(*(static_cast<CtiFDRSocketServer*>(this)), 
+                                                    &CtiFDR_ValmetMulti::threadFunctionConnection, 
+                                                    port);
+        thr.start();
+        _listenerThreads.push_back(thr);
+    }
+}
+
+void CtiFDR_ValmetMulti::stopMultiListeners()
+{
+    for each(RWThreadFunction thr in _listenerThreads)
+    {
+        thr.requestCancellation();
+        thr.join();
+    }
 }
 
 /*************************************************
@@ -198,10 +216,10 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
 
-        if (valmetPortId.PortNumber != 0)
+        if(valmetPortId.PortNumber != 0)
         {
-            _portsToListen.insert(valmetPortId.PortNumber);
-        }//else case is a problem and we should handle it... return?
+            _listeningPortNumbers.insert(valmetPortId.PortNumber);
+        }
 
         int pointId = translationPoint->getPointID();
         string upperPointName = pointName;
@@ -288,7 +306,6 @@ CtiFDRClientServerConnection* CtiFDR_ValmetMulti::createNewConnection(SOCKET new
 
     return newConnection;
 }
-
 
 CtiFDRClientServerConnection* CtiFDR_ValmetMulti::findConnectionForDestination(const CtiFDRDestination destination) const
 {
