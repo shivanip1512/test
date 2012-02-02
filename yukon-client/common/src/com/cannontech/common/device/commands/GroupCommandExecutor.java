@@ -15,28 +15,24 @@ public interface GroupCommandExecutor {
 
 	/**
 	 * Execute a command on a collection of devices.
-	 * Will send standard CommandRequestDevice requests.
+	 * Will send standard {@link CommandRequestDevice} requests.
 	 * @param deviceCollection
-	 * @param command
 	 * @param commandRequestExecutionType defaults to CommandRequestExecutionType.GROUP_COMMAND if null
 	 * @param callback custom code to be called on command completion
-	 * @param user
-	 * @return
 	 */
-    public String execute(DeviceCollection deviceCollection, String command, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
+    public String execute(DeviceCollection deviceCollection, String command,
+                          DeviceRequestType commandRequestExecutionType,
+                          SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
     /**
      * Execute a command on a collection of devices.
-     * May take custom CommandRequestDevice requests as parameter.
-     * @param deviceCollection
-     * @param command
-     * @param requests
+     * May take custom {@link CommandRequestDevice} requests as parameter.
      * @param commandRequestExecutionType defaults to CommandRequestExecutionType.GROUP_COMMAND if null
      * @param callback custom code to be called on command completion
-     * @param user
-     * @return
      */
-    public String execute(DeviceCollection deviceCollection, String command, List<CommandRequestDevice> requests, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);	
+    public String execute(DeviceCollection deviceCollection, List<CommandRequestDevice> requests,
+                          DeviceRequestType commandRequestExecutionType,
+                          SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
     public List<GroupCommandResult> getCompleted();
     public List<GroupCommandResult> getCompletedByType(DeviceRequestType type);
@@ -47,5 +43,4 @@ public interface GroupCommandExecutor {
     public GroupCommandResult getResult(String id) throws ResultResultExpiredException;
     
     public long cancelExecution(String resultId, LiteYukonUser user) throws ResultResultExpiredException;
-
 }

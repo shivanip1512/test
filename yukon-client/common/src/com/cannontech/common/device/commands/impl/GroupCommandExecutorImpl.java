@@ -65,7 +65,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
 
-    public String execute(DeviceCollection deviceCollection, final String command, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public String execute(DeviceCollection deviceCollection, final String command,
+                          DeviceRequestType commandRequestExecutionType,
+                          SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
         if (commandRequestExecutionType == null) {
             throw new IllegalArgumentException("commandRequestExecutionType cannot be null");
@@ -77,13 +79,17 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             }
         };
         
-    	List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
-    	
-    	return execute(deviceCollection, command, requests, commandRequestExecutionType, callback, user);
+    	List<CommandRequestDevice> requests =
+    	        new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+
+        log.debug("executing " + command + " on the " + requests.size() + " devices in " + deviceCollection);
+
+        return execute(deviceCollection, requests, commandRequestExecutionType, callback, user);
     }
-    
-    public String execute(final DeviceCollection deviceCollection, final String command, List<CommandRequestDevice> requests, DeviceRequestType commandRequestExecutionType, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
-        
+
+    public String execute(final DeviceCollection deviceCollection, List<CommandRequestDevice> requests,
+                          DeviceRequestType commandRequestExecutionType,
+                          final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         if (commandRequestExecutionType == null) {
             throw new IllegalArgumentException("commandRequestExecutionType cannot be null");
         }
@@ -117,7 +123,6 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         };
         
         groupCommandResult.setCommandRequestExecutionType(commandRequestExecutionType);
-        groupCommandResult.setCommand(command);
         groupCommandResult.setResultHolder(commandCompletionCallback);
         groupCommandResult.setDeviceCollection(deviceCollection);
         groupCommandResult.setCallback(commandCompletionCallback);
@@ -133,9 +138,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         
         CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = commandRequestExecutor.execute(requests, commandCompletionCallback, commandRequestExecutionType, user);
         groupCommandResult.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
-        
-        log.debug("executing " + command + " on the " + requests.size() + " devices in " + deviceCollection);
-        
+
         return key;
     }
     
