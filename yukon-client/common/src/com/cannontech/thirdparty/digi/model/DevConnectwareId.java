@@ -12,11 +12,11 @@ public class DevConnectwareId {
     private String devConnectwareId;
     
     //For Validation:
-    private static String regexForMac = "([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}";
-    private static Pattern macPattern = Pattern.compile(regexForMac);
+    final private static String regexForMac = "([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}";
+    final private static Pattern macPattern = Pattern.compile(regexForMac);
     
-    private static String regexForConnectware = "([\\da-fA-F]{8}-){3}[\\da-fA-F]{8}";
-    private static Pattern connectwarePattern = Pattern.compile(regexForConnectware);
+    final private static String regexForConnectware = "([\\da-fA-F]{8}-){3}[\\da-fA-F]{8}";
+    final private static Pattern connectwarePattern = Pattern.compile(regexForConnectware);
     
     /**
      * This is an object to represent a Digi Gateway MAC address.
@@ -26,7 +26,7 @@ public class DevConnectwareId {
      * macAddress is formatted with ':' separating 6 pairs of hex digits
      * devConnectwareId is formatted in 4 sets of 8 hex digits separated by "-"
      * 
-     * throws IllegalDataException if the string is not formatted in either format.
+     * @throws IllegalDataException if the string is not formatted in either format.
      * 
      * @param address
      */

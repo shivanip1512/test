@@ -171,7 +171,7 @@ public class SepMessageListener {
                 StreamMessage streamMessage = (StreamMessage) message;
                 
                 int listSize = streamMessage.readInt();
-                Set<Integer> inventoryIds = Sets.newHashSet(listSize);
+                Set<Integer> inventoryIds = Sets.newHashSet();
                 
                 for (int i = 0; i < listSize; i++) {
                     int inventoryId = streamMessage.readInt();
@@ -179,13 +179,12 @@ public class SepMessageListener {
                 }
 
                 int messageId = streamMessage.readInt();
-                
                 int stringSize = streamMessage.readInt();
-                String messageStr = new String();
                 
+                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < stringSize; i++) {
                     char character = streamMessage.readChar();
-                    messageStr += character;
+                    sb.append(character);
                 }
 
                 boolean confirmationRequired = streamMessage.readBoolean();
@@ -193,12 +192,12 @@ public class SepMessageListener {
                 Duration displayDuration = new Duration(durationInt);
                 
                 long timeSeconds = streamMessage.readLong();
-                Instant startTime = new Instant(timeSeconds);
+                Instant startTime = new Instant(timeSeconds*1000);
                 
                 zigbeeTextMessage = new ZigbeeTextMessage();
                 zigbeeTextMessage.setInventoryIds(inventoryIds);
                 zigbeeTextMessage.setMessageId(messageId);
-                zigbeeTextMessage.setMessage(messageStr);
+                zigbeeTextMessage.setMessage(sb.toString());
                 zigbeeTextMessage.setConfirmationRequired(confirmationRequired);
                 zigbeeTextMessage.setDisplayDuration(displayDuration);
                 zigbeeTextMessage.setStartTime(startTime);
@@ -239,7 +238,7 @@ public class SepMessageListener {
                 int messageId = streamMessage.readInt();
                 
                 int listSize = streamMessage.readInt();
-                Set<Integer> inventoryIds = Sets.newHashSet(listSize);
+                Set<Integer> inventoryIds = Sets.newHashSet();
                 
                 for (int i = 0; i < listSize; i++) {
                     int inventoryId = streamMessage.readInt();
