@@ -14,6 +14,9 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.stars.endpoint.RunThermostatProgramEndpoint;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -24,6 +27,7 @@ public class UserLoginRequestEndpoint {
     private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
     
     @Autowired private AuthenticationService authenticationService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="userLoginRequest")
     public Element invoke(Element updateAccountsRequest) throws Exception {
@@ -39,7 +43,9 @@ public class UserLoginRequestEndpoint {
             String username = requestTemplate.evaluateAsString("//y:username");
             String password = requestTemplate.evaluateAsString("//y:password");
             
-            authenticationService.login(username, password);
+            LiteYukonUser user = authenticationService.login(username, password);
+            //let the callee know how long a session should last
+            response.addContent(XmlUtils.createIntegerElement("sessionTimeoutLength", ns, rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.SESSION_TIMEOUT, user)));
             
         } catch (BadAuthenticationException e) {
             Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "UserNotAuthenticated", e.getMessage());
