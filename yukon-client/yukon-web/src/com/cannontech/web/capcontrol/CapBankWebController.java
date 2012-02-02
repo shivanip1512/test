@@ -94,7 +94,7 @@ public class CapBankWebController {
 		}
 		
 		model.addAttribute("capBankList", bankLocationList);
-		model.addAttribute("areaId", area.getCcId());
+		model.addAttribute("bc_areaId", area.getCcId());
 		model.addAttribute("bc_areaName", area.getCcName());
 		model.addAttribute("substationId", substation.getCcId());
 		model.addAttribute("substationName", substation.getCcName());

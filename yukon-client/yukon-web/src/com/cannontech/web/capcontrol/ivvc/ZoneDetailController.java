@@ -27,7 +27,6 @@ import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.commands.CapControlCommandExecutor;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -43,7 +42,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.DynamicCommand;
 import com.cannontech.message.capcontrol.model.DynamicCommand.DynamicCommandType;
@@ -79,7 +77,6 @@ public class ZoneDetailController {
     private PaoDao paoDao;
     private PointDao pointDao;
     private CapControlCommandExecutor executor;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping
     public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
@@ -157,10 +154,6 @@ public class ZoneDetailController {
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
-        
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        String pageTitle = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.pageTitleText", zoneDto.getName());
-        model.addAttribute("title", pageTitle);
         
         setupZoneDetails(model, cache, zoneDto);
         setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
@@ -373,8 +366,8 @@ public class ZoneDetailController {
         String subBusName = subBus.getCcName();
         String zoneName = zoneDto.getName();
         
-        model.addAttribute("areaId", area.getCcId());
-        model.addAttribute("areaName", areaName);
+        model.addAttribute("bc_areaId", area.getCcId());
+        model.addAttribute("bc_areaName", areaName);
         model.addAttribute("substationId", station.getCcId());
         model.addAttribute("substationName", substationName);
         model.addAttribute("subBusId", subBusId);
@@ -425,11 +418,6 @@ public class ZoneDetailController {
     @Autowired
     public void setCapControlCommandExecutor(CapControlCommandExecutor executor) {
         this.executor = executor;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
     
 }

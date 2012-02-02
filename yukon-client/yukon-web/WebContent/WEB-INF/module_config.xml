@@ -837,6 +837,18 @@
                                     <menu></menu>
                                     <labelArgument>${substationName}</labelArgument>
                                 </page>
+                                <page name="ivvc.busView" type="DETAIL">
+                                    <menu></menu>
+                                    <link>/spring/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
+                                    <labelArgument>${subBusName}</labelArgument>
+                                    <pages>
+		                                <page name="ivvc.zoneDetail" type="DETAIL">
+		                                    <menu></menu>
+											<link>/spring/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+		                                    <labelArgument>${zoneName}</labelArgument>
+		                                </page>
+                                    </pages>
+                                </page>
                             </pages>
                         </page>
                     </pages>

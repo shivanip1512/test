@@ -5,9 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msgScope paths="modules.capcontrol.ivvc.zoneDetail">
-
-<cti:standardPage title="${title}" module="capcontrol">
+<cti:standardPage module="capcontrol" page="ivvc.zoneDetail">
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/dynamicTable.js"/>
@@ -150,42 +148,6 @@
             doItemCommand(paoId, cmdId, event);
         });
     </script>
-
-    
-    <cti:standardMenu/>
-    
-    <cti:url var="substationAddress" value="/spring/capcontrol/tier/substations">
-    	<cti:param name="bc_areaId" value="${areaId}"/>
-    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-    </cti:url>
-    
-	<cti:url var="feederAddress" value="/spring/capcontrol/tier/feeders">
-    	<cti:param name="areaId" value="${areaId}"/>
-    	<cti:param name="substationId" value="${substationId}"/>
-    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-    </cti:url>
-    
-	<cti:url var="ivvcBusViewAddress" value="/spring/capcontrol/ivvc/bus/detail" >
-    	<cti:param name="subBusId" value="${subBusId}"/>
-    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-    </cti:url>
-    
-	<cti:breadCrumbs>
-	    <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home"/>
-		    	<c:choose>
-    		<c:when test="${isSpecialArea}">
-    		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
-    		</c:when>
-    		<c:otherwise>
-    			<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
-    		</c:otherwise>
-    	</c:choose>
-    
-        <cti:crumbLink url="${substationAddress}" title="${areaName}" />
-        <cti:crumbLink url="${feederAddress}" title="${substationName}" />
-		<cti:crumbLink url="${ivvcBusViewAddress}" title="${subBusName}" />
-		<cti:crumbLink title="${zoneName}" />
-	</cti:breadCrumbs>
 
     <c:choose>
         <c:when test="${hasEditingRole}">
@@ -674,5 +636,3 @@
 		</tags:pagedBox>
 	</div>
 </cti:standardPage>
-
-</cti:msgScope>

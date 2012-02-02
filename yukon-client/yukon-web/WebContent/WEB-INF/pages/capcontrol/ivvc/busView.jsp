@@ -5,9 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msgScope paths="modules.capcontrol.ivvc.busView">
-
-<cti:standardPage title="${title}" module="capcontrol" >
+<cti:standardPage module="capcontrol" page="ivvc.busView">
 	
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
@@ -73,36 +71,6 @@
         </script>
     </cti:checkProperty>
 
-    <cti:standardMenu/>
-    
-    <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
-    	<cti:param name="bc_areaId" value="${areaId}"/>
-    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-    </cti:url>
-    
-	<cti:url value="/spring/capcontrol/tier/feeders" var="feederAddress">
-    	<cti:param name="areaId" value="${areaId}"/>
-    	<cti:param name="substationId" value="${substationId}"/>
-    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-    </cti:url>
-    
-	<cti:breadCrumbs>
-	    <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home"/>
-		<c:choose>
-    		<c:when test="${isSpecialArea}">
-    		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
-    		</c:when>
-    		<c:otherwise>
-    			<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
-    		</c:otherwise>
-    	</c:choose>
-    
-        <cti:crumbLink url="${substationAddress}" title="${areaName}" />
-        <cti:crumbLink url="${feederAddress}" title="${substationName}" />
-		
-		<cti:crumbLink title="${subBusName}" />
-	</cti:breadCrumbs>
-	
 	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout">
 	
 		<cti:dataGridCell>
@@ -332,4 +300,3 @@
 	</cti:dataGrid>
 	
 </cti:standardPage>
-</cti:msgScope>

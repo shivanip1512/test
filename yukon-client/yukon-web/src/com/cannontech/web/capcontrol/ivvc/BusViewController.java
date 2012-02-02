@@ -13,7 +13,6 @@ import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -21,7 +20,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.enums.Phase;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
@@ -40,7 +38,6 @@ public class BusViewController {
     private StrategyDao strategyDao;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
     private PointDao pointDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping
     public String detail(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
@@ -112,12 +109,8 @@ public class BusViewController {
         String substationName = station.getCcName();
         String subBusName = subBus.getCcName();
         
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String pageTitle = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.busView.pageTitleText", subBusName);
-        model.addAttribute("title", pageTitle);
-        
-        model.addAttribute("areaId", area.getCcId());
-        model.addAttribute("areaName", areaName);
+        model.addAttribute("bc_areaId", area.getCcId());
+        model.addAttribute("bc_areaName", areaName);
         model.addAttribute("substationId", station.getCcId());
         model.addAttribute("substationName", substationName);
         model.addAttribute("subBusName", subBusName);
@@ -166,10 +159,5 @@ public class BusViewController {
     @Autowired
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
 }
