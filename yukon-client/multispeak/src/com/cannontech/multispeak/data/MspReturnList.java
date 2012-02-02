@@ -3,11 +3,16 @@ package com.cannontech.multispeak.data;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.Logger;
+
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.google.common.collect.Iterables;
 
 public abstract class MspReturnList {
 
+	private final Logger log = YukonLogManager.getLogger(MspReturnList.class);
+	
     private int objectsRemaining = 0;
     private String lastSent = null;
 
@@ -25,27 +30,45 @@ public abstract class MspReturnList {
     }
     
     /**
-     * Helper method to populate lastSent and objectsMemaining from a list of meters.
-     * ObjectsRemaining is -1 when size of meters is >= maxRecords (expectMore) but exact number unknown, else 0.
-     * LastSent is the meterNumber of the last object in meters list.
-     * Note: Expect meters to be an ordered list (by MeterNumber values)
+     * Helper method to populate lastSent and objectsRemaining from a list of objects.
+     * ObjectsRemaining is -1 when size of objects is >= maxRecords (expectMore) but exact number unknown, else 0.
+     * LastSent is the determined by getLastSentObjectId using last in object list.
+     * Note: Expect objects to be an ordered list (by MeterNumber values for example)
      * @param maxRecords
      * @param meters
      */
-    public void setReturnFields(List<Meter> meters, int maxRecords) {
+    public void setReturnFields(List<?> objects, int maxRecords) {
 
         try {
             // Set the lastSet with the last meternumber in meters; meters is ordered by meterNumber
-            Meter lastMeter= Iterables.getLast(meters);
-            setLastSent(lastMeter.getMeterNumber());
+            Object lastObject = Iterables.getLast(objects);
+        	String lastSentObjectId = getLastSentObjectId(lastObject);
+
+            setLastSent(lastSentObjectId);
             
             // Set the objectsRemaining, counting Meters (not elements of the extending class's return List).  
-            int numberRemaining = (meters.size() >= maxRecords ? -1 : 0); 
+            int numberRemaining = (objects.size() >= maxRecords ? -1 : 0); 
             setObjectsRemaining(numberRemaining);
 
         } catch (NoSuchElementException e) {
             // skip...we don't have any lastSent item to report.
             // objectsRemaining will be 0 by default
         }
+    }
+    
+    /**
+     * Helper method to parse specific instance type of lastObject and return a single string value
+     *  representing this object's MultiSpeak identifier. In most cases, this will be meter number or service location.
+     * @param lastObject
+     */
+    private String getLastSentObjectId(Object lastObject) {
+    	if (lastObject instanceof Meter) {
+    		return ((Meter)lastObject).getMeterNumber();
+    	} else if (lastObject instanceof com.cannontech.multispeak.deploy.service.Meter) {
+    		return ((com.cannontech.multispeak.deploy.service.Meter)lastObject).getMeterNo();
+    	} else {
+    		log.error("Object unrecognized for parsing lastSent value. Returning toString of object:" + lastObject.toString());
+    		return lastObject.toString();
+    	}
     }
 }

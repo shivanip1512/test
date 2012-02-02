@@ -70,6 +70,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
             yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
             MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
             mspMeterReturnList.setMeters(mspMeters);
+            mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
             return mspMeterReturnList;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No results found > MeterNumber" + lastReceived + ".");
