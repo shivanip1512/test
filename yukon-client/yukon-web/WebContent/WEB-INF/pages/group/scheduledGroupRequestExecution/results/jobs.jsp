@@ -35,7 +35,7 @@
                     <tags:dateInputCalendar fieldName="toDate" springInput="true" />
                 </tags:nameValue2>
 
-                <tags:nameValue2 nameKey=".executions.tableHeader.enabledStatus">
+                <tags:nameValue2 nameKey=".executions.tableHeader.status.linkText">
                     <label><input type="radio" name="statusFilter" value="ANY"
                         <c:if test="${backingBean.statusFilter == 'ANY'}">checked</c:if>>
                         	<i:inline key=".filter.allWord" />
@@ -87,8 +87,8 @@
 			<th><tags:sortLink nameKey="executions.tableHeader.attributeOrCommand" baseUrl="jobs" fieldName="ATTR_OR_COMM" /></th>
 			<th><tags:sortLink nameKey="executions.tableHeader.scheduleDescription" baseUrl="jobs" fieldName="SCHED_DESC" /></th>
 			<th><tags:sortLink nameKey="executions.tableHeader.nextRun" baseUrl="jobs" fieldName="NEXT_RUN" isDefault="true"/></th>
-			<th><tags:sortLink nameKey="executions.tableHeader.enabledStatus" baseUrl="jobs" fieldName="ENABLED_STATUS" /></th>
-			<th class="enabledStatus"><i:inline key=".executions.tableHeader.enabledStatus"/></th>
+			<th><tags:sortLink nameKey="executions.tableHeader.status" baseUrl="jobs" fieldName="ENABLED_STATUS" /></th>
+			<th class="enabledStatus"><i:inline key=".executions.tableHeader.enabled"/></th>
 		</tr>
 		<c:forEach var="jobWrapper" items="${filterResult.resultList}">
 	    	<c:set var="trClass" value=""/>

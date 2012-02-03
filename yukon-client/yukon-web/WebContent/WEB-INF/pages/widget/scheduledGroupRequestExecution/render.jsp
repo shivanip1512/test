@@ -103,13 +103,18 @@
 </c:otherwise>
 </c:choose>
 
-<c:if test="${numAdditionalJobs != null}">
     <div class="additionalSchedulerJobs fl">
-        <a href="/spring/group/scheduledGroupRequestExecutionResults/jobs">&hellip;
-            <i:inline key=".moreJobs" arguments="${numAdditionalJobs}"/>
+        <a href="/spring/group/scheduledGroupRequestExecutionResults/jobs">
+        	<c:choose>
+				<c:when test="${numAdditionalJobs != null}">
+	            	<i:inline key=".viewDetailsWithAdditional" arguments="${numAdditionalJobs}"/>
+				</c:when>
+				<c:otherwise>
+	            	<i:inline key=".viewDetails" />
+				</c:otherwise>
+        	</c:choose>
         </a>
     </div>
-</c:if>
 
 <c:if test="${canManage}">
 	<div style="text-align:right;padding-top:5px;">
