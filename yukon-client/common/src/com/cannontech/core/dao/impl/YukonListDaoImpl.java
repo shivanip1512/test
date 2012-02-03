@@ -322,7 +322,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
     }
     
     @Override
-    public YukonListEntry getYukonListEntry(int yukonDefinitionId, YukonEnergyCompany ec) {
+    public List<YukonListEntry> getYukonListEntry(int yukonDefinitionId, YukonEnergyCompany ec) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YLE.*");
         sql.append("FROM YukonListEntry YLE"); 
@@ -330,7 +330,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         sql.append("WHERE YLE.YukonDefinitionID").eq(yukonDefinitionId); 
         sql.append(  "AND YSL.EnergyCompanyId").eq(ec.getEnergyCompanyId()); 
 
-        return yukonJdbcTemplate.queryForObject(sql, new YukonListEntryRowMapper());
+        return yukonJdbcTemplate.query(sql, new YukonListEntryRowMapper());
     }
 	
     // Row Mappers

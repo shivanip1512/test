@@ -65,8 +65,9 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
         for (HardwareType hardwareType : zigbeeEndpointTypes) {
             int definitionId = hardwareType.getDefinitionId();
             try {
-                YukonListEntry zigbeeDeviceTypeListEntry = yukonListDao.getYukonListEntry(definitionId, yukonEc);
-                deviceTypeIds.add(zigbeeDeviceTypeListEntry.getEntryID());
+                for (YukonListEntry entry : yukonListDao.getYukonListEntry(definitionId, yukonEc)) {
+                    deviceTypeIds.add(entry.getEntryID());
+                }
             } catch (EmptyResultDataAccessException erdae) {
                 // This just means this energy company isn't using this device type.
             }

@@ -328,11 +328,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             LiteStarsLMHardware lmHardware = (LiteStarsLMHardware)liteInventoryBase;
             
             /* Update Type/Category */
-            YukonListEntry typeEntry = yukonListDao.getYukonListEntry(hardwareType.getDefinitionId(), ec);
+            YukonListEntry typeEntry = yukonListDao.getYukonListEntry(hardware.getHardwareTypeEntryId());
             // The Inventory Category list only exists on the default energy company.
-            YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(hardwareType.getInventoryCategory().getDefinitionId(), starsDatabaseCache.getDefaultEnergyCompany());
+            List<YukonListEntry> categoryEntry = yukonListDao.getYukonListEntry(hardwareType.getInventoryCategory().getDefinitionId(), starsDatabaseCache.getDefaultEnergyCompany());
             lmHardware.setLmHardwareTypeID(typeEntry.getEntryID());
-            lmHardware.setCategoryID(categoryEntry.getEntryID());
+            lmHardware.setCategoryID(categoryEntry.get(0).getEntryID());
             
             /* Update Route */
             lmHardware.setRouteID(hardware.getRouteId());

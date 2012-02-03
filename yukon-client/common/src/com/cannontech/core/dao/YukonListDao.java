@@ -65,7 +65,7 @@ public interface YukonListDao {
     public YukonSelectionList findSelectionListByEnergyCompanyIdAndListName(int energyCompanyId, String listName);
 
     /**
-     * Returns the YukonListEntry for the given yukon definition id and energy company.
+     * Returns the list of YukonListEntry for the given yukon definition id and energy company.
      */
-    public YukonListEntry getYukonListEntry(int yukonDefinitionId, YukonEnergyCompany ec);
+    public List<YukonListEntry> getYukonListEntry(int yukonDefinitionId, YukonEnergyCompany ec);
 }

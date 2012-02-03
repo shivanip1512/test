@@ -1327,11 +1327,6 @@
     	<property name="yukonListDao" ref="yukonListDao"/>
     </bean>
     
-    <bean id="yukonListEntryForDefinitionTagPrototype" class="com.cannontech.web.taglib.YukonListEntryForDefinitionTag">
-    	<property name="yukonListDao" ref="yukonListDao"/>
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-    </bean>
-    
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
         
