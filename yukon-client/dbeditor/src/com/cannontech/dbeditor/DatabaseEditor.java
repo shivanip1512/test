@@ -71,6 +71,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IPCMeter;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -2515,9 +2516,12 @@ public void selectionPerformed(WizardPanelEvent event)
             if (successfullInsertion) {
                 p.postSave(newItem);
             }
-
-			//tell our current tree model to update itself so it can display the newly added item
-			//getTreeViewPanel().refresh();
+            
+            //IPC meters also create a comm channel. Update the tree to pick it up.
+            if(newItem instanceof SmartMultiDBPersistent
+               && ((SmartMultiDBPersistent)newItem).getOwnerDBPersistent() instanceof IPCMeter) {
+                viewMenuRefreshAction();
+            }
 
 			//Bring the editor up for the newly created Object
 			if (successfullInsertion && selectInTree)

@@ -11,6 +11,9 @@ import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.database.data.port.PortFactory;
+import com.cannontech.database.data.port.TerminalServerSharedPort;
 
 
 public final class DeviceFactory {
@@ -123,6 +126,17 @@ public final class DeviceFactory {
             break;
         case TRANSDATA_MARKV:
             returnDevice = new TransdataMarkV();
+            break;
+        case IPC430SL:
+        case IPC430S4:
+        case IPC420AD:
+        case IPC410AL:
+            IPCMeter meter = new IPCMeter();
+            meter.setDeviceType(paoType.getDbString());
+            //set up comm channel
+            TerminalServerSharedPort comms = (TerminalServerSharedPort) PortFactory.createPort(PortTypes.TSERVER_SHARED);
+            meter.setCommChannel(comms);
+            returnDevice = meter;
             break;
         case RFN410FL:
         case RFN410FX:

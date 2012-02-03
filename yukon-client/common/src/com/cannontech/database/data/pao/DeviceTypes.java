@@ -174,7 +174,12 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN420FD = DEVICE_OFFSET + 134;
     public final static int RFN420CL = DEVICE_OFFSET + 135;
     public final static int RFN420CD = DEVICE_OFFSET + 136;
-
+    
+    public final static int IPC430S4 = DEVICE_OFFSET + 137;
+    public final static int IPC430SL = DEVICE_OFFSET + 138;
+    public final static int IPC420AD = DEVICE_OFFSET + 139;
+    public final static int IPC410AL = DEVICE_OFFSET + 140;
+    
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
@@ -298,5 +303,9 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_MCT_420FLD = {"MCT-420FLD"};
     public static final String[] STRING_MCT_420CL = {"MCT-420CL"};
     public static final String[] STRING_MCT_420CLD = {"MCT-420CLD"};
+    public static final String[] STRING_IPC_430S4 = {"IPC-430S4"};
+    public static final String[] STRING_IPC_430SL = {"IPC-430SL"};
+    public static final String[] STRING_IPC_420AD = {"IPC-420AD"};
+    public static final String[] STRING_IPC_410AL = {"IPC-410AL"};
     
 }

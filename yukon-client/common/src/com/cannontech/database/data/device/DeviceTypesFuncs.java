@@ -878,6 +878,10 @@ public final static boolean isMeter(int deviceType)
         case RFN420CD:
         case RFN430A3:
         case RFN430KV:
+        case IPC430SL:
+        case IPC430S4:
+        case IPC420AD:
+        case IPC410AL:
 			return true;
 	
 		default:
@@ -1616,6 +1620,19 @@ public static Object changeType (String newType,
             return PaoType.getForId(deviceType).getPaoClass() == PaoClass.RFMESH;
         } catch (IllegalArgumentException e) {
             // shouldn't happen, but we'll mimic old behavior just in case
+            return false;
+        }
+    }
+    
+    public static boolean isIPC(int deviceType) {
+        switch(deviceType) {
+        case IPC430SL:
+        case IPC430S4:
+        case IPC420AD:
+        case IPC410AL:
+            return true;
+        
+        default:
             return false;
         }
     }

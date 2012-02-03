@@ -4313,6 +4313,37 @@
       	
     </pao>
     
+    <!-- IPC METERS -->
+    <pao id="IPC_METER_BASE" inherits="ELECTRONIC_METER_BASE" abstract="true">
+        <displayGroup>IPC</displayGroup>
+        <points>
+            <point type="Analog" offset="61">
+                <init>true</init>
+                <name>Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+    </pao>
+    
+    <pao id="IPC430S4" inherits="IPC_METER_BASE">
+        <displayName>IPC-430S4</displayName>
+        <changeGroup>ipc</changeGroup>
+    </pao>
+    <pao id="IPC430SL" inherits="IPC_METER_BASE">
+        <displayName>IPC-430SL</displayName>
+        <changeGroup>ipc</changeGroup>
+    </pao>
+    <pao id="IPC420AD" inherits="IPC_METER_BASE">
+        <displayName>IPC-420AD</displayName>
+        <changeGroup>ipc</changeGroup>
+    </pao>
+    <pao id="IPC410AL" inherits="IPC_METER_BASE">
+        <displayName>IPC-410AL</displayName>
+        <changeGroup>ipc</changeGroup>
+    </pao>
+    
     <pao id="ALPHA_PPLUS" inherits="ELECTRONIC_METER_BASE">
         <displayName>ALPHA POWER PLUS</displayName>
         <changeGroup>electronic</changeGroup>

@@ -54,7 +54,12 @@ public enum PaoType implements DatabaseRepresentationSource {
     SIXNET(DeviceTypes.SIXNET, "SIXNET", PaoCategory.DEVICE, PaoClass.METER),
     TRANSDATA_MARKV(DeviceTypes.TRANSDATA_MARKV, "TRANSDATA MARK-V", PaoCategory.DEVICE, PaoClass.METER),
     VECTRON(DeviceTypes.VECTRON, "VECTRON", PaoCategory.DEVICE, PaoClass.METER),
-
+    
+    IPC430S4(DeviceTypes.IPC430S4, "IPC-430S4", PaoCategory.DEVICE, PaoClass.METER),
+    IPC430SL(DeviceTypes.IPC430SL, "IPC-430SL", PaoCategory.DEVICE, PaoClass.METER),
+    IPC420AD(DeviceTypes.IPC420AD, "IPC-420AD", PaoCategory.DEVICE, PaoClass.METER),
+    IPC410AL(DeviceTypes.IPC410AL, "IPC-410AL", PaoCategory.DEVICE, PaoClass.METER),
+    
     DAVISWEATHER(DeviceTypes.DAVISWEATHER, "DAVIS WEATHER", PaoCategory.DEVICE, PaoClass.IED),
 
     DCT_501(DeviceTypes.DCT_501, "DCT-501", PaoCategory.DEVICE, PaoClass.CARRIER),

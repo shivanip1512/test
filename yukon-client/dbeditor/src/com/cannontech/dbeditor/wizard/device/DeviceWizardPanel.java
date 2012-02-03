@@ -29,6 +29,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
     private RfnMeterPanel rfnMeterPanel;
     private DeviceRDSTerminalPanel rdsTerminalPanel;
+    private DeviceTcpTerminalPanel tcpTerminalPanel;
 
 /**
  * DeviceWizardPanel constructor comment.
@@ -58,6 +59,12 @@ public DeviceRDSTerminalPanel getRDSTerminalPanel() {
     return rdsTerminalPanel;
 }
 
+public DeviceTcpTerminalPanel getTcpTerminalPanel() {
+    if(tcpTerminalPanel == null)
+        tcpTerminalPanel = new DeviceTcpTerminalPanel();
+    
+    return tcpTerminalPanel;
+}
 
 /**
  * This method was created in VisualAge.
@@ -395,6 +402,10 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
             getDeviceCommChannelPanel().setFirstFocus();
 			return getDeviceCommChannelPanel();
 		}
+		else if(DeviceTypesFuncs.isIPC(devType)) {
+		    getTcpTerminalPanel().setFirstFocus();
+		    return getTcpTerminalPanel();
+		}
 		else
 			getDeviceCommChannelPanel().setFirstFocus();
             return getDeviceCommChannelPanel();
@@ -466,6 +477,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || (currentPanel == getDeviceBaseNamePanel() && getDeviceTypePanel().getDeviceType() == PAOGroups.VIRTUAL_SYSTEM)
             || currentPanel == getDeviceGridPanel()
             || currentPanel == getRfnMeterPanel()
+            || currentPanel == getTcpTerminalPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
                 (getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700
