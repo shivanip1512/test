@@ -108,6 +108,7 @@ public class RfnMeterEventService {
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
         pointData.setValue(pointValue);
+        pointData.setTagsPointMustArchive(true);
         pointDatas.add(pointData);
     }
 
