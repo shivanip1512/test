@@ -1,6 +1,6 @@
 package com.cannontech.common.pao.pojo;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
@@ -14,10 +14,10 @@ public class CompleteCapBankAdditional {
     private int commStrength = 0;
     private double latitude = 0.0;
     private double longitude = 0.0;
-    private Date lastMaintenanceVisit = CapBankAdditional.getBeginningTime();
-    private Date lastInspection = CapBankAdditional.getBeginningTime();
-    private Date opCountResetDate = CapBankAdditional.getBeginningTime();
-    private Date cbcInstallDate = CapBankAdditional.getBeginningTime();
+    private Instant lastMaintenanceVisit = new Instant(CapBankAdditional.getBeginningTime());
+    private Instant lastInspection = new Instant(CapBankAdditional.getBeginningTime());
+    private Instant opCountResetDate = new Instant(CapBankAdditional.getBeginningTime());
+    private Instant cbcInstallDate = new Instant(CapBankAdditional.getBeginningTime());
     private String capbankConfig = CtiUtilities.STRING_NONE;
     private String commMedium = CtiUtilities.STRING_NONE;
     private String driveDirections = CtiUtilities.STRING_NONE;
@@ -74,38 +74,38 @@ public class CompleteCapBankAdditional {
     }
 
     @YukonPaoField(columnName="LastMaintVisit")
-    public Date getLastMaintenanceVisit() {
+    public Instant getLastMaintenanceVisit() {
         return lastMaintenanceVisit;
     }
 
-    public void setLastMaintenanceVisit(Date lastMaintenanceVisit) {
+    public void setLastMaintenanceVisit(Instant lastMaintenanceVisit) {
         this.lastMaintenanceVisit = lastMaintenanceVisit;
     }
 
     @YukonPaoField(columnName="LastInspVisit")
-    public Date getLastInspection() {
+    public Instant getLastInspection() {
         return lastInspection;
     }
 
-    public void setLastInspection(Date lastInspection) {
+    public void setLastInspection(Instant lastInspection) {
         this.lastInspection = lastInspection;
     }
 
     @YukonPaoField
-    public Date getOpCountResetDate() {
+    public Instant getOpCountResetDate() {
         return opCountResetDate;
     }
 
-    public void setOpCountResetDate(Date opCountResetDate) {
+    public void setOpCountResetDate(Instant opCountResetDate) {
         this.opCountResetDate = opCountResetDate;
     }
 
     @YukonPaoField(columnName="CbcBattInstallDate")
-    public Date getCbcInstallDate() {
+    public Instant getCbcInstallDate() {
         return cbcInstallDate;
     }
 
-    public void setCbcInstallDate(Date cbcInstallDate) {
+    public void setCbcInstallDate(Instant cbcInstallDate) {
         this.cbcInstallDate = cbcInstallDate;
     }
 

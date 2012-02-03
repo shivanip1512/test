@@ -8,8 +8,8 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
 
-@YukonPao(idColumnName="PaObjectId")
-public class CompleteYukonPaObject implements com.cannontech.common.pao.YukonPao {
+@YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId")
+public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     private PaoIdentifier paoIdentifier;
 
     private String paoName;
@@ -107,7 +107,7 @@ public class CompleteYukonPaObject implements com.cannontech.common.pao.YukonPao
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CompleteYukonPaObject other = (CompleteYukonPaObject) obj;
+        CompleteYukonPao other = (CompleteYukonPao) obj;
         if (description == null) {
             if (other.description != null)
                 return false;

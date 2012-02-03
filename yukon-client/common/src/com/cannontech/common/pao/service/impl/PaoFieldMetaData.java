@@ -15,7 +15,6 @@ import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.google.common.base.Function;
 
 /**

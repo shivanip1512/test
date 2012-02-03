@@ -32,7 +32,7 @@ import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.pojo.CompleteCbcBase;
 import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
 import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
-import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
+import com.cannontech.common.pao.pojo.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -51,7 +51,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     private @Autowired FeederDao feederDao;
     private @Autowired SubstationBusDao substationBusDao;
 
-    private CompleteYukonPaObject createHierarchyCompletePao(HierarchyImportData hierarchyImportData,
+    private CompleteYukonPao createHierarchyCompletePao(HierarchyImportData hierarchyImportData,
                                                    List<HierarchyImportResult> results) {
         PaoType paoType = hierarchyImportData.getPaoType();
         HierarchyPaoCreator creator = HierarchyPaoCreator.valueOf(paoType.name());
@@ -280,7 +280,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             return;
         }
 
-        CompleteYukonPaObject pao = createHierarchyCompletePao(hierarchyImportData, results);
+        CompleteYukonPao pao = createHierarchyCompletePao(hierarchyImportData, results);
         paoPersistenceService.createPao(pao, hierarchyImportData.getPaoType());
         int childId = pao.getPaObjectId();
         
@@ -312,7 +312,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
         int childId = pao.getPaoIdentifier().getPaoId();
         
-        CompleteYukonPaObject completePao = null;
+        CompleteYukonPao completePao = null;
         switch(pao.getPaoIdentifier().getPaoType()) {
         case CAP_CONTROL_AREA:
             completePao = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteCapControlArea.class);

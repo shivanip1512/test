@@ -7,12 +7,12 @@ import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
 import com.cannontech.common.pao.pojo.CompleteCapControlSpecialArea;
 import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
 import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
-import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
+import com.cannontech.common.pao.pojo.CompleteYukonPao;
 
 /*package*/ enum HierarchyPaoCreator {
     CAP_CONTROL_AREA {
         @Override
-        public CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data) {
+        public CompleteYukonPao getCompleteYukonPao(HierarchyImportData data) {
             CompleteCapControlArea pao = new CompleteCapControlArea();
             populateYukonPaObjectData(pao, data);
             return pao;
@@ -20,7 +20,7 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
     },
     CAP_CONTROL_SPECIAL_AREA {
         @Override
-        public CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data) {
+        public CompleteYukonPao getCompleteYukonPao(HierarchyImportData data) {
             CompleteCapControlSpecialArea pao = new CompleteCapControlSpecialArea();
             populateYukonPaObjectData(pao, data);
             return pao;
@@ -28,7 +28,7 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
     },
     CAP_CONTROL_SUBSTATION {
         @Override
-        public CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data) {
+        public CompleteYukonPao getCompleteYukonPao(HierarchyImportData data) {
             CompleteCapControlSubstation pao = new CompleteCapControlSubstation();
             if (data.getMapLocationId() != null) {
                 pao.setMapLocationId(data.getMapLocationId());
@@ -39,7 +39,7 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
     },
     CAP_CONTROL_SUBBUS {
         @Override
-        public CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data) {
+        public CompleteYukonPao getCompleteYukonPao(HierarchyImportData data) {
             CompleteCapControlSubstationBus pao = new CompleteCapControlSubstationBus();
             if (data.getMapLocationId() != null) {
                 pao.setMapLocationId(data.getMapLocationId());
@@ -50,7 +50,7 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
     },
     CAP_CONTROL_FEEDER {
         @Override
-        public CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data) {
+        public CompleteYukonPao getCompleteYukonPao(HierarchyImportData data) {
             CompleteCapControlFeeder pao = new CompleteCapControlFeeder();
             if (data.getMapLocationId() != null) {
                 pao.setMapLocationId(data.getMapLocationId());
@@ -61,7 +61,7 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
     },
     CAPBANK {
         @Override
-        public CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data) {
+        public CompleteYukonPao getCompleteYukonPao(HierarchyImportData data) {
             CompleteCapBank pao = new CompleteCapBank();
             if (data.getMapLocationId() != null) {
                 pao.setMapLocationId(data.getMapLocationId());
@@ -78,9 +78,9 @@ import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
     },
     ;
     
-    public abstract CompleteYukonPaObject getCompleteYukonPao(HierarchyImportData data);
+    public abstract CompleteYukonPao getCompleteYukonPao(HierarchyImportData data);
     
-    private static void populateYukonPaObjectData(CompleteYukonPaObject pao, HierarchyImportData data) {
+    private static void populateYukonPaObjectData(CompleteYukonPao pao, HierarchyImportData data) {
         pao.setPaoName(data.getName());
         
         if (data.getDescription() != null) {

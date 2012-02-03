@@ -290,15 +290,15 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        	} catch (CapControlHierarchyFileImporterException e) {
 	        		log.error(e.getMessage());
 	        		results.add(new HierarchyImportResult(null, HierarchyImportResultType.MISSING_DATA));
-	        	} catch (ImporterInvalidDisabledValueException e) {
+	        	} catch (ImporterInvalidPaoTypeException e) {
+                    log.error(e.getMessage());
+                    results.add(new HierarchyImportResult(null, HierarchyImportResultType.INVALID_TYPE));
+                } catch (ImporterInvalidDisabledValueException e) {
 	        	    log.error(e.getMessage());
 	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_DISABLED_VALUE));
 	            } catch (ImporterInvalidOpStateException e) {
 	        	    log.error(e.getMessage());
 	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_OPERATIONAL_STATE));
-	        	} catch (ImporterInvalidPaoTypeException e) {
-	        	    log.error(e.getMessage());
-                    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_TYPE));
 	        	} finally {
 	        		line = csvReader.readNext();
 	        	}

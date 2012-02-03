@@ -34,7 +34,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
-import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
+import com.cannontech.common.pao.pojo.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -72,20 +72,18 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     
     @PostConstruct
     public void init() throws IOException, ClassNotFoundException {
-        Map<Class<?>, CompletePaoMetaData> dbTableMappings = Maps.newHashMap();
-
-        // Scan the package for classes to populate the dbTableMappings map.
-        scanForYukonPaos(dbTableMappings);
+     // Scan the package for classes to populate the dbTableMappings map.
+        Map<Class<?>, CompletePaoMetaData> metaDataMappings = scanForYukonPaos();
 
         // Build the maps required for later use in the DAO methods.
-        buildPaoTypeMaps(dbTableMappings);
+        buildPaoTypeMaps(metaDataMappings);
         
         /*
          *  Remove all fields which are annotated as YukonPaoPart because we're dealing with them 
          *  as table objects now. We can't do this previously because we need them around to help 
          *  define all of the class structures.
          */
-        for (CompletePaoMetaData mapping : dbTableMappings.values()) {
+        for (CompletePaoMetaData mapping : metaDataMappings.values()) {
             Iterator<PaoFieldMetaData> iter = mapping.getFields().iterator();
             while (iter.hasNext()) {
                 PaoFieldMetaData next = iter.next();
@@ -99,10 +97,12 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     /**
      * This method scans all classes in the com.cannontech.common.pao.pojo directory and attempts
      * to extract {@link CompletePaoMetaData} information from the them.
-     * @param dbTableMappings The map of class type to insertion-ordered list of DbTableMappings 
+     * @param metaDataMappings The map of class type to insertion-ordered list of DbTableMappings 
      * which will be populated after this method completes.
      */
-    private void scanForYukonPaos(Map<Class<?>, CompletePaoMetaData> dbTableMappings) throws IOException {
+    private Map<Class<?>, CompletePaoMetaData> scanForYukonPaos() throws IOException {
+        Map<Class<?>, CompletePaoMetaData> metaDataMappings = Maps.newHashMap();
+        
         // scan com.cannontech.common.pao.pojo package for YukonPao annotation
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         MetadataReaderFactory metadataReaderFactory =
@@ -117,13 +117,15 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                 MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
                 try {
                     Class<?> completePaoType = Class.forName(metadataReader.getClassMetadata().getClassName());
-                    makeDbTableMapping(dbTableMappings, completePaoType);
+                    makeDbTableMapping(metaDataMappings, completePaoType);
                 } catch (Throwable e) {
                     log.error("caught exception in init", e);
                     throw new RuntimeException(e);
                 }
             }
         }
+        
+        return metaDataMappings;
     }
 
     /**
@@ -199,7 +201,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                  */
                 classTableMappings = Lists.reverse(classTableMappings);
                 if (klass.getAnnotation(YukonPao.class) != null) {
-                    Validate.isTrue(classTableMappings.get(0).getKlass() == CompleteYukonPaObject.class, 
+                    Validate.isTrue(classTableMappings.get(0).getKlass() == CompleteYukonPao.class, 
                                     "Init error: " + klass + "'s structure is invalid!");
                 }
 
@@ -313,7 +315,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     }
 
     @Override
-    public <T extends CompleteYukonPaObject> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass) {
+    public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass) {
         try {
             final T newInstance = klass.newInstance();
             newInstance.setPaoIdentifier(paoIdentifier);
@@ -368,7 +370,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
 
     @Override
     @Transactional
-    public void createPao(CompleteYukonPaObject pao, PaoType paoType) {
+    public void createPao(CompleteYukonPao pao, PaoType paoType) {
         createNewPao(pao, paoType);
         
         // DB change message happens in the processDbChange call below.
@@ -380,7 +382,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     
     @Override
     @Transactional
-    public void createPaoWithCustomPoints(CompleteYukonPaObject pao, PaoType paoType,
+    public void createPaoWithCustomPoints(CompleteYukonPao pao, PaoType paoType,
                                              List<PointBase> points) {
         createNewPao(pao, paoType);
         
@@ -397,7 +399,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
      * @param pao The PAO being created
      * @param paoType the PaoType for the new PAO.
      */
-    private void createNewPao(CompleteYukonPaObject pao, PaoType paoType) {
+    private void createNewPao(CompleteYukonPao pao, PaoType paoType) {
      // Get the next paoId to insert this into the DB with.
         int paoId = paoDao.getNextPaoId();
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
@@ -413,7 +415,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     
     @Override
     @Transactional
-    public void updatePao(CompleteYukonPaObject pao) {
+    public void updatePao(CompleteYukonPao pao) {
         insertOrUpdatePao(pao, true);
         
         paoCreationHelper.processDbChange(pao.getPaoIdentifier(), DbChangeType.UPDATE);
@@ -451,7 +453,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
      * @param isUpdate determines whether we're inserting or updating the PAO 
      * (true if we're updating, false if we're inserting)
      */
-    private void insertOrUpdatePao(CompleteYukonPaObject pao, boolean isUpdate) {
+    private void insertOrUpdatePao(CompleteYukonPao pao, boolean isUpdate) {
         try {
             Set<PaoType> supportedTypes = classToPaoTypeMapping.get(pao.getClass());
             if (supportedTypes == null || !supportedTypes.contains(pao.getPaoIdentifier().getPaoType())) {

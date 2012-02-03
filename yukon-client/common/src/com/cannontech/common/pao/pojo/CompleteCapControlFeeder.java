@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
 @YukonPao(idColumnName="FeederId", paoTypes=PaoType.CAP_CONTROL_FEEDER)
-public class CompleteCapControlFeeder extends CompleteYukonPaObject {
+public class CompleteCapControlFeeder extends CompleteYukonPao {
     private int currentVarLoadPointId = 0;
     private int currentWattLoadPointId = 0;
     private int currentVoltLoadPointId = 0;

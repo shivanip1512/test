@@ -6,7 +6,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 
 @YukonPao(idColumnName="RegulatorId", 
           paoTypes={PaoType.LOAD_TAP_CHANGER, PaoType.GANG_OPERATED, PaoType.PHASE_OPERATED})
-public class CompleteRegulator extends CompleteYukonPaObject {
+public class CompleteRegulator extends CompleteYukonPao {
     private int keepAliveTimer;
     private int keepAliveConfig;
 

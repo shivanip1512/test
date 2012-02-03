@@ -4,7 +4,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
 @YukonPao(idColumnName="DeviceId")
-public class CompleteDevice extends CompleteYukonPaObject {
+public class CompleteDevice extends CompleteYukonPao {
     private boolean alarmInhibit = false;
     private boolean controlInhibit = false;
 

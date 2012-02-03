@@ -17,7 +17,7 @@ import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
 import com.cannontech.common.pao.pojo.CompleteRegulator;
 import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
-import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
+import com.cannontech.common.pao.pojo.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
@@ -28,7 +28,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     @Override
     @Transactional
     public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId) {
-        CompleteYukonPaObject pao;
+        CompleteYukonPao pao;
         
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
             pao = new CompleteOneWayCbc();
@@ -51,7 +51,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     @Override
     @Transactional
 	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled) {
-        CompleteYukonPaObject pao;
+        CompleteYukonPao pao;
         switch(paoType) {
 
             case CAP_CONTROL_SPECIAL_AREA :

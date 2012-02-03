@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
 @YukonPao(idColumnName="SubstationId", paoTypes=PaoType.CAP_CONTROL_SUBSTATION)
-public class CompleteCapControlSubstation extends CompleteYukonPaObject {
+public class CompleteCapControlSubstation extends CompleteYukonPao {
     private int voltReductionPointId = 0;
     private String mapLocationId = "0";
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.pojo.CompleteYukonPaObject;
+import com.cannontech.common.pao.pojo.CompleteYukonPao;
 import com.cannontech.database.data.point.PointBase;
 
 public interface PaoPersistenceService {
@@ -15,14 +15,14 @@ public interface PaoPersistenceService {
      * @param klass The class of the object expected as a return value.
      * @return a PAO of type T completely populated with data.
      */
-    public <T extends CompleteYukonPaObject> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass);
+    public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass);
     
     /**
      * This method is used to create a PAO of a specific type using default points for that type.
      * @param pao The PAO to be inserted into the database.
      * @param paoType The PaoType of the object being inserted.
      */
-    public void createPao(CompleteYukonPaObject pao, PaoType paoType);
+    public void createPao(CompleteYukonPao pao, PaoType paoType);
     
     /**
      * This method is used to create a PAO of a specific type using custom points. This method is 
@@ -32,7 +32,7 @@ public interface PaoPersistenceService {
      * @param paoType
      * @param points
      */
-    public void createPaoWithCustomPoints(CompleteYukonPaObject pao, PaoType paoType, List<PointBase> points);
+    public void createPaoWithCustomPoints(CompleteYukonPao pao, PaoType paoType, List<PointBase> points);
     
     /**
      * This method is used to update a PAO's information in the database. <b>This method should only 
@@ -42,7 +42,7 @@ public interface PaoPersistenceService {
      * be overwritten with default values.
      * @param pao the PAO whose database information is to be updated.
      */
-    public void updatePao(CompleteYukonPaObject pao);
+    public void updatePao(CompleteYukonPao pao);
     
     /**
      * This method is used to delete a PAO from the database.

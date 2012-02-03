@@ -26,9 +26,8 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
 import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.exception.CapControlImportException;
-import com.cannontech.capcontrol.exception.CbcImporterWebServiceException;
-import com.cannontech.capcontrol.exception.HierarchyImporterWebServiceException;
 import com.cannontech.capcontrol.exception.ImporterInvalidDisabledValueException;
+import com.cannontech.capcontrol.exception.ImporterInvalidImportActionException;
 import com.cannontech.capcontrol.exception.ImporterInvalidOpStateException;
 import com.cannontech.capcontrol.exception.ImporterInvalidPaoTypeException;
 import com.cannontech.clientutils.YukonLogManager;
@@ -45,7 +44,7 @@ import com.google.common.collect.Lists;
 public class CapControlImportRequestEndpoint {
 	private static final Logger log = YukonLogManager.getLogger(CapControlImportRequestEndpoint.class);
 
-	private @Autowired CapControlImportService capControlImportService;
+	@Autowired private CapControlImportService capControlImportService;
 	
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
@@ -225,10 +224,13 @@ public class CapControlImportRequestEndpoint {
                         capControlImportService.removeCbc(data, cbcResults);
                         break;
                 }
-			} catch (CbcImporterWebServiceException c) {
+			} catch (ImporterInvalidPaoTypeException c) {
 				log.debug(c);
-				cbcResults.add(new CbcImportResult(null, c.getResultType()));
-			} catch (CapControlImportException e) {
+				cbcResults.add(new CbcImportResult(null, CbcImportResultType.INVALID_TYPE));
+			} catch (ImporterInvalidImportActionException c) {
+                log.debug(c);
+                cbcResults.add(new CbcImportResult(null, CbcImportResultType.INVALID_IMPORT_ACTION));
+            } catch (CapControlImportException e) {
 				log.debug(e);
 				cbcResults.add(new CbcImportResult(null, CbcImportResultType.MISSING_DATA));
 			} catch (NotFoundException e) {
@@ -283,9 +285,9 @@ public class CapControlImportRequestEndpoint {
             } catch (ImporterInvalidPaoTypeException e) {
                 log.debug(e);
                 hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_TYPE));
-            } catch (HierarchyImporterWebServiceException h) {
+            } catch (ImporterInvalidImportActionException h) {
 				log.debug(h);
-				hierarchyResults.add(new HierarchyImportResult(null, h.getResultType()));
+				hierarchyResults.add(new HierarchyImportResult(null, HierarchyImportResultType.INVALID_IMPORT_ACTION));
 			} catch (CapControlImportException e) {
 				log.debug(e);
 				hierarchyResults.add(new HierarchyImportResult(null, HierarchyImportResultType.MISSING_DATA));
@@ -319,7 +321,7 @@ public class CapControlImportRequestEndpoint {
 		try {
 		    paoType = PaoType.getForDbString(cbcType);
 		} catch (IllegalArgumentException e) {
-			throw new CbcImporterWebServiceException(CbcImportResultType.INVALID_TYPE);
+			throw new ImporterInvalidPaoTypeException("Import of " + cbcName + " failed. Unknown Type: " + cbcType);
 		}
 		
 		Integer serialNumber = cbcTemplate.evaluateAsInt("y:serialNumber");
@@ -350,7 +352,7 @@ public class CapControlImportRequestEndpoint {
 		try {
 			importAction = ImportAction.getForDbString(importActionStr);
 		} catch (IllegalArgumentException e) {
-			throw new CbcImporterWebServiceException(CbcImportResultType.INVALID_IMPORT_ACTION);
+			throw new ImporterInvalidImportActionException("Import of " + cbcName + " failed. Unknown Action: " + importActionStr);
 		}
 		
 		// If we got to this point, we have all required data with no errors.
@@ -420,7 +422,7 @@ public class CapControlImportRequestEndpoint {
 		try {
 			importAction = ImportAction.getForDbString(importActionStr);
 		} catch (IllegalArgumentException e) {
-			throw new HierarchyImporterWebServiceException(HierarchyImportResultType.INVALID_IMPORT_ACTION);
+			throw new ImporterInvalidImportActionException("Import of " + name + " failed. Unknown Action: " + importActionStr);
 		}
 
 		// We have all required data. Let's make the HierarchyImportData object.
