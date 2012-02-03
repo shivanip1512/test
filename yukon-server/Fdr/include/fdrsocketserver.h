@@ -74,6 +74,8 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         void threadFunctionConnection(unsigned short listeningPort);
 
+        virtual CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
+
         ConnectionList  _connectionList;
 
         CtiMutex _socketMutex;
@@ -83,15 +85,14 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         PortSocketMap _socketConnections;
     private:
+
         bool loadList(std::string& aDirection,  CtiFDRPointList& aList);
-
-        RWThreadFunction _threadSingleConnection;
-
-        RWThreadFunction _threadHeartbeat;
         void threadFunctionSendHeartbeat(void);
 
+        RWThreadFunction _threadHeartbeat;
+        RWThreadFunction _threadSingleConnection;
+
         CtiMutex _connectionListMutex;
-        CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
 
         unsigned short _portNumber;
         int _pointTimeVariation;
@@ -100,7 +101,6 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         bool _singleListeningPort;
 
-        std::string direction;
         HANDLE _shutdownEvent;
 };
 
