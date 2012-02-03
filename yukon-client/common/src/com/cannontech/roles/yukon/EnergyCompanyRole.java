@@ -3,6 +3,13 @@ package com.cannontech.roles.yukon;
 import com.cannontech.roles.YukonRoleDefs;
 
 public interface EnergyCompanyRole {
+    
+    /* Lowercase for legacy reasons */
+    public enum MeteringType {
+        yukon,
+        stars
+    }
+    
 	public static final int ROLEID = YukonRoleDefs.ENERGY_COMPANY_ROLEID;
 	
 	public static final int ADMIN_EMAIL_ADDRESS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE;

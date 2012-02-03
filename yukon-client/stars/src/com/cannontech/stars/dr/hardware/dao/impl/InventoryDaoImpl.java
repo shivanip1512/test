@@ -182,6 +182,25 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId, Set<HardwareType> hardwareTypes) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append(    "lmhb.manufacturerSerialNumber,");
+        sql.append(    "le.yukonDefinitionId hardwareDefinitionId");
+        sql.append("FROM inventoryBase ib");
+        sql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
+        sql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId");
+        sql.append("WHERE ib.accountID").eq(accountId);
+        sql.append(" AND lmhb.LMHardwareTypeID IN ");
+        sql.append(" (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(hardwareTypes).append(")");
+        
+        List<HardwareSummary> hardwareList = yukonJdbcTemplate.query(sql, hardwareSummaryRowMapper);
+        
+        return hardwareList;
+    }
+    
+    @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {
     	
     	int accountId = account.getAccountId();
@@ -216,25 +235,6 @@ public class InventoryDaoImpl implements InventoryDao {
 
         List<HardwareSummary> hardwareList = yukonJdbcTemplate.query(sql, hardwareSummaryRowMapper);
 
-        return hardwareList;
-    }
-    
-    @Override
-    public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId, Set<HardwareType> hardwareTypes) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
-        sql.append(    "lmhb.manufacturerSerialNumber,");
-        sql.append(    "le.yukonDefinitionId hardwareDefinitionId");
-        sql.append("FROM inventoryBase ib");
-        sql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
-        sql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId");
-        sql.append("WHERE ib.accountID").eq(accountId);
-        sql.append(" AND lmhb.LMHardwareTypeID IN ");
-        sql.append(" (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(hardwareTypes).append(")");
-        
-        List<HardwareSummary> hardwareList = yukonJdbcTemplate.query(sql, hardwareSummaryRowMapper);
-        
         return hardwareList;
     }
     
@@ -681,6 +681,8 @@ public class InventoryDaoImpl implements InventoryDao {
                                                       int start, 
                                                       int pageCount, 
                                                       final boolean starsMeters) {
+        // Trim fields to null
+        inventorySearch.trimFields();
         
         final boolean usePhone = StringUtils.isNotBlank(inventorySearch.getPhoneNumber());
         final boolean useWorkOrder = StringUtils.isNotBlank(inventorySearch.getWorkOrderNumber());
@@ -807,6 +809,16 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return results;
     }
+    @Override
+    public int getCategoryIdForTypeId(int hardwareTypeId, YukonEnergyCompany ec) {
+        
+        HardwareType hardwareType = getHardwareTypeById(hardwareTypeId);
+
+        /* The category id is the entry id of the yukon list entry for this category in this energy company. */
+        int categoryDefId = hardwareType.getInventoryCategory().getDefinitionId();
+        YukonListEntry categoryEntryOfEnergyCompany = starsDatabaseCache.getEnergyCompany(ec).getYukonListEntry(categoryDefId);
+        return categoryEntryOfEnergyCompany.getEntryID();
+    }
 
     @Override
     public List<String> getThermostatLabels(List<Integer> thermostatIds) {
@@ -818,4 +830,14 @@ public class InventoryDaoImpl implements InventoryDao {
 
         return thermostatLabels;
     }
+    
+    @Override
+    public String getMeterNumberForDevice(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT MeterNumber");
+        sql.append("FROM DeviceMeterGroup");
+        sql.append("WHERE Deviceid").eq(deviceId);
+        return yukonJdbcTemplate.queryForString(sql);
+    }
+    
 }

@@ -1,7 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
@@ -70,13 +72,13 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                     <spring:escapeBody htmlEscape="true">${hardware.displayType}</spring:escapeBody>
                 </tags:nameValue2>
                 
-                <%-- For switchs and tstat's, show serial number, otherwise device name --%>
+                <%-- For switchs and tstat's, show serial number. If is also a device, show device name--%>
                 <c:choose>
                     <c:when test="${showSerialNumber}">
                         <c:choose>
                         
                             <c:when test="${serialNumberEditable}">
-                                <tags:inputNameValue nameKey=".serialNumber" path="serialNumber"></tags:inputNameValue>
+                                <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" inputClass="f_focus"></tags:inputNameValue>
                             </c:when>
                             
                             <c:otherwise>
@@ -88,15 +90,20 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             
                         </c:choose>
                     </c:when>
-                    
                     <c:otherwise>
-                        <cti:displayForPageEditModes modes="EDIT,VIEW">
-                            <tags:nameValue2 nameKey=".displayName"><spring:escapeBody htmlEscape="true">${hardware.displayName}</spring:escapeBody></tags:nameValue2>
-                        </cti:displayForPageEditModes>
+                        <tags:nameValue2 nameKey=".meterNumber">
+                            <form:hidden path="meterNumber"/>
+                            <spring:escapeBody htmlEscape="true">${hardware.meterNumber}</spring:escapeBody>
+                        </tags:nameValue2>
                     </c:otherwise>
-                    
                 </c:choose>
                 
+                <c:if test="${hardware.deviceId > 0}">
+                    <cti:displayForPageEditModes modes="EDIT,VIEW">
+                        <tags:nameValue2 nameKey=".displayName"><cti:deviceName deviceId="${hardware.deviceId}"/></tags:nameValue2>
+                    </cti:displayForPageEditModes>
+                </c:if>
+                    
                 <c:if test="${showInstallCode}">
                     <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false" maxlength="23" size="25"/>
                 </c:if>
@@ -228,7 +235,24 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <cti:displayForPageEditModes modes="EDIT">
-                    <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
+                    <c:choose>
+                        <c:when test="${not empty accountId}">
+                            <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:url value="delete" var="deleteInvUrl">
+                                <cti:param name="inventoryId" value="${inventoryId}"/>
+                            </cti:url>
+                            <cti:button nameKey="deleteDevice" type="button" id="invDeleteBtn" dialogButton="true" href="${deleteInvUrl}"/>
+                            <c:if test="${hardware.hardwareType.meter}">
+                                <c:set var="deleteName" value="${hardware.meterNumber}"/>
+                            </c:if>
+                            <c:if test="${not hardware.hardwareType.meter}">
+                                <c:set var="deleteName" value="${hardware.serialNumber}"/>
+                            </c:if>
+                            <dialog:confirm nameKey="deleteInventoryConfirm" on="#invDeleteBtn" argument="${deleteName}"/>
+                        </c:otherwise>
+                    </c:choose>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <cti:button nameKey="cancel" type="submit" name="cancel"/>

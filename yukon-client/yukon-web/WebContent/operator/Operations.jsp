@@ -163,8 +163,7 @@
                 </cti:checkRole>
                 <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE">
                     <tags:sectionLink>
-                        <a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse" />
-                        </a>
+                        <a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse" /></a>
                     </tags:sectionLink>
                 </cti:isPropertyTrue>
             </tags:operationSection>
@@ -193,22 +192,17 @@
         <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
 
             <tags:operationSection sectionName="Hardware Inventory" sectionImageName="HardwareInventoryLogo">
-                <cti:checkProperty property="InventoryRole.INVENTORY_SHOW_ALL">
+                <cti:checkRole role="InventoryRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="${hardwarePage}">Inventory</a>
+                        <a href="/spring/stars/operator/inventory/home"><cti:msg key="yukon.web.operations.inventory"/></a>
                     </tags:sectionLink>
-                </cti:checkProperty>
+                </cti:checkRole>
                 <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS">
                     <tags:sectionLink>
                         <a href="Hardware/PurchaseTrack.jsp">Purchasing</a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 
-                <cti:checkRole role="InventoryRole.ROLEID">
-                    <tags:sectionLink>
-                        <a href="/spring/stars/operator/inventory/home">Inventory Operations</a>
-                    </tags:sectionLink>
-                </cti:checkRole>
 
                 <!-- Hardware search form -->
                 <cti:checkRolesAndProperties value="INVENTORY_SEARCH">

@@ -36,7 +36,7 @@
 
 <c:choose>
     <c:when test="${starsMeters}">
-        <cti:url var="meterUrl" value="/spring/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId="/>
+        <cti:url var="meterUrl" value="/spring/stars/operator/hardware/mp/view?accountId=${accountId}&amp;inventoryId="/>
     </c:when>
     <c:otherwise>
         <cti:url var="meterUrl" value="/spring/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
@@ -636,7 +636,7 @@
             
                 <br>
                 
-                <form action="/spring/stars/operator/hardware/meterProfileCreate">
+                <form action="/spring/stars/operator/hardware/mp/creationPage">
                     <input type="hidden" name="accountId" value="${accountId}">
                     <table class="popupButtonTable">
                         <tr>

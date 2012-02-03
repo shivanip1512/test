@@ -20,7 +20,7 @@ public class InventoryActionsHelper {
     protected static final Logger log = YukonLogManager.getLogger(InventoryActionsHelper.class);
     
     /**
-     * Starts an inventory change device type task and returns the task's 
+     * Starts an inventory task and returns the task's 
      * recent result cache identifier.
      * @param collection
      * @return taskId

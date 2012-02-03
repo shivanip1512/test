@@ -10,6 +10,10 @@ import com.cannontech.web.updater.RecentResultUpdateBackingService;
 public class InventoryTaskBackingService extends RecentResultUpdateBackingService {
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
     private enum DataType {
+        NEW_OPERATION_FOR_SUCCESS,
+        NEW_OPERATION_FOR_FAILED,
+        SUCCESS_COUNT,
+        FAILED_COUNT,
         ITEMS_PROCESSED,
         IS_COMPLETE
     }
@@ -29,6 +33,14 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
         DataType type = DataType.valueOf(resultTypeStr);
         if (type == DataType.ITEMS_PROCESSED) {
             return result.getCompletedItems();
+        } else if (type == DataType.SUCCESS_COUNT) {
+            return result.getSuccessCount();
+        } else if (type == DataType.FAILED_COUNT) {
+            return result.getFailedCount();
+        } else if (type == DataType.NEW_OPERATION_FOR_SUCCESS) {
+            return result.isComplete() && result.getSuccessCount() > 0 ? "db" : "dn";
+        } else if (type == DataType.NEW_OPERATION_FOR_FAILED) {
+            return result.isComplete() && result.getFailedCount() > 0 ? "db" : "dn";
         } else {
             return result.isComplete();
         }

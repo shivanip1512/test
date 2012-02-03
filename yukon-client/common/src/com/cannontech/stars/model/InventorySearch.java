@@ -1,5 +1,7 @@
 package com.cannontech.stars.model;
 
+import org.apache.commons.lang.StringUtils;
+
 public class InventorySearch {
     
     private String serialNumber;
@@ -64,6 +66,16 @@ public class InventorySearch {
     
     public void setAltTrackingNumber(String altTrackingNumber) {
         this.altTrackingNumber = altTrackingNumber;
+    }
+
+    public void trimFields() {
+        serialNumber = StringUtils.trimToNull(serialNumber);
+        meterNumber = StringUtils.trimToNull(meterNumber);
+        accountNumber = StringUtils.trimToNull(accountNumber);
+        phoneNumber = StringUtils.trimToNull(phoneNumber);
+        lastName = StringUtils.trimToNull(lastName);
+        workOrderNumber = StringUtils.trimToNull(workOrderNumber);
+        altTrackingNumber = StringUtils.trimToNull(altTrackingNumber);
     }
     
 }

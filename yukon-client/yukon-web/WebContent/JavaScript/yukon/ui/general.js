@@ -108,8 +108,8 @@ Yukon.ui = {
         }
     },
     
-    block: function(event){
-       var blockElement = jQuery(event.currentTarget).closest(".f_block_this");
+    block: function(element){
+       var blockElement = jQuery(element).closest(".f_block_this");
        if(blockElement[0]){
            Yukon.uiUtils.elementGlass.show(blockElement[0]);
        }else{
@@ -117,8 +117,13 @@ Yukon.ui = {
        }
     },
     
-    unblock: function(event){
-        
+    unblock: function(element){
+        element = jQuery(element);
+        if(element.hasClass("f_block_this")){
+            Yukon.uiUtils.elementGlass.hide(element);
+        }else{
+            Yukon.uiUtils.elementGlass.hide(element.closest(".f_block_this"));
+        }
     },
 
     blockPage: function(args) {
@@ -349,6 +354,7 @@ Yukon.uiUtils = {
                 var glass = element.find(".glass");
                 if(!glass[0]){
                     element.prepend(jQuery("<div>").addClass("glass"));
+                    glass = element.find(".glass");
                 }
                 return Yukon.uiUtils.elementGlass.redraw(glass);
             }

@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<!-- General Demand Response -->
 <entry key="yukon.web.operations.demandResponse">Demand Response</entry>
+<entry key="yukon.web.operations.inventory">Inventory</entry>
 
 </properties>

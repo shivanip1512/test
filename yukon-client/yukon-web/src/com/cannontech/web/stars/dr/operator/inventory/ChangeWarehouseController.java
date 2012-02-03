@@ -32,10 +32,10 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehou
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeWarehouseController {
 
-    private @Autowired InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private @Autowired ChangeWarehouseHelper helper;
-    private @Autowired YukonEnergyCompanyService energyCompanyService;
-    private @Autowired StarsDatabaseCache starsDatabaseCache;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private ChangeWarehouseHelper helper;
+    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping

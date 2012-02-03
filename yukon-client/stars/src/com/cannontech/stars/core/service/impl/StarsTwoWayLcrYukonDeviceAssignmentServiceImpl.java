@@ -18,7 +18,7 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
-import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.xml.serialize.StarsInv;
@@ -31,7 +31,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	private DBPersistentDao dbPersistentDao;
 	private PaoDao paoDao;
 	
-	public void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws StarsTwoWayLcrYukonDeviceCreationException {
+	public void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Lcr3102YukonDeviceCreationException {
 		
 		try {
 			
@@ -56,7 +56,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 			}
 			
 		} catch (Exception e) {
-			throw new StarsTwoWayLcrYukonDeviceCreationException(e.getMessage());
+			throw new Lcr3102YukonDeviceCreationException(e.getMessage());
 		}
 	}
 	
@@ -68,10 +68,10 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 			String deviceName,
 			Integer demandRateSeconds,
 			boolean allowCreateIfAlreadyHasAssignedDevice)
-			throws StarsTwoWayLcrYukonDeviceCreationException {
+			throws Lcr3102YukonDeviceCreationException {
 
 		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
-			throw new StarsTwoWayLcrYukonDeviceCreationException("Yukon device must be a Two Way LCR type.");
+			throw new Lcr3102YukonDeviceCreationException("Yukon device must be a Two Way LCR type.");
 		}
 		
 		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
@@ -103,7 +103,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
     	            dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
     	            
         		} catch (Exception e) {
-        			throw new StarsTwoWayLcrYukonDeviceCreationException("Unable to create new yukon device.", e);
+        			throw new Lcr3102YukonDeviceCreationException("Unable to create new yukon device.", e);
         		}
         		
         		// update LM with new device 
@@ -130,7 +130,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	}
 	
 	// HELPERS
-	private void checkSerialNumberMatchesAddress(StarsInv starsInv) throws StarsTwoWayLcrYukonDeviceCreationException {
+	private void checkSerialNumberMatchesAddress(StarsInv starsInv) throws Lcr3102YukonDeviceCreationException {
 		
 		Integer yukonDeviceId = starsInv.getTwoWayLcrSetupInfoDto().getDeviceId();
 		if (yukonDeviceId != null) {
@@ -140,7 +140,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 			int address = pao.getAddress();
 			
 			if (address != serial) {
-				throw new StarsTwoWayLcrYukonDeviceCreationException("Yukon device serial must match that of the Two Way LCR.");
+				throw new Lcr3102YukonDeviceCreationException("Yukon device serial must match that of the Two Way LCR.");
 			}
 		}
 	}
@@ -154,7 +154,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	        inventoryBase.setDeviceID(deviceId);
 	        dbPersistentDao.performDBChange(inventoryBase, Transaction.UPDATE);
 		} catch (Exception e) {
-			throw new StarsTwoWayLcrYukonDeviceCreationException("Unable to assign Yukon device to hardware.", e);
+			throw new Lcr3102YukonDeviceCreationException("Unable to assign Yukon device to hardware.", e);
 		}
 	}
 		

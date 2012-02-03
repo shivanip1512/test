@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardware.exception;
 
 import com.cannontech.stars.util.StarsClientRequestException;
 
-public class StarsTwoWayLcrYukonDeviceCreationException extends StarsClientRequestException {
+public class Lcr3102YukonDeviceCreationException extends StarsClientRequestException {
     
     public static enum Type {
         UNKNOWN,
@@ -13,23 +13,23 @@ public class StarsTwoWayLcrYukonDeviceCreationException extends StarsClientReque
     
     private Type type = Type.UNKNOWN;
     
-    public StarsTwoWayLcrYukonDeviceCreationException(String message) {
+    public Lcr3102YukonDeviceCreationException(String message) {
         super(message);
     }
     
-    public StarsTwoWayLcrYukonDeviceCreationException(String message, Throwable cause) {
+    public Lcr3102YukonDeviceCreationException(String message, Throwable cause) {
         super(message, cause);
     }
     
-	public StarsTwoWayLcrYukonDeviceCreationException(Throwable cause) {
+	public Lcr3102YukonDeviceCreationException(Throwable cause) {
 	    super("Unable to create a Yukon device to assign to this Two Way LCR.", cause);
 	}
 
-    public StarsTwoWayLcrYukonDeviceCreationException(Type type) {
+    public Lcr3102YukonDeviceCreationException(Type type) {
         this.type = type;
     }
 
-    public StarsTwoWayLcrYukonDeviceCreationException(Throwable cause, Type type) {
+    public Lcr3102YukonDeviceCreationException(Throwable cause, Type type) {
         super("Unable to create a Yukon device to assign to this Two Way LCR.", cause);
         this.type = type;
     }

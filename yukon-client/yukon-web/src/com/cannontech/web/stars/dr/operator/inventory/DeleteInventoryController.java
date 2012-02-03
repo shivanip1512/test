@@ -24,8 +24,8 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInvento
 @CheckRoleProperty(YukonRoleProperty.SN_DELETE_RANGE)
 public class DeleteInventoryController {
     
-    private @Autowired InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private @Autowired DeleteInventoryHelper helper;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private DeleteInventoryHelper helper;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping

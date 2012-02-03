@@ -1894,6 +1894,9 @@
                     <page name="inventory.list" type="BASIC">
                         <menu>inventory|</menu>
                     </page>
+                    <page name="inventory.CREATE" type="BASIC">
+                        <menu>inventory|</menu>
+                    </page>
                     <page name="inventory.VIEW" type="DETAIL">
                         <labelArgument>${displayName}</labelArgument>
                         <menu>inventory|</menu>
@@ -1902,10 +1905,11 @@
                                 <labelArgument>${displayName}</labelArgument>
                                 <menu>inventory|</menu>
                             </page>
-                            <page name="inventory.CREATE" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
                         </pages>
+                    </page>
+                    <page name="abr.setup" type="BASIC">
+                        <labelArgument>${type}</labelArgument>
+                        <menu>inventory|</menu>
                     </page>
                     <page name="zbProblemDevices" type="BASIC">
                         <menu>inventory|</menu>

@@ -1,23 +1,18 @@
 package com.cannontech.stars.core.service.impl;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
-import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.HardwareClass;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -44,23 +39,17 @@ import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
+import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
-import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
-import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
-import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
-    private static final Logger log = YukonLogManager.getLogger(StarsInventoryBaseServiceImpl.class);
     private HardwareEventLogService hardwareEventLogService;
     private StarsSearchDao starsSearchDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -73,8 +62,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private EnrollmentHelperService enrollmentService;
     private CustomerAccountDao customerAccountDao;
     private LMHardwareBaseDao hardwareBaseDao;
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private ThermostatService thermostatService;
     private InventoryDao inventoryDao;
     private GatewayDeviceDao gatewayDeviceDao;
     
@@ -82,7 +69,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Override
     @Transactional
     public LiteInventoryBase addDeviceToAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, boolean allowCreateLcrIfAlreadyHasAssignedDevice) throws StarsTwoWayLcrYukonDeviceCreationException {
+            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, boolean allowCreateLcrIfAlreadyHasAssignedDevice) throws Lcr3102YukonDeviceCreationException {
 
         boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
         if (liteInv.getLiteID() <= 0) {
@@ -140,7 +127,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 	    		String deviceTypeName = entry.getEntryText();
 	    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
 	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
-	    			throw new StarsTwoWayLcrYukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
+	    			throw new Lcr3102YukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
 	    		}
 	    		
 	        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, allowCreateLcrIfAlreadyHasAssignedDevice);
@@ -459,16 +446,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired
     public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
         this.hardwareBaseDao = hardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-    }
-    
-    @Autowired
-    public void setThermostatService(ThermostatService thermostatService) {
-        this.thermostatService = thermostatService;
     }
     
     @Autowired

@@ -11,6 +11,7 @@ import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -381,6 +382,7 @@ public enum YukonRoleProperty {
     OPT_OUTS_COUNT(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.OPT_OUTS_COUNT, booleanType()),
     DATABASE_MIGRATION_FILE_LOCATION(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.DATABASE_MIGRATION_FILE_LOCATION, stringType()),
     
+    /* User EnergyCompanyRolePropertyDao when dealing with these role properties */
     ADMIN_EMAIL_ADDRESS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, stringType()),
     OPTOUT_NOTIFICATION_RECIPIENTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, stringType()),
     ENERGY_COMPANY_DEFAULT_TIME_ZONE(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TIME_ZONE, stringType()),
@@ -388,7 +390,7 @@ public enum YukonRoleProperty {
     SINGLE_ENERGY_COMPANY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SINGLE_ENERGY_COMPANY, booleanType()),
     OPTIONAL_PRODUCT_DEV(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, stringType()),
     DEFAULT_TEMPERATURE_UNIT(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT, stringType()),
-    METER_MCT_BASE_DESIGNATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.METER_MCT_BASE_DESIGNATION, stringType()),
+    METER_MCT_BASE_DESIGNATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.METER_MCT_BASE_DESIGNATION, enumType(EnergyCompanyRole.MeteringType.class)),
     APPLICABLE_POINT_TYPE_KEY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY, stringType()),
     INHERIT_PARENT_APP_CATS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.INHERIT_PARENT_APP_CATS, booleanType()),
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, booleanType()),

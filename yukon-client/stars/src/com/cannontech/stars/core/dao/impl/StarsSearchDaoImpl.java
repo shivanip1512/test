@@ -79,7 +79,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		// If we get to here, we didn't find the serial number for the energyCompany provided.  Throw exception.
 		YukonEnergyCompany otherEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(lmHardwareInOtherEnergyCompany.getInventoryID());
-		throw new ObjectInOtherEnergyCompanyException( lmHardwareInOtherEnergyCompany, otherEnergyCompany);
+		throw new ObjectInOtherEnergyCompanyException(lmHardwareInOtherEnergyCompany, otherEnergyCompany);
 	}
 
 	@Override

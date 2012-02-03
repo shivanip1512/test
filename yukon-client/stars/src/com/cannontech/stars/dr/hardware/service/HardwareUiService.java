@@ -9,7 +9,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
-import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.HardwareHistory;
 import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
@@ -27,12 +27,12 @@ public interface HardwareUiService {
      * Updates hardware and returns true if the state of the hardware changed
      * to spawn an event.
      */
-    public boolean updateHardware(LiteYukonUser user, Hardware hardware) throws ObjectInOtherEnergyCompanyException;
+    public boolean updateHardware(LiteYukonUser user, Hardware hardware);
 
     /**
      * Creates and returns a SimpleDevice for an LCR-3102 with the given device name
      */
-    public SimpleDevice createTwoWayDevice(LiteYukonUser user, int inventoryId, String deviceName) throws StarsTwoWayLcrYukonDeviceCreationException;
+    public SimpleDevice createTwoWayDevice(LiteYukonUser user, int inventoryId, String deviceName) throws Lcr3102YukonDeviceCreationException;
 
     /**
      * Returns a list of HardwareHistory for the given inventory id.
@@ -56,7 +56,7 @@ public interface HardwareUiService {
      * Creates hardware based on hardwareDto settings and returns
      * the resulting inventoryId.
      */
-    public int createHardware(Hardware hardware, int accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
+    public int createHardware(Hardware hardware, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * Adds a device to an acccount.  If fromAccount is true, removes it from it's
@@ -66,9 +66,11 @@ public interface HardwareUiService {
     public void addDeviceToAccount(LiteInventoryBase liteInventoryBase, int accountId, boolean fromAccount, LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
 
     /**
-     * Adds a meter to the account.
+     * Adds a meter to inventory, and assigns to account if accountId is provided.
+     * @return int the inventoryId
+     * @throws ObjectInOtherEnergyCompanyException 
      */
-    public void addYukonMeter(int meterId, int accountId, LiteYukonUser user);
+    public int addYukonMeter(int meterId, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * Returns a list of SwitchAssignment's for the switches assigned to the meter for this account.

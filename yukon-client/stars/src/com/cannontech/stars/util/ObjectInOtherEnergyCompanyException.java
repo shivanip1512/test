@@ -1,21 +1,9 @@
-/*
- * Created on Mar 4, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.stars.util;
 
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public class ObjectInOtherEnergyCompanyException extends Exception {
+public class ObjectInOtherEnergyCompanyException extends RuntimeException {
 	
 	private LiteBase object;
 	private YukonEnergyCompany yukonEnergyCompany;
@@ -30,16 +18,10 @@ public class ObjectInOtherEnergyCompanyException extends Exception {
 		this.yukonEnergyCompany = yukonEnergyCompany;
 	}
 
-	/**
-	 * @return
-	 */
 	public YukonEnergyCompany getYukonEnergyCompany() {
 		return yukonEnergyCompany;
 	}
 
-	/**
-	 * @return
-	 */
 	public LiteBase getObject() {
 		return object;
 	}

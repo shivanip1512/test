@@ -20,24 +20,29 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper.ChangeDeviceStatusTask;
+import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeTypeHelper.ChangeTypeTask;
 
 @Controller
 @RequestMapping("/operator/inventory/changeStatus/*")
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeDeviceStatusController {
 
-    private @Autowired InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private @Autowired ChangeDeviceStatusHelper helper;
-    private @Autowired YukonEnergyCompanyService energyCompanyService;
-    private @Autowired StarsDatabaseCache starsDatabaseCache;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private ChangeDeviceStatusHelper helper;
+    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping
@@ -60,7 +65,7 @@ public class ChangeDeviceStatusController {
     }
 
     @RequestMapping(value="do", params="start")
-    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, int deviceStatusEntryId) throws ServletRequestBindingException {
+    public String startTask(HttpServletRequest request, YukonUserContext context, ModelMap model, int deviceStatusEntryId) throws ServletRequestBindingException {
         InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
         ChangeDeviceStatusTask task = helper.new ChangeDeviceStatusTask(collection, context, deviceStatusEntryId, request.getSession());
         String taskId = helper.startTask(task);
@@ -74,6 +79,16 @@ public class ChangeDeviceStatusController {
     public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
         return "redirect:/spring/stars/operator/inventory/inventoryActions";
+    }
+    
+    @RequestMapping
+    public String newOperation(ModelMap model, String taskId, YukonUserContext context) {
+        ChangeTypeTask task = (ChangeTypeTask) resultsCache.getResult(taskId);
+        String descriptionHint = resolver.getMessageSourceAccessor(context).getMessage("yukon.web.modules.operator.changeType.successCollectionDescription");
+        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(task.getSuccessful().iterator(), descriptionHint);
+        model.addAttribute("inventoryCollection", temporaryCollection);
+        model.addAllAttributes(temporaryCollection.getCollectionParameters());
+        return "redirect:../inventoryActions";
     }
     
     @Resource(name="inventoryTaskResultsCache")

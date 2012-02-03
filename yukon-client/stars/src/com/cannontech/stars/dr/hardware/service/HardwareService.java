@@ -9,6 +9,8 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
@@ -60,5 +62,15 @@ public interface HardwareService {
      * @throws ObjectInOtherEnergyCompanyException 
      */
     public void changeWarehouse(YukonUserContext context, InventoryIdentifier inv, int warehouseId) throws ObjectInOtherEnergyCompanyException;
+
+    /**
+     * Create a single hardware based off a 'Add By SN Range' task iteration
+     * @param abr the add by range task options
+     * @param sn the serial number
+     * @param user the energy company operator executing this task
+     * @return inventory identifier of successfully created hardware
+     * @throws ObjectInOtherEnergyCompanyException 
+     */
+    public InventoryIdentifier createForAddByRangeTask(AddByRange abr, long sn, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
     
 }

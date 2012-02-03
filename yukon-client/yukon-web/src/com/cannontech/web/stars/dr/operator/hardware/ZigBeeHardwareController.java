@@ -2,16 +2,20 @@ package com.cannontech.web.stars.dr.operator.hardware;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.jsonOLD.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -80,12 +84,11 @@ public class ZigBeeHardwareController {
     private @Autowired PaoDao paoDao;
     
     @RequestMapping
-    public ModelAndView refresh(YukonUserContext context, int deviceId) {
+    public void refresh(HttpServletResponse resp, YukonUserContext context, int deviceId) throws NoSuchMessageException, IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceRefreshByOperator(context.getYukonUser(), pao.getPaoName());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        ModelAndView mav = new ModelAndView(new JsonView());
 
         InventoryIdentifier id = inventoryDao.getYukonInventoryForDeviceId(deviceId);
         HardwareType type = id.getHardwareType();
@@ -106,19 +109,26 @@ public class ZigBeeHardwareController {
             zigbeeEventLogService.zigbeeDeviceRefreshed(pao.getPaoName());
             
             zigbeeStateUpdaterService.activateSmartPolling(device);
+            returnJson(resp, ping.isSuccess(), accessor.getMessage(ping.getPingResultResolvable()));
         } catch (DigiWebServiceException e) {
-            commandFailed(mav.getModelMap(), accessor, e.getMessage());
-            return mav;
+            commandFailed(resp, accessor, e.getMessage());
         }
+        
+    }
+    
+    private void returnJson(HttpServletResponse response, boolean success, String message) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("success", success);
+        object.put("message", message);
 
-        mav.addObject("success", ping.isSuccess());
-        mav.addObject("message", accessor.getMessage(ping.getPingResultResolvable()));
-
-        return mav;
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        out.print(object.toString());
+        out.close();
     }
 
     @RequestMapping
-    public ModelAndView commission(YukonUserContext context, int deviceId) {
+    public ModelAndView commission(HttpServletResponse resp,YukonUserContext context, int deviceId) throws IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceCommissionByOperator(context.getYukonUser(), pao.getPaoName());
         
@@ -128,16 +138,16 @@ public class ZigBeeHardwareController {
         HardwareType type = id.getHardwareType();
         
         if (type.isGateway()) {
-            commissionGateway(mav.getModelMap(), accessor, deviceId);
+            commissionGateway(resp, accessor, deviceId);
         } else {
-            commissionNode(mav.getModelMap(), accessor, deviceId, id.getInventoryId());
+            commissionNode(resp, accessor, deviceId, id.getInventoryId());
         }
 
         return mav;
     }
     
     @RequestMapping
-    public ModelAndView decommission(YukonUserContext context, int deviceId) {
+    public ModelAndView decommission(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceDecommissionByOperator(context.getYukonUser(), pao.getPaoName());
         
@@ -147,15 +157,15 @@ public class ZigBeeHardwareController {
         HardwareType type = id.getHardwareType();
         
         if (type.isGateway()) {
-            decommissionGateway(mav.getModelMap(), accessor, deviceId);
+            decommissionGateway(resp, accessor, deviceId);
         } else {
-            decommissionNode(mav.getModelMap(), accessor, deviceId, id.getInventoryId());
+            decommissionNode(resp, accessor, deviceId, id.getInventoryId());
         }
         
         return mav;
     }
     
-    private void commissionNode(ModelMap model, MessageSourceAccessor accessor, int deviceId, int inventoryId) {
+    private void commissionNode(HttpServletResponse resp, MessageSourceAccessor accessor, int deviceId, int inventoryId) throws IOException {
         boolean messageFailed = false;
         String errorMessage = null;
         MessageSourceResolvable errorResolvable = null;
@@ -180,37 +190,36 @@ public class ZigBeeHardwareController {
         if (messageFailed) {
             if (errorResolvable != null) {
                 errorMessage = accessor.getMessage(errorResolvable);
-                commandFailed(model, errorMessage);
+                commandFailed(resp, errorMessage);
             } else {
-                commandFailed(model, accessor, errorMessage);
+                commandFailed(resp, accessor, errorMessage);
             }
         } else {
-            commandSucceeded(model, accessor, "thermostatCommissioned", deviceId);
+            commandSucceeded(resp, accessor, "thermostatCommissioned", deviceId);
         }
         
     }
 
-    private void commandSucceeded(ModelMap model, MessageSourceAccessor accessor, String keySuffix, int deviceId) {
+    private void commandSucceeded(HttpServletResponse resp, MessageSourceAccessor accessor, String keySuffix, int deviceId) throws IOException {
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
         String message = accessor.getMessage(new YukonMessageSourceResolvable(keyPrefix + keySuffix, deviceSerialNumber));
-        commandResults(model,true,message);
+        commandResults(resp, true, message);
     }
     
-    private void commandFailed(ModelMap model, MessageSourceAccessor accessor, String errorMessage) {
+    private void commandFailed(HttpServletResponse resp, MessageSourceAccessor accessor, String errorMessage) throws IOException {
         String message = accessor.getMessage(new YukonMessageSourceResolvable(keyPrefix + "commandFailed", errorMessage));
-        commandResults(model,false,message);
+        commandResults(resp, false, message);
     }
     
-    private void commandFailed(ModelMap model, String errorMessage) {
-        commandResults(model,false,errorMessage);
+    private void commandFailed(HttpServletResponse resp, String errorMessage) throws IOException {
+        commandResults(resp, false, errorMessage);
     }
     
-    private void commandResults(ModelMap model, boolean success, String message) {
-        model.addAttribute("success", success);        
-        model.addAttribute("message", message);
+    private void commandResults(HttpServletResponse resp, boolean success, String message) throws IOException {
+        returnJson(resp, success, message);
     }
     
-    private void commissionGateway(ModelMap model, MessageSourceAccessor accessor, int gatewayId) {
+    private void commissionGateway(HttpServletResponse resp, MessageSourceAccessor accessor, int gatewayId) throws IOException {
         boolean messageFailed = false;
         String errorMessage = null;
         MessageSourceResolvable errorResolvable = null;
@@ -234,16 +243,16 @@ public class ZigBeeHardwareController {
         if (messageFailed) {
             if (errorResolvable != null) {
                 errorMessage = accessor.getMessage(errorResolvable);
-                commandFailed(model, errorMessage);
+                commandFailed(resp, errorMessage);
             } else {
-                commandFailed(model, accessor, errorMessage);
+                commandFailed(resp, accessor, errorMessage);
             }
         } else {
-            commandSucceeded(model, accessor, "gatewayCommissioned", gatewayId);
+            commandSucceeded(resp, accessor, "gatewayCommissioned", gatewayId);
         }
     }
     
-    private void decommissionNode(ModelMap model, MessageSourceAccessor accessor, int deviceId, int inventoryId) {
+    private void decommissionNode(HttpServletResponse resp, MessageSourceAccessor accessor, int deviceId, int inventoryId) throws IOException {
         boolean messageFailed = false;
         String errorMessage = null;
         try {
@@ -259,13 +268,13 @@ public class ZigBeeHardwareController {
         }
         
         if (messageFailed) {
-            commandFailed(model, accessor, errorMessage);
+            commandFailed(resp, accessor, errorMessage);
         } else {
-            commandSucceeded(model, accessor, "thermostatDecommissioned", deviceId);
+            commandSucceeded(resp, accessor, "thermostatDecommissioned", deviceId);
         }
     }
     
-    private void decommissionGateway(ModelMap model, MessageSourceAccessor accessor, int gatewayId) {
+    private void decommissionGateway(HttpServletResponse resp, MessageSourceAccessor accessor, int gatewayId) throws IOException {
         boolean messageFailed = false;
         String errorMessage = null;
         try {
@@ -279,9 +288,9 @@ public class ZigBeeHardwareController {
         }
         
         if (messageFailed) {
-            commandFailed(model, accessor, errorMessage);
+            commandFailed(resp, accessor, errorMessage);
         } else {
-            commandSucceeded(model, accessor, "gatewayDecommissioned", gatewayId);
+            commandSucceeded(resp, accessor, "gatewayDecommissioned", gatewayId);
         }
     }
     

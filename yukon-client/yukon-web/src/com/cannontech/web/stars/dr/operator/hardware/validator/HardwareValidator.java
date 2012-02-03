@@ -44,26 +44,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
             if (StringUtils.isBlank(hardware.getSerialNumber())) {
                 errors.rejectValue("serialNumber", "yukon.web.error.required");
             } else {
-                if (hardwareType.isSwitch() && hardwareType.isTwoWay()) {
-                    /* This is a two way lcr so the serial number can only have numeric chars and must be a valid integer. */
-                    if (!StringUtils.isNumeric(hardware.getSerialNumber())) {
-                        errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
-                    } else {
-                       try {
-                           Integer.parseInt(hardware.getSerialNumber());
-                       } catch(NumberFormatException e) {
-                           errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.tooLong.twoWay");
-                       }
-                    }
-                } else {
-                    /* Not a two way device so serial number should only contain alpha numeric characters and
-                     * be less than 30 characters long. */
-                    if (!StringUtils.isAlphanumeric(hardware.getSerialNumber())) {
-                        errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
-                    } else {
-                        YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", hardware.getSerialNumber(), 30);
-                    } 
-                }
+                validateSN(hardware.getSerialNumber(), errors, hardwareType, "serialNumber");
             }
         } else if (hardwareType == HardwareType.NON_YUKON_METER) {
             /* Meter Number */
@@ -158,6 +139,30 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                     YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "twoWayDeviceName", "yukon.web.modules.operator.hardware.error.required");
                 }
             }
+        }
+    }
+    
+    public static void validateSN(String sn, Errors errors, HardwareType type, String path) {
+        if (type == HardwareType.LCR_3102) {
+            /* For LCR 3102's the serial number must be a valid integer since it has to match the 
+             * address in DeviceCarrierSettings which is a varchar(18) */
+            if (!StringUtils.isNumeric(sn)) {
+                errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
+            } else {
+               try {
+                   Integer.parseInt(sn);
+               } catch(NumberFormatException e) {
+                   errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.tooLong.twoWay");
+               }
+            }
+        } else {
+            /* Not a LCR 3102 so serial number should only contain alpha numeric characters and
+             * be less than 30 characters long. */
+            if (!StringUtils.isAlphanumeric(sn)) {
+                errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
+            } else {
+                YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
+            } 
         }
     }
     

@@ -14,86 +14,89 @@
 <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
-    var url = '/spring/stars/operator/hardware/zb/';
-    var button = event.findElement('button');
-    if (button.id == 'refresh') {
-        url += 'refresh';
-    } else if (button.name == 'commissionSubmit') {
-        url += 'commission';
-        $('confirmCommissionPopup').hide();
-    } else if (button.name == 'decommissionSubmit') {
-        url += 'decommission';
-    }
+jQuery(function(){
     
-    Yukon.ui.blockElement({selector:'#zigbeeStatus_content'});
-    
-    new Ajax.Request(url, {
-        method: 'get',
-        parameters: {'deviceId': '${hardware.deviceId}'},
-        onSuccess: function(resp, json) {
-           if (json.success ==  true) {
-               $('zbCommandFailure').hide();
-               $('zbCommandSuccess').innerHTML = json.message;
-               $('zbCommandSuccess').show();
-            } else {
-                $('zbCommandSuccess').hide();
-                $('zbCommandFailure').innerHTML = json.message;
-                $('zbCommandFailure').show(); 
-            }
-        },
-        onComplete: function() {
-            Yukon.ui.unblockElement({selector:'#zigbeeStatus_content'});
+    jQuery(document).delegate('#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', 'click', function(event) {
+        var url = '/spring/stars/operator/hardware/zb/';
+        var button = event.currentTarget;
+        if (button.id == 'refresh') {
+            url += 'refresh';
+        } else if (button.name == 'commissionSubmit') {
+            url += 'commission';
+            jQuery('#confirmCommissionPopup').hide();
+        } else if (button.name == 'decommissionSubmit') {
+            url += 'decommission';
         }
+        
+        var elementToBlock = event.currentTarget;
+        Yukon.ui.block(elementToBlock);
+        
+        jQuery.ajax({
+            url: url,
+            method: 'GET',
+            data: {'deviceId': '${hardware.deviceId}'},
+            success: function(data) {
+                jQuery('#zbCommandStatus').html(data.message);
+                jQuery('#zbCommandStatus').show();
+                if (data.success ==  true) {
+                    jQuery('#zbCommandStatus').addClass('successMessage').removeClass('errorMessage');
+                 } else {
+                     jQuery('#zbCommandStatus').removeClass('successMessage').addClass('errorMessage');
+                 }
+                Yukon.ui.unblock(elementToBlock);
+             },
+             failure: function(){
+                 Yukon.ui.unblock(elementToBlock);
+             }
+        });
     });
+    
+    jQuery(document).delegate('button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', 'click', function(event) {
+        var url = '/spring/stars/operator/hardware/zb/';
+        var button = event.currentTarget;
+        
+        var name = button.name.split('_')[0];
+        var deviceId = button.name.split('_')[1];
+        if (name == 'assignedDevicesCommissionSubmit') {
+            url += 'commission';
+            jQuery('#confirmCommissionPopup_' + deviceId).hide();
+        } else if (name == 'assignedDevicesDecommissionSubmit') {
+            url += 'decommission';
+        }
+        
+        var elementToBlock = event.currentTarget;
+        Yukon.ui.block(elementToBlock);
+        
+        jQuery.ajax({
+            url: url,
+            method: 'GET',
+            data: {'deviceId': deviceId},
+            success: function(data) {
+                jQuery('#zbAssignedStatus').html(data.message);
+                jQuery('#zbAssignedStatus').show();
+                if (data.success ==  true) {
+                    jQuery('#zbAssignedStatus').addClass('successMessage').removeClass('errorMessage');
+                } else {
+                    jQuery('#zbAssignedStatus').removeClass('successMessage').addClass('errorMessage');
+                }
+                Yukon.ui.unblock(elementToBlock);
+            },
+            failure: function() {
+                Yukon.ui.unblock(elementToBlock);
+            }
+        });
+    });
+    
+    <cti:displayForPageEditModes modes="VIEW">
+    jQuery(document).delegate('#sendTextMsg', 'click', function(event) {
+        var params = {'accountId' : ${accountId}, 
+                      'inventoryId' : ${inventoryId}, 
+                      'gatewayId' : ${hardware.deviceId}};
+        openSimpleDialog('ajaxDialog', 'zb/showTextMessage', null, params);
+    });
+    </cti:displayForPageEditModes>
 });
 
-YEvent.observeSelectorClick('button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
-    var url = '/spring/stars/operator/hardware/zb/';
-    var button = event.findElement('button');
-    var deviceId;
-    
-    if (button.name.startsWith('assignedDevicesCommissionSubmit_')) {
-        url += 'commission';
-        deviceId = button.name.sub('assignedDevicesCommissionSubmit_', '');
-        $('confirmCommissionPopup_' + deviceId).hide();
-    } else if (button.name.startsWith('assignedDevicesDecommissionSubmit_')) {
-        url += 'decommission';
-        deviceId = button.name.sub('assignedDevicesDecommissionSubmit_', '');
-    } else {
-        return;
-    }
-    
-    Yukon.ui.blockElement({selector:'#assignedDevices_content'});
-    
-    new Ajax.Request(url, {
-        method: 'get',
-        parameters: {'deviceId': deviceId},
-        onSuccess: function(resp, json) {
-           if (json.success ==  true) {
-               $('zbAssignedFailure').hide();
-               $('zbAssignedSuccess').innerHTML = json.message;
-               $('zbAssignedSuccess').show();
-            } else {
-                $('zbAssignedSuccess').hide();
-                $('zbAssignedFailure').innerHTML = json.message;
-                $('zbAssignedFailure').show(); 
-            }
-        },
-        onComplete: function() {
-            Yukon.ui.unblockElement({selector:'#assignedDevices_content'});
-        }
-    });
-});
-
-<cti:displayForPageEditModes modes="VIEW">
-YEvent.observeSelectorClick('#sendTextMsg', function(event) {
-    var params = {'accountId' : ${accountId}, 
-                  'inventoryId' : ${inventoryId}, 
-                  'gatewayId' : ${hardware.deviceId}};
-    openSimpleDialog('ajaxDialog', 'zb/showTextMessage', null, params);
-});
-</cti:displayForPageEditModes>
 
 function showDeletePopup() {
     $('deleteHardwarePopup').show();
@@ -202,10 +205,10 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     </i:simplePopup>
     
     <cti:displayForPageEditModes modes="EDIT">
-        <cti:url value="/spring/stars/operator/hardware/update" var="action"/>
+        <cti:url value="update" var="action"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
-        <cti:url value="/spring/stars/operator/hardware/create" var="action"/>
+        <cti:url value="create" var="action"/>
     </cti:displayForPageEditModes>
     
     <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
@@ -356,7 +359,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 
                 <c:if test="${showZigbeeState}">
                     <cti:displayForPageEditModes modes="VIEW">
-                        <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer" id="zigbeeStatus">
+                        <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer f_block_this" id="zigbeeStatus">
                             <table class="compactResultsTable">
                                 <tr>
                                     <th><i:inline key=".status"/></th>
@@ -375,8 +378,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                     </td>
                                 </tr>
                             </table>
-                            <div id="zbCommandFailure" style="display:none;" class="errorMessage zbCommandMsg"></div>
-                            <div id="zbCommandSuccess" style="display:none;" class="successMessage zbCommandMsg"></div>
+                            <div id="zbCommandStatus" style="display:none;" class="errorMessage zbCommandMsg"></div>
                             <div class="pageActionArea">
                                 <c:choose>
                                     <c:when test="${showDisabledRefresh}">
@@ -426,7 +428,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 </c:if>
                 
                 <c:if test="${showAssignedDevices}">
-                    <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices">
+                    <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f_block_this">
                         <div class="historyContainer">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
@@ -491,8 +493,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                             </c:choose>
                         </div>
                         
-                        <div id="zbAssignedFailure" style="display:none;" class="errorMessage zbCommandMsg"></div>
-                        <div id="zbAssignedSuccess" style="display:none;" class="successMessage zbCommandMsg"></div>
+                        <div id="zbAssignedStatus" style="display:none;" class="zbCommandMsg"></div>
                         
                         <c:if test="${not empty availableDevices}">
                             <div class="actionArea">

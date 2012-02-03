@@ -9,22 +9,19 @@
 <tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
     
-    <script type="text/javascript">
-    
-    function showDeletePopup() {
-        $('deleteHardwarePopup').show();
-    }
-    
-    function hideDeletePopup() {
-        $('deleteHardwarePopup').hide();
-    }
-    
-    </script>
+<script type="text/javascript">
+jQuery(document).delegate('#deleteBtn', 'click', function() {
+    jQuery('#deleteHardwarePopup').show();
+});
+jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
+    jQuery('#deleteHardwarePopup').hide();
+});
+</script>
     
     <!-- Delete Hardware Popup -->
-    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}" styleClass="smallSimplePopup">
-        <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
-            <input type="hidden" name="inventoryId" value="${hardwareDto.inventoryId}">
+    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardware.displayName}" styleClass="smallSimplePopup">
+        <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">
+            <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="deleteOption" value="delete">
             
@@ -35,27 +32,26 @@
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <input type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
+                            <cti:button nameKey="delete" type="submit"/>
                         </cti:checkRolesAndProperties>
-                        <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
+                        <cti:button nameKey="cancel" id="cancelDeleteBtn"/>
                     </td>
                 </tr>
             </table>
         </form>
     </i:simplePopup>
-    
+
     <cti:displayForPageEditModes modes="EDIT">
-        <c:set var="action" value="/spring/stars/operator/hardware/update"/>
+        <c:set var="action" value="update" />
     </cti:displayForPageEditModes>
-    
     <cti:displayForPageEditModes modes="CREATE">
-        <c:set var="action" value="/spring/stars/operator/hardware/create"/>
+        <c:set var="action" value="create" />
     </cti:displayForPageEditModes>
     
-    <form:form commandName="hardwareDto" action="${action}">
+    <form:form commandName="hardware" action="${action}">
     
         <input type="hidden" name="accountId" value="${accountId}">
-        <input type="hidden" name="inventoryId" value="${hardwareDto.inventoryId}">
+        <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
         <form:hidden path="hardwareType"/>
         <form:hidden path="hardwareTypeEntryId"/>
         
@@ -89,14 +85,14 @@
             
                 <tags:formElementContainer nameKey="availableSwitchesSection">
                     <c:choose>
-                        <c:when test="${not empty hardwareDto.switchAssignments}">
+                        <c:when test="${not empty hardware.switchAssignments}">
                             
-                            <table class="resultsTable">
+                            <table class="compactResultsTable">
                                 <tr>
                                     <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.serialNumber"/></th>
                                     <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.label"/></th>
                                 </tr>
-                                <c:forEach var="switch" items="${hardwareDto.switchAssignments}" varStatus="switchRow">
+                                <c:forEach var="switch" items="${hardware.switchAssignments}" varStatus="switchRow">
                                     <tr>
                                         <td nowrap="nowrap">
                                             <tags:checkbox path="switchAssignments[${switchRow.index}].assigned" /><span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${switch.serialNumber}</spring:escapeBody></span>
@@ -125,15 +121,24 @@
         
         <%-- BUTTONS --%>
         <div class="pageActionArea">
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:checkRolesAndProperties value="${editingRoleProperty}">
+                    <cti:url value="/spring/stars/operator/hardware/mp/edit" var="editUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="inventoryId" value="${inventoryId}"/>
+                    </cti:url>
+                    <cti:button nameKey="edit" href="${editUrl}"/>
+                </cti:checkRolesAndProperties>
+            </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
 
                 <cti:displayForPageEditModes modes="EDIT">
-                    <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
+                    <cti:button nameKey="delete" id="deleteBtn"/>
                 </cti:displayForPageEditModes>
 
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
-                    <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
+                    <cti:button nameKey="cancel" id="cancelBtn" type="submit" name="cancel"/>
                 </cti:displayForPageEditModes>
             </cti:displayForPageEditModes>
         </div>

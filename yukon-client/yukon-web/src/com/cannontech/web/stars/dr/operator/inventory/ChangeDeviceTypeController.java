@@ -37,10 +37,10 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeDeviceTypeController {
 
-    private @Autowired InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private @Autowired ChangeTypeHelper helper;
-    private @Autowired YukonEnergyCompanyService energyCompanyService;
-    private @Autowired StarsDatabaseCache starsDatabaseCache;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private ChangeTypeHelper helper;
+    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping

@@ -17,6 +17,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
 
@@ -146,9 +147,25 @@ public interface InventoryDao {
      * the amount of dao hits, but will force the user to use a map call to get the inventoryId for each serial number. 
      */
     public Map<String, Integer> getSerialNumberToInventoryIdMap(Collection<String> serialNumbers, int energyCompanyId);
+    
+    /**
+     * Returns the category id based on hardware type id which either comes from 
+     * LMHardwareBase:LMHardwareTypeID or from MeterHardwareBase:MeterTypeID.
+     * If this energy company uses yukon for meters, they will only exist in InventoryBase
+     * and they won't have a type id; their category defaults to 'MCT'. For stars meters the 
+     * category will be 'NON_YUKON_METER'.
+     */
+    public int getCategoryIdForTypeId(int hardwareTypeId, YukonEnergyCompany ec);
 
     /**
      * This method allows us to pass in a list of serial numbers and get back a list of all of the inventory ids that exist in the system.
      */
     public List<Integer> getInventoryIds(Collection<String> serialNumbers, int energyCompanyId);
+
+    /**
+     * Retrieves the meter number from DeviceMeterGroup for an mct
+     * @param deviceId
+     * @return
+     */
+    public String getMeterNumberForDevice(int deviceId);
 }

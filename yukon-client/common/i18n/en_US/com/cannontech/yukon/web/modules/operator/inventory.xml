@@ -5,7 +5,7 @@
     <!-- /inventory/home.jsp -->
     <entry key="yukon.web.modules.operator.inventory.home.pageName">Inventory</entry>
     <entry key="yukon.web.modules.operator.inventory.home.pageDescription"></entry>
-    <entry key="yukon.web.modules.operator.inventory.home.deviceSelection.title">Choose Inventory Selection Type</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.deviceSelection.title">Collection Actions</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryButton.label">Select by Inventory</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryDescription">Choose inventory manually.</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectFileButton.label">Select by File Upload</entry>
@@ -26,11 +26,11 @@
     <entry key="yukon.web.modules.operator.inventory.home.invalidInventoryData">File contains invalid inventory data.</entry>
     <entry key="yukon.web.modules.operator.inventory.home.links.title">Links</entry>
     <entry key="yukon.web.modules.operator.inventory.home.actions.title">Actions</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.addHardware">Add Hardware</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.addHardwareByRange">Add Hardware by Range</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.addMeter">Add Meter</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addHardware.label">Add Hardware</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addHardwareByRange.label">Add by Range</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addMeter.label">Add Meter</entry>
     <entry key="yukon.web.modules.operator.inventory.home.zbProblemDevices">ZigBee Problem Devices</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.inventorySearch.title">Advanced Inventory Search</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.inventorySearch.title">Advanced Search</entry>
     
     <!-- Common Inventory Words -->
     <entry key="yukon.web.modules.operator.inventory.serialNumber">Serial Number</entry>
@@ -51,11 +51,47 @@
     <entry key="yukon.web.modules.operator.inventory.list.inventorySearch.title">Advanced Inventory Search</entry>
     
     <!-- /inventory/inventory.jsp -->
-    <entry key="yukon.web.modules.operator.inventory.VIEW.pageName">Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventory.VIEW.pageName">Hardware</entry>
     <entry key="yukon.web.modules.operator.inventory.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.inventory.EDIT.pageName">Edit Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventory.EDIT.pageName">Edit Hardware</entry>
     <entry key="yukon.web.modules.operator.inventory.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.operator.inventory.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.inventory.EDIT.deleteInventoryConfirm.title">Delete Hardware {0}</entry>
+    <entry key="yukon.web.modules.operator.inventory.EDIT.deleteInventoryConfirm.message">Are you sure you want to delete hardware: {0}?</entry>
+    <entry key="yukon.web.modules.operator.inventory.CREATE.pageName">Create Hardware</entry>
+    <entry key="yukon.web.modules.operator.inventory.CREATE.pageDescription">Create Hardware</entry>
+    <entry key="yukon.web.modules.operator.inventory.CREATE.contextualPageName">Create</entry>
+    <entry key="yukon.web.modules.operator.inventory.yukonMeterAdded">Meter {0} successfully added to inventory.</entry>
+    
+    <!-- /inventory/abr/setup.jsp -->
+    <entry key="yukon.web.modules.operator.abr.setup.pageName">Add Hardware By SN Range</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.contextualPageName">Add By Range</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.type">Device Type</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.range">SN Range</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.to">to</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.status">Device Status</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.voltage">Voltage</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.serviceCompany">Service Company</entry>
+    <entry key="yukon.web.modules.operator.abr.setup.route">Route</entry>
+    <entry key="yukon.web.modules.operator.abr.settings.title">Settings</entry>
+    <entry key="yukon.web.modules.operator.abr.progress.title">Progress</entry>
+    <entry key="yukon.web.modules.operator.abr.progress">Progress</entry>
+    <entry key="yukon.web.modules.operator.abr.successful">Successful</entry>
+    <entry key="yukon.web.modules.operator.abr.failed">Failed</entry>
+    <entry key="yukon.web.modules.operator.abr.failedItems.title">Failed Items</entry>
+    <entry key="yukon.web.modules.operator.abr.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.abr.reason">Failure Reason</entry>
+    <entry key="yukon.web.modules.operator.abr.canceled">Add by SN Range task canceled after {0} items were processed.</entry>
+    <entry key="yukon.web.modules.operator.abr.newOperation">Choose A New Operation For Inventory</entry>
+    <entry key="yukon.web.modules.operator.abr.viewFailureReasons">View Failed</entry>
+    <entry key="yukon.web.modules.operator.abr.successCollectionDescription">Add By Range Success List</entry>
+    <entry key="yukon.web.modules.operator.abr.error.sn.required">Serial numbers are required.</entry>
+    <entry key="yukon.web.modules.operator.abr.error.sn.fromGreaterThanTo">Starting serial number must be less than or equal to ending serial number.</entry>
+    <entry key="yukon.web.modules.operator.abr.error.nonNumericSerialNumber">Serial numbers must be numeric.</entry>
+    <entry key="yukon.web.modules.operator.abr.error.tooLong.lcr3102">Serial numbers for the LCR 3102 device type must be less than 2147483648.</entry>
+    <entry key="yukon.web.modules.operator.abr.error.paoNameUnavailable.lcr3102">The device name is unavailable: LCR2W {0}</entry>
+    <entry key="yukon.web.modules.operator.abr.error.snUnavailable">Serial number: {0} is already in use.</entry>
+    <entry key="yukon.web.modules.operator.abr.error.unknown">Creation failed for serial number: {0}, reason: {1}</entry>
     
     <!-- /inventory/zbProblemDevices.jsp -->
     <entry key="yukon.web.modules.operator.zbProblemDevices.pageName">ZigBee Problem Devices</entry>
@@ -169,6 +205,9 @@
     <entry key="yukon.web.modules.operator.changeType.instructions">This will change the device type of all inventory in the selected inventory collection except the inventory whose original type does not support the change type action.</entry>
     <entry key="yukon.web.modules.operator.changeType.newType">New Type</entry>
     <entry key="yukon.web.modules.operator.changeType.progress">Progress</entry>
+    <entry key="yukon.web.modules.operator.changeType.successful">Successful</entry>
+    <entry key="yukon.web.modules.operator.changeType.unsupported">Unsupported</entry>
+    <entry key="yukon.web.modules.operator.changeType.successCollectionDescription">Change Type Success List</entry>
     
     <!-- /inventory/changeStatus.jsp -->
     <entry key="yukon.web.modules.operator.changeStatus.pageName">Change Device Status</entry>

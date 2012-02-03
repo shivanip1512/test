@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
@@ -20,6 +21,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -39,6 +41,7 @@ import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServic
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -59,22 +62,23 @@ import com.google.common.collect.Lists;
 
 public class HardwareServiceImpl implements HardwareService {
 
-    private @Autowired ApplianceDao applianceDao;
-    private @Autowired CustomerAccountDao customerAccountDao;
-    private @Autowired YukonEnergyCompanyService yukonEnergyCompanyService;
-    private @Autowired EnrollmentHelperService enrollmentHelperService;
-    private @Autowired HardwareEventLogService hardwareEventLogService;
-    private @Autowired InventoryBaseDao inventoryBaseDao;
-    private @Autowired LMHardwareBaseDao lmHardwareBaseDao;
-    private @Autowired LMHardwareEventDao lmHardwareEventDao;
-    private @Autowired StarsDatabaseCache starsDatabaseCache;
-    private @Autowired StarsInventoryBaseDao starsInventoryBaseDao;
-    private @Autowired OptOutService optOutService;
-    private @Autowired OptOutEventDao optOutEventDao;
-    private @Autowired HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
-    private @Autowired InventoryDao inventoryDao;
-    private @Autowired PaoDao paoDao;
-    private @Autowired HardwareUiService hardwareUiService;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnrollmentHelperService enrollmentHelperService;
+    @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private LMHardwareEventDao lmHardwareEventDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
+    @Autowired private OptOutService optOutService;
+    @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private YukonListDao yukonListDao;
     
     @Override
     @Transactional
@@ -232,6 +236,34 @@ public class HardwareServiceImpl implements HardwareService {
             hardware.setWarehouseId(warehouseId);
             hardwareUiService.updateHardware(context.getYukonUser(), hardware);
         }
+    }
+
+    @Override
+    public InventoryIdentifier createForAddByRangeTask(AddByRange abr, long sn, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
+        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        Hardware hardware = new Hardware();
+        hardware.setSerialNumber(String.valueOf(sn));
+        
+        hardware.setHardwareTypeEntryId(abr.getHardwareTypeId());
+        YukonListEntry entry = yukonListDao.getYukonListEntry(abr.getHardwareTypeId());
+        HardwareType type = HardwareType.valueOf(entry.getYukonDefID());
+        hardware.setHardwareType(type);
+        
+        hardware.setFieldReceiveDate(new Date());
+        hardware.setDeviceStatusEntryId(abr.getStatusTypeId());
+        hardware.setServiceCompanyId(abr.getServiceCompanyId());
+        hardware.setVoltageEntryId(abr.getVoltageTypeId());
+        hardware.setEnergyCompanyId(ec.getEnergyCompanyId());
+        hardware.setRouteId(abr.getRouteId());
+        
+        if (type == HardwareType.LCR_3102) {
+            hardware.setCreatingNewTwoWayDevice(true);
+            hardware.setTwoWayDeviceName("LCR2W " + sn);
+        }
+        
+        int id = hardwareUiService.createHardware(hardware, null, user);
+        
+        return new InventoryIdentifier(id, type);
     }
     
 }

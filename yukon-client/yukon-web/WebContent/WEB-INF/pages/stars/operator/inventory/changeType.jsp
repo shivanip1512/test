@@ -48,9 +48,32 @@
             </form>
         </c:if>
         <c:if test="${not empty task}">
+            
+            <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/changeType/newOperation">
+                <cti:param name="type" value="SUCCESS"/>
+                <cti:param name="taskId" value="${task.taskId}"/>
+            </cti:url>
+            <cti:url var="newOperationUnsupported" value="/spring/stars/operator/inventory/changeType/newOperation">
+                <cti:param name="type" value="UNSUPPORTED"/>
+                <cti:param name="taskId" value="${task.taskId}"/>
+            </cti:url>
+            
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".progress">
                     <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".successful">
+                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage normalBoldLabel"/>
+                    <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
+                        <ul class="resultList">
+                            <li>
+                                <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
+                            </li>
+                        </ul>
+                    </cti:classUpdater>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".unsupported">
+                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage normalBoldLabel"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         

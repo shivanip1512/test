@@ -674,7 +674,7 @@
     </bean>
     
     <bean id="deviceReconfigMonitorsWidget" class="com.cannontech.web.widget.DeviceReconfigMonitorsWidget">
-        <property name="title" value="Inventory Configuration Tasks"/>
+        <property name="title" value="Configuration Tasks"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_RECONFIG"/>
@@ -683,7 +683,7 @@
     </bean>
     
     <bean id="commandScheduleWidget" class="com.cannontech.web.widget.CommandScheduleWidget">
-        <property name="title" value="Command Scheduling"/>
+        <property name="title" value="Command Schedules"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_RECONFIG"/>
@@ -1773,6 +1773,8 @@
     
     <bean name="availableMctPicker" class="com.cannontech.web.picker.v2.AvailableMctPicker"/>
     
+    <bean name="drUntrackedMctPicker" class="com.cannontech.web.picker.v2.DrUntrackedMctPicker"/>
+    
     <bean name="availableSwitchPicker" class="com.cannontech.web.picker.v2.AvailableLmHardwarePicker">
         <property name="hardwareClass" value="SWITCH"/>
     </bean>
@@ -1941,6 +1943,8 @@
         <property name="resultsCache" ref="accountImportResultsCache" />
     </bean>
     
+    <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
+    
     <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">
         <property name="resultsCache" ref="inventoryTaskResultsCache" />
@@ -1958,6 +1962,9 @@
         <property name="resultsCache" ref="inventoryTaskResultsCache" />
     </bean>
     <bean id="deleteInventoryHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInventoryHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+    </bean>
+    <bean id="addByRangeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper">
         <property name="resultsCache" ref="inventoryTaskResultsCache" />
     </bean>
 

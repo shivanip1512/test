@@ -4,7 +4,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 
 public interface StarsInventoryBaseService {
 
@@ -24,7 +24,7 @@ public interface StarsInventoryBaseService {
      * @return LiteInventoryBase
      */
     public LiteInventoryBase addDeviceToAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, boolean allowCreateLcrIfAlreadyHasAssignedDevice) throws StarsTwoWayLcrYukonDeviceCreationException;
+            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, boolean allowCreateLcrIfAlreadyHasAssignedDevice) throws Lcr3102YukonDeviceCreationException;
 
     /**
      * Updates a hardware device info on the customer account. Ex., Field

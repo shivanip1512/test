@@ -6,12 +6,12 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 
 public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
 
-    public class ChangeDeviceStatusTask extends AbstractInventoryTask {
+    public class ChangeDeviceStatusTask extends CollectionBasedInventoryTask {
         private int statusEntryId;
         private HttpSession session;
         
@@ -43,11 +43,14 @@ public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
                 @Override
                 public void run() {
                     for (InventoryIdentifier inv : collection.getList()) {
+                        if (canceled) break;
                         try {
                             hardwareService.changeDeviceStatus(context, inv, statusEntryId, session);
+                            successCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {
                             /* Expect this to never happen */
                             log.error("Unable to change device status: " + inv, e);
+                            failedCount++;
                         } finally {
                             completedItems ++;
                         }

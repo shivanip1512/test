@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
@@ -15,6 +16,10 @@
     <script type="text/javascript">
     function submitSelectionForm(items) {
         $('selectByInventoryPickerForm').submit();
+        return true;
+    }
+    function addMeter() {
+        $('addMeterForm').submit();
         return true;
     }
 
@@ -109,17 +114,51 @@
                 <%--SEARCH --%>
                 <%@ include file="search.jsp" %>
                 
-                <tags:boxContainer2 nameKey="actions">
-                    <cti:checkRolesAndProperties value="INVENTORY_CREATE_HARDWARE">
-                        <a href=""><i:inline key=".addHardware"/></a><br>
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="SN_ADD_RANGE">
-                        <a href=""><i:inline key=".addHardwareByRange"/></a><br>
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="INVENTORY_CREATE_HARDWARE">
-                        <a href=""><i:inline key=".addMeter"/></a>
-                    </cti:checkRolesAndProperties>
-                </tags:boxContainer2>
+                <c:if test="${showActions}">
+                
+                    <tags:boxContainer2 nameKey="actions">
+                        <ul class="buttonStack">
+                            <li>
+                                <form action="creationPage" method="post">
+                                    <cti:button nameKey="addHardware" id="addHardwareBtn" type="submit"/>
+                                    <select name="hardwareTypeId">
+                                        <c:forEach items="${addHardwareTypes}" var="deviceType">
+                                            <option value="${deviceType.entryID}"><spring:escapeBody htmlEscape="true">${deviceType.entryText}</spring:escapeBody></option>
+                                        </c:forEach>
+                                    </select>
+                                </form>
+                            </li>
+                            <c:if test="${showAddByRange}">
+                                <li>
+                                    <form action="abr/view" method="post">
+                                        <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
+                                        <select name="hardwareTypeId">
+                                            <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
+                                                <option value="${deviceType.entryID}"><spring:escapeBody htmlEscape="true">${deviceType.entryText}</spring:escapeBody></option>
+                                            </c:forEach>
+                                        </select>
+                                    </form>
+                                </li>
+                            </c:if>
+                            <c:if test="${showAddMeter}">
+                                <li>
+                                    <form action="addMeter/view" id="addMeterForm">
+                                        <tags:pickerDialog id="addMeterPicker"
+                                                            type="drUntrackedMctPicker"
+                                                            nameKey="addMeter"
+                                                            linkType="button"
+                                                            destinationFieldName="mctId"
+                                                            allowEmptySelection="false"
+                                                            multiSelectMode="false"
+                                                            immediateSelectMode="true"
+                                                            endAction="addMeter"/>
+                                    </form>
+                                </li>
+                            </c:if>
+                        </ul>
+                    </tags:boxContainer2>
+                
+                </c:if>
                     
                 <c:if test="${showLinks}">
                     <br>
