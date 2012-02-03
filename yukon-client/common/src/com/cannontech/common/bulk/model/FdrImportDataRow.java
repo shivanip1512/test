@@ -1,11 +1,15 @@
 package com.cannontech.common.bulk.model;
 
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.util.StringUtils;
 
 import com.cannontech.common.bulk.service.FdrCsvHeader;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -76,28 +80,33 @@ public class FdrImportDataRow {
      * @return the String representation of a missing column, if found, otherwise null.
      */
     public String getMissingColumn() {
-        String missingColumn = getMissingDefaultColumn();
-        if(missingColumn == null) {
-            missingColumn = getMissingInterfaceColumn();
-        }
-        return missingColumn;
+        List<String> missingColumns = getMissingDefaultColumn();
+        missingColumns.addAll(getMissingInterfaceColumn());
+        
+        if(missingColumns.size() == 0) return null;
+        
+        String concatenatedOutput = StringUtils.collectionToCommaDelimitedString(missingColumns);
+        
+        return concatenatedOutput;
     }
     
-    private String getMissingInterfaceColumn() {
+    private List<String> getMissingInterfaceColumn() {
+        List<String> missingColumns = Lists.newArrayList();
         for(FdrInterfaceOption option : interfaceType.getInterfaceOptions()) {
             if(!interfaceColumns.containsKey(option)) {
-                return option.toString();
+                missingColumns.add(option.toString());
             }
         }
-        return null;
+        return missingColumns;
     }
     
-    private String getMissingDefaultColumn() {
+    private List<String> getMissingDefaultColumn() {
+        List<String> missingColumns = Lists.newArrayList();
         for(FdrCsvHeader header : FdrCsvHeader.values()) {
             if(!defaultColumns.containsKey(header)) {
-                return header.toString();
+                missingColumns.add(header.toString());
             }
         }
-        return null;
+        return missingColumns;
     }
 }

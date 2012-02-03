@@ -59,7 +59,7 @@
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDestination">"{0}" is not a valid destination.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDeviceType">"{0} is not a valid device type."</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.deviceNotFound">Import Error: No device found with name "{0}" and type "{1}".</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.missingAnyColumn">Import Error: Missing a column.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.missingAnyColumn">Import Error: Missing column value for {0}.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidAction">Import Error: Invalid Action.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDirection">"{0}" is not a valid direction.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.pointNotFound">Point "{0}" on Device "{1}" is not a valid point.</entry>
