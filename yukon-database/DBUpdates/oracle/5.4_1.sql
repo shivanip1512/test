@@ -23,6 +23,12 @@ INSERT INTO YukonRoleProperty VALUES (-20219, -202, 'Meter Events', 'false', 'Co
 INSERT INTO DeviceGroup VALUES (30, 'Device Configs', 15, 'NOEDIT_NOMOD', 'DEVICECONFIG');
 /* End YUK-10462 */
 
+/* Start YUK-10600 */
+UPDATE YukonRoleProperty 
+SET KeyName = 'Opt Out Force All Devices', Description = 'Controls access to select individual devices or forces all device selection when opting out. When true, individual device selection is unavailable and all devices are forced to opt out.' 
+WHERE RolePropertyId = -40201;
+/* End YUK-10600 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
