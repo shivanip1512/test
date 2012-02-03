@@ -1426,6 +1426,11 @@ select:focus {
 	user-select: none;
 }
 
+/* New style */
+a.icon {
+    margin: 0 5px 0 0;
+}
+
 .labeled_icon,
 .labeled_icon_right {
     padding: 0 0 0 20px;
@@ -1485,6 +1490,30 @@ select:focus {
 .magnifier_hovered,
 .magnifier:hover {
 	background: transparent url(../Icons/magnifier_over.gif) top left no-repeat;
+}
+
+.icon_folder_edit {
+    background: transparent url(../Icons/folder_edit.gif) top left no-repeat;
+}
+.icon_folder_edit_hovered,
+.icon_folder_edit:hover {
+    background: transparent url(../Icons/folder_edit_over.gif) top left no-repeat;
+}
+
+.icon_copy {
+    background: transparent url(../Icons/copy.gif) top left no-repeat;
+}
+.icon_copy_hovered,
+.icon_copy:hover {
+    background: transparent url(../Icons/copy_over.gif) top left no-repeat;
+}
+
+.icon_create {
+    background: transparent url(../Icons/wand.png) top left no-repeat;
+}
+.icon_create_hovered,
+.icon_create:hover {
+    background: transparent url(../Icons/wand_over.png) top left no-repeat;
 }
 
 .cog {

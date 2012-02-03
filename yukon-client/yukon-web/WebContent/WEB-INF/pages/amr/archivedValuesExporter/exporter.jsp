@@ -8,6 +8,7 @@
 
 
 <cti:standardPage page="archivedValueExporter.${mode}" module="amr">
+
     <script type="text/javascript">
     function ajaxSubmitForm(rowIndex, action, dialogSelector) {
         jQuery("#exporterForm input[name=rowIndex]").val(rowIndex);
@@ -235,7 +236,20 @@
             submitForm(rowIndex, 'moveFieldUp');
         });
         jQuery('.selectDevices').click(function(event) {
+            event.preventDefault();
             submitForm(-1, 'selectDevices');
+        });
+        jQuery('.edit').click(function(event) {
+            event.preventDefault();
+            submitForm(-1, 'edit');
+        });
+        jQuery('.copy').click(function(event) {
+            event.preventDefault();
+            submitForm(-1, 'copy');
+        });
+        jQuery('.create').click(function(event) {
+            event.preventDefault();
+            submitForm(-1, 'create');
         });
         function editAttributeOkPressed() {
             jQuery('#attributeDialog').dialog('close');
@@ -358,7 +372,7 @@
                     <div class="fl">
                         <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
                     </div>
-                        <cti:button nameKey="edit" styleClass="selectDevices fl" renderMode="image"  />
+                        <a href="javascript:void();" class="icon icon_folder_edit selectDevices fl" title="<i:inline key=".iconFolderEditDeviceGroup"/>"><i:inline key=".iconFolderEditDeviceGroup"/></a>
                     </c:otherwise>
                 </c:choose>
                 &nbsp &nbsp
@@ -370,17 +384,20 @@
                 <tags:nameValueContainer2 id="formatContainer" tableClass="marginBottom clear">
                     <tags:nameValue2 nameKey=".format">
                         <c:if test="${not empty backingBean.allFormats}">
-                            <form:select path="selectedFormatId" onchange="submitForm(-1, 'view')">
+                            <form:select path="selectedFormatId" onchange="submitForm(-1, 'view')" cssClass="fl" cssStyle="margin-right:5px;">
                                 <c:forEach var="format" items="${backingBean.allFormats}">
                                     <form:option value="${format.formatId}" title="${format.formatId}">${format.formatName}</form:option>
                                 </c:forEach>
                             </form:select>
                         </c:if>
-                        <cti:button id="createBtn" nameKey="create" styleClass="f_blocker" renderMode="image" />
-                        <c:if test="${not empty backingBean.allFormats}">
-                            <cti:button id="copyBtn" nameKey="copy" styleClass="f_blocker" renderMode="image" />
-                            <cti:button id="editBtn" nameKey="edit" styleClass="f_blocker" renderMode="image" />
-                        </c:if>
+                      <div class="fl">
+                          <a href="javascript:void();" class="icon icon_create create" title="<i:inline key=".iconCreateFormat" arguments="new format" />"><i:inline key=".iconCreateFormat" arguments="new format" /></a>
+                            <c:if test="${not empty backingBean.allFormats}">
+                                <a href="javascript:void();" class="icon icon_folder_edit edit" title="<i:inline key=".iconFolderEditFormat" arguments="${backingBean.format.formatName}" />"><i:inline key=".iconFolderEditFormat" arguments="${backingBean.format.formatName}" /></a>
+                                <a href="javascript:void();" class="icon icon_copy copy" title="<i:inline key=".iconCopyFormat" arguments="${backingBean.format.formatName}" />"><i:inline key=".iconCopyFormat" arguments="${backingBean.format.formatName}" /></a>
+                          </c:if>
+                      </div>
+           
                     </tags:nameValue2>
                     <c:if test="${not empty backingBean.allFormats}">
                         <tags:nameValue2 nameKey=".endDate">
@@ -486,6 +503,9 @@
                 <table class="compactResultsTable">
                     <tr>
                         <th class="nonwrapping"><i:inline key=".field" /></th>
+                        <th class="nonwrapping"><i:inline key=".dataType" /></th>
+                        <th class="nonwrapping"><i:inline key=".dataSelection" /></th>
+                        <th class="nonwrapping"><i:inline key=".daysPrevious" /></th>
                         <th class="nonwrapping"><i:inline key=".missingValue" /></th>
                         <th class="nonwrapping"><i:inline key=".rounding" /></th>
                         <th class="nonwrapping"><i:inline key=".pattern" /></th>
@@ -498,8 +518,14 @@
                     </tr>
                     <c:forEach var="field" items="${backingBean.format.fields}" varStatus="row">
                         <tr data-row-index="${row.index}" class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td class="nonwrapping"><i:inline key="${field}" /> <c:if test="${field.fieldType == 'ATTRIBUTE'}">(<cti:msg2 key="${field.attribute.dataSelection}" />,${field.attribute.daysPrevious}) - <i:inline key="${field.attributeField}" />
-                                </c:if></td>
+                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><i:inline key="${field}" /></spring:escapeBody>
+                            </td>
+                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><i:inline key="${field.attributeField}" /></spring:escapeBody>
+                            </td>
+                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><i:inline key="${field.attribute.dataSelection}" /></spring:escapeBody>
+                            </td>
+                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${field.attribute.daysPrevious}</spring:escapeBody>
+                            </td>
                             <td class="nonwrapping"><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody>
                             </td>
                             <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><i:inline key="${field.roundingMode}" /></spring:escapeBody>
@@ -553,7 +579,7 @@
                     
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <tr>
-                            <td align="right" colspan="7"><br> <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" /></td>
+                            <td align="right" colspan="10"><br> <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" /></td>
                         </tr>
                     </cti:displayForPageEditModes>
                     
@@ -562,13 +588,15 @@
         </c:if>
         
         <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <tags:boxContainer2 nameKey="preview">
-                <div class="code">
+            <c:if test="${not empty backingBean.format.fields}">
+                <tags:boxContainer2 nameKey="preview">
+                   <div class="code">
                 <!-- Please do not format this code -->
                     <pre><c:forEach var="preview" items="${backingBean.preview}">${preview}
 </c:forEach></pre>
-                </div>
-            </tags:boxContainer2>
+                   </div>
+                </tags:boxContainer2>
+            </c:if>
             <div class="pageActionArea">
                 <cti:button id="saveBtn" nameKey="save" styleClass="f_blocker" />
                 <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${format.formatName}" />

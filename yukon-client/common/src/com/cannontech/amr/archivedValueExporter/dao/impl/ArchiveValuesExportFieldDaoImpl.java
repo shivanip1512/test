@@ -114,7 +114,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     field.setFieldId(rs.getInt("FieldID"));
                     field.setFormatId(rs.getInt("FormatID"));
                     field.setFieldType(rs.getEnum("FieldType", FieldType.class));
-                    if (StringUtils.isNotBlank(SqlUtils.convertDbValueToString(rs.getString("AttributeID")))) {
+                    if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("AttributeID")))) {
                         final ExportAttribute attribute = new ExportAttribute();
                         attribute.setFormatId(rs.getInt("FormatID"));
                         attribute.setAttributeId(rs.getInt("AttributeID"));

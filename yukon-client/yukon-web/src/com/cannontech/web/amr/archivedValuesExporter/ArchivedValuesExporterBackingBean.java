@@ -326,14 +326,12 @@ public class ArchivedValuesExporterBackingBean{
         getFormat().setDelimiter(",");
     }
     
-    public void resetField() {
+    public void resetField(YukonRoundingMode roundingMode) {
         setExportField(new ExportField());
         setRowIndex(-1);
         setSelectedFieldId(0);
         getExportField().setMissingAttributeValue("Leave Blank");
-        String roundingMode =
-            ClientSession.getInstance().getRolePropertyValue(BillingRole.DEFAULT_ROUNDING_MODE);
-        getExportField().setRoundingMode(YukonRoundingMode.valueOf(roundingMode));
+        getExportField().setRoundingMode(roundingMode);
     }
     
 

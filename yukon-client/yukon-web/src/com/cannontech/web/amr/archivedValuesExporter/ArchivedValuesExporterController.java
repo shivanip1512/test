@@ -7,11 +7,8 @@ import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,14 +42,12 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
@@ -70,6 +65,8 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORTER)
 public class ArchivedValuesExporterController {
 
+    public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
+    
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private ExportReportValidator exportReportValidator;
     @Autowired private ExportFormatValidator exportFormatValidator;
@@ -79,16 +76,8 @@ public class ArchivedValuesExporterController {
     @Autowired private MeterDao meterDao;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
-    public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
-
-    private static String previewUOMValueKey = baseKey + "previewUOMValue";
-    private static String previewMeterNumberKey = baseKey + "previewMeterNumber";
-    private static String previewMeterNameKey = baseKey + "previewMeterName";
-    private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
-    private static String previewMeterRouteKey = baseKey + "previewMeterRoute";
-
     @ModelAttribute("attributes")
     public BuiltInAttribute[] getAttributes() {
         return BuiltInAttribute.values();
@@ -133,11 +122,7 @@ public class ArchivedValuesExporterController {
             format = getFirstFormat(backingBean.getAllFormats());
         }
         backingBean.setFormat(format);
-        backingBean.setPreview(exportReportGeneratorService
-            .generatePreview(getLocalizedPreviewMeter(userContext),
-                             getLocalizedPreviewUOMValue(userContext),
-                             backingBean.getFormat(),
-                             userContext));
+        backingBean.setPreview(exportReportGeneratorService.generatePreview(backingBean.getFormat(),userContext));
         model.addAttribute("editMode", PageEditMode.EDIT);
         return view;
     }
@@ -271,9 +256,13 @@ public class ArchivedValuesExporterController {
     
     @RequestMapping
     public String ajaxEditField(ModelMap model,
-                                    @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
         if (backingBean.getRowIndex() == -1) {
-            backingBean.resetField();
+            RoundingMode roundingMode =
+                rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_ROUNDING_MODE,
+                                                     RoundingMode.class,
+                                                     null);
+            backingBean.resetField(YukonRoundingMode.valueOf(roundingMode.name()));
             backingBean.setPageNameKey("addField");
         } else {
             backingBean.setExportField(backingBean.getSelectedField());
@@ -394,11 +383,7 @@ public class ArchivedValuesExporterController {
             backingBean.setAllFormats(archiveValuesExportFormatDao.getAllFormats());
         }
         backingBean.setTimezone(userContext.getJodaTimeZone());
-        backingBean.setPreview(exportReportGeneratorService
-            .generatePreview(getLocalizedPreviewMeter(userContext),
-                             getLocalizedPreviewUOMValue(userContext),
-                             backingBean.getFormat(),
-                             userContext));
+        backingBean.setPreview(exportReportGeneratorService.generatePreview(backingBean.getFormat(),userContext));
         return "archivedValuesExporter/exporter.jsp";
     }
     
@@ -447,11 +432,7 @@ public class ArchivedValuesExporterController {
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
         backingBean.setFormat(format);
         model.addAttribute("editMode", PageEditMode.EDIT);
-        backingBean.setPreview(exportReportGeneratorService
-                               .generatePreview(getLocalizedPreviewMeter(userContext),
-                                                getLocalizedPreviewUOMValue(userContext),
-                                                backingBean.getFormat(),
-                                                userContext));
+        backingBean.setPreview(exportReportGeneratorService.generatePreview(backingBean.getFormat(),userContext));
         return view;
     }
 
@@ -478,21 +459,5 @@ public class ArchivedValuesExporterController {
             writer.newLine();
         }
         writer.close();
-    }
-    
-    public Meter getLocalizedPreviewMeter(YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Meter previewMeter = new Meter();
-        previewMeter.setMeterNumber(messageSourceAccessor.getMessage(previewMeterNumberKey));
-        previewMeter.setName(messageSourceAccessor.getMessage(previewMeterNameKey));
-        previewMeter.setAddress(messageSourceAccessor.getMessage(previewMeterAddressKey));
-        previewMeter.setRoute(messageSourceAccessor.getMessage(previewMeterRouteKey));
-        previewMeter.setPaoType(PaoType.MCT420CL);
-        return previewMeter;
-    }
-    
-    public String getLocalizedPreviewUOMValue(YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        return messageSourceAccessor.getMessage(previewUOMValueKey);
     }
 }

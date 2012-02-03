@@ -199,7 +199,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
-        return getLimitedAttributeData(displayableDevices,attribute,startDate, stopDate, maxRows, excludeDisabledPaos,clusivity, order,OrderBy.TIMESTAMP);
+        return getLimitedAttributeData(displayableDevices, attribute, startDate, stopDate, maxRows, excludeDisabledPaos, clusivity, order, OrderBy.TIMESTAMP);
     }
 
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order, final OrderBy orderBy) {
@@ -236,7 +236,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory,displayableDevices,attribute, maxRows,excludeDisabledPaos);
+        return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
     }
     
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {

@@ -107,7 +107,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer");
             sql.append("FROM");
             sql.append(TABLE_NAME);
-            sql.append("WHERE FormatName").eq(formatName);
+            sql.append("WHERE upper(FormatName)").eq(formatName.toUpperCase());
             format = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex) {
             // returns null if the format was not found

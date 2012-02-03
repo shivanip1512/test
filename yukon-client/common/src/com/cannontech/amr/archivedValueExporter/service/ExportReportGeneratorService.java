@@ -30,5 +30,5 @@ public interface ExportReportGeneratorService {
      * @param userContext
      * @return list
      */
-    public List<String> generatePreview(Meter meter, String previewUOMValue, ExportFormat format, YukonUserContext userContext);
+    public List<String> generatePreview(ExportFormat format, YukonUserContext userContext);
 }

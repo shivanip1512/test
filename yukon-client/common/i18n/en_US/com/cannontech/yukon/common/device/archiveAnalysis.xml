@@ -133,6 +133,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataSelection">Data Selection</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.daysPrevious">Days previous</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dataType">Data Type</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.actions">Actions</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSetup.title">Field Setup:</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.field">Field</entry>
@@ -197,6 +198,11 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.helper.timestamp.title">Timestamp</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.helper.value.title">Value</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.helper.rounding.title">Rounding</entry>
+    
+    <entry key="yukon.web.modules.amr.archivedValueExporter.iconFolderEditDeviceGroup">Click to select Device Group</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.iconFolderEditFormat">Click to edit {0}</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.iconCopyFormat">Click to copy {0}</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.iconCreateFormat">Click to create {0}</entry>
     
     <entry key="yukon.web.modules.amr.archivedValueExporter.comma">Comma ( , )</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.semicolon">Semicolon ( ; )</entry>
@@ -265,7 +271,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.roundingMode.HALF_EVEN">Half Even</entry>
 
     <!-- preview  -->
-    <entry key="yukon.web.modules.amr.archivedValueExporter.previewUOMValue">kW</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.previewUOMValue">kWh</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterNumber">111111111</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterName">Default Device</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterAddress">123456789</entry>
