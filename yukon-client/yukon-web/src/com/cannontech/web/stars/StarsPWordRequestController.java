@@ -9,9 +9,9 @@ import org.springframework.web.servlet.mvc.Controller;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.AuthenticationRole;
-import com.cannontech.servlet.logic.RequestPword;
-import com.cannontech.servlet.logic.StarsRequestPword;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.model.RequestPword;
+import com.cannontech.stars.core.model.StarsRequestPword;
 import com.cannontech.util.ServletUtil;
 
 public class StarsPWordRequestController implements Controller {

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.AuthenticationRole;
-import com.cannontech.servlet.logic.RequestPword;
+import com.cannontech.stars.core.model.RequestPword;
 import com.cannontech.util.ServletUtil;
 
 public class PWordRequest extends javax.servlet.http.HttpServlet 

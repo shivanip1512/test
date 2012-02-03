@@ -1,4 +1,4 @@
-package com.cannontech.servlet.logic;
+package com.cannontech.stars.core.model;
 
 import java.util.ArrayList;
 import java.util.List;

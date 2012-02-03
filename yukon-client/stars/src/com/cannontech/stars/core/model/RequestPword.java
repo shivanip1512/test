@@ -1,7 +1,9 @@
-package com.cannontech.servlet.logic;
+package com.cannontech.stars.core.model;
 
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
@@ -332,7 +334,7 @@ public class RequestPword
 	{
 		boolean isValid = false;
 		for( int i = 0; i < allParams.length; i++ )
-			isValid |= allParams[i] != null;
+			isValid |= !StringUtils.isEmpty(allParams[i]);
 
 		return isValid;
 	}
