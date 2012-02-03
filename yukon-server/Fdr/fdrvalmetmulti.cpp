@@ -59,6 +59,7 @@ CtiFDR_ValmetMulti::CtiFDR_ValmetMulti()
 : CtiFDRScadaServer(string(FDR_VALMETMULTI)),
     _helper(NULL)
 {
+    // Set to prevent normal connection thread
     setSingleListeningPort(false);
     init();
     _helper = new CtiFDRScadaHelper<CtiValmetPortId>(this);

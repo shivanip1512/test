@@ -125,10 +125,13 @@ BOOL CtiFDRSocketServer::run( void )
         _threadSingleConnection = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber());
         _threadSingleConnection.start();
     } 
-    else if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    else 
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Configured to run on multiple ports. Handled in extending code" << endl;
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Configured to run on multiple ports. Handled in extending code" << endl;
+        }
     }
 
     // startup our interfaces
