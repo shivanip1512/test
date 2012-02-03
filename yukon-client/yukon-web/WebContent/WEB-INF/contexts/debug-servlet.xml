@@ -25,6 +25,7 @@
                <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/xml-templates/*Request.xml</value>
                <value>classpath*:com/cannontech/yukon/api/stars/schemas/xml-templates/*Request.xml</value>
                <value>classpath*:com/cannontech/yukon/api/account/schemas/xml-templates/*Request.xml</value>
+               <value>classpath*:com/cannontech/yukon/api/consumer/schemas/xml-templates/*Request.xml</value>
            </list>
        </property>
     </bean>
