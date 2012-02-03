@@ -29,6 +29,52 @@ SET KeyName = 'Opt Out Force All Devices', Description = 'Controls access to sel
 WHERE RolePropertyId = -40201;
 /* End YUK-10600 */
 
+/* Start YUK-10601 */
+CREATE TABLE ArchiveValuesExportFormat (
+    FormatId   NUMBER        NOT NULL,
+    FormatName VARCHAR2(100) NOT NULL,
+    Delimiter  VARCHAR2(20)  NOT NULL,
+    Header     VARCHAR2(255) NULL,
+    Footer     VARCHAR2(255) NULL,
+    CONSTRAINT PK_ArchiveValuesExportFormat PRIMARY KEY (FormatId)
+);
+
+CREATE TABLE ArchiveValuesExportAttribute (
+    AttributeId   NUMBER       NOT NULL,
+    FormatId      NUMBER       NOT NULL,
+    AttributeName VARCHAR2(50) NOT NULL,
+    DataSelection VARCHAR2(12) NOT NULL,
+    DaysPrevious  NUMBER       NOT NULL,
+    CONSTRAINT PK_ArchiveValuesExportAttrib PRIMARY KEY (AttributeId)
+);
+
+CREATE INDEX Indx_ArchValExpAttr_FormatId ON ArchiveValuesExportAttribute (
+    FormatId ASC
+);
+
+CREATE TABLE ArchiveValuesExportField (
+    FieldId               NUMBER       NOT NULL,
+    FormatId              NUMBER       NOT NULL,
+    FieldType             VARCHAR2(50) NULL,
+    AttributeId           NUMBER       NULL,
+    AttributeField        VARCHAR2(50) NULL,
+    Pattern               VARCHAR2(50) NULL,
+    MaxLength             NUMBER       NULL,
+    PadChar               CHAR(1)      NULL,
+    PadSide               VARCHAR2(5)  NULL,
+    RoundingMode          VARCHAR2(20) NULL,
+    MissingAttribute      VARCHAR2(20) NULL,
+    MissingAttributeValue VARCHAR2(20) NULL,
+    CONSTRAINT PK_ArchiveValuesExportField PRIMARY KEY (FieldId)
+);
+
+CREATE INDEX Indx_ArchValExportFld_FormatId ON ArchiveValuesExportField(
+    FormatId ASC
+);
+
+INSERT INTO YukonRoleProperty VALUES (-21313, -213, 'Archived Data Exporter', 'true', 'Controls access to Archived Data Exporter');
+/* End YUK-10601 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

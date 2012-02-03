@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2012 10:37:01 AM                         */
+/* Created on:     2/3/2012 4:53:45 PM                          */
 /*==============================================================*/
 
 
@@ -413,6 +413,63 @@ create table ArchiveDataAnalysisSlotValue  (
    SlotId               NUMBER                          not null,
    ChangeId             NUMBER,
    constraint PK_ArcDataAnalSlotValue primary key (DeviceId, SlotId)
+);
+
+/*==============================================================*/
+/* Table: ArchiveValuesExportAttribute                          */
+/*==============================================================*/
+create table ArchiveValuesExportAttribute  (
+   AttributeId          NUMBER                          not null,
+   FormatId             NUMBER                          not null,
+   AttributeName        VARCHAR2(50)                    not null,
+   DataSelection        VARCHAR2(12)                    not null,
+   DaysPrevious         NUMBER                          not null,
+   constraint PK_AttributeId primary key (AttributeId)
+);
+
+/*==============================================================*/
+/* Index: Indx_ArchValExpAttr_FormatId                          */
+/*==============================================================*/
+create index Indx_ArchValExpAttr_FormatId on ArchiveValuesExportAttribute (
+   FormatId ASC
+);
+
+/*==============================================================*/
+/* Table: ArchiveValuesExportField                              */
+/*==============================================================*/
+create table ArchiveValuesExportField  (
+   FieldId              NUMBER                          not null,
+   FormatId             NUMBER                          not null,
+   FieldType            VARCHAR2(50),
+   AttributeId          NUMBER,
+   AttributeField       VARCHAR2(50),
+   Pattern              VARCHAR2(50),
+   MaxLength            NUMBER,
+   PadChar              CHAR(1),
+   PadSide              VARCHAR2(5),
+   RoundingMode         VARCHAR2(20),
+   MissingAttribute     VARCHAR2(20),
+   MissingAttributeValue VARCHAR2(20),
+   constraint PK_FieldId primary key (FieldId)
+);
+
+/*==============================================================*/
+/* Index: Indx_ArchValExportFld_FormatId                        */
+/*==============================================================*/
+create index Indx_ArchValExportFld_FormatId on ArchiveValuesExportField (
+   FormatId ASC
+);
+
+/*==============================================================*/
+/* Table: ArchiveValuesExportFormat                             */
+/*==============================================================*/
+create table ArchiveValuesExportFormat  (
+   FormatId             NUMBER                          not null,
+   FormatName           VARCHAR2(100)                   not null,
+   Delimiter            VARCHAR2(20)                    not null,
+   Header               VARCHAR2(255),
+   Footer               VARCHAR2(255),
+   constraint PK_FormatId primary key (FormatId)
 );
 
 /*==============================================================*/
@@ -9086,6 +9143,7 @@ INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','C
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true','Controls access to Archived Data Analysis collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
+INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Exporter','true','Controls access to Archived Data Exporter');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');
