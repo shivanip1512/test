@@ -109,6 +109,11 @@
 
 #define TYPE_SIXNET                          1850  // Sixnet VersaTrak/SiteTrak firmware > 7/1/01
 
+#define TYPE_IPC_410AL                       1860
+#define TYPE_IPC_420AD                       1861
+#define TYPE_IPC_430S4                       1862
+#define TYPE_IPC_430SL                       1863
+
 #define TYPE_TAPTERM                         1900
 #define TYPE_TAPTERM_TESCOM                  1901
 #define TYPE_TAPTERM_EMAIL                   1902

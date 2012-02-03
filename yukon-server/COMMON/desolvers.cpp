@@ -137,6 +137,10 @@ string desolveDeviceType( int aType )
         case TYPE_ALPHA_A3:     Ret = "alpha a3";       break;
         case TYPE_SENTINEL:     Ret = "sentinel";       break;
         case TYPE_FOCUS:        Ret = "focus";          break;
+        case TYPE_IPC_410AL:    Ret = "ipc-410al";      break;
+        case TYPE_IPC_420AD:    Ret = "ipc-420ad";      break;
+        case TYPE_IPC_430S4:    Ret = "ipc-430s4";      break;
+        case TYPE_IPC_430SL:    Ret = "ipc-430sl";      break;
 
         case TYPEDCT501:        Ret = "dct-501";        break;
         case TYPEMCT210:        Ret = "mct-210";        break;

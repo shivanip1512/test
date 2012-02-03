@@ -220,6 +220,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "landis-gyr s4";
     devType = TYPE_LGS4;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "ipc-430sl";
+    devType = TYPE_IPC_430SL;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "dr-87";
     devType = TYPE_DR87;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
@@ -232,8 +235,17 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "sentinel";
     devType = TYPE_SENTINEL;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "ipc-430s4";
+    devType = TYPE_IPC_430S4;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "focus";
     devType = TYPE_FOCUS;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "ipc-410al";
+    devType = TYPE_IPC_410AL;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "ipc-420ad";
+    devType = TYPE_IPC_420AD;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "dct-501";
     devType = TYPEDCT501;

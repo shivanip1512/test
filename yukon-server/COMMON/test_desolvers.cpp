@@ -55,6 +55,10 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPE_ALPHA_A3]    = "ALPHA A3";
     type_lookups[TYPE_SENTINEL]    = "SENTINEL";
     type_lookups[TYPE_FOCUS]       = "FOCUS";
+    type_lookups[TYPE_IPC_410AL]   = "IPC-410AL";
+    type_lookups[TYPE_IPC_420AD]   = "IPC-420AD";
+    type_lookups[TYPE_IPC_430S4]   = "IPC-430S4";
+    type_lookups[TYPE_IPC_430SL]   = "IPC-430SL";
 
     type_lookups[TYPEDCT501]       = "DCT-501";
     type_lookups[TYPEMCT210]       = "MCT-210";

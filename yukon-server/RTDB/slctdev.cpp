@@ -218,6 +218,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_ALPHA_A1:     NewDevice = CTIDBG_new CtiDeviceAlphaA1;    break;
 
+        case TYPE_IPC_430S4:
         case TYPE_LGS4:         NewDevice = CTIDBG_new CtiDeviceLandisGyrS4; break;
 
         case TYPE_DR87:         NewDevice = CTIDBG_new CtiDeviceDR87;       break;
@@ -225,7 +226,11 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_KV2:
         case TYPE_ALPHA_A3:     NewDevice = CTIDBG_new CtiDeviceKV2;        break;
 
+        case TYPE_IPC_430SL:
         case TYPE_SENTINEL:     NewDevice = CTIDBG_new CtiDeviceSentinel;   break;
+
+        case TYPE_IPC_410AL:
+        case TYPE_IPC_420AD:
         case TYPE_FOCUS:        NewDevice = CTIDBG_new CtiDeviceFocus;      break;
 
         case TYPE_SIXNET:       NewDevice = CTIDBG_new CtiDeviceSixnet;     break;

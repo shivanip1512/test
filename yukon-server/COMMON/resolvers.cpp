@@ -439,6 +439,10 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("dct-501",            TYPEDCT501));
     device_types.insert(make_pair("dr-87",              TYPE_DR87));
     device_types.insert(make_pair("focus",              TYPE_FOCUS));
+    device_types.insert(make_pair("ipc-410al",          TYPE_IPC_410AL));
+    device_types.insert(make_pair("ipc-420ad",          TYPE_IPC_420AD));
+    device_types.insert(make_pair("ipc-430s4",          TYPE_IPC_430S4));
+    device_types.insert(make_pair("ipc-430sl",          TYPE_IPC_430SL));
     device_types.insert(make_pair("fulcrum",            TYPE_FULCRUM));
     device_types.insert(make_pair("ion-7330",           TYPE_ION7330));
     device_types.insert(make_pair("ion-7700",           TYPE_ION7700));
@@ -882,11 +886,15 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_QUANTUM:
         case TYPE_VECTRON:
         case TYPE_LGS4:
+        case TYPE_IPC_430S4:
         case TYPE_DR87:
         case TYPE_KV2:
         case TYPE_ALPHA_A3:
         case TYPE_SENTINEL:
+        case TYPE_IPC_430SL:
         case TYPE_FOCUS:
+        case TYPE_IPC_410AL:
+        case TYPE_IPC_420AD:
         case TYPE_SIXNET:
         case TYPEDCT501:
         case TYPEMCT210:
@@ -1421,6 +1429,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             break;
         }
     case TYPE_LGS4:
+    case TYPE_IPC_430S4:
     case TYPE_DR87:
     case TYPE_TAPTERM:
     case TYPE_WCTP:
@@ -1430,7 +1439,10 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
     case TYPE_KV2:
     case TYPE_ALPHA_A3:
     case TYPE_SENTINEL:
+    case TYPE_IPC_430SL:
     case TYPE_FOCUS:
+    case TYPE_IPC_410AL:
+    case TYPE_IPC_420AD:
     case TYPE_SERIESVRTU:
     case TYPE_SERIESVLMIRTU:
     case TYPE_ION7330:
