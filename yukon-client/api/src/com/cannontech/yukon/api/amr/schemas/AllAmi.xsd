@@ -11,4 +11,6 @@
 
     <xsd:include schemaLocation="ArchivedValuesRequest.xsd"/>
     <xsd:include schemaLocation="ArchivedValuesResponse.xsd"/>
+    <xsd:include schemaLocation="DemandResetRequest.xsd"/>
+    <xsd:include schemaLocation="DemandResetResponse.xsd"/>
 </xsd:schema>

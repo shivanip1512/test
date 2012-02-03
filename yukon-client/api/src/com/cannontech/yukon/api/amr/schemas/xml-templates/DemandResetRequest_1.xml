@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<demandResetRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DemandResetRequest.xsd" 
+           version="1.0">
+    <paos>
+        <deviceGroup value="/Meters/Ross/Some 430s"/>
+        <deviceGroup value="/System/Device Types/MCT-430S4"/>
+        <deviceGroup value="/Meters/BadGroup"/>
+        <meterNumber value="77564304"/>
+        <meterNumber value="bad meter number"/>
+        <paoId value="30250"/>
+        <paoId value="2111222333"/>
+        <carrierAddress value="657986"/>
+        <carrierAddress value="2111222333"/>
+        <paoName value="3023648"/>
+        <paoName value="bad pao name"/>
+    </paos>
+    
+</demandResetRequest>

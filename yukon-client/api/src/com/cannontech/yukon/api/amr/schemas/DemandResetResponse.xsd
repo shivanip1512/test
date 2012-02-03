@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api"
+    targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified" version="1.1">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"/>
+    <xsd:include schemaLocation="../../common/schemas/PaoTypes.xsd"/>
+
+    <xsd:complexType name="ResetsRequested">
+        <xsd:attribute name="initiated" type="xsd:int" use="required"/>
+        <xsd:attribute name="numLookupErrors" type="xsd:int" use="optional" default="0"/>
+        <xsd:attribute name="numDeviceErrors" type="xsd:int" use="optional" default="0"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="DemandResetErrorCode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="unsupportedDevice">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The device does not support demand reset.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="DemandResetError">
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="paoId" type="yukon:PaoId"/>
+        </xsd:sequence>
+        <xsd:attribute name="errorCode" type="yukon:DemandResetErrorCode" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="DemandResetResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:sequence>
+                        <xsd:element name="resetsRequested" type="yukon:ResetsRequested"/>
+                        <xsd:element name="lookupError" type="yukon:PaoCollection" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    No device or devices could be found which match the given
+                                    criteria.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="error" type="yukon:DemandResetError"
+                            minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                    <xsd:element name="generalFailure" type="yukon:Failure" minOccurs="0"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="demandResetResponse" type="yukon:DemandResetResponse"/>
+</xsd:schema>

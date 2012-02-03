@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<demandResetResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DemandResetResponse.xsd" 
+           version="1.0">
+    <resetsRequested initiated="3"/>
+    <lookupError>
+        <deviceGroup value="/Meters/InvalidGroup"/>
+    </lookupError>
+    <error errorCode="unsupportedDevice">
+        <paoId value="213423"/>
+        <paoId value="17423"/>
+    </error>
+</demandResetResponse>
