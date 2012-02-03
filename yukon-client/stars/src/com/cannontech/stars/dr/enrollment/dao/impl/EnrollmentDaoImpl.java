@@ -55,8 +55,8 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append("SELECT LMHCG.InventoryId");
         sql.append("FROM LMHardwareControlGroup LMHCG");
         sql.append("WHERE LMGroupId").in(groupIds);
-        sql.append("AND NOT LMHCG.groupEnrollStart IS NULL");
-        sql.append("AND LMHCG.groupEnrollStop IS NULL");
+        sql.append(  "AND NOT LMHCG.groupEnrollStart IS NULL");
+        sql.append(  "AND LMHCG.groupEnrollStop IS NULL");
         
         List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         Set<Integer> uniqueInventoryIds = Sets.newHashSet(inventoryIds);

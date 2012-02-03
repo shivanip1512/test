@@ -50,14 +50,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
 
-    private @Autowired NextValueHelper nextValueHelper;
-    private @Autowired RestOperations restTemplate;
-    private @Autowired GatewayDeviceDao gatewayDeviceDao;
-    private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
-    private @Autowired DigiXMLBuilder digiXMLBuilder;
-    private @Autowired DigiResponseHandler digiResponseHandler;
-    private @Autowired ConfigurationSource configurationSource;
-    private @Autowired ZigbeeServiceHelper zigbeeServiceHelper;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private RestOperations restTemplate;
+    @Autowired private GatewayDeviceDao gatewayDeviceDao;
+    @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
+    @Autowired private DigiXMLBuilder digiXMLBuilder;
+    @Autowired private DigiResponseHandler digiResponseHandler;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private ZigbeeServiceHelper zigbeeServiceHelper;
     
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
