@@ -83,15 +83,19 @@ function JsWidgetObject(shortName, parameters) {
       $(args.buttonID).down('span').innerHTML = args.waitingText;
     $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
     var container = this.container;
-    $(container).getElementsBySelector('input').invoke('disable');
-    $(container).getElementsBySelector('button').invoke('disable');
+    if (args.disableInputs == null || args.disableInputs == true) {
+    	$(container).getElementsBySelector('input').invoke('disable');
+    	$(container).getElementsBySelector('button').invoke('disable');
+    }
     
     var _self = this;
     var localSuccess = function(xhr) {
         $(args.buttonID).down('span').innerHTML = defaultButtonText;
         $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
-        $(container).getElementsBySelector('input').invoke('enable');
-        $(container).getElementsBySelector('button').invoke('enable');
+        if (args.disableInputs == null || args.disableInputs == true) {
+	        $(container).getElementsBySelector('input').invoke('enable');
+	        $(container).getElementsBySelector('button').invoke('enable');
+        }
         _self.onSuccess(xhr);
     }
     
@@ -232,7 +236,7 @@ function JsWidgetObject(shortName, parameters) {
       }
     }
     
-    var mergedParameters = jQuery.extend(true, theseParameters, this.parameters);
+    var mergedParameters = jQuery.extend(true, this.parameters, theseParameters);
     return mergedParameters;
   };
   

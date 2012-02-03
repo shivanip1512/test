@@ -2,6 +2,7 @@
 <%@ attribute name="nameKey" required="true" type="java.lang.String"%>
 <%@ attribute name="arguments" required="false" type="java.lang.String"%>
 <%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
+<%@ attribute name="disableInputs" required="false" type="java.lang.Boolean" description="Should the refresh action disable all inputs while waiting for the asynchronous response"%>
 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -14,6 +15,10 @@
 
 <c:if test="${showConfirm}">
     <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${arguments}"/>
+</c:if>
+
+<c:if test="${empty pageScope.disableInputs}">
+    <c:set var="disableInputs" value="false" />
 </c:if>
 
 <script type="text/javascript">
@@ -32,7 +37,8 @@
 			    command:     '${method}', 
 			    buttonID:    '${thisId}', 
 			    waitingText: "", 
-			    key:         '${uniqueId}'});
+			    key:         '${uniqueId}',
+			    disableInputs: ${disableInputs}});
 		}
 	}
 </script>
