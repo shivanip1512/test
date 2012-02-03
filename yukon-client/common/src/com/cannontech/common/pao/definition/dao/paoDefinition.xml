@@ -4319,19 +4319,75 @@
         <points>
             <point type="Analog" offset="61">
                 <init>true</init>
-                <name>Voltage</name>
+                <name>Instantaneous Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Instantaneous Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
         </points>
     </pao>
     
-    <pao id="IPC430S4" inherits="IPC_METER_BASE">
+    <pao id="IPC_POLYPHASE_BASE" inherits="ELECTRONIC_METER_BASE" abstract="true">
+        <displayGroup>IPC</displayGroup>
+        <points>    
+            <point type="Analog" offset="61">
+                <init>true</init>
+                <name>Instantaneous Voltage Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="63">
+                <init>true</init>
+                <name>Instantaneous Voltage Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="65">
+                <init>true</init>
+                <name>Instantaneous Voltage Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Instantaneous Current Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="73">
+                <init>true</init>
+                <name>Instantaneous Current Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="75">
+                <init>true</init>
+                <name>Instantaneous Current Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+    </pao>
+    
+    <pao id="IPC430S4" inherits="IPC_POLYPHASE_BASE">
         <displayName>IPC-430S4</displayName>
         <changeGroup>ipc</changeGroup>
+         
     </pao>
-    <pao id="IPC430SL" inherits="IPC_METER_BASE">
+    <pao id="IPC430SL" inherits="IPC_POLYPHASE_BASE">
         <displayName>IPC-430SL</displayName>
         <changeGroup>ipc</changeGroup>
     </pao>
