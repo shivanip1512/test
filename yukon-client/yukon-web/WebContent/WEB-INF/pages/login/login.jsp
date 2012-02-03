@@ -119,13 +119,11 @@
                             </tr>
                         </table>
                         <cti:checkGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY">
-	                        <cti:isStarsExist>
-	                            <div class="loginHelp">
-	                                <a href="<cti:url value="/spring/login/forgotPassword"/>">
-				                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
-	                                </a>
-	                            </div>
-	                        </cti:isStarsExist>
+                            <div class="loginHelp">
+                                <a href="<cti:url value="/spring/login/forgotPassword"/>">
+    		                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
+                                </a>
+                            </div>
                         </cti:checkGlobalRolesAndProperties>
                         <input type="hidden" name="REDIRECTED_FROM" value="<spring:escapeBody htmlEscape="true">${param.REDIRECTED_FROM}</spring:escapeBody>">
                         <input type="hidden" name="ACTION" value="LOGIN">

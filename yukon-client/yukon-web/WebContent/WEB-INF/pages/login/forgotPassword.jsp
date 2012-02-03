@@ -35,10 +35,6 @@
 			self.name = "mainWin";
 		}
 	</script>
-	
-<%
-	boolean starsExists = VersionTools.starsExists();
-%>
 
 	<body class="blank_module" onLoad="document.forms.form1.USERNAME.focus()">
 		
@@ -84,18 +80,7 @@
                         <cti:msg key="yukon.web.forgotPassword.intro"/>
 					</div>
 					
-					<form name="form1" method="post" action=
-	<%	
-		if( starsExists ) { 
-	%>
-						"<cti:url value="/servlet/StarsPWordRequest"/>">
-	<%	
-		} else { 
-	%>
-						"<cti:url value="/servlet/PWordRequest"/>">
-	<% 
-		}
-	%>
+					<form name="form1" method="post" action="<cti:url value="/servlet/StarsPWordRequest"/>">
 	              		<table width="290" border="0" cellspacing="0" cellpadding="3" align="center">
 	                		<tr> 
 	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.username"/></td>
@@ -121,18 +106,13 @@
 	                    			<input type="text" name="LAST_NAME" size="26">
 	                  			</td>
 	                		</tr>
-	<%
-		if( starsExists ) {
-	%>
+
 	                		<tr> 
 	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.account"/></td>
 	                  			<td align="left" valign="bottom"> 
 	                    			<input type="text" name="ACCOUNT_NUM" size="26">
 	                  			</td>
 	                		</tr>
-	<%	
-		} 
-	%>
 	
 							<tr> 
 	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.provider"/></td>

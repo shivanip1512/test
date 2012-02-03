@@ -137,8 +137,6 @@ public class LiteCustomer extends LiteBase {
     }
     
     private synchronized void retrieveAccountIDs() {
-        if (!VersionTools.starsExists()) return;
-        
         PreparedStatement pstmt = null;
         java.sql.Connection conn = null;
         ResultSet rset = null;

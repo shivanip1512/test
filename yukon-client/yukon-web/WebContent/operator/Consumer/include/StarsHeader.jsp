@@ -126,17 +126,11 @@
      final DecimalFormat format_nv3 = new java.text.DecimalFormat("#0.000");
      final DecimalFormat format_nsec = new java.text.DecimalFormat("#0 secs");
      
-     boolean starsExists = false;
-
-     try {
-         starsExists = VersionTools.starsExists(); 
-     } catch (RuntimeException ignore) { }
-     
      final LiteYukonUser lYukonUser = ServletUtil.getYukonUser(session);
      final StarsYukonUser user = ServletUtils.getStarsYukonUser(session);
      final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
      
-     if ((starsExists) && (user != null)) {
+     if (user != null) {
      
      	errorMsg = ServletUtils.removeErrorMessage(session);
      	confirmMsg = ServletUtils.removeConfirmMessage(session);

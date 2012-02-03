@@ -136,23 +136,6 @@ public synchronized static CTIDatabase getDatabaseVersion()
 }
 
 /**
- * Check to see if a common STARS table is in the DB
- * @return boolean
- */
-public static boolean starsExists()
-{
-    if (!appCatFound) {
-        // we'll keep checking until we find it
-        appCatFound = VersionTools.tableExists("APPLIANCECATEGORY");
-        if (!appCatFound) {
-            throw new StarsNotCreatedException("STARS tables not present in this database.");
-        }
-        // appCatFound is now true and we'll not check in the future
-    }
-    return CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ));
-}
-
-/**
  * Check to see if a the required SAMToCRS_PTJ table exits in DB
  * @return boolean
  */

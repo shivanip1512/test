@@ -427,7 +427,6 @@ public enum YukonRoleProperty {
     NOTIFICATION_HOST(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_HOST, stringType()),
     NOTIFICATION_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_PORT, integerType()),
     BATCHED_SWITCH_COMMAND_TOGGLE(SYSTEM, com.cannontech.roles.yukon.SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE, stringType()),
-    STARS_ACTIVATION(SYSTEM, com.cannontech.roles.yukon.SystemRole.STARS_ACTIVATION, stringType()),
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(SYSTEM, com.cannontech.roles.yukon.SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED, stringType()),
 
     CALL_RESPONSE_TIMEOUT(VOICE_SERVER, com.cannontech.roles.yukon.VoiceServerRole.CALL_RESPONSE_TIMEOUT, integerType()),

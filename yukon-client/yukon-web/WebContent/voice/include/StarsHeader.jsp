@@ -48,18 +48,6 @@
 			return;
 		}
 	}
-	
-	boolean starsExists = false;
-    try{
-        starsExists = VersionTools.starsExists();
-    }catch (Exception e)
-    {
-    }
-    
-    if(!starsExists) {
-		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
-		return;
-	}
     
     /*This is now preset by the SessionInitializer so it should not be null*/
     if (user == null) {

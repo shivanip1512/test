@@ -301,13 +301,7 @@
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>
   </tag>
- 
-  <tag>
-  	<name>isStarsExist</name>
-    <body-content>scriptless</body-content>
-  	<tag-class>com.cannontech.web.taglib.IsStarsExistTag</tag-class>
-  </tag>
- 
+   
     <tag>
         <name>standardMsgScopeHelper</name>
         <tag-class>com.cannontech.web.taglib.StandardMsgScopeHelperTag</tag-class>

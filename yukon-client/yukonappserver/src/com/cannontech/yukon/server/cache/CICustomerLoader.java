@@ -141,40 +141,38 @@ public class CICustomerLoader implements Runnable
             customer.setAdditionalContacts(additionalContacts);
         }
         
-        if (starsExists()) {
-            // Now we do the same for accountIds as we just did with additional contacts.
-            sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
-                "FROM CustomerAccount acct, ECToAccountMapping map, Customer c " +
-                "WHERE acct.AccountID = map.AccountID " +
-                "and acct.CustomerID = c.CustomerID " +
-                "and c.CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " +                
-                "and acct.CustomerID <= " + maxCustomerID + " " +
-                "order by acct.customerID";
-            
-            final Map<LiteCustomer, Vector<Integer>> temporaryAccountIds = new TreeMap<LiteCustomer, Vector<Integer>>();
-            
-            template.query(sqlString, new RowCallbackHandler() {
-                public void processRow(ResultSet rset) throws SQLException {
-                    Integer accountId = rset.getInt("AccountID");
-                    int energyCompanyId = rset.getInt("EnergyCompanyID");
-                    Integer customerId = rset.getInt("CustomerID");
-                    
-                    LiteCustomer customer = allCICustomersMap.get(customerId);
-                    customer.setEnergyCompanyID(energyCompanyId);
-                    
-                    Vector<Integer> accountList = temporaryAccountIds.get(customer);
-                    if (accountList == null) {
-                        accountList = new Vector<Integer>();
-                        temporaryAccountIds.put(customer, accountList);
-                    }
-                    accountList.add(accountId);
+
+        // Now we do the same for accountIds as we just did with additional contacts.
+        sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
+            "FROM CustomerAccount acct, ECToAccountMapping map, Customer c " +
+            "WHERE acct.AccountID = map.AccountID " +
+            "and acct.CustomerID = c.CustomerID " +
+            "and c.CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " +                
+            "and acct.CustomerID <= " + maxCustomerID + " " +
+            "order by acct.customerID";
+        
+        final Map<LiteCustomer, Vector<Integer>> temporaryAccountIds = new TreeMap<LiteCustomer, Vector<Integer>>();
+        
+        template.query(sqlString, new RowCallbackHandler() {
+            public void processRow(ResultSet rset) throws SQLException {
+                Integer accountId = rset.getInt("AccountID");
+                int energyCompanyId = rset.getInt("EnergyCompanyID");
+                Integer customerId = rset.getInt("CustomerID");
+                
+                LiteCustomer customer = allCICustomersMap.get(customerId);
+                customer.setEnergyCompanyID(energyCompanyId);
+                
+                Vector<Integer> accountList = temporaryAccountIds.get(customer);
+                if (accountList == null) {
+                    accountList = new Vector<Integer>();
+                    temporaryAccountIds.put(customer, accountList);
                 }
-            });
-            
-            for (Map.Entry<LiteCustomer, Vector<Integer>> entry : temporaryAccountIds.entrySet()) {
-                entry.getKey().setAccountIDs(entry.getValue());
+                accountList.add(accountId);
             }
-            
+        });
+        
+        for (Map.Entry<LiteCustomer, Vector<Integer>> entry : temporaryAccountIds.entrySet()) {
+            entry.getKey().setAccountIDs(entry.getValue());
         }
         
         // Finally, fill in the extra CICustomer data for those customers that are C&I.
@@ -212,15 +210,6 @@ public class CICustomerLoader implements Runnable
         CTILogger.info((timerStop.getTime() - timerStart.getTime())*.001 + 
                        " Secs for CICustomerLoader with Contacts (" + allCICustomers.size() + 
                        " loaded, MAX_CUSTOMER_LOAD="+ MAX_CUSTOMER_LOAD + ")" );
-    }
-    
-    public boolean starsExists () {
-        try {
-            return VersionTools.starsExists();
-        }
-        catch (Exception e) {
-            return false;
-        }
     }
     
 }

@@ -13,12 +13,8 @@
 
     LiteStarsEnergyCompany liteEC = null;
     final StarsYukonUser user = ServletUtils.getStarsYukonUser(session);
-	boolean starsExists = false;
-	try {
-	    starsExists = VersionTools.starsExists(); 
-	} catch (RuntimeException ignore) { }
-	
-	if ((starsExists) && (user != null)) {
+
+	if (user != null) {
 	    liteEC = StarsDatabaseCache.getInstance().getEnergyCompany(user.getEnergyCompanyID());
 	}
 	

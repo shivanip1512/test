@@ -35,10 +35,7 @@ public class StarsOperationsTag extends YukonTagSupport {
 		StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings) session.getAttribute(
 				ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 		
-		getJspContext().setAttribute("showStarsList", settings != null);
 		if (settings != null) {
-
-			
 			StarsYukonUser user = (StarsYukonUser) session
 					.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance()

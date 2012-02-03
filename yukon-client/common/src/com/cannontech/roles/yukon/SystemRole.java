@@ -25,8 +25,7 @@ public interface SystemRole
     public static final int NOTIFICATION_HOST = YukonRoleDefs.YUKON_PROPERTYID_BASE - 16;
     public static final int NOTIFICATION_PORT = YukonRoleDefs.YUKON_PROPERTYID_BASE - 17;
     public static final int BATCHED_SWITCH_COMMAND_TOGGLE = YukonRoleDefs.YUKON_PROPERTYID_BASE - 19;
-    public static final int STARS_ACTIVATION = YukonRoleDefs.YUKON_PROPERTYID_BASE - 20;
-	
+    	
     public static final int BULK_IMPORTER_COMMUNICATIONS_ENABLED = YukonRoleDefs.YUKON_PROPERTYID_BASE -21;
     
 }
