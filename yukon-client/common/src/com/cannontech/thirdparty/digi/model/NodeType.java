@@ -5,10 +5,10 @@ import com.cannontech.core.dao.NotFoundException;
 public enum NodeType {
 
     // 0 = coordinator, 1 = router (UPRO is this), 2 = End Node, -1 = Unknown
-    Unknown(-1),
-    Coordinator(0),
-    Router(1),
-    EndNode(2);
+    UNKNOWN(-1),
+    COORDINATOR(0),
+    ROUTER(1),
+    ENDNODE(2);
     
     private int value;
     

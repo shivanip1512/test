@@ -4,8 +4,8 @@ import com.cannontech.core.dao.NotFoundException;
 
 public enum NodeStatus {
     
-    active(1),
-    inactive(0);
+    ACTIVE(1),
+    INACTIVE(0);
     
     private int value;
     
@@ -18,7 +18,7 @@ public enum NodeStatus {
     }
     
     public boolean isConnected() {
-        if (this == active) { 
+        if (this == ACTIVE) { 
             return true;
         }
         return false;
