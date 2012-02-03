@@ -90,4 +90,15 @@
             <xsd:enumeration value="GATEWAY" />
         </xsd:restriction>
     </xsd:simpleType>
+
+    <xsd:simpleType name="nonNegativeInt">
+        <xsd:annotation>
+            <xsd:documentation>
+                A 32 bit non-negative integer.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

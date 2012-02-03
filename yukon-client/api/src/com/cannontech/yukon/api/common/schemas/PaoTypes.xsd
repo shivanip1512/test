@@ -3,7 +3,9 @@
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api" 
             elementFormDefault="qualified" version="1.0">
-            
+
+    <xsd:include schemaLocation="Types.xsd"/>
+
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">
             General type definitions for Yukon message elements pertaining specifically to PAOs.
@@ -20,10 +22,10 @@
         <xsd:attribute name="value" use="required" type="xsd:string"/>
     </xsd:complexType>
     <xsd:complexType name="CarrierAddress">
-        <xsd:attribute name="value" use="required" type="xsd:unsignedInt"/>
+        <xsd:attribute name="value" use="required" type="yukon:nonNegativeInt"/>
     </xsd:complexType>
     <xsd:complexType name="PaoId">
-        <xsd:attribute name="value" use="required" type="xsd:int"/>
+        <xsd:attribute name="value" use="required" type="yukon:nonNegativeInt"/>
     </xsd:complexType>
 
     <xsd:complexType name="PaoCollection">
