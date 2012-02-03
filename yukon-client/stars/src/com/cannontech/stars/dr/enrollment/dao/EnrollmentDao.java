@@ -1,8 +1,10 @@
 package com.cannontech.stars.dr.enrollment.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -117,4 +119,11 @@ public interface EnrollmentDao {
 	 * @return True if account is enrolled, false otherwise.
 	 */
     public boolean isAccountEnrolled(int accountId);
+    
+    /**
+     * Returns a Set of the inventory Ids which are actively enrolled for a given group.
+     * 
+     * @return
+     */
+    public Set<Integer> getActiveEnrolledInventoryIdsForGroupIds(Collection<Integer> groupIds);
 }

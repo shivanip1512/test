@@ -207,6 +207,10 @@
 
     <entry key="yukon.web.modules.support.miscellaneousMethod.pageName">Miscellaneous Methods</entry>
     <entry key="yukon.web.modules.support.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>
+    <entry key="yukon.web.modules.support.miscellaneousMethod.sendTestTextMessage.label">Send Control Start</entry>
+    <entry key="yukon.web.modules.support.miscellaneousMethod.sendTestCancelMessage.label">Send Control Stop</entry>
+    <entry key="yukon.web.modules.support.miscellaneousMethod.sendControlStopNotificationMessage.label">Send Control Notification Stop</entry>
+    <entry key="yukon.web.modules.support.miscellaneousMethod.sendControlStartNotificationMessage.label">Send Control Notification Start</entry>
 
     <entry key="yukon.web.modules.support.rfnTest.pageName">RFN Test</entry>
     <entry key="yukon.web.modules.support.rfnTest.numEventsSent">{0,choice,0#no events sent|1#{0} event sent successfully|1&lt;{0} events sent successfully}</entry>

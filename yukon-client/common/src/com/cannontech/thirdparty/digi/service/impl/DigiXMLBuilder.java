@@ -13,7 +13,6 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
-import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
@@ -26,10 +25,9 @@ import com.google.common.collect.Sets;
 
 public class DigiXMLBuilder {
 
-    private SepDeviceClassDao sepDeviceClassDao;
-    private LMGroupDao lmGroupDao;
-    private GatewayDeviceDao gatewayDeviceDao;
-    private ZigbeeDeviceDao zigbeeDeviceDao;
+    @Autowired private SepDeviceClassDao sepDeviceClassDao;
+    @Autowired private LMGroupDao lmGroupDao;
+    @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
     
     private static int sourceEndPointId = 0x5E;
     private static int clusterId = 0x0701;
@@ -241,7 +239,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildSepRestore(int eventId, SepRestoreMessage restoreMessage) {
+    public String buildSepRestore(int eventId, List<ZigbeeDevice> gateways, SepRestoreMessage restoreMessage) {
         int groupId = restoreMessage.getGroupId();
                 
         //Get DeviceClass
@@ -252,7 +250,6 @@ public class DigiXMLBuilder {
         byte utilEnrollmentGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(groupId);
         
         //Get gateways on the group
-        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(groupId);
         List<String> macAddresses = Lists.newArrayList();
 
         for (ZigbeeDevice gateway : gateways) {
@@ -444,25 +441,5 @@ public class DigiXMLBuilder {
         crc ^= 0xffff;//Remove for regular CRC
 
         return crc;
-    }
-    
-    @Autowired
-    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
-        this.zigbeeDeviceDao = zigbeeDeviceDao;
-    }
-    
-    @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
-    public void setSepDeviceClassDao(SepDeviceClassDao sepDeviceClassDao) {
-        this.sepDeviceClassDao = sepDeviceClassDao;
-    }
-    
-    @Autowired
-    public void setLmGroupDao(LMGroupDao lmGroupDao) {
-        this.lmGroupDao = lmGroupDao;
     }
 }

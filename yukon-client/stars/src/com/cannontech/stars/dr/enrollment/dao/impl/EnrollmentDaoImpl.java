@@ -2,10 +2,12 @@ package com.cannontech.stars.dr.enrollment.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.google.common.collect.Sets;
 
 public class EnrollmentDaoImpl implements EnrollmentDao {
     
@@ -44,6 +47,23 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     	"							AND LMHCG.accountId = AB.accountId ";
 
 
+    @Override
+    public Set<Integer> getActiveEnrolledInventoryIdsForGroupIds(Collection<Integer> groupIds) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT LMHCG.InventoryId");
+        sql.append("FROM LMHardwareControlGroup LMHCG");
+        sql.append("WHERE LMGroupId").in(groupIds);
+        sql.append("AND NOT LMHCG.groupEnrollStart IS NULL");
+        sql.append("AND LMHCG.groupEnrollStop IS NULL");
+        
+        List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        Set<Integer> uniqueInventoryIds = Sets.newHashSet(inventoryIds);
+        
+        return uniqueInventoryIds;
+    }
+    
     /**
      * Gets all the programs the account is enrolled in
      */

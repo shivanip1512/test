@@ -12,6 +12,68 @@
             <cti:button nameKey="insertProgramTypes" type="submit"/>
         </form>
         </tags:sectionContainer>
+        
+        <tags:sectionContainer title="SEP Text Message Tester"> 
+            <form action="sendTestTextMessage" method="post">
+                <input type="hidden" name="loadProgramId" id="loadProgramId">
+                    <tags:pickerDialog  type="lmProgramPicker"
+                                                        extraArgs="${energyCompanyId}"
+                                                        id="programPicker" 
+                                                        immediateSelectMode="true"
+                                                        destinationFieldId="loadProgramId"
+                                                        selectionProperty="paoName"
+                                                        linkType="selection">
+                        <img src="/WebConfig/yukon/Icons/add.gif">
+                        Choose Program
+                   </tags:pickerDialog>
+                <cti:button nameKey="sendTestTextMessage" type="submit"/>
+            </form>
+            <form action="sendTestCancelMessage" method="post">
+                <input type="hidden" name="loadProgramId" id="loadProgramId2">
+                    <tags:pickerDialog  type="lmProgramPicker"
+                                                        extraArgs="${energyCompanyId}"
+                                                        id="programPicker2" 
+                                                        immediateSelectMode="true"
+                                                        destinationFieldId="loadProgramId2"
+                                                        selectionProperty="paoName"
+                                                        linkType="selection">
+                        <img src="/WebConfig/yukon/Icons/add.gif"> 
+                        Choose Program
+                    </tags:pickerDialog>
+                <cti:button nameKey="sendTestCancelMessage" type="submit"/>
+            </form>
+            </tags:sectionContainer>
+            
+            <tags:sectionContainer title="Control Notification Tester"> 
+            <form action="sendControlStartNotificationMessage" method="post">
+                <input type="hidden" name="loadProgramId" id="loadProgramId3">
+                    <tags:pickerDialog  type="lmProgramPicker"
+                                                        extraArgs="${energyCompanyId}"
+                                                        id="programPicker3" 
+                                                        immediateSelectMode="true"
+                                                        destinationFieldId="loadProgramId3"
+                                                        selectionProperty="paoName"
+                                                        linkType="selection">
+                        <img src="/WebConfig/yukon/Icons/add.gif">
+                        Choose Program
+                    </tags:pickerDialog>
+                <cti:button nameKey="sendControlStartNotificationMessage" type="submit"/>
+            </form>
+            <form action="sendControlStopNotificationMessage" method="post">
+                <input type="hidden" name="loadProgramId" id="loadProgramId4">
+                    <tags:pickerDialog  type="lmProgramPicker"
+                                                        extraArgs="${energyCompanyId}"
+                                                        id="programPicker4" 
+                                                        immediateSelectMode="true"
+                                                        destinationFieldId="loadProgramId4"
+                                                        selectionProperty="paoName"
+                                                        linkType="selection">
+                        <img src="/WebConfig/yukon/Icons/add.gif">
+                        Choose Program
+                    </tags:pickerDialog>
+                <cti:button nameKey="sendControlStopNotificationMessage" type="submit"/>
+            </form>
+        </tags:sectionContainer>
     </cti:dataGridCell>
 </cti:dataGrid>
 

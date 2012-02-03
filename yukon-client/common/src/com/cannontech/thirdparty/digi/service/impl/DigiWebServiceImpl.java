@@ -50,15 +50,16 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
 
-    @Autowired private NextValueHelper nextValueHelper;
-    private RestOperations restTemplate;
-    private GatewayDeviceDao gatewayDeviceDao;
-    private ZigbeeDeviceDao zigbeeDeviceDao;
-    private DigiXMLBuilder digiXMLBuilder;
-    private DigiResponseHandler digiResponseHandler;
-    private ConfigurationSource configurationSource;
-    private ZigbeeServiceHelper zigbeeServiceHelper;
+    private @Autowired NextValueHelper nextValueHelper;
+    private @Autowired RestOperations restTemplate;
+    private @Autowired GatewayDeviceDao gatewayDeviceDao;
+    private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
+    private @Autowired DigiXMLBuilder digiXMLBuilder;
+    private @Autowired DigiResponseHandler digiResponseHandler;
+    private @Autowired ConfigurationSource configurationSource;
+    private @Autowired ZigbeeServiceHelper zigbeeServiceHelper;
     
+    //@Autowired by setter
     private JmsTemplate jmsTemplate;
     
     private static String digiBaseUrl;
@@ -413,7 +414,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         
         sendTextMessage(gateways,message);
     }
-        
+
     private void sendTextMessage(List<ZigbeeDevice> gateways, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         //Needs a unique id.
         int messageId = nextValueHelper.getNextValue("ZBControlEvent");
@@ -526,7 +527,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     @Override
     public void sendSEPRestoreMessage(int eventId, SepRestoreMessage restoreMessage) {
         log.debug("Sending SEP Restore Message Start");
-        String xml = digiXMLBuilder.buildSepRestore(eventId, restoreMessage);
+        
+        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(restoreMessage.getGroupId());
+        
+        String xml = digiXMLBuilder.buildSepRestore(eventId, gateways, restoreMessage);
        
         try {
             log.debug(xml);
@@ -537,41 +541,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         
         log.debug("Sending SEP Restore Message End");
         return;
-    }
-    
-    @Autowired
-    public void setRestTemplate(RestOperations restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    @Autowired
-    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
-        this.zigbeeDeviceDao = zigbeeDeviceDao;
-    }
-    
-    @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
-    public void setDigiXMLBuilder(DigiXMLBuilder digiXMLBuilder) {
-        this.digiXMLBuilder = digiXMLBuilder;
-    }
-
-    @Autowired
-    public void setDigiResponseHandler(DigiResponseHandler digiResponseHandler) {
-        this.digiResponseHandler = digiResponseHandler;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-
-    @Autowired
-    public void setZigbeeServiceHelper(ZigbeeServiceHelper zigbeeServiceHelper) {
-        this.zigbeeServiceHelper = zigbeeServiceHelper;
     }
     
     @Autowired
