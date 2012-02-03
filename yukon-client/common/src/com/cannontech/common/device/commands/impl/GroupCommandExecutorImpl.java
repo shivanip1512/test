@@ -122,6 +122,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         groupCommandResult.setCommandRequestExecutionType(commandRequestExecutionType);
         groupCommandResult.setCommand(command);
         groupCommandResult.setResultHolder(commandCompletionCallback);
+        groupCommandResult.setDeviceCollection(deviceCollection);
         groupCommandResult.setCallback(commandCompletionCallback);
         
         DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
