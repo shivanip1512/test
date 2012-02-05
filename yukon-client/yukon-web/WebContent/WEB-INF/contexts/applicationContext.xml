@@ -1405,7 +1405,7 @@
                 <value>ALLOW|/|WEB_CLIENT</value>
                 <value>ALLOW|/index.jsp|WEB_CLIENT</value>
                 <value>ALLOW|/home|WEB_CLIENT</value>
-                <value>ALLOW|/spring/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
+                <value>DENY|/spring/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
                                                 
                 <value>ALLOW|/spring/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/spring/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
