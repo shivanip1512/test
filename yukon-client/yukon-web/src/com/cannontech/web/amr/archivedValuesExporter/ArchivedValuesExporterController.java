@@ -148,7 +148,7 @@ public class ArchivedValuesExporterController {
         format.setFormatId(0);
         format.setFormatName("");
         backingBean.setFormat(format);
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        return getView(model, request, PageEditMode.CREATE, backingBean, userContext);
     }
 
     @RequestMapping
@@ -203,7 +203,7 @@ public class ArchivedValuesExporterController {
                                BindingResult bindingResult, HttpServletRequest request,
                                YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-
+        PageEditMode mode = PageEditMode.EDIT;
         exportAttributeValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             backingBean.setPopupToOpen("addAttributePopup");
@@ -211,7 +211,10 @@ public class ArchivedValuesExporterController {
         } else {
             backingBean.addSelectedAttribute();
         }
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        if(backingBean.getFormat().getFormatId() == 0){
+            mode = PageEditMode.CREATE;
+        }
+        return getView(model, request, mode, backingBean, userContext);
     }
 
     @RequestMapping
@@ -234,6 +237,7 @@ public class ArchivedValuesExporterController {
                            BindingResult bindingResult, HttpServletRequest request,
                            YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
+        PageEditMode mode = PageEditMode.EDIT;
         backingBean.resetExportFieldValues();
         exportFieldValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -241,7 +245,10 @@ public class ArchivedValuesExporterController {
         } else {
             backingBean.addSelectedField();
         }
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        if(backingBean.getFormat().getFormatId() == 0){
+            mode = PageEditMode.CREATE;
+        }
+        return getView(model, request, mode, backingBean, userContext);
     }
 
     @RequestMapping
@@ -309,7 +316,11 @@ public class ArchivedValuesExporterController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
-            mode = PageEditMode.EDIT;
+            if(backingBean.getFormat().getFormatId() == 0){
+                mode = PageEditMode.CREATE;
+            }else{
+                mode = PageEditMode.EDIT;
+            }
         } else {
             ExportFormat format = null;
             if (backingBean.getFormat().getFormatId() == 0) {

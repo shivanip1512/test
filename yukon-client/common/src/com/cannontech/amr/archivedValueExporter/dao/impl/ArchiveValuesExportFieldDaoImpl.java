@@ -132,7 +132,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     }
                     if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("RoundingMode")))){
                         field.setRoundingMode(rs.getEnum("RoundingMode", YukonRoundingMode.class));
-                    };
+                    }
                     field.setMissingAttributeValue(SqlUtils.convertDbValueToString(rs.getString("MissingAttributeValue")));
                     if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("MissingAttribute")))) {
                         field.setMissingAttribute(rs.getEnum("MissingAttribute",MissingAttribute.class));

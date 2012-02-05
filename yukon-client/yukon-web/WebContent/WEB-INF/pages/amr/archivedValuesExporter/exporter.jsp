@@ -319,6 +319,7 @@
 
     <cti:includeScript link="/JavaScript/yukonGeneral.js" />
 
+    <div class="dn">
     <div id="attributeDialog">
         <c:if test="${backingBean.popupToOpen == 'addAttributePopup'}">
             <cti:flashScopeMessages />
@@ -331,6 +332,7 @@
             <cti:flashScopeMessages />
             <%@ include file="editField.jspf"%>
         </c:if>
+    </div>
     </div>
 
     <form:form id="exporterForm" commandName="backingBean" action="${action}">

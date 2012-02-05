@@ -441,6 +441,7 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
     public Meter getDefaultMeter(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Meter previewMeter = new Meter();
+        previewMeter.setDeviceId(fakeDeviceId);
         previewMeter.setMeterNumber(messageSourceAccessor.getMessage(previewMeterNumberKey));
         previewMeter.setName(messageSourceAccessor.getMessage(previewMeterNameKey));
         previewMeter.setAddress(messageSourceAccessor.getMessage(previewMeterAddressKey));
