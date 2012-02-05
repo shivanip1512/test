@@ -133,26 +133,23 @@ public class ChartController extends MultiActionController {
         for (int i = 0; i < idStrings.length; i++) {
             ids[i] = Integer.valueOf(idStrings[i]);
         }
+
+        // Get period
+        String interval = ServletRequestUtils.getRequiredStringParameter(request, "interval");
+        ChartInterval chartInterval = ChartInterval.valueOf(interval);
         
         LitePoint point = pointDao.getLitePoint(ids[0]);
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
-        String units = converterType.getUnits(unitMeasure);
+        String units = converterType.getUnits(unitMeasure, chartInterval);
         mav.addObject("units", units);
 
         // Get graph title from request
         String title = ServletRequestUtils.getStringParameter(request, "title");
         mav.addObject("trendTitle", title);
 
-        // Get period
-        String interval = ServletRequestUtils.getRequiredStringParameter(request,
-                                                                       "interval");
-
-        
-        
         // startDate, endDate
         Date startDate = null;
         Date endDate = null;
-        ChartInterval chartInterval = ChartInterval.valueOf(interval);
 
         String endDateParam = ServletRequestUtils.getRequiredStringParameter(request,
                                                                              "endDate");

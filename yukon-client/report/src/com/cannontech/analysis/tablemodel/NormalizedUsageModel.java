@@ -9,7 +9,11 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.chart.model.ChartValue;
+import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.chart.service.impl.ChartNormalizedDeltaConverter;
+import com.cannontech.common.chart.service.impl.ChartDeltaWaterConverter;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -33,6 +37,7 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
     int pointId;
     Long startDate;
     Long stopDate;
+    Attribute attribute;
 
     // member variables
     private static String title = "Normalized Usage Data";
@@ -69,7 +74,7 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         }
         
         // normalize ChartValue list
-        ChartNormalizedDeltaConverter normalizer = new ChartNormalizedDeltaConverter();
+        ChartDataConverter normalizer = getChartDataConverter();
         List<ChartValue<Double>> normalizedCharValueList = normalizer.convertValues(chartValueList, null);
         
         // convert normalized ChartValue back to POintValueHolder, add data to report rows
@@ -116,6 +121,21 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         return ModelRow.class;
     }
 
+    /**
+     * Returns a converter based on attribute.
+     * Defaults to ChartNormalizedDeltaConverter.
+     * @return
+     */
+    private ChartDataConverter getChartDataConverter() {
+	    if (getAttribute() == BuiltInAttribute.USAGE_WATER) {
+	    	return new ChartDeltaWaterConverter();
+	    } if (getAttribute() == BuiltInAttribute.USAGE) {
+	    	return new ChartNormalizedDeltaConverter();
+	    } else {	//default to regular normalized converter
+	    	return new ChartNormalizedDeltaConverter();
+	    }
+    }
+    
     public int getRowCount() {
         return data.size();
     }
@@ -168,4 +188,12 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         return stopDate;
     }
 
+
+    public void setAttribute(Attribute attribute) {
+		this.attribute = attribute;
+	}
+    
+    public Attribute getAttribute() {
+		return attribute;
+	}
 }

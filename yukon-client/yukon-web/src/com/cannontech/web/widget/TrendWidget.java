@@ -42,7 +42,7 @@ public class TrendWidget extends WidgetControllerBase {
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
     private DateFormattingService dateFormattingService = null;
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
-    
+    private BuiltInAttribute defaultUsageAttribute = null;
 
     /*
      * (non-Javadoc)
@@ -61,7 +61,7 @@ public class TrendWidget extends WidgetControllerBase {
 
         // ATTRIBUTE, ATTRIBUTE GRAPH TYPE
         // - if selected attribute does not exist, choose first valid
-        String defaultAttribute = WidgetParameterHelper.getStringParameter(request, "defaultAttribute", "USAGE");
+        String defaultAttribute = WidgetParameterHelper.getStringParameter(request, "defaultAttribute", defaultUsageAttribute.name());
         String attributeStr = cachingWidgetParameterGrabber.getCachedStringParameter(request, "attribute", defaultAttribute);
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
         
@@ -213,5 +213,9 @@ public class TrendWidget extends WidgetControllerBase {
             CachingWidgetParameterGrabber cachingWidgetParameterGrabber) {
         this.cachingWidgetParameterGrabber = cachingWidgetParameterGrabber;
     }
-
+    
+    @Required
+    public void setDefaultUsageAttribute(BuiltInAttribute defaultUsageAttribute) {
+		this.defaultUsageAttribute = defaultUsageAttribute;
+	}
 }

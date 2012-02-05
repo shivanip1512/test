@@ -1,5 +1,8 @@
 package com.cannontech.common.chart.model;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 
 public class ChartValue<T> {
     private long id = 0;
@@ -54,6 +57,11 @@ public class ChartValue<T> {
 
 	public void setFormattedValue(String formattedValue) {
 		this.formattedValue = formattedValue;
+	}
+	
+	@Override
+	public String toString() {
+		return "(Value:" + formattedValue + ", Time:" + new DateTime(time).toString(DateTimeFormat.mediumDateTime()) + ")";
 	}
 
 }

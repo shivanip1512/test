@@ -4,7 +4,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 /**
  * Enum of which represents the x-axis time interval between tick marks on the
@@ -285,4 +288,12 @@ public enum ChartInterval {
     public DateFormatEnum getFormat() {
         return DateFormatEnum.DATE;
     }
+    
+    /**
+     * Method to return the interval string for display.
+     */
+    public MessageSourceResolvable getIntervalString() {
+        return YukonMessageSourceResolvable.createDefault("yukon.common.chart.interval." + name(), name());
+    }
+
 }

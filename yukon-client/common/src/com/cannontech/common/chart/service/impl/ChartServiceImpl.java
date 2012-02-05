@@ -62,7 +62,7 @@ public class ChartServiceImpl implements ChartService {
 		this.dateFormattingService = dateFormattingService;
 	}
 
-    public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
+    public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval interval,
                                  GraphType graphType, ConverterType converterType) {
 
         List<Graph> graphList = new ArrayList<Graph>();
@@ -84,7 +84,7 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setGroupingUsed(false);
             
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
-            String units = converterType.getUnits(unitMeasure);
+            String units = converterType.getUnits(unitMeasure, interval);
 
             // Make a list of each of the data points
             List<ChartValue<Double>> chartData = new ArrayList<ChartValue<Double>>();
@@ -102,11 +102,11 @@ public class ChartServiceImpl implements ChartService {
             }
             
             // Assign each chart value to an x-axis spot
-            List<ChartValue<Double>> axisChartData = this.setXAxisIds(unit, startDate, chartData);
+            List<ChartValue<Double>> axisChartData = this.setXAxisIds(interval, startDate, chartData);
 
             // Convert data to specified graph type
             ChartDataConverter converter = converterType.getDataConverter();
-            axisChartData = converter.convertValues(axisChartData, unit);
+            axisChartData = converter.convertValues(axisChartData, interval);
 
             // graph
             Graph graph = new Graph();
@@ -234,7 +234,12 @@ public class ChartServiceImpl implements ChartService {
         ChartValue<Double> maxValue = null;
 
         for (ChartValue<Double> currValue : intervalValues) {
-            if (maxValue == null || currValue.getValue() >= maxValue.getValue()) {
+        	
+        	// record maxValue when currentValue is greater than previous maxValue.
+        	// if currentValue and maxValue are the same, record maxValue for the one with greater time
+            if (maxValue == null || 
+            		(currValue.getValue() > maxValue.getValue()) ||
+            		(currValue.getValue() == maxValue.getValue() && currValue.getTime() > maxValue.getTime())) {
                 maxValue = currValue;
             }
         }

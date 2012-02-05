@@ -647,6 +647,13 @@
                       <bean class="com.cannontech.web.input.type.DateMillisType"/>
                     </property>
                 </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="attribute"/>
+                    <property name="displayName" value="Attribute"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.AttributeType"/>
+                    </property>
+                </bean>
               </list>
             </property>
           </bean>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- ChartInterval --> 
+    <entry key="yukon.common.chart.interval.MONTH">month</entry>
+    <entry key="yukon.common.chart.interval.DAY">day</entry>
+    <entry key="yukon.common.chart.interval.DAY_MIDNIGHT">day</entry>
+    <entry key="yukon.common.chart.interval.HOUR">hour</entry>
+    <entry key="yukon.common.chart.interval.MINUTE">minute</entry>
+    <entry key="yukon.common.chart.interval.FIFTEENSECOND">15 sec</entry>
+    <entry key="yukon.common.chart.interval.WEEK">week</entry>
+    <entry key="yukon.common.chart.interval.FIVEMINUTE">5 min</entry>
+    <entry key="yukon.common.chart.interval.FIFTEENMINUTE">15 min</entry>
+
+</properties>
