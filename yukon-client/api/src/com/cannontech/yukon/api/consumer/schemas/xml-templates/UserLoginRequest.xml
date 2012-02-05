@@ -3,6 +3,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../UserLoginRequest.xsd"
            version="1.0">
-           <username>yukon</username>
-           <password>yukon</password>
+           <username>testLogin</username>
+           <password>testPassword</password>
 </userLoginRequest>
