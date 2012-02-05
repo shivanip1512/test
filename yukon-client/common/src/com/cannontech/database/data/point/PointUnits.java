@@ -52,7 +52,7 @@ public final class PointUnits
    public static final int UOMID_VOLTS = 35;
    public static final int UOMID_VOLTAMPS = 36;
    public static final int UOMID_VA = 37;
-   public static final int UOMID_WATR_CFT = 38;
+   public static final int UOMID_CUBIC_FEET = 38;	//formerly know as UOMID_WATR_CFT
    public static final int UOMID_WATTS = 39;
    public static final int UOMID_HZ = 40;
    public static final int UOMID_VOLTS_V2H = 41;
@@ -70,6 +70,7 @@ public final class PointUnits
 	public static final int UOMID_M_S = 52;
 	public static final int UOMID_KV = 53;
 	public static final int UOMID_UNDEF = 54;
+	public static final int UOMID_CUBIC_METERS = 55;
 
    public static final Integer[] CAP_CONTROL_VAR_UOMIDS =
    {

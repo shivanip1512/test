@@ -210,7 +210,8 @@ public abstract class BillingDeviceBase implements BillableDevice {
             break;
 
         case PointUnits.UOMID_GALLONS:
-        case PointUnits.UOMID_WATR_CFT:
+        case PointUnits.UOMID_CUBIC_FEET:
+        case PointUnits.UOMID_CUBIC_METERS:
         case PointUnits.UOMID_GAL_PM:
             type = ReadingType.WATER;
 
