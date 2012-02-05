@@ -25,21 +25,21 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.PoolManager;
@@ -114,6 +114,8 @@ public final class BulkImporter extends Observable implements MessageListener
     private final long PORTER_WAIT = 900000;
 	private final int SAVETHEAMPCARDS_AMOUNT = 50;
 	
+	private boolean singleGroup = false;	//false supports legacy functionality
+	
 public BulkImporter() {
 	super();
 }
@@ -170,6 +172,10 @@ public void start() {
 			figureNextImportTime();
 			//start the worker bee to handle porter communication
             porterWorker();
+            
+            // Load possible cParm for controlling single vs multi child group membership in parent group
+            ConfigurationSource configurationSource = YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
+            singleGroup = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.BULK_IMPORTER_SINGLE_GROUP);
             
 			do {
 				java.util.Date now = null;
@@ -238,7 +244,6 @@ public void runImport(List<ImportData> imps) {
 
     DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
     
-    DeviceGroupService deviceGroupService = (DeviceGroupService) YukonSpringHook.getBean("deviceGroupService");
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
     DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
     RoleDao roleDao = (RoleDao) YukonSpringHook.getBean("roleDao");
@@ -248,10 +253,6 @@ public void runImport(List<ImportData> imps) {
     StoredDeviceGroup billingGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
     StoredDeviceGroup collectionGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.COLLECTION);
 
-    StoredDeviceGroup alternateGroup = alternateGroupBase;
-    StoredDeviceGroup billingGroup = billingGroupBase;
-    StoredDeviceGroup collectionGroup = collectionGroupBase;
-    
 	for(int j = 0; j < imps.size(); j++) {
 		updateDeviceID = null;
         currentEntry = imps.get(j);
@@ -357,88 +358,28 @@ public void runImport(List<ImportData> imps) {
         }
         
         // COLLECTION GROUP
-        if(StringUtils.isBlank(collectionGrp) && notUpdate) {
-            String error = "Has no collection group.  ";
-            log.warn(logMsgPrefix + error);
-            errorMsg.add(error);
-        } 
-        else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(collectionGrp)) {
+        // updatePrefixGroup will check for isBlank and ignore group field updates/inserts when collectionGroup is blank. 
+        if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(collectionGrp)) {
             String error = "Collection group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
             log.warn(logMsgPrefix + error);
             errorMsg.add(error);
         } 
-        else if(StringUtils.isNotBlank(collectionGrp)){
-            try {
-                String fullGrpName = collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp();
-                collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
-                if(!fullGrpName.equals(collectionGroup.getFullName())) {
-                    String error = logMsgPrefix + "Has an incorrect collection group name (check case).  ";
-                    log.warn(error);
-                    errorMsg.add(error);
-                }
-            } catch (NotFoundException nfe) {
-                String error = "Has a collection group that does not exist.  Creating device group.  ";
-                log.warn(logMsgPrefix + error);
-                deviceGroupEditorDao.addGroup(collectionGroupBase, DeviceGroupType.STATIC, currentEntry.getCollectionGrp());
-                collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
-            }
-        } // else...is blank and !notUpdate which is okay.
-        
+       
         // ALTERNATE GROUP
-        if(StringUtils.isBlank(altGrp) && notUpdate) {
-            String error = "Has no alternate group.  ";
-            log.warn(logMsgPrefix + error);
-            errorMsg.add(error);
-        } 
-        else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(altGrp)) {
+        // updatePrefixGroup will check for isBlank and ignore group field updates/inserts when alternateGroup is blank.
+        if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(altGrp)) {
             String error = "Alternate group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
             log.warn(logMsgPrefix + error);
             errorMsg.add(error);
-        } 
-        else if(StringUtils.isNotBlank(altGrp)){
-            try {
-                String fullGrpName = alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp();
-                alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
-                if(!fullGrpName.equals(alternateGroup.getFullName())) {
-                    String error = logMsgPrefix + "Has an incorrect alternate group name (check case).  ";
-                    log.warn(error);
-                    errorMsg.add(error);
-                }
-            } catch (NotFoundException nfe) {
-                String error = "Has an alternate group that does not exist.  Creating device group.  ";
-                log.warn(logMsgPrefix + error);
-                deviceGroupEditorDao.addGroup(alternateGroupBase, DeviceGroupType.STATIC, currentEntry.getAltGrp());
-                alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
-            }
-        } // else...is blank and !notUpdate which is okay.
+        }
         
         // BILLING GROUP
-        if(StringUtils.isBlank(billGrp) && notUpdate) {
-            String warning = "Has no billing group.  ";
-            log.warn(logMsgPrefix + warning);
-            //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
-        }
-        else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(billGrp)) {
+        // updatePrefixGroup will check for isBlank and ignore group field updates/inserts when billingGroup is blank.
+        if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(billGrp)) {
             String error = "Billing group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
             log.warn(logMsgPrefix + error);
             errorMsg.add(error);
-        } 
-        else if(StringUtils.isNotBlank(billGrp)){
-            try {
-                String fullGrpName = billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup();
-                billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
-                if(!fullGrpName.equals(billingGroup.getFullName())) {
-                    String error = logMsgPrefix + "Has an incorrect billing group name (check case).  ";
-                    log.warn(error);
-                    errorMsg.add(error);
-                }
-            } catch (NotFoundException nfe) {
-                String error = "Has a billing group that does not exist.  Creating device group.  ";
-                log.warn(logMsgPrefix + error);
-                deviceGroupEditorDao.addGroup(billingGroupBase, DeviceGroupType.STATIC, currentEntry.getBillingGroup());
-                billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
-            }
-        } // else...is blank and !notUpdate which is okay.
+        }
         
         if(StringUtils.isBlank(routeName)) {
             if(StringUtils.isBlank(substationName)) {
@@ -508,9 +449,9 @@ public void runImport(List<ImportData> imps) {
                 
                 //update device groups if they changed
                 SimpleDevice yukonDevice = new SimpleDevice(yukonPaobject.getPAObjectID(), PaoType.getForDbString(yukonPaobject.getPAOType()));
-                deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
-                deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
-                deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
+                updateGroup(collectionGroupBase, collectionGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
+                updateGroup(alternateGroupBase, altGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
+                updateGroup(billingGroupBase, billGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
                 
 				//update the deviceRoutes table if the routeID has changed.
 				if(routeID.intValue() != -12) {
@@ -600,9 +541,9 @@ public void runImport(List<ImportData> imps) {
                 log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
 
                 SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), PaoType.getForDbString(current400Series.getPAOType()));
-                deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
-                deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
-                deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
+                updateGroup(collectionGroupBase, collectionGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
+                updateGroup(alternateGroupBase, altGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
+                updateGroup(billingGroupBase, billGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
 
                 //write pending communication entry for porter thread to pick up
                 boolean importerCommunications = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED));
@@ -1021,6 +962,47 @@ private void handleSuccessfulLocate(Return returnMsg) {
             log.info("Could not assign device " + retMCT.getPAObjectID() + " the route " + routeName +" ("+ routeID+").");
         else
             log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " the route " + routeName +" ("+ routeID+").");
+    }
+}
+
+/**
+ * Removes meter from all immediate descendants of deviceGroupParent.
+ * Adds meter to a subgroup of deviceGroupParent called groupName.
+ * If groupName does not exist, a new group will be created.
+ * @param deviceGroupParent - base group
+ * @param groupName - child group name
+ * @param yukonDevice - device to add to groupName
+ * @param deviceGroupMemberEditorDao
+ * @param deviceGroupEditorDao
+ */
+private void updateGroup(StoredDeviceGroup deviceGroupParent, String groupName, 
+		YukonDevice yukonDevice, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupEditorDao deviceGroupEditorDao) {
+	
+	if (StringUtils.isBlank(groupName)) {
+		log.debug("Device(" + yukonDevice.getPaoIdentifier().toString() + ") - Group not updated - No child group name provided for: " + deviceGroupParent.getFullName());
+		return;
+	}
+	
+    boolean alreadyInGroup = false;
+    
+    Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, yukonDevice);
+    for (StoredDeviceGroup deviceGroup : deviceGroups) {
+        if( deviceGroup.getName().equalsIgnoreCase(groupName) ) {
+            alreadyInGroup = true;
+            log.debug("Device(" + yukonDevice.getPaoIdentifier().toString() + ") - Already in group:  " + deviceGroup.getFullName());
+        } else {
+        	if (singleGroup) {
+        		// remove from any other groups so only membership in one child group remains.
+	            deviceGroupMemberEditorDao.removeDevices(deviceGroup, yukonDevice);
+	            log.debug("Device(" + yukonDevice.getPaoIdentifier().toString() + ") - Removed from Group: " + deviceGroup.getFullName() + ".");
+        	}
+        }
+    }
+
+    if (!alreadyInGroup) {
+        StoredDeviceGroup deviceGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, groupName, true);
+        deviceGroupMemberEditorDao.addDevices(deviceGroup, yukonDevice);
+        log.debug("Device(" + yukonDevice.getPaoIdentifier().toString() + ") - Added to Group: " + deviceGroup.getFullName() + ".");
     }
 }
 }
