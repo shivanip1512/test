@@ -42,6 +42,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingExtractor;
+import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -71,7 +72,6 @@ import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -822,13 +822,21 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     public List<String> getThermostatLabels(List<Integer> thermostatIds) {
-        List<String> thermostatLabels = Lists.newArrayListWithCapacity(thermostatIds.size());
-        for(Integer thermostatId : thermostatIds) {
-            Thermostat thermostat = getThermostatById(thermostatId);
-            thermostatLabels.add(thermostat.getLabel());
-        }
-
-        return thermostatLabels;
+        
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        List<String> deviceLabels = template.query(new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT IB.DeviceLabel");
+                sql.append("FROM InventoryBase IB");
+                sql.append("WHERE IB.inventoryId").in(subList);
+                
+                return sql;
+            }
+        }, thermostatIds, new StringRowMapper());
+        
+        return deviceLabels;
     }
     
     @Override
