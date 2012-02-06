@@ -5092,6 +5092,10 @@
             <point type="CalcAnalog" offset="0">
                 <init>true</init>
                 <name>Total Outage Count</name>
+				<archive>
+					<type>ON_CHANGE</type>
+					<interval>ZERO</interval>
+				</archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>

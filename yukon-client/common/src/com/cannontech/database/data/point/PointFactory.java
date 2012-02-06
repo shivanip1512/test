@@ -424,15 +424,15 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name, int s
 }
 
 public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId) {
-    return createCalculatedPoint(paoIdentifier, name, stateGroupId, PointUnits.UOMID_UNDEF, PointUnit.DEFAULT_DECIMAL_PLACES, null);
+    return createCalculatedPoint(paoIdentifier, name, stateGroupId, PointUnits.UOMID_UNDEF, PointUnit.DEFAULT_DECIMAL_PLACES, PointArchiveType.NONE, PointArchiveInterval.ZERO, null);
 }
 
 /**
  * This method only supports creating calculated points that contain inner CalcPointComponent's that reference their own pao
  */
-public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId, int unitOfMeasure, int decimalPlaces, CalcPointInfo calcPoint) {
+public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId, int unitOfMeasure, int decimalPlaces, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
     PointBase point = createPoint(PointTypes.CALCULATED_POINT);
-    
+
     point = PointFactory.createNewPoint(point.getPoint().getPointID(),
                                         PointTypes.CALCULATED_POINT,
                                         name,
@@ -440,6 +440,8 @@ public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, Strin
                                         new Integer (TypeBase.POINT_OFFSET)
                                          );
     
+    point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+    point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
     point.getPoint().setStateGroupID(stateGroupId);
     PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
                                       new Integer(unitOfMeasure),

@@ -106,6 +106,8 @@ public class PointCreationServiceImpl implements PointCreationService {
                                                                          stateGroupId,
                                                                          unitOfMeasure,
                                                                          decimalPlaces,
+                                                                         pointArchiveType,
+                                                                         pointArchiveInterval,
                                                                          calcPoint);
             
             break;
