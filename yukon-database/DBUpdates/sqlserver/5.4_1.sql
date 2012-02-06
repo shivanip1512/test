@@ -79,6 +79,16 @@ CREATE INDEX Indx_ArchValExportFld_FormatId ON ArchiveValuesExportField (
 INSERT INTO YukonRoleProperty VALUES (-21313, -213, 'Archived Data Exporter', 'true', 'Controls access to Archived Data Exporter');
 /* End YUK-10601 */
 
+/* Start YUK-10605 */
+ALTER TABLE OptOutTemporaryOverride
+ALTER COLUMN OptOutValue VARCHAR(18) NOT NULL;
+UPDATE OptOutTemporaryOverride SET OptOutType = 'OPT_OUTS' WHERE OptOutType = 'ENABLED';
+UPDATE OptOutTemporaryOverride SET OptOutValue = 'COUNT' WHERE OptOutType = 'COUNTS' AND OptOutValue = '1';
+UPDATE OptOutTemporaryOverride SET OptOutValue = 'DONT_COUNT' WHERE OptOutType = 'COUNTS' AND OptOutValue = '0';
+UPDATE OptOutTemporaryOverride SET OptOutValue = 'ENABLED' WHERE OptOutType = 'OPT_OUTS' AND OptOutValue = '1';
+UPDATE OptOutTemporaryOverride SET OptOutValue = 'DISABLED_WITH_COMM' WHERE OptOutType = 'OPT_OUTS' AND OptOutValue = '0';
+/* End YUK-10605 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
