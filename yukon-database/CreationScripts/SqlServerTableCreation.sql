@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/5/2012 9:53:55 PM                          */
+/* Created on:     2/6/2012 9:12:03 AM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8157,7 +8157,7 @@ INSERT INTO UnitMeasure VALUES ( 34,'Vars', 0,'Vars','(none)' );
 INSERT INTO UnitMeasure VALUES ( 35,'Volts', 0,'Volts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 36,'VoltAmps', 0,'VoltAmps','(none)' );
 INSERT INTO UnitMeasure VALUES ( 37,'VA', 0,'VA','(none)' );
-INSERT INTO UnitMeasure VALUES ( 38,'Watr-CFT', 0,'Watr-CFT','(none)' );
+INSERT INTO UnitMeasure VALUES ( 38,'ft^3', 0,'Cubic Feet','(none)' );
 INSERT INTO UnitMeasure VALUES ( 39,'Watts', 0,'Watts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 40,'Hz', 0,'Hertz','(none)' );
 INSERT INTO UnitMeasure VALUES ( 41,'Volts', 1,'Volts from V2H','(none)' );
@@ -8174,6 +8174,7 @@ INSERT INTO UnitMeasure VALUES( 51,'km/h',0,'Kilometers Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
 INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
+INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 
 /*==============================================================*/
 /* Table: UserPaoPermission                                     */
