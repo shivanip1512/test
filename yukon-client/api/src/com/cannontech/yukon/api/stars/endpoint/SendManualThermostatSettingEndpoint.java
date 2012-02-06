@@ -1,15 +1,11 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -20,7 +16,6 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -29,7 +24,6 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.thermostat.FailedThermostatCommandException;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
@@ -40,7 +34,6 @@ import com.cannontech.yukon.api.stars.model.ManualThermostatSetting;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.google.common.collect.Sets;
 
 @Endpoint
 public class SendManualThermostatSettingEndpoint {
@@ -56,9 +49,6 @@ public class SendManualThermostatSettingEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(SendManualThermostatSettingEndpoint.class);
     
-    @PostConstruct
-    public void initialize() throws JDOMException {}
-    
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="sendManualThermostatSettingRequest")
     public Element invoke(Element sendManualThermostatSetting, LiteYukonUser user) throws Exception {
         
@@ -67,23 +57,21 @@ public class SendManualThermostatSettingEndpoint {
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(sendManualThermostatSetting);
 
-        List<ManualThermostatSetting> manualThermostatSettings = 
-                requestTemplate.evaluate("//y:manualThermostatSettingList/y:manualThermostatSetting", 
+        ManualThermostatSetting manualThermostatSetting = 
+                requestTemplate.evaluateAsObject("/y:sendManualThermostatSettingRequest/y:manualThermostatSettingList/y:manualThermostatSetting", 
                                          new NodeToElementMapperWrapper<ManualThermostatSetting>(new ManualThermostatSettingElementRequestMapper()));
-         Map<String, Integer> serialNumberToInventoryIdMap = getSerialNumberToInventoryIdMap(manualThermostatSettings, user);
+         Map<String, Integer> serialNumberToInventoryIdMap = getSerialNumberToInventoryIdMap(manualThermostatSetting, user);
          
         // Log run program attempt
-        for (ManualThermostatSetting manualThermostatSetting : manualThermostatSettings) {
-            for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
-                Temperature heatTemperature = manualThermostatSetting.getHeatTemperature() ;
-                Temperature coolTemperature = manualThermostatSetting.getCoolTemperature(); 
-                        
-                accountEventLogService.thermostatManualSetAttemptedByApi(user, serialNumber, 
-                                                                         (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null, 
-                                                                         (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null, 
-                                                                         manualThermostatSetting.getThermostatMode().toString(), 
-                                                                         manualThermostatSetting.getFanState().toString(), manualThermostatSetting.isHoldTemperature());
-            }
+        for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
+            Temperature heatTemperature = manualThermostatSetting.getHeatTemperature() ;
+            Temperature coolTemperature = manualThermostatSetting.getCoolTemperature(); 
+
+            accountEventLogService.thermostatManualSetAttemptedByApi(user, serialNumber, 
+                                                                     (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null, 
+                                                                     (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null, 
+                                                                     manualThermostatSetting.getThermostatMode().name(), 
+                                                                     manualThermostatSetting.getFanState().name(), manualThermostatSetting.isHoldTemperature());
         }
         
         // init response
@@ -102,33 +90,29 @@ public class SendManualThermostatSettingEndpoint {
              * Once the account dependence is  removed from the setupAndExecute command we'll be able to remove the customerAccountDao hit
              * and further simplify this code. 
              */
-            for (ManualThermostatSetting manualThermostatSetting : manualThermostatSettings) {
-                for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
-                    int thermostatId = serialNumberToInventoryIdMap.get(serialNumber);
-                    CustomerAccount account = customerAccountDao.getAccountByInventoryId( thermostatId);
-                
-                    // Send out manual thermostat commands
-                    setPreviousTemperaturesForNull(manualThermostatSetting, thermostatId);
-                    result = thermostatService.executeManualEvent(thermostatId, manualThermostatSetting.getHeatTemperature(), manualThermostatSetting.getCoolTemperature(),
-                                                                  manualThermostatSetting.getThermostatMode(), manualThermostatSetting.getFanState(), manualThermostatSetting.isHoldTemperature(),  
-                                                                  manualThermostatSetting.isAutoModeCommand(), account, user);
-                    if (result.isFailed() && manualThermostatSetting.getSerialNumbers().size() > 1) {
-                        result = ThermostatManualEventResult.MULTIPLE_ERROR;
-                        break;
-                    }
+            for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
+                int thermostatId = serialNumberToInventoryIdMap.get(serialNumber);
+                CustomerAccount account = customerAccountDao.getAccountByInventoryId( thermostatId);
+
+                // Send out manual thermostat commands
+                setPreviousTemperaturesForNull(manualThermostatSetting, thermostatId);
+                result = thermostatService.executeManualEvent(thermostatId, manualThermostatSetting.getHeatTemperature(), manualThermostatSetting.getCoolTemperature(),
+                                                              manualThermostatSetting.getThermostatMode(), manualThermostatSetting.getFanState(), manualThermostatSetting.isHoldTemperature(),  
+                                                              manualThermostatSetting.isAutoModeCommand(), account, user);
+
+                if (result.isFailed() && manualThermostatSetting.getSerialNumbers().size() > 1) {
+                    result = ThermostatManualEventResult.MULTIPLE_ERROR;
                 }
             }
             
             if (result.isFailed()) {
-                throw new FailedThermostatCommandException("Manual Thermostat Command Failed:"+result.toString());
+                Element fe = XMLFailureGenerator.generateFailure(sendManualThermostatSetting, "ManualCommandFailed", "The manual command sent did not work.");
+                resp.addContent(fe);
+                return resp;
             }
 
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendManualThermostatSetting, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
-            resp.addContent(fe);
-            return resp;
-        } catch (FailedThermostatCommandException e) {
-            Element fe = XMLFailureGenerator.generateFailure(sendManualThermostatSetting, e, "ManualCommandFailed", "The manual command sent did not work.");
             resp.addContent(fe);
             return resp;
         } catch (Exception e) {
@@ -138,7 +122,7 @@ public class SendManualThermostatSettingEndpoint {
             return resp;
         }
         
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
+        resp.addContent(new Element("success", ns));
         return resp;
     }
 
@@ -157,14 +141,11 @@ public class SendManualThermostatSettingEndpoint {
      * This method gets a list of thermostat manual events that can be sent to the thermostat service to change the temperature,
      * fan state, and mode for a given thermostat.
      */
-    private Map<String, Integer> getSerialNumberToInventoryIdMap(List<ManualThermostatSetting> manualThermostatSettings, LiteYukonUser user) {
+    private Map<String, Integer> getSerialNumberToInventoryIdMap(ManualThermostatSetting manualThermostatSetting, LiteYukonUser user) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 
         // Get all the serial numbers used in this web service call.
-        final Set<String> serialNumbers = Sets.newHashSet();
-        for (ManualThermostatSetting manualThermostatSetting : manualThermostatSettings) {
-            serialNumbers.addAll(manualThermostatSetting.getSerialNumbers());
-        }
+        Collection<String> serialNumbers = manualThermostatSetting.getSerialNumbers();
 
          return inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
     }

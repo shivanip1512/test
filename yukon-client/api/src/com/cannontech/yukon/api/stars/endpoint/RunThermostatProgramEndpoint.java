@@ -2,12 +2,8 @@ package com.cannontech.yukon.api.stars.endpoint;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -17,7 +13,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -43,9 +38,6 @@ public class RunThermostatProgramEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
     
-    @PostConstruct
-    public void initialize() throws JDOMException {}
-    
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="runThermostatProgramRequest")
     public Element invoke(Element runThermostatProgram, LiteYukonUser user) throws Exception {
         
@@ -53,7 +45,7 @@ public class RunThermostatProgramEndpoint {
         
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(runThermostatProgram);
-        List<String> serialNumbers = requestTemplate.evaluateAsStringList("//y:serialNumber");
+        List<String> serialNumbers = requestTemplate.evaluateAsStringList("/y:runThermostatProgramRequest/y:serialNumber");
 
         // Log run program attempt
         for (String serialNumber : serialNumbers) {
@@ -62,8 +54,7 @@ public class RunThermostatProgramEndpoint {
         
         // init response
         Element resp = new Element("runThermostatProgramResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
-        resp.setAttribute(versionAttribute);
+        resp.setAttribute("version", "1.0");
         
         // run service
         ThermostatManualEventResult result = null;
@@ -87,7 +78,7 @@ public class RunThermostatProgramEndpoint {
             }
 
             if (result.isFailed()) {
-                throw new FailedThermostatCommandException("Run Program Command Failed:"+result.toString());
+                throw new FailedThermostatCommandException("Run Program Command Failed:"+result);
             }
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(runThermostatProgram, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
@@ -104,7 +95,7 @@ public class RunThermostatProgramEndpoint {
         }
         
         // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
+        resp.addContent(new Element("success", ns));
         
         return resp;
     }

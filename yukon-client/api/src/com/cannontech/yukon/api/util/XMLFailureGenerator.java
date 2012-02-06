@@ -27,7 +27,11 @@ public class XMLFailureGenerator {
     public static Element generateFailure(Element request, Throwable t, String errorCode, String errorDescription) {
         return generateFailure(request, t, errorCode, errorDescription, YukonXml.getYukonNamespace());
     }
-    
+
+    public static Element generateFailure(Element request, String errorCode, String errorDescription) {
+        return generateFailure(request, null, errorCode, errorDescription, YukonXml.getYukonNamespace());
+    }
+
     public static Element generateFailure(Element request, Throwable t, String errorCode, String errorDescription, Namespace ns) {
         
         // log error

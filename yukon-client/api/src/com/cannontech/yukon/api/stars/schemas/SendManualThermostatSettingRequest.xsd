@@ -21,7 +21,7 @@
                     <xsd:element name="manualThermostatSettingList">
                         <xsd:complexType>
                             <xsd:sequence>
-                                <xsd:element name="manualThermostatSetting" type="yukon:ManualThermostatSetting" maxOccurs="unbounded"/>
+                                <xsd:element name="manualThermostatSetting" type="yukon:ManualThermostatSetting" />
                             </xsd:sequence>
                         </xsd:complexType>
                     </xsd:element>
