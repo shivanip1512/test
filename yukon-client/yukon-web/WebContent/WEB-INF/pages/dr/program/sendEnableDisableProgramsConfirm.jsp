@@ -77,17 +77,20 @@ jQuery(function() {
     <br>
     <label>
         <input type="checkbox" id="disableAllCheckbox">
-        <c:choose>
-            <c:when test="${enable}">
-                <cti:msg key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.enableAllPrograms"/><br>
-            </c:when>
-            <c:otherwise>
-                <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.disableAllPrograms"/><br>
-                <input type="checkbox" name="supressRestoration" value="true">
-                <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.supressRestoration"/>
-            </c:otherwise>
-        </c:choose>
+        <c:if test="${enable}">
+            <cti:msg key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.enableAllPrograms"/>
+        </c:if>
+        <c:if test="${!enable}">
+            <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.disableAllPrograms"/>
+        </c:if>
     </label>
+    <c:if test="${!enable}">
+        <br>
+        <label>
+            <input type="checkbox" name="supressRestoration" value="true">
+            <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.supressRestoration"/>
+        </label>
+    </c:if>
     
     <div class="actionArea">
         <input type="submit" value="<cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.okButton"/>"/>
