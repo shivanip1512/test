@@ -440,7 +440,14 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 {
                     controlout.control_offset = *control_offset;
 
-                    controlout.type = Protocol::DNPInterface::AnalogOutputPointType;
+                    if (parse.isKeyValid("analogfloatvalue"))
+                    {
+                        controlout.type = Protocol::DNPInterface::AnalogOutputFloatPointType;
+                    }
+                    else
+                    {
+                        controlout.type = Protocol::DNPInterface::AnalogOutputPointType;
+                    }
 
                     controlout.aout.value     = parse.getdValue("analogvalue");
 

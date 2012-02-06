@@ -17,6 +17,7 @@ static const CtiString str_quoted_token("((\".*\")|('.*'))");
 static const CtiString str_signed_num     ("(\\+|\\-)?([0-9]+)");
 static const CtiString str_num     ("([0-9]+)");
 static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
+static const CtiString str_floatnum_only("([0-9]+(\\.[0-9]*))");
 static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
 
 static const CtiString str_floatnum_list(str_floatnum + CtiString("( ") + str_floatnum + CtiString(")*"));
@@ -1450,6 +1451,10 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
                 _cmd["analogoffset"] = CtiParseValue( atoi(cmdtok().c_str()) );
                 _cmd["analogvalue"]  = CtiParseValue( atof(cmdtok().c_str()) );
+                if (!(token.match(str_floatnum_only)).empty())
+                {
+                    _cmd["analogfloatvalue"] = _cmd["analogvalue"];
+                }
             }
             if(!(token = CmdStr.match(re_analog_no_offset)).empty())
             {

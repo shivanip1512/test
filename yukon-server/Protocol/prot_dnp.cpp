@@ -179,12 +179,21 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
             case Command_SetAnalogOut:
             {
-                if( _command_parameters.size() == 1 && _command_parameters[0].type == AnalogOutputPointType )
+                if( _command_parameters.size() == 1 && 
+				   (_command_parameters[0].type == AnalogOutputPointType || _command_parameters[0].type == AnalogOutputFloatPointType ))
                 {
                     _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
 
                     ObjectBlock  *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                    AnalogOutput *aout = CTIDBG_new AnalogOutput(AnalogOutput::AO_16Bit);
+                    AnalogOutput *aout = NULL;
+                    if( _command_parameters[0].type == AnalogOutputPointType )
+                    {
+                        aout = CTIDBG_new AnalogOutput(AnalogOutput::AO_16Bit);
+                    }
+                    else
+                    {
+                        aout = CTIDBG_new AnalogOutput(AnalogOutput::AO_SingleFloat);
+                    }
 
                     aout->setControl(_command_parameters[0].aout.value);
 

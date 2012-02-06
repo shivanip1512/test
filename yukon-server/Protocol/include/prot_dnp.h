@@ -91,6 +91,7 @@ public:
     enum OutputPointType
     {
         AnalogOutputPointType,
+        AnalogOutputFloatPointType,
         DigitalOutputPointType
     };
 
@@ -132,6 +133,7 @@ public:
         Command_Class123Read,
         Command_Class1230Read,
         Command_SetAnalogOut,
+        Command_SetAnalogOut_Float,
         Command_SetDigitalOut_Direct,
         Command_SetDigitalOut_SBO_Select,
         Command_SetDigitalOut_SBO_Operate,
