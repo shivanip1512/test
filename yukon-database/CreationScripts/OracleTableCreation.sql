@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/5/2012 8:48:19 PM                          */
+/* Created on:     2/5/2012 9:25:47 PM                          */
 /*==============================================================*/
 
 
@@ -7835,7 +7835,6 @@ insert into YukonGroupRole values(-15,-1,-1,-1014,'CannonLogo.gif');
 insert into YukonGroupRole values(-17,-1,-1,-1016,' ');
 insert into YukonGroupRole values(-18,-1,-1,-1017,' ');
 insert into YukonGroupRole values(-20,-1,-1,-1019,' ');
-insert into YukonGroupRole values(-21,-1,-1,-1020,' ');
 insert into YukonGroupRole values(-50,-1,-4,-1308,' ');
 insert into YukonGroupRole values(-51,-1,-4,-1309,' ');
 insert into YukonGroupRole values(-52,-1,-4,-1310,' ');
@@ -8840,7 +8839,6 @@ insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The l
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
-insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
 insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled','true','Specifies whether communications will be allowed by the bulk importer.'); 
 
 /* Energy Company Role Properties */

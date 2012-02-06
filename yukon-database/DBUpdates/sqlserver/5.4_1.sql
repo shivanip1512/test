@@ -89,6 +89,15 @@ UPDATE OptOutTemporaryOverride SET OptOutValue = 'ENABLED' WHERE OptOutType = 'O
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'DISABLED_WITH_COMM' WHERE OptOutType = 'OPT_OUTS' AND OptOutValue = '0';
 /* End YUK-10605 */
 
+/* Start YUK-10610 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -1020; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -1020; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -1020;
+/* End YUK-10610 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
