@@ -9,6 +9,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.StringRowMapper;
@@ -166,14 +169,22 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     }
 
     @Override
-    public List<String> getSerialNumberForInventoryIds(Collection<Integer> inventoryIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT HB.ManufacturerSerialNumber SerialNumber");
-        sql.append("FROM InventoryBase IB");
-        sql.append(  "JOIN LMHardwareBase HB ON HB.InventoryId = IB.InventoryId");
-        sql.append("WHERE IB.InventoryId").in(inventoryIds);
+    public List<String> getSerialNumberForInventoryIds(final Collection<Integer> inventoryIds) {
+
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
-        List<String> serialNumbers = yukonJdbcTemplate.query(sql, new StringRowMapper());
+        List<String> serialNumbers = template.query(new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT HB.ManufacturerSerialNumber SerialNumber");
+                sql.append("FROM InventoryBase IB");
+                sql.append(  "JOIN LMHardwareBase HB ON HB.InventoryId = IB.InventoryId");
+                sql.append("WHERE IB.InventoryId").in(subList);
+                
+                return sql;
+            }
+        }, inventoryIds, new StringRowMapper());
+        
         return serialNumbers;
     }
     

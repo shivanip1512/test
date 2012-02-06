@@ -63,7 +63,7 @@ public interface ThermostatService {
                                                           CustomerAccount account, LiteYukonUser user);
     
     /**
-     * This method reverts the piece of inventory to it's thermostat program. This should be used instead of
+     * This method reverts the piece of inventory to its thermostat program. This should be used instead of
      * calling setupAndExecuteManualEvent directly.
      */
     public ThermostatManualEventResult runProgram(int thermostatIds, LiteYukonUser user);
