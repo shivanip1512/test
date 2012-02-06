@@ -44,7 +44,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     @Override
     public List<ThermostatEvent> getEventsByThermostatIds(List<Integer> thermostatIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId, EventType, UserName, EventTime, ThermostatId, ManualTemp, ManualMode, ManualFan, ManualHold, ScheduleId, ScheduleMode");
+        sql.append("SELECT EventId, EventType, UserName, EventTime, ThermostatId, ManualMode, ManualFan, ManualHold, ScheduleId, ScheduleMode, ManualCoolTemp, ManualHeatTemp");
         sql.append("FROM ThermostatEventHistory");
         sql.append("WHERE ThermostatId").in(thermostatIds);
         sql.append("ORDER BY EventTime DESC");
@@ -57,7 +57,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     @Override
     public List<ThermostatEvent> getLastNEventsByThermostatIds(List<Integer> thermostatIds, int numberOfEvents) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId, EventType, UserName, EventTime, ThermostatId, ManualTemp, ManualMode, ManualFan, ManualHold, ScheduleId, ScheduleMode");
+        sql.append("SELECT EventId, EventType, UserName, EventTime, ThermostatId, ManualMode, ManualFan, ManualHold, ScheduleId, ScheduleMode, ManualCoolTemp, ManualHeatTemp");
         sql.append("FROM ThermostatEventHistory");
         sql.append("WHERE ThermostatId").in(thermostatIds);
         sql.append("ORDER BY EventTime DESC");
@@ -102,7 +102,8 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         mte.setManualFan(event.getFanState());
         mte.setManualHold(event.isHoldTemperature());
         mte.setManualMode(event.getMode());
-        mte.setManualTemp(event.getPreviousTemperature());
+        mte.setManualCoolTemp(event.getPreviousCoolTemperature());
+        mte.setManualHeatTemp(event.getPreviousHeatTemperature());
         logEvent(mte);
     }
     
@@ -138,7 +139,8 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
                 retVal = event;
             } else if(eventType == ThermostatEventType.MANUAL) {
                 ManualThermostatEvent event = new ManualThermostatEvent();
-                event.setManualTemp(Temperature.fromFahrenheit(rs.getDouble("manualTemp")));
+                event.setManualCoolTemp(Temperature.fromFahrenheit(rs.getDouble("manualCoolTemp")));
+                event.setManualHeatTemp(Temperature.fromFahrenheit(rs.getDouble("manualHeatTemp")));
                 event.setManualMode(rs.getEnum("manualMode", ThermostatMode.class));
                 event.setManualFan(rs.getEnum("manualFan", ThermostatFanState.class));
                 event.setManualHold(rs.getEnum("manualHold", YNBoolean.class).getBoolean());
@@ -161,7 +163,8 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
             msps.addValue("ThermostatId", thermostatEvent.getThermostatId());
             if(thermostatEvent instanceof ManualThermostatEvent) {
                 ManualThermostatEvent manualEvent = (ManualThermostatEvent) thermostatEvent;
-                msps.addValue("ManualTemp", manualEvent.getManualTemp().toFahrenheit().getValue());
+                msps.addValue("ManualCoolTemp", manualEvent.getManualCoolTemp().toFahrenheit().getValue());
+                msps.addValue("ManualHeatTemp", manualEvent.getManualHeatTemp().toFahrenheit().getValue());
                 msps.addValue("ManualFan", manualEvent.getManualFan());
                 msps.addValue("ManualMode", manualEvent.getManualMode());
                 msps.addValue("ManualHold", YNBoolean.valueOf(manualEvent.isManualHold()));

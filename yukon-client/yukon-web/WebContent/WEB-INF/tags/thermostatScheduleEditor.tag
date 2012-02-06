@@ -88,7 +88,7 @@
                                             title="${heatLabel}">
                                             <input type="text" 
                                                    class="heat_F f_selectAll"
-                                                   maxlength="4"><i:inline key="yukon.web.defaults.degree"/>
+                                                   maxlength="4" data-temperatureMode="HEAT"><i:inline key="yukon.web.defaults.degree"/>
                                             <input
                                                 type="hidden"
                                                 value="${period.heatTemp.value}"
@@ -101,7 +101,7 @@
                                             title="${coolLabel}">
                                             <input type="text"
                                                    class="cool_F f_selectAll"
-                                                   maxlength="4"><i:inline key="yukon.web.defaults.degree"/>
+                                                   maxlength="4" data-temperatureMode="COOL"><i:inline key="yukon.web.defaults.degree"/>
                                             <input type="hidden"
                                                    value="${period.coolTemp.value}" 
                                                    initialValue="${period.coolTemp.value}" 

@@ -310,8 +310,8 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void thermostatManualSetAttemptedByApi(LiteYukonUser yukonUser, String serialNumber, int temperature,
-                                                  String mode, String fanSetting, boolean holdTemperature) {
+    public void thermostatManualSetAttemptedByApi(LiteYukonUser yukonUser, String serialNumber, int heatTemperature,
+                                                  int coolTemperature, String mode, String fanSetting, boolean holdTemperature) {
     }
 
     @Override

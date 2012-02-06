@@ -67,7 +67,11 @@ Event.observe(window, 'load', function(){
                                         <td>
                                             <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                 <!-- Temperature and Degree Units -->
-                                                <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualTemp.value}'></span>"/>
+                                                <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"/>
+                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
+                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>,
+
+                                                <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"/>
                                                 <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
                                                 <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>,
                                                 <!-- Heat/Cool Mode -->

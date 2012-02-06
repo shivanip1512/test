@@ -23,17 +23,14 @@ public class ManualThermostatSettingElementRequestMapper implements ObjectMapper
         manualThermostatSetting.setThermostatMode(ThermostatMode.valueOf(yukonTemplate.evaluateAsString("//y:mode").toUpperCase()));
         manualThermostatSetting.setFanState(ThermostatFanState.valueOf(yukonTemplate.evaluateAsString("//y:fanState").toUpperCase()));
         manualThermostatSetting.setHoldTemperature(yukonTemplate.evaluateAsBoolean("//y:holdTemperature", false));
-        manualThermostatSetting.setTemperature(yukonTemplate.evaluateAsTemperature("//y:temperature"));
-//        Double temperatureValue = yukonTemplate.evaluateAsDouble("//y:temperature");
-//        String temperatureUnit = yukonTemplate.evaluateAsString("//y:temperature/@unit");
-//        Temperature temperature = null;
-//        if (TemperatureUnit.fromAbbreviation(temperatureUnit) == TemperatureUnit.CELSIUS) {
-//            temperature = new CelsiusTemperature(temperatureValue);
-//        } else {
-//            temperature = new FahrenheitTemperature(temperatureValue);
-//        }
-//        manualThermostatSetting.setTemperature(temperature);
+        manualThermostatSetting.setHeatTemperature(yukonTemplate.evaluateAsTemperature("//y:heatTemperature"));
+        manualThermostatSetting.setCoolTemperature(yukonTemplate.evaluateAsTemperature("//y:coolTemperature"));
+
+        // If both the cool and heat are set, threat this command as an auto mode command and sent both temperatures.
+        if (manualThermostatSetting.getCoolTemperature() != null  &&  manualThermostatSetting.getHeatTemperature() != null) {
+            manualThermostatSetting.setAutoModeCommand(true);
+        }
         
-        return manualThermostatSetting ;
+        return manualThermostatSetting;
     }
 }

@@ -34,10 +34,10 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public class CustomerEventDaoImpl implements CustomerEventDao {
 
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private NextValueHelper nextValueHelper;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
     public ThermostatManualEvent getLastManualEvent(int inventoryId) {
@@ -142,7 +142,8 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
      */
     private void saveManualEvent(ThermostatManualEvent event, YukonEnergyCompany yukonEnergyCompany) {
 
-        Temperature previousTemperature = event.getPreviousTemperature();
+        Temperature previousHeatTemperature = event.getPreviousHeatTemperature();
+        Temperature previousCoolTemperature = event.getPreviousCoolTemperature();
         boolean holdTemperature = event.isHoldTemperature();
 
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
@@ -162,9 +163,10 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         // Insert row into LMThermostatManualEvent
         SqlStatementBuilder eventSql = new SqlStatementBuilder();
         eventSql.append("INSERT INTO LMThermostatManualEvent");
-        eventSql.append("(EventId, InventoryId, PreviousTemperature, HoldTemperature, OperationStateId, FanOperationId)");
-        eventSql.values(eventId, thermostatId, previousTemperature.toFahrenheit().getValue(), YNBoolean.valueOf(holdTemperature),
-                        modeListEntry.getEntryID(), fanStateEntry.getEntryID());
+        eventSql.append("(EventId, InventoryId, HoldTemperature, OperationStateId, FanOperationId, PreviousCoolTemperature, PreviousHeatTemperature)");
+        eventSql.values(eventId, thermostatId, YNBoolean.valueOf(holdTemperature), modeListEntry.getEntryID(), fanStateEntry.getEntryID(), 
+                        (previousCoolTemperature == null) ? null : previousCoolTemperature.toFahrenheit().getValue(), 
+                        (previousHeatTemperature == null) ? null : previousHeatTemperature.toFahrenheit().getValue());
 
         yukonJdbcTemplate.update(eventSql);
 
@@ -173,8 +175,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     /**
      * Helper class to map a result set into a LiteLMThermostatManualEvent
      */
-    private class ThermostatManualEventMapper implements
-            ParameterizedRowMapper<ThermostatManualEvent> {
+    private class ThermostatManualEventMapper implements ParameterizedRowMapper<ThermostatManualEvent> {
 
         private YukonEnergyCompany yukonEnergyCompany;
 
@@ -188,19 +189,22 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
             int id = rs.getInt("EventId");
             int inventoryId = rs.getInt("InventoryId");
-            Temperature previousTemp = Temperature.fromFahrenheit(rs.getDouble("PreviousTemperature"));
+            Temperature previousCoolTemp = Temperature.fromFahrenheit(rs.getDouble("PreviousCoolTemperature"));
+            Temperature previousHeatTemp = Temperature.fromFahrenheit(rs.getDouble("PreviousHeatTemperature"));
             String holdTemp = rs.getString("HoldTemperature");
             Date date = rs.getTimestamp("EventDateTime");
 
             ThermostatManualEvent event = new ThermostatManualEvent();
             event.setEventId(id);
             event.setThermostatId(inventoryId);
-            event.setPreviousTemperature(previousTemp);
+            event.setPreviousCoolTemperature(previousCoolTemp);
+            event.setPreviousHeatTemperature(previousHeatTemp);
 
             // A temp of -1 indicates this event was a 'run program' event. This
             // should really be handled with a column in the table or some other
             // more solid way
-            if (previousTemp.toFahrenheit().getValue() == -1) {
+            if (previousCoolTemp.toFahrenheit().getValue() == -1 &&
+                 previousHeatTemp.toFahrenheit().getValue() == -1 ) {
                 event.setRunProgram(true);
             }
 
@@ -238,26 +242,4 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             return event;
         }
     }
-
-    // DI Setters
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
 }

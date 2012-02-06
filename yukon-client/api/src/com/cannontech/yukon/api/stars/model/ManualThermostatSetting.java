@@ -10,8 +10,10 @@ public class ManualThermostatSetting {
     private Collection<String> serialNumbers;
     private ThermostatMode thermostatMode;
     private ThermostatFanState fanState;
-    private Temperature temperature;
+    private Temperature heatTemperature;
+    private Temperature coolTemperature;
     private boolean holdTemperature = false;
+    private boolean autoModeCommand = false;
     
     public Collection<String> getSerialNumbers() {
         return serialNumbers;
@@ -34,11 +36,18 @@ public class ManualThermostatSetting {
         this.fanState = fanState;
     }
     
-    public Temperature getTemperature() {
-        return temperature;
+    public Temperature getHeatTemperature() {
+        return heatTemperature;
     }
-    public void setTemperature(Temperature temperature) {
-        this.temperature = temperature;
+    public void setHeatTemperature(Temperature heatTemperature) {
+        this.heatTemperature = heatTemperature;
+    }
+
+    public Temperature getCoolTemperature() {
+        return coolTemperature;
+    }
+    public void setCoolTemperature(Temperature coolTemperature) {
+        this.coolTemperature = coolTemperature;
     }
 
     public boolean isHoldTemperature() {
@@ -46,5 +55,12 @@ public class ManualThermostatSetting {
     }
     public void setHoldTemperature(boolean holdTemperature) {
         this.holdTemperature = holdTemperature;
+    }
+    
+    public boolean isAutoModeCommand() {
+        return autoModeCommand;
+    }
+    public void setAutoModeCommand(boolean autoModeCommand) {
+        this.autoModeCommand = autoModeCommand;
     }
 }

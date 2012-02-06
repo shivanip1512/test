@@ -47,6 +47,8 @@ import com.cannontech.web.stars.dr.operator.hardware.validator.ThermostatValidat
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 public class ThermostatManualController extends AbstractThermostatController {
+    private static int DEFAULT_DEADBAND = 3;
+    
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerEventDao customerEventDao;
@@ -103,9 +105,30 @@ public class ThermostatManualController extends AbstractThermostatController {
 
         String temperatureUnit = customerDao.getCustomerForUser(user.getUserID()).getTemperatureUnit();
         map.addAttribute("temperatureUnit", temperatureUnit);
+        CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(thermostatIds.get(0));
+        
+        // Check to see if auto mode is enabled for this device.
+        boolean autoThermostatModeEnabled = thermostatService.isAutoModeAvailable(customerAccount.getAccountId(), thermostatIds.get(0));
+        map.addAttribute("autoModeEnabled", autoThermostatModeEnabled);
+        map.addAttribute("deadband", DEFAULT_DEADBAND);
+        
+        // Check if we're in the auto mode enabled view.
+        if (map.get("autoModeEnabledCommandView") == null) {
+            map.addAttribute("autoModeEnabledCommandView", false);
+        }
         
         return "consumer/thermostat.jsp";
     }
+    
+    // VIEW
+    @RequestMapping(value = "/consumer/thermostat/autoEnabledView", method = RequestMethod.GET)
+    public String autoEnabledView(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, LiteYukonUser user, 
+                                   ModelMap map, HttpServletRequest request) throws Exception {
+    
+         map.addAttribute("autoModeEnabledCommandView", true);
+         return view(thermostatIds, user, map, request);
+     }
+
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
     public String saveLabel(ModelMap map, @ModelAttribute Thermostat thermostat,
@@ -144,16 +167,24 @@ public class ThermostatManualController extends AbstractThermostatController {
 
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
     public String manual(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
-                         String mode, String fan, String temperatureUnit, Double temperature, 
+                         String mode, String fan, String temperatureUnit, Double heatTemperature, Double coolTemperature, 
                          FlashScope flashScope, YukonUserContext userContext, 
                          HttpServletRequest request, ModelMap map) 
     throws Exception {
         if(isCommunicationDisabled(userContext.getYukonUser())){
             return "consumer/thermostat/thermostatDisabled.jsp";
         }
-        Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
-        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, flashScope, map);
 
+        boolean autoModeEnabledCommand = ServletRequestUtils.getBooleanParameter(request, "autoModeEnabled", false);
+        
+        Temperature heatTemp = thermostatService.getTempOrDefault(heatTemperature, temperatureUnit);
+        Temperature coolTemp = thermostatService.getTempOrDefault(coolTemperature, temperatureUnit);
+        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, heatTemp, coolTemp, autoModeEnabledCommand, userContext, request, flashScope, map);
+        
+        if (autoModeEnabledCommand) {
+            return "redirect:/spring/stars/consumer/thermostat/autoEnabledView";
+        }
+        
         return "redirect:/spring/stars/consumer/thermostat/view";
     }
     
@@ -189,8 +220,8 @@ public class ThermostatManualController extends AbstractThermostatController {
     }
 
 	private void executeManualEvent(List<Integer> thermostatIds, String mode, String fan, String temperatureUnit,
-	                                Temperature temperature, YukonUserContext userContext, HttpServletRequest request,
-	                                FlashScope flashScope, ModelMap map) {
+	                                Temperature heatTemperature, Temperature coolTemperature, boolean autoModeEnabledCommand,
+	                                YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope, ModelMap map) {
 		
 	    CustomerAccount account = getCustomerAccount(request);
 		
@@ -205,7 +236,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         
         //Validate temperature for mode and thermostat type
         if(thermostatMode.isHeatOrCool()) {
-            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIds, temperature, thermostatMode);
+            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIds, heatTemperature, coolTemperature, thermostatMode);
             
             if(limitMessage != null) {
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.manualevent.result.CONSUMER_" + limitMessage.name()));
@@ -215,12 +246,14 @@ public class ThermostatManualController extends AbstractThermostatController {
 
         if(isValid) {
             boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
-            
+
             // Send out manual thermostat commands
             ThermostatManualEventResult result = ThermostatManualEventResult.MANUAL_SUCCESS;
             for (int thermostatId : thermostatIds) {
                 
-                result = thermostatService.executeManualEvent(thermostatId, temperature, thermostatMode, fanState, hold,  account, userContext.getYukonUser());
+                result = thermostatService.executeManualEvent(thermostatId, heatTemperature, coolTemperature, thermostatMode, fanState, hold,  
+                                                              autoModeEnabledCommand, account, userContext.getYukonUser());
+
                 if (result.isFailed() && thermostatIds.size() > 1) {
                     result = ThermostatManualEventResult.MULTIPLE_ERROR;
                     break;

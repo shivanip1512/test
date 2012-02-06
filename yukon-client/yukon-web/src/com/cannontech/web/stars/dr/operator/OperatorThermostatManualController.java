@@ -44,15 +44,17 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @RequestMapping(value = "/operator/thermostatManual/*")
 public class OperatorThermostatManualController {
     
+    private static int DEFAULT_DEADBAND = 3;
+    
     @Autowired private AccountEventLogService accountEventLogService;
-    @Autowired private InventoryDao inventoryDao;
 	@Autowired private CustomerEventDao customerEventDao;
 	@Autowired private CustomerDao customerDao;
 	@Autowired private CustomerAccountDao customerAccountDao;
+	@Autowired private InventoryDao inventoryDao;
 	@Autowired private LMHardwareBaseDao lmHardwareBaseDao;
-	@Autowired private ThermostatService thermostatService;
 	@Autowired private OperatorThermostatHelper operatorThermostatHelper;
 	@Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
+	@Autowired private ThermostatService thermostatService;
 	
 	// VIEW
 	@RequestMapping
@@ -111,19 +113,45 @@ public class OperatorThermostatManualController {
             modelMap.addAttribute("displayName", thermostat.getSerialNumber());
         }
         
+        // Check to see if auto mode is enabled for this device.
+        boolean autoThermostatModeEnabled = thermostatService.isAutoModeAvailable(accountInfoFragment.getAccountId(), inventoryId);
+        modelMap.addAttribute("autoModeEnabled", autoThermostatModeEnabled);
+        modelMap.addAttribute("deadband", DEFAULT_DEADBAND);
+        
+        // Check if we're in the auto mode enabled view.
+        if (modelMap.get("autoModeEnabledCommandView") == null) {
+            modelMap.addAttribute("autoModeEnabledCommandView", false);
+        }
+        
         return "operator/operatorThermostat/manual/view.jsp";
+    }
+
+	   // VIEW
+    @RequestMapping
+    public String autoEnabledView(String thermostatIds, ModelMap modelMap, FlashScope flashScope, 
+                       AccountInfoFragment accountInfoFragment, HttpServletRequest request) {
+
+        modelMap.addAttribute("autoModeEnabledCommandView", true);
+        return view(thermostatIds, modelMap, flashScope, accountInfoFragment, request);
     }
 	
 	// SAVE
 	@RequestMapping
-    public String save(String thermostatIds, String mode, String fan, String temperatureUnit, Double temperature,
+    public String save(String thermostatIds, String mode, String fan, String temperatureUnit, Double heatTemperature, Double coolTemperature,
                        YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
                        FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
+
+	    boolean autoModeEnabledCommand = ServletRequestUtils.getBooleanParameter(request, "autoModeEnabled", false);
 	    
-	    Temperature temp = thermostatService.getTempOrDefault(temperature, temperatureUnit);
-		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temp, userContext, request, modelMap, flashScope, accountInfoFragment);
+	    Temperature heatTemp = thermostatService.getTempOrDefault(heatTemperature, temperatureUnit);
+	    Temperature coolTemp = thermostatService.getTempOrDefault(coolTemperature, temperatureUnit);
+	    executeManualEvent(thermostatIds, mode, fan, temperatureUnit, heatTemp, coolTemp, autoModeEnabledCommand, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
-        return "redirect:view";
+	    if (autoModeEnabledCommand) {
+	        return "redirect:autoEnabledView";
+	    }
+	    
+	    return "redirect:view";
     }
 	
 	@RequestMapping
@@ -153,9 +181,9 @@ public class OperatorThermostatManualController {
 	    return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
     }
 	
-    private void executeManualEvent(String thermostatIds, String mode, String fan, String temperatureUnit, Temperature temperature,
-                                    YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
-                                    FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
+    private void executeManualEvent(String thermostatIds, String mode, String fan, String temperatureUnit, Temperature heatTemp, 
+                                    Temperature coolTemp, boolean autoModeEnabledCommand, YukonUserContext userContext, 
+                                    HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -169,7 +197,7 @@ public class OperatorThermostatManualController {
         
         //Validate temperature for mode and thermostat type
         if(thermostatMode.isHeatOrCool()) {
-            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, temperature, thermostatMode);
+            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, heatTemp, coolTemp, thermostatMode);
             
             if(limitMessage != null) {
                 String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + limitMessage.name();
@@ -186,7 +214,7 @@ public class OperatorThermostatManualController {
             ThermostatManualEventResult result = ThermostatManualEventResult.MANUAL_SUCCESS;
             for (int thermostatId : thermostatIdsList) {
                 
-                result = thermostatService.executeManualEvent(thermostatId, temperature, thermostatMode, fanState, hold,  customerAccount, userContext.getYukonUser());
+                result = thermostatService.executeManualEvent(thermostatId, heatTemp, coolTemp, thermostatMode, fanState, hold,  autoModeEnabledCommand, customerAccount, userContext.getYukonUser());
                 if (result.isFailed() && thermostatIdsList.size() > 1) {
                     result = ThermostatManualEventResult.MULTIPLE_ERROR;
                     break;

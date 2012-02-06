@@ -86,7 +86,8 @@ public enum SchedulableThermostatType {
                    Sets.immutableEnumSet(ThermostatFanState.AUTO,
                                          ThermostatFanState.CIRCULATE,
                                          ThermostatFanState.ON),
-                   Sets.immutableEnumSet(ThermostatMode.COOL,
+                   Sets.immutableEnumSet(ThermostatMode.AUTO,
+                                         ThermostatMode.COOL,
                                          ThermostatMode.HEAT,
                                          ThermostatMode.OFF)
     ),
@@ -103,7 +104,8 @@ public enum SchedulableThermostatType {
                    Sets.immutableEnumSet(ThermostatFanState.AUTO,
                                          ThermostatFanState.CIRCULATE,
                                          ThermostatFanState.ON),
-                   Sets.immutableEnumSet(ThermostatMode.COOL,
+                   Sets.immutableEnumSet(ThermostatMode.AUTO,
+                                         ThermostatMode.COOL,
                                          ThermostatMode.HEAT,
                                          ThermostatMode.OFF)
     ),

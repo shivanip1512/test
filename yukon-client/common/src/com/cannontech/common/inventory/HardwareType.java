@@ -291,4 +291,20 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public static ImmutableSet<HardwareType> getZigbeeEndpointTypes() {
         return zigbeeEndpointTypes;
     }
+    
+    /**
+     * Checks if a device has the capability of having auto mode enabled.
+     */
+    public boolean isAutoModeEnableable() {
+        ImmutableSet<HardwareType> isAutoModeEnableable = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        return isAutoModeEnableable.contains(this);
+    }
+
+    /**
+     * Checks if a device has a base type of UtilityPRO.
+     */
+    public boolean isUtilityProType() {
+        ImmutableSet<HardwareType> isUtilityProType = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        return isUtilityProType.contains(this);
+    }
 }

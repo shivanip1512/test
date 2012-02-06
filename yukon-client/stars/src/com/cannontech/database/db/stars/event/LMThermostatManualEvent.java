@@ -19,13 +19,14 @@ public class LMThermostatManualEvent extends DBPersistent {
 	
 	private Integer eventID = null;
 	private Integer inventoryID = new Integer(CtiUtilities.NONE_ZERO_ID);
-	private Integer previousTemperature = new Integer(0);
 	private String holdTemperature = new String("N");
 	private Integer operationStateID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer fanOperationID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer previousCoolTemperature = new Integer(0);
+    private Integer previousHeatTemperature = new Integer(0);
 	
 	public static final String[] SETTER_COLUMNS = {
-		"InventoryID", "PreviousTemperature", "HoldTemperature", "OperationStateID", "FanOperationID"
+		"InventoryID", "HoldTemperature", "OperationStateID", "FanOperationID", "PreviousCoolTemperature", "PreviousHeatTemperature"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "EventID" };
@@ -42,8 +43,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	@Override
     public void add() throws SQLException {
 		Object[] addValues = {
-			getEventID(), getInventoryID(), getPreviousTemperature(),
-			getHoldTemperature(), getOperationStateID(), getFanOperationID()
+			getEventID(), getInventoryID(), getHoldTemperature(), getOperationStateID(), getFanOperationID(),
+			getPreviousCoolTemperature(), getPreviousHeatTemperature()
 		};
 		add( TABLE_NAME, addValues );
 	}
@@ -67,10 +68,11 @@ public class LMThermostatManualEvent extends DBPersistent {
 		
 		if (results.length == SETTER_COLUMNS.length) {
 			setInventoryID( (Integer) results[0] );
-			setPreviousTemperature( (Integer) results[1] );
-			setHoldTemperature( (String) results[2] );
-			setOperationStateID( (Integer) results[3] );
-			setFanOperationID( (Integer) results[4] );
+			setHoldTemperature( (String) results[1] );
+			setOperationStateID( (Integer) results[2] );
+			setFanOperationID( (Integer) results[3] );
+			setPreviousCoolTemperature( (Integer) results[4] );
+            setPreviousHeatTemperature( (Integer) results[5] );
 		}
 		else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -82,8 +84,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	@Override
     public void update() throws SQLException {
 		Object[] setValues = {
-			getInventoryID(), getPreviousTemperature(), getHoldTemperature(),
-			getOperationStateID(), getFanOperationID()
+			getInventoryID(), getHoldTemperature(), getOperationStateID(), getFanOperationID(),
+			getPreviousCoolTemperature(),  getPreviousHeatTemperature()
 		};
 		Object[] constraintValues = { getEventID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
@@ -110,7 +112,7 @@ public class LMThermostatManualEvent extends DBPersistent {
     }
     
     public static LMThermostatManualEvent getLastLMThermostatManualEvent(Integer inventoryID) {
-        String sql = "SELECT EventID, InventoryID, PreviousTemperature, HoldTemperature, OperationStateID, FanOperationID "
+        String sql = "SELECT EventID, InventoryID,  HoldTemperature, OperationStateID, FanOperationID, PreviousCoolTemperature, PreviousHeatTemperature"
         		   + "FROM " + TABLE_NAME + " WHERE EventID = ("
         		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + ")";
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -124,10 +126,11 @@ public class LMThermostatManualEvent extends DBPersistent {
                 LMThermostatManualEvent event = new LMThermostatManualEvent();
                 event.setEventID( new Integer(((java.math.BigDecimal)row[0]).intValue()) );
                 event.setInventoryID( new Integer(((java.math.BigDecimal)row[1]).intValue()) );
-                event.setPreviousTemperature( new Integer(((java.math.BigDecimal)row[2]).intValue()) );
-                event.setHoldTemperature( (String) row[3] );
-                event.setOperationStateID( new Integer(((java.math.BigDecimal)row[4]).intValue()) );
-                event.setFanOperationID( new Integer(((java.math.BigDecimal)row[5]).intValue()) );
+                event.setHoldTemperature( (String) row[2] );
+                event.setOperationStateID( new Integer(((java.math.BigDecimal)row[3]).intValue()) );
+                event.setFanOperationID( new Integer(((java.math.BigDecimal)row[4]).intValue()) );
+                event.setPreviousCoolTemperature( new Integer(((java.math.BigDecimal)row[5]).intValue()) );
+                event.setPreviousHeatTemperature( new Integer(((java.math.BigDecimal)row[6]).intValue()) );
                 
                 return event;
             }
@@ -139,100 +142,57 @@ public class LMThermostatManualEvent extends DBPersistent {
         return null;
     }
 
-	/**
-	 * Returns the fanOperationID.
-	 * @return Integer
-	 */
 	public Integer getFanOperationID() {
 		return fanOperationID;
 	}
 
-	/**
-	 * Returns the holdTemperature.
-	 * @return String
-	 */
 	public String getHoldTemperature() {
 		return holdTemperature;
 	}
 
-	/**
-	 * Returns the inventoryID.
-	 * @return Integer
-	 */
 	public Integer getInventoryID() {
 		return inventoryID;
 	}
 
-	/**
-	 * Returns the operationStateID.
-	 * @return Integer
-	 */
 	public Integer getOperationStateID() {
 		return operationStateID;
 	}
 
-	/**
-	 * Returns the previousTemperature.
-	 * @return Integer
-	 */
-	public Integer getPreviousTemperature() {
-		return previousTemperature;
-	}
-
-	/**
-	 * Sets the fanOperationID.
-	 * @param fanOperationID The fanOperationID to set
-	 */
 	public void setFanOperationID(Integer fanOperationID) {
 		this.fanOperationID = fanOperationID;
 	}
 
-	/**
-	 * Sets the holdTemperature.
-	 * @param holdTemperature The holdTemperature to set
-	 */
 	public void setHoldTemperature(String holdTemperature) {
 		this.holdTemperature = holdTemperature;
 	}
 
-	/**
-	 * Sets the inventoryID.
-	 * @param inventoryID The inventoryID to set
-	 */
 	public void setInventoryID(Integer inventoryID) {
 		this.inventoryID = inventoryID;
 	}
 
-	/**
-	 * Sets the operationStateID.
-	 * @param operationStateID The operationStateID to set
-	 */
 	public void setOperationStateID(Integer operationStateID) {
 		this.operationStateID = operationStateID;
 	}
 
-	/**
-	 * Sets the previousTemperature.
-	 * @param previousTemperature The previousTemperature to set
-	 */
-	public void setPreviousTemperature(Integer previousTemperature) {
-		this.previousTemperature = previousTemperature;
-	}
-
-	/**
-	 * Returns the eventID.
-	 * @return Integer
-	 */
 	public Integer getEventID() {
 		return eventID;
 	}
 
-	/**
-	 * Sets the eventID.
-	 * @param eventID The eventID to set
-	 */
 	public void setEventID(Integer eventID) {
 		this.eventID = eventID;
 	}
 
+    public Integer getPreviousCoolTemperature() {
+        return previousCoolTemperature;
+    }
+    public void setPreviousCoolTemperature(Integer previousCoolTemperature) {
+        this.previousCoolTemperature = previousCoolTemperature;
+    }
+
+    public Integer getPreviousHeatTemperature() {
+        return previousHeatTemperature;
+    }
+    public void setPreviousHeatTemperature(Integer previousHeatTemperature) {
+        this.previousHeatTemperature = previousHeatTemperature;
+    }
 }

@@ -396,10 +396,11 @@ public class StarsLiteFactory {
 	public static void setLiteLMThermostatManualEvent(LiteLMThermostatManualEvent liteEvent, com.cannontech.database.data.stars.event.LMThermostatManualEvent event) {
 		setLiteLMCustomerEvent(liteEvent, event.getLMCustomerEventBase());
 		liteEvent.setInventoryID( event.getLmThermostatManualEvent().getInventoryID().intValue() );
-		liteEvent.setPreviousTemperature( event.getLmThermostatManualEvent().getPreviousTemperature().intValue() );
 		liteEvent.setHoldTemperature( event.getLmThermostatManualEvent().getHoldTemperature().equalsIgnoreCase("Y") );
 		liteEvent.setOperationStateID( event.getLmThermostatManualEvent().getOperationStateID().intValue() );
 		liteEvent.setFanOperationID( event.getLmThermostatManualEvent().getFanOperationID().intValue() );
+		liteEvent.setPreviousCoolTemperature( event.getLmThermostatManualEvent().getPreviousCoolTemperature().intValue() );
+        liteEvent.setPreviousHeatTemperature( event.getLmThermostatManualEvent().getPreviousHeatTemperature().intValue() );
 	}
 	
 	public static void setLiteStarsAppliance(LiteStarsAppliance liteApp, com.cannontech.database.data.stars.appliance.ApplianceBase app) {
@@ -893,10 +894,11 @@ public class StarsLiteFactory {
 	public static void setLMThermostatManualEvent(com.cannontech.database.data.stars.event.LMThermostatManualEvent event, LiteLMThermostatManualEvent liteEvent) {
 		setLMCustomerEventBase( event, liteEvent );
 		event.getLmThermostatManualEvent().setInventoryID( new Integer(liteEvent.getInventoryID()) );
-		event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(liteEvent.getPreviousTemperature()) );
 		event.getLmThermostatManualEvent().setHoldTemperature( liteEvent.isHoldTemperature() ? "Y" : "N" );
 		event.getLmThermostatManualEvent().setOperationStateID( new Integer(liteEvent.getOperationStateID()) );
 		event.getLmThermostatManualEvent().setFanOperationID( new Integer(liteEvent.getFanOperationID()) );
+        event.getLmThermostatManualEvent().setPreviousCoolTemperature( new Integer(liteEvent.getPreviousCoolTemperature()) );
+        event.getLmThermostatManualEvent().setPreviousHeatTemperature( new Integer(liteEvent.getPreviousHeatTemperature()) );
 	}
 	
 	public static void setApplianceBase(com.cannontech.database.data.stars.appliance.ApplianceBase app, LiteStarsAppliance liteApp) {

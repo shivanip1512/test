@@ -10,19 +10,28 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public static final Temperature DEFAULT_TEMPERATURE = Temperature.fromFahrenheit(72);
 
     // Default temp to 72F
-    private Temperature previousTemperature = DEFAULT_TEMPERATURE;
+    private Temperature previousHeatTemperature = Temperature.fromFahrenheit(72);
+    private Temperature previousCoolTemperature = Temperature.fromFahrenheit(72);
     private boolean holdTemperature = false;
     private ThermostatMode mode = ThermostatMode.OFF;
     private ThermostatFanState fanState = ThermostatFanState.AUTO;
     private boolean runProgram = false;
+    private boolean autoModeEnabledCommand = false;
 
-    public Temperature getPreviousTemperature() {
-        return previousTemperature;
+    public Temperature getPreviousHeatTemperature() {
+        return previousHeatTemperature;
     }
-    public void setPreviousTemperature(Temperature previousTemperature) {
-        this.previousTemperature = previousTemperature;
+    public void setPreviousHeatTemperature(Temperature previousHeatTemperature) {
+        this.previousHeatTemperature = previousHeatTemperature;
     }
-
+    
+    public Temperature getPreviousCoolTemperature() {
+        return previousCoolTemperature;
+    }
+    public void setPreviousCoolTemperature(Temperature previousCoolTemperature) {
+        this.previousCoolTemperature = previousCoolTemperature;
+    }
+    
     public boolean isHoldTemperature() {
         return holdTemperature;
     }
@@ -63,5 +72,12 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     }
     public void setRunProgram(boolean runProgram) {
         this.runProgram = runProgram;
+    }
+    
+    public boolean isAutoModeEnabledCommand() {
+        return autoModeEnabledCommand;
+    }
+    public void setAutoModeEnabledCommand(boolean autoModeEnabledCommand) {
+        this.autoModeEnabledCommand = autoModeEnabledCommand;
     }
 }

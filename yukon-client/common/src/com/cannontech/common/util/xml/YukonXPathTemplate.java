@@ -11,6 +11,10 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
         Temperature temperature = null;
         
         Double temperatureValue = evaluateAsDouble(expression);
+        if(temperatureValue == null) {
+            return null;
+        }
+        
         String temperatureUnit = evaluateAsString(expression+"/@unit");
         if (TemperatureUnit.fromAbbreviation(temperatureUnit) == TemperatureUnit.CELSIUS) {
             temperature = new CelsiusTemperature(temperatureValue);

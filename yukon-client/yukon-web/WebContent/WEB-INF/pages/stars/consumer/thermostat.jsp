@@ -21,17 +21,20 @@
         Event.observe(window, 'load', function(){
             Yukon.ThermostatManualEditor.init({
                 thermostat: {
-                    heat: {
+                    HEAT: {
                         upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitHeat.value}), unit:'F'}),
-                        lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'})
+                        lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'}),
+                        temperature: new Temperature({degrees: parseFloat(${event.previousHeatTemperature.value}), unit: 'F'})
                     },
-                    cool: {
+                    COOL: {
                         upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitCool.value}), unit:'F'}),
-                        lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'})
+                        lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'}),
+                        temperature: new Temperature({degrees: parseFloat(${event.previousCoolTemperature.value}), unit: 'F'})
                     },
-                    temperature: new Temperature({degrees: parseFloat(${event.previousTemperature.value}), unit: 'F'}),
                     mode: '${event.mode}',
-                    fan: '${event.fanState}'
+                    fan: '${event.fanState}',
+                    deadband: ${deadband},
+                    autoEnabled: ${autoModeEnabledCommandView}
                 },
                 initialUnit: '${temperatureUnit}'
             });
@@ -54,6 +57,13 @@
             </c:if>
         </div>
         
+        
+        <c:if test="${autoModeEnabledCommandView}">
+            <cti:msg key="yukon.web.modules.consumer.thermostat.autoModeDisclaimer" />
+            <br><br>
+        </c:if>
+        
+        
         <div class="plainText">
             <cti:msg key="yukon.web.modules.consumer.thermostat.instructionText" />
         </div>
@@ -70,13 +80,25 @@
                                          event="${event}"
                                          thermostatIds="${thermostatIds}"
                                          accountId="${accountId}"
-                                         canEditLabel="true"/>
+                                         canEditLabel="true" 
+                                         autoEnabledMode="${autoModeEnabledCommandView}"/>
         </div>
                 
         <div class="plainText oh">
             <cti:msg key="yukon.web.modules.consumer.thermostat.stepText" />
             <cti:msg key="yukon.web.modules.consumer.thermostat.runProgramText" />
             <br><br>
+            
+            <%-- Auto Enabled Manual Page --%>
+            <c:if test="${!autoModeEnabledCommandView && autoModeEnabled}">
+                <cti:url var="autoEnabledManualUrl" value="/spring/stars/consumer/thermostat/autoEnabledView">
+                    <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                </cti:url>
+                <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" />
+                <br>
+            </c:if>
+                                
+            
             <form action="/spring/stars/consumer/thermostat/runProgram" method="post" >
                 <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                 <cti:msg var="runProgramText" key="yukon.web.modules.consumer.thermostat.runProgram" />

@@ -389,7 +389,8 @@ public interface AccountEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatManualSetAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                        @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                       int temperature,
+                                                       Double heatTemperature,
+                                                       Double coolTemperature,
                                                        String mode,
                                                        String fanSetting,
                                                        boolean holdTemperature);

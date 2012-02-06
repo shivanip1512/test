@@ -19,26 +19,28 @@
     <cti:msg var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off" javaScriptEscape="true"/>
 
 <script type="text/javascript">
-Event.observe(window, 'load', function(){
+jQuery(function(){
     Yukon.ThermostatManualEditor.init({
         thermostat: {
-            heat: {
+            HEAT: {
                 upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitHeat.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'})
+                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'}),
+                temperature: new Temperature({degrees: parseFloat(${event.previousHeatTemperature.value}), unit: 'F'})
             },
-            cool: {
+            COOL: {
                 upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitCool.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'})
+                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'}),
+                temperature: new Temperature({degrees: parseFloat(${event.previousCoolTemperature.value}), unit: 'F'})
             },
-            temperature: new Temperature({degrees: parseFloat(${event.previousTemperature.value}), unit: 'F'}),
             mode: '${event.mode}',
-            fan: '${event.fanState}'
+            fan: '${event.fanState}',
+            deadband: ${deadband},
+            autoEnabled: ${autoModeEnabledCommandView}
         },
         initialUnit: '${temperatureUnit}'
     });
 });
 </script>
-
     <c:set var="multipleThermostatsSelected" value="${fn:length(thermostatNames) > 1}"></c:set>
 
     <table class="thermostatPageContent">
@@ -60,6 +62,11 @@ Event.observe(window, 'load', function(){
 				    		<cti:param name="accountId" value="${accountId}"/>
 				    		<cti:param name="thermostatIds" value="${thermostatIds}"/>
 				    	</cti:url>
+
+                        <c:if test="${autoModeEnabledCommandView}">
+                            <cti:msg key="yukon.web.modules.operator.thermostatManual.autoModeDisclaimer" />
+                            <br><br>
+                        </c:if>
 				        <cti:msg key="yukon.web.modules.operator.thermostatManual.instructionText" arguments="${scheduleUrl}" htmlEscape="false"/>
 				    </div>
 				    <br>
@@ -83,7 +90,8 @@ Event.observe(window, 'load', function(){
                                                              temperatureUnit="${temperatureUnit}"
                                                              event="${event}"
                                                              thermostatIds="${thermostatIds}"
-                                                             accountId="${accountId}" />
+                                                             accountId="${accountId}" 
+                                                             autoEnabledMode="${autoModeEnabledCommandView}"/>
 				            </div>
 				            <div style="padding-left:20px;font-size:11px;" class="oh">
 				            
@@ -91,6 +99,16 @@ Event.observe(window, 'load', function(){
 				                <cti:msg key="yukon.web.modules.operator.thermostatManual.stepText" />
 				                <cti:msg key="yukon.web.modules.operator.thermostatManual.runProgramText" />
 				                
+                                <%-- Auto Enabled Manual Page --%>
+                                <c:if test="${!autoModeEnabledCommandView && autoModeEnabled}">
+                                    <br><br>
+                                    <cti:url var="autoEnabledManualUrl" value="/spring/stars/operator/thermostatManual/autoEnabledView">
+                                        <cti:param name="accountId" value="${accountId}" />
+                                        <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                                    </cti:url>
+                                    <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" />
+                                </c:if>
+                                
 				                <%-- RUN PROGRAM BUTTON --%>
 				                <br><br>
 				                <form action="/spring/stars/operator/thermostatManual/runProgram" method="post" >

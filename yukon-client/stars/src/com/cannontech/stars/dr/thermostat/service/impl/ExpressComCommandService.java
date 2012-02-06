@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
@@ -34,9 +33,9 @@ import com.google.common.collect.ListMultimap;
 public class ExpressComCommandService extends AbstractCommandExecutionService {
     
     private static final Logger log = YukonLogManager.getLogger(ExpressComCommandService.class);
-    private InventoryDao inventoryDao;
-    private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     @Override
     public void doManualAdjustment(ThermostatManualEvent event, Thermostat thermostat, LiteYukonUser user) 
@@ -47,11 +46,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
     }
 
     @Override
-    public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account, 
-                                 AccountThermostatSchedule ats,
-                                 ThermostatScheduleMode mode, 
-                                 Thermostat stat, 
-                                 LiteYukonUser user) {
+    public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account, AccountThermostatSchedule ats,
+                                 ThermostatScheduleMode mode, Thermostat stat, LiteYukonUser user) {
         
         ThermostatScheduleUpdateResult result = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
         for (TimeOfWeek timeOfWeek : mode.getAssociatedTimeOfWeeks()) {
@@ -65,12 +61,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
     }
     
     @Transactional
-    private ThermostatScheduleUpdateResult sendSchedulePart(CustomerAccount account, 
-                                                       AccountThermostatSchedule ats, 
-                                                       int thermostatId, 
-                                                       TimeOfWeek timeOfWeek,
-                                                       ThermostatScheduleMode mode, 
-                                                       LiteYukonUser user) {
+    private ThermostatScheduleUpdateResult sendSchedulePart(CustomerAccount account, AccountThermostatSchedule ats, 
+                                                       int thermostatId, TimeOfWeek timeOfWeek, ThermostatScheduleMode mode, LiteYukonUser user) {
 
         Thermostat stat = inventoryDao.getThermostatById(thermostatId);
         HardwareType type = stat.getType();
@@ -135,9 +127,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
      *         15:00, ff, 72, 20:00, ff, 72 serial 1234567
      *         </p>
      */
-    private String buildScheduleCommand(Thermostat thermostat,
-                        AccountThermostatSchedule ats, 
-                        TimeOfWeek timeOfWeek,
+    private String buildScheduleCommand(Thermostat thermostat, AccountThermostatSchedule ats, TimeOfWeek timeOfWeek,
                         ThermostatScheduleMode mode) {
 
         
@@ -199,41 +189,39 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
         StringBuilder command = new StringBuilder();
         command.append("putconfig xcom setstate ");
 
-        ThermostatMode mode = event.getMode();
-        if (mode != null) {
-            String modeString = mode.getCommandString();
-            command.append(" system ");
-            command.append(modeString);
-        }
 
         if (event.isRunProgram()) {
             // Run scheduled program
             command.append(" run");
         } else {
-            // Set manual values
-            Temperature temperature = event.getPreviousTemperature();
-            
-            if (HardwareType.UTILITY_PRO.equals(thermostat.getType()) 
-                    && mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT) {
-                
-                command.append(" heattemp ");
-                
-            } else if (HardwareType.UTILITY_PRO.equals(thermostat.getType()) 
-                    && mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL) {
-
-                command.append(" cooltemp ");
-            
-            } else {
-                command.append(" temp ");
+            ThermostatMode mode = event.getMode();
+            if (mode != null) {
+                command.append(" system ").append(mode.getCommandString());
             }
             
-            command.append(temperature.toFahrenheit().toIntValue());
+            // Set manual values
+            int coolTemperatureInF = event.getPreviousCoolTemperature().toFahrenheit().toIntValue();
+            int heatTemperatureInF = event.getPreviousHeatTemperature().toFahrenheit().toIntValue();
+            
+            // The command was sent from an autoModeEnabled page.  Send both temperatures.
+            if(thermostat.getType().isAutoModeEnableable() && event.isAutoModeEnabledCommand()) {
+                command.append(" heattemp ").append(heatTemperatureInF);
+                command.append(" cooltemp ").append(coolTemperatureInF);
 
+            } else if (thermostat.getType().isUtilityProType() && mode == ThermostatMode.HEAT) {
+                command.append(" heattemp ").append(heatTemperatureInF);
+            
+            } else if (thermostat.getType().isUtilityProType() && mode == ThermostatMode.COOL) {
+                command.append(" cooltemp ").append(coolTemperatureInF);
+
+            } else {
+                int temperatureInF = (mode == ThermostatMode.HEAT) ? heatTemperatureInF : coolTemperatureInF;
+                command.append(" temp ").append(temperatureInF);
+            }
+            
             ThermostatFanState fanState = event.getFanState();
             if (fanState != null) {
-                String fanStatString = fanState.getCommandString();
-                command.append(" fan ");
-                command.append(fanStatString);
+                command.append(" fan ").append(fanState.getCommandString());
             }
 
             if (event.isHoldTemperature()) {
@@ -246,20 +234,5 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
         command.append(serialNumber);
 
         return command.toString();
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setCommandRequestHardwareExecutor(CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
-        this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 }

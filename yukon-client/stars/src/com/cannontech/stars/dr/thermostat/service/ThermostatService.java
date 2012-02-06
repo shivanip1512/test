@@ -58,8 +58,9 @@ public interface ThermostatService {
     /**
      * Attempts to execute the ThermostatManualEvent supplied.
      */
-    public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature temperature, ThermostatMode thermostatMode,
-                                                          ThermostatFanState fanState, boolean hold, CustomerAccount account, LiteYukonUser user);
+    public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature heatTemp, Temperature coolTemp, 
+                                                          ThermostatMode thermostatMode, ThermostatFanState fanState, boolean hold, boolean autoModeEnabledCommand,
+                                                          CustomerAccount account, LiteYukonUser user);
     
     /**
      * This method reverts the piece of inventory to it's thermostat program. This should be used instead of
@@ -104,9 +105,8 @@ public interface ThermostatService {
      * indicate a temp too high or low.  If the temperature is valid, the ThermostatManualEventResult
      * will be null.
      */
-    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList,
-                                                                 Temperature temperatureInF, 
-                                                                 ThermostatMode mode);
+    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, Temperature heatTemperatureInF, 
+                                                                 Temperature coolTemperatureInF, ThermostatMode mode);
     
     /**
      * Given a thermostat id, returns the name of that thermostat.
@@ -134,4 +134,9 @@ public interface ThermostatService {
      * @return
      */
     public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModes(YukonEnergyCompany yukonEnergyCompany);
+
+    /**
+     * Checks to see if the account and inventory are allowed to use the thermostat auto mode functionality.
+     */
+    public boolean isAutoModeAvailable(int accountId, int thermostatId);
 }

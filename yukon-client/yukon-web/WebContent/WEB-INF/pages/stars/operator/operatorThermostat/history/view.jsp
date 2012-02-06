@@ -22,15 +22,16 @@
 Event.observe(window, 'load', function(){
     Yukon.ThermostatManualEditor.init({
         thermostat: {
-            heat: {
+            HEAT: {
                 upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitHeat.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'})
+                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitHeat.value}), unit:'F'}),
+                temperature: new Temperature({degrees: parseFloat(${event.previousHeatTemperature.value}), unit: 'F'})
             },
-            cool: {
+            COOL: {
                 upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitCool.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'})
+                lower: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.lowerLimitCool.value}), unit:'F'}),
+                temperature: new Temperature({degrees: parseFloat(${event.previousCoolTemperature.value}), unit: 'F'})
             },
-            temperature: new Temperature({degrees: parseFloat(${event.previousTemperature.value}), unit: 'F'}),
             mode: '${event.mode}',
             fan: '${event.fanState}'
         },
@@ -96,7 +97,11 @@ Event.observe(window, 'load', function(){
                                             <td>
                                                 <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                     <!-- Temperature and Degree Units -->
-                                                    <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualTemp.value}'></span>"  htmlEscape="false"/>
+                                                    <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"  htmlEscape="false"/>
+                                                    <span class="C_label unit_label">${degreesCelsius}</span>
+                                                    <span class="F_label unit_label">${degreesFahrenheit}</span>,
+
+                                                    <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"  htmlEscape="false"/>
                                                     <span class="C_label unit_label">${degreesCelsius}</span>
                                                     <span class="F_label unit_label">${degreesFahrenheit}</span>,
                                                     

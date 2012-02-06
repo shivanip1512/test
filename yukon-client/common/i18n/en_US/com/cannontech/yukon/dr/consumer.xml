@@ -145,6 +145,10 @@
     <entry key="yukon.web.modules.consumer.thermostat.unitMode">Mode:</entry>
     <entry key="yukon.web.modules.consumer.thermostat.degreesCelsius">&amp;deg;C</entry>
     <entry key="yukon.web.modules.consumer.thermostat.degreesFahrenheit">&amp;deg;F</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.autoModeDisclaimer"><![CDATA[
+        Please make sure that you have your thermostat auto mode enabled or use the regular thermostat manual page.  Without this being set you could get some undesired results from using this page. 
+    ]]></entry>
+    
     <entry key="yukon.web.modules.consumer.thermostat.stepText"><![CDATA[
         <ol>
             <li>
@@ -183,6 +187,9 @@
     <entry key="yukon.web.modules.consumer.thermostat.sendConfirm.title">Confirm New Thermostat Settings</entry>
     <entry key="yukon.web.modules.consumer.thermostat.sendConfirm.message">Proceed with the following thermostat settings?</entry>
     <entry key="yukon.web.modules.consumer.thermostat.temperature">Temperature</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.coolTemperature">Cool Temperature</entry>
+    <entry key="yukon.web.modules.consumer.thermostat.heatTemperature">Heat Temperature</entry>
+    
     
     <entry key="yukon.dr.consumer.scheduleHints.hint"><![CDATA[
         <p>The schedule page allows you to set your ongoing temperature schedule.

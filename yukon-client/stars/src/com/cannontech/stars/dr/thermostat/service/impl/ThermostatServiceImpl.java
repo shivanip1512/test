@@ -16,8 +16,13 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -25,6 +30,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
+import com.cannontech.stars.dr.hardware.model.HeatCoolSettingType;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -43,6 +49,7 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatCommandExecutionService;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -55,26 +62,31 @@ public class ThermostatServiceImpl implements ThermostatService {
     private Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
 
     @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private CommandServiceFactory commandServiceFactory;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerEventDao customerEventDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    @Autowired private CommandServiceFactory commandServiceFactory;
-    @Autowired  private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature temperature, ThermostatMode thermostatMode,
-                                                          ThermostatFanState fanState, boolean hold, CustomerAccount account, LiteYukonUser user) {
+    public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature heatTemp, Temperature coolTemp,
+                                                          ThermostatMode thermostatMode, ThermostatFanState fanState, boolean hold, boolean autoModeEnabledCommand,
+                                                          CustomerAccount account, LiteYukonUser user) {
 
         ThermostatManualEvent thermostatManualEvent = new ThermostatManualEvent();
         thermostatManualEvent.setThermostatId(thermostatId);
-        thermostatManualEvent.setPreviousTemperature(temperature);
+        thermostatManualEvent.setPreviousHeatTemperature(heatTemp);
+        thermostatManualEvent.setPreviousCoolTemperature(coolTemp);
         thermostatManualEvent.setMode(thermostatMode);
         thermostatManualEvent.setFanState(fanState);
         thermostatManualEvent.setHoldTemperature(hold);
+        thermostatManualEvent.setAutoModeEnabledCommand(autoModeEnabledCommand);
         thermostatManualEvent.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
         thermostatManualEvent.setAction(CustomerAction.MANUAL_OPTION);
         
@@ -439,20 +451,21 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, Temperature tempInF, ThermostatMode mode) {
+    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, Temperature heatTemperatureInF,
+                                                                 Temperature coolTemperatureInF, ThermostatMode mode) {
         
         //The UI only allows selection of multiple thermostats of the same type, so the type of the
         //first thermostat should be the same as any others
         int firstThermostatId = thermostatIdsList.get(0);
         HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
         SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
-        Temperature minTempInF = schedThermType.getLowerLimit(mode.getHeatCoolSettingType()).toFahrenheit();
-        Temperature maxTempInF = schedThermType.getUpperLimit(mode.getHeatCoolSettingType()).toFahrenheit();
         
         ThermostatManualEventResult message = null;
-        if (tempInF.compareTo(maxTempInF) > 0) {
+        if (heatTemperatureInF.compareTo(schedThermType.getUpperLimit(HeatCoolSettingType.HEAT).toFahrenheit()) > 0 ||
+              coolTemperatureInF.compareTo(schedThermType.getUpperLimit(HeatCoolSettingType.COOL).toFahrenheit())  > 0) {
             message = ThermostatManualEventResult.MANUAL_INVALID_TEMP_HIGH;
-        } else if (minTempInF.compareTo(tempInF) > 0) {
+        } else if (schedThermType.getLowerLimit(HeatCoolSettingType.HEAT).toFahrenheit().compareTo(heatTemperatureInF) > 0 ||
+                     schedThermType.getLowerLimit(HeatCoolSettingType.COOL).toFahrenheit().compareTo(coolTemperatureInF) > 0) {
             message = ThermostatManualEventResult.MANUAL_INVALID_TEMP_LOW;
         }
         
@@ -522,7 +535,8 @@ public class ThermostatServiceImpl implements ThermostatService {
         if (event.isRunProgram()) {
             logMsg.append(", Run Program");
         } else {
-            logMsg.append(", Temp:" + event.getPreviousTemperature().toString());
+            logMsg.append(", CoolTemp:" + event.getPreviousCoolTemperature());
+            logMsg.append(", HeatTemp:" + event.getPreviousHeatTemperature());
             if (event.isHoldTemperature()) {
                 logMsg.append(" (HOLD)");
             }
@@ -562,5 +576,34 @@ public class ThermostatServiceImpl implements ThermostatService {
     public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModesByAccountId(int accountId) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
         return getAllowedThermostatScheduleModes(yukonEnergyCompany);
+    }
+    
+    @Override
+    public boolean isAutoModeAvailable(int accountId, int thermostatId) {
+
+        // Check to see if the thermostat allows it
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        if (!thermostat.getType().isAutoModeEnableable()) {
+            return false;
+        }
+        
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
+        
+        // Get the consumer user to get their opt out limit.
+        int userId = contact.getLoginID();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+        
+        // If the account has a login and is a member of the Residential Customer Role, load its limits
+        if(user.getUserID() != UserUtils.USER_DEFAULT_ID &&
+           rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
+            
+            boolean autoThermostatModeEnabled = 
+                    rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_AUTO_THERMOSTAT_MODE_ENABLED, user);
+            
+            return autoThermostatModeEnabled;
+        }
+        
+        return false;
     }
 }

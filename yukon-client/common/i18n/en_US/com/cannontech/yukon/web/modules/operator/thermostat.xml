@@ -32,6 +32,8 @@
 	<entry key="yukon.web.modules.operator.thermostatManual.manualUiContainerHeader.title">Thermostat Manual</entry>
 	
     <entry key="yukon.web.modules.operator.thermostatManual.temperature">Temperature</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.coolTemperature">Cool Temperature</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.heatTemperature">Heat Temperature</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.edit">edit</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.save">Save</entry>
@@ -70,6 +72,9 @@
     <entry key="yukon.web.modules.operator.thermostatManual.unitMode">Mode:</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.degreesCelsius"><![CDATA[&deg;C]]></entry>
     <entry key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit"><![CDATA[&deg;F]]></entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.autoModeDisclaimer"><![CDATA[
+        Please make sure that you have your thermostat auto mode enabled or use the regular thermostat manual page.  Without this being set you could get some undesired results from using this page. 
+    ]]></entry>
     <entry key="yukon.web.modules.operator.thermostatManual.stepText"><![CDATA[
 	    1. Select the new temperature to maintain until the next program scheduled change. Check <b>HOLD</b> to maintain this setting across program changes.<br><br>
 	    2. Adjust <b>MODE</b> and <b>FAN</b> settings.<br><br>
@@ -94,6 +99,8 @@
     <entry key="yukon.web.modules.operator.thermostatManual.RESTORE">Restore</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.SCHEDULE">Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp">Temp: {0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp">Cool Temp: {0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp">Heat Temp: {0}</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.manualDetailsFan">Fan:</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.scheduleDetails">Schedule: {0}</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode">Mode:</entry>
@@ -363,6 +370,9 @@
     <entry key="yukon.web.components.button.history.disabled">/WebConfig/yukon/Icons/time_disabled.gif</entry>
     <entry key="yukon.web.components.button.history.hoverText">View the history for the selected thermostat(s).</entry>
     <entry key="yukon.web.components.button.history.label">View History</entry>
+
+    <entry key="yukon.web.components.button.autoEnabledManual.hoverText">Manuall conifgure your auto mode enabled thermostat(s).</entry>
+    <entry key="yukon.web.components.button.autoEnabledManual.label">Auto Mode Enabled Settings</entry>
     
     <entry key="yukon.web.components.button.recommendedSettings.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
     <entry key="yukon.web.components.button.recommendedSettings.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>

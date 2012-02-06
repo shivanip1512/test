@@ -20,15 +20,16 @@ var TIME_SLIDER = null;
 Event.observe(window, 'load', function(){
     Yukon.ThermostatScheduleEditor.init({
         thermostat: {
-            heat: {
+            HEAT: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitHeat.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${type.lowerLimitHeat.value}), unit:'F'})
+                lower: new Temperature({degrees: parseFloat(${type.lowerLimitHeat.value}), unit:'F'}),
+                temperature: new Temperature({unit: '${temperatureUnit}'})
             },
-            cool: {
+            COOL: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitCool.value}), unit:'F'}),
-                lower: new Temperature({degrees: parseFloat(${type.lowerLimitCool.value}), unit:'F'})
+                lower: new Temperature({degrees: parseFloat(${type.lowerLimitCool.value}), unit:'F'}),
+                temperature: new Temperature({unit: '${temperatureUnit}'})
             },
-            temperature: new Temperature({unit: '${temperatureUnit}'}),
             mode: '${type.defaultThermostatScheduleMode}',
             fan: '',
             secondsResolution: ${type.resolution.standardSeconds},

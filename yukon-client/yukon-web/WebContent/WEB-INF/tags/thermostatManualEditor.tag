@@ -5,6 +5,7 @@
 <%@ attribute name="accountId" required="true" type="java.lang.String" description="ID of the account we are operating on." %>
 <%@ attribute name="temperatureUnit" required="true" type="java.lang.String" description="Acceptable units are: ['F', 'C'] determines the initial unit." %>
 <%@ attribute name="actionPath" required="true" type="java.lang.String" description="Where to submit the manual thermostat form to."%>
+<%@ attribute name="autoEnabledMode" required="false" type="java.lang.Boolean" description="Turns on the auto mode functionality and changes the gui to take deadbands into account" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -59,13 +60,27 @@
         
         <div class="box temperatureDisplay fl">
              <div class="box fl">
-                <input class="${event.modeString} temperature fl" type="text" name="temperature_display" maxlength="4" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
-                <input type="hidden" name="temperature" value="${(event.runProgram)? '' : event.previousTemperature.value}" />
-                <input type="hidden" name="temperatureUnit" value="F" /> <!-- currently always stored as Fahrenheit -->
-                <div class="box fl temperatureAdjust"> 
-                    <div class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp" htmlEscape="false" /></div>
-                    <div class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp" htmlEscape="false" /></div>
-                </div>          
+                <!-- Cool Temperature -->
+                <div class="coolDiv">
+                    <input class="${event.modeString} temperature fl" data-temperatureMode="COOL" type="text" name="temperature_display" maxlength="4" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
+                    <input type="hidden"  name="temperature" value="${(event.runProgram)? '' : event.previousCoolTemperature.value}" />
+                    <input type="hidden" name="temperatureUnit" value="F" /> <!-- currently always stored as Fahrenheit -->
+                    <div class="box fl temperatureAdjust"> 
+                        <div data-temperatureMode="COOL" class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp" htmlEscape="false" /></div>
+                        <div data-temperatureMode="COOL" class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp" htmlEscape="false" /></div>
+                    </div>
+                </div>
+
+                <!-- Heat Temperature -->
+                <div class="heatDiv">
+                    <input class="${event.modeString} temperature fl" data-temperatureMode="HEAT" type="text" name="temperature_display" maxlength="4" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
+                    <input type="hidden"  name="temperature" value="${(event.runProgram)? '' : event.previousHeatTemperature.value}" />
+                    <div class="box fl temperatureAdjust"> 
+                        <div data-temperatureMode="HEAT" class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp" htmlEscape="false" /></div>
+                        <div data-temperatureMode="HEAT" class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp" htmlEscape="false" /></div>
+                    </div>
+                </div>
+
                 <div class="temperatureUnit clear">
                     <ul class="pipes">
                         <li class="unit <c:if test="${temperatureUnit == 'C'}">selected</c:if>" unit="C"><i:inline key="yukon.web.defaults.celsius" /></li>
@@ -83,7 +98,9 @@
                 <ul class="box">
                 <c:forEach var="thermostatMode" items="${thermostat.schedulableThermostatType.supportedModes}">
                     <li class="mode ${(event.runProgram)? '' : (event.mode eq thermostatMode? 'selected' : '' )}" mode="${thermostatMode}">
-                        <i:inline key="yukon.web.modules.operator.thermostatManual.mode.${thermostatMode}" />
+                        <c:if test="${autoEnabledMode || thermostatMode != 'AUTO'}">
+                            <i:inline key="yukon.web.modules.operator.thermostatManual.mode.${thermostatMode}" />
+                        </c:if>
                     </li>
                 </c:forEach>
                 </ul>
@@ -122,21 +139,27 @@
 <i:simplePopup titleKey=".sendConfirm.title" on="sendSettingsSubmit" id="confirmPopup_${event.eventId}" styleClass="smallSimplePopup">
     
     <form action="${actionPath}" method="post">
-    
         <input type="hidden" name="accountId"  value="${accountId}" />
         <input type="hidden" name="thermostatIds"  value="${thermostatIds}" />
         <input type="hidden" name="fan" value=""/>
-        <input type="hidden" name="temperature"/>
+        <input type="hidden" name="coolTemperature"/>
+        <input type="hidden" name="heatTemperature"/>
         <input type="hidden" name="temperatureUnit" value=""/>
         <input type="hidden" name="mode" value="">
         <input type="hidden" name="hold"/>
+        <input type="hidden" name="autoModeEnabled" value="${autoEnabledMode}" />
     
         <div id="confirmMessage"><i:inline key=".sendConfirm.message"/></div>
         <br/>
         
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".temperature" rowId="temperatureConfirm">
-                <span id="temperatureValueConfirm" class="temperatureConfirm"></span><span class="C unit"><i:inline key="yukon.web.defaults.celsius" /></span><span class="F unit"><i:inline key="yukon.web.defaults.fahrenheit" /></span>
+
+            <tags:nameValue2 nameKey=".coolTemperature" rowId="coolTemperatureConfirm">
+                <span id="coolTemperatureValueConfirm" class="coolTemperatureConfirm"></span><span class="C unit"><i:inline key="yukon.web.defaults.celsius" /></span><span class="F unit"><i:inline key="yukon.web.defaults.fahrenheit" /></span>
+            </tags:nameValue2>
+
+            <tags:nameValue2 nameKey=".heatTemperature" rowId="heatTemperatureConfirm">
+                <span id="heatTemperatureValueConfirm" class="heatTemperatureConfirm"></span><span class="C unit"><i:inline key="yukon.web.defaults.celsius" /></span><span class="F unit"><i:inline key="yukon.web.defaults.fahrenheit" /></span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".mode" rowId="modeConfirm">
@@ -151,7 +174,6 @@
                 <span class="true"><i:inline key="yukon.web.modules.operator.thermostatManual.hold.on"/></span>
                 <span class="false"><i:inline key="yukon.web.modules.operator.thermostatManual.hold.off"/></span>
             </tags:nameValue2>
-            
         </tags:nameValueContainer2>
         
         <div class="actionArea">

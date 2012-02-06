@@ -207,19 +207,21 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             /* Mode */
             ThermostatMode mode = event.getMode();
             if (mode != null) {
+                // TODO: Auto mode not supported just yet for digi.  This will be added when we have a command to do so. 
                 if (mode == ThermostatMode.COOL) {
                     command.append("C,");
+                    /* Temp - needs to be sent as an integer fahrenheit value */
+                    command.append(event.getPreviousCoolTemperature().toFahrenheit().toIntValue() + ",");
                 } else if (mode == ThermostatMode.HEAT) {
                     command.append("H,");
+                    /* Temp - needs to be sent as an integer fahrenheit value */
+                    command.append(event.getPreviousHeatTemperature().toFahrenheit().toIntValue() + ",");
                 } else if (mode == ThermostatMode.OFF) {
                     command.append("O,");
                 }
             } else {
                 command.append("R,");
             }
-            
-            /* Temp - needs to be sent as an integer fahrenheit value */
-            command.append(event.getPreviousTemperature().toFahrenheit().toIntValue() + ",");
             
             /* Fan */
             if (event.getFanState() == ThermostatFanState.AUTO) {

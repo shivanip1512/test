@@ -157,6 +157,10 @@ Temperature = function(args){
         }
     };
     
+    this.print = function(){
+    	return this.sanitizedString() + " " + this.unit;
+    };
+    
     this.stepUp = function() {
         this.degrees += this.resolution[this.unit];
     };

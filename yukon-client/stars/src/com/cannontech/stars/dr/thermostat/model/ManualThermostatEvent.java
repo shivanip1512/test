@@ -1,31 +1,32 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import com.cannontech.common.temperature.CelsiusTemperature;
 import com.cannontech.common.temperature.Temperature;
 
 public class ManualThermostatEvent extends ThermostatEvent {
     
-    private Temperature manualTemp;
+    private Temperature manualCoolTemp;
+    private Temperature manualHeatTemp;
     private ThermostatMode manualMode;
     private ThermostatFanState manualFan;
     private boolean manualHold;
 
-    public Temperature getManualTemp() {
-        return manualTemp;
+    public Temperature getManualCoolTemp() {
+        return manualCoolTemp;
+    }
+    public void setManualCoolTemp(Temperature manualCoolTemp) {
+        this.manualCoolTemp = manualCoolTemp;
     }
     
-    public CelsiusTemperature getManualTempInC() {
-        return manualTemp.toCelsius();
+    public Temperature getManualHeatTemp() {
+        return manualHeatTemp;
     }
-    
-    public void setManualTemp(Temperature manualTemp) {
-        this.manualTemp = manualTemp;
+    public void setManualHeatTemp(Temperature manualHeatTemp) {
+        this.manualHeatTemp = manualHeatTemp;
     }
 
     public ThermostatMode getManualMode() {
         return manualMode;
     }
-
     public void setManualMode(ThermostatMode manualMode) {
         this.manualMode = manualMode;
     }
@@ -33,7 +34,6 @@ public class ManualThermostatEvent extends ThermostatEvent {
     public ThermostatFanState getManualFan() {
         return manualFan;
     }
-
     public void setManualFan(ThermostatFanState manualFan) {
         this.manualFan = manualFan;
     }
@@ -41,7 +41,6 @@ public class ManualThermostatEvent extends ThermostatEvent {
     public boolean isManualHold() {
         return manualHold;
     }
-
     public void setManualHold(boolean manualHold) {
         this.manualHold = manualHold;
     }

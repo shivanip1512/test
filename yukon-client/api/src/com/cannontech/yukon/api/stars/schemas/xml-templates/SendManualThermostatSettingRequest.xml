@@ -9,7 +9,7 @@
             <serialNumber>98765400011</serialNumber>
             <mode>Heat</mode>
             <fanState>Auto</fanState>
-            <temperature unit="F">76</temperature>
+            <heatTemperature unit="F">76</heatTemperature>
         </manualThermostatSetting>
     </manualThermostatSettingList>
 </sendManualThermostatSettingRequest>

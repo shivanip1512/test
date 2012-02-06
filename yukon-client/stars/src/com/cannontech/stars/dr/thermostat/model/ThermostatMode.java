@@ -11,10 +11,10 @@ import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
  */
 public enum ThermostatMode implements ListEntryEnum, DisplayableEnum {
     DEFAULT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT, "default", HeatCoolSettingType.OTHER), 
+    AUTO(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO, "auto", HeatCoolSettingType.AUTO),
     COOL(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool", HeatCoolSettingType.COOL), 
     HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat", HeatCoolSettingType.HEAT), 
-    EMERGENCY_HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT, "emheat",
-                   HeatCoolSettingType.HEAT),
+    EMERGENCY_HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT, "emheat", HeatCoolSettingType.HEAT),
     OFF(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off", HeatCoolSettingType.OTHER);
 
     // this key prefix can be found in the following file:

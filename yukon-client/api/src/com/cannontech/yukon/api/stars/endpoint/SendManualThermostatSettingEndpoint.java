@@ -18,6 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
@@ -29,6 +30,8 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.thermostat.FailedThermostatCommandException;
+import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -43,6 +46,7 @@ import com.google.common.collect.Sets;
 public class SendManualThermostatSettingEndpoint {
 
     @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private CustomerEventDao customerEventDao;
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -71,14 +75,19 @@ public class SendManualThermostatSettingEndpoint {
         // Log run program attempt
         for (ManualThermostatSetting manualThermostatSetting : manualThermostatSettings) {
             for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
-                accountEventLogService.thermostatManualSetAttemptedByApi(user, serialNumber, manualThermostatSetting.getTemperature().toFahrenheit().toIntValue(),
-                                                                         manualThermostatSetting.getThermostatMode().toString(), manualThermostatSetting.getFanState().toString(),
-                                                                         manualThermostatSetting.isHoldTemperature());
+                Temperature heatTemperature = manualThermostatSetting.getHeatTemperature() ;
+                Temperature coolTemperature = manualThermostatSetting.getCoolTemperature(); 
+                        
+                accountEventLogService.thermostatManualSetAttemptedByApi(user, serialNumber, 
+                                                                         (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null, 
+                                                                         (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null, 
+                                                                         manualThermostatSetting.getThermostatMode().toString(), 
+                                                                         manualThermostatSetting.getFanState().toString(), manualThermostatSetting.isHoldTemperature());
             }
         }
         
         // init response
-        Element resp = new Element("runThermostatProgramResponse", ns);
+        Element resp = new Element("sendManualThermostatProgramResponse", ns);
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
         
@@ -99,8 +108,10 @@ public class SendManualThermostatSettingEndpoint {
                     CustomerAccount account = customerAccountDao.getAccountByInventoryId( thermostatId);
                 
                     // Send out manual thermostat commands
-                    result = thermostatService.executeManualEvent(thermostatId, manualThermostatSetting.getTemperature(), manualThermostatSetting.getThermostatMode(),
-                                                                  manualThermostatSetting.getFanState(), manualThermostatSetting.isHoldTemperature(),  account, user);
+                    setPreviousTemperaturesForNull(manualThermostatSetting, thermostatId);
+                    result = thermostatService.executeManualEvent(thermostatId, manualThermostatSetting.getHeatTemperature(), manualThermostatSetting.getCoolTemperature(),
+                                                                  manualThermostatSetting.getThermostatMode(), manualThermostatSetting.getFanState(), manualThermostatSetting.isHoldTemperature(),  
+                                                                  manualThermostatSetting.isAutoModeCommand(), account, user);
                     if (result.isFailed() && manualThermostatSetting.getSerialNumbers().size() > 1) {
                         result = ThermostatManualEventResult.MULTIPLE_ERROR;
                         break;
@@ -124,10 +135,22 @@ public class SendManualThermostatSettingEndpoint {
             Element fe = XMLFailureGenerator.generateFailure(sendManualThermostatSetting, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
             log.error(e.getMessage(), e);
+            return resp;
         }
         
         resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         return resp;
+    }
+
+    private void setPreviousTemperaturesForNull(ManualThermostatSetting manualThermostatSetting, int thermostatId) {
+        ThermostatManualEvent lastManualEvent = customerEventDao.getLastManualEvent(thermostatId);
+        if (manualThermostatSetting.getCoolTemperature() == null) {
+            manualThermostatSetting.setCoolTemperature(lastManualEvent.getPreviousCoolTemperature());
+        }
+
+        if (manualThermostatSetting.getHeatTemperature() == null) {
+            manualThermostatSetting.setHeatTemperature(lastManualEvent.getPreviousHeatTemperature());
+        }
     }
 
     /**

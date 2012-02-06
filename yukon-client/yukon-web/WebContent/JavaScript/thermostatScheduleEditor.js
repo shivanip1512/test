@@ -2,13 +2,14 @@ var CURRENT_TIME_INPUT = null;
 var CURRENT_TEMP_INPUT = null;
 var KEYUP = 38;
 var KEYDOWN = 40;
+var TEMPERATURE_WINDOW_TYPES = ["HEAT","COOL"];
 
 Yukon.ThermostatScheduleEditor = {
     //Initializes the UI
     init: function(args) {
         Yukon.ThermostatScheduleEditor.initArgs(args);
         Yukon.ThermostatScheduleEditor.renderTime();
-        Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.temperature.unit]();
+        Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.COOL.temperature.unit]();
        
         $$(".time input:text").each(function(input){
             input.observe('focus', Yukon.ThermostatScheduleEditor.showTimeSlider);
@@ -35,11 +36,11 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         TEMP_SLIDER = new Control.Slider($("tempSlider").down('.handle'), $("tempSlider").down('.track'), {
-            range: $R(this.thermostat.heat.lower.getF(), Yukon.ThermostatScheduleEditor.thermostat.heat.upper.getF()),
+            range: $R(this.thermostat.HEAT.lower.getF(), Yukon.ThermostatScheduleEditor.thermostat.HEAT.upper.getF()),
             sliderValue: 72,
             onSlide: function(value) {
-                Yukon.ThermostatScheduleEditor.thermostat.assignDegreesOrSnapToLimit(value);
-                CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat.temperature.sanitizedString();
+                Yukon.ThermostatScheduleEditor.thermostat.assignDegreesOrSnapToLimit(value, CURRENT_TEMP_INPUT.readAttribute("data-temperatureMode"));
+                CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat[CURRENT_TEMP_INPUT.readAttribute("data-temperatureMode")].temperature.sanitizedString();
             },
             onChange: function(value, e) {
                 Yukon.ThermostatScheduleEditor.commitTempValue(value, CURRENT_TEMP_INPUT);
@@ -49,6 +50,7 @@ Yukon.ThermostatScheduleEditor = {
 
         $$(".schedules input:text, .createSchedule input:text").invoke('observe', 'focus', function(event){
                 this.writeAttribute("previousValue", this.value);
+                
         });
         
         $$(".tempControls input:radio").invoke('observe', 'click', function(e){
@@ -92,7 +94,7 @@ Yukon.ThermostatScheduleEditor = {
                 input.value = input.readAttribute('initialValue');
             });
             Yukon.ThermostatScheduleEditor.renderTime();
-            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.temperature.unit]();
+            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.COOL.temperature.unit]();
         });
         
         YEvent.observeSelectorClick(".copy", function(e){
@@ -272,7 +274,7 @@ Yukon.ThermostatScheduleEditor = {
             
             //render times and temps
             Yukon.ThermostatScheduleEditor.renderTime();
-            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.temperature.unit]();
+            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.COOL.temperature.unit]();
         }
     },
     
@@ -317,18 +319,19 @@ Yukon.ThermostatScheduleEditor = {
         
         switch(event.keyCode){
         case KEYUP:
-            Yukon.ThermostatScheduleEditor.thermostat.stepUp();
+            Yukon.ThermostatScheduleEditor.thermostat.stepUp(event);
             break;
         case KEYDOWN:
-            Yukon.ThermostatScheduleEditor.thermostat.stepDown();
+            Yukon.ThermostatScheduleEditor.thermostat.stepDown(event);
             break;
         default:
             //really this is redundant given the first check in this function
             return;
         }
         
-        CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat.temperature.sanitizedString();
-        TEMP_SLIDER.setValue(Yukon.ThermostatScheduleEditor.thermostat.temperature.getResolvedTemp());
+        var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
+        CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat[windowModeType].temperature.sanitizedString();
+        TEMP_SLIDER.setValue(Yukon.ThermostatScheduleEditor.thermostat[windowModeType].temperature.getResolvedTemp());
         event.stop();
     },
     
@@ -336,23 +339,24 @@ Yukon.ThermostatScheduleEditor = {
         var _self = Yukon.ThermostatScheduleEditor;
         _self.hideTimeSlider();
         
-        var startingValue = new Temperature({degrees: parseFloat(this.value), unit:_self.thermostat.temperature.unit});
+        var startingValue = new Temperature({degrees: parseFloat(this.value), unit:_self.thermostat.COOL.temperature.unit});
         
         //determine range
         var start = null;
         var end = null;
         
         if(this.hasClassName("heat_F")) {
-            start = _self.thermostat.heat.lower;
-            end = _self.thermostat.heat.upper;
+            start = _self.thermostat.HEAT.lower;
+            end = _self.thermostat.HEAT.upper;
             _self.thermostat.setMode('HEAT');
         } else if(this.hasClassName("cool_F")) {
-            start = _self.thermostat.cool.lower;
-            end = _self.thermostat.cool.upper;
+            start = _self.thermostat.COOL.lower;
+            end = _self.thermostat.COOL.upper;
             _self.thermostat.setMode('COOL');
         }
         
-        TEMP_SLIDER.increment = _self.thermostat.temperature.getResolution();
+        var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
+        TEMP_SLIDER.increment = _self.thermostat[windowModeType].temperature.getResolution();
         var startLabel = start.sanitizedString();
         var endLabel = end.sanitizedString();
         
@@ -388,24 +392,25 @@ Yukon.ThermostatScheduleEditor = {
         value = parseFloat(value);
         
         if(!isNaN(value)){
-            _self.thermostat.assignDegreesOrSnapToLimit(value);
+        	var windowModeType = input.readAttribute("data-temperatureMode")
+            _self.thermostat.assignDegreesOrSnapToLimit(value, windowModeType);
 
             //determine range
             var start = null;
             var end = null;
                     
             if(input.hasClassName("heat_F")) {
-                start = _self.thermostat.heat.lower;
-                end = _self.thermostat.heat.upper;
+                start = _self.thermostat.HEAT.lower;
+                end = _self.thermostat.HEAT.upper;
             } else if(input.hasClassName("cool_F")) {
-                start = _self.thermostat.cool.lower;
-                end = _self.thermostat.cool.upper;
+                start = _self.thermostat.COOL.lower;
+                end = _self.thermostat.COOL.upper;
             }
             
             //put value into REAL input
-            input.adjacent("input:hidden")[0].value = _self.thermostat.temperature.getF();
-            input.value = _self.thermostat.temperature.sanitizedString();
-            input.up('.temp').setStyle({backgroundColor:_self.thermostat.color()});
+            input.adjacent("input:hidden")[0].value = _self.thermostat[windowModeType].temperature.getF();
+            input.value = _self.thermostat[windowModeType].temperature.sanitizedString();
+            input.up('.temp').setStyle({backgroundColor:_self.thermostat.color(input.readAttribute("data-temperatureMode"))});
             return true;
         }
         //revert to previousValue
@@ -633,9 +638,9 @@ Yukon.ThermostatScheduleEditor = {
         $$(".temp input[type=hidden]").each(function(elem){
             var temperature = new Temperature({degrees: parseFloat(elem.value), unit:'F'});
             if(elem.up('.temp').hasClassName('heat')){
-                elem.up(".temp").setStyle({backgroundColor:_self.thermostat.calcHeatColor(temperature)});
+                elem.up(".temp").setStyle({backgroundColor:_self.thermostat.calcHEATColor(temperature)});
             } else {
-                elem.up(".temp").setStyle({backgroundColor:_self.thermostat.calcCoolColor(temperature)});
+                elem.up(".temp").setStyle({backgroundColor:_self.thermostat.calcCOOLColor(temperature)});
             }
         });
     }
@@ -663,7 +668,7 @@ Yukon.ThermostatManualEditor = {
         $$(".editLabel, .cancelLabelEdit").invoke('observe', 'click', _self.toggleLabelEditor);
         
         _self.render();
-        _self.renderOtherTemperatures(_self.thermostat.temperature.unit);
+        _self.renderOtherTemperatures(_self.thermostat.COOL.temperature.unit);
     },
     
     toggleLabelEditor: function(){
@@ -689,7 +694,7 @@ Yukon.ThermostatManualEditor = {
     },
     
     onBlurTemperatureDisplay: function(event) {
-        if(Yukon.ThermostatManualEditor.thermostat.assignDegreesOrSnapToLimit(parseFloat(this.value))){
+        if(Yukon.ThermostatManualEditor.thermostat.assignDegreesOrSnapToLimit(parseFloat(this.value), this.readAttribute("data-temperatureMode"))){
             Yukon.ThermostatManualEditor.render();
         }else{
             this.value = this.readAttribute("previousValue");
@@ -705,7 +710,8 @@ Yukon.ThermostatManualEditor = {
         var widget = event.target.up(".manualThermostat");
         
         popup.select(".unit").invoke('hide');
-        popup.select("." + Yukon.ThermostatManualEditor.thermostat.temperature.unit).invoke('show');
+        
+        popup.select("." + Yukon.ThermostatManualEditor.thermostat.COOL.temperature.unit).invoke('show');
         
         popup.select("input:hidden").each(function(input){
             var name = input.readAttribute("name");
@@ -714,7 +720,6 @@ Yukon.ThermostatManualEditor = {
             if(source){
                 //not really true for the checkbox, but we overwrite it down below
                 input.value = source.value;
-            
                 if(widget.down("."+ name +".selected")){
                     popup.down("."+ name +"Confirm").innerHTML = widget.down("."+ name +".selected").innerHTML; 
                 }else if(widget.down("input[type=text]."+ name +"")){
@@ -728,8 +733,27 @@ Yukon.ThermostatManualEditor = {
         });
         
         //send the actual requested value for logging
-        popup.down("input[name=temperature]").value = widget.down("input[name=temperature_display]").value;
-        popup.down("input[name=temperatureUnit]").value = Yukon.ThermostatManualEditor.thermostat.temperature.unit;
+        var _self = Yukon.ThermostatManualEditor;
+
+        var coolTemperatureValue = widget.down("input[name=temperature_display][data-temperatureMode='COOL']").value;
+        popup.down("input[name=coolTemperature]").value = coolTemperatureValue;
+        popup.down(".coolTemperatureConfirm").innerHTML = coolTemperatureValue;
+        
+        var heatTemperatureValue = widget.down("input[name=temperature_display][data-temperatureMode='HEAT']").value;
+        popup.down("input[name=heatTemperature]").value = heatTemperatureValue;
+        popup.down(".heatTemperatureConfirm").innerHTML = heatTemperatureValue;
+
+        if (!(_self.thermostat.autoEnabled) && (_self.thermostat.mode == 'HEAT')) {
+        	jQuery("#coolTemperatureConfirm").hide();
+        	jQuery("#heatTemperatureConfirm").show();
+        }
+
+        if (!(_self.thermostat.autoEnabled) && (_self.thermostat.mode == 'COOL')) {
+        	jQuery("#coolTemperatureConfirm").show();
+        	jQuery("#heatTemperatureConfirm").hide();
+        }
+        
+		popup.down("input[name=temperatureUnit]").value = Yukon.ThermostatManualEditor.thermostat.COOL.temperature.unit;
         
         popup.show();
     },
@@ -737,59 +761,70 @@ Yukon.ThermostatManualEditor = {
     temperatureUp: function(event) {
         var _self = Yukon.ThermostatManualEditor;
         switch(_self.thermostat.mode){
-        case 'EMERGENCY_HEAT':
-        case 'HEAT':
-        case 'COOL':
-            _self.thermostat.stepUp();
-            _self.render();
-            return true;
-        default:
-            return false;
+            case 'AUTO':
+            case 'EMERGENCY_HEAT':
+            case 'HEAT':
+            case 'COOL':
+                _self.thermostat.stepUp(event);
+                _self.render();
+                return true;
+            default:
+                return false;
         }
     },
     
     temperatureDown: function(event) {
         var _self = Yukon.ThermostatManualEditor;
         switch(_self.thermostat.mode){
-        case 'EMERGENCY_HEAT':
-        case 'HEAT':
-        case 'COOL':
-            _self.thermostat.stepDown();
-            _self.render();
-            return true;
-        default:
-            return false;
+            case 'AUTO':
+            case 'EMERGENCY_HEAT':
+            case 'HEAT':
+            case 'COOL':
+                _self.thermostat.stepDown(event);
+                _self.render();
+                return true;
+            default:
+                return false;
         }
     },
     
     render: function(){
         var _self = Yukon.ThermostatManualEditor;
         $$(".manualThermostat").each(function(widget){
-            var displayInput = widget.down("input[name=temperature_display]");
+            widget.select("input[name=temperature_display]").each(function(elem) {
+            	var temperatureMode = elem.readAttribute("data-temperatureMode");
+            	//set color
+                elem.setStyle({color: _self.thermostat.color(temperatureMode)});
+                
+                //set availability
+                switch(_self.thermostat.mode){
+                	case 'AUTO':
+                    case 'EMERGENCY_HEAT':
+                    case 'HEAT':
+                    case 'COOL':
+                    	elem.enable();
+                    	break;
+                    default:
+                    	elem.disable();
+                	}
+                
+                //render the temperature w/ correct color and input availability
+                elem.value = _self.thermostat[temperatureMode].temperature.sanitizedString();
+                elem.up().down("input[name=temperature]").value = _self.thermostat[temperatureMode].degrees;
+            });
             
-            //render the temperature w/ correct color and input availability
-            displayInput.value = _self.thermostat.temperature.sanitizedString();
-            displayInput.setStyle({color: _self.thermostat.color()});
-            switch(_self.thermostat.mode){
-                case 'EMERGENCY_HEAT':
-                case 'HEAT':
-                case 'COOL':
-                    displayInput.enable();
-                    break;
-                default:
-                    displayInput.disable();
-            }
-            widget.down("input[name=temperature]").value = _self.thermostat.temperature.degrees;
             
             //render mode
             Yukon.ui.exclusiveSelect(widget.down("li[mode=" + _self.thermostat.mode + "]"));
             $("mode").value = _self.thermostat.mode;
+            
             //render fan
             Yukon.ui.exclusiveSelect(widget.down("li[state=" + _self.thermostat.fan + "]"));
             $("fan").value = _self.thermostat.fan;
+
             //render unit
-            Yukon.ui.exclusiveSelect(widget.down("li[unit=" + _self.thermostat.temperature.unit + "]"));
-            widget.down("input[name=temperatureUnit]").value = _self.thermostat.temperature.unit;
+            Yukon.ui.exclusiveSelect(widget.down("li[unit=" + _self.thermostat.COOL.temperature.unit + "]"));
+            widget.down("input[name=temperatureUnit]").value = _self.thermostat.COOL.temperature.unit;
         });
     },
     
@@ -825,75 +860,92 @@ Yukon.ThermostatManualEditor = {
 // heatColor            - object - {r:{start:[0..255], end:[0..255]}, g:{start:[0..255], end:[0..255]}, b:{start:[0..255], end:[0..255]}, a:{start:[0..255], end:[0..255]}}
 // coolColor            - object - {r:{start:[0..255], end:[0..255]}, g:{start:[0..255], end:[0..255]}, b:{start:[0..255], end:[0..255]}, a:{start:[0..255], end:[0..255]}}
 Yukon.Thermostat = function(args){
-    this.heat = {
+    this.HEAT = {
         upper: null,
-        lower: null
+        lower: null,
+        temperature: null
     };
-    this.cool = {
+    this.COOL = {
         upper: null,
-        lower: null
+        lower: null,
+        temperature: null
     };
     
-    this.temperature = null;
     this.mode = '';
     this.fan = '';
+    this.deadband=3;
+    this.autoEnabled = false;
     this.secondsResolution = 0; //seconds
     this.secondsBetweenPeriods = 0; //minimum time between periods in seconds
-    
-    this.heatColor = {
+
+    this.HEATColor = {
         r: {start: 242, end: 242},
         g: {start: 150, end: 0},
         b: {start: 29, end: 29},
         a: {start: 1, end: 1}
     };
     
-    this.coolColor = {
+    this.COOLColor = {
         r: {start: 64, end: 189},
         g: {start: 153, end: 220},
         b: {start: 255, end: 255},
         a: {start: 1, end: 1}
     };
     
-    for(var key in args){
-        if(typeof(this[key]) != 'undefined' && typeof(this[key]) != 'function'){
-            this[key] = args[key];
-        }
+    this._init = function() {
+    	// Fill in new object
+	    for(var key in args){
+	        if(typeof(this[key]) != 'undefined' && typeof(this[key]) != 'function'){
+	            this[key] = args[key];
+	        }
+	    }
+	    
+	    // Adjust for current deadband if needed
+	    if (this.autoEnabled) {
+	    	if (!this._isDeadbandValid()) {
+	    		this.HEAT.temperature.setF(this.COOL.temperature.getF() - this.deadband);
+	    	}
+	    } 
+
+	    this.setMode(this.mode);
     }
     
-    this.calcHeatColor = function(temperature){
-        var r = this.heatColor.r.start;
-        var g = Math.round(this.heatColor.g.start - Math.abs((temperature.getF() - this.heat.lower.getF()) * ((this.heatColor.g.end - this.heatColor.g.start)/(this.heat.upper.getF() - this.heat.lower.getF()))));
-        var b = this.heatColor.b.start; 
+    this.calcHEATColor = function(temperature){
+        var r = this.HEATColor.r.start;
+        var g = Math.round(this.HEATColor.g.start - Math.abs((temperature.getF() - this.HEAT.lower.getF()) * ((this.HEATColor.g.end - this.HEATColor.g.start)/(this.HEAT.upper.getF() - this.HEAT.lower.getF()))));
+        var b = this.HEATColor.b.start; 
         return "rgb("+ r +", "+ g +", "+ b +")";
     };
     
-    this.calcCoolColor = function(temperature){
-        var tempRange = this.cool.upper.getF() - this.cool.lower.getF();
-        var RRange = this.coolColor.r.end - this.coolColor.r.start;
-        var GRange = this.coolColor.g.end - this.coolColor.g.start;
-        var r = Math.round(this.coolColor.r.start + ((temperature.getF() - this.cool.lower.getF()) * (RRange/tempRange)));
-        var g = Math.round(this.coolColor.g.start + ((temperature.getF() - this.cool.lower.getF()) * (GRange/tempRange)));
-        var b = this.coolColor.b.start;
+    this.calcCOOLColor = function(temperature){
+        var tempRange = this.COOL.upper.getF() - this.COOL.lower.getF();
+        var RRange = this.COOLColor.r.end - this.COOLColor.r.start;
+        var GRange = this.COOLColor.g.end - this.COOLColor.g.start;
+        var r = Math.round(this.COOLColor.r.start + ((temperature.getF() - this.COOL.lower.getF()) * (RRange/tempRange)));
+        var g = Math.round(this.COOLColor.g.start + ((temperature.getF() - this.COOL.lower.getF()) * (GRange/tempRange)));
+        var b = this.COOLColor.b.start;
         return "rgb("+ r +","+ g +","+ b +")";
     };
     
-    this.color = function() {
+    this.color = function(temperatureMode) {
         switch(this.mode){
+        case 'AUTO':
         case 'EMERGENCY_HEAT':
         case 'HEAT':
-            return this.calcHeatColor(this.temperature);
         case 'COOL':
-            return this.calcCoolColor(this.temperature);
+            return this["calc"+temperatureMode+"Color"](this[temperatureMode]["temperature"]);
         default:
             return "#CCC";
         }
     };
     
-    this.assignDegrees = function(degrees) {
-        var temperature = new Temperature({degrees: degrees, unit: this.temperature.unit});
-        
-        if(this.isValidTemperature(temperature)){
-            this.temperature = temperature;
+    this.assignDegrees = function(degrees, temperatureMode) {
+    	var newTemperature = new Temperature({degrees: degrees, unit: this[temperatureMode].temperature.unit});
+        var coolTemperature = (temperatureMode == 'COOL') ? newTemperature : jQuery.extend(true, {}, this.COOL.temperature);
+        var heatTemperature = (temperatureMode == 'HEAT') ? newTemperature : jQuery.extend(true, {}, this.HEAT.temperature);
+    	
+        if(this.isValidTemperature(coolTemperature, heatTemperature)){
+            this[temperatureMode].temperature = newTemperature;
             return true;
         }
         return false;
@@ -903,86 +955,176 @@ Yukon.Thermostat = function(args){
      * If we are in an edge case mode say 45F (lower limit on ExpressStats) = 7.222222C rounds to 7C.
      * Users need to be able to enter 7.0C but have it save as 7.2222222C
      */
-    this.assignDegreesOrSnapToLimit = function(degrees) {
-        if(this.assignDegrees(degrees)){
-           return true; 
-        }
-        
-        var temperature = new Temperature({degrees: degrees, unit: this.temperature.unit});
-        var temps = null;
-        
+    this.assignDegreesOrSnapToLimit = function(degrees, temperatureMode) {
+    	
         switch(this.mode){
-        case 'EMERGENCY_HEAT':
-        case 'HEAT':
-            temps = this.heat;
-            break;
-        case 'COOL':
-            temps = this.cool;
-            break;
-        default:
-            return false;
+	        case 'AUTO':
+	        case 'EMERGENCY_HEAT':
+	        case 'HEAT':
+	        case 'COOL':
+	        	var temperatureSnapshot = this._temperatureSnapshot();
+	        	
+	            this[temperatureMode].temperature = new Temperature({degrees: degrees, unit: this[temperatureMode].temperature.unit});
+	        	var temps = this[temperatureMode];
+
+        		// snap to lower limit
+	            if(this[temperatureMode].temperature.getF() < temps.lower.getF()){
+	                this[temperatureMode].temperature = new Temperature({degrees:temps.lower.degrees, unit:temps.lower.unit});
+	            }
+
+	            //snap to upper limit
+	            if(this[temperatureMode].temperature.getF() > temps.upper.getF()){
+	                this[temperatureMode].temperature = new Temperature({degrees:temps.upper.degrees, unit:temps.upper.unit});
+	            }
+	        	
+	        	if(this.autoEnabled) {
+		            //snap to upper cool deadband limit
+	        		if(temperatureMode == 'HEAT' && this.HEAT.temperature.getF() + this.deadband > this.COOL.temperature.getF()){
+            			this.COOL.temperature.setF(this.HEAT.temperature.getF() + this.deadband);
+		            }
+	
+		            //snap to upper heat deadband limit
+		            if(temperatureMode == 'COOL' && this.COOL.temperature.getF() - this.deadband < this.HEAT.temperature.getF()) {
+		            	this.HEAT.temperature.setF(this.COOL.temperature.getF() - this.deadband);
+		            }
+	        	}
+
+	        	if (!this.isValidTemperature(this.COOL.temperature, this.HEAT.temperature)) {
+	        		this._restoreFromTemperatureSnapshot(temperatureSnapshot);
+                }
+	        	
+	        	return true;
+	        default:
+	            return false;
         }
         
-        //snap to lower limit
-        if(temperature.getF() < temps.lower.getF()){
-            this.temperature = new Temperature({degrees:temps.lower.degrees, unit:temps.lower.unit});
-            return true;
-        }
-        //snap to upper limit
-        if(temperature.getF() > temps.upper.getF()){
-            this.temperature = new Temperature({degrees:temps.upper.degrees, unit:temps.upper.unit});
-            return true;
-        }
-        //for posterity
         return false;
     };
     
-    this.stepUp = function(){
-        this.temperature.stepUp();
-        //if limit is reached, set to highest temp
-        if(!this.isValidTemperature(this.temperature)){
-            switch(this.mode){
+    this.stepUp = function(event){
+        switch(this.mode){
+        	case 'AUTO':
             case 'EMERGENCY_HEAT':
             case 'HEAT':
-                this.temperature = new Temperature({degrees: this.heat.upper.degrees, unit:this.heat.upper.unit});
-                return;
             case 'COOL':
-                this.temperature = new Temperature({degrees: this.cool.upper.degrees, unit:this.cool.upper.unit});
+            	
+            	// Get temperatureSnapshot in case we need to revert the stepUp
+            	var temperatureSnapshot = this._temperatureSnapshot();
+            	
+	        	var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
+	        	this[windowModeType].temperature.stepUp();
+
+            	// Auto mode enabled.  We need to worry about two windows now.
+            	if(this.autoEnabled){
+            		// Save current cool temp incase we need to roll back
+            		if(!this._isDeadbandValid()){
+            			this.COOL.temperature.setF(this.HEAT.temperature.getF() + this.deadband);
+            		}
+            		
+            		// Check if we have a valid cool temperature
+            		if(!this.isValidTemperature(this.COOL.temperature, this.HEAT.temperature)){
+            			this._restoreFromTemperatureSnapshot(temperatureSnapshot);
+            		}
+            		
+            	}else{
+            		if(!this.isValidTemperature(this.COOL.temperature, this.HEAT.temperature)){
+	        			this[windowModeType].temperature = new Temperature({degrees: this[windowModeType].upper.degrees, unit:this[windowModeType].upper.unit});
+            		}
+            	}
                 return;
-            default:
+             default:
                 return;
-            }
         }
     };
     
-    this.stepDown = function(){
-        this.temperature.stepDown();
-        //if limit is reached, set to lowest temp
-        if(!this.isValidTemperature(this.temperature)){
-            switch(this.mode){
-            case 'EMERGENCY_HEAT':
-            case 'HEAT':
-                this.temperature = new Temperature({degrees: this.heat.lower.degrees, unit:this.heat.lower.unit});
-                return;
-            case 'COOL':
-                this.temperature = new Temperature({degrees: this.cool.lower.degrees, unit:this.cool.lower.unit});
-                return;
-            default:
-                return;
-            }
-        }
+    this.stepDown = function(event){
+        switch(this.mode){
+	    	case 'AUTO':
+	        case 'EMERGENCY_HEAT':
+	        case 'HEAT':
+	        case 'COOL':
+	        	
+	        	// Get temperatureSnapshot in case we need to revert the stepUp
+	        	var temperatureSnapshot = this._temperatureSnapshot();
+	        	
+	        	var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
+	        	this[windowModeType].temperature.stepDown();
+	
+	        	// Auto mode enabled.  We need to worry about two windows now.
+	        	if(this.autoEnabled){
+	        		// Save current cool temp incase we need to roll back
+	        		if(!this._isDeadbandValid()){
+	        			this.HEAT.temperature.setF(this.COOL.temperature.getF() - this.deadband);
+	        		}
+	        		
+	        		// Check if we have a valid cool temperature
+	        		if(!this.isValidTemperature(this.COOL.temperature, this.HEAT.temperature)){
+	        			this._restoreFromTemperatureSnapshot(temperatureSnapshot);
+	        		}
+	        		
+	        	}else{
+	        		if(!this.isValidTemperature(this.COOL.temperature, this.HEAT.temperature)){
+	        			this[windowModeType].temperature = new Temperature({degrees: this[windowModeType].lower.degrees, unit:this[windowModeType].lower.unit});
+	        		}
+	        	}
+	            return;
+	         default:
+	            return;
+	    }
+	};
+    
+    this._isDeadbandValid = function(){
+    	//@TODO: note about deadband in F vs. C
+    	//this.COOL.temperature.unit
+    	return !(this.COOL.temperature.getF() - this.HEAT.temperature.getF() < this.deadband);
+    };
+    
+    // Gets the current temperatures.  This can then be used with _restoreFromTemperatureSnapshot to restore from an invalid temperature change.
+    this._temperatureSnapshot = function() {
+    	var temperatureSnapshot = {};
+    	for (var i=0; i < TEMPERATURE_WINDOW_TYPES.length; i++) {
+    		var tempWindowType = TEMPERATURE_WINDOW_TYPES[i];
+    		var clonedTemperatureObject = jQuery.extend(true, {}, this[tempWindowType].temperature);
+    		temperatureSnapshot[tempWindowType] = clonedTemperatureObject;
+		}
+
+    	return temperatureSnapshot;
+    };
+
+    // Restores the temperture objects to the  
+    this._restoreFromTemperatureSnapshot = function(temperatureSnapshot) {
+    	for (var i=0; i < TEMPERATURE_WINDOW_TYPES.length; i++) {
+    		var tempWindowType = TEMPERATURE_WINDOW_TYPES[i];
+    		this[tempWindowType].temperature = temperatureSnapshot[tempWindowType];
+		}
     };
     
     this.setMode = function(mode) {
         this.mode = mode;
         
         switch(mode){
+        case 'AUTO':
         case 'EMERGENCY_HEAT':
         case 'HEAT':
-            return this._toValidHeatTemperature(this.temperature);
+        	if (!this.autoEnabled) {
+        		jQuery('.coolDiv').hide();
+        		jQuery('.heatDiv').show();
+        	}
+            return this._toValidHeatTemperature(this.HEAT.temperature);
         case 'COOL':
-            return this._toValidCoolTemperature(this.temperature);
+        	if (!this.autoEnabled) {
+        		jQuery('.coolDiv').show();
+        		jQuery('.heatDiv').hide();
+        	}
+            return this._toValidCoolTemperature(this.COOL.temperature);
         default:
+        	
+        	// TODO: find a better way to do this.  
+        	if (!this.autoEnabled) {
+        		jQuery('.coolDiv').show();
+        		jQuery('.heatDiv').hide();
+        	}
+        	
             return this.temperature;
         }
     };
@@ -992,11 +1134,12 @@ Yukon.Thermostat = function(args){
     };
     
     this.setUnit = function(unit){
-        this.temperature.toUnit(unit);
-        this.heat.upper.toUnit(unit);
-        this.heat.lower.toUnit(unit);
-        this.cool.upper.toUnit(unit);
-        this.cool.lower.toUnit(unit);
+        this.HEAT.temperature.toUnit(unit);
+        this.HEAT.upper.toUnit(unit);
+        this.HEAT.lower.toUnit(unit);
+        this.COOL.temperature.toUnit(unit);
+        this.COOL.upper.toUnit(unit);
+        this.COOL.lower.toUnit(unit);
     }
     
     this.toValidTemperature = function(temperature){
@@ -1014,40 +1157,46 @@ Yukon.Thermostat = function(args){
     /**
      * Validates the temperature against the limits for this thermostat according the selected mode
      */
-    this.isValidTemperature = function(temperature){
+    this.isValidTemperature = function(coolTemperature, heatTemperature){
         switch(this.mode){
+        case 'AUTO':
         case 'EMERGENCY_HEAT':
         case 'HEAT':
-            if((temperature.getF() >= this.heat.lower.getF()) && (temperature.getF() <= this.heat.upper.getF())){
-                return true;
-            }
-            return false;
         case 'COOL':
-            if((temperature.getF() >= this.cool.lower.getF()) && (temperature.getF() <= this.cool.upper.getF())){
-                return true;
+            if((heatTemperature.getF() < this.HEAT.lower.getF()) || (heatTemperature.getF() > this.HEAT.upper.getF())){
+                return false;
             }
-            return false;
+            if((coolTemperature.getF() < this.COOL.lower.getF()) || (coolTemperature.getF() > this.COOL.upper.getF())){
+                return false;
+            }
+            if(this.autoEnabled && !this._isDeadbandValid()) {
+            	return false;
+            }
+            
+            return true;
         default:
             return false;
         }
     };
     
     this._toValidHeatTemperature = function(temperature){
-        if(temperature.getF() < this.heat.lower.getF()){
-            temperature.setF(this.heat.lower.getF());
-        }else if(temperature.getF() > this.heat.upper.getF()){
-            temperature.setF(this.heat.upper.getF());
+        if(temperature.getF() < this.HEAT.lower.getF()){
+            temperature.setF(this.HEAT.lower.getF());
+        }else if(temperature.getF() > this.HEAT.upper.getF()){
+            temperature.setF(this.HEAT.upper.getF());
         }
         return temperature; 
     };
     
     this._toValidCoolTemperature = function(temperature){
-        if(temperature.getF() < this.cool.lower.getF()){
-            temperature.setF(this.cool.lower.getF());
-        }else if(temperature.getF() > this.cool.upper.getF()){
-            temperature.setF(this.cool.upper.getF());
+        if(temperature.getF() < this.COOL.lower.getF()){
+            temperature.setF(this.COOL.lower.getF());
+        }else if(temperature.getF() > this.COOL.upper.getF()){
+            temperature.setF(this.COOL.upper.getF());
         }
         return temperature;
     };
+    
+    // Calling init class to create an object.
+    this._init();
 };
-
