@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2012 4:53:45 PM                          */
+/* Created on:     2/5/2012 8:48:19 PM                          */
 /*==============================================================*/
 
 
@@ -6265,7 +6265,7 @@ create table OptOutTemporaryOverride  (
    OptOutType           VARCHAR2(25)                    not null,
    StartDate            DATE                            not null,
    StopDate             DATE                            not null,
-   OptOutValue          VARCHAR2(10)                    not null,
+   OptOutValue          VARCHAR2(18)                    not null,
    ProgramId            NUMBER,
    constraint PK_OPTOUTTEMPORARYOVERRIDE primary key (OptOutTemporaryOverrideId)
 );
