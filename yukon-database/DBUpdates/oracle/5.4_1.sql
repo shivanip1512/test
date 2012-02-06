@@ -120,8 +120,23 @@ ADD PreviousHeatTemperature FLOAT;
 UPDATE LMThermostatManualEvent
 SET PreviousHeatTemperature = PreviousTemperature;
 
-ALTER TABLE LMThermostatMAnualEvent
+ALTER TABLE LMThermostatManualEvent
 DROP COLUMN PreviousTemperature;
+
+ALTER TABLE ThermostatEventHistory
+ADD ManualCoolTemp FLOAT;
+
+UPDATE ThermostatEventHistory
+SET ManualCoolTemp = ManualTemp;
+
+ALTER TABLE ThermostatEventHistory
+ADD ManualHeatTemp FLOAT;
+
+UPDATE ThermostatEventHistory
+SET ManualHeatTemp = ManualTemp;
+
+ALTER TABLE ThermostatEventHistory
+DROP COLUMN ManualTemp;
 /* End YUK-10619 */
 
 /**************************************************************/ 

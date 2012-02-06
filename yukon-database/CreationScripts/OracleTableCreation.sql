@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2012 10:05:34 AM                         */
+/* Created on:     2/6/2012 10:26:28 AM                         */
 /*==============================================================*/
 
 
@@ -9168,6 +9168,7 @@ INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','fal
 INSERT INTO YukonRoleProperty VALUES(-40201,-400,'Opt Out Force All Devices','false','Controls access to select individual devices or forces all device selection when opting out. When true, individual device selection is unavailable and all devices are forced to opt out.'); 
 INSERT INTO YukonRoleProperty VALUES(-40202,-400,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.'); 
 INSERT INTO YukonRoleProperty VALUES(-40203,-400,'Enrollment per Device','false','Displays a second web page that allows for enrollment by individual device per program.');
+INSERT INTO YukonRoleProperty VALUES(-40300,-400,'Auto Thermostat Mode Enabled','false','Enables auto mode functionality for the account.enrollment by individual device per program.');
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
