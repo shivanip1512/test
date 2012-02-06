@@ -1164,7 +1164,7 @@
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService" />
         <property name="dateFormattingService" ref="dateFormattingService" />
-        <property name="defaultUsageAttribute">
+        <property name="defaultAttribute">
           <value>USAGE</value>
         </property>
         <property name="supportedAttributeGraphSet">
@@ -1257,7 +1257,7 @@
                     <property name="label" value="Water Usage (Delta)"/>
                     <property name="description">
                         <value>
-                            <![CDATA[The <b>Delta Usage</b> graph is a view of the usage data as delta between intervals.<br><br>  Each
+                            <![CDATA[The <b>Delta Usage</b> graph is a view of the usage data as the delta between intervals.<br><br>  Each
                             point on the graph is generated using the following formula: 
                             (reading - previousReading) / (days between readings).
                             If gaps in data exist that are greater than the charted interval, then that interval will be
@@ -1267,7 +1267,7 @@
                 </bean>
             </list>
         </property>
-        <property name="defaultUsageAttribute">
+        <property name="defaultAttribute">
           <value>USAGE_WATER</value>
         </property>
     </bean>

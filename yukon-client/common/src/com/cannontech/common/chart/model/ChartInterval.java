@@ -291,6 +291,7 @@ public enum ChartInterval {
     
     /**
      * Method to return the interval string for display.
+     * This does NOT return a MessageSourceResolvable the enum itself.
      */
     public MessageSourceResolvable getIntervalString() {
         return YukonMessageSourceResolvable.createDefault("yukon.common.chart.interval." + name(), name());

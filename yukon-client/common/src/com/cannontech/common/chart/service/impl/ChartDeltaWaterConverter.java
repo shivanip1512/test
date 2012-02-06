@@ -12,6 +12,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.service.ChartDataConverter;
+import com.google.common.collect.ImmutableList;
 
 /**
  * ChartDataConverter which converts raw usage values into a list of usage deltas.
@@ -34,7 +35,7 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
         NumberFormat pointValueFormat = new DecimalFormat();
         pointValueFormat.setGroupingUsed(false);
 
-        List<ChartValue<Double>> chartValuesCopy = new ArrayList<ChartValue<Double>>(chartValues);
+        List<ChartValue<Double>> chartValuesCopy = ImmutableList.copyOf(chartValues);
         List<ChartValue<Double>> convertedValues = new ArrayList<ChartValue<Double>>();
 
         Double previousValue = null;
@@ -59,11 +60,11 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
 	                    chartValue.setValue(deltaValue);
 	                    chartValue.setFormattedValue(pointValueFormat.format(deltaValue));
 	                    convertedValues.add(chartValue);
-	                    log.warn("millisecondDelta:" + millisecondDelta + "; deltaValue:" + deltaValue);
+	                    log.debug("millisecondDelta:" + millisecondDelta + "; deltaValue:" + deltaValue);
                     } else {	// otherwise discard and log
                     	log.warn("Delta is greater than expected delta...value will be skipped: " +
                     			chartValue.toString());
-                    	log.warn("Interval: " + interval +
+                    	log.debug("Interval: " + interval +
                     			"; Curr:" + new Date(currTime) + 
                     			"; Prev:" + new Date(previousTime) + 
                     			"; Millis: " + millisecondDelta + " > " + expectedMaxDeltaInMillis);
