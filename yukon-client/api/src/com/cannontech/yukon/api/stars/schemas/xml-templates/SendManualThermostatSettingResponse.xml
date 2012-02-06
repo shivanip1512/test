@@ -3,7 +3,5 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../SendManualThermostatSettingResponse.xsd"
            version="1.0">
-    <manualThermostatSettingList>
-	    <success/>
-    </manualThermostatSettingList>
+    <success/>
 </sendManualThermostatSettingResponse>

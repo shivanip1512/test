@@ -6,33 +6,13 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-    <xsd:include schemaLocation="./TextMessageResult.xsd"/>
     
-    <xsd:complexType name="SendManualThermostatSettingResponse">
+    <xsd:element name="sendManualThermostatSettingResponse" type="yukon:SimpleSuccessOrFailure">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
                 This is the response returned from sending a manually thermostat setting command.  The sending of the manual thermostat setting command is is done through the sendManualThermostatSettingRequest.
             </xsd:documentation>
         </xsd:annotation>
-    
-        <xsd:complexContent>
-            <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:element name="manualThermostatSettingList">
-                        <xsd:complexType>
-                            <xsd:sequence>
-                                <xsd:choice>
-                                    <xsd:element name="success" />
-                                    <xsd:element name="failure" type="yukon:Failure" />
-                                </xsd:choice>
-                            </xsd:sequence>
-                        </xsd:complexType>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <xsd:element name="sendManualThermostatSettingResponse" type="yukon:SendManualThermostatSettingResponse"/>
+    </xsd:element>
 
 </xsd:schema>
