@@ -51,6 +51,7 @@ public enum PaoTag {
 	RFN_EVENTS("Supports Rfn Events"),
 	ONE_WAY_DEVICE("Supports One-Way Communication"),
 	TWO_WAY_DEVICE("Supports Two-Way Communication"),
+	IPC_METER("IPC Meter"),
 	;
 
 	private final String description;

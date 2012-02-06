@@ -4332,6 +4332,9 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
+        <tags>
+            <tag name="IPC_METER"/>
+        </tags>
     </pao>
     
     <pao id="IPC_POLYPHASE_BASE" inherits="ELECTRONIC_METER_BASE" abstract="true">
@@ -4380,6 +4383,9 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
+        <tags>
+            <tag name="IPC_METER"/>
+        </tags>
     </pao>
     
     <pao id="IPC430S4" inherits="IPC_POLYPHASE_BASE">

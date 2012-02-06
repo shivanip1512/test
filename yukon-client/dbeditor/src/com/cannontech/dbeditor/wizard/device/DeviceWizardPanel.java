@@ -1,10 +1,14 @@
 package com.cannontech.dbeditor.wizard.device;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -12,7 +16,8 @@ import com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel;
 
 public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel 
 {
-	private DeviceNameAddressPanel deviceNameAddressPanel;
+	private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+    private DeviceNameAddressPanel deviceNameAddressPanel;
 	private DevicePhoneNumberPanel devicePhoneNumberPanel;
 	private DeviceRoutePanel deviceRoutePanel;
 	private DeviceTypePanel deviceTypePanel;
@@ -402,7 +407,7 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
             getDeviceCommChannelPanel().setFirstFocus();
 			return getDeviceCommChannelPanel();
 		}
-		else if(DeviceTypesFuncs.isIPC(devType)) {
+		else if(paoDefinitionDao.isTagSupported(PaoType.getForId(devType), PaoTag.IPC_METER)) {
 		    getTcpTerminalPanel().setFirstFocus();
 		    return getTcpTerminalPanel();
 		}

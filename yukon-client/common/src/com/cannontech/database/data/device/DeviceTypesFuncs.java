@@ -1623,17 +1623,4 @@ public static Object changeType (String newType,
             return false;
         }
     }
-    
-    public static boolean isIPC(int deviceType) {
-        switch(deviceType) {
-        case IPC430SL:
-        case IPC430S4:
-        case IPC420AD:
-        case IPC410AL:
-            return true;
-        
-        default:
-            return false;
-        }
-    }
 }
