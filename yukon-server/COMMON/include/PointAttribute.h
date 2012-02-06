@@ -72,7 +72,9 @@ class IM_EX_CTIBASE PointAttribute
 
             TotalOpCountAttribute,
             UvCountAttribute,
-            OvCountAttribute
+            OvCountAttribute,
+            CloseOpCountAttribute,
+            OpenOpCountAttribute
         };
 
         static const PointAttribute Unknown;
@@ -137,6 +139,8 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute TotalOpCount;
         static const PointAttribute UvCount;
         static const PointAttribute OvCount;
+        static const PointAttribute CloseOpCount;
+        static const PointAttribute OpenOpCount;
 
 
         std::string name() const;

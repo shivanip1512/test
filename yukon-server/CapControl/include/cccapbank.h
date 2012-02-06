@@ -351,7 +351,7 @@ private:
     BOOL _retryFlag;
     LONG _prevVerificationControlStatus;
     int _assumedOrigCapBankPos;
-    BOOL _verificationFlag;
+    bool _verificationFlag;
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
     BOOL _retryOpenFailedFlag;

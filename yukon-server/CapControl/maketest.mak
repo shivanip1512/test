@@ -16,7 +16,8 @@ INCLPATHS+= \
 -I$(BOOST) \
 -I$(SQLAPI)\include \
 -I$(ACTIVEMQ) \
-
+-I$(DEVICECONFIGURATION)\include \
+-I$(PROT)\include \
 
 .PATH.H = \
 .\include \
@@ -32,7 +33,8 @@ INCLPATHS+= \
 ;$(ACTIVEMQ) \
 ;$(ACTIVEMQ)\cms \
 ;$(ACTIVEMQ)\activemq\library \
-
+;$(DEVICECONFIGURATION)\include \
+;$(PROT)\include \
 
 
 LIBS=\
@@ -41,7 +43,8 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\ctiholidaydb.lib
+$(COMPILEBASE)\lib\ctiholidaydb.lib \
+$(COMPILEBASE)\lib\ctidevdb.lib \
 
 CAPCTRLTESTOBJS= \
 test_ControlStrategies.obj \

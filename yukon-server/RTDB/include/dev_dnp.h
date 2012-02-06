@@ -3,6 +3,7 @@
 #include "dev_remote.h"
 #include "prot_dnp.h"
 #include "tbl_dv_address.h"
+#include "pointAttribute.h"
 
 #include <map>
 #include <string>
@@ -93,6 +94,9 @@ public:
 
     //  virtual in case devices need to form up different DNP requests for the same command ("control open", for example)
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual void initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
+                                          std::map <int, PointAttribute> &statusOffsetAttribute,
+                                          std::map <int, PointAttribute> &accumulatorOffsetAttribute);
 
     virtual bool clearedForScan( int scantype );
 

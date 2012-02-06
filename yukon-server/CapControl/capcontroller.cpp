@@ -2031,7 +2031,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                             registrationIds.insert(currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
                             regMsg->insert( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
                         }
-                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
+                        if ( currentCapBank->isControlDeviceTwoWay() )
                         {
                             CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                             //registrationIds.push_back();//pass this down the chain.
@@ -3667,7 +3667,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             currentCapBank->setTotalOperations((LONG)value);
                         }
                     }
-                    else if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
+                    else if (currentCapBank->isControlDeviceTwoWay() )
                     {
                         CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                         //NEED to check this value for a toggle, before setting status points.
@@ -3935,7 +3935,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
             if( status == 0 )
             {
                 std::transform(commandString.begin(), commandString.end(), commandString.begin(), tolower);
-                if ( !stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") &&
+                if ( !currentCapBank->isControlDeviceTwoWay() &&
                      !currentSubstationBus->getVerificationFlag() )
                 {
                     if( commandString == "control open" )
@@ -3957,12 +3957,12 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                 std::transform(commandString.begin(), commandString.end(), commandString.begin(), tolower);
                 if( commandString == "control open" )
                 {
-                    if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
+                    if (!currentCapBank->isControlDeviceTwoWay() )
                         currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                 }
                 else if( commandString == "control close" )
                 {
-                    if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
+                    if (!currentCapBank->isControlDeviceTwoWay() )
                         currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                 }
                 else if( commandString == "control flip" )
@@ -3998,7 +3998,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                     {
                         userName += " verification";
 
-                        if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702"))
+                        if (!currentCapBank->isControlDeviceTwoWay())
                         {
                             currentCapBank->setPorterRetFailFlag(TRUE);
                             currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -4019,7 +4019,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
                     }
 
-                    else if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
+                    else if (!currentCapBank->isControlDeviceTwoWay() )
                     {
                         text1 += currentCapBank->getControlStatusText();
                         currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -4044,7 +4044,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                   << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
                 }
 
-                if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
+                if (!currentCapBank->isControlDeviceTwoWay() )
                 {
                     currentFeeder->setPorterRetFailFlag(TRUE);
                     currentSubstationBus->checkAndUpdateRecentlyControlledFlag();

@@ -66,6 +66,8 @@ const PointAttribute PointAttribute::IgnoredIndicator = PointAttribute(PointAttr
 const PointAttribute PointAttribute::TotalOpCount = PointAttribute(PointAttribute::TotalOpCountAttribute, "Total Op Count");
 const PointAttribute PointAttribute::UvCount = PointAttribute(PointAttribute::UvCountAttribute, "Uv Count");
 const PointAttribute PointAttribute::OvCount = PointAttribute(PointAttribute::OvCountAttribute, "Ov Count");
+const PointAttribute PointAttribute::CloseOpCount = PointAttribute(PointAttribute::CloseOpCountAttribute, "Close Op Count");
+const PointAttribute PointAttribute::OpenOpCount = PointAttribute(PointAttribute::OpenOpCountAttribute, "Open Op Count");
 
 const PointAttribute& PointAttribute::valueOf(const std::string& name)
 {

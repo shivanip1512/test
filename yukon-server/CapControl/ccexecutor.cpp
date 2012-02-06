@@ -4409,8 +4409,7 @@ void CtiCCCommandExecutor::Scan2WayDevice(long bankId)
 
             if (currentSubstationBus != NULL && currentFeeder != NULL)
             {
-                if (cbcID > 0 &&
-                    stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702"))
+                if (cbcID > 0 && currentCapBank->isControlDeviceTwoWay())
                 {
 
                     string text = string("Manual Scan 2-Way CBC attached to CapBank: ");

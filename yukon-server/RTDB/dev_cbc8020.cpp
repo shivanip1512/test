@@ -2,8 +2,10 @@
 
 #include "dev_cbc8020.h"
 
-#include <boost/optional.hpp>
+#include "pt_status.h"
 
+#include <boost/optional.hpp>
+using namespace std;
 namespace Cti {
 namespace Devices {
 
@@ -73,6 +75,106 @@ void Cbc8020Device::processPoints( Cti::Protocol::Interface::pointlist_t &points
 
     //  do the final processing
     DnpDevice::processPoints(points);
+}
+
+INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT nRet = NoMethod;
+    bool didExecute = false;
+
+    if( parse.getCommand() == PutConfigRequest )
+    {
+        if(parse.isKeyValid("ovuv"))
+        {
+            string cmd = parse.getiValue("ovuv") == 0 ? " open " : " close "; //0 = disable, 1 = enable
+            pReq->setCommandString("control " +  cmd + " offset 14");
+			parse = CtiCommandParser (pReq->CommandString());
+        }
+    }
+    if( (parse.getCommand() == ControlRequest)) 
+    {
+        CtiPointSPtr   point;
+        string temp;
+
+        if( parse.getiValue("point") > 0 )
+        {
+            //  select by raw pointid
+            if( point = getDevicePointEqual(parse.getiValue("point")) )
+            {
+                if( point->isStatus() && point->getControlOffset() > 0)
+                {
+                    char wb[10];
+                    temp = " offset " + string(itoa(point->getControlOffset(),wb,10));
+                }
+            }
+        }
+        parse = CtiCommandParser(pReq->CommandString() + temp);
+    }
+
+    
+
+    nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
+
+    return nRet;
+}
+
+void Cbc8020Device::initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
+                                             std::map <int, PointAttribute> &statusOffsetAttribute,
+                                             std::map <int, PointAttribute> &accumulatorOffsetAttribute)
+{
+    
+    //analogOffsetAttribute.insert( std::make_pair( 2, PointAttribute::LastControlReason) );
+    //analogOffsetAttribute.insert( std::make_pair( 5, PointAttribute::Temperature) );
+    //analogOffsetAttribute.insert( std::make_pair( 6, PointAttribute::DeltaVoltage) );
+    //analogOffsetAttribute.insert( std::make_pair( 7, PointAttribute::HighVoltage) );
+    //analogOffsetAttribute.insert( std::make_pair( 8, PointAttribute::LowVoltage) );
+    //analogOffsetAttribute.insert( std::make_pair( 12, PointAttribute::AverageLineVoltage) );
+    //analogOffsetAttribute.insert( std::make_pair( 21, PointAttribute::LineVoltageTHD) );
+    //analogOffsetAttribute.insert( std::make_pair( 114, PointAttribute::IgnoredControlReason) );
+    analogOffsetAttribute.insert( std::make_pair( 10001, PointAttribute::OvThreshold) );
+    analogOffsetAttribute.insert( std::make_pair( 10002, PointAttribute::UvThreshold) );
+    //analogOffsetAttribute.insert( std::make_pair( 10005, PointAttribute::DailyControlLimit) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10006, PointAttribute::AutoCloseDelayTime) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10007, PointAttribute::ManualCloseDelayTime) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10008, PointAttribute::OpenDelayTime) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10009, PointAttribute::BankControlTime) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10010, PointAttribute::ReCloseDelayTime) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10011, PointAttribute::CommsLossTime) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10012, PointAttribute::CvrOvThreshold) );
+    //aanalogOffsetAttribute.insert( std::make_pair( 10013, PointAttribute::CvrUvThreshold) );
+    //analogOffsetAttribute.insert( std::make_pair( 10015, PointAttribute::EmergencyOvThreshold) );
+    //analogOffsetAttribute.insert( std::make_pair( 10016, PointAttribute::EmergencyUvThreshold) );
+    //analogOffsetAttribute.insert( std::make_pair( 10018, PointAttribute::CommsLossOvThreshold) );
+    //analogOffsetAttribute.insert( std::make_pair( 10019, PointAttribute::CommsLossUvThreshold) );
+    //analogOffsetAttribute.insert( std::make_pair( 10020, PointAttribute::AverageLineVoltageTime) );
+    analogOffsetAttribute.insert( std::make_pair( 10318, PointAttribute::VoltageControl) );
+
+
+    statusOffsetAttribute.insert( std::make_pair( 1, PointAttribute::CapacitorBankState) );
+    statusOffsetAttribute.insert( std::make_pair( 3, PointAttribute::NeutralLockout) );
+    //statusOffsetAttribute.insert( std::make_pair( 2, PointAttribute::ScadaOverride));
+    //statusOffsetAttribute.insert( std::make_pair( 4, PointAttribute::CVRMode));
+    //statusOffsetAttribute.insert( std::make_pair( 5, PointAttribute::LineVoltageHigh));
+    //statusOffsetAttribute.insert( std::make_pair( 6, PointAttribute::LineVoltage));
+    //statusOffsetAttribute.insert( std::make_pair( 14, PointAttribute::TemperatureHigh));
+    //statusOffsetAttribute.insert( std::make_pair( 15, PointAttribute::TemperatureLow));
+    //statusOffsetAttribute.insert( std::make_pair( 68, PointAttribute::OperationFailed));
+    //statusOffsetAttribute.insert( std::make_pair( 69, PointAttribute::MaxOperationCount));
+    //statusOffsetAttribute.insert( std::make_pair( 70, PointAttribute::BadActiveCloseRelay));
+    //statusOffsetAttribute.insert( std::make_pair( 71, PointAttribute::BadActiveTripRelay));
+    statusOffsetAttribute.insert( std::make_pair( 72, PointAttribute::VoltageDeltaAbnormal) );
+    //statusOffsetAttribute.insert( std::make_pair( 83, PointAttribute::RelaySenseFailed));
+    statusOffsetAttribute.insert( std::make_pair( 84, PointAttribute::ReCloseBlocked) );
+    statusOffsetAttribute.insert( std::make_pair( 86,  PointAttribute::ControlMode) ); //Manual Mode
+    //statusOffsetAttribute.insert( std::make_pair( 87,  PointAttribute::RemoteControlMode) ); 
+    //statusOffsetAttribute.insert( std::make_pair( 88,  PointAttribute::AutoControlMode) ); 
+
+    accumulatorOffsetAttribute.insert( std::make_pair( 1, PointAttribute::TotalOpCount) );
+    accumulatorOffsetAttribute.insert( std::make_pair( 3, PointAttribute::UvCount) );
+    accumulatorOffsetAttribute.insert( std::make_pair( 2, PointAttribute::OvCount) );
+    accumulatorOffsetAttribute.insert( std::make_pair( 4, PointAttribute::CloseOpCount) );
+    accumulatorOffsetAttribute.insert( std::make_pair( 5, PointAttribute::OpenOpCount) );
+    return;
 }
 
 }

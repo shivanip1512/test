@@ -7093,7 +7093,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
                 if ( currentCCCapBank != NULL )
                 {
-                    if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702"))
+                    if (currentCCCapBank->isControlDeviceTwoWay())
                     {
                         if ( !rdr["pointid"].isNull() )
                         {

@@ -2615,7 +2615,8 @@ const string& CtiCCCapBank::convertOperationalState( int num )
 bool CtiCCCapBank::isControlDeviceTwoWay()
 {
     if (stringContainsIgnoreCase( getControlDeviceType(),"CBC 702") ||
-        stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") )
+        stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") ||
+        stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") )
     {
         return true;
     }

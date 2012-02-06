@@ -17,6 +17,9 @@
 #include "cctwowaycbcpoints.h"
 #include "cccapbank.h"
 #include "ccid.h"
+#include "dev_dnp.h"
+#include "dev_cbc7020.h"
+#include "dev_cbc8020.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "logger.h"
@@ -24,6 +27,10 @@
 #include "msg_ptreg.h"
 #include "database_writer.h"
 #include "ccutil.h"
+#include "slctdev.h"
+#include "dev_base.h"
+#include "dev_single.h"
+
 
 using std::string;
 using std::endl;
@@ -89,56 +96,16 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid, string paotype)
     {
         _attributes.insert( std::make_pair( attribute, LitePoint()) );
     }
-    _analogOffsetAttribute.insert( std::make_pair( 5,  PointAttribute::CbcVoltage) );
-    _analogOffsetAttribute.insert( std::make_pair( 6,  PointAttribute::HighVoltage) );
-    _analogOffsetAttribute.insert( std::make_pair( 7,  PointAttribute::LowVoltage) );
-    _analogOffsetAttribute.insert( std::make_pair( 8,  PointAttribute::DeltaVoltage) );
-    _analogOffsetAttribute.insert( std::make_pair( 9,  PointAttribute::AnalogInput1) );
-    _analogOffsetAttribute.insert( std::make_pair( 10, PointAttribute::Temperature) );
-    _analogOffsetAttribute.insert( std::make_pair( 13, PointAttribute::RSSI) );
-    _analogOffsetAttribute.insert( std::make_pair( 14, PointAttribute::IgnoredReason) );
 
-    //dnp analog output points have offsets starting with 10000
-    _analogOffsetAttribute.insert( std::make_pair( 10001, PointAttribute::VoltageControl) );
-    _analogOffsetAttribute.insert( std::make_pair( 10002, PointAttribute::UvThreshold) );
-    _analogOffsetAttribute.insert( std::make_pair( 10003, PointAttribute::OvThreshold) );
-    _analogOffsetAttribute.insert( std::make_pair( 10004, PointAttribute::OVUVTrackTime) );
-    _analogOffsetAttribute.insert( std::make_pair( 10010, PointAttribute::NeutralCurrentSensor) );
-    _analogOffsetAttribute.insert( std::make_pair( 10011, PointAttribute::NeutralCurrentAlarmThreshold) );
-    _analogOffsetAttribute.insert( std::make_pair( 10026, PointAttribute::TimeTempSeasonOne) );
-    _analogOffsetAttribute.insert( std::make_pair( 10042, PointAttribute::TimeTempSeasonTwo) );
-    _analogOffsetAttribute.insert( std::make_pair( 10068, PointAttribute::VarControl) );
-    _analogOffsetAttribute.insert( std::make_pair( 20001, PointAttribute::UDPIpAddress) );
-    _analogOffsetAttribute.insert( std::make_pair( 20002, PointAttribute::UDPPortNumber) );
+    Cti::Devices::DnpDevice* device = NULL;
+    if (stringContainsIgnoreCase(paotype, "cbc 702"))
+        device = new Cti::Devices::Cbc7020Device();
+    else
+        device = new Cti::Devices::Cbc8020Device();
 
-    _statusOffsetAttribute.insert( std::make_pair( 1, PointAttribute::CapacitorBankState) );
-    _statusOffsetAttribute.insert( std::make_pair( 2, PointAttribute::ReCloseBlocked) );
-    _statusOffsetAttribute.insert( std::make_pair( 3, PointAttribute::ControlMode) );
-    _statusOffsetAttribute.insert( std::make_pair( 4, PointAttribute::AutoVoltControl) );
-    _statusOffsetAttribute.insert( std::make_pair( 5, PointAttribute::LastControlLocal) );
-    _statusOffsetAttribute.insert( std::make_pair( 6, PointAttribute::LastControlRemote) );
-    _statusOffsetAttribute.insert( std::make_pair( 7, PointAttribute::LastControlOvUv) );
-    _statusOffsetAttribute.insert( std::make_pair( 8, PointAttribute::LastControlNeutralFault) );
-    _statusOffsetAttribute.insert( std::make_pair( 9, PointAttribute::LastControlScheduled) );
-    _statusOffsetAttribute.insert( std::make_pair( 10, PointAttribute::LastControlDigital) );
-    _statusOffsetAttribute.insert( std::make_pair( 11, PointAttribute::LastControlAnalog) );
-    _statusOffsetAttribute.insert( std::make_pair( 12, PointAttribute::LastControlTemperature) );
-    _statusOffsetAttribute.insert( std::make_pair( 13, PointAttribute::OvCondition) );
-    _statusOffsetAttribute.insert( std::make_pair( 14, PointAttribute::UvCondition) );
-    _statusOffsetAttribute.insert( std::make_pair( 15, PointAttribute::OpFailedNeutralCurrent) );
-    _statusOffsetAttribute.insert( std::make_pair( 16, PointAttribute::NeutralCurrentFault) );
-    _statusOffsetAttribute.insert( std::make_pair( 24, PointAttribute::BadRelay) );
-    _statusOffsetAttribute.insert( std::make_pair( 25, PointAttribute::DailyMaxOps) );
-    _statusOffsetAttribute.insert( std::make_pair( 26, PointAttribute::VoltageDeltaAbnormal) );
-    _statusOffsetAttribute.insert( std::make_pair( 27, PointAttribute::TempAlarm) );
-    _statusOffsetAttribute.insert( std::make_pair( 28, PointAttribute::DSTActive) );
-    _statusOffsetAttribute.insert( std::make_pair( 29, PointAttribute::NeutralLockout) );
-    _statusOffsetAttribute.insert( std::make_pair( 34, PointAttribute::IgnoredIndicator) );
-
-    _accumulatorOffsetAttribute.insert( std::make_pair( 1, PointAttribute::TotalOpCount) );
-    _accumulatorOffsetAttribute.insert( std::make_pair( 2, PointAttribute::UvCount) );
-    _accumulatorOffsetAttribute.insert( std::make_pair( 3, PointAttribute::OvCount) );
-
+   
+    device->initOffsetAttributeMaps(_analogOffsetAttribute, _statusOffsetAttribute, _accumulatorOffsetAttribute);
+    
 
     _pointidPointtypeMap.clear();
 

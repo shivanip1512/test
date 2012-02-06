@@ -16,7 +16,9 @@ public:
     //  we need to transform "control open" and "control close" into "control open offset 1" and "control close offset 1"
     //  also, we now need to allow configs to be sent out.
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-
+    virtual void initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
+                                          std::map <int, PointAttribute> &statusOffsetAttribute,
+                                          std::map <int, PointAttribute> &accumulatorOffsetAttribute);
     //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS* >&outList);
 
 protected:

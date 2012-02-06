@@ -1102,6 +1102,18 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
    }
 }
 
+void DnpDevice::initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
+                                    std::map <int, PointAttribute> &statusOffsetAttribute,
+                                    std::map <int, PointAttribute> &accumulatorOffsetAttribute)
+{
+
+    {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << "No Attributes Defined " <<  endl;
+   }
+    return;
+}
+
 
 }
 }
