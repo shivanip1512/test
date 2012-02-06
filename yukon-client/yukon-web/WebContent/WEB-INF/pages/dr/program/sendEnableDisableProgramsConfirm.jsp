@@ -5,13 +5,27 @@
 <%@ taglib prefix="i"tagdir="/WEB-INF/tags/i18n" %>
 
 <script>
-jQuery('#disableAllCheckbox').click(function(){
-    var disable = jQuery(this).is(':checked')
-    jQuery('.disableProgramCheckbox').prop("checked", disable);
-});
-
-jQuery('#cancelButton').click(function(){
-    jQuery('#drDialog').hide();
+jQuery(function() {
+    jQuery('#disableAllCheckbox').click(function(){
+        var disable = jQuery(this).is(':checked')
+        jQuery('.disableProgramCheckbox').prop("checked", disable);
+    });
+    
+    jQuery('#cancelButton').click(function(){
+        jQuery('#drDialog').hide();
+    });
+    
+    jQuery('.disableProgramCheckbox').click(function(event) {
+        var allChecked = event.currentTarget.checked;
+        if (event.currentTarget.checked) {
+            jQuery('.disableProgramCheckbox').each(function(index, checkbox) {
+                if (!checkbox.checked) {
+                    allChecked = false;
+                }
+            });
+        }
+        jQuery('#disableAllCheckbox')[0].checked = allChecked;
+    });
 });
 </script>
 
@@ -46,8 +60,10 @@ jQuery('#cancelButton').click(function(){
                 <c:forEach var="program" varStatus="status" items="${programs}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td>
-                            <input type="checkbox" class="disableProgramCheckbox" name="disableProgram" value="${program.paoIdentifier.paoId}">
-                            ${fn:escapeXml(program.name)}
+                            <label>
+                                <input type="checkbox" class="disableProgramCheckbox" name="disableProgram" value="${program.paoIdentifier.paoId}">
+                                ${fn:escapeXml(program.name)}
+                            </label>
                         </td><td>
                             ${fn:escapeXml(gears[status.index])}
                         </td><td>
@@ -59,17 +75,19 @@ jQuery('#cancelButton').click(function(){
         </div>
     </tags:abstractContainer>
     <br>
-    <input type="checkbox" id="disableAllCheckbox">
-    <c:choose>
-        <c:when test="${enable}">
-            <cti:msg key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.enableAllPrograms"/><br>
-        </c:when>
-        <c:otherwise>
-            <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.disableAllPrograms"/><br>
-            <input type="checkbox" name="supressRestoration" value="true">
-            <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.supressRestoration"/>
-        </c:otherwise>
-    </c:choose>
+    <label>
+        <input type="checkbox" id="disableAllCheckbox">
+        <c:choose>
+            <c:when test="${enable}">
+                <cti:msg key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.enableAllPrograms"/><br>
+            </c:when>
+            <c:otherwise>
+                <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.disableAllPrograms"/><br>
+                <input type="checkbox" name="supressRestoration" value="true">
+                <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.supressRestoration"/>
+            </c:otherwise>
+        </c:choose>
+    </label>
     
     <div class="actionArea">
         <input type="submit" value="<cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.okButton"/>"/>
