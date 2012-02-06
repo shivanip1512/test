@@ -27,15 +27,16 @@
         Yukon.ThermostatScheduleEditor.init({
             
             thermostat: {
-                heat: {
+                HEAT: {
                     upper: new Temperature({degrees: parseFloat(${schedule.thermostatType.upperLimitHeat.value}), unit:'F'}),
-                    lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitHeat.value}), unit:'F'})
+                    lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitHeat.value}), unit:'F'}),
+                    temperature: new Temperature({unit: '${temperatureUnit}'})
                 },
-                cool: {
+                COOL: {
                     upper: new Temperature({degrees: parseFloat(${schedule.thermostatType.upperLimitCool.value}), unit:'F'}),
-                    lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitCool.value}), unit:'F'})
+                    lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitCool.value}), unit:'F'}),
+                    temperature: new Temperature({unit: '${temperatureUnit}'})
                 },
-                temperature: new Temperature({unit: '${temperatureUnit}'}),
                 mode: '${schedule.thermostatType.defaultThermostatScheduleMode}',
                 fan: '',
                 secondsResolution: ${schedule.thermostatType.resolution.standardSeconds},
