@@ -9,6 +9,14 @@
     <c:set var="hasModifyRoleProperty" value="true"/>
 </cti:checkProperty>
 </cti:checkRole>
+
+<script>
+    //reload the tree on ajax refresh
+    jQuery(function(){
+        jQuery("#deviceGroupWidgetPopupTree").dynatree({children: ${groupDataJson}});
+        jQuery("#deviceGroupWidgetPopupTree").dynatree('getTree').reload();
+    });
+</script>
     
 <div class="widgetInternalSectionHeader"><i:inline key=".currentGroup"/></div>
     <c:choose>

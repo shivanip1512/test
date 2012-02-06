@@ -81,7 +81,6 @@ Yukon.ui = {
         $$(".f_toggleSwitch").each(function(container){
             
             container.select("input:radio").each(function(input, index){
-                debug(index);
                 input.hide();
                 var elem = input.up('.f_toggleSwitch').down('.f_switchInterface');
                 if(!elem){
