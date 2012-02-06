@@ -76,8 +76,8 @@
     <entry key="yukon.web.widgetClasses.TrendWidget.oneYear">1Y</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.custom">Custom</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh_small.png</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh_over.png</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.chartStyle">Chart Style:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.line">Line</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.lineGraph">Line Graph</entry>
