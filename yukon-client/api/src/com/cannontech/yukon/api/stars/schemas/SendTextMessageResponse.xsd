@@ -7,31 +7,12 @@
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     
-    <xsd:complexType name="SendTextMessageResponse">
+    <xsd:element name="sendTextMessageResponse" type="yukon:SimpleSuccessOrFailure">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
                 This is the response returned for a sent text message.  The sending of a text message is done through the sendTextMessageRequest.
             </xsd:documentation>
         </xsd:annotation>
-    
-        <xsd:complexContent>
-            <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:element name="textMessageResultList">
-                        <xsd:complexType>
-                            <xsd:sequence>
-                                <xsd:choice>
-                                    <xsd:element name="success" />
-                                    <xsd:element name="failure" type="yukon:Failure" />
-                                </xsd:choice>
-                            </xsd:sequence>
-                        </xsd:complexType>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <xsd:element name="sendTextMessageResponse" type="yukon:SendTextMessageResponse"/>
+    </xsd:element>
 
 </xsd:schema>

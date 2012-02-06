@@ -3,7 +3,5 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../SendTextMessageResponse.xsd"
            version="1.0">
-    <textMessageResultList>
-        <success/>
-    </textMessageResultList>
+    <success/>
 </sendTextMessageResponse>
