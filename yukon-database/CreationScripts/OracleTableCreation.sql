@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2012 10:39:11 AM                         */
+/* Created on:     2/6/2012 10:53:15 AM                         */
 /*==============================================================*/
 
 
@@ -5887,11 +5887,11 @@ create table LMThermoStatGear  (
 create table LMThermostatManualEvent  (
    EventID              NUMBER                          not null,
    InventoryID          NUMBER                          not null,
-   PreviousCoolTemperature FLOAT,
-   PreviousHeatTemperature FLOAT,
    HoldTemperature      VARCHAR2(1),
    OperationStateID     NUMBER,
    FanOperationID       NUMBER,
+   PreviousCoolTemperature FLOAT,
+   PreviousHeatTemperature FLOAT,
    constraint PK_LMTHERMOSTATMANUALEVENT primary key (EventID)
 );
 
@@ -7620,13 +7620,13 @@ create table ThermostatEventHistory  (
    Username             VARCHAR2(64)                    not null,
    EventTime            DATE                            not null,
    ThermostatId         NUMBER                          not null,
-   ManualHeatTemp       FLOAT,
-   ManualCoolTemp       FLOAT,
    ManualMode           VARCHAR2(64),
    ManualFan            VARCHAR2(64),
    ManualHold           CHAR(1),
    ScheduleId           NUMBER,
    ScheduleMode         VARCHAR2(64),
+   ManualHeatTemp       FLOAT,
+   ManualCoolTemp       FLOAT,
    constraint PK_ThermEventHist primary key (EventId)
 );
 
