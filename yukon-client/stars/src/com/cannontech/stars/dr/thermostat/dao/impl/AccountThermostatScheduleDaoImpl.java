@@ -294,6 +294,29 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         
         return schedules;
     }
+
+    @Override
+    public AccountThermostatSchedule getSchedulesForAccountByScheduleName(int accountId, String scheduleName){
+        List<AccountThermostatSchedule> thermostatSchedules = getSchedulesForAccountByScheduleName(accountId, scheduleName, null);
+        
+        if (thermostatSchedules.size() < 1) {
+            throw new EmptyResultDataAccessException(1);
+        }
+        
+        return thermostatSchedules.get(0);
+    }
+
+    @Override
+    public AccountThermostatSchedule findSchedulesForAccountByScheduleName(int accountId, String scheduleName){
+        try {
+            return getSchedulesForAccountByScheduleName(accountId, scheduleName);
+        } catch (EmptyResultDataAccessException e) {
+            // This is fine.  just return null.
+        }
+
+        return null;
+    }
+
     
     // FIND SCHEDULE FOR ACCOUNT BY NAME
     @Override

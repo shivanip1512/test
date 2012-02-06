@@ -57,14 +57,14 @@ import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleV
 @Controller
 @RequestMapping(value = "/operator/thermostatSchedule/*")
 public class OperatorThermostatScheduleController {
-    private AccountEventLogService accountEventLogService;
-	private InventoryDao inventoryDao;
-	private CustomerDao customerDao;
-	private CustomerAccountDao customerAccountDao;
-	private ThermostatService thermostatService;
-	private OperatorThermostatHelper operatorThermostatHelper;
-	private AccountCheckerService accountCheckerService;
-	private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private ThermostatService thermostatService;
+    @Autowired private OperatorThermostatHelper operatorThermostatHelper;
+    @Autowired private AccountCheckerService accountCheckerService;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	// SAVE - ajaxy
@@ -335,44 +335,4 @@ public class OperatorThermostatScheduleController {
         PrintWriter writer = response.getWriter();
         writer.write(returnJSON.toString());
     }
-    
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-	
-	@Autowired
-	public void setInventoryDao(InventoryDao inventoryDao) {
-		this.inventoryDao = inventoryDao;
-	}
-	
-	@Autowired
-	public void setCustomerDao(CustomerDao customerDao) {
-		this.customerDao = customerDao;
-	}
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-	
-	@Autowired
-	public void setThermostatService(ThermostatService thermostatService) {
-		this.thermostatService = thermostatService;
-	}
-	
-	@Autowired
-	public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
-		this.operatorThermostatHelper = operatorThermostatHelper;
-	}
-	
-	@Autowired
-	public void setAccountCheckerService(AccountCheckerService accountCheckerService) {
-		this.accountCheckerService = accountCheckerService;
-	}
-	
-	@Autowired
-	public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-	}
 }

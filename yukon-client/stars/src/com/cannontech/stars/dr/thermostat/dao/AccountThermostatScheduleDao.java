@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.management.InvalidAttributeValueException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 
@@ -65,6 +67,27 @@ public interface AccountThermostatScheduleDao {
 	 */
 	public AccountThermostatSchedule getEnergyCompanyDefaultScheduleByAccountAndType(int accountId, SchedulableThermostatType type);
 	
+	/**
+     * Get a schedule for an account by matching an exact schedule name.  If there are more than one schedule it will use the 
+     * first one although this should never be the case.
+     * 
+     * @param accountId
+     * @param scheduleName
+     * 
+     * @throws EmptyResultDataAccessException - The schedule name doesn't exist for the given account
+     */
+    public AccountThermostatSchedule getSchedulesForAccountByScheduleName(int accountId, String scheduleName);
+
+    /**
+     * Get a schedule for an account by matching an exact schedule name.  If there are more than one schedule it will use the 
+     * first one although this should never be the case.
+     * 
+     * @param accountId
+     * @param scheduleName
+     * 
+     */
+    public AccountThermostatSchedule findSchedulesForAccountByScheduleName(int accountId, String scheduleName);
+    
 	/**
 	 * Get a schedule for an account by matching an exact schedule name
 	 * @param accountId
