@@ -45,7 +45,7 @@ jQuery(function(){
                  }
                 Yukon.ui.unblock(elementToBlock);
              },
-             failure: function(){
+             error: function(){
                  Yukon.ui.unblock(elementToBlock);
              }
         });
@@ -81,7 +81,7 @@ jQuery(function(){
                 }
                 Yukon.ui.unblock(elementToBlock);
             },
-            failure: function() {
+            error: function() {
                 Yukon.ui.unblock(elementToBlock);
             }
         });
