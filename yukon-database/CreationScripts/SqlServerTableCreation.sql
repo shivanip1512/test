@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/5/2012 9:27:47 PM                          */
+/* Created on:     2/5/2012 9:53:55 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4921,8 +4921,7 @@ INSERT INTO FDRInterfaceOption VALUES(28, 'Offset', 3, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Multiplier', 5, 'Text', '1.0');
 INSERT INTO FDRInterfaceOption VALUES(29, 'Point', 1, 'Text', '(none)' );
-INSERT INTO FDRInterfaceOption VALUES(29, 'Destination/Source', 2, 'Text', '(none)');
-INSERT INTO FDRInterfaceOption VALUES(29, 'Port', 3, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(29, 'Port', 2, 'Text', '(none)');
 
 /*==============================================================*/
 /* Table: FDRTranslation                                        */
