@@ -6,27 +6,13 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
     
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-            This web service sends a command to the list of thermostats, which causes them to  to run their thermostat program.
-        </xsd:documentation>
-    </xsd:annotation>
-    
-    <xsd:complexType name="RunThermostatProgramResponse">
-        <xsd:complexContent>
-            <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:choice>
-                        <xsd:element name="success" />
-                        <xsd:element name="failure" type="yukon:Failure" />
-                    </xsd:choice>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <xsd:element name="runThermostatProgramResponse" type="yukon:RunThermostatProgramResponse"/>
+    <xsd:element name="runThermostatProgramResponse" type="yukon:SimpleSuccessOrFailure">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This web service sends a command to the list of thermostats, which causes them to  to run their thermostat program.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
 </xsd:schema>
