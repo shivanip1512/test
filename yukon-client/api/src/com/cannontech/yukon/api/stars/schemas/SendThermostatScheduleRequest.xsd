@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    
+    <xsd:complexType name="SendThermostatScheduleRequest">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This web service sends the supplied thermostat schedule to the thermostats supplied.
+            </xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="serialNumber" type="yukon:SerialNumber" maxOccurs="unbounded" />
+                    <xsd:element name="scheduleName" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="sendThermostatScheduleRequest" type="yukon:SendThermostatScheduleRequest"/>
+
+</xsd:schema>
