@@ -10,6 +10,8 @@
 
     <xsd:include schemaLocation="ControllableDevice.xsd"></xsd:include>
     <xsd:include schemaLocation="ControllableDeviceResult.xsd"></xsd:include>
+    <xsd:include schemaLocation="EnrolledDevicesByAccountNumberRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="EnrolledDevicesByAccountNumberResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="EnrollmentRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="EnrollmentResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="ManualThermostatSetting.xsd"></xsd:include>
@@ -17,15 +19,23 @@
     <xsd:include schemaLocation="NewControllableDevicesResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="ProgramEnrollment.xsd"></xsd:include>
     <xsd:include schemaLocation="ProgramEnrollmentResult.xsd"></xsd:include>
+    <xsd:include schemaLocation="ProgramUnenrollment.xsd"></xsd:include>
     <xsd:include schemaLocation="RemoveControllableDevicesRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="RemoveControllableDevicesResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="RunThermostatProgramRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="RunThermostatProgramResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="SendDefaultThermostatScheduleRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="SendDefaultThermostatScheduleResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="SendManualThermostatSettingRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="SendManualThermostatSettingResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="SendTextMessageRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="SendTextMessageResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="SendThermostatScheduleRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="SendThermostatScheduleResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="TextMessage.xsd"></xsd:include>
+    <xsd:include schemaLocation="UnenrollmentRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="UnenrollmentResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateControllableDevicesRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateControllableDevicesResponse.xsd"></xsd:include>
-    <xsd:include schemaLocation="EnrolledDevicesByAccountNumberRequest.xsd" />
-    <xsd:include schemaLocation="EnrolledDevicesByAccountNumberResponse.xsd" />
     
 </xsd:schema>
