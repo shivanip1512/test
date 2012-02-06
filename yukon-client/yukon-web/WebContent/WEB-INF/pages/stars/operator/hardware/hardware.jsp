@@ -378,7 +378,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                     </td>
                                 </tr>
                             </table>
-                            <div id="zbCommandStatus" style="display:none;" class="errorMessage zbCommandMsg"></div>
+                            <div id="zbCommandStatus" class="dn errorMessage zbCommandMsg"></div>
                             <div class="pageActionArea">
                                 <c:choose>
                                     <c:when test="${showDisabledRefresh}">
@@ -493,7 +493,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                             </c:choose>
                         </div>
                         
-                        <div id="zbAssignedStatus" style="display:none;" class="zbCommandMsg"></div>
+                        <div id="zbAssignedStatus" class="dn zbCommandMsg"></div>
                         
                         <c:if test="${not empty availableDevices}">
                             <div class="actionArea">

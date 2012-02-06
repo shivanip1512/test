@@ -383,7 +383,7 @@ public enum YukonRoleProperty {
     OPT_OUTS_COUNT(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.OPT_OUTS_COUNT, booleanType()),
     DATABASE_MIGRATION_FILE_LOCATION(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.DATABASE_MIGRATION_FILE_LOCATION, stringType()),
     
-    /* User EnergyCompanyRolePropertyDao when dealing with these role properties */
+    /* Use EnergyCompanyRolePropertyDao when dealing with these role properties */
     ADMIN_EMAIL_ADDRESS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, stringType()),
     OPTOUT_NOTIFICATION_RECIPIENTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, stringType()),
     ENERGY_COMPANY_DEFAULT_TIME_ZONE(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TIME_ZONE, stringType()),
