@@ -104,6 +104,26 @@ UPDATE UnitMeasure SET UOMName = 'ft^3', LongName = 'Cubic Feet' WHERE UOMID = 3
 INSERT INTO UnitMeasure VALUES (55, 'm^3', 0, 'Cubic Meters', '(none)');
 /* End YUK-10255 */
 
+/* Start YUK-10619 */ 
+INSERT INTO YukonRoleProperty 
+VALUES(-40300,-400,'Auto Thermostat Mode Enabled','false','Enables auto mode functionality for the account.enrollment by individual device per program.');
+
+ALTER TABLE LMThermostatManualEvent
+ADD PreviousCoolTemperature FLOAT;
+
+UPDATE LMThermostatManualEvent
+SET PreviousCoolTemperature = PreviousTemperature;
+
+ALTER TABLE LMThermostatManualEvent
+ADD PreviousHeatTemperature FLOAT;
+
+UPDATE LMThermostatManualEvent
+SET PreviousHeatTemperature = PreviousTemperature;
+
+ALTER TABLE LMThermostatMAnualEvent
+DROP COLUMN PreviousTemperature;
+/* End YUK-10619 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

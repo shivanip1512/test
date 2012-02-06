@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/6/2012 9:12:03 AM                          */
+/* Created on:     2/6/2012 10:04:25 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6227,10 +6227,11 @@ go
 create table LMThermostatManualEvent (
    EventID              numeric              not null,
    InventoryID          numeric              not null,
-   PreviousTemperature  float                null,
    HoldTemperature      varchar(1)           null,
    OperationStateID     numeric              null,
    FanOperationID       numeric              null,
+   PreviousCoolTemperature float                null,
+   PreviousHeatTemperature float                null,
    constraint PK_LMTHERMOSTATMANUALEVENT primary key (EventID)
 )
 go
