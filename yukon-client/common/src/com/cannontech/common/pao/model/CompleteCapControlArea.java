@@ -1,20 +1,25 @@
-package com.cannontech.common.pao.pojo;
+package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 
-@YukonPao(idColumnName="AreaId", paoTypes=PaoType.CAP_CONTROL_SPECIAL_AREA)
-public class CompleteCapControlSpecialArea extends CompleteYukonPao {
+@YukonPao(idColumnName="areaId", paoTypes=PaoType.CAP_CONTROL_AREA)
+public class CompleteCapControlArea extends CompleteYukonPao {
     private int voltReductionPointId;
 
     @YukonPaoField
     public int getVoltReductionPointId() {
         return voltReductionPointId;
     }
-
+    
     public void setVoltReductionPointId(int voltReductionPointId) {
         this.voltReductionPointId = voltReductionPointId;
+    }
+
+    @Override
+    public String toString() {
+        return "CompleteCapControlArea [voltReductionPointId=" + voltReductionPointId + "]";
     }
 
     @Override
@@ -33,14 +38,9 @@ public class CompleteCapControlSpecialArea extends CompleteYukonPao {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CompleteCapControlSpecialArea other = (CompleteCapControlSpecialArea) obj;
+        CompleteCapControlArea other = (CompleteCapControlArea) obj;
         if (voltReductionPointId != other.voltReductionPointId)
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "CompleteCapControlSpecialArea [voltReductionPointId=" + voltReductionPointId + "]";
     }
 }

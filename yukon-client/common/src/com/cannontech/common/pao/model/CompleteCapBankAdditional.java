@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.pojo;
+package com.cannontech.common.pao.model;
 
 import org.joda.time.Instant;
 

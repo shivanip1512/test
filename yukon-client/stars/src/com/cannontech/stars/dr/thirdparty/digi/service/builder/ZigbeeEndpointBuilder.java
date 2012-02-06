@@ -14,7 +14,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.pojo.CompleteZbEndpoint;
+import com.cannontech.common.pao.model.CompleteZbEndpoint;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;

@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.creation.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,33 +25,109 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.pao.pojo.CompleteCapBank;
-import com.cannontech.common.pao.pojo.CompleteCapControlArea;
-import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
-import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
-import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
-import com.cannontech.common.pao.pojo.CompleteCbcBase;
-import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
-import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
-import com.cannontech.common.pao.pojo.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteCapBank;
+import com.cannontech.common.pao.model.CompleteCapControlArea;
+import com.cannontech.common.pao.model.CompleteCapControlFeeder;
+import com.cannontech.common.pao.model.CompleteCapControlSubstation;
+import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
+import com.cannontech.common.pao.model.CompleteCbcBase;
+import com.cannontech.common.pao.model.CompleteOneWayCbc;
+import com.cannontech.common.pao.model.CompleteTwoWayCbc;
+import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class CapControlImportServiceImpl implements CapControlImportService {
 
-    private @Autowired PaoPersistenceService paoPersistenceService;
-    private @Autowired PaoDefinitionDao paoDefinitionDao;
-    private @Autowired PaoDao paoDao;
-    private @Autowired PointDao pointDao;
-    private @Autowired CapbankControllerDao capbankControllerDao;
-    private @Autowired SubstationDao substationDao;
-    private @Autowired CapbankDao capbankDao;
-    private @Autowired FeederDao feederDao;
-    private @Autowired SubstationBusDao substationBusDao;
+    @Autowired private PaoPersistenceService paoPersistenceService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private CapbankControllerDao capbankControllerDao;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private CapbankDao capbankDao;
+    @Autowired private FeederDao feederDao;
+    @Autowired private SubstationBusDao substationBusDao;
 
+    private abstract class PaoRetriever {
+        abstract CompleteYukonPao retrievePao(PaoIdentifier pao, HierarchyImportData hierarchyImportData);
+    }
+
+    final Map<PaoType, PaoRetriever> paoRetrievers;
+
+    // I should go into the constructor
+    public CapControlImportServiceImpl() {
+        Builder<PaoType, PaoRetriever> builder = ImmutableMap.builder();
+        builder.put(PaoType.CAP_CONTROL_AREA, new PaoRetriever() {
+            @Override
+            CompleteYukonPao retrievePao(PaoIdentifier pao,
+                                              HierarchyImportData hierarchyImportData) {
+                return paoPersistenceService.retreivePao(pao, CompleteCapControlArea.class);
+            }
+        });
+        builder.put(PaoType.CAP_CONTROL_FEEDER, new PaoRetriever() {
+            @Override
+            CompleteYukonPao retrievePao(PaoIdentifier pao,
+                                              HierarchyImportData hierarchyImportData) {
+                CompleteCapControlFeeder feeder =
+                        paoPersistenceService.retreivePao(pao, CompleteCapControlFeeder.class);
+                if (hierarchyImportData.getMapLocationId() != null) {
+                    feeder.setMapLocationId(hierarchyImportData.getMapLocationId());
+                }
+                return feeder;
+            }
+        });
+        builder.put(PaoType.CAP_CONTROL_SUBSTATION, new PaoRetriever() {
+            @Override
+            CompleteYukonPao retrievePao(PaoIdentifier pao,
+                                              HierarchyImportData hierarchyImportData) {
+                CompleteCapControlSubstation substation =
+                        paoPersistenceService.retreivePao(pao, CompleteCapControlSubstation.class);
+                if (hierarchyImportData.getMapLocationId() != null) {
+                    substation.setMapLocationId(hierarchyImportData.getMapLocationId());
+                }
+                return substation;
+            }
+        });
+        builder.put(PaoType.CAP_CONTROL_SUBBUS, new PaoRetriever() {
+            @Override
+            CompleteYukonPao retrievePao(PaoIdentifier pao,
+                                              HierarchyImportData hierarchyImportData) {
+                CompleteCapControlSubstationBus substationBus =
+                        paoPersistenceService.retreivePao(pao, CompleteCapControlSubstationBus.class);
+                if (hierarchyImportData.getMapLocationId() != null) {
+                    substationBus.setMapLocationId(hierarchyImportData.getMapLocationId());
+                }
+                return substationBus;
+            }
+        });
+        builder.put(PaoType.CAPBANK, new PaoRetriever() {
+            @Override
+            CompleteYukonPao retrievePao(PaoIdentifier pao,
+                                              HierarchyImportData hierarchyImportData) {
+                CompleteCapBank capBank =
+                        paoPersistenceService.retreivePao(pao, CompleteCapBank.class);
+                if (hierarchyImportData.getMapLocationId() != null) {
+                    capBank.setMapLocationId(hierarchyImportData.getMapLocationId());
+                }
+                if (hierarchyImportData.getBankOpState() != null) {
+                    capBank.setOperationalState(hierarchyImportData.getBankOpState());
+                }
+                if (hierarchyImportData.getCapBankSize() != null) {
+                    capBank.setBankSize(hierarchyImportData.getCapBankSize());
+                }
+                return capBank;
+            }
+        });
+
+        paoRetrievers = builder.build();
+    }
+    
     private CompleteYukonPao createHierarchyCompletePao(HierarchyImportData hierarchyImportData,
                                                    List<HierarchyImportResult> results) {
         PaoType paoType = hierarchyImportData.getPaoType();
@@ -312,58 +389,13 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
         int childId = pao.getPaoIdentifier().getPaoId();
         
-        CompleteYukonPao completePao = null;
-        switch(pao.getPaoIdentifier().getPaoType()) {
-        case CAP_CONTROL_AREA:
-            completePao = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteCapControlArea.class);
-            break;
-        case CAP_CONTROL_FEEDER:
-            completePao = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteCapControlFeeder.class);
-            CompleteCapControlFeeder feeder = (CompleteCapControlFeeder)completePao;
-            if (hierarchyImportData.getMapLocationId() != null) {
-                feeder.setMapLocationId(hierarchyImportData.getMapLocationId());
-            }
-            break;
-        case CAP_CONTROL_SUBSTATION:
-            completePao = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteCapControlSubstation.class);
-            CompleteCapControlSubstation substation = (CompleteCapControlSubstation)completePao;
-            if (hierarchyImportData.getMapLocationId() != null) {
-                substation.setMapLocationId(hierarchyImportData.getMapLocationId());
-            }
-            break;
-        case CAP_CONTROL_SUBBUS:
-            completePao = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteCapControlSubstationBus.class);
-            CompleteCapControlSubstationBus substationBus = (CompleteCapControlSubstationBus)completePao;
-            if (hierarchyImportData.getMapLocationId() != null) {
-                substationBus.setMapLocationId(hierarchyImportData.getMapLocationId());
-            }
-            break;
-        case CAPBANK:
-            completePao = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteCapBank.class);
-            CompleteCapBank capBank = (CompleteCapBank)completePao;
-            if (hierarchyImportData.getMapLocationId() != null) {
-                capBank.setMapLocationId(hierarchyImportData.getMapLocationId());
-            }
-            if (hierarchyImportData.getBankOpState() != null) {
-                capBank.setOperationalState(hierarchyImportData.getBankOpState());
-            }
-            if (hierarchyImportData.getCapBankSize() != null) {
-                capBank.setBankSize(hierarchyImportData.getCapBankSize());
-            }
-            
-            break;
-        default:
+        PaoRetriever paoRetriever = paoRetrievers.get(pao.getPaoIdentifier().getPaoType());
+        if (paoRetriever == null) {
             results.add(new HierarchyImportResult(hierarchyImportData,
                                                   HierarchyImportResultType.INVALID_TYPE));
             return;
         }
-
-        if (hierarchyImportData.getDescription() != null) {
-            completePao.setDescription(hierarchyImportData.getDescription());
-        }
-        if (hierarchyImportData.isDisabled() != null) {
-            completePao.setDisabled(hierarchyImportData.isDisabled());
-        }
+        CompleteYukonPao completePao = paoRetriever.retrievePao(pao.getPaoIdentifier(), hierarchyImportData);
         
         paoPersistenceService.updatePao(completePao);
         

@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.pojo;
+package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
@@ -82,7 +82,7 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
 
     @Override
     public String toString() {
-        return "YukonPaoPojo [paoIdentifier=" + paoIdentifier + ", paoName=" + paoName
+        return "CompleteYukonPao [paoIdentifier=" + paoIdentifier + ", paoName=" + paoName
                + ", description=" + description + ", statistics=" + statistics + ", disabled="
                + disabled + "]";
     }

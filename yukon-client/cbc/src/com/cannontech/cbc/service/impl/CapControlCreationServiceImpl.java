@@ -8,16 +8,16 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.pao.pojo.CompleteCapBank;
-import com.cannontech.common.pao.pojo.CompleteCapControlArea;
-import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
-import com.cannontech.common.pao.pojo.CompleteCapControlSpecialArea;
-import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
-import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
-import com.cannontech.common.pao.pojo.CompleteOneWayCbc;
-import com.cannontech.common.pao.pojo.CompleteRegulator;
-import com.cannontech.common.pao.pojo.CompleteTwoWayCbc;
-import com.cannontech.common.pao.pojo.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteCapBank;
+import com.cannontech.common.pao.model.CompleteCapControlArea;
+import com.cannontech.common.pao.model.CompleteCapControlFeeder;
+import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
+import com.cannontech.common.pao.model.CompleteCapControlSubstation;
+import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
+import com.cannontech.common.pao.model.CompleteOneWayCbc;
+import com.cannontech.common.pao.model.CompleteRegulator;
+import com.cannontech.common.pao.model.CompleteTwoWayCbc;
+import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {

@@ -1,13 +1,13 @@
 package com.cannontech.capcontrol.creation.service.impl;
 
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
-import com.cannontech.common.pao.pojo.CompleteCapBank;
-import com.cannontech.common.pao.pojo.CompleteCapControlArea;
-import com.cannontech.common.pao.pojo.CompleteCapControlFeeder;
-import com.cannontech.common.pao.pojo.CompleteCapControlSpecialArea;
-import com.cannontech.common.pao.pojo.CompleteCapControlSubstation;
-import com.cannontech.common.pao.pojo.CompleteCapControlSubstationBus;
-import com.cannontech.common.pao.pojo.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteCapBank;
+import com.cannontech.common.pao.model.CompleteCapControlArea;
+import com.cannontech.common.pao.model.CompleteCapControlFeeder;
+import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
+import com.cannontech.common.pao.model.CompleteCapControlSubstation;
+import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
+import com.cannontech.common.pao.model.CompleteYukonPao;
 
 /*package*/ enum HierarchyPaoCreator {
     CAP_CONTROL_AREA {

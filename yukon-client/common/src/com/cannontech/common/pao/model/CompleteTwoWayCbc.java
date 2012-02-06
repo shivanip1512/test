@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.pojo;
+package com.cannontech.common.pao.model;
 
 import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.device.DeviceWindowType;

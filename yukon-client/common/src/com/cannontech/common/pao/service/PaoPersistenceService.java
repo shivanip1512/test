@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.pojo.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.database.data.point.PointBase;
 
 public interface PaoPersistenceService {

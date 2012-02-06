@@ -34,7 +34,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
-import com.cannontech.common.pao.pojo.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -103,12 +103,12 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     private Map<Class<?>, CompletePaoMetaData> scanForYukonPaos() throws IOException {
         Map<Class<?>, CompletePaoMetaData> metaDataMappings = Maps.newHashMap();
         
-        // scan com.cannontech.common.pao.pojo package for YukonPao annotation
+        // scan com.cannontech.common.pao.model package for YukonPao annotation
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         MetadataReaderFactory metadataReaderFactory =
             new CachingMetadataReaderFactory(resourcePatternResolver);
         
-        String resourcePath = ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders("com.cannontech.common.pao.pojo"));
+        String resourcePath = ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders("com.cannontech.common.pao.model"));
         String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
                     resourcePath + "/" + "**/*.class";
         Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
