@@ -80,6 +80,7 @@ INSERT INTO YukonRoleProperty VALUES (-21313, -213, 'Archived Data Exporter', 't
 /* End YUK-10601 */
 
 /* Start YUK-10605 */
+/* @error ignore-begin */
 ALTER TABLE OptOutTemporaryOverride
 ALTER COLUMN OptOutValue VARCHAR(18) NOT NULL;
 UPDATE OptOutTemporaryOverride SET OptOutType = 'OPT_OUTS' WHERE OptOutType = 'ENABLED';
@@ -87,6 +88,7 @@ UPDATE OptOutTemporaryOverride SET OptOutValue = 'COUNT' WHERE OptOutType = 'COU
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'DONT_COUNT' WHERE OptOutType = 'COUNTS' AND OptOutValue = '0';
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'ENABLED' WHERE OptOutType = 'OPT_OUTS' AND OptOutValue = '1';
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'DISABLED_WITH_COMM' WHERE OptOutType = 'OPT_OUTS' AND OptOutValue = '0';
+/* @error ignore-end */
 /* End YUK-10605 */
 
 /* Start YUK-10610 */
