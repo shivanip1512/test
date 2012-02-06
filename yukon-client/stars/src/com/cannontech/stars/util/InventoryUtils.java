@@ -32,7 +32,7 @@ public class InventoryUtils {
 	public static final int SA205_UNUSED_ADDR = 3909;
 	
 	/**
-     * @deprecated Use HardwareCategory enum and/or HardwareType enum instead.
+     * @deprecated Use InventoryCategory enum and/or HardwareType enum instead.
      */
     @Deprecated
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {

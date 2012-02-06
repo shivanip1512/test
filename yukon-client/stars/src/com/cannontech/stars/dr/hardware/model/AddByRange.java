@@ -1,13 +1,13 @@
 package com.cannontech.stars.dr.hardware.model;
 
 public class AddByRange {
-    int hardwareTypeId;
-    String from;
-    String to;
-    int statusTypeId;
-    int voltageTypeId;
-    int serviceCompanyId;
-    int routeId;
+    private int hardwareTypeId;
+    private String from;
+    private String to;
+    private int statusTypeId;
+    private int voltageTypeId;
+    private int serviceCompanyId;
+    private int routeId;
     
     public int getStatusTypeId() {
         return statusTypeId;
