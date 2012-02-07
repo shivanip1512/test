@@ -10,6 +10,6 @@
         <i:inline key=".msg"/>
         <br>
         <br>
-        <cti:button key=".home" href="/spring/stars/consumer/general"/>
+        <cti:button nameKey="home" href="/spring/stars/consumer/general"/>
     </div>
 </cti:standardPage>
