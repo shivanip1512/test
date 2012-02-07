@@ -169,9 +169,9 @@
 		        <br>
                 <cti:button nameKey="submitRequestBtn" styleClass="f_blocker" onclick="executeRequestForm()"/>
 
-	            <c:if test="${formatResponse == true}">
-	                <c:set var="checked" value="checked=\"true\""/>
-	            </c:if>
+				<c:if test="${formatResponse == true}">
+					<c:set var="checked" value="checked=\"true\""/>
+				</c:if>
 				<input id="formatResponseId" type="checkbox" name="formatResponse" ${checked}/>
 				<label for="formatResponseId" class="fwb"><i:inline key=".formatResponse"/>
 		    </td>
