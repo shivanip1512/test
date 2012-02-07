@@ -105,7 +105,9 @@ UPDATE FdrInterfaceOption SET Ordering = 2 WHERE InterfaceId = 29 AND Ordering =
 /* End YUK-10613 */
 
 /* Start YUK-10255 */
-UPDATE UnitMeasure SET UOMName = 'ft^3', LongName = 'Cubic Feet' WHERE UOMID = 38;
+UPDATE UnitMeasure 
+SET UOMName = 'ft^3', LongName = 'Cubic Feet' 
+WHERE UOMID = 38;
 INSERT INTO UnitMeasure VALUES (55, 'm^3', 0, 'Cubic Meters', '(none)');
 /* End YUK-10255 */
 
