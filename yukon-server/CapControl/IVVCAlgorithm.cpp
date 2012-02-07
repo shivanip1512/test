@@ -228,7 +228,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            bool invalidData            = validatePointDataReceived( request, timeNow, subbus );
+            bool invalidData            = ! hasValidData( request, timeNow, subbus );
             bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
 
             if ( invalidData || hasAutoModeRegulator )
@@ -656,23 +656,23 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     This guy will run a validation check on the received point data request.
         We are looking for non-stale data and that all of the required BusPower points are present and accounted for.
 */
-bool IVVCAlgorithm::validatePointDataReceived( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus )
+bool IVVCAlgorithm::hasValidData( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus )
 {
     using namespace Cti::Messaging::CapControl;
 
     const long subbusId = subbus->getPaoId();
 
-    bool hasStaleOrIncompleteData = false;
+    bool validData = true;
 
     DataCheckResult result;
 
     if ( request->hasRequestType( CbcRequestType ) )
     {
-        result = checkDataStatuses( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
+        result = hasEnoughRecentData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType, "CBC" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleOrIncompleteData = true;
+            validData = false;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -687,11 +687,11 @@ bool IVVCAlgorithm::validatePointDataReceived( const PointDataRequestPtr& reques
 
     if ( request->hasRequestType( RegulatorRequestType ) )
     {
-        result = checkDataStatuses( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
+        result = hasEnoughRecentData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO, RegulatorRequestType, "Regulator" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleOrIncompleteData = true;
+            validData = false;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -706,11 +706,11 @@ bool IVVCAlgorithm::validatePointDataReceived( const PointDataRequestPtr& reques
 
     if ( request->hasRequestType( OtherRequestType ) )
     {
-        result = checkDataStatuses( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
+        result = hasEnoughRecentData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType, "Other" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleOrIncompleteData = true;
+            validData = false;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -786,11 +786,11 @@ bool IVVCAlgorithm::validatePointDataReceived( const PointDataRequestPtr& reques
 
     if ( ! missingBusPowerPoint )
     {
-        result = checkDataStatuses( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
+        result = hasEnoughRecentData( request, timeNow, 1.0, BusPowerRequestType, "BusPower" );
 
         if ( result.first != DataStatus_Good )
         {
-            hasStaleOrIncompleteData = true;
+            validData = false;
 
             sendIVVCAnalysisMessage(
                                    IVVCAnalysisMessage::createCommsRatioMessage( subbusId,
@@ -803,11 +803,11 @@ bool IVVCAlgorithm::validatePointDataReceived( const PointDataRequestPtr& reques
         }
     }
 
-    return ( hasStaleOrIncompleteData || missingBusPowerPoint );
+    return ( validData && ( ! missingBusPowerPoint ) );
 }
 
 
-IVVCAlgorithm::DataCheckResult IVVCAlgorithm::checkDataStatuses(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
+IVVCAlgorithm::DataCheckResult IVVCAlgorithm::hasEnoughRecentData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString)
 {
     double ratio = request->ratioComplete(pointRequestType);
     if (ratio < desiredRatio)
