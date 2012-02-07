@@ -27,13 +27,11 @@ CtiAnsiTable92::CtiAnsiTable92( BYTE *dataBlob, int bitRate, int nbrSetupStrings
     _nbrSetupStrings = nbrSetupStrings;
     _setupStringLength = setupStringLength;
 
-    memcpy( (void *)&_globalParmsTbl.psem_identity, dataBlob, sizeof(UINT8));
-    dataBlob += sizeof(UINT8);
+    dataBlob += toAnsiIntParser(dataBlob, &_globalParmsTbl.psem_identity, sizeof(UINT8));
 
     if (_bitRate == 1)
     {
-        memcpy( (void *)&_globalParmsTbl.bit_rate, dataBlob, sizeof(UINT32));
-        dataBlob += sizeof(UINT32);
+        dataBlob += toAnsiIntParser(dataBlob, &_globalParmsTbl.bit_rate, sizeof(UINT32)); 
     }
     else
        _globalParmsTbl.bit_rate = 0;
@@ -45,8 +43,7 @@ CtiAnsiTable92::CtiAnsiTable92( BYTE *dataBlob, int bitRate, int nbrSetupStrings
         _globalParmsTbl.modem_setup_strings[x].setup_string = new unsigned char[_setupStringLength];
         for (int xx = 0; xx < _setupStringLength; xx++)
         {
-            memcpy( (void *)&_globalParmsTbl.modem_setup_strings[x].setup_string[xx], dataBlob, sizeof(unsigned char));
-            dataBlob += sizeof(unsigned char);
+            dataBlob += toAnsiIntParser(dataBlob, &_globalParmsTbl.modem_setup_strings[x].setup_string[xx], sizeof(unsigned char));
         }
     }
 

@@ -49,15 +49,10 @@ CtiAnsiTable08::CtiAnsiTable08( BYTE *dataBlob )
 {
     int dummy = 0;
 
-    memcpy( (void *)&_proc_resp_tbl.proc, dataBlob, sizeof( unsigned short ));
-    dataBlob += sizeof( unsigned short );
-
-    memcpy( (void *)&_proc_resp_tbl.seq_nbr, dataBlob, sizeof( unsigned char ));
-    dataBlob += sizeof( unsigned char );
-
-    memcpy( (void *)&_proc_resp_tbl.result_code, dataBlob, sizeof( unsigned char ));
-    dataBlob += sizeof( unsigned char );
-
+    dataBlob += toAnsiIntParser(dataBlob, &_proc_resp_tbl.proc, sizeof( unsigned short ));
+    dataBlob += toAnsiIntParser(dataBlob, &_proc_resp_tbl.seq_nbr, sizeof( unsigned char ));
+    dataBlob += toAnsiIntParser(dataBlob, &_proc_resp_tbl.result_code, sizeof( unsigned char ));
+   
     populateRespDataRcd(dataBlob, &_proc_resp_tbl.resp_data, dummy);
     dataBlob += dummy;
 
@@ -110,21 +105,14 @@ void CtiAnsiTable08::populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *data_rcd
             }
         case 5:
             {
-                memcpy( (void *)&data_rcd->u.p5.tbl_list, dataBlob, sizeof( unsigned char ));
-                dataBlob += sizeof( unsigned char );
-
-                memcpy( (void *)&data_rcd->u.p5.entries_read, dataBlob, sizeof( unsigned short ));
-                dataBlob += sizeof( unsigned short );
-
-
+                dataBlob += toAnsiIntParser(dataBlob, &data_rcd->u.p5.tbl_list, sizeof( unsigned char ));
+                dataBlob += toAnsiIntParser(dataBlob, &data_rcd->u.p5.entries_read, sizeof( unsigned short ));
                 offset = 3;
                 break;
             }
         case 22:
         {
-            memcpy( (void *)&data_rcd->u.pm22.lpOffset, dataBlob, sizeof( unsigned char ));
-            dataBlob += sizeof( unsigned char );
-
+            dataBlob += toAnsiIntParser(dataBlob, &data_rcd->u.pm22.lpOffset, sizeof( unsigned char ));
             offset = 1;
             break;
         }

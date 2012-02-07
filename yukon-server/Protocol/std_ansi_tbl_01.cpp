@@ -49,38 +49,27 @@ CtiAnsiTable01::CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form ) :
     _serialNumberFlag(sn_flag),
     _idForm(id_form)
 {
-   memcpy( (void *)&_manufacturer, dataBlob, 4 * sizeof( unsigned char ));
-   dataBlob += 4 * sizeof( unsigned char );
-
-   memcpy( (void *)&_ed_model, dataBlob, 8 * sizeof( unsigned char ));
-   dataBlob += 8 * sizeof( unsigned char );
-
-   memcpy( (void *)&_hw_version_number, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char );
-
-   memcpy( (void *)&_hw_revision_number, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char );
-
-   memcpy( (void *)&_fw_version_number, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char );
-
-   memcpy( (void *)&_fw_revision_number, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char );
-
+   dataBlob += toAnsiIntParser(dataBlob, &_manufacturer, 4 * sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_ed_model, 8 * sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_hw_version_number, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_hw_revision_number, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_fw_version_number, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_fw_revision_number, sizeof( unsigned char ));
+   
    if( _serialNumberFlag == false )
    {
       if( _idForm == false )
       {
-         memcpy( (void *)&_mfg_serial_number, dataBlob, 16 * sizeof( char ));
+         dataBlob += toAnsiIntParser(dataBlob, &_mfg_serial_number, 16 * sizeof( char ));
       }
       else
       {
-         memcpy( (void *)&_mfg_serial_number, dataBlob, 8 * sizeof( BCD ));
+         dataBlob += toAnsiIntParser(dataBlob, &_mfg_serial_number, 8 * sizeof( BCD ));
       }
    }
    else
    {
-      memcpy( (void *)&_mfg_serial_number, dataBlob, sizeof( UINT64 ));
+      dataBlob += toAnsiIntParser(dataBlob, &_mfg_serial_number, sizeof( UINT64 ));
    }
 
 }

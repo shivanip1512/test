@@ -56,8 +56,7 @@ CtiAnsiTable25::CtiAnsiTable25( BYTE *dataBlob, int oc, int sum, int demnd, int 
     }
     if (_seasonInfoFieldFlag)
     {
-        memcpy( (void *)&_season, dataBlob, sizeof(unsigned char));
-        dataBlob += sizeof (unsigned char);
+        dataBlob += toAnsiIntParser(dataBlob, &_season, sizeof(unsigned char));
     }
 
     _prevDemandResetData = new CtiAnsiTable23( dataBlob, oc, sum, demnd, coin, tier, reset, time, cumd, cumcont,

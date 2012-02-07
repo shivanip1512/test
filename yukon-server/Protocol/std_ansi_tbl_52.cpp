@@ -63,9 +63,7 @@ CtiAnsiTable52::CtiAnsiTable52( BYTE *dataBlob, int timefmat )
     bytes = toUint32LTime( dataBlob, clock_table.clock_calendar, _timefmt );
     dataBlob += bytes;
 
-    memcpy( (void *)&clock_table.time_date_qual, dataBlob, sizeof( unsigned char ));
-    dataBlob +=  sizeof( unsigned char);
-
+    dataBlob += toAnsiIntParser(dataBlob, &clock_table.time_date_qual, sizeof( unsigned char ));
 
     ULONG timeNow = CtiTime().seconds();
     _meterServerTimeDifference = (int)abs((int)(timeNow - CtiTime(clock_table.clock_calendar).seconds()));

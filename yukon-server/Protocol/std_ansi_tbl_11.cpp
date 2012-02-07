@@ -54,7 +54,7 @@ CtiAnsiTable11::CtiAnsiTable11( BYTE *dataBlob )
    _source_record = new SOURCE_RCD;
 
    if( _source_record != NULL )
-      memcpy( _source_record, dataBlob, sizeof( SOURCE_RCD ));
+      dataBlob += toAnsiIntParser(dataBlob, _source_record, sizeof( SOURCE_RCD ));
 }
 
 

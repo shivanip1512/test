@@ -66,8 +66,7 @@ CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, i
 
    for( index = 0; index < _numSums; index++ )
    {
-      memcpy( (void *)&_summation_select[index], dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
+      dataBlob += toAnsiIntParser(dataBlob, &_summation_select[index], sizeof( unsigned char ));
       _totalTableSize += sizeof( unsigned char );
    }
 
@@ -76,16 +75,15 @@ CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, i
 
    for( index = 0; index < _numDemands; index++ )
    {
-      memcpy( (void *)&_demand_select[index], dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
+      dataBlob += toAnsiIntParser(dataBlob, &_demand_select[index], sizeof( unsigned char ));
       _totalTableSize += sizeof( unsigned char );
    }
 
    _demandSelectSize = sizeof( unsigned char ) * _numDemands;
 
    _set = new unsigned char[( _numDemands +7)/8];
-   memcpy( _set, dataBlob, (( _numDemands +7)/8));
-   dataBlob += ((_numDemands +7)/8);
+   memcpy ( _set, dataBlob, (( _numDemands +7)/8));
+   dataBlob += (( _numDemands +7)/8);
    _totalTableSize += ((_numDemands +7)/8);
 
    _coincident_select = new unsigned char[_numCoins];
@@ -93,8 +91,7 @@ CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, i
 
    for( index = 0; index < _numCoins; index++ )
    {
-      memcpy( (void *)&_coincident_select[index], dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
+      dataBlob += toAnsiIntParser(dataBlob, &_coincident_select[index], sizeof( unsigned char ));
       _totalTableSize += sizeof( unsigned char );
    }
 
@@ -103,8 +100,7 @@ CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, i
 
    for( index = 0; index < _numCoins; index++ )
    {
-      memcpy( (void *)&_coin_demand_assoc[index], dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
+      dataBlob += toAnsiIntParser(dataBlob, &_coin_demand_assoc[index], sizeof( unsigned char ));
       _totalTableSize += sizeof( unsigned char );
    }
 }

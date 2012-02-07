@@ -71,8 +71,7 @@ CtiAnsiTable14::CtiAnsiTable14( BYTE *dataBlob, int dataCtrlLen, int numDataCtrl
 
             for( cnt = 0; cnt < _controlLength; cnt++ )
             {
-               memcpy( (void *)&_data_control_record.data_rcd[index].source_id[cnt], dataBlob, sizeof( unsigned char ));
-               dataBlob += sizeof( unsigned char );
+               dataBlob += toAnsiIntParser(dataBlob, &_data_control_record.data_rcd[index].source_id[cnt], sizeof( unsigned char ));
             }
          }
       }

@@ -94,8 +94,7 @@ CtiAnsiTable23::CtiAnsiTable23( BYTE *dataBlob, int occur, int summations, int d
    //part 1
    if( _reset == true )
    {
-      memcpy( (void *)&_nbr_demand_resets, dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char);
+      dataBlob += toAnsiIntParser(dataBlob, &_nbr_demand_resets, sizeof( unsigned char ));
       _totSize += 1;
    }
    else

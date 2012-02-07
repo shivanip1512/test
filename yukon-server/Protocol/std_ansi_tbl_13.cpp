@@ -58,24 +58,16 @@ CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, boo
 
    if( reset_exclude != false )
    {
-      memcpy( (void *)&_demand_control_record.reset_exclusion, dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
+      dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record.reset_exclusion, sizeof( unsigned char )); //1 byte
    }
 
    if( pf_exclude != false )
    {
-      memcpy( (void *)&_demand_control_record.excludes.p_fail_recogntn_tm, dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
-
-      memcpy( (void *)&_demand_control_record.excludes.p_fail_exclusion, dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
-
-      memcpy( (void *)&_demand_control_record.excludes.cold_load_pickup, dataBlob, sizeof( unsigned char ));
-      dataBlob += sizeof( unsigned char );
+      dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record.excludes.p_fail_recogntn_tm, sizeof( unsigned char )); //1 byte
+      dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record.excludes.p_fail_exclusion, sizeof( unsigned char )); //1 byte
+      dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record.excludes.cold_load_pickup, sizeof( unsigned char )); //1 byte
    }
 
-
-   dataBlob += sizeof( unsigned char );
    _numberDemandCtrlEntries = nbr_demand_cntl_entries;
    _demand_control_record._int_control_rec = new INT_CONTROL_RCD[nbr_demand_cntl_entries];
 
@@ -83,20 +75,12 @@ CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, boo
    {
       if( sliding_demand != false )
       {
-         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.sub_int, dataBlob, sizeof( unsigned char ));
-         dataBlob += sizeof( unsigned char );
-
-         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, dataBlob, sizeof( unsigned char ));
-         dataBlob += sizeof( unsigned char );
+         dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record._int_control_rec[index].cntl_rec.sub_int, sizeof( unsigned char )); //1 byte
+         dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, sizeof( unsigned char )); //1 byte
       }
       else
       {
-          if(dataOrder == MSB)
-          {
-              reverseOrder(dataBlob, sizeof( unsigned char) * 2 );
-          }
-          memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, dataBlob, sizeof( unsigned char) *2 );
-          dataBlob += ( sizeof( unsigned char) *2 );
+          dataBlob += toAnsiIntParser(dataBlob, &_demand_control_record._int_control_rec[index].int_length,  sizeof( unsigned char) *2, dataOrder ); // 2 bytes
       }
    }
 }

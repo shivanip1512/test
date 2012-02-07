@@ -53,35 +53,16 @@ using std::endl;
 CtiAnsiTable21::CtiAnsiTable21( BYTE *dataBlob ) :
     _tier(0)
 {
-   memcpy(( void *)&_reg_func1_flags, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_reg_func2_flags, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_nbr_self_reads, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_nbr_summations, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_nbr_demands, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_nbr_coin_values, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_occur, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_tiers, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_nbr_present_demands, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
-
-   memcpy(( void *)&_nbr_present_values, dataBlob, sizeof( unsigned char ));
-   dataBlob += sizeof( unsigned char);
+   dataBlob += toAnsiIntParser(dataBlob, &_reg_func1_flags, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_reg_func2_flags, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_nbr_self_reads, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_nbr_summations, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_nbr_demands, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_nbr_coin_values, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_occur, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_tiers, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_nbr_present_demands, sizeof( unsigned char ));
+   dataBlob += toAnsiIntParser(dataBlob, &_nbr_present_values, sizeof( unsigned char ));
 }
 
 //=========================================================================================================================================

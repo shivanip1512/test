@@ -36,8 +36,7 @@ CtiAnsiTable32::CtiAnsiTable32( BYTE *dataBlob, UINT16 nbrDispSources, UINT8 wid
          _displaySources[i].displaySource = new UINT8[_widthDispSources];
          for (int j = 0; j < _widthDispSources; j++)
          {
-             memcpy((void *)&_displaySources[i].displaySource[j], dataBlob, sizeof(UINT8));
-             dataBlob += sizeof(UINT8);
+             dataBlob += toAnsiIntParser(dataBlob, &_displaySources[i].displaySource[j], sizeof(UINT8));
          }
     }
 

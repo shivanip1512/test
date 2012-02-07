@@ -667,6 +667,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                 CtiPointStatusSPtr pStatusPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(x, StatusPointType));
                 if (pStatusPoint)
                 {
+                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << endl << CtiTime() << " " << getName() << " Point Offset ==> " << x;
@@ -735,6 +736,7 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
     
     _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
+    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
     {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
        dout << " : " << _result_string;

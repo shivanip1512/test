@@ -165,6 +165,7 @@ public:
 
    void reverseOrder(  BYTE *source, int length );
    int toDoubleParser( BYTE *source, double &result, int format, DataOrder dataOrderLSB = LSB );
+   int toAnsiIntParser( BYTE *source, void *result, size_t length,  DataOrder dataOrder = LSB );
    int fromDoubleParser ( double &result, BYTE *source, int format,  DataOrder dataOrder = LSB );
    int toUint32STime( BYTE *source, ULONG &result, int format );
    ULONG BCDtoBase10( UCHAR* buffer, ULONG len );

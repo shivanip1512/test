@@ -99,8 +99,7 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
 
                if( _SetOnePresentFlag )
                {
-                  memcpy( (void *)&_constants_table[index].electric_constants.set1_constants.set_flags, dataBlob, sizeof( unsigned char ));
-                  dataBlob += 1;
+                  dataBlob += toAnsiIntParser(dataBlob, &_constants_table[index].electric_constants.set1_constants.set_flags, sizeof( unsigned char ));
 
                   bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set1_constants.ratio_f1, _NIFormat1, _lsbDataOrder );
                   dataBlob += bytes;
@@ -118,8 +117,7 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
 
                if( _SetTwoPresentFlag )
                {
-                  memcpy( (void *)&_constants_table[index].electric_constants.set2_constants.set_flags, dataBlob, sizeof( unsigned char ));
-                  dataBlob += 1;
+                  dataBlob += toAnsiIntParser(dataBlob, &_constants_table[index].electric_constants.set2_constants.set_flags, sizeof( unsigned char ));
 
                   bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set2_constants.ratio_f1, _NIFormat1, _lsbDataOrder );
                   dataBlob += bytes;

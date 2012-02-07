@@ -22,8 +22,7 @@ using std::endl;
 CtiAnsiTable91::CtiAnsiTable91( BYTE *dataBlob )
 {
 
-    memcpy( (void *)&_telephoneTbl, dataBlob, sizeof( TELEPHONE_RCD ));
-    dataBlob += sizeof( TELEPHONE_RCD );
+    dataBlob += toAnsiIntParser(dataBlob, &_telephoneTbl, sizeof( TELEPHONE_RCD ));
 }
 
 //=========================================================================================================================================

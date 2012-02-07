@@ -40,31 +40,16 @@ CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, DataOrder
         if (_lpCtrlDataSetUsed[x])
         {
 
-            ULONG tempLong;
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, dataBlob, sizeof( LP_SET_STATUS_BFLD ));
-            dataBlob += sizeof( LP_SET_STATUS_BFLD );
-
-            if (dataOrder == MSB)
-            {
-                reverseOrder(dataBlob, sizeof (short));
-                reverseOrder(dataBlob + 2, sizeof (short));
-            }
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, dataBlob, sizeof (short));
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, dataBlob + 2, sizeof (short));
-            dataBlob += (sizeof (short) * 2);
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_status_tbl.lp_status_set[index].lp_set_status_flags, sizeof( LP_SET_STATUS_BFLD )); // 1byte
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, sizeof (short), dataOrder); //2bytes
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_status_tbl.lp_status_set[index].last_block_element, sizeof (short), dataOrder); //2bytes
 
             double tempResult;
             dataBlob += toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, dataOrder );
             _lp_status_tbl.lp_status_set[index].last_block_seq_nbr = tempResult;
 
-            if (dataOrder == MSB)
-            {
-                reverseOrder(dataBlob, sizeof (short));
-                reverseOrder(dataBlob + 2, sizeof (short));
-            }
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, dataBlob, sizeof (short));
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, dataBlob + 2, sizeof (short));
-            dataBlob += (sizeof (short) * 2);
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, sizeof (short), dataOrder); //2bytes
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_status_tbl.lp_status_set[index].nbr_valid_int, sizeof (short), dataOrder); //2bytes
 
             index+=1;
         }

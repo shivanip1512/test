@@ -33,19 +33,13 @@ CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nb
     _priDispListTable.priDispList = new DISP_LIST_DESC_RCD[_nbrPriDispLists];
     for (int i = 0; i < _nbrPriDispLists; i++)
     {
-         memcpy((void *)&_priDispListTable.priDispList[i], dataBlob, sizeof(DISP_LIST_DESC_RCD));
-         dataBlob += sizeof(DISP_LIST_DESC_RCD);    //3 bytes
+         dataBlob += toAnsiIntParser(dataBlob, &_priDispListTable.priDispList[i], sizeof(DISP_LIST_DESC_RCD), dataOrder); //3 bytes
     }
 
     _priDispListTable.priDispSources = new UINT16[_nbrPriDispListItems];
     for (int i = 0; i < _nbrPriDispListItems; i++)
     {
-        if (dataOrder == MSB)
-        {
-            reverseOrder(dataBlob, sizeof(UINT16));
-        }
-         memcpy((void *)&_priDispListTable.priDispSources[i], dataBlob, sizeof(UINT16));
-         dataBlob += sizeof(UINT16);    //2 bytes
+        dataBlob += toAnsiIntParser(dataBlob, &_priDispListTable.priDispSources[i], sizeof(UINT16), dataOrder);//2 bytes
     }
 
 
@@ -107,16 +101,16 @@ void CtiAnsiTable33::printResult( const string& deviceName )
         dout << " ** Primary Display List Table ** "<<endl;
         dout << "        Display Source[ ] OnTime OffTime HoldTime DefaultList NbrListItems" <<endl;
     }
-   /* for (int i = 0; i < _nbrPriDispLists; i++)
+    for (int i = 0; i < _nbrPriDispLists; i++)
     {
         {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "          " << i << "    " 
-                                     <<_priDispListTable.priDispList[i].dispScroll1.onTime << "    "     
-                                     <<_priDispListTable.priDispList[i].dispScroll1.offTime << "    "    
-                                     <<_priDispListTable.priDispList[i].dispScroll2.holdTime << "    "   
-                                     <<_priDispListTable.priDispList[i].dispScroll2.defaultList << "    "
-                                     <<_priDispListTable.priDispList[i].nbrListItems << "    " << endl;           
+                                     <<(int) _priDispListTable.priDispList[i].dispScroll1.onTime << "    "     
+                                     <<(int) _priDispListTable.priDispList[i].dispScroll1.offTime << "    "    
+                                     <<(int) _priDispListTable.priDispList[i].dispScroll2.holdTime << "    "   
+                                     <<(int) _priDispListTable.priDispList[i].dispScroll2.defaultList << "    "
+                                     <<      _priDispListTable.priDispList[i].nbrListItems << "    " << endl;           
         }
         
     }
@@ -130,7 +124,7 @@ void CtiAnsiTable33::printResult( const string& deviceName )
         
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "          " <<  _priDispListTable.priDispSources[i] << endl;
-    }*/
+    }
 
 
 

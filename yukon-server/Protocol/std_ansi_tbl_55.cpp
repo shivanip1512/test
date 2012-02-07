@@ -51,7 +51,7 @@ using std::endl;
 
 CtiAnsiTable055::CtiAnsiTable055( BYTE *dataBlob )
 {
-   memcpy( (void *)&_clockStateTbl, dataBlob, sizeof( CLOCK_55_STATE_RCD ));
+   dataBlob += toAnsiIntParser(dataBlob, &_clockStateTbl, sizeof( CLOCK_55_STATE_RCD ));
    dataBlob +=  sizeof( CLOCK_55_STATE_RCD );
 }
 

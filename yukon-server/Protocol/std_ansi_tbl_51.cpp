@@ -21,8 +21,7 @@ using std::endl;
 
 CtiAnsiTable51::CtiAnsiTable51( BYTE *dataBlob )
 {
-    memcpy( (void *)&_time_tou, dataBlob, sizeof( TIME_TOU_RCD ));
-    dataBlob +=  sizeof( TIME_TOU_RCD );
+    dataBlob += toAnsiIntParser(dataBlob, &_time_tou, sizeof( TIME_TOU_RCD ));
 }
 
 //=========================================================================================================================================

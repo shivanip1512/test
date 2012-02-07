@@ -57,15 +57,9 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
     _lp_tbl.lp_memory_len = tempResult;
     dataBlob += offset;
 
-    if (dataOrder == MSB)
-    {
-        reverseOrder(dataBlob, sizeof( unsigned char )*2 );
-    }
-    memcpy( (void *)&_lp_tbl.lp_flags, dataBlob, sizeof( unsigned char )*2);
-    dataBlob += sizeof( unsigned char )*2;
-    memcpy( (void *)&_lp_tbl.lp_fmats, dataBlob, sizeof( unsigned char ));
-    dataBlob +=   sizeof( unsigned char );
-
+    dataBlob += toAnsiIntParser(dataBlob, &_lp_tbl.lp_flags, sizeof( unsigned char )*2, dataOrder); //2 bytes
+    dataBlob += toAnsiIntParser(dataBlob, &_lp_tbl.lp_fmats, sizeof( unsigned char )); // 1 byte
+    
     _lp_tbl.lp_data_set_info = new LP_DATA_SET[4];
     int xx = 0;
     for (x = 0; x < 4; x++)
@@ -73,18 +67,10 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
         if (_lpDataSetUsed[x])
         {
 
-            if (dataOrder == MSB)
-            {
-                reverseOrder(dataBlob, sizeof(short) );
-                reverseOrder(dataBlob + 2, sizeof(short) );
-            }
-            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blks_set, dataBlob, sizeof(short));
-            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, dataBlob + 2, sizeof(short));
-            dataBlob += sizeof(short) * 2;
-            
-            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_chns_set, dataBlob, sizeof( UINT8 ));
-            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].max_int_time_set, dataBlob + 1, sizeof( UINT8 ));
-            dataBlob +=   sizeof( UINT8 ) * 2;
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_tbl.lp_data_set_info[xx].nbr_blks_set, sizeof(short), dataOrder); //2bytes
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, sizeof(short), dataOrder );//2bytes
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_tbl.lp_data_set_info[xx].nbr_chns_set, sizeof( UINT8 )); // 1byte
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_tbl.lp_data_set_info[xx].max_int_time_set, sizeof( UINT8 )); //1byte
             xx++;
         }
     }

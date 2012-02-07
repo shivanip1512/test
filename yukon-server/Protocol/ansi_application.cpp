@@ -915,101 +915,110 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
 
    switch( current )
    {
-   case identified:
-      next = timingSet;
-      break;
+       case identified:
+       {
+           if (_ansiDeviceType == focus)
+           {
+              next = timingSet;
+           }
+           else
+           {
+               next = negotiated;
+           }
+          break;
+       }
 
-   case negotiated:
-    {
-        if (_negotiateRetry > 1 && _negotiateRetry < 3)
+       case negotiated:
         {
-            next = terminated;
-        }
-        else
-        {
-            // timing state only valid for 12_21
-            if (_prot_version == ANSI_C12_21)
+            if (_negotiateRetry > 1 && _negotiateRetry < 3)
             {
-                next = timingSet;
+                next = terminated;
             }
             else
             {
-                next = loggedOn;
+                // timing state only valid for 12_21
+                if (_prot_version == ANSI_C12_21)
+                {
+                    next = timingSet;
+                }
+                else
+                {
+                    next = loggedOn;
+                }
             }
+            break;
         }
-        break;
-    }
-   case timingSet:
-      next = loggedOn;
-      break;
+       case timingSet:
+          next = loggedOn;
+          break;
 
-   case loggedOn:
-      next = secured;
-      //next = request;
-       //next = authenticated;
-       break;
+       case loggedOn:
+          next = secured;
+          //next = request;
+           //next = authenticated;
+           break;
 
-   case secured:
-       {
-           // timing state only valid for 12_21
-           if (_prot_version == ANSI_C12_21)
+       case secured:
            {
-               if( _authenticate == true )
-                  next = authenticated;
+               // timing state only valid for 12_21
+               if (_prot_version == ANSI_C12_21)
+               {
+                   if( _authenticate == true )
+                      next = authenticated;
+                   else
+                       next = request;
+               }
                else
+               {
                    next = request;
+               }
+               break;
+           }
+       case authenticated:
+          next = request;
+          break;
+
+       case request:
+          next = loggedOff;
+          // next = terminated;
+          break;
+       case waitState:
+          //next = loggedOff;
+           if (_currentTableID == Cti::Protocols::Ansi::Undefined)
+           {
+               next = terminated;
            }
            else
            {
                next = request;
            }
-           break;
-       }
-   case authenticated:
-      next = request;
-      break;
+          break;
 
-   case request:
-      next = loggedOff;
-      // next = terminated;
-      break;
-   case waitState:
-      //next = loggedOff;
-       if (_currentTableID == Cti::Protocols::Ansi::Undefined)
-       {
-           next = terminated;
-       }
-       else
-       {
-           next = request;
-       }
-      break;
+       case loggedOff:
+          next = terminated;
+          break;
 
-   case loggedOff:
-      next = terminated;
-      break;
-
-   case terminated:
-      {
-          if (_negotiateRetry > 1 && _negotiateRetry < 3)
+       case terminated:
           {
-              next =  identified;
-          }
-          else
-          {
-              if( (int)_prot_version == ANSI_C12_21 )
-                 next = disconnected;
+              if (_negotiateRetry > 1 && _negotiateRetry < 3)
+              {
+                  next =  identified;
+              }
               else
-                 _readComplete =  true;
-            //            next = finalAck;
+              {
+                  if( (int)_prot_version == ANSI_C12_21 )
+                     next = disconnected;
+                  else
+                     _readComplete =  true;
+                //            next = finalAck;
+              }
           }
-      }
-      break;
+          break;
 
-   case disconnected:
-      _readComplete=  true;
-      //      next = finalAck;
-      break;
+       case disconnected:
+          _readComplete=  true;
+          //      next = finalAck;
+          break;
 
    }
    return( next );

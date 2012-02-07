@@ -72,11 +72,9 @@ CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_S
 
             for ( index = 0; index < _numChansSet[0]; index++ )
             {
-                memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].lp_sel_set[index], dataBlob, sizeof( LP_SOURCE_SEL_RCD ));
-                dataBlob += sizeof( LP_SOURCE_SEL_RCD );
+                dataBlob += toAnsiIntParser(dataBlob, &_lp_ctrl_tbl.lp_sel[x].lp_sel_set[index], sizeof( LP_SOURCE_SEL_RCD ));
             }
-            memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].int_fmt_cde, dataBlob, sizeof( unsigned char ));
-            dataBlob +=  sizeof( unsigned char );
+            dataBlob += toAnsiIntParser(dataBlob, &_lp_ctrl_tbl.lp_sel[x].int_fmt_cde, sizeof( unsigned char ));
 
             if (_scalarDivisorFlagSet[x])
             {
@@ -85,13 +83,11 @@ CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_S
 
                 for ( index = 0; index < _numChansSet[0]; index++ )
                 {
-                    memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].scalars_set[index], dataBlob, sizeof( UINT16 ));
-                    dataBlob +=  sizeof( UINT16 );
+                    dataBlob += toAnsiIntParser(dataBlob, &_lp_ctrl_tbl.lp_sel[x].scalars_set[index], sizeof( UINT16 ), dataOrder);
                 }
                 for ( index = 0; index < _numChansSet[0]; index++ )
                 {
-                    memcpy( (void *)&_lp_ctrl_tbl.lp_sel[x].divisor_set[index], dataBlob, sizeof( UINT16 ) );
-                    dataBlob +=  sizeof( UINT16 ) ;
+                    dataBlob += toAnsiIntParser(dataBlob, &_lp_ctrl_tbl.lp_sel[x].divisor_set[index], sizeof( UINT16 ), dataOrder);
                 }
             }
         }

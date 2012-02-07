@@ -71,8 +71,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
             if (_blkEndPulseFlag)
             {
                 // END READINGS - block end pulse
-                memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_pulse, dataBlob, sizeof( UINT32 ));
-                dataBlob += sizeof( UINT32 );
+                dataBlob += toAnsiIntParser(dataBlob, &_lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_pulse, sizeof( UINT32 ), _dataOrder);
             }
         }
         if (_closureStatusFlag)
@@ -81,8 +80,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
             for (i = 0; i < _nbrChnsSet1; i++)
             {
                 // CLOSURE STATUS - status, nbr_valid_interval
-                memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i], dataBlob, sizeof( unsigned short ));
-                dataBlob += sizeof( unsigned short );
+                dataBlob += toAnsiIntParser(dataBlob, &_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i], sizeof( unsigned short ), _dataOrder);
             }
 
         }
@@ -103,8 +101,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
                 _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status = new UINT8[(_nbrChnsSet1/2)+1];
                 for (j = 0; j < (_nbrChnsSet1/2)+1; j++ )
                 {
-                    memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j], dataBlob, sizeof (UINT8));
-                    dataBlob += sizeof (UINT8);
+                    dataBlob += toAnsiIntParser(dataBlob, &_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j], sizeof (UINT8));
                 }
 
                 if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x10)
@@ -139,8 +136,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
             _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data = new INT_FMT1_RCD[_nbrChnsSet1];
             for (j = 0; j < _nbrChnsSet1; j++ )
             {
-                bytes = populateIntData( &_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data[j], dataBlob );
-                dataBlob += bytes;
+                dataBlob += populateIntData( &_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data[j], dataBlob );
             }
         }
     }
@@ -220,42 +216,36 @@ int CtiAnsiTable64::populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob)
     {
         case 1:
         {
-            memcpy( (void *)&intData->u.s1.item, dataBlob, sizeof (UINT8));
-            retVal += sizeof (UINT8);
+            retVal = toAnsiIntParser(dataBlob, &intData->u.s1.item, sizeof (UINT8));
             break;
         }
         case 2:
         {
-            memcpy( (void *)&intData->u.s2.item, dataBlob, sizeof (UINT16));
-            retVal += sizeof (UINT16);
+            retVal = toAnsiIntParser(dataBlob, &intData->u.s2.item, sizeof (UINT16), _dataOrder);
             break;
         }
 
         case 4:
         {
-            memcpy( (void *)&intData->u.s4.item, dataBlob, sizeof (UINT32));
-            retVal += sizeof (UINT32);
+            retVal = toAnsiIntParser(dataBlob, &intData->u.s4.item, sizeof (UINT32), _dataOrder);
             break;
         }
 
         case 8:
         {
-            memcpy( (void *)&intData->u.s8.item, dataBlob, sizeof (INT8));
-            retVal += sizeof (INT8);
+            retVal = toAnsiIntParser(dataBlob, &intData->u.s8.item, sizeof (INT8));
             break;
         }
 
         case 16:
         {
-            memcpy( (void *)&intData->u.s16.item, dataBlob, sizeof (INT16));
-            retVal += sizeof (INT16);
+            retVal = toAnsiIntParser(dataBlob, &intData->u.s16.item, sizeof (INT16), _dataOrder);
             break;
         }
 
         case 32:
         {
-            memcpy( (void *)&intData->u.s32.item, dataBlob, sizeof (INT32));
-            retVal += sizeof (INT32);
+            retVal = toAnsiIntParser(dataBlob, &intData->u.s32.item, sizeof (INT32), _dataOrder);
             break;
         }
         case 64:

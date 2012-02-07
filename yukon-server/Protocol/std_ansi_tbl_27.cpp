@@ -57,14 +57,12 @@ CtiAnsiTable27::CtiAnsiTable27( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 n
     _presentDemandSelect = new unsigned char[_nbrPresentDemands];
     for (int i = 0; i < _nbrPresentDemands; i++)
     {
-        memcpy(( void *)&_presentDemandSelect[i], dataBlob, sizeof( unsigned char ));
-        dataBlob += sizeof( unsigned char);
+        dataBlob += toAnsiIntParser(dataBlob, &_presentDemandSelect[i], sizeof( unsigned char ));
     }
     _presentValueSelect = new unsigned char[_nbrPresentValues];
     for (int i = 0; i < _nbrPresentValues; i++)
     {
-        memcpy(( void *)&_presentValueSelect[i], dataBlob, sizeof( unsigned char ));
-        dataBlob += sizeof( unsigned char);
+        dataBlob += toAnsiIntParser(dataBlob, &_presentValueSelect[i], sizeof( unsigned char ));
     }
 
 }

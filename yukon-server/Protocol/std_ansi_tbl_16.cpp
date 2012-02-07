@@ -57,8 +57,7 @@ CtiAnsiTable16::CtiAnsiTable16( BYTE *dataBlob, int nbr_constants )
 
    for( index = 0; index < _numberOfConstants; index++ )
    {
-      memcpy(( void *)&_source_link[index], dataBlob, sizeof( SOURCE_LINK_BFLD ));
-      dataBlob += sizeof( SOURCE_LINK_BFLD );
+      dataBlob += toAnsiIntParser(dataBlob, &_source_link[index], sizeof( SOURCE_LINK_BFLD ));
    }
 }
 

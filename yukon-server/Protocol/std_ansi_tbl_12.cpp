@@ -82,13 +82,7 @@ CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries, DataOrder d
 
    for( index = 0; index < num_uom_entries; index++ )
    {
-       if (dataOrder == MSB)
-       {
-           reverseOrder(dataBlob, sizeof( UOM_ENTRY_BFLD ));
-       }
-       memcpy( (void *)&_uom_entries[index], dataBlob, sizeof( UOM_ENTRY_BFLD ));
-       dataBlob += sizeof( UOM_ENTRY_BFLD );
-
+       dataBlob += toAnsiIntParser(dataBlob, &_uom_entries[index], sizeof( UOM_ENTRY_BFLD ), dataOrder );
    }
 
 }

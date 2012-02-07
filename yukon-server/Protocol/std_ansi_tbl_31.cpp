@@ -34,39 +34,19 @@ CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob, DataOrder dataOrder)
     UINT16         nbrSecDispListItems;
     UINT8          nbrSecDispLists;
 
-    memcpy( (void *)&_displayTable.displayCtrl, dataBlob, sizeof( DISP_FLAG_BFLD ));
-    dataBlob += sizeof( DISP_FLAG_BFLD ); //1 byte
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.displayCtrl, sizeof( DISP_FLAG_BFLD )); //1 byte
 
-    if(dataOrder == MSB)
-    {
-        reverseOrder(dataBlob, sizeof(UINT16));
-    }
-    memcpy( (void *)&_displayTable.nbrDispSources, dataBlob, sizeof( UINT16 ));
-    dataBlob += sizeof( UINT16 ); //2 byte
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.nbrDispSources, sizeof( UINT16 ), dataOrder); //2bytes
 
-    memcpy( (void *)&_displayTable.widthDispSources, dataBlob, sizeof( UINT8 ));
-    dataBlob += sizeof( UINT8 ); //1 byte
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.widthDispSources, sizeof( UINT8 )); //1 byte
 
-    if(dataOrder == MSB)
-    {
-        reverseOrder(dataBlob, sizeof(UINT16));
-    }
-    memcpy( (void *)&_displayTable.nbrPriDispListItems, dataBlob, sizeof( UINT16 ));
-    dataBlob += sizeof( UINT16 ); //2 byte
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.nbrPriDispListItems, sizeof( UINT16 ), dataOrder); //2bytes
 
-    memcpy( (void *)&_displayTable.nbrPriDispLists, dataBlob, sizeof( UINT8 ));
-    dataBlob += sizeof( UINT8 ); //1 byte
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.nbrPriDispLists, sizeof( UINT8 )); //1 byte
 
-    if(dataOrder == MSB)
-    {
-        reverseOrder(dataBlob, sizeof(UINT16));
-    }
-    memcpy( (void *)&_displayTable.nbrSecDispListItems, dataBlob, sizeof( UINT16 ));
-    dataBlob += sizeof( UINT16 ); //2 byte
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.nbrSecDispListItems, sizeof( UINT16 ), dataOrder); //2 bytes
 
-    memcpy( (void *)&_displayTable.nbrSecDispLists, dataBlob, sizeof( UINT8 ));
-    dataBlob += sizeof( UINT8 ); //1 byte
-
+    dataBlob += toAnsiIntParser(dataBlob, &_displayTable.nbrSecDispLists, sizeof( UINT8 )); //1 byte
 
 }
 
@@ -153,15 +133,15 @@ void CtiAnsiTable31::printResult( const string& deviceName )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << " ** Actual Display Dimension Table ** "<<endl;
-        dout << "                 On Time Flag: "<<(int)getOnTimeFlag()<<endl;
-        dout << "                Off Time Flag: "<<(int)getOffTimeFlag()<<endl;
-        dout << "               Hold Time Flag: "<<(int)getHoldTimeFlag()<<endl;
-        dout << "          Nbr Display Sources: "<<(int)getNbrDispSources()<<endl;
-        dout << "        Width Display Sources: "<<(int)getWidthDispSources()<<endl;
-        dout << "   Nbr Pri Display List Items: "<<(int)getNbrPriDispListItems()<<endl;
-        dout << "         Nbr Pri Diplay Lists: "<<(int)getNbrPriDispLists()<<endl;
-        dout << "   Nbr Sec Display List Items: "<<(int)getNbrSecDispListItems()<<endl;
-        dout << "         Nbr Sec Diplay Lists: "<<(int)getNbrSecDispLists()<<endl;
+        dout << "                 On Time Flag: "<<getOnTimeFlag()<<endl;
+        dout << "                Off Time Flag: "<<getOffTimeFlag()<<endl;
+        dout << "               Hold Time Flag: "<<getHoldTimeFlag()<<endl;
+        dout << "          Nbr Display Sources: "<<(int) getNbrDispSources()<<endl;
+        dout << "        Width Display Sources: "<<(int) getWidthDispSources()<<endl;
+        dout << "   Nbr Pri Display List Items: "<<(int) getNbrPriDispListItems()<<endl;
+        dout << "        Nbr Pri Display Lists: "<<(int) getNbrPriDispLists()<<endl;
+        dout << "   Nbr Sec Display List Items: "<<(int) getNbrSecDispListItems()<<endl;
+        dout << "         Nbr Sec Diplay Lists: "<<(int) getNbrSecDispLists()<<endl;
 
     }
 

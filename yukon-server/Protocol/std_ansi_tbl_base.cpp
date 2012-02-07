@@ -100,7 +100,6 @@ void CtiAnsiTableBase::reverseOrder(  BYTE *source, int length )
     delete []tempArray;
 }
 
-
 //=========================================================================================================================================
 //this guy converts raw bytes from the meter to doubles so we have a set size to work with
 //all the tables have access to him
@@ -269,6 +268,16 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
 }
 
 
+int CtiAnsiTableBase::toAnsiIntParser( BYTE *source, void *result, size_t length,  DataOrder dataOrder )
+{
+     if (dataOrder == MSB)
+     {
+         reverseOrder(source, length);
+     }
+     memcpy( result, source, length);
+     return length;
+
+}
 //=========================================================================================================================================
 //an STIME_DATE converter to UINT32ness
 //=========================================================================================================================================

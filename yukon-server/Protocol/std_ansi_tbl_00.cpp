@@ -52,48 +52,28 @@ CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
     _std_revision_no(0),
     _nbr_pending(0)
 {
-   //int   byteCount;
-   //byteCount = sizeof( FORMAT_CONTROL_1 ) + sizeof( FORMAT_CONTROL_2 ) + sizeof( FORMAT_CONTROL_3 ) + sizeof( unsigned char )*16;
+    dataBlob += toAnsiIntParser(dataBlob, &_control_1, sizeof( FORMAT_CONTROL_1 ) );
+    dataBlob += toAnsiIntParser(dataBlob, &_control_2, sizeof( FORMAT_CONTROL_2 ) );
+    dataBlob += toAnsiIntParser(dataBlob, &_control_3, sizeof( FORMAT_CONTROL_3 ) );
+    dataBlob += toAnsiIntParser(dataBlob, &_device_class, sizeof( unsigned char )*16 );
+    
+    _std_tbls_used = new unsigned char[_dim_std_tbls_used];
+    dataBlob += toAnsiIntParser(dataBlob, _std_tbls_used, _dim_std_tbls_used );
 
-   memcpy(( void *)&_control_1, dataBlob, sizeof( FORMAT_CONTROL_1 ) );
-   dataBlob += sizeof( FORMAT_CONTROL_1 );
+    _mfg_tbls_used = new unsigned char[_dim_mfg_tbls_used];
+    dataBlob += toAnsiIntParser(dataBlob, _mfg_tbls_used, _dim_mfg_tbls_used );
 
+    _std_proc_used = new unsigned char[_dim_std_proc_used];
+    dataBlob += toAnsiIntParser(dataBlob,  _std_proc_used, _dim_std_proc_used );
+    
+    _mfg_proc_used = new unsigned char[_dim_mfg_proc_used];
+    dataBlob += toAnsiIntParser(dataBlob, _mfg_proc_used, _dim_mfg_proc_used );
+    
+    _std_tbls_write = new unsigned char[_dim_std_tbls_used];
+    dataBlob += toAnsiIntParser(dataBlob, _std_tbls_write, _dim_std_tbls_used );
 
-   memcpy(( void *)&_control_2, dataBlob, sizeof( FORMAT_CONTROL_2 ) );
-   dataBlob += sizeof( FORMAT_CONTROL_2 );
-
-
-   memcpy(( void *)&_control_3, dataBlob, sizeof( FORMAT_CONTROL_3 ) );
-   dataBlob += sizeof( FORMAT_CONTROL_3 );
-
-
-   memcpy(( void *)&_device_class, dataBlob, sizeof( unsigned char )*16 );
-   dataBlob += sizeof( unsigned char )*16;
-
-   _std_tbls_used = new unsigned char[_dim_std_tbls_used];
-   memcpy( _std_tbls_used, dataBlob, _dim_std_tbls_used );
-   dataBlob += _dim_std_tbls_used;
-
-   _mfg_tbls_used = new unsigned char[_dim_mfg_tbls_used];
-   memcpy( _mfg_tbls_used, dataBlob, _dim_mfg_tbls_used );
-   dataBlob += _dim_mfg_tbls_used;
-
-   _std_proc_used = new unsigned char[_dim_std_proc_used];
-   memcpy( _std_proc_used, dataBlob, _dim_std_proc_used );
-   dataBlob += _dim_std_proc_used;
-
-   _mfg_proc_used = new unsigned char[_dim_mfg_proc_used];
-   memcpy( _mfg_proc_used, dataBlob, _dim_mfg_proc_used );
-   dataBlob += _dim_mfg_proc_used;
-
-   _std_tbls_write = new unsigned char[_dim_std_tbls_used];
-   memcpy( _std_tbls_write, dataBlob, _dim_std_tbls_used );
-   dataBlob += _dim_std_tbls_used;
-
-   _mfg_tbls_write = new unsigned char[_dim_mfg_status_used];
-   memcpy( _mfg_tbls_write, dataBlob, _dim_mfg_status_used );
-   dataBlob += _dim_mfg_status_used;
-
+    _mfg_tbls_write = new unsigned char[_dim_mfg_status_used];
+    dataBlob += toAnsiIntParser(dataBlob, _mfg_tbls_write, _dim_mfg_status_used );
 
 }
 
