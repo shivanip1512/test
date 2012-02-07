@@ -39,8 +39,9 @@ Yukon.ThermostatScheduleEditor = {
             range: $R(this.thermostat.HEAT.lower.getF(), Yukon.ThermostatScheduleEditor.thermostat.HEAT.upper.getF()),
             sliderValue: 72,
             onSlide: function(value) {
-                Yukon.ThermostatScheduleEditor.thermostat.assignDegreesOrSnapToLimit(value, CURRENT_TEMP_INPUT.readAttribute("data-temperatureMode"));
-                CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat[CURRENT_TEMP_INPUT.readAttribute("data-temperatureMode")].temperature.sanitizedString();
+            	var tempMode = CURRENT_TEMP_INPUT.readAttribute("data-temperatureMode");
+            	Yukon.ThermostatScheduleEditor.thermostat.assignDegreesOrSnapToLimit(value, tempMode);
+            	CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat[tempMode].temperature.sanitizedString();
             },
             onChange: function(value, e) {
                 Yukon.ThermostatScheduleEditor.commitTempValue(value, CURRENT_TEMP_INPUT);
