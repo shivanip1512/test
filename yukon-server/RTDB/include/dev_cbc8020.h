@@ -10,7 +10,7 @@ class IM_EX_DEVDB Cbc8020Device : public Cbc7020Device
 public:
 
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    virtual void initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
+    static void initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
                                           std::map <int, PointAttribute> &statusOffsetAttribute,
                                           std::map <int, PointAttribute> &accumulatorOffsetAttribute);
 protected:
