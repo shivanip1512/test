@@ -36,7 +36,7 @@ CREATE TABLE ArchiveValuesExportFormat (
     Delimiter  VARCHAR2(20)  NOT NULL,
     Header     VARCHAR2(255) NULL,
     Footer     VARCHAR2(255) NULL,
-    CONSTRAINT PK_ArchiveValuesExportFormat PRIMARY KEY (FormatId)
+    CONSTRAINT PK_ArchiveValuesExpFormat PRIMARY KEY (FormatId)
 );
 
 CREATE TABLE ArchiveValuesExportAttribute (
@@ -45,7 +45,7 @@ CREATE TABLE ArchiveValuesExportAttribute (
     AttributeName VARCHAR2(50) NOT NULL,
     DataSelection VARCHAR2(12) NOT NULL,
     DaysPrevious  NUMBER       NOT NULL,
-    CONSTRAINT PK_ArchiveValuesExportAttrib PRIMARY KEY (AttributeId)
+    CONSTRAINT PK_ArchiveValuesExpAttribute PRIMARY KEY (AttributeId)
 );
 
 CREATE INDEX Indx_ArchValExpAttr_FormatId ON ArchiveValuesExportAttribute (
@@ -65,7 +65,7 @@ CREATE TABLE ArchiveValuesExportField (
     RoundingMode          VARCHAR2(20) NULL,
     MissingAttribute      VARCHAR2(20) NULL,
     MissingAttributeValue VARCHAR2(20) NULL,
-    CONSTRAINT PK_ArchiveValuesExportField PRIMARY KEY (FieldId)
+    CONSTRAINT PK_ArchiveValuesExpField PRIMARY KEY (FieldId)
 );
 
 CREATE INDEX Indx_ArchValExportFld_FormatId ON ArchiveValuesExportField(
