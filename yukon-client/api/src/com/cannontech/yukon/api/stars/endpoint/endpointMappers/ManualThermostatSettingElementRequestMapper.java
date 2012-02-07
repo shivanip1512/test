@@ -26,7 +26,7 @@ public class ManualThermostatSettingElementRequestMapper implements ObjectMapper
         manualThermostatSetting.setHeatTemperature(yukonTemplate.evaluateAsTemperature("//y:heatTemperature"));
         manualThermostatSetting.setCoolTemperature(yukonTemplate.evaluateAsTemperature("//y:coolTemperature"));
 
-        // If both the cool and heat are set, threat this command as an auto mode command and sent both temperatures.
+        // If both the cool and heat are set, treat this command as an auto mode command and send both temperatures.
         if (manualThermostatSetting.getCoolTemperature() != null  &&  manualThermostatSetting.getHeatTemperature() != null) {
             manualThermostatSetting.setAutoModeCommand(true);
         }

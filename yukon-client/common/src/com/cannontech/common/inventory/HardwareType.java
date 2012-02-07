@@ -75,6 +75,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private static ImmutableSet<HardwareType> zigbeeTypes;
     private static ImmutableSet<HardwareType> zigbeeEndpointTypes;
     private static ImmutableSet<HardwareType> validForChangeType;
+    private static ImmutableSet<HardwareType> utilityPROTypes;
+    private static ImmutableSet<HardwareType> autoModeEnableTypes;
     static {
         Builder<HardwareType> builder = ImmutableSet.builder();
         builder.add(UTILITY_PRO_ZIGBEE);
@@ -104,6 +106,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         validForChangeTypeBuilder.add(UTILITY_PRO_G2);
         validForChangeTypeBuilder.add(UTILITY_PRO_G3);
         validForChangeType = validForChangeTypeBuilder.build();
+        
+        utilityPROTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
     }
     
     //TODO Drop booleans and turn these into sets as well?
@@ -296,15 +301,13 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      * Checks if a device has the capability of having auto mode enabled.
      */
     public boolean isAutoModeEnableable() {
-        ImmutableSet<HardwareType> isAutoModeEnableable = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
-        return isAutoModeEnableable.contains(this);
+        return autoModeEnableTypes.contains(this);
     }
 
     /**
      * Checks if a device has a base type of UtilityPRO.
      */
     public boolean isUtilityProType() {
-        ImmutableSet<HardwareType> isUtilityProType = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
-        return isUtilityProType.contains(this);
+        return utilityPROTypes.contains(this);
     }
 }

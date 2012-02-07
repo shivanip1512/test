@@ -907,6 +907,11 @@ Yukon.Thermostat = function(args){
 	    	}
 	    } 
 
+	    // Check if we're looking at a device in auto mode that is not on the autoEnabled view.  If so default to cool instead.
+	    var mode = this.mode
+	    if (this.mode == 'AUTO' && !this.autoEnabled) {
+	    	this.setMode('COOL');
+	    }
 	    this.setMode(this.mode);
     }
     

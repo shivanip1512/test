@@ -10,8 +10,8 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     public static final Temperature DEFAULT_TEMPERATURE = Temperature.fromFahrenheit(72);
 
     // Default temp to 72F
-    private Temperature previousHeatTemperature = Temperature.fromFahrenheit(72);
-    private Temperature previousCoolTemperature = Temperature.fromFahrenheit(72);
+    private Temperature previousHeatTemperature = DEFAULT_TEMPERATURE;
+    private Temperature previousCoolTemperature = DEFAULT_TEMPERATURE;
     private boolean holdTemperature = false;
     private ThermostatMode mode = ThermostatMode.OFF;
     private ThermostatFanState fanState = ThermostatFanState.AUTO;
