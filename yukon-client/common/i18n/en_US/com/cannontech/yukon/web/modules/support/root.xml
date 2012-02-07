@@ -333,6 +333,7 @@
     <entry key="yukon.web.modules.support.webServices.webservice.choose">Choose...</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.uri">URI:</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.username">Username:</entry>
+    <entry key="yukon.web.modules.support.webServices.webservice.formatResponse">Format Response</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.response">RESPONSE</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.submitRequestBtn.label">Submit Request</entry>
     <entry key="yukon.web.modules.support.webServices.webservice.resetUsernameBtn.label">Reset Username</entry>

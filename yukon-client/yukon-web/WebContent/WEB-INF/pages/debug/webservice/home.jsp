@@ -44,6 +44,45 @@
             new Ajax.Request('/spring/debug/webservice/xml/resetUserName', {'method': 'post', 'parameters': {}, 'onComplete': onComplete});
 		}
 		
+		jQuery(document).ready(function() {
+			if (${formatResponse}) {
+				document.getElementById("xmlResponse").value = getformattedXml(document.getElementById("xmlResponse").value);
+			}
+		});
+		
+		/*
+		* Format the passed in unformatted xml by adding newlines and indentation, then return it
+		*/
+		function getformattedXml(unformattedXml) {
+		    var formatted = '';
+		    var reg = /(>)(<)(\/*)/g;
+		    unformattedXml = unformattedXml.replace(reg, '$1\r\n$2$3');
+		    var pad = 0;
+		    jQuery.each(unformattedXml.split('\r\n'), function(index, node) {
+		        var indent = 0;
+		        if (node.match( /.+<\/\w[^>]*>$/ )) {
+		            indent = 0;
+		        } else if (node.match( /^<\/\w/ )) {
+		            if (pad != 0) {
+		                pad -= 1;
+		            }
+		        } else if (node.match( /^<\w[^>]*[^\/]>.*$/ )) {
+		            indent = 1;
+		        } else {
+		            indent = 0;
+		        }
+
+		        var padding = '';
+		        for (var i = 0; i < pad; i++) {
+		            padding += '  ';
+		        }
+
+		        formatted += padding + node + '\r\n';
+		        pad += indent;
+		    });
+			return formatted;
+		}
+		
 	</script>
     
     <form id="executeRequestForm" action="/spring/debug/webservice/xml/executeRequest" method="post">
@@ -129,6 +168,12 @@
 		        <%-- SUBMIT --%>
 		        <br>
                 <cti:button nameKey="submitRequestBtn" styleClass="f_blocker" onclick="executeRequestForm()"/>
+
+	            <c:if test="${formatResponse == true}">
+	                <c:set var="checked" value="checked=\"true\""/>
+	            </c:if>
+				<input id="formatResponseId" type="checkbox" name="formatResponse" ${checked}/>
+				<label for="formatResponseId" class="fwb"><i:inline key=".formatResponse"/>
 		    </td>
 		    
     	</tr>

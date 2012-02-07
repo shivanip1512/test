@@ -47,6 +47,7 @@ public class XMLTestController extends MultiActionController {
     	mav.addObject("uriNames", getUriNames());
     	mav.addObject("uri", getUriNames().get(0));
     	mav.addObject("userName", userContext.getYukonUser().getUsername());
+    	mav.addObject("formatResponse", true);
     	
     	return mav;
     }
@@ -86,6 +87,7 @@ public class XMLTestController extends MultiActionController {
     	String selectedUriIndex = ServletRequestUtils.getRequiredStringParameter(request, "selectedUriIndex");
     	String uri = ServletRequestUtils.getRequiredStringParameter(request, "uri");
     	String userName = ServletRequestUtils.getStringParameter(request, "userName", "");
+    	Boolean formatResponse = ServletRequestUtils.getBooleanParameter(request, "formatResponse");
     	
     	String xmlResponse;
     	try {
@@ -113,6 +115,7 @@ public class XMLTestController extends MultiActionController {
     	mav.addObject("exampleFileNames", getExampleFileNames());
     	mav.addObject("uriNames", getUriNames());
     	mav.addObject("xmlRequest", xmlRequest);
+    	mav.addObject("formatResponse", formatResponse == null ? false : true);
     	mav.addObject("uri", uri);
     	mav.addObject("xmlResponse", xmlResponse);
     	mav.addObject("selectedTemplateIndex", selectedTemplateIndex);
