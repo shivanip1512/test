@@ -29,10 +29,9 @@
     <h3><cti:msg key="yukon.dr.consumer.general.header" /></h3>
     <br>
     <c:if test="${not empty optOutDisabledKey}">
-        <cti:msg2 var="warning" key=".optOutsDisabledWarningTitle" />
-        <tags:boxContainer title="${warning}" hideEnabled="false">
+        <tags:boxContainer2 nameKey="optOutsDisabledWarning" hideEnabled="false">
             <cti:msg2 key=".${optOutDisabledKey}" htmlEscape="false"/>
-        </tags:boxContainer>
+        </tags:boxContainer2>
         <br>
         <br>
     </c:if>

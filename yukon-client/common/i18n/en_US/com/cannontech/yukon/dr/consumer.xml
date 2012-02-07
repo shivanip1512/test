@@ -45,12 +45,12 @@
     <ul>
         <li>The Override (Opt Out) link has been removed.</li>
         <li>Access to program or change your thermostat from this site has been removed.</li>
-        <li>The ability to change program enrollment has been removed</li>
+        <li>The ability to change program enrollment has been removed.</li>
     </ul>
     <br/>
     For more information please contact your Energy Company.
     ]]></entry>
-    <entry key="yukon.web.modules.consumer.general.optOutsDisabledWarningTitle">Temporary Limited Access to Features</entry>
+    <entry key="yukon.web.modules.consumer.general.optOutsDisabledWarning.title">Temporary Limited Access to Features</entry>
     
     <!--  contacts.jsp -->
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>

@@ -110,7 +110,7 @@
                                 <br>
                                 <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" styleClass="formSubmit"/>
                             </div>
-                            <div class="box fl">
+                            <div class="box fr">
                                 <cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" styleClass="formSubmit"/>
                             </div>
                         </form>       

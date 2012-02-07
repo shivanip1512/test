@@ -4,7 +4,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum OptOutEnabled implements DisplayableEnum {
 
-    //Column varChar(25)
+    //Column varChar(18)
 	ENABLED (true, true), 
 	DISABLED_WITH_COMM (false, true),
 	DISABLED_WITHOUT_COMM (false, false);

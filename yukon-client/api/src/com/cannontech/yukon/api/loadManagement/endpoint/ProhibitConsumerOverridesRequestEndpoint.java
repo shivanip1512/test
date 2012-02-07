@@ -52,13 +52,19 @@ public class ProhibitConsumerOverridesRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             
+            //the default action before was to disable optouts - this check ensures that backwards compatibility is preserved.
+            OptOutEnabled optOutAction =  OptOutEnabled.DISABLED_WITH_COMM;
+            if(StringUtils.isNotBlank(action)){
+                optOutAction = OptOutEnabled.valueOf(action);
+            }
+            
             if (StringUtils.isBlank(programName)) {
                 starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
-                optOutService.changeOptOutEnabledStateForToday(user, OptOutEnabled.valueOf(action));
+                optOutService.changeOptOutEnabledStateForToday(user, optOutAction);
 
             } else {
                 starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByApi(user, programName);
-                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, OptOutEnabled.valueOf(action), programName);
+                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, optOutAction, programName);
             }
             
             resultElement = XmlUtils.createStringElement("success", ns, "");

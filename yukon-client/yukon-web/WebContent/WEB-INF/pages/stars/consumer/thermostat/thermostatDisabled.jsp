@@ -10,7 +10,6 @@
         <i:inline key=".msg"/>
         <br>
         <br>
-        <input type="button" value='<i:inline key=".home"/>'
-               onclick="location.href='/spring/stars/consumer/general';"></input>
+        <cti:button key=".home" href="/spring/stars/consumer/general"/>
     </div>
 </cti:standardPage>
