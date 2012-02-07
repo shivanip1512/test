@@ -183,7 +183,7 @@ public:
     CtiCCCapBank& setLastStatusChangeTime(const CtiTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(LONG tags);
 
-    CtiCCCapBank& setVerificationFlag(BOOL verificationFlag);
+    CtiCCCapBank& setVerificationFlag(bool verificationFlag);
     CtiCCCapBank& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
     CtiCCCapBank& setRetryOpenFailedFlag(BOOL retryOpenFailedFlag);

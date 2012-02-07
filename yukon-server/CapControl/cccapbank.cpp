@@ -977,7 +977,7 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(LONG statuspoint)
 
     Sets the verification flag, b4 capbank is exercised in the verification routine
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setVerificationFlag(BOOL verificationFlag)
+CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
 {
 
     if (_verificationFlag != verificationFlag)
