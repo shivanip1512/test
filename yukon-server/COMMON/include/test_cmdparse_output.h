@@ -104,7 +104,7 @@ std::string parse_asString[] = {
 //  90
 "command=5:flags=0::interval=intervals,-2147483648,0.000:type=versacom,0,0.000",
 "command=5:flags=0::model=TRUE,-2147483648,0.000:type=versacom,0,0.000",
-"command=2:flags=0::analog=(none),1,1.000:analogoffset=(none),1,1.000:analogvalue=(none),3,3.142:type=versacom,0,0.000",
+"command=2:flags=0::analog=(none),1,1.000:analogfloatvalue=(none),3,3.142:analogoffset=(none),1,1.000:analogvalue=(none),3,3.142:type=versacom,0,0.000",
 "command=2:flags=0::analog=(none),1,1.000:analogvalue=(none),2,2.718:type=versacom,0,0.000",
 "command=2:flags=0::kyz=(none),1,1.000:kyz_offset=(none),1,1.000:type=versacom,0,0.000",
 "command=4:flags=16::type=versacom,0,0.000",
