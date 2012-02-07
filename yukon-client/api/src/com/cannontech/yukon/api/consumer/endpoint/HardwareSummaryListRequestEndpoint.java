@@ -1,7 +1,5 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +24,8 @@ import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.yukon.api.stars.endpoint.RunThermostatProgramEndpoint;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Endpoint
 public class HardwareSummaryListRequestEndpoint {
@@ -46,13 +46,13 @@ public class HardwareSummaryListRequestEndpoint {
         try{
             //get the hardware summary for the specified account
             List<String> requestedHardwareTypes = requestTemplate.evaluateAsStringList("//y:hardwareClass");
-            List<HardwareSummary> hardwareSummaryList = new ArrayList<HardwareSummary>();
+            List<HardwareSummary> hardwareSummaryList = Lists.newArrayList();
             if(requestedHardwareTypes.isEmpty()){
                 //get all the hardware
                 hardwareSummaryList = inventoryDao.getAllHardwareSummaryForAccount(customerAccount.getAccountId());
             }else{
                 //gather up the types
-                Set<HardwareType> hardwareTypes = new HashSet<HardwareType>();
+                Set<HardwareType> hardwareTypes = Sets.newHashSet();
                 for(String requestedHardwareType : requestedHardwareTypes){
                     hardwareTypes.addAll(HardwareType.getForClass(HardwareClass.valueOf(requestedHardwareType)));
                 }
