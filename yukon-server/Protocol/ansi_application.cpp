@@ -414,7 +414,7 @@ void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigne
 {
     if (_currentTable != NULL)
     {
-        delete _currentTable;
+        delete []_currentTable;
         _currentTable = NULL;
     }
     _currentTable = CTIDBG_new BYTE[_currentTableSize];
