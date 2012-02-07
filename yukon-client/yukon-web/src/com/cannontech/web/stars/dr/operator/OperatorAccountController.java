@@ -572,10 +572,6 @@ public class OperatorAccountController {
             && !bindingResult.hasErrors()) {
             systemEventLogService.loginChangeAttemptedByOperator(userContext.getYukonUser(), residentialUser.getUsername());
             
-            
-            /* Check to see if the user is trying to modify the default user */
-            checkEditingDefaultUser(loginBackingBean.getUsername());
-            
             /* ensure that we are only updating passwords on existing accounts */
             residentialLoginService.updateResidentialPassword(loginBackingBean, userContext, residentialUser);
             
