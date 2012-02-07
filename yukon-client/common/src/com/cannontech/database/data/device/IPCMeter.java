@@ -19,6 +19,7 @@ public class IPCMeter extends IEDMeter {
         //add comm channel
         comms.setPortName(getPAOName());
         comms.setDbConnection(getDbConnection());
+        comms.getCommPort().setCommonProtocol("None");
         comms.add();
         
         //add meter
