@@ -110,7 +110,7 @@ private:
     int   _timeFmt;
     int   _meterHour;
     bool  _timeZoneApplied;
-    bool  _lsbDataOrder;
+    DataOrder  _dataOrder;
     bool  _descBlockOrder;
     bool  _descIntervalOrder;
 
@@ -122,7 +122,7 @@ public:
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
-                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true,
+                        int timeFmt, int meterHour, bool timeZoneApplied, DataOrder dataOrder = LSB,
                         bool descBlockOrder = false, bool descIntervalOrder = false);
 
    virtual ~CtiAnsiTable64();

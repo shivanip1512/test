@@ -25,7 +25,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                                           int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour,
-                                          bool timeZoneApplied, bool lsbDataOrder, bool descBlockOrder, bool descIntervalOrder )
+                                          bool timeZoneApplied, DataOrder dataOrder, bool descBlockOrder, bool descIntervalOrder )
 {
     int index, i, j;
     int bytes = 0;
@@ -46,7 +46,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
     _niFmt2 = niFmt2;
     _meterHour = meterHour;
     _timeZoneApplied = timeZoneApplied;
-    _lsbDataOrder = lsbDataOrder;
+    _dataOrder = dataOrder;
     _descBlockOrder = descBlockOrder;
     _descIntervalOrder = descIntervalOrder;
 
@@ -65,7 +65,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
             if (_blkEndReadFlag)
             {
                 // END READINGS - block end reading
-                bytes = toDoubleParser( dataBlob, _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read, _niFmt1, _lsbDataOrder );
+                bytes = toDoubleParser( dataBlob, _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read, _niFmt1, _dataOrder );
                 dataBlob += bytes;
             }
             if (_blkEndPulseFlag)

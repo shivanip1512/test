@@ -53,7 +53,7 @@ private:
 
 public:
 
-   CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbDataOrder = true );
+   CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, DataOrder dataOrder = LSB );
 
    virtual ~CtiAnsiTable63();
 

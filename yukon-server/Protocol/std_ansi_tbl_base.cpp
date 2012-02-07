@@ -109,7 +109,7 @@ void CtiAnsiTableBase::reverseOrder(  BYTE *source, int length )
 //
 //=========================================================================================================================================
 
-int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format,  bool dataOrderLSB )
+int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format,  DataOrder dataOrder )
 {
    BYTEFLOAT32  float32;
    BYTEFLOAT64 flipFloat;
@@ -123,7 +123,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
            //float64
            {
                offset = sizeof( unsigned char ) * 8;
-               if (!dataOrderLSB) 
+               if (dataOrder == MSB) 
                {
                    reverseOrder(  source, offset );
                }
@@ -144,7 +144,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
            //float32
            {
                offset = sizeof( unsigned char ) * 4;
-               if (!dataOrderLSB) 
+               if (dataOrder == MSB) 
                {
                    reverseOrder(  source, offset );
                }
@@ -182,7 +182,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
            {
                //int24
                offset = sizeof( unsigned char ) * 3;
-               if (!dataOrderLSB) 
+               if (dataOrder == MSB) 
                {
                    reverseOrder(  source, offset );
                }
@@ -198,7 +198,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
           {
               //int32
                offset = sizeof( long );
-               if (!dataOrderLSB) 
+               if (dataOrder == MSB) 
                {
                    reverseOrder(  source, offset );
                }
@@ -215,7 +215,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
            {
                //int40
                offset = sizeof( unsigned char ) * 5;
-               if (!dataOrderLSB) 
+               if (dataOrder == MSB) 
                {
                    reverseOrder(  source, offset );
                }
@@ -234,7 +234,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format, 
           {
               //int48
                offset = sizeof( unsigned char ) * 6;
-               if (!dataOrderLSB) 
+               if (dataOrder == MSB) 
                {
                    reverseOrder(  source, offset );
                }

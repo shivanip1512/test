@@ -48,7 +48,7 @@ using std::endl;
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTable28::CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues,
-                                bool timeRemainingFlag, int format1, int format2, int timefmt, bool lsbDataOrder )
+                                bool timeRemainingFlag, int format1, int format2, int timefmt, DataOrder dataOrder )
 {
     int bytes, offset;
     offset = 0;
@@ -58,7 +58,7 @@ CtiAnsiTable28::CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 n
     _format1 = format1;
     _format2 = format2;
     _timefmt = timefmt;
-    _lsbDataOrder = lsbDataOrder;
+    _dataOrder = dataOrder;
 
     _presentDemand = new PRESENT_DEMAND_RCD[_nbrPresentDemands];
     for (int i = 0; i < _nbrPresentDemands; i++)
@@ -71,7 +71,7 @@ CtiAnsiTable28::CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 n
         }
         else
             _presentDemand[i].timeRemaining = 0;
-        bytes = toDoubleParser( dataBlob, _presentDemand[i].demandValue, _format2, _lsbDataOrder );
+        bytes = toDoubleParser( dataBlob, _presentDemand[i].demandValue, _format2, _dataOrder );
         dataBlob += bytes;
         offset += bytes;
 
@@ -79,7 +79,7 @@ CtiAnsiTable28::CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 n
     _presentValue = new double[_nbrPresentValues];
     for (int i = 0; i < _nbrPresentValues; i++)
     {
-        bytes = toDoubleParser( dataBlob, _presentValue[i], _format1, _lsbDataOrder );
+        bytes = toDoubleParser( dataBlob, _presentValue[i], _format1, _dataOrder );
         dataBlob += bytes;
         offset += bytes;
     }

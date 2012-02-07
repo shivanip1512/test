@@ -73,7 +73,7 @@ private:
 
 public:
 
-   CtiAnsiTable61(  BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder = true);
+   CtiAnsiTable61(  BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, DataOrder dataOrder = LSB);
 
    virtual ~CtiAnsiTable61();
 

@@ -159,7 +159,7 @@ void CtiAnsiTable00::printResult(const string& deviceName)
     * of the method call
     ***************************************************************
     */
-    integer = getRawDataOrder();
+    integer = (int) getRawDataOrder();
     aString = getResolvedDataOrder();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -419,9 +419,9 @@ string CtiAnsiTable00::getResolvedIntFormat( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTable00::getRawDataOrder( void )
+DataOrder CtiAnsiTable00::getRawDataOrder( void )
 {
-   return (int)_control_1.data_order;
+   return _control_1.data_order == 0 ? LSB : MSB ;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================

@@ -39,7 +39,7 @@ class IM_EX_PROT CtiAnsiTable13 : public CtiAnsiTableBase
 
 public:
 
-   CtiAnsiTable13( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude, bool lsbDataOrder = true );
+   CtiAnsiTable13( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude, DataOrder dataOrder = LSB );
    virtual ~CtiAnsiTable13();
    CtiAnsiTable13& operator=(const CtiAnsiTable13& aRef);
    void printResult( const std::string& deviceName );

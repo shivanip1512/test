@@ -21,7 +21,7 @@ using std::endl;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder )
+CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, DataOrder dataOrder )
 {
     int x = 0;
     int offset = 0;
@@ -53,11 +53,11 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
         }
     }
     double tempResult;
-    offset = toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
+    offset = toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, dataOrder );
     _lp_tbl.lp_memory_len = tempResult;
     dataBlob += offset;
 
-    if (!lsbDataOrder)
+    if (dataOrder == MSB)
     {
         reverseOrder(dataBlob, sizeof( unsigned char )*2 );
     }
@@ -73,7 +73,7 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
         if (_lpDataSetUsed[x])
         {
 
-            if (!lsbDataOrder)
+            if (dataOrder == MSB)
             {
                 reverseOrder(dataBlob, sizeof(short) );
                 reverseOrder(dataBlob + 2, sizeof(short) );

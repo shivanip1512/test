@@ -48,7 +48,7 @@ using std::string;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude, bool lsbDataOrder )
+CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude, DataOrder dataOrder)
 {
    int      index;
 
@@ -91,7 +91,7 @@ CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, boo
       }
       else
       {
-          if(!lsbDataOrder)
+          if(dataOrder == MSB)
           {
               reverseOrder(dataBlob, sizeof( unsigned char) * 2 );
           }

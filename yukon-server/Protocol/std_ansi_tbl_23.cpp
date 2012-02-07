@@ -61,7 +61,7 @@ using std::string;
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTable23::CtiAnsiTable23( BYTE *dataBlob, int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
-                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr,  bool lsbDataOrder )
+                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr,  DataOrder dataOrder )
 {
    int      index;
    int      cnt;
@@ -82,7 +82,7 @@ CtiAnsiTable23::CtiAnsiTable23( BYTE *dataBlob, int occur, int summations, int d
    _format1 = format1;
    _format2 = format2;
    _timefmt = timefmat;
-   _lsbDataOrder = lsbDataOrder;
+   _dataOrder = dataOrder;
 
    _tablePrintNumber = tableNbr;
 
@@ -365,7 +365,7 @@ void CtiAnsiTable23::populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_bloc
 
     for( index = 0; index < _sumNums; index++ )
     {
-       bytes = toDoubleParser( dataBlob, data_block->summations[index], _format1, _lsbDataOrder );
+       bytes = toDoubleParser( dataBlob, data_block->summations[index], _format1, _dataOrder );
        dataBlob += bytes;
        offset += bytes;
     }
@@ -396,7 +396,7 @@ void CtiAnsiTable23::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_b
 
       if( _cumd == true )
       {
-         bytes = toDoubleParser( dataBlob, data_block->demands[index].cum_demand, _format1, _lsbDataOrder );
+         bytes = toDoubleParser( dataBlob, data_block->demands[index].cum_demand, _format1, _dataOrder );
          dataBlob += bytes;
          offset += bytes;
       }
@@ -405,7 +405,7 @@ void CtiAnsiTable23::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_b
 
       if( _cumcont == true )
       {
-         bytes = toDoubleParser( dataBlob, data_block->demands[index].cont_cum_demand, _format1, _lsbDataOrder );
+         bytes = toDoubleParser( dataBlob, data_block->demands[index].cont_cum_demand, _format1, _dataOrder );
          dataBlob += bytes;
          offset += bytes;
       }
@@ -415,7 +415,7 @@ void CtiAnsiTable23::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_b
       data_block->demands[index].demand = new double[_ocNums];
       for( cnt = 0; cnt < _ocNums; cnt++ )
       {
-         bytes = toDoubleParser( dataBlob, data_block->demands[index].demand[cnt], _format2, _lsbDataOrder );
+         bytes = toDoubleParser( dataBlob, data_block->demands[index].demand[cnt], _format2, _dataOrder );
          dataBlob += bytes;
          offset += bytes;
       }
@@ -435,7 +435,7 @@ void CtiAnsiTable23::populateCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD *da
 
        for( cnt = 0; cnt < _ocNums; cnt++ )
        {
-          bytes = toDoubleParser( dataBlob, data_block->coincidents[index].coincident_values[cnt], _format2, _lsbDataOrder );
+          bytes = toDoubleParser( dataBlob, data_block->coincidents[index].coincident_values[cnt], _format2, _dataOrder );
           dataBlob += bytes;
           offset += bytes;
        }

@@ -72,7 +72,7 @@ void CtiANSIApplication::init( void )
     _negotiateRetry = 0;
     if (_currentTable != NULL)
     {
-        delete _currentTable;
+        delete []_currentTable;
         _currentTable = NULL;
     }
     _currentTableSize = 1024;
@@ -101,7 +101,7 @@ void CtiANSIApplication::terminateSession( void )
     _currentState = getNextState (_requestedState);
     setRetries (MAXRETRIES);
     setTableComplete (false);
-    //memset( _currentTable, 0, sizeof( *_currentTable ) );
+    memset( _currentTable, 0, sizeof( *_currentTable ) );
     
     _totalBytesInTable = 0;
 }
@@ -112,7 +112,7 @@ void CtiANSIApplication::destroyMe( void )
 {
     if( _currentTable != NULL )
     {
-        delete _currentTable;
+        delete []_currentTable;
         _currentTable = NULL;
     }
    

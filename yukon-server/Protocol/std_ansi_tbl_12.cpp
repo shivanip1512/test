@@ -72,7 +72,7 @@ const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_UNKNOWN = "Timebase not supported";
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries, bool lsbDataOrder )
+CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries, DataOrder dataOrder )
 {
    int index;
 
@@ -82,7 +82,7 @@ CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries, bool lsbDat
 
    for( index = 0; index < num_uom_entries; index++ )
    {
-       if (!lsbDataOrder)
+       if (dataOrder == MSB)
        {
            reverseOrder(dataBlob, sizeof( UOM_ENTRY_BFLD ));
        }

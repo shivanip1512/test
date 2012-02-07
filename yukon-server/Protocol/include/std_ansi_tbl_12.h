@@ -28,7 +28,7 @@ class IM_EX_PROT CtiAnsiTable12 : public CtiAnsiTableBase
 {
 public:
 
-   CtiAnsiTable12( BYTE *dataBlob, int num_entries, bool lsbDataOrder = true );
+   CtiAnsiTable12( BYTE *dataBlob, int num_entries, DataOrder dataOrder = LSB );
    virtual ~CtiAnsiTable12();
    CtiAnsiTable12& operator=(const CtiAnsiTable12& aRef);
 

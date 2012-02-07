@@ -61,7 +61,7 @@ private:
 
 public:
 
-    int getRawDataOrder( void );
+    DataOrder getRawDataOrder( void );
     std::string getResolvedDataOrder( void );
     int getRawCharFormat( void );
     std::string getResolvedCharFormat( void );

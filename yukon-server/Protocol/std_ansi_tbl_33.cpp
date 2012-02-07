@@ -25,7 +25,7 @@ using std::endl;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems, bool lsbDataOrder )
+CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems, DataOrder dataOrder )
 {
     _nbrPriDispLists = nbrPriDispLists;
     _nbrPriDispListItems = nbrPriDispListItems;
@@ -40,7 +40,7 @@ CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nb
     _priDispListTable.priDispSources = new UINT16[_nbrPriDispListItems];
     for (int i = 0; i < _nbrPriDispListItems; i++)
     {
-        if (!lsbDataOrder)
+        if (dataOrder == MSB)
         {
             reverseOrder(dataBlob, sizeof(UINT16));
         }

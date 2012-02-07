@@ -20,7 +20,7 @@ using std::endl;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbDataOrder)
+CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, DataOrder dataOrder )
 {
     int x;
     int cnt = 0;
@@ -44,7 +44,7 @@ CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbD
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, dataBlob, sizeof( LP_SET_STATUS_BFLD ));
             dataBlob += sizeof( LP_SET_STATUS_BFLD );
 
-            if (!lsbDataOrder)
+            if (dataOrder == MSB)
             {
                 reverseOrder(dataBlob, sizeof (short));
                 reverseOrder(dataBlob + 2, sizeof (short));
@@ -54,10 +54,10 @@ CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbD
             dataBlob += (sizeof (short) * 2);
 
             double tempResult;
-            dataBlob += toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
+            dataBlob += toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, dataOrder );
             _lp_status_tbl.lp_status_set[index].last_block_seq_nbr = tempResult;
 
-            if (!lsbDataOrder)
+            if (dataOrder == MSB)
             {
                 reverseOrder(dataBlob, sizeof (short));
                 reverseOrder(dataBlob + 2, sizeof (short));

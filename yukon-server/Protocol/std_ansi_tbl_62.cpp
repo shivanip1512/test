@@ -22,7 +22,7 @@ using std::endl;
 
 CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info,
                                         bool scalarDivisorFlag1, bool scalarDivisorFlag2, bool scalarDivisorFlag3,
-                                        bool scalarDivisorFlag4, int stdVersionNumber, bool lsbDataOrder )
+                                        bool scalarDivisorFlag4, int stdVersionNumber, DataOrder dataOrder)
 {
     _lp_ctrl_tbl.lp_sel[0].lp_sel_set = NULL;
     _lp_ctrl_tbl.lp_sel[0].scalars_set = NULL;

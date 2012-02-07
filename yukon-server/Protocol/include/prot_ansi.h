@@ -259,7 +259,6 @@ typedef enum
 } MfgTables;
 
 
-
 #pragma pack( pop )
 
 class IM_EX_PROT CtiProtocolANSI

@@ -24,7 +24,7 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob, bool lsbDataOrder )
+CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob, DataOrder dataOrder)
 {
     DISP_FLAG_BFLD displayCtrl;
     UINT16         nbrDispSources;
@@ -37,7 +37,7 @@ CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob, bool lsbDataOrder )
     memcpy( (void *)&_displayTable.displayCtrl, dataBlob, sizeof( DISP_FLAG_BFLD ));
     dataBlob += sizeof( DISP_FLAG_BFLD ); //1 byte
 
-    if(!lsbDataOrder)
+    if(dataOrder == MSB)
     {
         reverseOrder(dataBlob, sizeof(UINT16));
     }
@@ -47,7 +47,7 @@ CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob, bool lsbDataOrder )
     memcpy( (void *)&_displayTable.widthDispSources, dataBlob, sizeof( UINT8 ));
     dataBlob += sizeof( UINT8 ); //1 byte
 
-    if(!lsbDataOrder)
+    if(dataOrder == MSB)
     {
         reverseOrder(dataBlob, sizeof(UINT16));
     }
@@ -57,7 +57,7 @@ CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob, bool lsbDataOrder )
     memcpy( (void *)&_displayTable.nbrPriDispLists, dataBlob, sizeof( UINT8 ));
     dataBlob += sizeof( UINT8 ); //1 byte
 
-    if(!lsbDataOrder)
+    if(dataOrder == MSB)
     {
         reverseOrder(dataBlob, sizeof(UINT16));
     }

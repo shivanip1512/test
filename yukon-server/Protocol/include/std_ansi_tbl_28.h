@@ -33,13 +33,12 @@ private:
     int _format1;
     int _format2;
     int _timefmt;
-    bool _lsbDataOrder;
+    DataOrder _dataOrder;
 
 public:
 
-   CtiAnsiTable28( );
    CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues,
-                         bool timeRemainingFlag, int format1, int format2, int timefmt, bool lsbDataOrder = true );
+                         bool timeRemainingFlag, int format1, int format2, int timefmt, DataOrder dataOrder = LSB );
    virtual ~CtiAnsiTable28();
    CtiAnsiTable28& operator=(const CtiAnsiTable28& aRef);
    void printResult( const std::string& deviceName );

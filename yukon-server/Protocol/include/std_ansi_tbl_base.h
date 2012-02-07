@@ -46,6 +46,12 @@ typedef union
 } BYTEUINT32;
 
 
+typedef enum
+{
+    LSB,
+    MSB
+} DataOrder;
+
 #define BCD                unsigned char
 
 // non integer formats
@@ -158,8 +164,8 @@ private:
 public:
 
    void reverseOrder(  BYTE *source, int length );
-   int toDoubleParser( BYTE *source, double &result, int format, bool dataOrderLSB = true);
-   int fromDoubleParser ( double &result, BYTE *source, int format,  bool dataOrderLSB = true );
+   int toDoubleParser( BYTE *source, double &result, int format, DataOrder dataOrderLSB = LSB );
+   int fromDoubleParser ( double &result, BYTE *source, int format,  DataOrder dataOrder = LSB );
    int toUint32STime( BYTE *source, ULONG &result, int format );
    ULONG BCDtoBase10( UCHAR* buffer, ULONG len );
    int toUint32LTime( BYTE *source, ULONG &result, int format );

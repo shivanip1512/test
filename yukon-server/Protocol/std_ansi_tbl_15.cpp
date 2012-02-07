@@ -48,7 +48,7 @@ using std::string;
 //=========================================================================================================================================
 
 CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
-                                          int format1, int format2, bool lsbDataOrder )
+                                          int format1, int format2, DataOrder dataOrder)
 {
    int      index;
    int      bytes;
@@ -60,7 +60,7 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
     _SetTwoPresentFlag = useSet2;
     _NIFormat1 = format1;
     _NIFormat2 = format2;
-    _lsbDataOrder = lsbDataOrder;
+    _lsbDataOrder = dataOrder;
 
    _constants_table = new CONSTANTS_SELECT[_NumberConstantsEntries];
 

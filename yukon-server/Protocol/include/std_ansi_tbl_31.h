@@ -40,7 +40,7 @@ private:
 
 public:
 
-   CtiAnsiTable31( BYTE *dataBlob, bool lsbDataOrder = true );
+   CtiAnsiTable31( BYTE *dataBlob, DataOrder dataOrder = LSB );
 
    virtual ~CtiAnsiTable31();
    CtiAnsiTable31& operator=(const CtiAnsiTable31& aRef);

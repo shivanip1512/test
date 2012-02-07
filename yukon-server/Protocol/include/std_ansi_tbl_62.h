@@ -53,7 +53,7 @@ public:
 
     CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
                      bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
-                     int stdVersionNumber, bool lsbDataOrder = true  );
+                     int stdVersionNumber, DataOrder dataOrder = LSB );
     
     virtual ~CtiAnsiTable62();
 
