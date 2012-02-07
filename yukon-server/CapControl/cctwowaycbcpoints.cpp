@@ -97,14 +97,14 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid, string paotype)
         _attributes.insert( std::make_pair( attribute, LitePoint()) );
     }
 
-    Cti::Devices::DnpDevice* device = NULL;
+    Cti::Devices::DnpDevice device;
     if (stringContainsIgnoreCase(paotype, "cbc 702"))
-        device = new Cti::Devices::Cbc7020Device();
+        device = Cti::Devices::Cbc7020Device();
     else
-        device = new Cti::Devices::Cbc8020Device();
+        device = Cti::Devices::Cbc8020Device();
 
    
-    device->initOffsetAttributeMaps(_analogOffsetAttribute, _statusOffsetAttribute, _accumulatorOffsetAttribute);
+    device.initOffsetAttributeMaps(_analogOffsetAttribute, _statusOffsetAttribute, _accumulatorOffsetAttribute);
     
 
     _pointidPointtypeMap.clear();
