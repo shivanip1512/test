@@ -40,6 +40,10 @@ public enum ProgramState implements DisplayableEnum{
         return lookupByLegacyId.get(stateId);
     }
     
+    public String getStyleString() {
+        return "PROGRAM_STATE_" + toString();
+    }
+    
     @Override
     public String getFormatKey() {
         return keyPrefix + name();

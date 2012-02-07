@@ -66,7 +66,7 @@ jQuery(function() {
                             </label>
                         </td><td>
                             ${fn:escapeXml(gears[status.index])}
-                        </td><td>
+                        </td><td class="${states[status.index].styleString}">
                             <i:inline key="${states[status.index]}"/>
                         </td>
                     </tr>

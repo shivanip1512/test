@@ -45,10 +45,10 @@ import com.google.common.collect.Lists;
 @Controller
 @RequestMapping("/program/*")
 public class ProgramController extends ProgramControllerBase {
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private ScenarioService scenarioService;
-    private LoadGroupControllerHelper loadGroupControllerHelper;
-    private FavoritesDao favoritesDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ScenarioService scenarioService;
+    @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
+    @Autowired private FavoritesDao favoritesDao;
 
     @RequestMapping
     public String list(ModelMap model, YukonUserContext userContext,
@@ -209,8 +209,8 @@ public class ProgramController extends ProgramControllerBase {
         modelMap.addAttribute("programs", programs);
         
         //get current gears and statuses
-        List<String> gears = Lists.newArrayList();
-        List<ProgramState> states = Lists.newArrayList();
+        List<String> gears = Lists.newArrayListWithCapacity(programs.size());
+        List<ProgramState> states = Lists.newArrayListWithCapacity(programs.size());
         for(DisplayablePao program : programs) {
             DatedObject<LMProgramBase> datedObject = programService.findDatedProgram(program.getPaoIdentifier().getPaoId());
             LMProgramBase programBase = datedObject.getObject();
@@ -283,26 +283,5 @@ public class ProgramController extends ProgramControllerBase {
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         programControllerHelper.initBinder(binder, userContext, "programList");
         loadGroupControllerHelper.initBinder(binder, userContext);
-    }
-
-    @Autowired
-    public void setLoadGroupControllerHelper(
-            LoadGroupControllerHelper loadGroupControllerHelper) {
-        this.loadGroupControllerHelper = loadGroupControllerHelper;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
-    }
-    
-    @Autowired
-    public void setScenarioService(ScenarioService scenarioService) {
-        this.scenarioService = scenarioService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
 }
