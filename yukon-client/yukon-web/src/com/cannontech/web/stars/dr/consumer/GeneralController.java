@@ -52,6 +52,14 @@ public class GeneralController extends AbstractConsumerController {
         boolean isNotEnrolled = displayablePrograms.size() == 0;
         map.addAttribute("isNotEnrolled", isNotEnrolled);
 
+        if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isOptOutEnabled() ||
+                !optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
+            if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
+                map.addAttribute("optOutDisabledKey", "optOutsAndCommuncationDisabledWarning");
+            }else{
+                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
+            }
+        }
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
         
         int accountId = customerAccount.getAccountId();
@@ -84,14 +92,6 @@ public class GeneralController extends AbstractConsumerController {
         	}
         }
         map.addAttribute("showNotification", showNotification);
-        if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isOptOutEnabled() ||
-                !optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
-            if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
-                map.addAttribute("optOutDisabledKey", "optOutsAndCommuncationDisabledWarning");
-            }else{
-                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
-            }
-        }
         
         return viewName;
     }
