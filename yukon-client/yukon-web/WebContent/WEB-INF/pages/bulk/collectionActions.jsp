@@ -176,7 +176,7 @@
                             <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
                                 action="/spring/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
                         </cti:checkProperty>        
-                       <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORTER">
+                       <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                             <tags:collectionActionTr buttonValue="${archivedValueDataExporterLabel}" description="${archivedValueDataExporterDescription}"
                                 action="/spring/amr/archivedValuesExporter/view" deviceCollection="${deviceCollection}"/>
                        </cti:checkRolesAndProperties>

@@ -113,7 +113,7 @@
     <entry key="yukon.common.device.bulk.collectionActions.readConfigDescription">Reads device configuration settings from the devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigLabel">Verify Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigDescription">Verify settings between the device and the assigned configuration.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Export Point Data</entry> 
+    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Archived Data Export</entry> 
     <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription">Export archived point data.</entry>
      
     <!-- DEVICE COLLECTION REPORT -->

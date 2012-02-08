@@ -114,10 +114,10 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.generateReport.label">Generate Report</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.saveFormatAndGenerateReport.label">Save Format and Generate Report</entry>
     
-    <entry key="yukon.web.modules.amr.archivedValueExporter.VIEW.pageName">Archived Value Exporter</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.EDIT.pageName">Archived Value Exporter</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.VIEW.pageName">Archived Data Export</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.EDIT.pageName">Archived Data Export</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.EDIT.pageDescription">Edit</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageName">Archived Value Exporter</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageName">Archived Data Export</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageDescription">Create</entry>
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.format">Format</entry>
@@ -278,8 +278,8 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterRoute">Default Route</entry>
 
     <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
-    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageName">Archived Value Exporter Device Selection</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageDescription">Archived Value Exporter Device Selection</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageName">Archived Data Export Device Selection</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageDescription">Archived Data Export Device Selection</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.selectionContainer.title">Select Devices</entry>
         
 </properties>

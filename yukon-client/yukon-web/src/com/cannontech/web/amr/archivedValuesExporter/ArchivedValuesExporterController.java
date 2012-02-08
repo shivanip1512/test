@@ -62,7 +62,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/archivedValuesExporter/*")
-@CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORTER)
+@CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
 public class ArchivedValuesExporterController {
 
     public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";

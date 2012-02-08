@@ -269,9 +269,9 @@
                         <a href="../apps/SelectDevice.jsp">Commander</a>
                     </tags:sectionLink>
                 </cti:checkProperty>
-                <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORTER">
+                <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                     <tags:sectionLink>
-                        <a href="/spring/amr/archivedValuesExporter/view">Archived Values Exporter</a>
+                        <a href="/spring/amr/archivedValuesExporter/view">Archived Data Export</a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 <cti:checkProperty property="MultispeakRole.MSP_LM_MAPPING_SETUP">

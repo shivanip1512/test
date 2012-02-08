@@ -34,6 +34,6 @@ public interface DeviceActionsRole {
     public static final int ARCHIVED_DATA_ANALYSIS = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 11; // -21311
     /** Access to Fdr Translation Manager */
     public static final int FDR_TRANSLATION_MANAGER = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 12; // -21312
-    /** Access to Archived Data Exporter */
-    public static final int ARCHIVED_DATA_EXPORTER = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 13; // -21313
+    /** Access to Archived Data Export */
+    public static final int ARCHIVED_DATA_EXPORT = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 13; // -21313
 }
