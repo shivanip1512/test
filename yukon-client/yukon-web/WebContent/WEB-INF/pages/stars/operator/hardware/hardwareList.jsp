@@ -636,7 +636,7 @@
             
                 <br>
                 
-                <form action="/spring/stars/operator/hardware/mp/creationPage">
+                <form action="/spring/stars/operator/hardware/mp/create" method="get">
                     <input type="hidden" name="accountId" value="${accountId}">
                     <table class="popupButtonTable">
                         <tr>

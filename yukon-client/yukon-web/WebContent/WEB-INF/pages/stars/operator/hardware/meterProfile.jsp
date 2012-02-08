@@ -42,13 +42,13 @@ jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
     </i:simplePopup>
 
     <cti:displayForPageEditModes modes="EDIT">
-        <c:set var="action" value="update" />
+        <c:set var="action" value="edit" />
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
         <c:set var="action" value="create" />
     </cti:displayForPageEditModes>
     
-    <form:form commandName="hardware" action="${action}">
+    <form:form commandName="hardware" action="${action}" method="post">
     
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">

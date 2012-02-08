@@ -17,6 +17,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.HardwareType;
@@ -54,14 +55,20 @@ public class MeterProfileController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private HardwareModelHelper helper;
     
-    @RequestMapping
+    /**
+     * View page GET
+     */
+    @RequestMapping(value="view", method=RequestMethod.GET)
     public String view(ModelMap model, AccountInfoFragment fragment, int inventoryId) {
         model.addAttribute("mode", PageEditMode.VIEW);
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
         return setupModel(model, fragment, hardware);
     }
     
-    @RequestMapping
+    /**
+     * Editing page GET 
+     */
+    @RequestMapping(value="edit", method=RequestMethod.GET)
     public String edit(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int inventoryId) {
         model.addAttribute("mode", PageEditMode.EDIT);
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
@@ -69,57 +76,11 @@ public class MeterProfileController {
         return setupModel(model, fragment, hardware);
     }
     
-    private String setupModel(ModelMap model, AccountInfoFragment fragment, Hardware hardware) {
-        int inventoryId = hardware.getInventoryId();
-        model.addAttribute("inventoryId", inventoryId);
-        model.addAttribute("editingRoleProperty", YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING);
-        hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
-        model.addAttribute("hardware", hardware);
-        model.addAttribute("displayName", hardware.getDisplayName());
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        
-        return "operator/hardware/meterProfile.jsp";
-    }
-    
-    @RequestMapping
-    public String creationPage(ModelMap model, 
-                                     YukonUserContext context, 
-                                     AccountInfoFragment fragment, 
-                                     FlashScope flashScope) {
-        model.addAttribute("mode", PageEditMode.CREATE);
-        
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        YukonListEntry typeEntry = energyCompany.getYukonListEntry(HardwareType.NON_YUKON_METER.getDefinitionId());
-        
-        Hardware hardware = new Hardware();
-        hardware.setHardwareType(HardwareType.NON_YUKON_METER);
-        hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
-        hardware.setFieldInstallDate(new Date());
-        
-        for (SwitchAssignment assignement : hardwareUiService.getSwitchAssignments(new ArrayList<Integer>(), fragment.getAccountId())) {
-            hardware.getSwitchAssignments().add(assignement);
-        }
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, context.getYukonUser());
-        
-        if (typeEntry.getEntryID() == 0) {
-            /* This happens when using stars to handle meters (role property z_meter_mct_base_desig='stars') but this energy company does
-             * not have the 'MCT' device type (which is the non yukon meter device type) added to it's device type list in the 
-             * config energy company section yet.  This is a setup issue and we will blow up here for now.  */
-            throw new NoNonYukonMeterDeviceTypeException("There is no meter type in the device types list for this energy company.");
-        }
-
-        model.addAttribute("hardware", hardware);
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        return "operator/hardware/meterProfile.jsp";
-    }
-    
-    @RequestMapping
-    public String update(@ModelAttribute Hardware hardware, BindingResult result,
+    /**
+     * Try to update the meter profile POST 
+     */
+    @RequestMapping(value="edit", method=RequestMethod.POST)
+    public String edit(@ModelAttribute Hardware hardware, BindingResult result,
                                  ModelMap model, 
                                  YukonUserContext context,
                                  HttpServletRequest request,
@@ -161,7 +122,46 @@ public class MeterProfileController {
         return "redirect:view";
     }
     
-    @RequestMapping
+    /**
+     * Creation page GET 
+     */
+    @RequestMapping(value="create", method=RequestMethod.GET)
+    public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        YukonListEntry typeEntry = energyCompany.getYukonListEntry(HardwareType.NON_YUKON_METER.getDefinitionId());
+        
+        Hardware hardware = new Hardware();
+        hardware.setHardwareType(HardwareType.NON_YUKON_METER);
+        hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
+        hardware.setFieldInstallDate(new Date());
+        
+        for (SwitchAssignment assignement : hardwareUiService.getSwitchAssignments(new ArrayList<Integer>(), fragment.getAccountId())) {
+            hardware.getSwitchAssignments().add(assignement);
+        }
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, context.getYukonUser());
+        
+        if (typeEntry.getEntryID() == 0) {
+            /* This happens when using stars to handle meters (role property z_meter_mct_base_desig='stars') but this energy company does
+             * not have the 'MCT' device type (which is the non yukon meter device type) added to it's device type list in the 
+             * config energy company section yet.  This is a setup issue and we will blow up here for now.  */
+            throw new NoNonYukonMeterDeviceTypeException("There is no meter type in the device types list for this energy company.");
+        }
+
+        model.addAttribute("hardware", hardware);
+        
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+        return "operator/hardware/meterProfile.jsp";
+    }
+    
+    /**
+     * Try to create a meter profile POST 
+     */
+    @RequestMapping(value="create", method=RequestMethod.POST)
     public String create(@ModelAttribute("hardware") Hardware hardware, BindingResult result,
                                  ModelMap model, 
                                  YukonUserContext context,
@@ -198,6 +198,19 @@ public class MeterProfileController {
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
         model.addAttribute("inventoryId", inventoryId);
         return "redirect:view";
+    }
+    
+    private String setupModel(ModelMap model, AccountInfoFragment fragment, Hardware hardware) {
+        int inventoryId = hardware.getInventoryId();
+        model.addAttribute("inventoryId", inventoryId);
+        model.addAttribute("editingRoleProperty", YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING);
+        hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
+        model.addAttribute("hardware", hardware);
+        model.addAttribute("displayName", hardware.getDisplayName());
+        
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+        
+        return "operator/hardware/meterProfile.jsp";
     }
     
 }
