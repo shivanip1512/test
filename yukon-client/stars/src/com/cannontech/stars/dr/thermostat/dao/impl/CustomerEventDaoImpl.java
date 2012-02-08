@@ -1,12 +1,11 @@
 package com.cannontech.stars.dr.thermostat.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -15,6 +14,8 @@ import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -76,9 +77,9 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
      */
     private void fillInMissingTemperature(ThermostatManualEvent latestManualEvent, List<ThermostatManualEvent> eventList) {
         // Patch cool temperature if it doesn't exist
-        if (latestManualEvent.getPreviousCoolTemperature().toFahrenheit().getValue() == 0) {
+        if (latestManualEvent.getPreviousCoolTemperature() == null) {
             for (ThermostatManualEvent manualEvent : eventList) {
-                if (manualEvent.getPreviousCoolTemperature().toFahrenheit().getValue() != 0) {
+                if (manualEvent.getPreviousCoolTemperature() != null) {
                     latestManualEvent.setPreviousCoolTemperature(manualEvent.getPreviousCoolTemperature());
                     break;
                 }
@@ -86,14 +87,14 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         }
         
         // Use the default value for a non existing temperature
-        if (latestManualEvent.getPreviousCoolTemperature().toFahrenheit().getValue() == 0) {
+        if (latestManualEvent.getPreviousCoolTemperature() == null) {
             latestManualEvent.setPreviousCoolTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE);
         }
         
         // Patch heat temperature if it doesn't exist
-        if (latestManualEvent.getPreviousHeatTemperature().toFahrenheit().getValue() == 0) {
+        if (latestManualEvent.getPreviousHeatTemperature() == null) {
             for (ThermostatManualEvent manualEvent : eventList) {
-                if (manualEvent.getPreviousHeatTemperature().toFahrenheit().getValue() != 0) {
+                if (manualEvent.getPreviousHeatTemperature() != null) {
                     latestManualEvent.setPreviousHeatTemperature(manualEvent.getPreviousHeatTemperature());
                     break;
                 }
@@ -101,7 +102,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         }
 
         // Use the default value for a non existing temperature
-        if (latestManualEvent.getPreviousHeatTemperature().toFahrenheit().getValue() == 0) {
+        if (latestManualEvent.getPreviousHeatTemperature() == null) {
             latestManualEvent.setPreviousHeatTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE);
         }
     }
@@ -212,7 +213,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     /**
      * Helper class to map a result set into a LiteLMThermostatManualEvent
      */
-    private class ThermostatManualEventMapper implements ParameterizedRowMapper<ThermostatManualEvent> {
+    private class ThermostatManualEventMapper implements YukonRowMapper<ThermostatManualEvent> {
 
         private YukonEnergyCompany yukonEnergyCompany;
 
@@ -221,15 +222,18 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         }
 
         @Override
-        public ThermostatManualEvent mapRow(ResultSet rs, int rowNum)
-                throws SQLException {
+        public ThermostatManualEvent mapRow(YukonResultSet rs) throws SQLException {
 
             int id = rs.getInt("EventId");
             int inventoryId = rs.getInt("InventoryId");
-            Temperature previousCoolTemp = Temperature.fromFahrenheit(rs.getDouble("PreviousCoolTemperature"));
-            Temperature previousHeatTemp = Temperature.fromFahrenheit(rs.getDouble("PreviousHeatTemperature"));
+
+            Double coolTemp = rs.getNullableDouble("PreviousCoolTemperature");
+            Temperature previousCoolTemp = (coolTemp != null) ? Temperature.fromFahrenheit(coolTemp) : null;
+
+            Double heatTemp = rs.getNullableDouble("PreviousHeatTemperature");
+            Temperature previousHeatTemp = (heatTemp != null) ? Temperature.fromFahrenheit(heatTemp) : null;
             String holdTemp = rs.getString("HoldTemperature");
-            Date date = rs.getTimestamp("EventDateTime");
+            Instant date = rs.getInstant("EventDateTime");
 
             ThermostatManualEvent event = new ThermostatManualEvent();
             event.setEventId(id);
@@ -240,8 +244,8 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             // A temp of -1 indicates this event was a 'run program' event. This
             // should really be handled with a column in the table or some other
             // more solid way
-            if (previousCoolTemp.toFahrenheit().getValue() == -1 &&
-                 previousHeatTemp.toFahrenheit().getValue() == -1 ) {
+            // I'm pretty sure this aspect of this mapper is no longer used.  The table doesn't event store this any more.
+            if (previousCoolTemp == null && previousHeatTemp == null ) {
                 event.setRunProgram(true);
             }
 
@@ -271,7 +275,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             ThermostatFanState fanState = ThermostatFanState.valueOf(fanStateDefinitionId);
             event.setFanState(fanState);
 
-            event.setDate(date);
+            event.setDate(date.toDate());
 
             event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
             event.setAction(CustomerAction.MANUAL_OPTION);

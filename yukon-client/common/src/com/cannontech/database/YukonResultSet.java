@@ -80,6 +80,11 @@ public class YukonResultSet {
         return rs.wasNull() ? null : retVal;
     }
 
+    public Double getNullableDouble(String columnLabel) throws SQLException {
+        double retVal = rs.getDouble(columnLabel);
+        return rs.wasNull() ? null : retVal;
+    }
+    
     public long getLong(String columnLabel) throws SQLException {
         return rs.getLong(columnLabel);
     }
