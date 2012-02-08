@@ -60,7 +60,7 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
     _SetTwoPresentFlag = useSet2;
     _NIFormat1 = format1;
     _NIFormat2 = format2;
-    _lsbDataOrder = dataOrder;
+    _dataOrder = dataOrder;
 
    _constants_table = new CONSTANTS_SELECT[_NumberConstantsEntries];
 
@@ -84,12 +84,12 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
          {
             //if( _constants_table != NULL )
            // {
-               bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.multiplier, _NIFormat1, _lsbDataOrder );
+               bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.multiplier, _NIFormat1, _dataOrder );
                dataBlob += bytes;
 
                if( !_NoOffsetFlag )
                {
-                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.offset, _NIFormat1, _lsbDataOrder );
+                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.offset, _NIFormat1, _dataOrder );
                   dataBlob += bytes;
                }
                else
@@ -101,10 +101,10 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
                {
                   dataBlob += toAnsiIntParser(dataBlob, &_constants_table[index].electric_constants.set1_constants.set_flags, sizeof( unsigned char ));
 
-                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set1_constants.ratio_f1, _NIFormat1, _lsbDataOrder );
+                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set1_constants.ratio_f1, _NIFormat1, _dataOrder );
                   dataBlob += bytes;
 
-                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set1_constants.ratio_p1, _NIFormat1, _lsbDataOrder );
+                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set1_constants.ratio_p1, _NIFormat1, _dataOrder );
                   dataBlob += bytes;
                }
                else
@@ -119,10 +119,10 @@ CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entr
                {
                   dataBlob += toAnsiIntParser(dataBlob, &_constants_table[index].electric_constants.set2_constants.set_flags, sizeof( unsigned char ));
 
-                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set2_constants.ratio_f1, _NIFormat1, _lsbDataOrder );
+                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set2_constants.ratio_f1, _NIFormat1, _dataOrder );
                   dataBlob += bytes;
 
-                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set2_constants.ratio_p1, _NIFormat1, _lsbDataOrder );
+                  bytes = toDoubleParser( dataBlob, _constants_table[index].electric_constants.set2_constants.ratio_p1, _NIFormat1, _dataOrder );
                   dataBlob += bytes;
                }
                else

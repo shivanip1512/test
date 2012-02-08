@@ -121,7 +121,7 @@ private:
     bool _SetTwoPresentFlag;
     int _NIFormat1;
     int _NIFormat2;
-    DataOrder _lsbDataOrder;
+    DataOrder _dataOrder;
 
 public:
 
