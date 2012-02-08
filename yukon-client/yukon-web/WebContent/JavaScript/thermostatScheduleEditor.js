@@ -709,11 +709,11 @@ Yukon.ThermostatManualEditor = {
     _resetCoolAndHeatTemperatures: function(event) {
         var popup = $(event.target.readAttribute("popup_id"));
 
-    	popup.down("input[name=coolTemperature]").value = null;
-        popup.down(".coolTemperatureConfirm").innerHTML = null;
+    	popup.down("input[name=coolTemperature]").value = "";
+        popup.down(".coolTemperatureConfirm").innerHTML = "";
     	
-        popup.down("input[name=heatTemperature]").value = null;
-        popup.down(".heatTemperatureConfirm").innerHTML = null;
+        popup.down("input[name=heatTemperature]").value = "";
+        popup.down(".heatTemperatureConfirm").innerHTML = "";
     },
     
     prepForm: function(event){
@@ -1042,7 +1042,8 @@ Yukon.Thermostat = function(args){
             	// Get temperatureSnapshot in case we need to revert the stepUp
             	var temperatureSnapshot = this._temperatureSnapshot();
             	
-	        	var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
+	        	var target = (event.currentTarget) ? event.currentTarget : event.srcElement;
+	        	var windowModeType = target.readAttribute("data-temperatureMode");
 	        	this[windowModeType].temperature.stepUp();
 
             	// Auto mode enabled.  We need to worry about two windows now.
@@ -1078,7 +1079,8 @@ Yukon.Thermostat = function(args){
 	        	// Get temperatureSnapshot in case we need to revert the stepUp
 	        	var temperatureSnapshot = this._temperatureSnapshot();
 	        	
-	        	var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
+	        	var target = (event.currentTarget) ? event.currentTarget : event.srcElement;
+	        	var windowModeType = target.readAttribute("data-temperatureMode");
 	        	this[windowModeType].temperature.stepDown();
 	
 	        	// Auto mode enabled.  We need to worry about two windows now.
