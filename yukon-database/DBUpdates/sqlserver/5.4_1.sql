@@ -76,7 +76,7 @@ CREATE INDEX Indx_ArchValExportFld_FormatId ON ArchiveValuesExportField (
     FormatId ASC
 );
 
-INSERT INTO YukonRoleProperty VALUES (-21313, -213, 'Archived Data Exporter', 'true', 'Controls access to Archived Data Exporter');
+INSERT INTO YukonRoleProperty VALUES (-21313, -213, 'Archived Data Export', 'true', 'Controls access to Archived Data Export');
 /* End YUK-10601 */
 
 /* Start YUK-10605 */

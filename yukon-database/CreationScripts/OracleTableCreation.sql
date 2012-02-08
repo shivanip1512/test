@@ -424,7 +424,7 @@ create table ArchiveValuesExportAttribute  (
    AttributeName        VARCHAR2(50)                    not null,
    DataSelection        VARCHAR2(12)                    not null,
    DaysPrevious         NUMBER                          not null,
-   constraint PK_AttributeId primary key (AttributeId)
+   constraint PK_ArchiveValuesExpAttribute primary key (AttributeId)
 );
 
 /*==============================================================*/
@@ -450,7 +450,7 @@ create table ArchiveValuesExportField  (
    RoundingMode         VARCHAR2(20),
    MissingAttribute     VARCHAR2(20),
    MissingAttributeValue VARCHAR2(20),
-   constraint PK_FieldId primary key (FieldId)
+   constraint PK_ArchiveValuesExpField primary key (FieldId)
 );
 
 /*==============================================================*/
@@ -469,7 +469,7 @@ create table ArchiveValuesExportFormat  (
    Delimiter            VARCHAR2(20)                    not null,
    Header               VARCHAR2(255),
    Footer               VARCHAR2(255),
-   constraint PK_FormatId primary key (FormatId)
+   constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 );
 
 /*==============================================================*/
@@ -9143,7 +9143,7 @@ INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','C
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true','Controls access to Archived Data Analysis collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
-INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Exporter','true','Controls access to Archived Data Exporter');
+INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Export','true','Controls access to Archived Data Export');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');
