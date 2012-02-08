@@ -128,7 +128,7 @@ MODIFY FirmwareVersion VARCHAR2(255) NULL;
 /* Start YUK-10605 */
 /* Note: OptOutTemporaryOverride.OptOutValue is NOT NULL. Nullability is not affected in the below update statement */
 ALTER TABLE OptOutTemporaryOverride
-MODIFY OptOutValue VARCHAR2(18);
+MODIFY OptOutValue VARCHAR2(25);
 UPDATE OptOutTemporaryOverride SET OptOutType = 'OPT_OUTS' WHERE OptOutType = 'ENABLED';
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'COUNT' WHERE OptOutType = 'COUNTS' AND OptOutValue = '1';
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'DONT_COUNT' WHERE OptOutType = 'COUNTS' AND OptOutValue = '0';
