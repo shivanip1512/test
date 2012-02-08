@@ -77,9 +77,7 @@ INSERT INTO YukonRoleProperty VALUES (-21313, -213, 'Archived Data Exporter', 't
 
 /* Start YUK-10605 */
 /* @error ignore-begin */
-/*   Note: The OptOutValue column does not allow NULL values.  This will not change with the MODIFY
- *         statement below.  All that will change is the data type of the field--
- *         it changes from VARCHAR2(10) to VARCHAR2(18). */
+/* Note: OptOutTemporaryOverride.OptOutValue is NOT NULL. Nullability is not affected in the below update statement */
 ALTER TABLE OptOutTemporaryOverride
 MODIFY OptOutValue VARCHAR2(18);
 UPDATE OptOutTemporaryOverride SET OptOutType = 'OPT_OUTS' WHERE OptOutType = 'ENABLED';
