@@ -126,9 +126,7 @@ MODIFY FirmwareVersion VARCHAR2(255) NULL;
 /* End YUK-10536 */
 
 /* Start YUK-10605 */
-/*   Note: The OptOutValue column does not allow NULL values.  This will not change with the MODIFY
- *         statement below.  All that will change is the data type of the field--
- *         it changes from VARCHAR2(10) to VARCHAR2(18). */
+/* Note: OptOutTemporaryOverride.OptOutValue is NOT NULL. Nullability is not affected in the below update statement */
 ALTER TABLE OptOutTemporaryOverride
 MODIFY OptOutValue VARCHAR2(18);
 UPDATE OptOutTemporaryOverride SET OptOutType = 'OPT_OUTS' WHERE OptOutType = 'ENABLED';
