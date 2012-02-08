@@ -51,24 +51,61 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         // In english: get the LMThermostatManualEvent row for the most recent
         // event for the thermostat
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT event.*, base.EventDateTime");
-        sql.append("FROM LMThermostatManualEvent event, LMCustomerEventBase base");
-        sql.append("WHERE event.EventId = base.EventId");
-        sql.append("  AND event.InventoryId").eq(inventoryId);
-        sql.append("ORDER BY base.EventDateTime DESC");
+        sql.append("SELECT LMTME.*, LMCEB.EventDateTime");
+        sql.append("FROM LMThermostatManualEvent LMTME, LMCustomerEventBase LMCEB");
+        sql.append("WHERE LMTME.EventId = LMCEB.EventId");
+        sql.append("  AND LMTME.InventoryId").eq(inventoryId);
+        sql.append("ORDER BY LMCEB.EventDateTime DESC");
         
-        ThermostatManualEvent manualEvent = new ThermostatManualEvent();
-        List<ThermostatManualEvent> eventList = 
-            yukonJdbcTemplate.queryForLimitedResults(sql,  new ThermostatManualEventMapper(yukonEnergyCompany), 1);
+        List<ThermostatManualEvent> eventList = yukonJdbcTemplate.query(sql,  new ThermostatManualEventMapper(yukonEnergyCompany));
 
-        // If any events are found, use the first one which is most recent
+        // Build up the most relivent manual thermostat event grabbing the most recent temperatures for both heat and cool. If a past heat or cool
+        // temperature doesn't exist for a given thermostat, use the default temperature
+        ThermostatManualEvent manualEvent = new ThermostatManualEvent();
     	if(eventList.size() > 0) {
     		manualEvent = eventList.get(0);
+    		fillInMissingTemperature(manualEvent, eventList);
     	}
     	
         return manualEvent;
     }
+    
+    /**
+     * This method goes through and tries to set any missing temperatures with the latest know value for that temperature.
+     * Example:  if you have the events  [87, null], [76, null], and [null, 89] you would get [87, 89]
+     */
+    private void fillInMissingTemperature(ThermostatManualEvent latestManualEvent, List<ThermostatManualEvent> eventList) {
+        // Patch cool temperature if it doesn't exist
+        if (latestManualEvent.getPreviousCoolTemperature().toFahrenheit().getValue() == 0) {
+            for (ThermostatManualEvent manualEvent : eventList) {
+                if (manualEvent.getPreviousCoolTemperature().toFahrenheit().getValue() != 0) {
+                    latestManualEvent.setPreviousCoolTemperature(manualEvent.getPreviousCoolTemperature());
+                    break;
+                }
+            }
+        }
+        
+        // Use the default value for a non existing temperature
+        if (latestManualEvent.getPreviousCoolTemperature().toFahrenheit().getValue() == 0) {
+            latestManualEvent.setPreviousCoolTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE);
+        }
+        
+        // Patch heat temperature if it doesn't exist
+        if (latestManualEvent.getPreviousHeatTemperature().toFahrenheit().getValue() == 0) {
+            for (ThermostatManualEvent manualEvent : eventList) {
+                if (manualEvent.getPreviousHeatTemperature().toFahrenheit().getValue() != 0) {
+                    latestManualEvent.setPreviousHeatTemperature(manualEvent.getPreviousHeatTemperature());
+                    break;
+                }
+            }
+        }
 
+        // Use the default value for a non existing temperature
+        if (latestManualEvent.getPreviousHeatTemperature().toFahrenheit().getValue() == 0) {
+            latestManualEvent.setPreviousHeatTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE);
+        }
+    }
+    
     @Override
     @Transactional
     public void save(CustomerThermostatEvent event) {

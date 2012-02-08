@@ -705,6 +705,16 @@ Yukon.ThermostatManualEditor = {
     onFocusTemperatureDisplay: function(event) {
         this.writeAttribute("previousValue", this.value);
     },
+
+    _resetCoolAndHeatTemperatures: function(event) {
+        var popup = $(event.target.readAttribute("popup_id"));
+
+    	popup.down("input[name=coolTemperature]").value = null;
+        popup.down(".coolTemperatureConfirm").innerHTML = null;
+    	
+        popup.down("input[name=heatTemperature]").value = null;
+        popup.down(".heatTemperatureConfirm").innerHTML = null;
+    },
     
     prepForm: function(event){
         var popup = $(event.target.readAttribute("popup_id"));
@@ -736,24 +746,39 @@ Yukon.ThermostatManualEditor = {
         //send the actual requested value for logging
         var _self = Yukon.ThermostatManualEditor;
 
-        var coolTemperatureValue = widget.down("input[name=temperature_display][data-temperatureMode='COOL']").value;
-        popup.down("input[name=coolTemperature]").value = coolTemperatureValue;
-        popup.down(".coolTemperatureConfirm").innerHTML = coolTemperatureValue;
+        // Reset the request temperatures for heat and cool.
+        _self._resetCoolAndHeatTemperatures(event);
         
-        var heatTemperatureValue = widget.down("input[name=temperature_display][data-temperatureMode='HEAT']").value;
-        popup.down("input[name=heatTemperature]").value = heatTemperatureValue;
-        popup.down(".heatTemperatureConfirm").innerHTML = heatTemperatureValue;
+        // Check to see if the cool temperature should be sent in the request.
+        if ((!_self.thermostat.autoEnabled && _self.thermostat.mode != 'HEAT')  ||
+              _self.thermostat.autoEnabled) {
 
-        if (!(_self.thermostat.autoEnabled) && (_self.thermostat.mode == 'HEAT')) {
-        	jQuery("#coolTemperatureConfirm").hide();
-        	jQuery("#heatTemperatureConfirm").show();
+        	var coolTemperatureValue = widget.down("input[name=temperature_display][data-temperatureMode='COOL']").value;
+            popup.down("input[name=coolTemperature]").value = coolTemperatureValue;
+            popup.down(".coolTemperatureConfirm").innerHTML = coolTemperatureValue;
+
+            // If we are looking at the non auto enabled page only show the one temperature in the confirm box
+            if (!_self.thermostat.autoEnabled) {
+            	jQuery("#coolTemperatureConfirm").show();
+            	jQuery("#heatTemperatureConfirm").hide();
+            }
         }
 
-        if (!(_self.thermostat.autoEnabled) && (_self.thermostat.mode == 'COOL')) {
-        	jQuery("#coolTemperatureConfirm").show();
-        	jQuery("#heatTemperatureConfirm").hide();
+        // Check to see if the cool temperature should be sent in the request.
+        if ((!_self.thermostat.autoEnabled && _self.thermostat.mode == 'HEAT') ||
+             _self.thermostat.autoEnabled) {
+
+            var heatTemperatureValue = widget.down("input[name=temperature_display][data-temperatureMode='HEAT']").value;
+            popup.down("input[name=heatTemperature]").value = heatTemperatureValue;
+            popup.down(".heatTemperatureConfirm").innerHTML = heatTemperatureValue;
+
+            // If we are looking at the non auto enabled page only show the one temperature in the confirm box
+            if (!_self.thermostat.autoEnabled) {
+            	jQuery("#coolTemperatureConfirm").hide();
+            	jQuery("#heatTemperatureConfirm").show();
+            }
         }
-        
+
 		popup.down("input[name=temperatureUnit]").value = Yukon.ThermostatManualEditor.thermostat.COOL.temperature.unit;
         
         popup.show();

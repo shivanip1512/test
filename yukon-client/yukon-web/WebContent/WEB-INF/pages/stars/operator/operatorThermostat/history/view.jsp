@@ -97,13 +97,17 @@ Event.observe(window, 'load', function(){
                                             <td>
                                                 <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                     <!-- Temperature and Degree Units -->
-                                                    <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"  htmlEscape="false"/>
-                                                    <span class="C_label unit_label">${degreesCelsius}</span>
-                                                    <span class="F_label unit_label">${degreesFahrenheit}</span>,
+                                                    <c:if test="${historyItem.manualCoolTemp.value != 0}">
+                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"  htmlEscape="false"/>
+                                                        <span class="C_label unit_label">${degreesCelsius}</span>
+                                                        <span class="F_label unit_label">${degreesFahrenheit}</span>,
+                                                    </c:if>
 
-                                                    <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"  htmlEscape="false"/>
-                                                    <span class="C_label unit_label">${degreesCelsius}</span>
-                                                    <span class="F_label unit_label">${degreesFahrenheit}</span>,
+                                                    <c:if test="${historyItem.manualHeatTemp.value != 0}">
+                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"  htmlEscape="false"/>
+                                                        <span class="C_label unit_label">${degreesCelsius}</span>
+                                                        <span class="F_label unit_label">${degreesFahrenheit}</span>,
+                                                    </c:if>
                                                     
                                                     <!-- Heat/Cool Mode -->
                                                     <i:inline key="yukon.web.modules.operator.thermostatManual.unitMode" /> 

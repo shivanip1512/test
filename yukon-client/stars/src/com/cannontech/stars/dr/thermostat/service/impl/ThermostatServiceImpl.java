@@ -461,11 +461,12 @@ public class ThermostatServiceImpl implements ThermostatService {
         SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
         
         ThermostatManualEventResult message = null;
-        if (heatTemperatureInF.compareTo(schedThermType.getUpperLimit(HeatCoolSettingType.HEAT)) > 0 ||
-              coolTemperatureInF.compareTo(schedThermType.getUpperLimit(HeatCoolSettingType.COOL))  > 0) {
+        if ((heatTemperatureInF != null && heatTemperatureInF.higherThan(schedThermType.getUpperLimit(HeatCoolSettingType.HEAT))) ||
+            (coolTemperatureInF != null && coolTemperatureInF.higherThan(schedThermType.getUpperLimit(HeatCoolSettingType.COOL)))) {
             message = ThermostatManualEventResult.MANUAL_INVALID_TEMP_HIGH;
-        } else if (schedThermType.getLowerLimit(HeatCoolSettingType.HEAT).compareTo(heatTemperatureInF) > 0 ||
-                     schedThermType.getLowerLimit(HeatCoolSettingType.COOL).compareTo(coolTemperatureInF) > 0) {
+
+        } else if ((heatTemperatureInF != null && heatTemperatureInF.lowerThan(schedThermType.getLowerLimit(HeatCoolSettingType.HEAT))) ||
+                     (coolTemperatureInF != null && coolTemperatureInF.lowerThan(schedThermType.getLowerLimit(HeatCoolSettingType.COOL)))) {
             message = ThermostatManualEventResult.MANUAL_INVALID_TEMP_LOW;
         }
         

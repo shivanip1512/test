@@ -200,8 +200,13 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
             }
             
             // Set manual values
-            int coolTemperatureInF = event.getPreviousCoolTemperature().toFahrenheit().toIntValue();
-            int heatTemperatureInF = event.getPreviousHeatTemperature().toFahrenheit().toIntValue();
+            Integer coolTemperatureInF = null;
+            if (event.getPreviousCoolTemperature() != null) 
+                coolTemperatureInF = event.getPreviousCoolTemperature().toFahrenheit().toIntValue();
+            
+            Integer heatTemperatureInF = null;
+            if (event.getPreviousHeatTemperature() != null) 
+                heatTemperatureInF = event.getPreviousHeatTemperature().toFahrenheit().toIntValue();
             
             // The command was sent from an autoModeEnabled page.  Send both temperatures.
             if(thermostat.getType().isAutoModeEnableable() && event.isAutoModeEnabledCommand()) {

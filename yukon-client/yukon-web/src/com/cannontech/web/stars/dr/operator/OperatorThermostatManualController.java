@@ -143,8 +143,14 @@ public class OperatorThermostatManualController {
 
 	    boolean autoModeEnabledCommand = ServletRequestUtils.getBooleanParameter(request, "autoModeEnabled", false);
 	    
-	    Temperature heatTemp = thermostatService.getTempOrDefault(heatTemperature, temperatureUnit);
-	    Temperature coolTemp = thermostatService.getTempOrDefault(coolTemperature, temperatureUnit);
+	    Temperature heatTemp = null;
+	    if (heatTemperature != null) 
+	        heatTemp = thermostatService.getTempOrDefault(heatTemperature, temperatureUnit);
+
+	    Temperature coolTemp = null;
+	    if (coolTemperature != null) 
+	        coolTemp = thermostatService.getTempOrDefault(coolTemperature, temperatureUnit);
+	    
 	    executeManualEvent(thermostatIds, mode, fan, temperatureUnit, heatTemp, coolTemp, autoModeEnabledCommand, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
 	    if (autoModeEnabledCommand) {

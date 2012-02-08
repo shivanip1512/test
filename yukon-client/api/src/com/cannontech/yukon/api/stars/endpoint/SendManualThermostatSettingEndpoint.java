@@ -24,8 +24,6 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
-import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -39,7 +37,6 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 public class SendManualThermostatSettingEndpoint {
 
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private CustomerEventDao customerEventDao;
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -95,7 +92,6 @@ public class SendManualThermostatSettingEndpoint {
                 CustomerAccount account = customerAccountDao.getAccountByInventoryId( thermostatId);
 
                 // Send out manual thermostat commands
-                setPreviousTemperaturesForNull(manualThermostatSetting, thermostatId);
                 result = thermostatService.executeManualEvent(thermostatId, manualThermostatSetting.getHeatTemperature(), manualThermostatSetting.getCoolTemperature(),
                                                               manualThermostatSetting.getThermostatMode(), manualThermostatSetting.getFanState(), manualThermostatSetting.isHoldTemperature(),  
                                                               manualThermostatSetting.isAutoModeCommand(), account, user);
@@ -124,17 +120,6 @@ public class SendManualThermostatSettingEndpoint {
         
         resp.addContent(new Element("success", ns));
         return resp;
-    }
-
-    private void setPreviousTemperaturesForNull(ManualThermostatSetting manualThermostatSetting, int thermostatId) {
-        ThermostatManualEvent lastManualEvent = customerEventDao.getLastManualEvent(thermostatId);
-        if (manualThermostatSetting.getCoolTemperature() == null) {
-            manualThermostatSetting.setCoolTemperature(lastManualEvent.getPreviousCoolTemperature());
-        }
-
-        if (manualThermostatSetting.getHeatTemperature() == null) {
-            manualThermostatSetting.setHeatTemperature(lastManualEvent.getPreviousHeatTemperature());
-        }
     }
 
     /**

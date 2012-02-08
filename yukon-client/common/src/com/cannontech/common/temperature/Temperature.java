@@ -89,4 +89,15 @@ public abstract class Temperature implements Comparable<Temperature> {
         return Double.compare(leftF, rightF);
     }
     
+    public boolean higherThan(Temperature temp) {
+        double leftF = this.toFahrenheit().getValue();
+        double rightF = temp.toFahrenheit().getValue();
+        return Double.compare(leftF, rightF) > 0;
+    }
+
+    public boolean lowerThan(Temperature temp) {
+        double leftF = this.toFahrenheit().getValue();
+        double rightF = temp.toFahrenheit().getValue();
+        return Double.compare(leftF, rightF) < 0;
+    }
 }
