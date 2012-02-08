@@ -53,7 +53,7 @@
 		/*
 		* Format the passed in unformatted xml by adding newlines and indentation, then return it
 		*/
-		function getformattedXml(unformattedXml) {
+		function getFormattedXml(unformattedXml) {
 		    var formatted = '';
 		    var reg = /(>)(<)(\/*)/g;
 		    unformattedXml = unformattedXml.replace(reg, '$1\r\n$2$3');
@@ -169,11 +169,11 @@
 		        <br>
                 <cti:button nameKey="submitRequestBtn" styleClass="f_blocker" onclick="executeRequestForm()"/>
 
-				<c:if test="${formatResponse == true}">
+				<c:if test="${formatResponse}">
 					<c:set var="checked" value="checked=\"true\""/>
 				</c:if>
 				<input id="formatResponseId" type="checkbox" name="formatResponse" ${checked}/>
-				<label for="formatResponseId" class="fwb"><i:inline key=".formatResponse"/>
+				<label for="formatResponseId" class="fwb"><i:inline key=".formatResponse"/></label>
 		    </td>
 		    
     	</tr>
