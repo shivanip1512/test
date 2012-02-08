@@ -118,33 +118,39 @@ VALUES(-40300,-400,'Auto Thermostat Mode Enabled','false','Enables auto mode fun
 
 ALTER TABLE LMThermostatManualEvent
 ADD PreviousCoolTemperature FLOAT;
+GO
 
 UPDATE LMThermostatManualEvent
 SET PreviousCoolTemperature = PreviousTemperature;
 
 ALTER TABLE LMThermostatManualEvent
 ADD PreviousHeatTemperature FLOAT;
+GO
 
 UPDATE LMThermostatManualEvent
 SET PreviousHeatTemperature = PreviousTemperature;
 
 ALTER TABLE LMThermostatManualEvent
 DROP COLUMN PreviousTemperature;
+GO
 
 ALTER TABLE ThermostatEventHistory
 ADD ManualCoolTemp FLOAT;
+GO
 
 UPDATE ThermostatEventHistory
 SET ManualCoolTemp = ManualTemp;
 
 ALTER TABLE ThermostatEventHistory
 ADD ManualHeatTemp FLOAT;
+GO
 
 UPDATE ThermostatEventHistory
 SET ManualHeatTemp = ManualTemp;
 
 ALTER TABLE ThermostatEventHistory
 DROP COLUMN ManualTemp;
+GO
 /* End YUK-10619 */
 
 /**************************************************************/ 
