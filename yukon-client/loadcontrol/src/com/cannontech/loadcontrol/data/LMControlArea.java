@@ -120,7 +120,7 @@ public class LMControlArea implements ILMData, Cloneable {
 			return "INACTIVE";
 
 		case STATE_PARTIALLY_ACTIVE:
-			return "ACTIVE";
+			return "PARTIALLY ACTIVE";
 
 		case STATE_MANUAL_ACTIVE:
 			return "MANUAL ACTIVE";
@@ -132,7 +132,7 @@ public class LMControlArea implements ILMData, Cloneable {
 		    return "PARTIALLY SCHEDULED";
 
 		case STATE_FULLY_ACTIVE:
-			return "FULLY ACTIVE";
+			return "ACTIVE";
 
 		case STATE_CNTRL_ATTEMPT:
 			return "CONTROL ATTEMPT";
