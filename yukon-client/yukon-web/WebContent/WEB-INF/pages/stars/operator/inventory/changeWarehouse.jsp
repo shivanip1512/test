@@ -33,6 +33,7 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".newWarehouse">
                         <select name="warehouseId">
+                            <option value="0" selected/><cti:msg2 key="yukon.web.defaults.none"/></option> 
                             <c:forEach items="${warehouses}" var="wh">
                                 <option value="${wh.warehouseID}"><spring:escapeBody htmlEscape="true">${wh.warehouseName}</spring:escapeBody></option>
                             </c:forEach>
