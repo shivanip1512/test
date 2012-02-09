@@ -22972,18 +22972,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSLSE_AC</i__foreignKeyName>
+            <i__foreignKeyName>FK_CSLSE_AC_TY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>TONNAGEID</i__columnName>
+            <i__columnName>TYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSLSE_AC_TY</i__foreignKeyName>
+            <i__foreignKeyName>FK_CSLSE_AC</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>TYPEID</i__columnName>
+            <i__columnName>TONNAGEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -37363,7 +37363,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>VARCHAR2</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
+            <i__columnSize>25</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -40007,7 +40007,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_FORMATID</string>
+            <string>PK_ARCHIVEVALUESEXPFORMAT</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <no-comparator/>
@@ -40018,7 +40018,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_FORMATID</indexName>
+              <indexName>PK_ARCHIVEVALUESEXPFORMAT</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -47074,7 +47074,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_FIELDID</string>
+            <string>PK_ARCHIVEVALUESEXPFIELD</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <no-comparator/>
@@ -47085,7 +47085,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_FIELDID</indexName>
+              <indexName>PK_ARCHIVEVALUESEXPFIELD</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -54876,7 +54876,7 @@
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
-            <string>PK_ATTRIBUTEID</string>
+            <string>PK_ARCHIVEVALUESEXPATTRIBUTE</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <no-comparator/>
@@ -54887,7 +54887,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_ATTRIBUTEID</indexName>
+              <indexName>PK_ARCHIVEVALUESEXPATTRIBUTE</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>

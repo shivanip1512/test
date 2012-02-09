@@ -12990,7 +12990,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_FormatId</string>
+            <string>PK_ArchiveValuesExpFormat</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <no-comparator/>
@@ -13001,7 +13001,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_FormatId</indexName>
+              <indexName>PK_ArchiveValuesExpFormat</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -14330,6 +14330,21 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
+            <string>PK_ArchiveValuesExpField</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <no-comparator/>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>ArchiveValuesExportField</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>FieldId</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_ArchiveValuesExpField</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>Indx_ArchValExportFld_FormatId</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -14342,21 +14357,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>Indx_ArchValExportFld_FormatId</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>PK_FieldId</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <no-comparator/>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>ArchiveValuesExportField</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>FieldId</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>PK_FieldId</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -15332,7 +15332,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_AttributeId</string>
+            <string>PK_ArchiveValuesExpAttribute</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <no-comparator/>
@@ -15343,7 +15343,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_AttributeId</indexName>
+              <indexName>PK_ArchiveValuesExpAttribute</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -57699,7 +57699,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>varchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
+            <i__columnSize>25</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
