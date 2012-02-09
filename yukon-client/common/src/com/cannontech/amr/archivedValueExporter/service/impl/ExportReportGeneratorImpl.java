@@ -68,7 +68,7 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
     */
     private static String SKIP_RECORD = "SKIP_RECORD_SKIP_RECORD";
 
-    private static double previewValue = 1234546.00;
+    private static double previewValue = 1234546.012;
     private static PointQuality previewQuality = PointQuality.Normal;
     private static int fakeDeviceId = -1;
     

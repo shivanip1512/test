@@ -126,9 +126,14 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     }
                     field.setPattern(SqlUtils.convertDbValueToString(rs.getString("Pattern")));
                     field.setMaxLength(rs.getInt("MaxLength"));
-                    field.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
                     if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("PadSide")))){
                         field.setPadSide(rs.getEnum("PadSide", PadSide.class));
+                    }
+                    field.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
+                    if(field.getPadChar() != null && field.getPadChar().isEmpty()){
+                        if(field.getPadSide() == PadSide.LEFT || field.getPadSide() ==PadSide.RIGHT){
+                            field.setPadChar(" ");
+                        }
                     }
                     if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("RoundingMode")))){
                         field.setRoundingMode(rs.getEnum("RoundingMode", YukonRoundingMode.class));

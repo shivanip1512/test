@@ -6,7 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
     <script type="text/javascript">
-    jQuery(document).ready(function() {
+    jQuery(function() {
         // function location: exporter.jsp
         renderPopup();
     });
@@ -119,14 +119,14 @@
                         </c:forEach>
                     </form:select>  &nbsp
                         <div id="padCharSelectFields" class="di">
-                        <select id="padCharSelect" data-selection="#padCharSelect" data-field-to-display="#padChar">
+                        <select id="padCharSelect" data-selection="#padCharSelect" data-field-to-display="#padChar" data-skip-disable="true">
                             <option value="" <c:if test="${backingBean.exportField.padChar == ' '}">selected="selected" </c:if>>
                                 <cti:msg2 key=".space" />
                             </option>
                             <option value="0" <c:if test="${backingBean.exportField.padChar == '0'}">selected="selected" </c:if>>
                                 <cti:msg2 key=".zero" />
                             </option>
-                            <option value="Custom" <c:if test="${backingBean.exportField.padChar  !=  '0' && not empty backingBean.exportField.padChar}">selected="selected" </c:if>>
+                            <option value="Custom" <c:if test="${backingBean.exportField.padChar  !=  '0' && backingBean.exportField.padChar  !=  ' ' && not empty backingBean.exportField.padChar}">selected="selected" </c:if>>
                                 <cti:msg2 key=".custom" />
                             </option>
                         </select>

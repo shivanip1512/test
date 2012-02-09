@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,6 +21,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -44,6 +46,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -347,6 +350,12 @@ public class ArchivedValuesExporterController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        if (binder.getTarget() != null) {
+            MessageCodesResolver msgCodesResolver =
+                new YukonMessageCodeResolver(baseKey);
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
+
         EnumPropertyEditor<BuiltInAttribute> attributeEditor =
             new EnumPropertyEditor<BuiltInAttribute>(BuiltInAttribute.class);
         EnumPropertyEditor<FieldType> fieldTypeEditor =

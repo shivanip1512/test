@@ -20,11 +20,10 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
+import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.LazyList;
-import com.cannontech.roles.yukon.BillingRole;
 import com.google.common.collect.Lists;
 
 public class ArchivedValuesExporterBackingBean{
@@ -286,6 +285,11 @@ public class ArchivedValuesExporterBackingBean{
         if (exportField.getFieldType() == FieldType.ATTRIBUTE 
             && exportField.getAttributeField() != AttributeField.VALUE) {
                 exportField.setRoundingMode(null);
+        }
+        if(exportField.getPadChar() != null && exportField.getPadChar().isEmpty()){
+            if(exportField.getPadSide() == PadSide.LEFT || exportField.getPadSide() ==PadSide.RIGHT){
+                exportField.setPadChar(" ");
+            }
         }
     }
 

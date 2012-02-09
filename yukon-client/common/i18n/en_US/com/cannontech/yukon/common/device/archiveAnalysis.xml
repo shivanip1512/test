@@ -186,6 +186,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.roundingModeHelp">Rounding Mode Help</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatHelp">Format Help</entry>
     
+    <entry key="yukon.web.modules.amr.archivedValueExporter.typeMismatch.java.lang.Integer">Must be a valid integer value.</entry>
     <entry key="yukon.web.components.image.helpRoundingMode.imageUrl">/WebConfig/yukon/Icons/help.gif</entry>
     <entry key="yukon.web.components.image.helpRoundingMode.hoverUrl">/WebConfig/yukon/Icons/help_over.gif</entry>
     <entry key="yukon.web.components.image.helpRoundingMode.hoverText">Rounding Mode specifies a rounding behavior for numerical operations capable of discarding precision.</entry>
