@@ -97,10 +97,10 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -1020;
 /* End YUK-10610 */
 
-/* Start YUK-10613 */
+/* Start YUK-10618 */
 DELETE FROM FdrInterfaceOption WHERE InterfaceId = 29 AND Ordering = 2;
 UPDATE FdrInterfaceOption SET Ordering = 2 WHERE InterfaceId = 29 AND Ordering = 3;
-/* End YUK-10613 */
+/* End YUK-10618 */
 
 /* Start YUK-10255 */
 UPDATE UnitMeasure 
