@@ -20,7 +20,7 @@ INSERT INTO YukonRoleProperty VALUES (-20219, -202, 'Meter Events', 'false', 'Co
 /* End YUK-10565 */
 
 /* Start YUK-10462 */
-INSERT INTO DeviceGroup VALUES (30, 'Device Configs', 15, 'NOEDIT_NOMOD', 'DEVICECONFIG');
+INSERT INTO DeviceGroup VALUES (30,'Device Configs',12,'NOEDIT_NOMOD','DEVICECONFIG');
 /* End YUK-10462 */
 
 /* Start YUK-10600 */
@@ -148,3 +148,4 @@ DROP COLUMN ManualTemp;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '09-FEB-2012', 'Latest Update', 1 );
