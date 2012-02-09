@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
@@ -29,6 +29,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -36,34 +37,16 @@ import com.cannontech.user.YukonUserContext;
  */
 public class ChartServiceImpl implements ChartService {
 
-    private RawPointHistoryDao rphDao = null;
-    private PointDao pointDao = null;
-    private UnitMeasureDao unitMeasureDao = null;
+	@Autowired private RawPointHistoryDao rphDao = null;
+	@Autowired private PointDao pointDao = null;
+	@Autowired private UnitMeasureDao unitMeasureDao = null;
+	@Autowired private DateFormattingService dateFormattingService = null;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
-    private DateFormattingService dateFormattingService = null;
     
-    @Required
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
-    }
-
-    @Required
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Required
-    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-        this.unitMeasureDao = unitMeasureDao;
-    }
-    
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-
     public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval interval,
-                                 GraphType graphType, ConverterType converterType) {
+                                 GraphType graphType, ConverterType converterType, YukonUserContext userContext) {
 
         List<Graph> graphList = new ArrayList<Graph>();
 
@@ -84,7 +67,8 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setGroupingUsed(false);
             
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
-            String units = converterType.getUnits(unitMeasure, interval);
+            String chartIntervalString = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(interval.getIntervalString());
+            String units = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterType.getFormattedUOM(unitMeasure, chartIntervalString));
 
             // Make a list of each of the data points
             List<ChartValue<Double>> chartData = new ArrayList<ChartValue<Double>>();

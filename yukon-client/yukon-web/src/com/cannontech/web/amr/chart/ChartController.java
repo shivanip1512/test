@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -20,29 +21,19 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class ChartController extends MultiActionController {
 
-    private ChartService chartService = null;
-    private UnitMeasureDao unitMeasureDao = null;
-    private PointDao pointDao = null;
+	@Autowired private ChartService chartService = null;
+    @Autowired private UnitMeasureDao unitMeasureDao = null;
+    @Autowired private PointDao pointDao = null;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     public ChartController() {
         super();
-    }
-
-    public void setChartService(ChartService chartService) {
-        this.chartService = chartService;
-    }
-
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-        this.unitMeasureDao = unitMeasureDao;
     }
 
     public ModelAndView chart(HttpServletRequest request, HttpServletResponse response)
@@ -104,7 +95,8 @@ public class ChartController extends MultiActionController {
                                                           endDate,
                                                           chartInterval,
                                                           graphType,
-                                                          converterType));
+                                                          converterType, 
+                                                          userContext));
 
         return mav;
     }
@@ -112,6 +104,8 @@ public class ChartController extends MultiActionController {
     public ModelAndView settings(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
         // setup mav with the appropriate jsp, depending on grapth style: LINE
         // or COLUMN (decided in trend.tag)
         String amChartsProduct = ServletRequestUtils.getStringParameter(request,
@@ -140,7 +134,9 @@ public class ChartController extends MultiActionController {
         
         LitePoint point = pointDao.getLitePoint(ids[0]);
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
-        String units = converterType.getUnits(unitMeasure, chartInterval);
+
+        String chartIntervalString = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(chartInterval.getIntervalString());
+        String units = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterType.getFormattedUOM(unitMeasure, chartIntervalString));
         mav.addObject("units", units);
 
         // Get graph title from request

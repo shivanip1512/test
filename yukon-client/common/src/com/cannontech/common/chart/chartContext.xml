@@ -2,10 +2,5 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    <bean id="chartService" class="com.cannontech.common.chart.service.impl.ChartServiceImpl">
-        <property name="rphDao" ref="rphDao" />
-        <property name="pointDao" ref="pointDao" />
-        <property name="unitMeasureDao" ref="unitMeasureDao" />
-        <property name="dateFormattingService" ref="dateFormattingService" />
-    </bean>
+    <bean id="chartService" class="com.cannontech.common.chart.service.impl.ChartServiceImpl"/>
 </beans>

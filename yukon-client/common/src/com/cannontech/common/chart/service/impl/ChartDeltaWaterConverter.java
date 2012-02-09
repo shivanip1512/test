@@ -23,7 +23,14 @@ import com.google.common.collect.ImmutableList;
  * For water, an average consumption over a day doesn't make sense, since there are several intervals that may have
  *  zero consumption. Therefore, this normalizer does not average out per day like the ChartNormalizedDeltaConverter (kWh) does.
  *  Instead, it attempts to "guess" at the expected interval based off the ChartInterval and delta between curr and prev.
- * This normalizer "discards" chartData if the delta interval is greater than expected.   
+ * This normalizer "discards" chartData if the delta interval is greater than expected.
+ * 
+ * This normalizer is fairly strict when determining the "expectedMaxDeltaInMillis". In the future, it may make sense
+ *  to add an additional (acceptable) threshold past the max. ie. For an expected day, add an additional 5m past the max.
+ *  This would allow for readings to be considered acceptable, even if they "just missed" the max.
+ *  
+ * If only daily readings actually exist, and this chartInterval is less than a day, then nothing will be returned
+ *   because the expected (guess) max interval will be hour, but the true interval is a day.
  */
 public class ChartDeltaWaterConverter implements ChartDataConverter {
 
@@ -40,6 +47,8 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
 
         Double previousValue = null;
         Long previousTime = null;
+        double expectedMaxDeltaInMillis = getExpectedMaxDeltaInMillis(interval);
+        
         for (ChartValue<Double> chartValue : chartValuesCopy) {
 
             double currVal = chartValue.getValue();
@@ -53,8 +62,6 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
                 if (deltaValue >= 0) {
                     long millisecondDelta = currTime - previousTime;
 
-                    double expectedMaxDeltaInMillis = getExpectedMaxDeltaInMillis(interval);
-                	
                     // if delta <= expectedDelta, then we'll keep the chart value.
                     if ( millisecondDelta <= expectedMaxDeltaInMillis) {
 	                    chartValue.setValue(deltaValue);

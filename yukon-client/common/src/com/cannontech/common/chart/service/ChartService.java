@@ -21,10 +21,11 @@ public interface ChartService {
      * @param startDate - Start date for graph
      * @param stopDate - End date for graph
      * @param converterType - Type of graph to be generated
+     * @param userContext
      * @return A list containing one graph per point
      */
     public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
-                                 GraphType graphType, ConverterType converterType);
+                                 GraphType graphType, ConverterType converterType, YukonUserContext userContext);
 
     /**
      * Method to get the x-axis tick marks for a given time period and interval
