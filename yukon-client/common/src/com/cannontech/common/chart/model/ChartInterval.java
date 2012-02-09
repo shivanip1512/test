@@ -292,6 +292,12 @@ public enum ChartInterval {
     /**
      * Method to return the interval string for display.
      * This does NOT return a MessageSourceResolvable the enum itself.
+     *
+     * This will return "interval" for anything less than Hour. It's kind of a hack for the water delta converter to use 
+     * since this is the interval of the chart, and not the actual interval of the data. 
+     * For chart intervals >= hour, we are assuming we have data intervals that are at least an hour, too.
+     * In the future, it would be better to figure out how to tie these values to ChartPeriod? or the actual meter's
+     *  data recording interval. SN YUK-10416  
      */
     public MessageSourceResolvable getIntervalString() {
         return YukonMessageSourceResolvable.createDefault("yukon.common.chart.interval." + name(), name());

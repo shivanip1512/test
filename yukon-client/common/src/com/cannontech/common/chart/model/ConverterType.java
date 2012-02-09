@@ -55,7 +55,7 @@ public enum ConverterType {
      * @param chartIntervalString - (i18n'd) chartInterval string
      * @return {@link MessageSourceResolvable}
      */
-    public MessageSourceResolvable getFormattedUOM(LiteUnitMeasure unitMeasure, String chartIntervalString) {
+    public MessageSourceResolvable getFormattedUnits(LiteUnitMeasure unitMeasure, String chartIntervalString) {
         return YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.chart.model.converterType." + name(), 
         		unitMeasure.getUnitMeasureName(), chartIntervalString);
     }

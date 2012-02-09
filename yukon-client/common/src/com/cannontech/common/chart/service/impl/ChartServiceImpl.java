@@ -20,6 +20,7 @@ import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.chart.service.ChartService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -67,8 +68,9 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setGroupingUsed(false);
             
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
-            String chartIntervalString = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(interval.getIntervalString());
-            String units = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterType.getFormattedUOM(unitMeasure, chartIntervalString));
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
+            String units = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
 
             // Make a list of each of the data points
             List<ChartValue<Double>> chartData = new ArrayList<ChartValue<Double>>();

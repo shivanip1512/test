@@ -8,11 +8,6 @@
     <entry key="yukon.common.chart.interval.DAY">day</entry>
     <entry key="yukon.common.chart.interval.DAY_MIDNIGHT">day</entry>
     <entry key="yukon.common.chart.interval.HOUR">hour</entry>
-    <!-- Using just "interval" is kind of a hack for the water delta converter to use since this is the interval
-    	of the chart, and not the actual interval of the data. For chart intervals >= hour, we are assuming we have 
-    	data intervals that are at least an hour, too.
-      In the future, it would be better to figure out how to tie these values to ChartPeriod? or the actual meter's 
-        data recording interval. SN YUK-10416 -->
     <entry key="yukon.common.chart.interval.MINUTE">interval</entry>
     <entry key="yukon.common.chart.interval.FIFTEENSECOND">interval</entry>
     <entry key="yukon.common.chart.interval.FIVEMINUTE">interval</entry>

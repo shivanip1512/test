@@ -17,6 +17,7 @@ import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.service.ChartService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -135,8 +136,9 @@ public class ChartController extends MultiActionController {
         LitePoint point = pointDao.getLitePoint(ids[0]);
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
 
-        String chartIntervalString = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(chartInterval.getIntervalString());
-        String units = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterType.getFormattedUOM(unitMeasure, chartIntervalString));
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String chartIntervalString = messageSourceAccessor.getMessage(chartInterval.getIntervalString());
+        String units = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
         mav.addObject("units", units);
 
         // Get graph title from request
