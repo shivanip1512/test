@@ -33,6 +33,7 @@
     <entry key="yukon.web.modules.operator.inventory.home.inventorySearch.title">Advanced Search</entry>
     
     <!-- Common Inventory Words -->
+    <entry key="yukon.web.modules.operator.newOperation">Choose A New Operation For Inventory</entry>
     <entry key="yukon.web.modules.operator.inventory.serialNumber">Serial Number</entry>
     <entry key="yukon.web.modules.operator.inventory.meterNumber">Meter Number</entry>
     <entry key="yukon.web.modules.operator.inventory.accountNumber">Account Number</entry>
@@ -208,6 +209,7 @@
     <entry key="yukon.web.modules.operator.changeType.successful">Successful</entry>
     <entry key="yukon.web.modules.operator.changeType.unsupported">Unsupported</entry>
     <entry key="yukon.web.modules.operator.changeType.successCollectionDescription">Change Type Success List</entry>
+    <entry key="yukon.web.modules.operator.changeType.unsupportedCollectionDescription">Change Type Unsupported List</entry>
     
     <!-- /inventory/changeStatus.jsp -->
     <entry key="yukon.web.modules.operator.changeStatus.pageName">Change Device Status</entry>

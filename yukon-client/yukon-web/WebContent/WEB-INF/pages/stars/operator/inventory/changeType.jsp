@@ -49,11 +49,11 @@
         </c:if>
         <c:if test="${not empty task}">
             
-            <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/changeType/newOperation">
+            <cti:url var="newOperationSuccess" value="newOperation">
                 <cti:param name="type" value="SUCCESS"/>
                 <cti:param name="taskId" value="${task.taskId}"/>
             </cti:url>
-            <cti:url var="newOperationUnsupported" value="/spring/stars/operator/inventory/changeType/newOperation">
+            <cti:url var="newOperationUnsupported" value="newOperation">
                 <cti:param name="type" value="UNSUPPORTED"/>
                 <cti:param name="taskId" value="${task.taskId}"/>
             </cti:url>
@@ -74,6 +74,13 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".unsupported">
                     <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage normalBoldLabel"/>
+                    <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
+                        <ul class="resultList">
+                            <li>
+                                <a href="${newOperationUnsupported}" class="small"><i:inline key=".newOperation"/></a>
+                            </li>
+                        </ul>
+                    </cti:classUpdater>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         

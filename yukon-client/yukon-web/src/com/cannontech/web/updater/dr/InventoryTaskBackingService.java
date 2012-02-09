@@ -12,8 +12,10 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
     private enum DataType {
         NEW_OPERATION_FOR_SUCCESS,
         NEW_OPERATION_FOR_FAILED,
+        NEW_OPERATION_FOR_UNSUPPORTED,
         SUCCESS_COUNT,
         FAILED_COUNT,
+        UNSUPPORTED_COUNT,
         ITEMS_PROCESSED,
         IS_COMPLETE
     }
@@ -37,10 +39,14 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
             return result.getSuccessCount();
         } else if (type == DataType.FAILED_COUNT) {
             return result.getFailedCount();
+        } else if (type == DataType.UNSUPPORTED_COUNT) {
+            return result.getUnsupportedCount();
         } else if (type == DataType.NEW_OPERATION_FOR_SUCCESS) {
             return result.isComplete() && result.getSuccessCount() > 0 ? "db" : "dn";
         } else if (type == DataType.NEW_OPERATION_FOR_FAILED) {
             return result.isComplete() && result.getFailedCount() > 0 ? "db" : "dn";
+        } else if (type == DataType.NEW_OPERATION_FOR_UNSUPPORTED) {
+            return result.isComplete() && result.getUnsupportedCount() > 0 ? "db" : "dn";
         } else {
             return result.isComplete();
         }
