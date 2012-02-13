@@ -3,6 +3,7 @@ package com.cannontech.web.admin.energyCompany;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.PaoDao;
@@ -64,7 +67,19 @@ public class EnergyCompanyController {
 
     /* Energy Company Setup Home Page*/
     @RequestMapping("/energyCompany/home")
-    public String home(YukonUserContext userContext, ModelMap modelMap) {
+    public String home(HttpServletRequest request, YukonUserContext userContext, ModelMap modelMap) {
+
+        HttpSession session = request.getSession(false);
+        Pair p = (Pair)session.getAttribute(LoginController.SAVED_YUKON_USERS);
+
+        // p != null indicates there is a saved user.
+        if (p != null) {
+            Properties oldContext = (Properties) p.getFirst();
+            LiteYukonUser previousUser = (LiteYukonUser) oldContext.get(LoginController.YUKON_USER);
+            int previousUserId = previousUser.getUserID();
+            modelMap.addAttribute("previousUserId", previousUserId);
+        }
+
         LiteYukonUser user = userContext.getYukonUser();
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         

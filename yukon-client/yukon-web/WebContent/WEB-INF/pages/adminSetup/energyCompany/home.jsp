@@ -9,11 +9,17 @@
 <cti:standardPage module="adminSetup" page="home">
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('button.loginButton', function(event) {
-    var parentLoginId = event.target.getAttribute('name');
-    $('loginAsUserId').value = parentLoginId;
-    $('parentLoginForm').submit();
+
+jQuery(document).ready(function() {
+    jQuery('button.loginButton').click(function() {
+
+        var parentLoginId = jQuery(this).attr('name');
+        jQuery('#loginAsUserId').val(parentLoginId); 
+        jQuery('#parentLoginForm').submit();
+
+      });
 });
+
 </script>
     <form action="parentLogin" method="post" id="parentLoginForm">
         <input type="hidden" name="loginAsUserId" id="loginAsUserId">
@@ -37,7 +43,7 @@ YEvent.observeSelectorClick('button.loginButton', function(event) {
                                 <td class="buttonColumn">
                                     <c:if test="${canManageMembers && company.parent != null}">
                                         <c:set var="parentLoginId" value="${parentLogins[company.energyCompanyId]}"/>
-                                        <c:if test="${not empty parentLoginId && parentLoginId != loggedInUserId}">
+                                        <c:if test="${not empty parentLoginId && parentLoginId != loggedInUserId && previousUserId != parentLoginId}">
                                             <cti:button nameKey="login" styleClass="loginButton" name="${parentLoginId}"/>
                                         </c:if>
                                     </c:if>
