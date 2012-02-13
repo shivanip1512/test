@@ -11,7 +11,7 @@
 <script type="text/javascript">
 
 jQuery(document).ready(function() {
-    jQuery('button.loginButton').click(function() {
+    jQuery('button.loginButton').live("click",function() {
 
         var parentLoginId = jQuery(this).attr('name');
         jQuery('#loginAsUserId').val(parentLoginId); 
