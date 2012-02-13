@@ -8936,7 +8936,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(CtiMultiMsg_set &modif
                {
                    CtiCCCapBankPtr cap = (CtiCCCapBankPtr)caps[k];
                    cap->addAllCapBankPointsToMsg(pointList);
-                   if (stringContainsIgnoreCase(cap->getControlDeviceType(), "CBC 702") )
+                   if ( cap->isControlDeviceTwoWay() )
                    {
                        CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)cap->getTwoWayPoints();
                        twoWayPts->addAllCBCPointsToRegMsg(pointList);
