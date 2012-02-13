@@ -267,6 +267,11 @@ public:
     void resetAllConfirmationStats();
     void reCalculateConfirmationStatsFromDatabase( );
     void reCalculateAllStats( );
+    void assignStrategyAtBus(CtiCCSubstationBusPtr bus, long stratId);
+    void assignStrategyAtFeeder(CtiCCFeederPtr feeder, long stratId);
+    void assignStrategyToCCObject(Cti::RowReader& dbRdr, Cti::CapControl::CapControlType objectType);
+    string getDbTableString(Cti::CapControl::CapControlType objectType);
+    string getDbColumnString(Cti::CapControl::CapControlType objectType);
 
     template<class T>
     void setOperationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
