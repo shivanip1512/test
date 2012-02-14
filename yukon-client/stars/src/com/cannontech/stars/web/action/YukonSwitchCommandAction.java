@@ -586,7 +586,6 @@ public class YukonSwitchCommandAction {
     public static void sendConfigCommand(YukonEnergyCompany yukonEnergyCompany, LiteStarsLMHardware liteHw, 
                                          boolean forceInService, String options) throws WebClientException {
 
-        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
         EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
         StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
         
@@ -599,12 +598,6 @@ public class YukonSwitchCommandAction {
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
             starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         
-        Integer invID = new Integer(liteHw.getInventoryID());
-        Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
-        Integer configEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID());
-        Integer availStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
-        java.util.Date now = new java.util.Date();
-    
         // Parameter options corresponds to the infoString field of the switch
         // command queue.
         // It takes the format of "GroupID:XX;RouteID:XX"
@@ -685,34 +678,22 @@ public class YukonSwitchCommandAction {
     
         // Add "Config" to hardware events
         try {
-            com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-            com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            Integer invID = new Integer(liteHw.getInventoryID());
+            Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
+            Integer configEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID());
+            Integer availStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
+        
+            addHardwareEvents(yukonEnergyCompany,invID,hwEventEntryID,configEntryID);
     
-            eventDB.setInventoryID(invID);
-            eventBase.setEventTypeID(hwEventEntryID);
-            eventBase.setActionID(configEntryID);
-            eventBase.setEventDateTime(now);
-            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
-    
-            dbPersistentDao.performDBChange(event, TransactionType.INSERT);
-    
-            com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
-            StarsLiteFactory.setInventoryBase(invDB, liteHw);
-            invDB.setCurrentStateID(availStatusEntryID);
-            dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
-    
-            liteHw.setCurrentStateID(invDB.getCurrentStateID());
-            liteHw.updateDeviceStatus();
+            updateHardwareCurrentState(liteHw, availStatusEntryID);
         } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
         }
     }
-
+    
     /* from YukonSwitchCommandAction */
     public static void sendDisableCommand(YukonEnergyCompany yukonEnergyCompany, LiteStarsLMHardware liteHw, Integer routeId)
             throws WebClientException {
-        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
         StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
 
         if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
@@ -721,11 +702,7 @@ public class YukonSwitchCommandAction {
         
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
             starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-        
-        Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
-        Integer termEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID());
-        Integer unavailStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID());
-    
+
         LiteYukonUser energyCompanyUser = yukonEnergyCompany.getEnergyCompanyUser();
         List<String> commands = getDisableCommands(liteHw);
 
@@ -744,25 +721,16 @@ public class YukonSwitchCommandAction {
 
         // Add "Termination" to hardware events
         try {
-            com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-            com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
+            Integer termEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID());
+            Integer unavailStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID());
+            
+            addHardwareEvents(yukonEnergyCompany,
+                              liteHw.getInventoryID(),
+                              hwEventEntryID,
+                              termEntryID);
     
-            eventDB.setInventoryID(new Integer(liteHw.getInventoryID()));
-            eventBase.setEventTypeID(hwEventEntryID);
-            eventBase.setActionID(termEntryID);
-            eventBase.setEventDateTime(new Date());
-            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
-    
-            dbPersistentDao.performDBChange(event, TransactionType.INSERT);
-    
-            com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
-            StarsLiteFactory.setInventoryBase(invDB, liteHw);
-            invDB.setCurrentStateID(unavailStatusEntryID);
-            dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
-
-            liteHw.setCurrentStateID(invDB.getCurrentStateID());
-            liteHw.updateDeviceStatus();
+            updateHardwareCurrentState(liteHw, unavailStatusEntryID);
         } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
         }
@@ -803,7 +771,6 @@ public class YukonSwitchCommandAction {
     public static void sendEnableCommand(YukonEnergyCompany yukonEnergyCompany, LiteStarsLMHardware liteHw, Integer routeId)
             throws WebClientException {
         
-        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
         StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
         
         if (liteHw.getManufacturerSerialNumber().length() == 0) {
@@ -833,34 +800,56 @@ public class YukonSwitchCommandAction {
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
             starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         
-        // Add "Activation Completed" to hardware events
-        Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
-        Integer actCompEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID());
-        Integer availStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
-    
+        // Add "Activation Completed" to hardware events    
         try {
-            com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-            com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
+            Integer actCompEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID());
+            Integer availStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
+
+            addHardwareEvents(yukonEnergyCompany,
+                              liteHw.getInventoryID(),
+                              hwEventEntryID,
+                              actCompEntryID);
     
-            eventDB.setInventoryID(new Integer(liteHw.getInventoryID()));
-            eventBase.setEventTypeID(hwEventEntryID);
-            eventBase.setActionID(actCompEntryID);
-            eventBase.setEventDateTime(new Date());
-            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
-    
-            dbPersistentDao.performDBChange(event, TransactionType.INSERT);
-    
-            com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
-            StarsLiteFactory.setInventoryBase(invDB, liteHw);
-            invDB.setCurrentStateID(availStatusEntryID);
-            dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
-    
-            liteHw.setCurrentStateID(invDB.getCurrentStateID());
-            liteHw.updateDeviceStatus();
+            updateHardwareCurrentState(liteHw,availStatusEntryID);
         } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Updates the current state on the hardware to the one provided.
+     */
+    public static void updateHardwareCurrentState(LiteStarsLMHardware liteHardware, Integer stateId) {
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        
+        com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
+        
+        StarsLiteFactory.setInventoryBase(invDB, liteHardware);
+        invDB.setCurrentStateID(stateId);
+        dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
+        
+        liteHardware.setCurrentStateID(stateId);
+        liteHardware.updateDeviceStatus();
+    }
+
+    private static void addHardwareEvents(YukonEnergyCompany yukonEnergyCompany,
+                                          Integer inventoryId,
+                                          Integer hwEventEntryID,
+                                          Integer configEntryID) {
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        
+        com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+        com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+        com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+   
+        eventDB.setInventoryID(inventoryId);
+        eventBase.setEventTypeID(hwEventEntryID);
+        eventBase.setActionID(configEntryID);
+        eventBase.setEventDateTime(new Date());
+        event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
+   
+        dbPersistentDao.performDBChange(event, TransactionType.INSERT);
     }
 
     public static List<String> getEnableCommands(LiteStarsLMHardware liteHw,

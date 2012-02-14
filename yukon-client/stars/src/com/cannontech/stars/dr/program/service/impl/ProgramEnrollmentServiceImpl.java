@@ -151,16 +151,16 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             // Send out the config/disable command
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {
                 boolean toConfig = HardwareAction.isToConfig(liteHw, liteCustomerAccount);
-                
+
+                YukonListEntry yukonListEntry = yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
+                HardwareType hardwareType = HardwareType.valueOf(yukonListEntry.getYukonDefID());
+
                 if (toConfig) {                
                     // Send the reenable command if hardware status is unavailable,
                     // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-
+                    
                     if (automaticConfigurationEnabled) {
                         //ZigBee related configs
-                        YukonListEntry yukonListEntry = yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
-                        HardwareType hardwareType = HardwareType.valueOf(yukonListEntry.getYukonDefID());
-
                         if (hardwareType.isZigbee()) {
                             //Determine Gateway and Device Id.
                             int deviceId = liteHw.getDeviceID();
@@ -187,6 +187,15 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
                                 zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
                             }
+                            
+                            //Update the status of the ZigBee Hardware to Available
+                            List<YukonListEntry> availableListEntry = yukonListDao.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, 
+                                                                                                 yukonEnergyCompany);
+                            if(availableListEntry.isEmpty() || availableListEntry.size() > 1) {
+                                throw new InvalidParameterException("Expect one list entry for Stat Unavailable. Got " + availableListEntry.size());
+                            }
+                            YukonSwitchCommandAction.updateHardwareCurrentState(liteHw,availableListEntry.get(0).getEntryID());
+                            
                         } else { //Kept this from an 'else if' to be clear we mean NOT ZigBee
                             if (!trackHardwareAddressingEnabled) {
                                 YukonSwitchCommandAction.sendConfigCommand( yukonEnergyCompany, liteHw, false, null );
@@ -196,8 +205,19 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         YukonSwitchCommandAction.sendEnableCommand( yukonEnergyCompany, liteHw, null );
                     }
                 } else {
-                    // Send disable command to hardware
-                    YukonSwitchCommandAction.sendDisableCommand(yukonEnergyCompany, liteHw, null );
+                    //Send disable command to hardware
+                    if (hardwareType.isZigbee()) {
+                        List<YukonListEntry> unavailableListEntry = yukonListDao.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL, 
+                                                                                             yukonEnergyCompany);
+                        if(unavailableListEntry.isEmpty() || unavailableListEntry.size() > 1) {
+                            throw new InvalidParameterException("Expect one list entry for Stat Unavailable. Got " + unavailableListEntry.size());
+                        }
+                        //Don't send a disable command to the ZigBee device. Only update the state
+                        YukonSwitchCommandAction.updateHardwareCurrentState(liteHw,unavailableListEntry.get(0).getEntryID());
+                    } else {
+                        //Send the Disable, this method also updates the CurrentState
+                        YukonSwitchCommandAction.sendDisableCommand(yukonEnergyCompany, liteHw, null );
+                    }
                 }
             }
         } catch (InvalidParameterException e) {
