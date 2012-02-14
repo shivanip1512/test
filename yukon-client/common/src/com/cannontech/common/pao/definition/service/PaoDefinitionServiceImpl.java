@@ -82,8 +82,10 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         for (PointTemplate template : pointTemplates) {
             if (template.getCalcPointInfo() != null) {
                 for (CalcPointComponent pointComponent : template.getCalcPointInfo().getComponents()) {
-                    Integer pointId = pointIdLookupMap.get(pointComponent.getPointIdentifier());
-                    pointComponent.setPointId(pointId);
+                    if (pointComponent.getPointIdentifier() != null) {
+                        Integer pointId = pointIdLookupMap.get(pointComponent.getPointIdentifier());
+                        pointComponent.setPointId(pointId);
+                    }
                 }
             }
         }
