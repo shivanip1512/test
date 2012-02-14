@@ -286,7 +286,7 @@ public void runImport(List<ImportData> imps) {
 			errorMsg.add(error);
 		} else {
 			try{
-				// Does a parseCheck to make sure its a numical value
+				// Does a parseCheck to make sure its a numerical value
 				Double doubleAddress = Double.parseDouble(address);				
 				updateDeviceID = DBFuncs.getDeviceIDByAddress(doubleAddress.toString());
 			} catch (NumberFormatException nfe) {
@@ -308,6 +308,14 @@ public void runImport(List<ImportData> imps) {
                 String error = "Specifies a template MCT ("+templateName+") not in the Yukon database.  ";
                 log.error(logMsgPrefix + error);
                 errorMsg.add(error);
+            } else {
+                /*Address range check for 400 series*/
+            	PaoType paoType = PaoType.getForDbString(template400SeriesBase.getPAOType());
+            	if (!dlcAddressRangeService.isEnforcedAddress(paoType, Integer.parseInt(address))) {
+            		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
+            		log.error(logMsgPrefix + error);
+            		errorMsg.add(error);
+            	}
             }
         }
         
@@ -339,15 +347,7 @@ public void runImport(List<ImportData> imps) {
                 }
             }
         }
-        
-        /*Address range check for 400 series*/
-    	PaoType paoType = PaoType.getForDbString(template400SeriesBase.getPAOType());
-    	if (!dlcAddressRangeService.isEnforcedAddress(paoType, Integer.parseInt(address))) {
-    		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
-    		log.error(logMsgPrefix + error);
-    		errorMsg.add(error);
-    	}
-        
+
         /*New 400 series MCTs will each need a clause added above if address range
          * validation is desired
          */
