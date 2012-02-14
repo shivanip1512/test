@@ -46,7 +46,7 @@
 		
 		jQuery(document).ready(function() {
 			if (${formatResponse}) {
-				document.getElementById("xmlResponse").value = getformattedXml(document.getElementById("xmlResponse").value);
+				document.getElementById("xmlResponse").value = getFormattedXml(document.getElementById("xmlResponse").value);
 			}
 		});
 		
