@@ -71,7 +71,7 @@
                                 </td>
             	                <td nowrap="nowrap">${row.itemType}</td>
             	                <td nowrap="nowrap">${row.itemDescription}</td>
-            	                <td><spring:escapeBody htmlEscape="true">${row.parentString}</spring:escapeBody></td>
+            	                <td><spring:escapeBody>${row.parentString}</spring:escapeBody></td>
             	            </tr>
             	        </c:forEach>
             	    </table>
