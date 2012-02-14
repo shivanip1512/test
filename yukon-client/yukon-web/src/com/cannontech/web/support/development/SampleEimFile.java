@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.springframework.core.io.Resource;
 
 public class SampleEimFile implements Comparable<SampleEimFile> {
-    private final static Pattern pattern =
+    private final static Pattern filenamePattern =
         Pattern.compile(".*\\\\api\\\\(\\w+)\\\\schemas\\\\xml-templates\\\\([\\w\\.]+)\\.xml");
 
     private int id;
@@ -20,7 +20,7 @@ public class SampleEimFile implements Comparable<SampleEimFile> {
         this.resource = resource;
         String fullPath = resource.getFile().getAbsolutePath();
 
-        Matcher matcher = pattern.matcher(fullPath);
+        Matcher matcher = filenamePattern.matcher(fullPath);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(fullPath + " does not match");
         }
