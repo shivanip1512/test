@@ -27,8 +27,12 @@
     
     <bean id="loggingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.SoapEnvelopeLoggingInterceptor"/>
 
-    <bean id="loadManagement"
-        class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+    <bean id="wsdlBase" abstract="true" class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+        <property name="locationUri" value="/soap"/>
+        <property name="targetNamespace" value="http://yukon.cannontech.com/service"/>
+    </bean>
+
+    <bean id="loadManagement" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
@@ -41,12 +45,9 @@
         </property>
         <property name="serviceName" value="loadManagementService" />
         <property name="portTypeName" value="loadManagementPort" />
-        <property name="locationUri" value="/soap/loadManagement" />
-        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />
     </bean>
 
-    <bean id="stars"
-        class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+    <bean id="stars" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
@@ -59,13 +60,9 @@
         </property>
         <property name="serviceName" value="starsService" />
         <property name="portTypeName" value="starsPort" />
-        <property name="locationUri" value="/soap/stars" />
-        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 
-    <bean id="account"
-        class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
- 
+    <bean id="account" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
@@ -78,13 +75,9 @@
         </property>
         <property name="serviceName" value="accountService" />
         <property name="portTypeName" value="accountPort" />
-        <property name="locationUri" value="/soap/account" />
-        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 
-	<bean id="capcontrol"
-		class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
-	
+	<bean id="capcontrol" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
 		<property name="schemaCollection">
 			<bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
 				<property name="xsds">
@@ -97,11 +90,9 @@
 		</property>
 		<property name="serviceName" value="capcontrolService" />
         <property name="portTypeName" value="capcontrolPort" />
-        <property name="locationUri" value="/soap/capcontrol" />
-        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />  
 	</bean>
 
-    <bean id="ami" class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+    <bean id="ami" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
@@ -114,11 +105,9 @@
         </property>
         <property name="serviceName" value="amiService" />
         <property name="portTypeName" value="amiPort" />
-        <property name="locationUri" value="/soap/ami" />
-        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 
-    <bean id="consumer" class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
+    <bean id="consumer" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
@@ -131,7 +120,5 @@
         </property>
         <property name="serviceName" value="consumerService" />
         <property name="portTypeName" value="consumerPort" />
-        <property name="locationUri" value="/soap/consumer" />
-        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 </beans>
