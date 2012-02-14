@@ -326,16 +326,17 @@
     <entry key="yukon.web.modules.support.webServices.account.run">RUN</entry>
     <entry key="yukon.web.modules.support.webServices.account.testBtn.label">TEST</entry>
 
-    <entry key="yukon.web.modules.support.webServices.webservice.pageName">Web Service XML Test</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.pageDescription">Web Service</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.pageName">Web Service XML Test</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.pageDescription">Web Service</entry>
 
-    <entry key="yukon.web.modules.support.webServices.webservice.requestType">Request Type:</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.choose">Choose...</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.uri">URI:</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.username">Username:</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.formatResponse">Format Response</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.response">RESPONSE</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.submitRequestBtn.label">Submit Request</entry>
-    <entry key="yukon.web.modules.support.webServices.webservice.resetUsernameBtn.label">Reset Username</entry>
-
+    <entry key="yukon.web.modules.support.webServices.eimTest.sampleRequests">Sample Requests...</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.request.title">Request</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.response.title">Response</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.uri">URI</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.username">User Name</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.resetUsername">Reset</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.otherUri">Other</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.formatResponse">Format Response</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.submitRequest">Submit Request</entry>
+    <entry key="yukon.web.modules.support.webServices.eimTest.noRequestMade">No request has been made yet.</entry>
 </properties>

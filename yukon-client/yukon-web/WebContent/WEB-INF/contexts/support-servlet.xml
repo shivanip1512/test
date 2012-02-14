@@ -39,5 +39,11 @@
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/support/"/>
     </bean>
-   
+
+    <bean class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg>
+            <bean class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
+        </constructor-arg>
+        <property name="defaultUri" value="http://example.com/WebService"/>
+    </bean>
 </beans>

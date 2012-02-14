@@ -17,25 +17,4 @@
     
     <bean name="/accountService/inputs/*" class="com.cannontech.web.debug.AccountServiceInputsTestController" >
     </bean>
-    
-    <bean name="/webservice/xml/*" class="com.cannontech.web.debug.webservice.XMLTestController" >
-    	<property name="exampleRequestXmls">
-           <list>
-               <value>classpath*:com/cannontech/yukon/api/amr/schemas/xml-templates/*Request*.xml</value>
-               <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/xml-templates/*Request.xml</value>
-               <value>classpath*:com/cannontech/yukon/api/stars/schemas/xml-templates/*Request.xml</value>
-               <value>classpath*:com/cannontech/yukon/api/account/schemas/xml-templates/*Request.xml</value>
-               <value>classpath*:com/cannontech/yukon/api/consumer/schemas/xml-templates/*Request.xml</value>
-           </list>
-       </property>
-    </bean>
-    
-    <bean id="messageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
-
-    <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
-        <constructor-arg ref="messageFactory"/>
-        <property name="defaultUri" value="http://example.com/WebService"/>
-    </bean>
-	 
-	 
 </beans>

@@ -204,9 +204,9 @@
 <entry key="yukon.web.menu.config.support.development.rfn">RFN Test</entry>
 
 <entry key="yukon.web.menu.config.support.webServices">Web Services</entry>
+<entry key="yukon.web.menu.config.support.webServices.eimTest">Web Services</entry>
 <entry key="yukon.web.menu.config.support.webServices.loadControl">Load Control Service</entry>
 <entry key="yukon.web.menu.config.support.webServices.account">Account Service</entry>
-<entry key="yukon.web.menu.config.support.webServices.webservice">Web Services</entry>
 
 <entry key="yukon.web.menu.config.support.other">Other</entry>
 <entry key="yukon.web.menu.config.support.other.threadDump">Thread Dump</entry>

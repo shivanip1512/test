@@ -109,3 +109,30 @@ textarea.xml {
     margin: 10px 20px;
     outline: black dotted thin;
 }
+
+#requestArea {
+    margin: 5px 0px;
+}
+
+#xmlRequest {
+    margin-top: 5px;
+    display: block;
+    height: 20em;
+    width: 100%;
+}
+
+#uriInput {
+    width:  25em;
+}
+
+#responseAreaDiv {
+    position: relative;
+}
+
+#selectAllDiv {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: inherit;
+    padding: 0px 3px;
+}

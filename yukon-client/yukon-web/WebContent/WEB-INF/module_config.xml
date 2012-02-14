@@ -1111,10 +1111,10 @@
         </option> 
         <option name="webServices">
           <requireRoleProperty value="ENABLE_WEB_DEBUG_PAGES" />
-          <link>/spring/debug/webservice/xml/home</link>
+          <link>/spring/support/development/eimTest/main</link>
           <options>
-             <option name="webservice">
-              <link>/spring/debug/webservice/xml/home</link>
+            <option name="eimTest">
+              <link>/spring/support/development/eimTest/main</link>
             </option>
             <option name="loadControl">
               <link>/spring/debug/loadControlService/inputs/home</link>
@@ -1165,14 +1165,14 @@
                         </page>
                     </pages>
                 </page>
+                <page name="webServices.eimTest" type="BASIC">
+                    <menu>webServices|eimTest</menu>
+                </page>
                 <page name="webServices.loadControl" type="BASIC">
                     <menu>webServices|loadControl</menu>
                 </page>
                 <page name="webServices.account" type="BASIC">
                     <menu>webServices|account</menu>
-                </page>
-                <page name="webServices.webservice" type="BASIC">
-                    <menu>webServices|webservice</menu>
                 </page>
                 <page name="pointInjection" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
