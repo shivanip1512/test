@@ -409,16 +409,21 @@ int IDLC::decode( CtiXfer &xfer, int status )
     {
         _io_operation  = IO_Operation_Failed;
 
-        //  this should be a nicer error - this is very generic
-        retval = !NORMAL;
-
         if ( _framing_seek_length >= MaximumFramingSeekLength )
         {
             retval = FRAMEERR;
         }
-        if ( _input_loops > MaximumInputLoops )
+        else if ( _input_loops > MaximumInputLoops )
         {
             retval = READTIMEOUT;
+        }
+        else if ( status )
+        {
+            retval = status;
+        }
+        else
+        {
+            retval = !NORMAL;
         }
     }
 
