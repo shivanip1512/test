@@ -36,7 +36,7 @@ public TDCDeviceTreeModel()
  */
 public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return paoType != PaoType.SYSTEM;
+	return true;
 }
 
 protected synchronized java.util.List getCacheList(IDatabaseCache cache ) 
@@ -64,24 +64,16 @@ protected synchronized void runUpdate()
 		{
 			LiteYukonPAObject litPAO = (LiteYukonPAObject)paos.get(i);
 
-			if( isDeviceValid(
-					litPAO.getPaoType().getPaoCategory(),
-					litPAO.getPaoType().getPaoClass(),
-					litPAO.getPaoType()))
-			{
-				if( currType != litPAO.getPaoType().getDeviceTypeId() )
-				{
-					devTypeNode = new DummyTreeNode(litPAO.getPaoType().getDbString());
-					typeList.add( devTypeNode );
-				}
+    		if( currType != litPAO.getPaoType().getDeviceTypeId() ) {
+    			devTypeNode = new DummyTreeNode(litPAO.getPaoType().getDbString());
+    			typeList.add( devTypeNode );
+    		}
 
-				DBTreeNode deviceNode = getNewNode(litPAO);
-				devTypeNode.add(deviceNode);					
-				deviceNode.setWillHaveChildren(true);
+    		DBTreeNode deviceNode = getNewNode(litPAO);
+    		devTypeNode.add(deviceNode);
+    		deviceNode.setWillHaveChildren(true);
 
-				currType = litPAO.getPaoType().getDeviceTypeId();
-			}
-
+    		currType = litPAO.getPaoType().getDeviceTypeId();
 
 		} //for loop		
 	} //synch
