@@ -38,21 +38,6 @@ function formatXml(unformattedXml) {
     return formatted;
 }
 
-function selectText(element) {
-    var text = element[0];
-    if (document.body.createTextRange) { // ms
-        var range = document.body.createTextRange();
-        range.moveToElementText(text);
-        range.select();
-    } else if (window.getSelection) { // moz, opera, webkit
-        var selection = window.getSelection();            
-        var range = document.createRange();
-        range.selectNodeContents(text);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
-}
-
 jQuery(function() {
     jQuery('#resetUsername').click(function() {
         jQuery('input[name=username]').val('${username}');
@@ -99,7 +84,7 @@ jQuery(function() {
     });
 
     jQuery('#selectAll').click(function() {
-        selectText(jQuery('#eimResponseDiv'));
+        jQuery('#eimResponseDiv').selectText();
     });
 });
 </script>

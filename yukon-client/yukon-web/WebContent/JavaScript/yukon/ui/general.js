@@ -418,6 +418,21 @@ Element.prototype.trigger = function(eventName)
     }
 }
 
+jQuery.fn.selectText = function() {
+    var text = this[0];
+    if (document.body.createTextRange) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(text);
+        range.select();
+    } else if (window.getSelection) {
+        var selection = window.getSelection();        
+        var range = document.createRange();
+        range.selectNodeContents(text);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+};
+
 // initialize the lib
 jQuery(document).ready(function(){
     Yukon.ui.init();
