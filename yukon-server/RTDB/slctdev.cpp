@@ -195,7 +195,10 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT420FL:
         case TYPEMCT420FLD:     NewDevice = CTIDBG_new Mct420Device;     break;
 
-        case TYPEMCT430:
+        case TYPEMCT430A:
+        case TYPEMCT430A3:
+        case TYPEMCT430S4:
+        case TYPEMCT430SL:
         case TYPEMCT470:        NewDevice = CTIDBG_new Mct470Device;     break;
 
         case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
@@ -428,39 +431,37 @@ DLLEXPORT BOOL isARoute(CtiRouteBase* pSp, void *arg)
 }
 
 
-DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
+DLLEXPORT bool isCarrierLPDevice(CtiDeviceSPtr &pDevice)
 {
-    BOOL result;
-
     switch(pDevice->getType())
     {
-    case TYPELMT2:
-    case TYPEDCT501:
-    case TYPEMCT240:
-    case TYPEMCT242:
-    case TYPEMCT248:
-    case TYPEMCT250:
-    case TYPEMCT260:
-    case TYPEMCT310IL:
-    case TYPEMCT318L:
-    case TYPEMCT410CL:
-    case TYPEMCT410FL:
-    case TYPEMCT410GL:
-    case TYPEMCT410IL:
-    case TYPEMCT420CL:
-    case TYPEMCT420CLD:
-    case TYPEMCT420FL:
-    case TYPEMCT420FLD:
-    case TYPEMCT430:
-    case TYPEMCT470:
-        result = TRUE;
-        break;
-
-    default:
-        result = FALSE;
-        break;
+        case TYPELMT2:
+        case TYPEDCT501:
+        case TYPEMCT240:
+        case TYPEMCT242:
+        case TYPEMCT248:
+        case TYPEMCT250:
+        case TYPEMCT260:
+        case TYPEMCT310IL:
+        case TYPEMCT318L:
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
+        case TYPEMCT430A:
+        case TYPEMCT430A3:
+        case TYPEMCT430S4:
+        case TYPEMCT430SL:
+        case TYPEMCT470:
+        {
+            return true;
+        }
     }
 
-    return result;
+    return false;
 }
 

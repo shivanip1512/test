@@ -1163,7 +1163,10 @@ bool CtiDeviceManager::isMct(int type)
         case TYPEMCT420CLD:
         case TYPEMCT420FL:
         case TYPEMCT420FLD:
-        case TYPEMCT430:
+        case TYPEMCT430A:
+        case TYPEMCT430A3:
+        case TYPEMCT430S4:
+        case TYPEMCT430SL:
         case TYPEMCT470:
         {
             return true;

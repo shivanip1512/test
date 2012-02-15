@@ -34,19 +34,14 @@
 #define TYPEMCT420FL                         88
 #define TYPEMCT420FLD                        89
 #define TYPEMCT470                           90
-#define TYPEMCT430                           91
-
-#define TYPEDIALUP                           100
+#define TYPEMCT430A                          91
+#define TYPEMCT430A3                         92
+#define TYPEMCT430S4                         93
+#define TYPEMCT430SL                         94
 
 #define TYPELCR3102                          120
 
 #define TYPELTC                              150
-
-#define TYPELMT100S                          200
-#define TYPELCR1000                          201
-#define TYPELCR2000                          202
-#define TYPELCR3000                          203
-#define TYPELCR4000                          204
 
 #define TYPECAPBANK                          220
 #define TYPEVERSACOMCBC                      221
@@ -84,16 +79,8 @@
 #define TYPE_LCUT3026                        1215
 #define TYPE_TCU5000                         1250
 #define TYPE_TCU5500                         1255
-#define TYPE_COOP4C                          1300
-#define TYPE_COOPCL4C                        1301
-#define TYPE_COOPCL5A                        1302
-#define TYPE_COOPLTC4C                       1303
-#define TYPE_JEM1                            1400
-#define TYPE_JEM2                            1401
-#define TYPE_JEM3                            1402
 #define TYPE_TDMARKV                         1500
 #define TYPE_DAVIS                           1600
-#define TYPE_PCU                             1700
 #define TYPE_VTU                             1700
 #define TYPE_ALPHA_PPLUS                     1800
 #define TYPE_FULCRUM                         1805  // Schlumberger Fulcrum....
@@ -115,8 +102,6 @@
 #define TYPE_IPC_430SL                       1863
 
 #define TYPE_TAPTERM                         1900
-#define TYPE_TAPTERM_TESCOM                  1901
-#define TYPE_TAPTERM_EMAIL                   1902
 #define TYPE_WCTP                            1905
 #define TYPE_RDS                             1906
 #define TYPE_SNPP                            1907

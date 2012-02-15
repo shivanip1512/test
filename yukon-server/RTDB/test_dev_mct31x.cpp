@@ -14,6 +14,112 @@ struct test_Mct31xDevice : Mct31xDevice
 };
 
 
+struct beginExecuteRequest_helper
+{
+    CtiRequestMsg           request;
+    std::list<CtiMessage*>  vgList, retList;
+    std::list<OUTMESS*>     outList;
+
+    ~beginExecuteRequest_helper()
+    {
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_alpha)
+    {
+        test_Mct31xDevice mct;
+
+        mct._type = TYPEMCT360;
+
+        mct.getIEDPort().setIEDType(CtiTableDeviceMCTIEDPort::AlphaPowerPlus);
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_AlphaResetPos );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_AlphaResetLen );
+
+        const unsigned char expected_message[] = { 60, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_lgs4)
+    {
+        test_Mct31xDevice mct;
+
+        mct._type = TYPEMCT360;
+
+        mct.getIEDPort().setIEDType(CtiTableDeviceMCTIEDPort::LandisGyrS4);
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_LGS4ResetPos );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_LGS4ResetLen );
+
+        const unsigned char expected_message[] = { 1, 1, 1, 3, 60, 43 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_gekv)
+    {
+        test_Mct31xDevice mct;
+
+        mct._type = TYPEMCT360;
+
+        mct.getIEDPort().setIEDType(CtiTableDeviceMCTIEDPort::GeneralElectricKV);
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_GEKVResetPos );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_GEKVResetLen );
+
+        const unsigned char expected_message[] = { 60, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
+
 struct getOperation_helper
 {
     test_Mct31xDevice mct;

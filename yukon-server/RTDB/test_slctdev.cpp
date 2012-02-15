@@ -37,7 +37,10 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device)
         TYPEMCT420CLD,
         TYPEMCT420FL,
         TYPEMCT420FLD,
-        TYPEMCT430,
+        TYPEMCT430A,
+        TYPEMCT430A3,
+        TYPEMCT430S4,
+        TYPEMCT430SL,
         TYPEMCT470 };
 
     size_t type_count = sizeof(types) / sizeof(types[0]);

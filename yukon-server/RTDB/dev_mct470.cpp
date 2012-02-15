@@ -1048,7 +1048,7 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
 
 bool Mct470Device::hasIedInputs() const
 {
-    if( getType() == TYPEMCT430 )
+    if( isMct430(getType()) )
     {
         return true;
     }
@@ -1079,7 +1079,7 @@ bool Mct470Device::hasIedInputs() const
 
 bool Mct470Device::hasPulseInputs() const
 {
-    if( getType() == TYPEMCT430 )
+    if( isMct430(getType()) )
     {
         return false;
     }

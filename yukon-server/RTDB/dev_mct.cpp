@@ -1458,7 +1458,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
         {
             channels = Mct410Device::ChannelCount;
         }
-        else if( getType() == TYPEMCT470 || getType() == TYPEMCT430)
+        else if( getType() == TYPEMCT470 || isMct430(getType()) )
         {
             channels = Mct470Device::ChannelCount;
         }
@@ -1644,7 +1644,7 @@ INT MctDevice::executePutValue(CtiRequestMsg *pReq,
                     }
                 }
             }
-            else if( getType() == TYPEMCT470 || getType() == TYPEMCT430)
+            else if( getType() == TYPEMCT470 || isMct430(getType()) )
             {
                 //  this should move to dev_mct470.cpp and use resolveIEDType() or some such
 
@@ -1786,7 +1786,7 @@ INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
 
         if( found && parse.isKeyValid("loadprofile_offset") )
         {
-            if( getType() == TYPEMCT470 || getType() == TYPEMCT430 )
+            if( getType() == TYPEMCT470 || isMct430(getType()) )
             {
                 if( parse.getiValue("loadprofile_offset") == 1 ||
                     parse.getiValue("loadprofile_offset") == 2 )
@@ -3836,6 +3836,22 @@ bool MctDevice::isMct420(int type)
         case TYPEMCT420CLD:
         case TYPEMCT420FL:
         case TYPEMCT420FLD:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MctDevice::isMct430(int type)
+{
+    switch(type)
+    {
+        case TYPEMCT430A:
+        case TYPEMCT430A3:
+        case TYPEMCT430S4:
+        case TYPEMCT430SL:
         {
             return true;
         }

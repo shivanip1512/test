@@ -88,7 +88,10 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPEMCT420FL]     = "MCT-420FL";
     type_lookups[TYPEMCT420FLD]    = "MCT-420FLD";
 
-    type_lookups[TYPEMCT430]       = "MCT-430";
+    type_lookups[TYPEMCT430A]      = "MCT-430A";
+    type_lookups[TYPEMCT430A3]     = "MCT-430A3";
+    type_lookups[TYPEMCT430S4]     = "MCT-430S4";
+    type_lookups[TYPEMCT430SL]     = "MCT-430SL";
     type_lookups[TYPEMCT470]       = "MCT-470";
 
     type_lookups[TYPERFN430A3]     = "RFN-430A3";

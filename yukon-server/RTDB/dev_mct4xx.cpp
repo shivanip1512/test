@@ -2102,7 +2102,7 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
                             newReq->setConnectionHandle((void *)InMessage->Return.Connection);
                             newReq->setCommandString(newReq->CommandString() + " read");
 
-                            if( getType() == TYPEMCT470 || getType() == TYPEMCT430 )
+                            if( getType() == TYPEMCT470 || isMct430(getType()) )
                             {
                                 unsigned fixed_delay = gConfigParms.getValueAsULong("PORTER_MCT470_LLP_READ_DELAY", 45);
 
