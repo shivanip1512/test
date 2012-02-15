@@ -134,7 +134,7 @@ jQuery(function() {
 </tags:sectionContainer2>
 
 <tags:sectionContainer2 nameKey="response">
-    <div id="responseAreaDiv" class="code">
+    <div class="code pr">
         <div id="selectAllDiv"><a href="javascript:void(0)" id="selectAll">Select All</a></div>
         <div id="eimResponseDiv"><i:inline key=".noRequestMade"/></div>
     </div>

@@ -125,10 +125,6 @@ textarea.xml {
     width:  25em;
 }
 
-#responseAreaDiv {
-    position: relative;
-}
-
 #selectAllDiv {
     position: absolute;
     top: 5px;
