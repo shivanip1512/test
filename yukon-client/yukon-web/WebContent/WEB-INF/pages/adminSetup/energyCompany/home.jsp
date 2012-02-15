@@ -10,14 +10,12 @@
 
 <script type="text/javascript">
 
-jQuery(document).ready(function() {
-    jQuery('button.loginButton').live("click",function() {
+jQuery(document).delegate('button.loginButton','click',function() {
 
         var parentLoginId = jQuery(this).attr('name');
         jQuery('#loginAsUserId').val(parentLoginId); 
         jQuery('#parentLoginForm').submit();
 
-      });
 });
 
 </script>
