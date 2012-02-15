@@ -28,7 +28,19 @@ struct beginExecuteRequest_helper
     }
 };
 
+
+//  hack to get BOOST_CHECK_EQUAL_COLLECTIONS to print unsigned char as integer
+namespace std {
+
+ostream &operator<<( ostream &os, const unsigned char &uc ) {
+    return os << static_cast<unsigned>(uc);
+}
+
+}
+
+
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
+
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_alpha)
     {
@@ -79,7 +91,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_LGS4ResetPos );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_LGS4ResetLen );
 
-        const unsigned char expected_message[] = { 1, 1, 1, 3, 60, 43 };
+        const unsigned char expected_message[] = { 3, 60, 43 };
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
             om->Buffer.BSt.Message,
@@ -108,7 +120,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_GEKVResetPos );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_GEKVResetLen );
 
-        const unsigned char expected_message[] = { 60, 1 };
+        const unsigned char expected_message[] = { 4, 60, 0, 9, 1, 1 };
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
             om->Buffer.BSt.Message,
