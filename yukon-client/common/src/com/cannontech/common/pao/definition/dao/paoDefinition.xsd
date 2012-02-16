@@ -93,6 +93,24 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="controlTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="NORMAL"/>
+            <xs:enumeration value="LATCH"/>
+            <xs:enumeration value="PSEUDO"/>
+            <xs:enumeration value="SBOLATCH"/>
+            <xs:enumeration value="SBOPULSE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="stateControlType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OPEN"/>
+            <xs:enumeration value="CLOSE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
 	<!-- POINTS -->
 	<xs:attributeGroup name="pointAttributes">
 		<xs:attribute name="type" type="xs:string" use="required" /> <!-- Type and offset together is the unique identifier for points for the parser. -->
@@ -115,7 +133,10 @@
 	                    <xs:element name="init" type="xs:boolean" minOccurs="0" default="false" />
 	                    <xs:element name="name" type="xs:string" minOccurs="0" />
 	                    <xs:element name="description" type="xs:string" minOccurs="0" />
-						<xs:element name="controltype" type="xs:string" minOccurs="0" default="NONE" />
+						<xs:element name="controlType" type="controlTypeType" minOccurs="0" default="NONE" />
+						<xs:element name="controlOffset" type="xs:integer" minOccurs="0" default="1" />
+						<xs:element name="stateZeroControl" type="stateControlType" minOccurs="0" default="OPEN" />
+						<xs:element name="stateOneControl" type="stateControlType" minOccurs="0" default="CLOSE" />
 						<xs:element name="archive" type="archiveDefaults" minOccurs="0" />
 	                    <xs:choice>
 	                        <xs:sequence>

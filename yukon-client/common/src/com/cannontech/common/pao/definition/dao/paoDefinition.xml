@@ -6200,6 +6200,8 @@
             <point type="Status" offset="1">
                 <init>true</init>
                 <name>Capacitor Bank State</name>
+				<controlType>NORMAL</controlType>
+				<controlOffset>1</controlOffset>
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
@@ -6613,7 +6615,7 @@
             <point type="Status" offset="4">
                 <init>true</init>
                 <name>Auto Volt Control</name>
-                <controltype>NORMAL</controltype>
+                <controlType>NORMAL</controlType>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
@@ -6772,6 +6774,8 @@
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>SCADA Override</name>
+				<controlType>NORMAL</controlType>
+				<controlOffset>2</controlOffset>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
@@ -6842,17 +6846,32 @@
             <point type="Status" offset="86">
                 <init>true</init>
                 <name>Manual Control Mode</name>
+				<controlType>LATCH</controlType>
+				<controlOffset>11</controlOffset>
+				<stateZeroControl>OPEN</stateZeroControl>
+				<stateOneControl>CLOSE</stateOneControl>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="87">
                 <init>true</init>
                 <name>Remote Control Mode</name>
+				<controlType>LATCH</controlType>
+				<controlOffset>11</controlOffset>
+				<stateZeroControl>CLOSE</stateZeroControl>
+				<stateOneControl>OPEN</stateOneControl>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="88">
                 <init>true</init>
                 <name>Auto Control Mode</name>
                 <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="89">
+                <init>true</init>
+                <name>OVUV Control</name>
+				<controlType>LATCH</controlType>
+				<controlOffset>14</controlOffset>
+				<stategroup value="TrueFalse"/>
             </point>
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="1">
@@ -7030,6 +7049,13 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10318">
+                <init>true</init>
+                <name>Voltage Control Flags</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
             </point>
         </points>
     </pao>

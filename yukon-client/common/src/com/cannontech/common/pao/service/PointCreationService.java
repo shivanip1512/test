@@ -7,6 +7,7 @@ import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.StateControlType;
 
 public interface PointCreationService {
 
@@ -45,7 +46,7 @@ public interface PointCreationService {
      * @return A new point of the given type
      */
     public PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset,
-                                 double multiplier, int unitOfMeasure, int stateGroupId, int initialState, int decimalplaces, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint);
+                                 double multiplier, int unitOfMeasure, int stateGroupId, int initialState, int decimalplaces, Integer controlOffset, ControlType controlType, StateControlType stateZeroControl, StateControlType stateOneControl, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint);
 
     /**
      * Method to create a point based on a point template

@@ -288,22 +288,56 @@ public class PointDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- _controltype
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_controltype", "controltype", org.exolab.castor.xml.NodeType.Element);
-        desc.setImmutable(true);
+        //-- _controlType
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.types.ControlTypeType.class, "_controlType", "controlType", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Point target = (Point) object;
-                return target.getControltype();
+                return target.getControlType();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     Point target = (Point) object;
-                    target.setControltype( (java.lang.String) value);
+                    target.setControlType( (com.cannontech.common.pao.definition.model.castor.types.ControlTypeType) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(com.cannontech.common.pao.definition.model.castor.types.ControlTypeType.class, handler);
+        desc.setImmutable(true);
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _controlType
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _controlOffset
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Integer.class, "_controlOffset", "controlOffset", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Point target = (Point) object;
+                return target.getControlOffset();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Point target = (Point) object;
+                    target.setControlOffset( (java.lang.Integer) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -317,12 +351,81 @@ public class PointDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _controltype
+        //-- validation code for: _controlOffset
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            StringValidator typeValidator = new StringValidator();
-            typeValidator.setWhiteSpace("preserve");
+            IntegerValidator typeValidator = new IntegerValidator();
             fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+        //-- _stateZeroControl
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.types.StateControlType.class, "_stateZeroControl", "stateZeroControl", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Point target = (Point) object;
+                return target.getStateZeroControl();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Point target = (Point) object;
+                    target.setStateZeroControl( (com.cannontech.common.pao.definition.model.castor.types.StateControlType) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(com.cannontech.common.pao.definition.model.castor.types.StateControlType.class, handler);
+        desc.setImmutable(true);
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _stateZeroControl
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _stateOneControl
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.types.StateControlType.class, "_stateOneControl", "stateOneControl", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Point target = (Point) object;
+                return target.getStateOneControl();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Point target = (Point) object;
+                    target.setStateOneControl( (com.cannontech.common.pao.definition.model.castor.types.StateControlType) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(com.cannontech.common.pao.definition.model.castor.types.StateControlType.class, handler);
+        desc.setImmutable(true);
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _stateOneControl
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
         }
         desc.setValidator(fieldValidator);
         //-- _archive

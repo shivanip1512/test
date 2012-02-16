@@ -7,6 +7,7 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.StateControlType;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -22,7 +23,10 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
     private int initialState = StateGroupUtils.DEFAULT_STATE;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
+    private int controlOffset = 1;
     private ControlType controlType = ControlType.NONE;
+    private StateControlType stateZeroControl = StateControlType.OPEN;
+    private StateControlType stateOneControl = StateControlType.CLOSE;
     private PointArchiveType pointArchiveType = PointArchiveType.NONE;
     private PointArchiveInterval pointArchiveInterval = PointArchiveInterval.ZERO;
     private CalcPointInfo calcPointInfo = null;
@@ -127,12 +131,36 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.decimalPlaces = decimalPlaces;
     }
 
+    public int getControlOffset() {
+        return controlOffset;
+    }
+
+    public void setControlOffset(int controlOffset) {
+        this.controlOffset = controlOffset;
+    }
+
     public ControlType getControlType() {
         return controlType;
     }
 
     public void setControlType(ControlType controlType) {
         this.controlType = controlType;
+    }
+
+    public StateControlType getStateZeroControl() {
+        return stateZeroControl;
+    }
+
+    public void setStateZeroControl(StateControlType stateZeroControl) {
+        this.stateZeroControl = stateZeroControl;
+    }
+
+    public StateControlType getStateOneControl() {
+        return stateOneControl;
+    }
+
+    public void setStateOneControl(StateControlType stateOneControl) {
+        this.stateOneControl = stateOneControl;
     }
 
     public PointArchiveType getPointArchiveType() {
@@ -193,6 +221,8 @@ public class PointTemplate implements Comparable<PointTemplate> {
                 return false;
         } else if (!calcPointInfo.equals(other.calcPointInfo))
             return false;
+        if (controlOffset != other.controlOffset)
+            return false;
         if (controlType != other.controlType)
             return false;
         if (decimalPlaces != other.decimalPlaces)
@@ -216,6 +246,10 @@ public class PointTemplate implements Comparable<PointTemplate> {
         } else if (!pointIdentifier.equals(other.pointIdentifier))
             return false;
         if (stateGroupId != other.stateGroupId)
+            return false;
+        if (stateOneControl != other.stateOneControl)
+            return false;
+        if (stateZeroControl != other.stateZeroControl)
             return false;
         if (unitOfMeasure != other.unitOfMeasure)
             return false;

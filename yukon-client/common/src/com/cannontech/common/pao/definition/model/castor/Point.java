@@ -11,6 +11,8 @@ package com.cannontech.common.pao.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import com.cannontech.common.pao.definition.model.castor.types.ControlTypeType;
+import com.cannontech.common.pao.definition.model.castor.types.StateControlType;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -64,9 +66,24 @@ public class Point implements java.io.Serializable {
     private java.lang.String _description;
 
     /**
-     * Field _controltype
+     * Field _controlType
      */
-    private java.lang.String _controltype = "NONE";
+    private com.cannontech.common.pao.definition.model.castor.types.ControlTypeType _controlType = com.cannontech.common.pao.definition.model.castor.types.ControlTypeType.valueOf("NONE");
+
+    /**
+     * Field _controlOffset
+     */
+    private java.lang.Integer _controlOffset = new java.lang.Integer("1");
+
+    /**
+     * Field _stateZeroControl
+     */
+    private com.cannontech.common.pao.definition.model.castor.types.StateControlType _stateZeroControl = com.cannontech.common.pao.definition.model.castor.types.StateControlType.valueOf("OPEN");
+
+    /**
+     * Field _stateOneControl
+     */
+    private com.cannontech.common.pao.definition.model.castor.types.StateControlType _stateOneControl = com.cannontech.common.pao.definition.model.castor.types.StateControlType.valueOf("CLOSE");
 
     /**
      * Field _archive
@@ -91,7 +108,9 @@ public class Point implements java.io.Serializable {
     public Point() 
      {
         super();
-        setControltype("NONE");
+        setControlType(com.cannontech.common.pao.definition.model.castor.types.ControlTypeType.valueOf("NONE"));
+        setStateZeroControl(com.cannontech.common.pao.definition.model.castor.types.StateControlType.valueOf("OPEN"));
+        setStateOneControl(com.cannontech.common.pao.definition.model.castor.types.StateControlType.valueOf("CLOSE"));
     } //-- com.cannontech.common.pao.definition.model.castor.Point()
 
 
@@ -122,15 +141,26 @@ public class Point implements java.io.Serializable {
     } //-- com.cannontech.common.pao.definition.model.castor.Calculation getCalculation() 
 
     /**
-     * Returns the value of field 'controltype'.
+     * Returns the value of field 'controlOffset'.
      * 
-     * @return String
-     * @return the value of field 'controltype'.
+     * @return Integer
+     * @return the value of field 'controlOffset'.
      */
-    public java.lang.String getControltype()
+    public java.lang.Integer getControlOffset()
     {
-        return this._controltype;
-    } //-- java.lang.String getControltype() 
+        return this._controlOffset;
+    } //-- java.lang.Integer getControlOffset() 
+
+    /**
+     * Returns the value of field 'controlType'.
+     * 
+     * @return ControlTypeType
+     * @return the value of field 'controlType'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.types.ControlTypeType getControlType()
+    {
+        return this._controlType;
+    } //-- com.cannontech.common.pao.definition.model.castor.types.ControlTypeType getControlType() 
 
     /**
      * Returns the value of field 'description'.
@@ -197,6 +227,28 @@ public class Point implements java.io.Serializable {
     {
         return this._pointChoice;
     } //-- com.cannontech.common.pao.definition.model.castor.PointChoice getPointChoice() 
+
+    /**
+     * Returns the value of field 'stateOneControl'.
+     * 
+     * @return StateControlType
+     * @return the value of field 'stateOneControl'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.types.StateControlType getStateOneControl()
+    {
+        return this._stateOneControl;
+    } //-- com.cannontech.common.pao.definition.model.castor.types.StateControlType getStateOneControl() 
+
+    /**
+     * Returns the value of field 'stateZeroControl'.
+     * 
+     * @return StateControlType
+     * @return the value of field 'stateZeroControl'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.types.StateControlType getStateZeroControl()
+    {
+        return this._stateZeroControl;
+    } //-- com.cannontech.common.pao.definition.model.castor.types.StateControlType getStateZeroControl() 
 
     /**
      * Returns the value of field 'type'.
@@ -276,14 +328,24 @@ public class Point implements java.io.Serializable {
     } //-- void setCalculation(com.cannontech.common.pao.definition.model.castor.Calculation) 
 
     /**
-     * Sets the value of field 'controltype'.
+     * Sets the value of field 'controlOffset'.
      * 
-     * @param controltype the value of field 'controltype'.
+     * @param controlOffset the value of field 'controlOffset'.
      */
-    public void setControltype(java.lang.String controltype)
+    public void setControlOffset(java.lang.Integer controlOffset)
     {
-        this._controltype = controltype;
-    } //-- void setControltype(java.lang.String) 
+        this._controlOffset = controlOffset;
+    } //-- void setControlOffset(java.lang.Integer) 
+
+    /**
+     * Sets the value of field 'controlType'.
+     * 
+     * @param controlType the value of field 'controlType'.
+     */
+    public void setControlType(com.cannontech.common.pao.definition.model.castor.types.ControlTypeType controlType)
+    {
+        this._controlType = controlType;
+    } //-- void setControlType(com.cannontech.common.pao.definition.model.castor.types.ControlTypeType) 
 
     /**
      * Sets the value of field 'description'.
@@ -344,6 +406,26 @@ public class Point implements java.io.Serializable {
     {
         this._pointChoice = pointChoice;
     } //-- void setPointChoice(com.cannontech.common.pao.definition.model.castor.PointChoice) 
+
+    /**
+     * Sets the value of field 'stateOneControl'.
+     * 
+     * @param stateOneControl the value of field 'stateOneControl'.
+     */
+    public void setStateOneControl(com.cannontech.common.pao.definition.model.castor.types.StateControlType stateOneControl)
+    {
+        this._stateOneControl = stateOneControl;
+    } //-- void setStateOneControl(com.cannontech.common.pao.definition.model.castor.types.StateControlType) 
+
+    /**
+     * Sets the value of field 'stateZeroControl'.
+     * 
+     * @param stateZeroControl the value of field 'stateZeroControl'
+     */
+    public void setStateZeroControl(com.cannontech.common.pao.definition.model.castor.types.StateControlType stateZeroControl)
+    {
+        this._stateZeroControl = stateZeroControl;
+    } //-- void setStateZeroControl(com.cannontech.common.pao.definition.model.castor.types.StateControlType) 
 
     /**
      * Sets the value of field 'type'.

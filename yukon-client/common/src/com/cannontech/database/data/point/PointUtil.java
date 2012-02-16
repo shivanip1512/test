@@ -253,7 +253,10 @@ public class PointUtil {
         	StatusPoint statusPoint = (StatusPoint)pointBase;
         	
         	statusPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+        	statusPoint.getPointStatus().setControlOffset(pointTemplate.getControlOffset());
         	statusPoint.getPointStatus().setControlType(pointTemplate.getControlType().getControlName());
+        	statusPoint.getPointStatus().setStateZeroControl(pointTemplate.getStateZeroControl().getControlName());
+        	statusPoint.getPointStatus().setStateOneControl(pointTemplate.getStateOneControl().getControlName());
         	
         } else if (pointBase instanceof AccumulatorPoint) {
         	

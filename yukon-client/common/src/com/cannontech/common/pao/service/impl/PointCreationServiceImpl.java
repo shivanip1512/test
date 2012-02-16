@@ -15,6 +15,7 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StateControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -34,7 +35,10 @@ public class PointCreationServiceImpl implements PointCreationService {
 	                       stateGroupId,
 	                       initialState,
 	                       decimalPlaces,
+	                       null,
 	                       controlType,
+	                       null,
+	                       null,
 	                       pointArchiveType,
 	                       pointArchiveInterval,
 	                       null);
@@ -42,7 +46,7 @@ public class PointCreationServiceImpl implements PointCreationService {
 
     @Override
     public PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset, double multiplier,
-                                 int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
+                                 int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, Integer controlOffset, ControlType controlType, StateControlType stateZeroControl, StateControlType stateOneControl, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
         PointBase point = null;
         int pointId = nextValueHelper.getNextValue("point");
         
@@ -67,7 +71,10 @@ public class PointCreationServiceImpl implements PointCreationService {
             													offset, 
             													stateGroupId,
             													initialState,
+            													controlOffset,
             													controlType,
+            													stateZeroControl,
+            													stateOneControl,
             													pointArchiveType,
             													pointArchiveInterval);
             break;
@@ -130,7 +137,10 @@ public class PointCreationServiceImpl implements PointCreationService {
                                 template.getStateGroupId(),
                                 template.getInitialState(),
                                 template.getDecimalPlaces(),
+                                template.getControlOffset(),
                                 template.getControlType(),
+                                template.getStateZeroControl(),
+                                template.getStateOneControl(),
                                 template.getPointArchiveType(),
                                 template.getPointArchiveInterval(),
                                 template.getCalcPointInfo());

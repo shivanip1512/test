@@ -1,6 +1,7 @@
 package com.cannontech.database.db.point;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.StateControlType;
 
 /**
  * This type was created in VisualAge.
@@ -16,8 +17,8 @@ public class PointStatus extends com.cannontech.database.db.DBPersistent
 	private Integer controlOffset = new Integer(1);
 	private Integer closeTime1 = new Integer(0);
 	private Integer closeTime2 = new Integer(0);
-	private String stateZeroControl = "control open";
-	private String stateOneControl = "control close";
+	private String stateZeroControl = StateControlType.OPEN.getControlName();
+	private String stateOneControl = StateControlType.CLOSE.getControlName();
 	private Integer commandTimeOut = new Integer(DEFAULT_CMD_TIMEOUT);
 
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
