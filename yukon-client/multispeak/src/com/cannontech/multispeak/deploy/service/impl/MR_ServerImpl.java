@@ -25,6 +25,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -79,7 +81,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public AttributeService attributeService;
     public MeterReadProcessingService meterReadProcessingService;
     public DynamicDataSource dynamicDataSource;
-
+    public PaoDefinitionDao paoDefinitionDao;
+    
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     
     private void init() throws RemoteException {
@@ -231,8 +234,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
+    	boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+    	
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
-        if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") ) {
+        if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") && canInitiatePorterRequest) {
         	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
@@ -760,4 +765,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
         this.dynamicDataSource = dynamicDataSource;
     }
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
 }
