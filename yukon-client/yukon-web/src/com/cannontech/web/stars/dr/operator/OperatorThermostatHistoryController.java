@@ -42,11 +42,7 @@ public class OperatorThermostatHistoryController {
     
     // VIEW history for 1 or more thermostats
     @RequestMapping
-    public String view(String thermostatIds,
-                       ModelMap modelMap,
-                       FlashScope flashScope,
-                       AccountInfoFragment accountInfoFragment,
-                       HttpServletRequest request) {
+    public String view(String thermostatIds, ModelMap modelMap, FlashScope flashScope, AccountInfoFragment accountInfoFragment, HttpServletRequest request) {
 
         List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
         
