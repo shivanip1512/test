@@ -1,19 +1,14 @@
 package com.cannontech.capcontrol.creation.model;
 
-public class HierarchyImportResult {
-	private HierarchyImportData hierarchyImportData;
-	private HierarchyImportResultType resultType;
-	
-	public HierarchyImportResult(HierarchyImportData hierarchyImportData, HierarchyImportResultType resultType) {
-		this.hierarchyImportData = hierarchyImportData;
-		this.resultType = resultType;
-	}
-	
-	public HierarchyImportData getHierarchyImportData() {
-		return hierarchyImportData;
-	}
-	
-	public HierarchyImportResultType getResultType() {
-		return resultType;
-	}
+import org.jdom.Element;
+import org.jdom.Namespace;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
+public interface HierarchyImportResult {
+    public Element getResponseElement(Namespace ns);
+    
+    public YukonMessageSourceResolvable getResolvable();
+    
+    public HierarchyImportResultType getResultType();
 }

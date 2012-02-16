@@ -30,6 +30,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
+import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
@@ -46,7 +47,6 @@ import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.service.CapControlCreationModel;
-import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;

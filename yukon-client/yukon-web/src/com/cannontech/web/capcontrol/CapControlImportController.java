@@ -20,20 +20,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
+import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
+import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
+import com.cannontech.capcontrol.creation.model.HierarchyImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
-import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
-import com.cannontech.capcontrol.exception.CapControlImportException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -58,10 +58,10 @@ public class CapControlImportController {
 	private ConcurrentMap<String, List<CapControlImportResolvable>> resultsLookup = 
 	                                    new MapMaker().expireAfterWrite(12, TimeUnit.HOURS).makeMap();
 	
-	private static Function<CapControlImporterCbcCsvField, String> colNameOfField =
-	        new Function<CapControlImporterCbcCsvField, String>() {
+	private static Function<CapControlImporterCbcField, String> colNameOfField =
+	        new Function<CapControlImporterCbcField, String>() {
         @Override
-        public String apply(CapControlImporterCbcCsvField input) {
+        public String apply(CapControlImporterCbcField input) {
             return input.getColumnName();
         }
     };
@@ -131,12 +131,12 @@ public class CapControlImportController {
     					break;
     					
     				default:
-    					cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_IMPORT_ACTION));
+    					cbcResults.add(new CbcImportCompleteDataResult(data, CbcImportResultType.INVALID_IMPORT_ACTION));
     					break;
     			}
 		    } catch (NotFoundException e) {
 		        log.warn(e);
-	            cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_PARENT));
+	            cbcResults.add(new CbcImportCompleteDataResult(data, CbcImportResultType.INVALID_PARENT));
 		    }
 		}
 	}
@@ -159,13 +159,13 @@ public class CapControlImportController {
 						break;
 					
 					default:
-						hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_IMPORT_ACTION));
+						hierarchyResults.add(new HierarchyImportCompleteDataResult(data, HierarchyImportResultType.INVALID_IMPORT_ACTION));
 						break;
 				}
 			} catch (NotFoundException e) {
 				log.debug("Parent " + data.getParent() + " was not found for hierarchy object " + data.getName() +
 						  ". No import occured for this object.");
-				hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_PARENT));
+				hierarchyResults.add(new HierarchyImportCompleteDataResult(data, HierarchyImportResultType.INVALID_PARENT));
 			}
 		}
 	}
@@ -193,13 +193,15 @@ public class CapControlImportController {
                 String columnString = StringUtils.join(colNames.iterator(), ", ");
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", columnString));
         		return "tools/capcontrolImport.jsp";
-        	} catch (CapControlImportException e) { 
-        		log.error(e.getMessage());
         	} catch (IllegalArgumentException e) {
         		log.error("Invalid column name found in import file: " + e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getMessage()));
         		return "tools/capcontrolImport.jsp";
-        	} finally {
+        	} catch (RuntimeException e) { 
+        	    flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.errorProcessingFile", e.getMessage()));
+                log.error(e.getMessage());
+                return "tools/capcontrolImport.jsp";
+            } finally {
         		inputStream.close();
         	}
         }
@@ -274,65 +276,31 @@ public class CapControlImportController {
 	private List<CapControlImportResolvable> getHierarchyResultResolvables(List<HierarchyImportResult> results) {
 		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
 		
-		for (HierarchyImportResult result : results) {			
-		    CapControlImportResolvable resolvable = getHierarchyResultDetailResolvable(result);
+		for (HierarchyImportResult result : results) {	
+		    YukonMessageSourceResolvable message = result.getResolvable();
+		    
+		    CapControlImportResolvable resolvable = 
+		            new CapControlImportResolvable(message, result.getResultType().isSuccess());
 			
 			resolvables.add(resolvable);
 		}
 		
 		return resolvables;
-	}
-	
-	private CapControlImportResolvable getHierarchyResultDetailResolvable(HierarchyImportResult result) {
-	    YukonMessageSourceResolvable message = null;
-	    if (result.getHierarchyImportData() != null) {
-	        String key = "yukon.web.modules.capcontrol.import.hierarchy";
-	    
-	        key += getResultKey(result.getHierarchyImportData().getImportAction(), result.getResultType().isSuccess());
-	        message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString(),
-	                                                   result.getHierarchyImportData().getName());
-	    } else {
-	        String key = "yukon.web.modules.capcontrol.import.noDataResult";
-            message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString());
-	    }
-	    
-	    return new CapControlImportResolvable(message, result.getResultType().isSuccess());
-	}
-	
-	private String getResultKey(ImportAction action, boolean success) {
-	    String key = (action != null) ? action.getDbString() : "Import";
-        key += success ? "Success" : "Failure";
-        
-        return key;
 	}
 	
 	private List<CapControlImportResolvable> getCbcResultResolvables(List<CbcImportResult> results) {
 		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
 		
 		for (CbcImportResult result : results) {
-		    CapControlImportResolvable resolvable = getCbcResultDetailResolvable(result);
+		    YukonMessageSourceResolvable message = result.getResolvable();
+		    
+		    CapControlImportResolvable resolvable = 
+		            new CapControlImportResolvable(message, result.getResultType().isSuccess());
 			
 			resolvables.add(resolvable);
 		}
 		
 		return resolvables;
-	}
-	
-	private CapControlImportResolvable getCbcResultDetailResolvable(CbcImportResult result) {
-	    YukonMessageSourceResolvable message = null;
-	    if (result.getCbcImportData() != null) {
-    	    String key = "yukon.web.modules.capcontrol.import.cbc";
-    	    
-    	    key += getResultKey(result.getCbcImportData().getImportAction(), result.getResultType().isSuccess());
-    	    
-    	    message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString(), 
-    	                                               result.getCbcImportData().getCbcName());
-	    } else {
-	        String key = "yukon.web.modules.capcontrol.import.noDataResult";
-            message = new YukonMessageSourceResolvable(key, result.getResultType().getDbString());
-	    }
-	    
-	    return new CapControlImportResolvable(message, result.getResultType().isSuccess());
 	}
 	
 	@Autowired

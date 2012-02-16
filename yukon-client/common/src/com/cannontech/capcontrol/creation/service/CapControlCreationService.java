@@ -1,4 +1,4 @@
-package com.cannontech.cbc.service;
+package com.cannontech.capcontrol.creation.service;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;

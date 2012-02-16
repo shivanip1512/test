@@ -3,12 +3,16 @@ package com.cannontech.capcontrol.creation.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
+import com.cannontech.capcontrol.creation.model.HierarchyImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
@@ -18,6 +22,8 @@ import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
+import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -43,7 +49,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class CapControlImportServiceImpl implements CapControlImportService {
-
+    private static final Logger log = YukonLogManager.getLogger(CapControlImportServiceImpl.class);
+    
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDao paoDao;
@@ -134,8 +141,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         HierarchyPaoCreator creator = HierarchyPaoCreator.valueOf(paoType.name());
         
         if (creator == null) {
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.INVALID_TYPE));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.INVALID_TYPE));
             return null;
         }
         
@@ -148,11 +155,11 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao yukonPao = retrieveCbcPao(cbcImportData.getCbcName());
         if (yukonPao != null) {
             // We were told to add a device that already exists. This is an error!
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
             return;
         }
         
-        Integer parentId = getParentId(cbcImportData);
+        Integer parentId = getParentCapBankId(cbcImportData);
         
         CompleteCbcBase pao;
         if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
@@ -174,14 +181,19 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (commChannel != null) {
                 cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
             } else {
-                results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
+                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
                 return;
             }
         } else {
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_TYPE));
             return;
         }
 
+        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
+            return;
+        }
+        
         pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
         pao.setPaoName(cbcImportData.getCbcName());
         
@@ -194,7 +206,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             capbankControllerDao.assignController(parentId, paoId);
         }
 
-        results.add(new CbcImportResult(cbcImportData, CbcImportResultType.SUCCESS));
+        results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
     }
 
     @Override
@@ -203,18 +215,18 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao templatePao = retrieveCbcPao(cbcImportData.getTemplateName());
         if (templatePao == null) {
             // The template didn't exist.
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao != null) {
             // The object we're trying to make already exists.
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
             return;
         }
         
-        Integer parentId = getParentId(cbcImportData);
+        Integer parentId = getParentCapBankId(cbcImportData);
         
         PaoIdentifier templateIdentifier = templatePao.getPaoIdentifier();
         // Get a copy of the points from the template to copy to the new CBC.
@@ -235,7 +247,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (commChannel != null) {
                 cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
             } else {
-                results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
+                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
                 return;
             }
             
@@ -246,13 +258,18 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 cbc.setIntervalRate(cbcImportData.getScanInterval());
             }
         } else {
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_PARENT));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT));
             return;
         }
 
-        template.setPaoName(cbcImportData.getCbcName());
-        template.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
+            return;
+        }
         
+        template.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        template.setPaoName(cbcImportData.getCbcName());
+
         paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
         
         int paoId = template.getPaObjectId();
@@ -261,7 +278,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             capbankControllerDao.assignController(parentId, paoId);
         }
 
-        results.add(new CbcImportResult(cbcImportData, CbcImportResultType.SUCCESS));
+        results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
     }
 
     @Override
@@ -270,11 +287,11 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao yukonPao = retrieveCbcPao(cbcImportData.getCbcName());
         if (yukonPao == null) {
             // We were told to update a device that doesn't exist. This is an error!
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
-        Integer parentId = getParentId(cbcImportData);
+        Integer parentId = getParentCapBankId(cbcImportData);
 
         CompleteCbcBase pao;
         if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
@@ -282,9 +299,13 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
             pao = paoPersistenceService.retreivePao(yukonPao.getPaoIdentifier(), CompleteTwoWayCbc.class);
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
-            cbc.setMasterAddress(cbcImportData.getMasterAddress());
-            cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             
+            if (cbcImportData.getMasterAddress() != null) {
+                cbc.setMasterAddress(cbcImportData.getMasterAddress());
+            }
+            if (cbcImportData.getSlaveAddress() != null) {
+                cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
+            }
             if (cbcImportData.getAltInterval() != null) {
                 cbc.setAlternateRate(cbcImportData.getAltInterval());
             }
@@ -292,37 +313,47 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 cbc.setIntervalRate(cbcImportData.getScanInterval());
             }
             
-            YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
-                                                       PaoCategory.PORT, PaoClass.PORT);
-            if (commChannel != null) {
-                cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
-            } else {
-                results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
-                return;
+            if (cbcImportData.getCommChannel() != null) {
+                YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
+                                                           PaoCategory.PORT, PaoClass.PORT);
+                if (commChannel != null) {
+                    cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
+                } else {
+                    results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
+                    return;
+                }
             }
         } else {
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.INVALID_TYPE));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_TYPE));
             return;
         }
         
-        pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        if (cbcImportData.getCbcSerialNumber() != null) {
+            if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
+                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
+                return;
+            }
+            pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        }
         
         paoPersistenceService.updatePao(pao);
 
+        if (("").equals(cbcImportData.getCapBankName())) {
+            capbankControllerDao.unassignController(yukonPao.getPaoIdentifier().getPaoId());
+        }
         if (parentId != null) {
             capbankControllerDao.assignController(parentId, yukonPao.getPaoIdentifier().getPaoId());
         }
 
-        results.add(new CbcImportResult(cbcImportData, CbcImportResultType.SUCCESS));
+        results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
     }
 
-    private Integer getParentId(CbcImportData cbcImportData) {
+    private Integer getParentCapBankId(CbcImportData cbcImportData) {
         String capBankName = cbcImportData.getCapBankName();
-        Integer parentId = null;
-        if (capBankName != null) {
-            parentId = getParentId(capBankName, PaoType.CAPBANK);
+        if (StringUtils.isBlank(capBankName)) {
+            return null;
         }
-        return parentId;
+        return getParentId(capBankName, PaoType.CAPBANK);
     }
 
     @Override
@@ -331,7 +362,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao pao = retrieveCbcPao(cbcImportData.getCbcName());
         if (pao == null) {
             // We were told to remove a device that doesn't exist. This is an error!
-            results.add(new CbcImportResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
@@ -342,7 +373,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
 
         paoPersistenceService.deletePao(paoIdentifier);
 
-        results.add(new CbcImportResult(cbcImportData, CbcImportResultType.SUCCESS));
+        results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
     }
 
     @Override
@@ -352,8 +383,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao yukonPao = findHierarchyPao(hierarchyImportData);
         if (yukonPao != null) {
             // We were told to add an object that already exists. This is an error!
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.OBJECT_EXISTS));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.OBJECT_EXISTS));
             return;
         }
 
@@ -372,7 +403,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             }
         }
 
-        results.add(new HierarchyImportResult(hierarchyImportData, HierarchyImportResultType.SUCCESS));
+        results.add(new HierarchyImportCompleteDataResult(hierarchyImportData, HierarchyImportResultType.SUCCESS));
     }
 
     @Override
@@ -382,8 +413,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
         if (pao == null) {
             // We were told to remove an object that doesn't exist. This is an error!
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.NO_SUCH_OBJECT));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
@@ -391,11 +422,18 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         
         PaoRetriever paoRetriever = paoRetrievers.get(pao.getPaoIdentifier().getPaoType());
         if (paoRetriever == null) {
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.INVALID_TYPE));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.INVALID_TYPE));
             return;
         }
         CompleteYukonPao completePao = paoRetriever.retrievePao(pao.getPaoIdentifier(), hierarchyImportData);
+        
+        if (hierarchyImportData.isDisabled() != null) {
+            completePao.setDisabled(hierarchyImportData.isDisabled());
+        }
+        if (hierarchyImportData.getDescription() != null) {
+            completePao.setDescription(hierarchyImportData.getDescription());
+        }
         
         paoPersistenceService.updatePao(completePao);
         
@@ -403,15 +441,19 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         // desired.
         String parentName = hierarchyImportData.getParent();
         if (parentName != null) {
-            int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
-            if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
-                // Invalid child type or parent type. We don't have a success here.
-                return;
+            if (parentName.isEmpty()) {
+                removeHierarchyParentLink(hierarchyImportData, childId);
+            } else {
+                int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
+                if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
+                    // Invalid child type or parent type. We don't have a success here.
+                    return;
+                }
             }
         }
 
-        results.add(new HierarchyImportResult(hierarchyImportData,
-                                              HierarchyImportResultType.SUCCESS));
+        results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                          HierarchyImportResultType.SUCCESS));
     };
 
     @Override
@@ -421,17 +463,24 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
         if (pao == null) {
             // We were told to remove a device that doesn't exist. This is an error!
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.NO_SUCH_OBJECT));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
         PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
         
-        paoPersistenceService.deletePao(paoIdentifier);
-        
-        results.add(new HierarchyImportResult(hierarchyImportData,
-                                              HierarchyImportResultType.SUCCESS));
+        try {
+            removeHierarchyParentLink(hierarchyImportData, pao.getPaoIdentifier().getPaoId());
+    
+            paoPersistenceService.deletePao(paoIdentifier);
+            
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.SUCCESS));
+        } catch (CapControlHierarchyImportException e) {
+            log.debug(e);
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData, e.getImportResultType()));
+        }
     };
     
     private boolean parentTypeIsValid(int childId, int parentId) {
@@ -481,8 +530,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                                            int childId,
                                            List<HierarchyImportResult> results) {
         if(!parentTypeIsValid(childId, parentId)) {
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.INVALID_PARENT));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.INVALID_PARENT));
             return false;
         }
         
@@ -500,9 +549,33 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         case CAPBANK:
             return capbankDao.assignCapbank(parentId, childId);
         default:
-            results.add(new HierarchyImportResult(hierarchyImportData,
-                                                  HierarchyImportResultType.INVALID_TYPE));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              HierarchyImportResultType.INVALID_TYPE));
             return false;
+        }
+    }
+    
+    private void removeHierarchyParentLink(HierarchyImportData hierarchyImportData, int childId) {
+        switch(hierarchyImportData.getPaoType()) {
+        case CAP_CONTROL_AREA:
+        case CAP_CONTROL_SPECIAL_AREA:
+            break;
+        case CAP_CONTROL_SUBSTATION:
+            substationDao.unassignSubstation(childId);
+            break;
+        case CAP_CONTROL_SUBBUS:
+            substationBusDao.unassignSubstationBus(childId);
+            break;
+        case CAP_CONTROL_FEEDER:
+            feederDao.unassignFeeder(childId);
+            break;
+        case CAPBANK:
+            capbankDao.unassignCapbank(childId);
+            break;
+        default:
+            throw new CapControlHierarchyImportException("Attempted to remove assignment link for an " +
+                                                         "invalid PaoType: " + hierarchyImportData.getPaoType(), 
+                                                         HierarchyImportResultType.INVALID_TYPE);
         }
     }
 }

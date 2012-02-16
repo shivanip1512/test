@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.capcontrol.creation.CapControlImporterHierarchyCsvField;
+import com.cannontech.capcontrol.creation.CapControlImporterHierarchyField;
 
 /**
  * This exception is thrown when the user uses the Cap Control File Importer to
@@ -14,18 +14,18 @@ import com.cannontech.capcontrol.creation.CapControlImporterHierarchyCsvField;
  */
 public class CapControlHierarchyFileImporterException extends CapControlFileImporterException {
 
-	private Collection<CapControlImporterHierarchyCsvField> columns;
+	private Collection<CapControlImporterHierarchyField> columns;
 	
 	private CapControlHierarchyFileImporterException(String message) {
 		super(message);
 	}
 	
-	public CapControlHierarchyFileImporterException(String message, Collection<CapControlImporterHierarchyCsvField> columns) {
+	public CapControlHierarchyFileImporterException(String message, Collection<CapControlImporterHierarchyField> columns) {
 		this(message + StringUtils.join(columns, ", "));
 		this.columns = columns;
 	}
 	
-	public Collection<CapControlImporterHierarchyCsvField> getColumns() {
+	public Collection<CapControlImporterHierarchyField> getColumns() {
 		return columns;
 	}
 }

@@ -11,23 +11,25 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.capcontrol.BankOpState;
-import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
-import com.cannontech.capcontrol.creation.CapControlImporterHierarchyCsvField;
+import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
+import com.cannontech.capcontrol.creation.CapControlImporterHierarchyField;
+import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
+import com.cannontech.capcontrol.creation.model.CbcImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
+import com.cannontech.capcontrol.creation.model.HierarchyImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
+import com.cannontech.capcontrol.creation.model.HierarchyImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
 import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
+import com.cannontech.capcontrol.exception.CapControlCbcImportException;
 import com.cannontech.capcontrol.exception.CapControlFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
-import com.cannontech.capcontrol.exception.CapControlImportException;
-import com.cannontech.capcontrol.exception.ImporterInvalidDisabledValueException;
-import com.cannontech.capcontrol.exception.ImporterInvalidOpStateException;
-import com.cannontech.capcontrol.exception.ImporterInvalidPaoTypeException;
+import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
@@ -38,98 +40,104 @@ import com.google.common.collect.Sets;
 public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao {
     private static final Logger log = YukonLogManager.getLogger(CapControlImporterFileDaoImpl.class);
 	
-	private Map<CapControlImporterCbcCsvField, Integer> getCbcHeaderRowMap(final String[] headerRow) {
-		Map<CapControlImporterCbcCsvField, Integer> headerColumnMap = Maps.newHashMap();
+	private Map<CapControlImporterCbcField, Integer> getCbcHeaderRowMap(final String[] headerRow) {
+		Map<CapControlImporterCbcField, Integer> headerColumnMap = Maps.newHashMap();
 		
 		for (int i = 0; i < headerRow.length; i++) {
-			CapControlImporterCbcCsvField column = CapControlImporterCbcCsvField.getColumnByName(headerRow[i]);
+			CapControlImporterCbcField column = CapControlImporterCbcField.getColumnByName(headerRow[i]);
 			headerColumnMap.put(column, i);
 		}
 		
 		return headerColumnMap;
 	}
 	
-	private Map<CapControlImporterHierarchyCsvField, Integer> getHierarchyHeaderRowMap(final String[] headerRow) {
-		Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap = Maps.newHashMap();
+	private Map<CapControlImporterHierarchyField, Integer> getHierarchyHeaderRowMap(final String[] headerRow) {
+		Map<CapControlImporterHierarchyField, Integer> headerColumnMap = Maps.newHashMap();
 		
 		for (int i = 0; i < headerRow.length; i++) {
-			CapControlImporterHierarchyCsvField column = CapControlImporterHierarchyCsvField.getColumnByName(headerRow[i]);
+			CapControlImporterHierarchyField column = CapControlImporterHierarchyField.getColumnByName(headerRow[i]);
 			headerColumnMap.put(column, i);
 		}
 		
 		return headerColumnMap;
 	}
 	
-	private void validateCbcImportFileColumns(Map<CapControlImporterCbcCsvField, Integer> headerColumnMap) {
+	private void validateCbcImportFileColumns(Map<CapControlImporterCbcField, Integer> headerColumnMap) {
 		// Make sure we have all required columns in the file!
-		Set<CapControlImporterCbcCsvField> requiredFields = CapControlImporterCbcCsvField.getRequiredFields();
-		Set<CapControlImporterCbcCsvField> fileColumns = headerColumnMap.keySet();
+		Set<CapControlImporterCbcField> requiredFields = CapControlImporterCbcField.getRequiredFields();
+		Set<CapControlImporterCbcField> fileColumns = headerColumnMap.keySet();
 		
 		if (!fileColumns.containsAll(requiredFields)) {
-	        fileColumns.removeAll(CapControlImporterCbcCsvField.getNonRequiredFields());
-	        Set<CapControlImporterCbcCsvField> missing = Sets.difference(fileColumns, requiredFields);
+	        fileColumns.removeAll(CapControlImporterCbcField.getNonRequiredFields());
+	        Set<CapControlImporterCbcField> missing = Sets.difference(fileColumns, requiredFields);
             throw new CapControlCbcFileImportException("Cbc Import File is missing required columns: ", missing);
 		}
 	}
 	
-	private void validateHierarchyImportFileColumns(Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap) {
+	private void validateHierarchyImportFileColumns(Map<CapControlImporterHierarchyField, Integer> headerColumnMap) {
 		// Make sure we have all required columns in the file!
-		Set<CapControlImporterHierarchyCsvField> requiredFields = CapControlImporterHierarchyCsvField.getRequiredFields();
-		Set<CapControlImporterHierarchyCsvField> fileColumns = headerColumnMap.keySet();
+		Set<CapControlImporterHierarchyField> requiredFields = CapControlImporterHierarchyField.getRequiredFields();
+		Set<CapControlImporterHierarchyField> fileColumns = headerColumnMap.keySet();
 		
 		if (!fileColumns.containsAll(requiredFields)) {
-		    fileColumns.removeAll(CapControlImporterHierarchyCsvField.getNonRequiredFields());
-	        Set<CapControlImporterHierarchyCsvField> missingColumns = Sets.difference(fileColumns, requiredFields);
+		    fileColumns.removeAll(CapControlImporterHierarchyField.getNonRequiredFields());
+	        Set<CapControlImporterHierarchyField> missingColumns = Sets.difference(fileColumns, requiredFields);
 			throw new CapControlHierarchyFileImporterException("Hierarchy import file is missing required columns: ", missingColumns);
 		}
 	}
 	
-	private CbcImportData createCbcImportData(final String[] line, Map<CapControlImporterCbcCsvField, Integer> headerColumnMap) {
+	private CbcImportData createCbcImportData(final String[] line, Map<CapControlImporterCbcField, Integer> headerColumnMap) {
 		PaoType paoType;
 		
-		String name = line[headerColumnMap.get(CapControlImporterCbcCsvField.CBC_NAME)];
+		String name = line[headerColumnMap.get(CapControlImporterCbcField.CBC_NAME)];
 
-		ImportAction importAction = ImportAction.getForDbString(line[headerColumnMap.get(CapControlImporterCbcCsvField.IMPORT_ACTION)]);
+		ImportAction importAction = ImportAction.getForDbString(line[headerColumnMap.get(CapControlImporterCbcField.IMPORT_ACTION)]);
 
 		if (importAction != ImportAction.REMOVE) {
-			String type = line[headerColumnMap.get(CapControlImporterCbcCsvField.CBC_TYPE)];
+			String type = line[headerColumnMap.get(CapControlImporterCbcField.CBC_TYPE)];
 			try {
 				paoType = PaoType.getForDbString(type);
 			} catch (IllegalArgumentException e) {
-				throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Unknown Type: " + type);
+			    throw new CapControlCbcImportException("Import of " + name + " failed. Unknown Type: " + type,
+			                                             CbcImportResultType.INVALID_TYPE);
 			}
 			
 			if (PaoType.isCbc(paoType)) {
+			    CbcImportData cbcData = new CbcImportData(name, importAction, paoType);
+			    
 				// There are required fields we KNOW are here. Set them, then try the non-requireds.
-				int cbcSerialNumber = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcCsvField.CBC_SERIAL_NUMBER)]);
-				int masterAddress = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcCsvField.MASTER_ADDRESS)]);
-				int slaveAddress = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcCsvField.SLAVE_ADDRESS)]);
-				String commChannel = line[headerColumnMap.get(CapControlImporterCbcCsvField.COMM_CHANNEL)];
+				int cbcSerialNumber = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.CBC_SERIAL_NUMBER)]);
+				cbcData.setCbcSerialNumber(cbcSerialNumber);
 				
-				CbcImportData cbcData = new CbcImportData(name, 
-				                                          importAction,
-				                                          paoType, 
-				                                          commChannel, 
-				                                          cbcSerialNumber, 
-				                                          masterAddress, 
-				                                          slaveAddress);
+				int masterAddress = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS)]);
+				cbcData.setMasterAddress(masterAddress);
+				
+				int slaveAddress = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS)]);
+				cbcData.setSlaveAddress(slaveAddress);
+				
+				String commChannel = line[headerColumnMap.get(CapControlImporterCbcField.COMM_CHANNEL)];
+			    cbcData.setCommChannel(commChannel);
 		        
 		        // Template name may or may not be there. Check.
-		        if (headerColumnMap.containsKey(CapControlImporterCbcCsvField.TEMPLATE_NAME)) {
-		            cbcData.setTemplateName(line[headerColumnMap.get(CapControlImporterCbcCsvField.TEMPLATE_NAME)]);
+		        if (headerColumnMap.containsKey(CapControlImporterCbcField.TEMPLATE_NAME)) {
+		            cbcData.setTemplateName(line[headerColumnMap.get(CapControlImporterCbcField.TEMPLATE_NAME)]);
 		        }
 				
-				Integer capBankColumn = headerColumnMap.get(CapControlImporterCbcCsvField.CAPBANK_NAME);
-				if (capBankColumn != null && !StringUtils.isBlank(line[capBankColumn])) {
-					cbcData.setCapBankName(line[capBankColumn]);
+				Integer capBankColumn = headerColumnMap.get(CapControlImporterCbcField.CAPBANK_NAME);
+				if (capBankColumn != null) {
+				    if (!StringUtils.isBlank(line[capBankColumn])) {
+				        cbcData.setCapBankName(line[capBankColumn]);
+				    } else {
+				        cbcData.setCapBankName(new String()); // This will unassign the Cbc.
+				    }
 				}
 				
-				Integer scanColumn = headerColumnMap.get(CapControlImporterCbcCsvField.SCAN_INTERVAL);
+				Integer scanColumn = headerColumnMap.get(CapControlImporterCbcField.SCAN_INTERVAL);
 				if (scanColumn != null && !StringUtils.isBlank(line[scanColumn])) {
 					cbcData.setScanInterval(Integer.decode(line[scanColumn]));
 				}
 				
-				Integer altColumn = headerColumnMap.get(CapControlImporterCbcCsvField.ALT_INTERVAL);
+				Integer altColumn = headerColumnMap.get(CapControlImporterCbcField.ALT_INTERVAL);
 				if (altColumn != null && !StringUtils.isBlank(line[altColumn])) {
 					cbcData.setAltInterval(Integer.decode(line[altColumn]));
 				}
@@ -137,45 +145,45 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				return cbcData;
 			} else {
 			    // They gave us a valid PaoType, only it wasn't a valid CBC type. Yell!
-			    throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Invalid CBC " +
-			                                              "PaoType of " + paoType.getDbString() + " provided.");
+			    throw new CapControlCbcImportException("Import of " + name + " failed. Invalid CBC " +
+                                                         "PaoType of " + paoType.getDbString() + " provided.", 
+                                                         CbcImportResultType.INVALID_TYPE);
 			}
 		} else {
-		    /* This is a little icky, but we only needed the name and 
-		     * import action of remove anyway. */
-		    return CbcImportData.createRemovalImportData(name);
+		    return new CbcImportData(name, importAction, null); // PaoType is irrelevant!
 		}
 	}
 	
-	private HierarchyImportData createHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap) 
-	                        throws ImporterInvalidPaoTypeException {
+	private HierarchyImportData createHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyField, Integer> headerColumnMap) 
+	                        throws CapControlHierarchyImportException {
 	    PaoType paoType;
         
-        String name = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.NAME)];
-        String ccType = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.TYPE)];    
+        String name = line[headerColumnMap.get(CapControlImporterHierarchyField.NAME)];
+        String ccType = line[headerColumnMap.get(CapControlImporterHierarchyField.TYPE)];    
         
         try {
             paoType = PaoType.getForDbString(ccType);
         } catch (IllegalArgumentException i) {
-            throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Unknown Type: " + ccType);
+            throw new CapControlHierarchyImportException("Import of " + name + " failed. Unknown Type: " + ccType, 
+                                                         HierarchyImportResultType.INVALID_TYPE);
         }
         
         // There are required fields we KNOW are here. Set them, then try the non-requireds.
-        String action = line[headerColumnMap.get(CapControlImporterHierarchyCsvField.IMPORT_ACTION)];
+        String action = line[headerColumnMap.get(CapControlImporterHierarchyField.IMPORT_ACTION)];
         ImportAction importAction = ImportAction.getForDbString(action);
         
         // We got everything we need, lets make the HierarchyImportData object.
         return new HierarchyImportData(paoType, name, importAction);
 	}
 	
-	private void populateHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap,
+	private void populateHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyField, Integer> headerColumnMap,
                                            HierarchyImportData data) {
-		Integer descColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.DESCRIPTION);
+		Integer descColumn = headerColumnMap.get(CapControlImporterHierarchyField.DESCRIPTION);
 		if (descColumn != null && !StringUtils.isBlank(line[descColumn])) {
 			data.setDescription(line[descColumn]);
 		}
 		
-		Integer disabledColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.DISABLED);
+		Integer disabledColumn = headerColumnMap.get(CapControlImporterHierarchyField.DISABLED);
 		if (disabledColumn != null && !StringUtils.isBlank(line[disabledColumn])) {
 			String disabled = line[disabledColumn];
 			if (disabled.equalsIgnoreCase("Y")) {
@@ -183,39 +191,45 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			} else if (disabled.equalsIgnoreCase("N")) {
 				data.setDisabled(false);
 			} else {
-				throw new ImporterInvalidDisabledValueException("Disabled field contained invalid data. Please " +
-													            "change to 'Y' or 'N'");
+			    throw new CapControlHierarchyImportException("Disabled field contained invalid data. Please " +
+                                                             "change to 'Y' or 'N'", 
+                                                             HierarchyImportResultType.INVALID_DISABLED_VALUE);
 			}
 		}
 		
-		Integer mapColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.MAP_LOCATION_ID);
+		Integer mapColumn = headerColumnMap.get(CapControlImporterHierarchyField.MAP_LOCATION_ID);
 		if (mapColumn != null && !StringUtils.isBlank(line[mapColumn])) {
 			data.setMapLocationId(line[mapColumn]);
 		}
 		
-		Integer parentColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.PARENT);
-		if (parentColumn != null && !StringUtils.isBlank(line[parentColumn])) {
-			data.setParent(line[parentColumn]);
+		Integer parentColumn = headerColumnMap.get(CapControlImporterHierarchyField.PARENT);
+		if (parentColumn != null) {
+		    if (!StringUtils.isBlank(line[parentColumn])) {
+		        data.setParent(line[parentColumn]);
+		    } else {
+		        data.setParent(new String());
+		    }
 		}
 		
-		Integer opStateColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.OPERATIONAL_STATE);
+		Integer opStateColumn = headerColumnMap.get(CapControlImporterHierarchyField.OPERATIONAL_STATE);
 		if (opStateColumn != null && !StringUtils.isBlank(line[opStateColumn])) {
 		    try {
 		        BankOpState bankOpState = BankOpState.getStateByName(line[opStateColumn]);
 		        data.setBankOpState(bankOpState);
 		    } catch (IllegalArgumentException e) {
-		        throw new ImporterInvalidOpStateException("Operational state field contained invalid data.");
+		        throw new CapControlHierarchyImportException("Operational state field contained invalid data.", 
+		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE);
 		    }
 		}
 		
-		Integer capBankSizeColumn = headerColumnMap.get(CapControlImporterHierarchyCsvField.CAPBANK_SIZE);
+		Integer capBankSizeColumn = headerColumnMap.get(CapControlImporterHierarchyField.CAPBANK_SIZE);
 		if (capBankSizeColumn != null && !StringUtils.isBlank(line[capBankSizeColumn])) {
 		    data.setCapBankSize(Integer.valueOf(line[capBankSizeColumn]));
 		}
 	}
 	
 	@Override
-	public List<CbcImportData> getCbcImportData(InputStream inputStream, List<CbcImportResult> results) throws CapControlImportException {
+	public List<CbcImportData> getCbcImportData(InputStream inputStream, List<CbcImportResult> results) throws RuntimeException {
 		List<CbcImportData> cbcImportData = Lists.newArrayList();
 		
 		try {
@@ -224,14 +238,14 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
             CSVReader csvReader = new CSVReader(inputStreamReader);
             final String[] headerRow = csvReader.readNext();
             
-            Map<CapControlImporterCbcCsvField, Integer> headerColumnMap = getCbcHeaderRowMap(headerRow);
+            Map<CapControlImporterCbcField, Integer> headerColumnMap = getCbcHeaderRowMap(headerRow);
             validateCbcImportFileColumns(headerColumnMap);
             
             String[] line = csvReader.readNext();
         
 	        while(line != null) {
 	        	CbcImportData cbcData = null;
-	        	List<CapControlImporterCbcCsvField> missingColumns = Lists.newArrayList();
+	        	List<CapControlImporterCbcField> missingColumns = Lists.newArrayList();
 	        	
 	        	try {
 	        		validateCbcImporterRow(headerColumnMap, line, missingColumns);
@@ -240,12 +254,12 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		cbcData = createCbcImportData(line, headerColumnMap);
 	        		
 	        		cbcImportData.add(cbcData);
-	        	} catch (CapControlFileImporterException e) {
+	        	} catch (CapControlCbcFileImportException e) {
 	        		log.error(e.getMessage());
-	        		results.add(new CbcImportResult(null, CbcImportResultType.MISSING_DATA));
-	        	} catch (ImporterInvalidPaoTypeException e) {
+	        		results.add(new CbcImportMissingDataResult(e.getColumns()));
+	        	} catch (CapControlCbcImportException e) {
 	        	    log.error(e.getMessage());
-	        	    results.add(new CbcImportResult(cbcData, CbcImportResultType.INVALID_TYPE));
+	        	    results.add(new CbcImportCompleteDataResult(cbcData, e.getImportResultType()));
 	        	} finally {
 	        		line = csvReader.readNext();
 	        	}
@@ -253,7 +267,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		        
 		    csvReader.close();
 		} catch (IOException e) {
-			throw new CapControlImportException("Cap Control Importer encountered an error while reading the input file!");
+			throw new RuntimeException("Cap Control Importer encountered an error while reading the input file!");
 		}
 
         return cbcImportData;
@@ -269,14 +283,14 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
             CSVReader csvReader = new CSVReader(inputStreamReader);
             final String[] headerRow = csvReader.readNext();
             
-            Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap = getHierarchyHeaderRowMap(headerRow);
+            Map<CapControlImporterHierarchyField, Integer> headerColumnMap = getHierarchyHeaderRowMap(headerRow);
             validateHierarchyImportFileColumns(headerColumnMap);
             
             String[] line = csvReader.readNext();
         
 	        while(line != null) {
 	        	HierarchyImportData data = null;
-	        	List<CapControlImporterHierarchyCsvField> missingColumns = Lists.newArrayList();
+	        	List<CapControlImporterHierarchyField> missingColumns = Lists.newArrayList();
 	        	
 	        	try {
 	        		validateHierarchyImporterRow(headerColumnMap, line, missingColumns);
@@ -289,17 +303,11 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		hierarchyImportData.add(data);
 	        	} catch (CapControlHierarchyFileImporterException e) {
 	        		log.error(e.getMessage());
-	        		results.add(new HierarchyImportResult(null, HierarchyImportResultType.MISSING_DATA));
-	        	} catch (ImporterInvalidPaoTypeException e) {
+	        		results.add(new HierarchyImportMissingDataResult(e.getColumns()));
+	        	} catch (CapControlHierarchyImportException e) {
                     log.error(e.getMessage());
-                    results.add(new HierarchyImportResult(null, HierarchyImportResultType.INVALID_TYPE));
-                } catch (ImporterInvalidDisabledValueException e) {
-	        	    log.error(e.getMessage());
-	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_DISABLED_VALUE));
-	            } catch (ImporterInvalidOpStateException e) {
-	        	    log.error(e.getMessage());
-	        	    results.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_OPERATIONAL_STATE));
-	        	} finally {
+                    results.add(new HierarchyImportCompleteDataResult(data, e.getImportResultType()));
+                } finally {
 	        		line = csvReader.readNext();
 	        	}
 	        }
@@ -312,40 +320,40 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
         return hierarchyImportData;
 	}
 	
-	private void validateCbcImporterRow(Map<CapControlImporterCbcCsvField, Integer> headerColumnMap,
-			String[] line, List<CapControlImporterCbcCsvField> missingColumns) throws CapControlFileImporterException {
-		Set<CapControlImporterCbcCsvField> columns = Sets.newHashSet(headerColumnMap.keySet());
+	private void validateCbcImporterRow(Map<CapControlImporterCbcField, Integer> headerColumnMap,
+			String[] line, List<CapControlImporterCbcField> missingColumns) throws CapControlCbcFileImportException {
+		Set<CapControlImporterCbcField> columns = Sets.newHashSet(headerColumnMap.keySet());
 		
 		// Check to see if we're a template first.
-		if (headerColumnMap.containsKey(CapControlImporterCbcCsvField.TEMPLATE_NAME)) {
-			int templateColumnId = headerColumnMap.get(CapControlImporterCbcCsvField.TEMPLATE_NAME);
+		if (headerColumnMap.containsKey(CapControlImporterCbcField.TEMPLATE_NAME)) {
+			int templateColumnId = headerColumnMap.get(CapControlImporterCbcField.TEMPLATE_NAME);
 			
 			if( line[templateColumnId].length() == 0 ) {
-				missingColumns.add(CapControlImporterCbcCsvField.TEMPLATE_NAME);
+				missingColumns.add(CapControlImporterCbcField.TEMPLATE_NAME);
 			}
 			
 			// Remove the template name column from the set so the rest of the function doesn't see it and complain.
-			columns.remove(CapControlImporterCbcCsvField.TEMPLATE_NAME);
+			columns.remove(CapControlImporterCbcField.TEMPLATE_NAME);
 		}
 		
 		ImportAction action = null;
 		
-		int actionColumnId = headerColumnMap.get(CapControlImporterCbcCsvField.IMPORT_ACTION);
+		int actionColumnId = headerColumnMap.get(CapControlImporterCbcField.IMPORT_ACTION);
 		
 		if (StringUtils.isBlank(line[actionColumnId])) {
-			missingColumns.add(CapControlImporterCbcCsvField.IMPORT_ACTION);
+			missingColumns.add(CapControlImporterCbcField.IMPORT_ACTION);
 		} else {
 			action = ImportAction.getForDbString(line[actionColumnId]);
 		
 			if (action == ImportAction.REMOVE) {
 				// In Remove cases, we only care about the name of the CBC, the rest is irrelevant.
-				int cbcNameColumnId = headerColumnMap.get(CapControlImporterCbcCsvField.CBC_NAME);
+				int cbcNameColumnId = headerColumnMap.get(CapControlImporterCbcField.CBC_NAME);
 				
 				if (StringUtils.isBlank(line[cbcNameColumnId])) {
-					missingColumns.add(CapControlImporterCbcCsvField.CBC_NAME);
+					missingColumns.add(CapControlImporterCbcField.CBC_NAME);
 				}
 			} else {
-				for (CapControlImporterCbcCsvField column : columns) {
+				for (CapControlImporterCbcField column : columns) {
 					int columnId = headerColumnMap.get(column);
 					
 					if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
@@ -360,12 +368,12 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		}
 	}
 		
-	private void validateHierarchyImporterRow(Map<CapControlImporterHierarchyCsvField, Integer> headerColumnMap,
-			String[] line, List<CapControlImporterHierarchyCsvField> missingColumns) throws CapControlFileImporterException {
+	private void validateHierarchyImporterRow(Map<CapControlImporterHierarchyField, Integer> headerColumnMap,
+			String[] line, List<CapControlImporterHierarchyField> missingColumns) throws CapControlFileImporterException {
 		// Ensure all required columns contain data.
-		Set<CapControlImporterHierarchyCsvField> columns = headerColumnMap.keySet();
+		Set<CapControlImporterHierarchyField> columns = headerColumnMap.keySet();
 		
-		for (CapControlImporterHierarchyCsvField column : columns) {
+		for (CapControlImporterHierarchyField column : columns) {
 			int columnId = headerColumnMap.get(column);
 			
 			if (column.isRequired() && StringUtils.isBlank(line[columnId])) {

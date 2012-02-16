@@ -1,19 +1,14 @@
 package com.cannontech.capcontrol.creation.model;
 
-public class CbcImportResult {
-	private CbcImportData cbcImportData;
-	private CbcImportResultType resultType;
+import org.jdom.Element;
+import org.jdom.Namespace;
 
-	public CbcImportResult(CbcImportData cbcImportData, CbcImportResultType resultType) {
-		this.cbcImportData = cbcImportData;
-		this.resultType = resultType;
-	}
-	
-	public CbcImportData getCbcImportData() {
-		return cbcImportData;
-	}
-	
-	public CbcImportResultType getResultType() {
-		return resultType;
-	}
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
+public interface CbcImportResult {
+    public Element getResponseElement(Namespace ns);
+    
+    public YukonMessageSourceResolvable getResolvable();
+    
+    public CbcImportResultType getResultType();
 }

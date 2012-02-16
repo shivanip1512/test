@@ -28,6 +28,14 @@ public interface CapbankControllerDao {
      * updated, false otherwise.
      */
     public boolean unassignController(int controller);
+    
+    /**
+     * This method checks to see if a serial number is valid for a CBC (that is, it checks
+     * to see that no other CBC in the database has the same serial number.)
+     * @param serialNumber the serial number in question.
+     * @return true if the serial number doesn't already exist in the database, false otherwise.
+     */
+    public boolean isSerialNumberValid(int serialNumber);
 	
 	public SearchResult<LiteCapControlObject> getOrphans(final int start,final int count);
 }

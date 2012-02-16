@@ -47,8 +47,6 @@
     <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
   </bean> 
 
-    <bean id="capControlCreationService" class="com.cannontech.cbc.service.impl.CapControlCreationServiceImpl"/>
-
     <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl"/>
     
     <bean id="updaterHelper" class="com.cannontech.cbc.util.UpdaterHelper"/>

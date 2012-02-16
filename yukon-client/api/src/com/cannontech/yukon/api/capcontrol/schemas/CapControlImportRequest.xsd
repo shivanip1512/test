@@ -76,7 +76,6 @@
 			<xsd:enumeration value="CBC 8024"/>
 			<xsd:enumeration value="CBC DNP"/>
 			<xsd:enumeration value="CBC FP-2800"/>
-			<xsd:enumeration value="CBC 6510"/>
 			<xsd:enumeration value="CBC Versacom"/>
 			<xsd:enumeration value="CBC Expresscom"/>
         </xsd:restriction>

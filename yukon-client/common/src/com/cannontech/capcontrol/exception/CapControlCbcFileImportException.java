@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
+import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
 
 /**
  * This exception is thrown when the user uses the Cap Control File Importer to
@@ -14,18 +14,18 @@ import com.cannontech.capcontrol.creation.CapControlImporterCbcCsvField;
  */
 public class CapControlCbcFileImportException extends CapControlFileImporterException {
 	
-	private Collection<CapControlImporterCbcCsvField> columns;
+	private Collection<CapControlImporterCbcField> columns;
 
 	private CapControlCbcFileImportException(String message) {
 		super(message);
 	}
 	
-	public CapControlCbcFileImportException(String message, Collection<CapControlImporterCbcCsvField> columns) {
+	public CapControlCbcFileImportException(String message, Collection<CapControlImporterCbcField> columns) {
 		this(message + StringUtils.join(columns, ", "));
 		this.columns = columns;
 	}
 	
-	public Collection<CapControlImporterCbcCsvField> getColumns() {
+	public Collection<CapControlImporterCbcField> getColumns() {
 		return columns;
 	}
 }

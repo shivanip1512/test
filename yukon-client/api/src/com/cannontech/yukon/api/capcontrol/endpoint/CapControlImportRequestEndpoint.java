@@ -16,20 +16,25 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import com.cannontech.capcontrol.BankOpState;
+import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
+import com.cannontech.capcontrol.creation.CapControlImporterHierarchyField;
 import com.cannontech.capcontrol.creation.model.CapControlXmlImport;
+import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
+import com.cannontech.capcontrol.creation.model.CbcImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
+import com.cannontech.capcontrol.creation.model.HierarchyImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
+import com.cannontech.capcontrol.creation.model.HierarchyImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
 import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
-import com.cannontech.capcontrol.exception.CapControlImportException;
-import com.cannontech.capcontrol.exception.ImporterInvalidDisabledValueException;
-import com.cannontech.capcontrol.exception.ImporterInvalidImportActionException;
-import com.cannontech.capcontrol.exception.ImporterInvalidOpStateException;
-import com.cannontech.capcontrol.exception.ImporterInvalidPaoTypeException;
+import com.cannontech.capcontrol.exception.CapControlCbcImportException;
+import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
+import com.cannontech.capcontrol.exception.ImporterCbcMissingDataException;
+import com.cannontech.capcontrol.exception.ImporterHierarchyMissingDataException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -101,24 +106,10 @@ public class CapControlImportRequestEndpoint {
 	        return null;
 	    }
 	    
-		Element hierarchyRepsonse = new Element("hierarchyResponseList");
+		Element hierarchyRepsonse = new Element("hierarchyResponseList", ns);
 		
 		for (HierarchyImportResult result : results) {
-			Element response = new Element("hierarchyImportResponse");
-			
-			HierarchyImportResultType resultType = result.getResultType();
-			
-			if (!resultType.isSuccess()) {
-				Element resultTypeElement = new Element("hierarchyImportResultType");
-				resultTypeElement.addContent(result.getResultType().getDbString());
-				response.addContent(resultTypeElement);
-			}
-
-			// Add more detail if we can.
-			if (result.getHierarchyImportData() != null) {
-                Element detailElement = createHierarchyDetailElement(result);
-                response.addContent(detailElement);
-            }
+			Element response = result.getResponseElement(ns);
 		
 			response.setAttribute(new Attribute("success", result.getResultType().isSuccess().toString()));
 			response.setAttribute(new Attribute("errorCode", Integer.toString(result.getResultType().getErrorCode())));
@@ -134,24 +125,10 @@ public class CapControlImportRequestEndpoint {
 	        return null;
 	    }
 	    
-		Element cbcResponse = new Element("cbcResponseList");
+		Element cbcResponse = new Element("cbcResponseList", ns);
 		
 		for (CbcImportResult result : results) {
-			Element response = new Element("cbcImportResponse");
-			
-			CbcImportResultType resultType = result.getResultType();
-			
-			if (!resultType.isSuccess()) {
-				Element cbcResult = new Element("cbcImportResultType");
-				cbcResult.addContent(result.getResultType().getDbString());
-				response.addContent(cbcResult);
-			} 
-
-			// Add more detail if we can.
-            if (result.getCbcImportData() != null) {
-                Element detailElement = createCbcDetailElement(result);
-                response.addContent(detailElement);
-            }
+		    Element response = result.getResponseElement(ns);
 			
 			response.setAttribute(new Attribute("success", result.getResultType().isSuccess().toString()));
 			response.setAttribute(new Attribute("errorCode", Integer.toString(result.getResultType().getErrorCode())));
@@ -160,34 +137,6 @@ public class CapControlImportRequestEndpoint {
 		}
 		
 		return cbcResponse;
-	}
-	
-	private Element createCbcDetailElement(CbcImportResult result) {
-		ImportAction action = result.getCbcImportData().getImportAction();
-		String name = result.getCbcImportData().getCbcName();
-		String outcome = result.getResultType().isSuccess() ? "succeeded" : "failed";
-		String actionString = (action != null) ? action.getDbString() : "Import"; 
-		
-		String detail = actionString + " " + outcome + " for CBC with name \"" + name + "\".";
-		
-		Element detailElement = new Element("resultDetail");
-		detailElement.addContent(detail);
-		
-		return detailElement;
-	}
-	
-	private Element createHierarchyDetailElement(HierarchyImportResult result) {
-		ImportAction action = result.getHierarchyImportData().getImportAction();
-		String name = result.getHierarchyImportData().getName();
-		String outcome = result.getResultType().isSuccess() ? "succeeded" : "failed";
-		String actionString = (action != null) ? action.getDbString() : "Import"; 
-		
-		String detail = actionString + " " + outcome + " for object with name \"" + name + "\".";
-		
-		Element detailElement = new Element("resultDetail");
-		detailElement.addContent(detail);
-		
-		return detailElement;
 	}
 	
 	private List<CbcImportResult> performCbcImport(SimpleXPathTemplate requestTemplate) {
@@ -224,18 +173,15 @@ public class CapControlImportRequestEndpoint {
                         capControlImportService.removeCbc(data, cbcResults);
                         break;
                 }
-			} catch (ImporterInvalidPaoTypeException c) {
+			} catch (CapControlCbcImportException c) {
 				log.debug(c);
-				cbcResults.add(new CbcImportResult(null, CbcImportResultType.INVALID_TYPE));
-			} catch (ImporterInvalidImportActionException c) {
-                log.debug(c);
-                cbcResults.add(new CbcImportResult(null, CbcImportResultType.INVALID_IMPORT_ACTION));
-            } catch (CapControlImportException e) {
+				cbcResults.add(new CbcImportCompleteDataResult(data, c.getImportResultType()));
+			} catch (ImporterCbcMissingDataException e) {
 				log.debug(e);
-				cbcResults.add(new CbcImportResult(null, CbcImportResultType.MISSING_DATA));
+				cbcResults.add(new CbcImportMissingDataResult(e.getMissingField()));
 			} catch (NotFoundException e) {
                 log.debug(e);
-                cbcResults.add(new CbcImportResult(data, CbcImportResultType.INVALID_PARENT));
+                cbcResults.add(new CbcImportCompleteDataResult(data, CbcImportResultType.INVALID_PARENT));
             }
 		}
 	}
@@ -261,45 +207,33 @@ public class CapControlImportRequestEndpoint {
 			     */
 				data = createHierarchyImportData(hierarchyNode);
 				
-				populateHierarchyImportData(hierarchyNode, data);
-				
-				switch(data.getImportAction()) {
-                    case ADD:
+				if (data.getImportAction() == ImportAction.REMOVE) {
+				    capControlImportService.removeHierarchyObject(data, hierarchyResults);
+				} else {
+    				populateHierarchyImportData(hierarchyNode, data);
+    				
+    				if (data.getImportAction() == ImportAction.ADD) {
                         capControlImportService.createHierarchyObject(data, hierarchyResults);
-                        break;
-                        
-                    case UPDATE:
+    				} else {
                         capControlImportService.updateHierarchyObject(data, hierarchyResults);
-                        break;
-                        
-                    case REMOVE:
-                        capControlImportService.removeHierarchyObject(data, hierarchyResults);
-                        break;
-                }
-			} catch (ImporterInvalidOpStateException e) {
-			    log.debug(e);
-			    hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_OPERATIONAL_STATE));
-			} catch (ImporterInvalidDisabledValueException e) {
+                    }
+				}
+			} catch (CapControlHierarchyImportException e) {
                 log.debug(e);
-                hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_DISABLED_VALUE));
-            } catch (ImporterInvalidPaoTypeException e) {
-                log.debug(e);
-                hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_TYPE));
-            } catch (ImporterInvalidImportActionException h) {
-				log.debug(h);
-				hierarchyResults.add(new HierarchyImportResult(null, HierarchyImportResultType.INVALID_IMPORT_ACTION));
-			} catch (CapControlImportException e) {
+                hierarchyResults.add(new HierarchyImportCompleteDataResult(data, e.getImportResultType()));
+            } catch (ImporterHierarchyMissingDataException e) {
 				log.debug(e);
-				hierarchyResults.add(new HierarchyImportResult(null, HierarchyImportResultType.MISSING_DATA));
+				hierarchyResults.add(new HierarchyImportMissingDataResult(e.getMissingField()));
 			} catch (NotFoundException e) {
                 log.debug("Parent " + data.getParent() + " was not found for hierarchy object " + data.getName() +
                         ". No import occured for this object.");
-                hierarchyResults.add(new HierarchyImportResult(data, HierarchyImportResultType.INVALID_PARENT));
+                hierarchyResults.add(new HierarchyImportCompleteDataResult(data, HierarchyImportResultType.INVALID_PARENT));
 			}
 		}
 	}
 	
-	private CbcImportData createCbcImportData(Node cbcNode) {
+	private CbcImportData createCbcImportData(Node cbcNode) 
+	        throws ImporterCbcMissingDataException, CapControlCbcImportException {
 		final String missingText = "Cbc XML import is missing required element: ";
 		PaoType paoType;
 		ImportAction importAction;
@@ -309,60 +243,75 @@ public class CapControlImportRequestEndpoint {
 		// Required fields, guaranteed present. Throw if they aren't.
 		String cbcName = cbcTemplate.evaluateAsString("y:name");
 		if (cbcName == null) {
-			throw new CapControlImportException(missingText + "'name'");
+		    throw new ImporterCbcMissingDataException(missingText + "'name'", CapControlImporterCbcField.CBC_NAME);
+			//throw new CapControlImportException(missingText + "'name'");
 		}
+
+        String importActionStr = cbcTemplate.evaluateAsString("@action");
+        if (importActionStr == null) {
+            throw new ImporterCbcMissingDataException(missingText + "'importAction'", CapControlImporterCbcField.IMPORT_ACTION);
+        }
 		
+        try {
+            importAction = ImportAction.getForDbString(importActionStr);
+        } catch (IllegalArgumentException e) {
+            throw new CapControlCbcImportException("Import of " + cbcName + " failed. Unknown Action: " + importActionStr, 
+                                                   CbcImportResultType.INVALID_IMPORT_ACTION);
+        }
+
+        // If we're removing an object, there's no need to look at any of the rest of the data.
+        if (importAction == ImportAction.REMOVE) {
+            return new CbcImportData(cbcName, importAction, null); // PaoType is irrelevant.
+        }
+        
 		String cbcType = cbcTemplate.evaluateAsString("y:type");
 		if (cbcType == null) {
-			throw new CapControlImportException(missingText + "'type'");
+			throw new ImporterCbcMissingDataException(missingText + "'type'", CapControlImporterCbcField.CBC_TYPE);
 		}
 		
 		// Will throw if cbcType is invalid.
 		try {
 		    paoType = PaoType.getForDbString(cbcType);
 		} catch (IllegalArgumentException e) {
-			throw new ImporterInvalidPaoTypeException("Import of " + cbcName + " failed. Unknown Type: " + cbcType);
+			throw new CapControlCbcImportException("Import of " + cbcName + " failed. Unknown Type: " + cbcType, 
+			                                         CbcImportResultType.INVALID_TYPE);
 		}
+		
+		CbcImportData cbcImportData = new CbcImportData(cbcName, importAction, paoType);
 		
 		Integer serialNumber = cbcTemplate.evaluateAsInt("y:serialNumber");
 		if (serialNumber == null) {
-			throw new CapControlImportException(missingText + "'serialNumber");
+		    if (importAction == ImportAction.ADD) {
+		        throw new ImporterCbcMissingDataException(missingText + "'serialNumber", CapControlImporterCbcField.CBC_SERIAL_NUMBER);
+		    }
+		} else {
+		    cbcImportData.setCbcSerialNumber(serialNumber.intValue());
 		}
 		
 		Integer masterAddress = cbcTemplate.evaluateAsInt("y:masterAddress");
 		if (masterAddress == null) {
-			throw new CapControlImportException(missingText + "'masterAddress'");
+		    if (importAction == ImportAction.ADD) {
+		        throw new ImporterCbcMissingDataException(missingText + "'masterAddress'", CapControlImporterCbcField.MASTER_ADDRESS);
+		    }
+		} else {
+		    cbcImportData.setMasterAddress(masterAddress.intValue());
 		}
-		
+		     
 		Integer slaveAddress = cbcTemplate.evaluateAsInt("y:slaveAddress");
 		if (slaveAddress == null) {
-			throw new CapControlImportException(missingText + "'slaveAddress'");
+		    if (importAction == ImportAction.ADD) {
+		        throw new ImporterCbcMissingDataException(missingText + "'slaveAddress'", CapControlImporterCbcField.SLAVE_ADDRESS);
+		    }
+		} else {
+		    cbcImportData.setSlaveAddress(slaveAddress.intValue());
 		}
 		
 		String commChannel = cbcTemplate.evaluateAsString("y:commChannel");
-		if (commChannel == null) {
-			throw new CapControlImportException(missingText + "'commChannel'");
+		if (commChannel == null && (importAction == ImportAction.ADD)) {
+			throw new ImporterCbcMissingDataException(missingText + "'commChannel'", CapControlImporterCbcField.COMM_CHANNEL);
 		}
 		
-		String importActionStr = cbcTemplate.evaluateAsString("@action");
-		if (importActionStr == null) {
-			throw new CapControlImportException(missingText + "'importAction'");
-		}
-		
-		try {
-			importAction = ImportAction.getForDbString(importActionStr);
-		} catch (IllegalArgumentException e) {
-			throw new ImporterInvalidImportActionException("Import of " + cbcName + " failed. Unknown Action: " + importActionStr);
-		}
-		
-		// If we got to this point, we have all required data with no errors.
-		CbcImportData cbcImportData = new CbcImportData(cbcName,
-		                                                importAction,
-		                                                paoType, 
-		                                                commChannel, 
-		                                                serialNumber.intValue(), 
-		                                                masterAddress.intValue(), 
-		                                                slaveAddress.intValue());
+		cbcImportData.setCommChannel(commChannel);
 		
 		// Not required. Check for nulls.
 		String templateName = cbcTemplate.evaluateAsString("y:templateName");
@@ -388,7 +337,8 @@ public class CapControlImportRequestEndpoint {
 		return cbcImportData;
 	}
 	
-	private HierarchyImportData createHierarchyImportData(Node hierarchyNode) throws CapControlImportException {
+	private HierarchyImportData createHierarchyImportData(Node hierarchyNode) 
+	        throws ImporterHierarchyMissingDataException, CapControlHierarchyImportException {
 		final String missingText = "Hierarchy XML import is missing required element: ";
 		PaoType paoType;
 		ImportAction importAction;
@@ -398,31 +348,33 @@ public class CapControlImportRequestEndpoint {
 		// Required fields, guaranteed present. Throw if they aren't.
 		String name = hierarchyTemplate.evaluateAsString("y:name");
 		if (name == null) {
-			throw new CapControlImportException(missingText + "'name'");
+			throw new ImporterHierarchyMissingDataException(missingText + "'name'", CapControlImporterHierarchyField.NAME);
 		}
 		
 		String paoTypeStr = hierarchyNode.getNodeName();
 		if (paoTypeStr == null) { // Weird, but check just in case...
-			throw new CapControlImportException(missingText + "'type'");
+			throw new ImporterHierarchyMissingDataException(missingText + "'type'", CapControlImporterHierarchyField.TYPE);
 		}
 		
 		// This will throw an IllegalArgumentException if the type was invalid.
 		try {
 			paoType = CapControlXmlImport.getPaoTypeForXmlString(paoTypeStr);
 		} catch (IllegalArgumentException e) {
-			throw new ImporterInvalidPaoTypeException("Import of " + name + " failed. Unknown Type: " + paoTypeStr);
+		    throw new CapControlHierarchyImportException("Import of " + name + " failed. Unknown Type: " + paoTypeStr, 
+		                                                 HierarchyImportResultType.INVALID_TYPE);
 		}
 		
 		String importActionStr = hierarchyTemplate.evaluateAsString("@action");
 		if (importActionStr == null) {
-			throw new CapControlImportException(missingText + "'importAction'");
+			throw new ImporterHierarchyMissingDataException(missingText + "'importAction'", CapControlImporterHierarchyField.IMPORT_ACTION);
 		}
 		
 		// This will throw an IllegalArgumentException as well.
 		try {
 			importAction = ImportAction.getForDbString(importActionStr);
 		} catch (IllegalArgumentException e) {
-			throw new ImporterInvalidImportActionException("Import of " + name + " failed. Unknown Action: " + importActionStr);
+		    throw new CapControlHierarchyImportException("Import of " + name + " failed. Unknown Action: " + importActionStr, 
+		                                                 HierarchyImportResultType.INVALID_IMPORT_ACTION);
 		}
 
 		// We have all required data. Let's make the HierarchyImportData object.
@@ -450,8 +402,9 @@ public class CapControlImportRequestEndpoint {
 			} else if (disabled.equalsIgnoreCase("N")) {
 				data.setDisabled(false);
 			} else {
-			    throw new ImporterInvalidDisabledValueException("Disabled field contained invalid data. Please " +
-                                                                "change to 'Y' or 'N'");
+			    throw new CapControlHierarchyImportException("Disabled field contained invalid data. Please " +
+                                                             "change to 'Y' or 'N'",
+                                                             HierarchyImportResultType.INVALID_DISABLED_VALUE);
 			}
 		}
 		
@@ -466,7 +419,8 @@ public class CapControlImportRequestEndpoint {
 		        BankOpState bankOpState = BankOpState.getStateByName(opState);
 		        data.setBankOpState(bankOpState);
 		    } catch (IllegalArgumentException e) {
-		        throw new ImporterInvalidOpStateException("Operational state field contained invalid data.");
+		        throw new CapControlHierarchyImportException("Operational state field contained invalid data.",
+		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE);
 		    }
 		}
 		

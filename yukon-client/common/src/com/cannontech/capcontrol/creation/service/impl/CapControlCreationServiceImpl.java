@@ -1,19 +1,15 @@
-package com.cannontech.cbc.service.impl;
+package com.cannontech.capcontrol.creation.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.cbc.service.CapControlCreationService;
+import com.cannontech.capcontrol.creation.model.HierarchyImportData;
+import com.cannontech.capcontrol.creation.model.ImportAction;
+import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.pao.model.CompleteCapBank;
-import com.cannontech.common.pao.model.CompleteCapControlArea;
-import com.cannontech.common.pao.model.CompleteCapControlFeeder;
-import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
-import com.cannontech.common.pao.model.CompleteCapControlSubstation;
-import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
@@ -51,38 +47,24 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     @Override
     @Transactional
 	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled) {
-        CompleteYukonPao pao;
-        switch(paoType) {
-
-            case CAP_CONTROL_SPECIAL_AREA :
-                pao = new CompleteCapControlSpecialArea();
-                break;
-            case CAP_CONTROL_AREA :
-                pao = new CompleteCapControlArea();
-                break;
-            case CAP_CONTROL_SUBSTATION :
-                pao = new CompleteCapControlSubstation();
-                break;
-            case CAP_CONTROL_SUBBUS :
-                pao = new CompleteCapControlSubstationBus();
-                break;
-            case CAP_CONTROL_FEEDER :
-                pao = new CompleteCapControlFeeder();
-                break;
-            case CAPBANK :
-                pao = new CompleteCapBank();
-                break;
-            case LOAD_TAP_CHANGER:
-            case GANG_OPERATED:
-            case PHASE_OPERATED:
-                pao = new CompleteRegulator();
-                break;
-            default:
-                throw new UnsupportedOperationException("Import of " + name + " failed. Unknown Pao Type: " + paoType.getDbString());
-        }
+        CompleteYukonPao pao = null;
         
-        pao.setPaoName(name);
-        pao.setDisabled(disabled);
+        HierarchyPaoCreator creator = HierarchyPaoCreator.valueOf(paoType.name());
+        if (creator == null) {
+            if (paoType == PaoType.LOAD_TAP_CHANGER || paoType == PaoType.GANG_OPERATED || paoType == PaoType.PHASE_OPERATED) {
+                pao = new CompleteRegulator();
+                pao.setDisabled(disabled);
+                pao.setPaoName(name);
+            } else {
+                throw new UnsupportedOperationException("Import of " + name + " failed. Unknown " +
+                		                                "Pao Type: " + paoType.getDbString());
+            }
+        } else {
+            HierarchyImportData data = new HierarchyImportData(paoType, name, ImportAction.ADD);
+            data.setDisabled(disabled);
+            
+            pao = creator.getCompleteYukonPao(data);
+        }
         
         paoPersistenceService.createPao(pao, paoType);
         

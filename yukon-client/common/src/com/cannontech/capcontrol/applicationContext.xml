@@ -19,6 +19,7 @@
 	<bean id="capbankControllerDao" class="com.cannontech.capcontrol.dao.impl.CapbankControllerDaoImpl"/>
 	
 	<bean class="com.cannontech.capcontrol.creation.service.impl.CapControlImportServiceImpl"/>
+    <bean id="capControlCreationService" class="com.cannontech.capcontrol.creation.service.impl.CapControlCreationServiceImpl"/>
 	<bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
 	
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>

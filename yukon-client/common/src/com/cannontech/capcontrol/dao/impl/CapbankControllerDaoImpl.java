@@ -153,6 +153,23 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         return searchResult;
     }
     
+    @Override
+    public boolean isSerialNumberValid(int serialNumber) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SerialNumber");
+        sql.append("FROM DeviceCBC");
+        
+        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int num) throws SQLException{
+                return rs.getInt("SerialNumber");
+            }
+        };
+        
+        List<Integer> serialNumbers = yukonJdbcTemplate.query(sql, mapper);
+        
+        return !serialNumbers.contains(serialNumber);
+    }
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
