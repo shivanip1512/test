@@ -9,17 +9,11 @@
 
 <script type="text/javascript">
     buildArgs = function(url) {
-        var args = {};
-        args.url = url;
-        args.requests = [];
-        return args;
+        return { 'url' : url, 'requests' : [] };
     };
     
     buildRequest = function(id) {
-        var request = {};
-        request.extraParameters = {};
-        request.extraParameters.id = id;
-        return request;
+        return { 'extraParameters' : { 'id' : id } };
     };
     
     addBankHandler = function (selectedPaoInfo, picker) {
