@@ -15,6 +15,7 @@ import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.model.CompleteCapControlFeeder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -76,11 +77,11 @@ public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHM
         }
         else if(capControlCache.isFeeder(targetId)) {
         	com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-        	com.cannontech.capcontrol.model.Feeder feeder_dao = feederDao.findById(targetId);
+        	CompleteCapControlFeeder feeder_dao = feederDao.findById(targetId);
         	
         	phaseAPointId = feeder_cache.getCurrentVarLoadPointID();
-        	phaseBPointId = feeder_dao.getPhaseb();
-        	phaseCPointId = feeder_dao.getPhasec();
+        	phaseBPointId = feeder_dao.getPhaseB();
+        	phaseCPointId = feeder_dao.getPhaseC();
         	estimatedVarLoadPointId = feeder_cache.getEstimatedVarLoadPointID();
         	currentWattLoadPointId = feeder_cache.getCurrentWattLoadPointID();
         }

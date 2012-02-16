@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.common.pao.model.CompleteCapControlFeeder;
 import com.cannontech.common.search.SearchResult;
 
 public interface FeederDao {
@@ -15,7 +15,7 @@ public interface FeederDao {
      * @param id the PaoID of the feeder.
      * @return the Feeder specified.
      */
-    public Feeder findById( int id );
+    public CompleteCapControlFeeder findById( int id );
     
     /**
      * This method returns all the Feeder IDs that are not assigned

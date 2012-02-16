@@ -1,7 +1,5 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +7,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.FeederDao;
-import com.cannontech.capcontrol.model.Feeder;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.model.CompleteCapControlFeeder;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -21,53 +20,26 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class FeederDaoImpl implements FeederDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private PaoDao paoDao;
-    private PaoCreationHelper paoCreationHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    private @Autowired PaoDao paoDao;
+    private @Autowired PaoCreationHelper paoCreationHelper;
+    private @Autowired PaoPersistenceService paoPersistenceService;
+    private @Autowired YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
     }
-
-    private static final ParameterizedRowMapper<Feeder> rowMapper = new ParameterizedRowMapper<Feeder>() {
-        public Feeder mapRow(ResultSet rs, int rowNum) throws SQLException {
-        	PaoIdentifier paoIdentifier = new PaoIdentifier(rs.getInt("FeederID"), PaoType.CAP_CONTROL_FEEDER);
-            Feeder feeder = new Feeder(paoIdentifier);
-            feeder.setCurrentVarLoadPointId(rs.getInt("CurrentVarLoadPointID"));
-            feeder.setCurrentWattLoadPointId(rs.getInt("CurrentWattLoadPointID"));
-            feeder.setMapLocationId(rs.getString("MapLocationID"));
-            feeder.setCurrentVoltLoadPointId(rs.getInt("CurrentVoltLoadPointID"));
-            YNBoolean multiMonitorControl = YNBoolean.valueOf(rs.getString("MultiMonitorControl"));
-            feeder.setMultiMonitorControl(multiMonitorControl);
-            YNBoolean usePhaseData = YNBoolean.valueOf(rs.getString("usephasedata"));
-            feeder.setUsePhaseData(usePhaseData);
-            feeder.setPhaseb(rs.getInt("phaseb"));
-            feeder.setPhasec(rs.getInt("phasec"));
-            YNBoolean controlFlag = YNBoolean.valueOf(rs.getString("ControlFlag"));
-            feeder.setControlFlag(controlFlag);
-            return feeder;
-        }
-    };
     
-    public Feeder findById(int id) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-    	sql.append("SELECT YP.PAOName, FeederId, CurrentVarLoadPointID, CurrentWattLoadPointID,");
-    	sql.append(   "MapLocationID, CurrentVoltLoadPointID, MultiMonitorControl, UsePhaseData,");
-    	sql.append(   "PhaseB, PhaseC, ControlFlag");
-    	sql.append("FROM CapControlFeeder, YukonPAObject YP");
-    	sql.append("WHERE FeederID = YP.PAObjectID AND FeederID").eq(id);
-    	
-    	Feeder f = yukonJdbcTemplate.queryForObject(sql, rowMapper);
-    	
-        return f;
+    public CompleteCapControlFeeder findById(int id) {
+        PaoIdentifier paoIdentifier = new PaoIdentifier(id, PaoType.CAP_CONTROL_FEEDER);
+        CompleteCapControlFeeder feeder = 
+                paoPersistenceService.retreivePao(paoIdentifier, CompleteCapControlFeeder.class);
+        return feeder;
     }
 
     /**
@@ -179,19 +151,4 @@ public class FeederDaoImpl implements FeederDao {
 		boolean result = (rowsAffected == 1);
 		return result;
 	}
-	
-	@Autowired
-	public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-	
-    @Autowired
-    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
-        this.paoCreationHelper = paoCreationHelper;
-    }
 }
