@@ -811,7 +811,11 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
         retList.push_back(msgPtr);
         msgPtr = NULL;
     }
-    _lastLPTime = getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
+    int lastLPIndex = 0;
+    if (!getANSIProtocol().isDataBlockOrderDecreasing())
+        lastLPIndex = getANSIProtocol().getTotalWantedLPBlockInts()-1;
+
+    _lastLPTime = getANSIProtocol().getLPTime(lastLPIndex);
     
     if (pData != NULL)
     {

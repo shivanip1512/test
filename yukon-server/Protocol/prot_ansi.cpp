@@ -1449,12 +1449,12 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table00->getRawNIFormat1(), _table00->getRawNIFormat2(),
                                                                _table00->getRawTimeFormat(), meterHour, timeZoneApplied,
                                                                _table00->getRawDataOrder(), _table63->isDataBlockOrderDecreasing(1),
-                                                                _table63->isDataBlockOrderDecreasing(1));
+                                                               _table63->isIntervalOrderDecreasing(1));
 
 
                         if (_invalidLastLoadProfileTime && _table64 != NULL)
                         {
-                            _header->lastLoadProfileTime = _table64->getLPDemandTime(0,0, isDataBlockOrderDecreasing());
+                            _header->lastLoadProfileTime = _table64->getLPDemandTime(0,0);
                         }
                     }
                 }
@@ -1814,6 +1814,10 @@ void CtiProtocolANSI::updateBytesExpected( )
                 case LoadProfileDataSet1:
                     {
                         _tables[_index].bytesExpected = (_lpNbrFullBlocks * _lpBlockSize) + _lpLastBlockSize;
+                        if((int) getApplicationLayer().getAnsiDeviceType() == CtiANSIApplication::focus)
+                        {
+                            _tables[_index].bytesExpected = (_lpNbrFullBlocks * _lpBlockSize) + _lpBlockSize;
+                        }
 
                     }
                     break;
@@ -2597,7 +2601,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                         _lpQuality = NULL;
                                                     }
                                                     _lpQuality = new UINT8[totalIntvls +1];
-                                                    int intvlIndex = 0;
+                                                    int intvlIndex = isDataBlockOrderDecreasing() ? intvlsPerBlk - _lpNbrIntvlsLastBlock : 0;
                                                     for (int y = 0; y < totalIntvls; y++)
                                                     {
                                                         if (_table62->getNoMultiplierFlag(dataSet) && _table15 != NULL) //no_multiplier_flag == true (constants need to be applied)
@@ -2606,7 +2610,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                                            (_table15->getElecMultiplier((lpDemandSelect[x]%20)))) /
                                                                             (_table12->getResolvedMultiplier(lpDemandSelect[x]) * 1000) *
                                                                             (60 / _table61->getMaxIntTimeSet(dataSet)) ) ;
-                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex,_table63->isDataBlockOrderDecreasing(dataSet));
+                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex);
                                                             if (_table52 != NULL)
                                                             {
                                                                 _lpTimes[y] = _table52->adjustTimeZoneAndDST(_lpTimes[y]);
@@ -2628,7 +2632,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             _lpValues[y] = ( _table64->getLPDemandValue ( x, blkIndex, intvlIndex ) /
                                                                            (_table12->getResolvedMultiplier(lpDemandSelect[x]) * 1000) *
                                                                              (60 / _table61->getMaxIntTimeSet(dataSet)) ) ;
-                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex, _table63->isDataBlockOrderDecreasing(dataSet));
+                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex);
                                                             if (_table52 != NULL)
                                                             {
                                                                 _lpTimes[y] = _table52->adjustTimeZoneAndDST(_lpTimes[y]);

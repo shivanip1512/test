@@ -132,11 +132,11 @@ public:
    int populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob);
    void printIntervalFmtRecord(INT_FMT1_RCD intData);
 
-   void getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime, bool blockOrderDecreasing);
+   void getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime);
    bool getBlkEndTime(int blkSet, ULONG &blkEndTime);
 
    double getLPDemandValue ( int channel, int blkSet, int blkIntvl );
-   ULONG getLPDemandTime (int blkSet, int blkIntvl, bool decreasingBlockOrder);
+   ULONG getLPDemandTime (int blkSet, int blkIntvl);
 
    int getExtendedIntervalStatus(int channel, int blkSet, int blkIntvl);
    bool getDayLightSavingsFlag(int blkSet, int blkIntvl) const;

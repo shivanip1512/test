@@ -66,5 +66,6 @@ public:
    UINT16 getNbrUnreadBlks(int setNbr);
    UINT16 getNbrValidIntvls(int setNbr);
    bool isDataBlockOrderDecreasing(int setNbr);
+   bool isIntervalOrderDecreasing(int setNbr);
 
 };

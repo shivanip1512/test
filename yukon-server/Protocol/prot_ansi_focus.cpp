@@ -89,10 +89,10 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 
     //READ #3.1.2.8.34 MFG Table 34 - SEt Load Profile Read Control in
     //Focux AX C12.19 Implementation Guide
-    lpSetupRecord[0] = readBlockOffset.ch[0];
-    lpSetupRecord[1] = readBlockOffset.ch[1];
-    lpSetupRecord[2] = nbrReadBlocks.ch[0];
-    lpSetupRecord[3] = nbrReadBlocks.ch[1];
+    lpSetupRecord[0] = readBlockOffset.ch[1];
+    lpSetupRecord[1] = readBlockOffset.ch[0];
+    lpSetupRecord[2] = 0; //nbrReadBlocks.ch[1];
+    lpSetupRecord[3] = 0; //nbrReadBlocks.ch[0];
 
     getApplicationLayer().populateParmPtr(lpSetupRecord, 4) ;
 

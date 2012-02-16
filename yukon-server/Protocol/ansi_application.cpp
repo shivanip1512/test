@@ -920,6 +920,7 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
            if (_ansiDeviceType == focus)
            {
               next = timingSet;
+              _maxPktSize.sh = 52;
            }
            else
            {

@@ -282,7 +282,7 @@ CtiAnsiTable64& CtiAnsiTable64::operator=(const CtiAnsiTable64& aRef)
 void CtiAnsiTable64::printResult( const string& deviceName )
 {
     int index, i, j;
-    int nbrBlkInts;
+    int nbrBlkInts, startInt;
 
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
@@ -298,11 +298,20 @@ void CtiAnsiTable64::printResult( const string& deviceName )
 
     for (index = 0; index < _nbrBlksSet1; index++)
     {
+        startInt = 0;
         if ( ( !_descBlockOrder && index == (_nbrBlksSet1-1))
               || (  _descBlockOrder && index == 0 )
               )
         {
-            nbrBlkInts = _nbrValidInts;
+            if (_descIntervalOrder)
+            {
+                startInt = _nbrBlkIntsSet1 - _nbrValidInts;
+                nbrBlkInts = _nbrBlkIntsSet1;
+            }
+            else
+            {
+                nbrBlkInts = _nbrValidInts;
+            }
         }
         else
         {
@@ -387,7 +396,7 @@ void CtiAnsiTable64::printResult( const string& deviceName )
                 dout << "  **Simple Interval Status: "<<_lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status<<endl;
             }
         }
-        for (i = 0; i < nbrBlkInts; i++)
+        for (i = startInt; i < nbrBlkInts; i++)
         {
             {
                     CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -504,9 +513,14 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
 }
 
 
-void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime, bool blockOrderDecreasing)
+void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime)
 {
     ULONG blkEndTime = 0;
+    if (_descIntervalOrder)
+    {
+        blkIntvl = _nbrBlkIntsSet1 - (blkIntvl + 1);
+    }
+
     if (getBlkEndTime(blkSet,blkEndTime))
     {
         if (_closureStatusFlag)
@@ -524,7 +538,7 @@ void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
         }
         else
         {
-            if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts)
+            if ((blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts) || (_descIntervalOrder && blkSet == 0))
             {
                blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
             }
@@ -559,15 +573,18 @@ bool CtiAnsiTable64::getBlkEndTime(int blkSet, ULONG &blkEndTime)
     return retVal;
 }
 
-ULONG CtiAnsiTable64::getLPDemandTime (int blkSet, int blkIntvl, bool decreasingBlockOrder)
+ULONG CtiAnsiTable64::getLPDemandTime (int blkSet, int blkIntvl)
 {
     ULONG blkEndTime = 0;
-    getBlkIntvlTime(blkSet, blkIntvl, blkEndTime, decreasingBlockOrder);
+    
+    getBlkIntvlTime(blkSet, blkIntvl, blkEndTime);
     return blkEndTime;
 }
+
 double CtiAnsiTable64::getLPDemandValue ( int channel, int blkSet, int blkIntvl )
 {
     double retVal = 0;
+
     switch(_intFmtCde1)
     {
         case 1:

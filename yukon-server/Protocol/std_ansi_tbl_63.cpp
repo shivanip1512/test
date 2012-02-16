@@ -147,3 +147,8 @@ bool CtiAnsiTable63::isDataBlockOrderDecreasing(int setNbr)
     return (bool)_lp_status_tbl.lp_status_set[setNbr - 1].lp_set_status_flags.block_order;
 }
 
+bool CtiAnsiTable63::isIntervalOrderDecreasing(int setNbr)
+{
+    return (bool)_lp_status_tbl.lp_status_set[setNbr - 1].lp_set_status_flags.interval_order;
+}
+
