@@ -13,6 +13,7 @@
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="addItemParameters" %>
 <%@ attribute name="addButtonClass" description="Use this if you need your own behavior for addItem." %>
+<%@ attribute name="noBlockOnAdd" description="Set to true to prevent page blocking when the add button is clicked." %>
 
 <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 <c:if test="${empty pageScope.addItemParameters}">
@@ -20,6 +21,9 @@
 </c:if>
 <c:if test="${empty pageScope.addButtonClass}">
     <c:set var="addButtonClass" value="addItem"/>
+</c:if>
+<c:if test="${empty pageScope.noBlockOnAdd || !pageScope.noBlockOnAdd}">
+    <c:set var="blockOnAdd" value="f_blocker"/>
 </c:if>
 
 <script type="text/javascript">
@@ -37,7 +41,7 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
         <div class="noItemsMessage">${pageScope.noItemsMsg}</div>
     </c:if>
     <div class="actionArea">
-        <cti:button nameKey="add" styleClass="f_blocker ${addButtonClass}"/>
+        <cti:button nameKey="add" styleClass="${blockOnAdd} ${addButtonClass}"/>
     </div>
     <div style="display: none;" class="tempRequest"></div>
 </div>

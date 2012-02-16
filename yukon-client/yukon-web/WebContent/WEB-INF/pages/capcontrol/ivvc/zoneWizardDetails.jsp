@@ -8,35 +8,44 @@
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
 <script type="text/javascript">
-    getExtraArgs = function(url, addRegPhase) {
-        var extraParameters = {};
-        if (addRegPhase) {
-            <c:if test="${zoneDto.zoneType !=  threePhase && !empty zoneDto.regulator.phase}">
-                extraParameters.phase = '${zoneDto.regulator.phase}';
-            </c:if>
-        }
-        return {'url' : url, 'extraParameters' : extraParameters};
+    buildArgs = function(url) {
+        var args = {};
+        args.url = url;
+        args.requests = [];
+        return args;
+    };
+    
+    buildRequest = function(id) {
+        var request = {};
+        request.extraParameters = {};
+        request.extraParameters.id = id;
+        return request;
     };
     
     addBankHandler = function (selectedPaoInfo, picker) {
-        var extraArgs = getExtraArgs('/spring/capcontrol/ivvc/wizard/addCapBank', false);
+        var args = buildArgs('/spring/capcontrol/ivvc/wizard/addCapBank');
+        
         for(var i = 0; i < selectedPaoInfo.length; i++) {
-            var paoId = selectedPaoInfo[i].paoId;
-            extraArgs.extraParameters.id = paoId;
-            picker.excludeIds.push(paoId);
-            bankTable.addItem(null, extraArgs);   
+            var request = buildRequest(selectedPaoInfo[i].paoId);
+            picker.excludeIds.push(selectedPaoInfo[i].paoId);
+            args.requests[i] = request;
         }
+        bankTable.addItems(args);
         picker.clearEntireSelection();
     };
-
-    addPointHandler = function (selectedPointInfo, picker) {
-        var extraArgs = getExtraArgs('/spring/capcontrol/ivvc/wizard/addVoltagePoint', true);
+    
+    addPointHandler = function(selectedPointInfo, picker) {
+        var args = buildArgs('/spring/capcontrol/ivvc/wizard/addVoltagePoint');
+        
         for(var i = 0; i < selectedPointInfo.length; i++) {
-            var pointId = selectedPointInfo[i].pointId;
-            extraArgs.extraParameters.id = pointId;
-            picker.excludeIds.push(pointId);
-            pointTable.addItem(null, extraArgs);
+            var request = buildRequest(selectedPointInfo[i].pointId);
+            <c:if test="${zoneDto.zoneType !=  threePhase && !empty zoneDto.regulator.phase}">
+                request.extraParameters.phase = '${zoneDto.regulator.phase}';
+            </c:if>
+            picker.excludeIds.push(selectedPointInfo[i].pointId);
+            args.requests[i] = request;
         }
+        pointTable.addItems(args);
         picker.clearEntireSelection();
     };
     
@@ -214,7 +223,7 @@
                 <td>
                 	<tags:boxContainer2 nameKey="assignedVoltageDevice" hideEnabled="false" showInitially="true" styleClass="zoneWizardCapBanks">
                         <tags:dynamicTable items="${zoneDto.bankAssignments}" nameKey="dynamicTable"
-                            id="bankTable" addButtonClass="bankAddItem">
+                            id="bankTable" addButtonClass="bankAddItem" noBlockOnAdd="true">
                         <div class="zoneWizardTableScrollArea">
             			<table class="compactResultsTable">
             				<thead>
@@ -274,7 +283,8 @@
             	<tags:boxContainer2 nameKey="assignedVoltagePoint" hideEnabled="false" showInitially="true" styleClass="zoneWizardVoltagePoints">
                     <c:set var="addItemParameters" value="{'zoneType': '${zoneDto.zoneType}'}"/>
                     <tags:dynamicTable items="${zoneDto.pointAssignments}" nameKey="dynamicTable"
-                        id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem">
+                        id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem"  
+                        noBlockOnAdd="true">
                     <div class="zoneWizardTableScrollArea">
             		<table class="compactResultsTable">
             			<thead>

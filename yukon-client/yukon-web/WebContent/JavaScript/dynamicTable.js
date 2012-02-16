@@ -64,8 +64,59 @@ DynamicTable.prototype = {
             'onComplete': this.addItemSuccess.bind(this)
         });
     },
-
-    addItemSuccess : function() {
+    
+    /**
+     * This method is intended to be called directly, to add multiple rows to the table.
+     * The single parameter is an arguments object with the following properties:
+     * -url (optional, used if no url set on an individual request)
+     * -requests (array of objects to create rows from, each with the following properties)
+     *   -extraParameters
+     *   -url (optional)
+     */
+    addItems: function(args) {
+        Yukon.ui.blockPage();
+        
+        var that = this;
+        function doRequest(index) {
+            var request = args.requests[index];
+            
+            if(!that.addItemParameters) {
+                that.addItemParameters = {};
+            }
+            that.addItemParameters.itemIndex = that.nextRowId++;
+            var parameters = Object.clone(that.addItemParameters);
+            if(request.extraParameters) {
+                Object.extend(parameters, request.extraParameters);
+            }
+            
+            var url = 'addItem';
+            if(request.url) {
+                url = request.url;
+            } else if(args.url) {
+                url = args.url;
+            }
+            
+            function onComplete() {
+                that.addItemSuccess(false);
+                index++;
+                if(index < args.requests.length) {
+                    doRequest(index);
+                } else {
+                    Yukon.ui.unblockPage();
+                }
+            }
+            
+            new Ajax.Updater(that.tempRequestDiv, url, {
+                'parameters': parameters,
+                'evalScripts': true,
+                'onComplete': onComplete
+            });
+        }
+        
+        doRequest(0);
+    },
+    
+    addItemSuccess : function(doUnblock) {
         var newRow = this.tempRequestDiv.down('tr');
         var newUndoRow = newRow.next();
         var tempRow = this.table.insertRow(-1);
@@ -81,7 +132,9 @@ DynamicTable.prototype = {
         if (noItemsMessageDiv) {
             noItemsMessageDiv.parentNode.removeChild(noItemsMessageDiv);
         }
-        Yukon.ui.unblockPage();
+        if(doUnblock) {
+            Yukon.ui.unblockPage();
+        }
     },
 
     moveItemUp: function(event) {
