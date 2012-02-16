@@ -136,7 +136,20 @@ UPDATE OptOutTemporaryOverride SET OptOutValue = 'ENABLED' WHERE OptOutType = 'O
 UPDATE OptOutTemporaryOverride SET OptOutValue = 'DISABLED_WITH_COMM' WHERE OptOutType = 'OPT_OUTS' AND OptOutValue = '0';
 /* End YUK-10605 */
 
+/* Start YUK-10669 */
+UPDATE YukonListEntry
+SET EntryOrder = (SELECT SubQuery.Sort_Order
+FROM (
+    SELECT EntryId, Row_Number() OVER (ORDER BY EntryText) as SORT_ORDER
+    FROM YukonListEntry
+    WHERE ListID = 1
+) SubQuery
+WHERE SubQuery.EntryID = YukonListEntry.EntryID)
+WHERE ListID = 1
+/* End YUK-10669 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Garrett D', '15-FEB-2012', 'Latest Update', 7);
