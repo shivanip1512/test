@@ -6,9 +6,11 @@
 
 <cti:standardPage module="support" page="uiDemos">
 
+<cti:includeScript link="JQUERY_COOKIE"/>
+
 <script type="text/javascript">
 jQuery(function() {
-    jQuery('#tabs').tabs({'selected' : 2});
+    jQuery('#tabs').tabs({'cookie' : {}});
 });
 </script>
 

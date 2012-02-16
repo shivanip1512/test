@@ -16,8 +16,8 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class ObjectFormattingServiceImpl implements ObjectFormattingService {
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private TemplateProcessorFactory templateProcessorFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private TemplateProcessorFactory templateProcessorFactory;
 
     @Override
     public String formatObjectAsString(Object value, YukonUserContext userContext) {
@@ -25,7 +25,7 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
         String result = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(resolvable);
         return result;
     }
-    
+
     @Override
     public MessageSourceResolvable formatObjectAsResolvable(Object object, YukonUserContext userContext) {
         if (object instanceof MessageSourceResolvable) {
@@ -45,12 +45,22 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
     }
 
     @Override
-    public <T extends DisplayableEnum> List<T> sortEnumValues(T[] enumList,
-                                                              final T first, final T last,
-                                                              YukonUserContext context) {
-        final MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(context);
-        List<T> retVal = Lists.newArrayList(enumList);
+    public <T> List<T> sortDisplayableValues(T[] toSort, final T first, final T last,
+                                             YukonUserContext context) {
+        return sortDisplayableValues(Lists.newArrayList(toSort), first, last, context);
+    }
+
+    @Override
+    public <T> List<T> sortDisplayableValues(Iterable<T> toSort, final T first, final T last,
+                                             final YukonUserContext context) {
+        return sortDisplayableValues(Lists.newArrayList(toSort), first, last, context);
+    }
+
+    /**
+     * Sorts the passed in list and returns it.
+     */
+    private <T> List<T> sortDisplayableValues(List<T> retVal, final T first, final T last,
+                                             final YukonUserContext context) {
         Collections.sort(retVal, new Comparator<T>() {
             @Override
             public int compare(T t1, T t2) {
@@ -62,21 +72,12 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
                 if (t1 == last || t2 == first) {
                     return 1;
                 }
-                String localName1 = messageSourceAccessor.getMessage(t1.getFormatKey());
-                String localName2 = messageSourceAccessor.getMessage(t2.getFormatKey());
+                String localName1 = formatObjectAsString(t1, context);
+                String localName2 = formatObjectAsString(t2, context);
                 return localName1.compareToIgnoreCase(localName2);
             }
         });
+
         return retVal;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
-    @Autowired
-    public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
     }
 }

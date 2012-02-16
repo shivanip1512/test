@@ -93,6 +93,29 @@ Using the following format:</p>
 <p>Don't use these.  Use our own date formatting services (cti:formatDate).  If the date is part of
 a larger message, format it as a string and pass it as an argument to the other format.</p>
 
+<h3>Sorted Enum Values</h3>
+
+<p>This is an DisplayableEnum sorted with a specific value forced to the top and another foced to
+the bottom.</p>
+
+<p>
+<select>
+    <c:forEach var="color" items="${colors}">
+        <option><cti:msg2 key="${color}"/></option>
+    </c:forEach>
+</select>
+</p>
+
+<p>This is an enum which implements Displayable sorted.</p>
+
+<p>
+<select>
+    <c:forEach var="builtInAttribute" items="${builtInAttributes}">
+        <option><cti:msg2 key="${builtInAttribute}"/></option>
+    </c:forEach>
+</select>
+</p>
+
 </div>
 
 </cti:msgScope>

@@ -34,6 +34,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramNameFilter;
@@ -47,6 +48,7 @@ import com.cannontech.stars.dr.appliance.model.EnvironmentIcon;
 import com.cannontech.stars.dr.appliance.model.SavingsIcon;
 import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
@@ -65,15 +67,17 @@ import com.google.common.collect.Lists;
 @RequestMapping("/energyCompany/applianceCategory/*")
 public class ApplianceCategoryController {
     private final static String baseKey = "yukon.web.modules.adminSetup.applianceCategory";
-    private AssignedProgramDao assignedProgramDao;
-    private AssignedProgramService assignedProgramService;
-    private ApplianceCategoryDao applianceCategoryDao;
-    private ApplianceCategoryService applianceCategoryService;
-    private ObjectFormattingService objectFormattingService;
-    private StarsDatabaseCache starsDatabaseCache;
-    private PaoDao paoDao;
-    private EnergyCompanyService energyCompanyService;
-    private ConfigurationSource configurationSource;
+
+    @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private AssignedProgramService assignedProgramService;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private ApplianceCategoryService applianceCategoryService;
+    @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private PaoDao paoDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private ConfigurationSource configurationSource;
 
     private Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
@@ -266,12 +270,12 @@ public class ApplianceCategoryController {
 
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
             List<ApplianceTypeEnum> applianceTypes =
-                objectFormattingService.sortEnumValues(ApplianceTypeEnum.values(),
+                objectFormattingService.sortDisplayableValues(ApplianceTypeEnum.values(),
                                                        ApplianceTypeEnum.DEFAULT, null, context);
             model.addAttribute("applianceTypes", applianceTypes);
 
             List<ApplianceCategoryIcon> icons =
-                objectFormattingService.sortEnumValues(ApplianceCategoryIcon.values(),
+                objectFormattingService.sortDisplayableValues(ApplianceCategoryIcon.values(),
                                                        ApplianceCategoryIcon.NONE,
                                                        ApplianceCategoryIcon.OTHER, context);
             model.addAttribute("icons", icons);
@@ -373,8 +377,10 @@ public class ApplianceCategoryController {
         backingBean.getAssignedProgram().setApplianceCategoryId(applianceCategoryId);
         model.addAttribute("backingBean", backingBean);
 
+        YukonEnergyCompany yukonEnergyCompany =
+            yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompanyByUser(context.getYukonUser());
+            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         StarsCustSelectionList chanceOfControlList =
             energyCompany.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
         List<ChanceOfControl> chanceOfControls = Lists.newArrayList();
@@ -563,52 +569,5 @@ public class ApplianceCategoryController {
         public String getName() {
             return name;
         }
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramService(
-            AssignedProgramService assignedProgramService) {
-        this.assignedProgramService = assignedProgramService;
-    }
-
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-
-    @Autowired
-    public void setApplianceCategoryService(
-            ApplianceCategoryService applianceCategoryService) {
-        this.applianceCategoryService = applianceCategoryService;
-    }
-
-    @Autowired
-    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
-        this.objectFormattingService = objectFormattingService;
-    }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
     }
 }

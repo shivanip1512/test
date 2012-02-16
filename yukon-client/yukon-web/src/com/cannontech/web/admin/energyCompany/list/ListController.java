@@ -150,8 +150,7 @@ public class ListController {
         List<YukonDefinition> listDefinitions =
             selectionListService.getValidDefinitions(ecId, type);
         listDefinitions =
-            objectFormattingService.sortEnumValues(listDefinitions.toArray(new YukonDefinition[listDefinitions.size()]),
-                                                   null, null, context);
+            objectFormattingService.sortDisplayableValues(listDefinitions, null, null, context);
         model.addAttribute("listDefinitions", listDefinitions);
         model.addAttribute("usesType", !listDefinitions.isEmpty());
     }
