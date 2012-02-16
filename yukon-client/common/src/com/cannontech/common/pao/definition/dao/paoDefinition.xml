@@ -6112,36 +6112,6 @@
     <pao id="CAP_CONTROL_AREA">
     	<displayName>Area</displayName>
     	<changeGroup>cap</changeGroup>
-    	<points>
-            <point type="Analog" offset="1">
-            	<init>true</init>
-                <name>Estimated Var Load</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="2">
-            	<init>true</init>
-                <name>Daily Operations</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="3">
-            	<init>true</init>
-                <name>Power Factor</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="4">
-            	<init>true</init>
-                <name>Estimated Power Factor</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="4"/>
-            </point>
-        </points>
     </pao>
     
     <pao id="CAP_CONTROL_SUBBUS">
@@ -6192,6 +6162,36 @@
     <pao id="CAP_CONTROL_FEEDER">
     	<displayName>Feeder</displayName>
     	<changeGroup>cap</changeGroup>
+    	<points>
+            <point type="Analog" offset="1">
+            	<init>true</init>
+                <name>Estimated Var Load</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="2">
+            	<init>true</init>
+                <name>Daily Operations</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="3">
+            	<init>true</init>
+                <name>Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="4">
+            	<init>true</init>
+                <name>Estimated Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+        </points>
     </pao>
     
     <!-- CBCs -->
