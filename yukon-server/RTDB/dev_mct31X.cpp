@@ -16,6 +16,10 @@ using Cti::Protocols::EmetconProtocol;
 using std::string;
 using std::endl;
 using std::list;
+using std::vector;
+using std::pair;
+using std::make_pair;
+using boost::assign::list_of;
 
 namespace Cti {
 namespace Devices {
@@ -404,69 +408,72 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         if( getOperation(function, OutMessage->Buffer.BSt) )
         {
-            using boost::assign::list_of;
+            struct IedResetCommand
+            {
+                unsigned char function;
+                vector<unsigned char> payload;
 
-            typedef map<int, std::vector<unsigned char> > IedTypesToCommands;
+                IedResetCommand( unsigned char function_, vector<unsigned char> payload_ ) :
+                    function(function_),
+                    payload(payload_)
+                {
+                }
+            };
 
-            static const IedTypesToCommands ied_reset_commands =
-                boost::assign::map_list_of
-                    (CtiTableDeviceMCTIEDPort::AlphaPowerPlus,
-                        list_of<unsigned char>
-                            (MCT360_AlphaResetPos)
-                            (60)  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                            (1))  //  Demand Reset function code for the Alpha
-                    (CtiTableDeviceMCTIEDPort::LandisGyrS4,
-                        list_of<unsigned char>
-                            (MCT360_LGS4ResetPos)
-                            (MCT360_LGS4ResetID)
-                            (60)  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                            (43)) //  Demand Reset function code for the LG S4
-                    (CtiTableDeviceMCTIEDPort::GeneralElectricKV,
-                        list_of<unsigned char>
-                            (MCT360_GEKVResetPos)
-                            (MCT360_GEKVResetID)
-                            (60)  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                            (0)   //  sequence, standard proc, and uppoer bits of proc are 0
-                            (9)   //  procedure 9
-                            (1)   //  parameter length 1
-                            (1)); //  demand reset bit set
+            typedef map<int, IedResetCommand> IedTypesToCommands;
+
+            static const IedTypesToCommands ResetCommandsByIedType = boost::assign::map_list_of
+                (CtiTableDeviceMCTIEDPort::AlphaPowerPlus, IedResetCommand
+                    (MCT360_AlphaResetPos, list_of<unsigned char>
+                        (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                         (1)))  //  Demand Reset function code for the Alpha
+                (CtiTableDeviceMCTIEDPort::LandisGyrS4, IedResetCommand
+                    (MCT360_LGS4ResetPos, list_of<unsigned char>
+                        (MCT360_LGS4ResetID)
+                        (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        (43)))  //  Demand Reset function code for the LG S4
+                (CtiTableDeviceMCTIEDPort::GeneralElectricKV, IedResetCommand
+                    (MCT360_GEKVResetPos, list_of<unsigned char>
+                        (MCT360_GEKVResetID)
+                        (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                         (0)    //  sequence, standard proc, and uppoer bits of proc are 0
+                         (9)    //  procedure 9
+                         (1)    //  parameter length 1
+                         (1))); //  demand reset bit set
 
             const int iedtype = getIEDPort().getIEDType();
 
-            IedTypesToCommands::const_iterator itr = ied_reset_commands.find(iedtype);
+            IedTypesToCommands::const_iterator itr = ResetCommandsByIedType.find(iedtype);
 
-            if( itr != ied_reset_commands.end() )
+            if( itr == ResetCommandsByIedType.end() )
             {
-                const std::vector<unsigned char> &command = itr->second;
-
-                if( ! command.empty() )
                 {
-                    OutMessage->Buffer.BSt.Function = command[0];
-                    OutMessage->Buffer.BSt.Length   = command.size() - 1;
-                    std::copy(command.begin() + 1, command.end(), OutMessage->Buffer.BSt.Message);
-
-                    // Load all the other stuff that is needed
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
-                    OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
-
-                    OutMessage->Request.RouteID   = getRouteID();
-                    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-
-                    return NoError;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                return MISCONFIG;
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            const IedResetCommand &command = itr->second;
 
-            return MISCONFIG;
+            OutMessage->Buffer.BSt.Function = command.function;
+            OutMessage->Buffer.BSt.Length   = command.payload.size();
+            std::copy(command.payload.begin(), command.payload.end(), OutMessage->Buffer.BSt.Message);
+
+            // Load all the other stuff that is needed
+            OutMessage->DeviceID  = getID();
+            OutMessage->TargetID  = getID();
+            OutMessage->Port      = getPortID();
+            OutMessage->Remote    = getAddress();
+            OutMessage->TimeOut   = 2;
+            OutMessage->Sequence  = function;         // Helps us figure it out later!
+            OutMessage->Retry     = 2;
+
+            OutMessage->Request.RouteID   = getRouteID();
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+            return NoError;
         }
     }
 

@@ -23,6 +23,10 @@ using namespace Cti::Config;
 using std::string;
 using std::endl;
 using std::list;
+using std::pair;
+using std::vector;
+using std::make_pair;
+using boost::assign::list_of;
 
 namespace Cti {
 namespace Devices {
@@ -2564,15 +2568,14 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryFindIedTypeInCommandSt
 {
     typedef map<string, IED_Types> NameToType;
 
-    static const NameToType IedResetNames =
-        boost::assign::map_list_of
-            (" alpha",    IED_Type_Alpha_PP)
-            (" s4",       IED_Type_LG_S4)
-            (" a3",       IED_Type_Alpha_A3)
-            (" sentinel", IED_Type_Sentinel)
-            (" kv2c",     IED_Type_GE_kV2c)
-            (" kv2",      IED_Type_GE_kV2)
-            (" kv",       IED_Type_GE_kV);
+    static const NameToType IedResetNames = boost::assign::map_list_of
+        (" alpha",    IED_Type_Alpha_PP)
+        (" s4",       IED_Type_LG_S4)
+        (" a3",       IED_Type_Alpha_A3)
+        (" sentinel", IED_Type_Sentinel)
+        (" kv2c",     IED_Type_GE_kV2c)
+        (" kv2",      IED_Type_GE_kV2)
+        (" kv",       IED_Type_GE_kV);
 
     for each( const std::pair<string, IED_Types> iedTypeName in IedResetNames )
     {
@@ -2614,21 +2617,20 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDe
     //  we must be an MCT-430 - try to match it up by devicetype
     typedef map<int, IED_Types> DeviceTypeToIedType;
 
-    static const DeviceTypeToIedType IedDeviceTypes =
-        boost::assign::map_list_of
-            (TYPEMCT430A,   IED_Type_Alpha_PP)
-            (TYPEMCT430S4,  IED_Type_LG_S4)
-            (TYPEMCT430A3,  IED_Type_Alpha_A3)
-            (TYPEMCT430SL,  IED_Type_Sentinel);
+    static const DeviceTypeToIedType IedDeviceTypes = boost::assign::map_list_of
+        (TYPEMCT430A,   IED_Type_Alpha_PP)
+        (TYPEMCT430S4,  IED_Type_LG_S4)
+        (TYPEMCT430A3,  IED_Type_Alpha_A3)
+        (TYPEMCT430SL,  IED_Type_Sentinel);
 
     DeviceTypeToIedType::const_iterator itr = IedDeviceTypes.find(deviceType);
 
-    if( itr != IedDeviceTypes.end() )
+    if( itr == IedDeviceTypes.end() )
     {
-        return itr->second;
+        return boost::none;
     }
 
-    return boost::none;
+    return itr->second;
 }
 
 
@@ -2749,51 +2751,62 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
             return MISCONFIG;
         }
 
-        using boost::assign::list_of;
+        struct IedResetCommand
+        {
+            unsigned char function;
+            vector<unsigned char> payload;
 
-        typedef map<int, std::vector<unsigned char> > IedTypesToCommands;
+            IedResetCommand( unsigned char function_, vector<unsigned char> payload_ ) :
+                function(function_),
+                payload(payload_)
+            {
+            }
+        };
 
-        static const IedTypesToCommands ied_reset_commands =
-            boost::assign::map_list_of
-                (IED_Type_Alpha_PP,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, function Alpha reset
-                        (FuncWrite_IEDCommand)(0xff)(IED_Type_Alpha_PP)(0)(1))
-                (IED_Type_LG_S4,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, function S4 reset
-                        (FuncWrite_IEDCommand)(0xff)(IED_Type_LG_S4)(0)(0x2b))
-                (IED_Type_Alpha_A3,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (FuncWrite_IEDCommandWithData)(0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1))
-                (IED_Type_GE_kV2c,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (FuncWrite_IEDCommandWithData)(0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1))
-                (IED_Type_GE_kV2,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (FuncWrite_IEDCommandWithData)(0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1))
-                (IED_Type_GE_kV,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (FuncWrite_IEDCommandWithData)(0xff)(IED_Type_GE_kV)   (0)(9)(1)(1))
-                (IED_Type_Sentinel,
-                    list_of<unsigned char>  //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (FuncWrite_IEDCommandWithData)(0xff)(IED_Type_Sentinel)(0)(9)(1)(1));
+        typedef map<int, IedResetCommand> IedTypesToCommands;
 
-        IedTypesToCommands::const_iterator itr = ied_reset_commands.find(*iedType);
+        static const IedTypesToCommands ResetCommandsByIedType = boost::assign::map_list_of
+            (IED_Type_Alpha_PP, IedResetCommand
+                (FuncWrite_IEDCommand, list_of
+                    //  SPID, meter type, meter num, function Alpha reset
+                    (0xff)(IED_Type_Alpha_PP)(0)(1)))
+            (IED_Type_LG_S4, IedResetCommand
+                (FuncWrite_IEDCommand, list_of
+                    //  SPID, meter type, meter num, function S4 reset
+                    (0xff)(IED_Type_LG_S4)   (0)(0x2b)))
+            (IED_Type_Alpha_A3, IedResetCommand
+                (FuncWrite_IEDCommandWithData, list_of
+                    //  SPID, meter type, meter num, command, data length, demand reset bit set
+                    (0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1)))
+            (IED_Type_GE_kV2c, IedResetCommand
+                (FuncWrite_IEDCommandWithData, list_of
+                    //  SPID, meter type, meter num, command, data length, demand reset bit set
+                    (0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1)))
+            (IED_Type_GE_kV2, IedResetCommand
+                (FuncWrite_IEDCommandWithData, list_of
+                    //  SPID, meter type, meter num, command, data length, demand reset bit set
+                    (0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1)))
+            (IED_Type_GE_kV, IedResetCommand
+                (FuncWrite_IEDCommandWithData, list_of
+                    //  SPID, meter type, meter num, command, data length, demand reset bit set
+                    (0xff)(IED_Type_GE_kV)   (0)(9)(1)(1)))
+            (IED_Type_Sentinel, IedResetCommand
+                (FuncWrite_IEDCommandWithData, list_of
+                    //  SPID, meter type, meter num, command, data length, demand reset bit set
+                    (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
 
-        if( itr == ied_reset_commands.end() )
+        IedTypesToCommands::const_iterator itr = ResetCommandsByIedType.find(*iedType);
+
+        if( itr == ResetCommandsByIedType.end() )
         {
             return MISCONFIG;
         }
 
-        const std::vector<unsigned char> &command = itr->second;
+        const IedResetCommand &command = itr->second;
 
-        if( command.empty() )
-        {
-            return MISCONFIG;
-        }
-
-        OutMessage->Buffer.BSt.Function = command[0];
-        OutMessage->Buffer.BSt.Length   = command.size() - 1;
-        std::copy(command.begin() + 1, command.end(), OutMessage->Buffer.BSt.Message);
+        OutMessage->Buffer.BSt.Function = command.function;
+        OutMessage->Buffer.BSt.Length   = command.payload.size();
+        std::copy(command.payload.begin(), command.payload.end(), OutMessage->Buffer.BSt.Message);
     }
     else
     {
