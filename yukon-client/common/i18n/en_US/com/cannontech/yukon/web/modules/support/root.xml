@@ -239,6 +239,16 @@
     <entry key="yukon.web.modules.support.i18nDemo.decimalExample.2places">{0,number,0.00}</entry>
     <entry key="yukon.web.modules.support.i18nDemo.decimalExample.withCommas">{0,number,#,##0.0}</entry>
 
+    <entry key="yukon.web.modules.support.i18nDemo.colors.NONE">Please Choose...</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.RED">Red</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.ORANGE">Orange</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.YELLOW">Yellow</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.GREEN">Green</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.BLUE">Blue</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.INDIGO">Indigo</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.VIOLET">Violet</entry>
+    <entry key="yukon.web.modules.support.i18nDemo.colors.OTHER">Other</entry>
+
     <!-- Load Control Web Service Page -->
     <entry key="yukon.web.modules.support.webServices.loadControl.pageName">Load Control Services Test</entry>
     <entry key="yukon.web.modules.support.webServices.loadControl.pageDescription">Load Control Services</entry>
