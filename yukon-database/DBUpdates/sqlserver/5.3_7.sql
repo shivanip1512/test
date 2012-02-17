@@ -146,7 +146,7 @@ FROM (
 ) SubQuery
 JOIN YukonListEntry ON
 SubQuery.EntryID = YukonListEntry.EntryID
-WHERE ListID = 1
+WHERE ListID = 1;
 /* End YUK-10669 */
 
 /**************************************************************/ 

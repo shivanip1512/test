@@ -11,7 +11,7 @@ FROM (
     WHERE ListID = 1
 ) SubQuery
 WHERE SubQuery.EntryID = YukonListEntry.EntryID)
-WHERE ListID = 1
+WHERE ListID = 1;
 /* End YUK-10669 */
 
 /**************************************************************/ 
