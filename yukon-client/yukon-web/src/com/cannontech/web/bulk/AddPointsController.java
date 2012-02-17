@@ -18,11 +18,8 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.definition.model.CalcPointComponent;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
@@ -155,7 +152,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
                     		if (!pointExistsForDevice) {
                     			
                     			// add new
-                    			PointBase newPoint = getPointBaseHelper(device.getPaoIdentifier(), pointTemplate);
+                    			PointBase newPoint = pointCreationService.createPoint(device.getPaoIdentifier(), pointTemplate);
                     			dbPersistentDao.performDBChange(newPoint, TransactionType.INSERT);
                     			
                     			log.debug("Added point to device: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
@@ -220,23 +217,6 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         };
         
         return addPointsProcessor;
-    }
-    
-    /**
-     * Gets a PointBase object. If we are a Calculated point, 
-     * then populate the CalcPointComponent.pointId values first (this step is required
-     * prior to Calc Point creation)
-     */
-    private PointBase getPointBaseHelper(PaoIdentifier paoIdentifier, PointTemplate template) {
-        if (template.getCalcPointInfo() != null) {
-            for (CalcPointComponent pointComponent : template.getCalcPointInfo().getComponents()) {
-                if (pointComponent.getPointIdentifier() != null) {
-                    LitePoint litePoint = pointDao.getLitePoint(new PaoPointIdentifier(paoIdentifier, pointComponent.getPointIdentifier()));
-                    pointComponent.setPointId(litePoint.getPointID());
-                }
-            }
-        }
-        return pointCreationService.createPoint(paoIdentifier, template);
     }
     
     // VIEW RESULTS

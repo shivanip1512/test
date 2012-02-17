@@ -8,12 +8,15 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CalcPointInfo;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.point.PointStatus;
@@ -21,6 +24,7 @@ import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -487,10 +491,17 @@ public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, Strin
     ((CalculatedPoint) point).setBaselineAssigned(false);
     
     if (calcPoint != null) {
+        PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+
         int order = 1;
         Vector<CalcComponent> calcComponents = new Vector<CalcComponent>();
         Integer pointId = point.getPoint().getPointID();
         for (CalcPointComponent calcPointComponent: calcPoint.getComponents()) {
+            if (calcPointComponent.getPointId() == null) {
+                // If this CalcPointComponent's pointId isn't set by now... we assume it's pointIdentifier refers to this same paoIdentifier
+                LitePoint litePoint = pointDao.getLitePoint(new PaoPointIdentifier(paoIdentifier, calcPointComponent.getPointIdentifier()));
+                calcPointComponent.setPointId(litePoint.getPointID());
+            }
             Integer componentPointId = calcPointComponent.getPointId();
             String componentType = calcPointComponent.getCalcComponentType();
             String operation = calcPointComponent.getOperation();
