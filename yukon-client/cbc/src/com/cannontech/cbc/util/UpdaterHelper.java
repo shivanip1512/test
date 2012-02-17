@@ -599,7 +599,7 @@ public class UpdaterHelper {
             num.setMinimumFractionDigits(1);
             
             if (subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
-                return accessor.getMessage("yukon.web.modules.capcontrol.ovuvDisabled");
+                return accessor.getMessage("yukon.web.modules.capcontrol.tod");
             } else if (subBus.getControlMethod() == ControlMethod.NONE) {
                 return accessor.getMessage("yukon.web.defaults.none");
             } 
