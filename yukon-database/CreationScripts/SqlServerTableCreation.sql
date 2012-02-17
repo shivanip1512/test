@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/9/2012 3:10:57 PM                          */
+/* Created on:     2/17/2012 10:58:14 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8704,17 +8704,17 @@ create table YukonListEntry (
 go
 
 insert into YukonListEntry values( 0, 0, 0, '(none)', 0 );
-insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
-insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
-insert into YukonListEntry values( 3, 1, 0, 'Email to Pager', 1 );
-insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 5 );
-insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
-insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
-insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
-insert into YukonListEntry values( 8, 1, 0, 'Cell Phone', 2 );
-insert into YukonListEntry values( 9, 1, 0, 'Email to Cell', 1);
-insert into YukonListEntry values( 10, 1, 0, 'Call Back Phone', 2);
-insert into YukonListEntry values( 11, 1, 0, 'IVR Login', 3 );
+insert into YukonListEntry values( 1, 1, 3, 'Email', 1 );
+insert into YukonListEntry values( 2, 1, 9, 'Phone Number', 2 );
+insert into YukonListEntry values( 3, 1, 5, 'Email to Pager', 1 );
+insert into YukonListEntry values( 4, 1, 6, 'Fax Number', 5 );
+insert into YukonListEntry values( 5, 1, 7, 'Home Phone', 2 );
+insert into YukonListEntry values( 6, 1, 11, 'Work Phone', 2 );
+insert into YukonListEntry values( 7, 1, 10, 'Voice PIN', 3 );
+insert into YukonListEntry values( 8, 1, 2, 'Cell Phone', 2 );
+insert into YukonListEntry values( 9, 1, 4, 'Email to Cell', 1);
+insert into YukonListEntry values( 10, 1, 1, 'Call Back Phone', 2);
+insert into YukonListEntry values( 11, 1, 8, 'IVR Login', 3 );
 
 insert into YukonListEntry values (100, 100, 0, 'Addition', 0);
 insert into YukonListEntry values (101, 100, 0, 'Subtraction', 0);
