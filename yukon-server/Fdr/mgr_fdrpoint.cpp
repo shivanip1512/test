@@ -305,9 +305,9 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
 
         while( rdr() )
         {
-            rdr[0]      >> pointID;
-            rdr[1]   >> translation;
-            rdr[2]   >> destination;
+            rdr[0] >> pointID;
+            rdr[1] >> translation;
+            rdr[2] >> destination;
             rdr[3] >> direction;
             rdr[4] >> tmp;
             rdr[5] >> pointOffset;

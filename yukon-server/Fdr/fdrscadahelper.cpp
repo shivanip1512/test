@@ -261,7 +261,7 @@ template<typename T>
 void CtiFDRScadaHelper<T>::addSendMapping(const T& id, const CtiFDRDestination& pointDestination)
 {
     sendMap[pointDestination] = id;
-    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    if (_parent->getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Added send mapping " << pointDestination << " to " << id << endl;
@@ -272,7 +272,7 @@ template<typename T>
 void CtiFDRScadaHelper<T>::addReceiveMapping(const T& id, const CtiFDRDestination& pointDestination)
 {
     receiveMap.insert(ReceiveMap::value_type(id, pointDestination));
-    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    if (_parent->getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Added receive mapping " << id << " to " << pointDestination << endl;
@@ -284,7 +284,7 @@ void CtiFDRScadaHelper<T>::removeSendMapping(const T& id, const CtiFDRDestinatio
 {
     //just call erase, there can only be one
     sendMap.erase(pointDestination);
-    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    if (_parent->getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Removing send mapping " << pointDestination << " to " << id << endl;
@@ -305,7 +305,7 @@ void CtiFDRScadaHelper<T>::removeReceiveMapping(const T& id, const CtiFDRDestina
         }
     }
 
-    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    if (_parent->getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Removing receive mapping " << id << " to " << pointDestination << endl;

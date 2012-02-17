@@ -72,7 +72,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
                                                char** buffer,
                                                unsigned int& bufferSize) = 0;
 
-        void threadFunctionConnection(unsigned short listeningPort);
+        void threadFunctionConnection(unsigned short listeningPort, int startupDelaySeconds);
 
         virtual CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
 

@@ -32,6 +32,8 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
 
     protected:
 
+        virtual int processScanMessage(CtiFDRClientServerConnection* connection, const char *data) {return false;};
+
         virtual bool processValueMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* data, unsigned int size) {return false;};
         virtual bool processStatusMessage(Cti::Fdr::ServerConnection& connection,

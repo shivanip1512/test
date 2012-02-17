@@ -15,6 +15,6 @@ struct IM_EX_FDRBASE ServerConnection
 
 inline std::ostream& operator<< (std::ostream& os, const Cti::Fdr::ServerConnection& conn)
 {
-    return os << "[connection " << conn.getName() << "#" << conn.getConnectionNumber() << "]";
+    return os << "[connection " << conn.getName() << " #" << conn.getConnectionNumber() << "]";
 }
 

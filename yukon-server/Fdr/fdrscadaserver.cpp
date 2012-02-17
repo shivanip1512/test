@@ -37,6 +37,12 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
 
     switch (function)
     {
+        case SINGLE_SOCKET_FORCESCAN:
+            {
+                CtiFDRClientServerConnection* connection2 = (CtiFDRClientServerConnection*)&connection;
+                retVal = processScanMessage(connection2,data);
+                break;
+            }
         case SINGLE_SOCKET_VALUE:
             {
                 retVal = processValueMessage (connection, data, size);

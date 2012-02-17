@@ -55,7 +55,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         virtual BOOL run( void );
         virtual BOOL stop( void );
 
-        virtual int processScanMessage(CHAR *data);
+        virtual int processScanMessage(CtiFDRClientServerConnection* connection, const char* data);
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
 
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
@@ -66,7 +66,6 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
                                                char** buffer,
                                                unsigned int& bufferSize);
-
 
         virtual bool processValueMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* data, unsigned int size);
@@ -105,24 +104,15 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         static const CHAR * KEY_LINK_TIMEOUT;
         static const CHAR * KEY_SCAN_DEVICE_POINTNAME;
         static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME;
+        static const CHAR * KEY_STARTUP_DELAY_SECONDS;
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
 
         std::vector<RWThreadFunction> _listenerThreads;
 
-        // maps ip address -> server name
-        typedef std::map<std::string, std::string> ServerNameMap;
-        ServerNameMap _serverNameLookup;
-
         typedef std::map<std::string,int> NameToPointIdMap;
         NameToPointIdMap _nameToPointId;
         std::string _scanDevicePointName;
         std::string _sendAllPointsPointName;
+        int _listenerThreadStartupDelay;
 };
-
-
-
-
-
-
-

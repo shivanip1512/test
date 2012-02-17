@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
+// get the STL into our namespace for use.  Do NOT use iostream.h anymore
 #include <stdio.h>
+#include <sstream>
 
 /** include files **/
 #include "ctitime.h"
@@ -28,6 +28,8 @@
 #include "fdrsocketinterface.h"
 #include "fdrscadahelper.h"
 #include "utility.h"
+#include "dbaccess.h"
+
 // this class header
 #include "fdrvalmetmulti.h"
 #include "fdrvalmetutil.h"
@@ -53,11 +55,13 @@ const CHAR * CtiFDR_ValmetMulti::KEY_TIMESYNC_UPDATE = "FDR_VALMETMULTI_RESET_PC
 const CHAR * CtiFDR_ValmetMulti::KEY_LINK_TIMEOUT = "FDR_VALMETMULTI_LINK_TIMEOUT_SECONDS";
 const CHAR * CtiFDR_ValmetMulti::KEY_SCAN_DEVICE_POINTNAME = "FDR_VALMETMULTI_SCAN_DEVICE_POINTNAME";
 const CHAR * CtiFDR_ValmetMulti::KEY_SEND_ALL_POINTS_POINTNAME = "FDR_VALMETMULTI_SEND_ALL_POINTS_POINTNAME";
+const CHAR * CtiFDR_ValmetMulti::KEY_STARTUP_DELAY_SECONDS = "FDR_VALMETMULTI_STARTUP_DELAY";
 
 // Constructors, Destructor, and Operators
 CtiFDR_ValmetMulti::CtiFDR_ValmetMulti()
 : CtiFDRScadaServer(string(FDR_VALMETMULTI)),
-    _helper(NULL)
+    _helper(NULL),
+    _listenerThreadStartupDelay(0)
 {
     // Set to prevent normal connection thread
     setSingleListeningPort(false);
@@ -98,7 +102,8 @@ void CtiFDR_ValmetMulti::startMultiListeners()
     {
         RWThreadFunction thr = rwMakeThreadFunction(*(static_cast<CtiFDRSocketServer*>(this)), 
                                                     &CtiFDR_ValmetMulti::threadFunctionConnection, 
-                                                    port);
+                                                    port,
+                                                    _listenerThreadStartupDelay);
         thr.start();
         _listenerThreads.push_back(thr);
     }
@@ -163,6 +168,8 @@ int CtiFDR_ValmetMulti::readConfig()
 
     _scanDevicePointName = gConfigParms.getValueAsString(KEY_SCAN_DEVICE_POINTNAME, "DEVICE_SCAN");
     _sendAllPointsPointName = gConfigParms.getValueAsString(KEY_SEND_ALL_POINTS_POINTNAME, "SEND_ALL_POINTS");
+
+    _listenerThreadStartupDelay = gConfigParms.getValueAsInt(KEY_STARTUP_DELAY_SECONDS, 0);
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -282,24 +289,18 @@ void CtiFDR_ValmetMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPo
 
 CtiFDRClientServerConnection* CtiFDR_ValmetMulti::createNewConnection(SOCKET newSocket)
 {
-    sockaddr_in peerAddr;
-    int peerAddrSize = sizeof(peerAddr);
-    getpeername(newSocket, (SOCKADDR*) &peerAddr, &peerAddrSize);
-    std::string ipString(inet_ntoa(peerAddr.sin_addr));
-    std::string connName;
-    ServerNameMap::const_iterator iter = _serverNameLookup.find(ipString);
-    if (iter == _serverNameLookup.end())
-    {
-        connName = ipString;
-    }
-    else
-    {
-        connName = _serverNameLookup[ipString];
-    }
+    sockaddr_in sockAddr;
+    int sockAddrSize = sizeof(sockAddr);
+    getsockname(newSocket, (SOCKADDR*) &sockAddr, &sockAddrSize);
+    int port = ntohs(sockAddr.sin_port);
+
+    std::stringstream ss;
+    ss << "port_" << port;
+
+    std::string connName = ss.str();
     CtiFDRClientServerConnection* newConnection;
-    newConnection = new CtiFDRClientServerConnection(connName.c_str(),
-                                                 newSocket,
-                                                 this);
+    newConnection = new CtiFDRClientServerConnection(connName.c_str(), newSocket, this);
+
     newConnection->setRegistered(true); //ACS doesn't have a separate registration message
 
     // I'm not sure this is the best location for this
@@ -387,7 +388,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                     dout << CtiTime() << " Analog/Calculated point " << point.getPointID();
                     dout << " queued as " << ptr->Value.Name;
                     dout << " value " << point.getValue() << " with quality of " << ForeignQualityToString(ptr->Value.Quality);
-                    dout << " to " << getInterfaceName() << endl;
+                    dout << " to " << getInterfaceName() << " on Port " << atoi(destination.getTranslationValue("Port").c_str()) << endl;
                 }
                 break;
             }
@@ -429,7 +430,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                              {
                                  dout << " state of Close ";
                              }
-                             dout << "to " << getInterfaceName() << endl;;
+                             dout << "to " << getInterfaceName() << " on Port " << atoi(destination.getTranslationValue("Port").c_str()) << endl;;
                          }
                     }
                 }
@@ -482,6 +483,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
     }
     *buffer = valmet;
     bufferSize = sizeof(ValmetExtendedInterface_t);
+
     return valmet != NULL;
 }
 
@@ -883,7 +885,7 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
     return retVal;
 }
 
-int CtiFDR_ValmetMulti::processScanMessage(CHAR *aData)
+int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connection, const char* aData)
 {
     ValmetExtendedInterface_t  *data = (ValmetExtendedInterface_t*)aData;
     string  translationName(data->ForceScan.Name);
@@ -895,7 +897,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CHAR *aData)
     }
     if (ciStringEqual(translationName, _sendAllPointsPointName))
     {
-        //sendAllPoints();
+        sendAllPoints(connection);
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

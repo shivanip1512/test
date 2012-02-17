@@ -122,7 +122,7 @@ BOOL CtiFDRSocketServer::run( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Configured to run on a single port: " << getPortNumber() << endl;
         }
-        _threadSingleConnection = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber());
+        _threadSingleConnection = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber(), 0);
         _threadSingleConnection.start();
     } 
     else 
@@ -299,7 +299,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
 
     try
     {
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() <<"threadFunctionSendHeartbeat initializing" << endl;
@@ -328,7 +328,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
                 bool result = buildForeignSystemHeartbeatMsg(&heartbeatMsg, size);
                 if (result && size > 0)
                 {
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Queueing heartbeat message to " << **myIter << endl;
@@ -364,17 +364,26 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
     }
 }
 
-void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort )
+void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort, int startupDelaySeconds )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     SOCKET listenerSocket;
 
     try {
 
-        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL) {
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL) {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "threadFunctionConnection initializing" << endl;
+            logNow() << "threadFunctionConnection initializing in " << startupDelaySeconds << " seconds." << endl;
         }
+
+        //Delay for initial load. This gives Dispatch a chance to give us data before being bombarded by VALMET
+        Sleep(startupDelaySeconds*1000);
+
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL) {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "threadFunctionConnection initializing now." << endl;
+        }
+
         while (true) {
             // We may have gotten to this point because of a socket being closed on 
             // shutdown. Check to see if we're supposed to be exiting, otherwise 
@@ -394,7 +403,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
             } else {
-                if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
+                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Listening for connection on port " << listeningPort << endl;

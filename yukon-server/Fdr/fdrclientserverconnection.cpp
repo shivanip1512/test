@@ -185,7 +185,7 @@ bool CtiFDRClientServerConnection::queueMessage(CHAR *aBuffer,
 {
     bool success = true;
 
-    if (_connectionFailed)
+    if (isFailed())
     {
         return false;
     }
@@ -220,7 +220,7 @@ ULONG CtiFDRClientServerConnection::getDebugLevel()
 
 ostream& CtiFDRClientServerConnection::logNow()
 {
-    return _parentInterface->logNow() << "" << getName() << "#" << getConnectionNumber() << ": ";
+    return _parentInterface->logNow() << "" << getName() << " #" << getConnectionNumber() << ": ";
 }
 
 
@@ -243,7 +243,13 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
         // Now sit and wait for stuff to come in
         for (;;)
         {
-
+            if(isFailed())
+            {
+                // Probably supposed to be shutting down.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                logNow() << "threadFunctionSentDataTo shutting down." << endl;
+                break;
+            }
 
             UCHAR priority;
             CHAR *buffer = NULL;
@@ -490,6 +496,13 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
 
         for ( ; ; )
         {
+            if(isFailed())
+            {
+                // Probably supposed to be shutting down.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                logNow() << "threadFunctionGetDataFrom shutting down." << endl;
+                break;
+            }
 
             memset (&data, '\0', maxBufferSize);
             // attempt to find out what type of message we're dealing with
@@ -617,4 +630,3 @@ void CtiFDRClientServerConnection::sendLinkState(bool linkUp)
                                 StatusPointType);
     _parentInterface->sendMessageToDispatch (pData);
 }
-
