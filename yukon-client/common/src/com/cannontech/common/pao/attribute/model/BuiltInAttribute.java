@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public enum BuiltInAttribute implements Attribute {
     
-    /* Keep this ordered alphabetically by description */
     AUTO_BLOCK_ENABLE("Auto Block Enable"),
     AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
@@ -260,4 +259,5 @@ public enum BuiltInAttribute implements Attribute {
     public MessageSourceResolvable getMessage() {
         return YukonMessageSourceResolvable.createDefault("yukon.common.attribute.builtInAttribute." + name(), description);
     }
+    
 }

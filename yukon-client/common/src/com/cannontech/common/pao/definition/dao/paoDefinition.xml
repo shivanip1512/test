@@ -5308,6 +5308,7 @@
         </tags>
     </pao>
 	
+    <!-- Adds Min and Max Volts, Delivered, Received and Peak kW -->
     <pao id="RFN_EXTENDED" inherits="RFN_ELECTRIC_BASE" abstract="true">
         <points>
             <point type="Analog" offset="14">
@@ -5361,6 +5362,7 @@
         </attributes>
     </pao>
     
+    <!-- Adds Pulse, kVAR, kVArh, Phase Amps, Sum and Net kW -->
     <pao id="RFN_ADVANCED" abstract="true">
         <points>
             <point type="Analog" offset="30">
@@ -5422,7 +5424,7 @@
         </points>
     </pao>
     
-    <!-- Coincident Value Supporting Devices -->
+    <!-- Coincident Value Supporting Devices, adds Coincident kVAr, kVA, and PF -->
     <pao id="RFN_COINCIDENT_VALUES" abstract="true">
         <points>
             <point type="Analog" offset="106">
@@ -5549,7 +5551,7 @@
         </attributes>
     </pao>
      
-    <pao id="RFN_TOU" abstract="true">
+    <pao id="RFN_TOU" abstract="true" inherits="SUPPORTS_TOU_TAG">
         <points>
             <point type="Analog" offset="24">
                 <init>true</init>
@@ -5589,7 +5591,7 @@
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
-            <point type="Analog" offset="30">
+            <point type="Analog" offset="32">
                 <name>Peak kW (Rate D kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -5602,6 +5604,32 @@
                 <decimalplaces value="4"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="TOU_RATE_A_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate A kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_A_USAGE">
+                <basicLookup point="Rate A kWh" />
+            </attribute>
+            <attribute name="TOU_RATE_B_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate B kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_B_USAGE">
+                <basicLookup point="Rate B kWh" />
+            </attribute>
+            <attribute name="TOU_RATE_C_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate C kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_C_USAGE">
+                <basicLookup point="Rate C kWh" />
+            </attribute>
+            <attribute name="TOU_RATE_D_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate D kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_D_USAGE">
+                <basicLookup point="Rate D kWh" />
+            </attribute>
+        </attributes>
     </pao>
     
     <pao id="RFN_DISCONNECT" abstract="true">
@@ -5622,11 +5650,12 @@
         </tags>
     </pao>
     
+    <!-- FOCUS RFN METERS -->
     <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE">
         <displayName>RFN-410fL</displayName>
     </pao>
     
-    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE">
+    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU">
         <displayName>RFN-410fX</displayName>
     </pao>
     
@@ -5644,6 +5673,7 @@
         <displayName>RFN-420fD</displayName>
     </pao>
     
+    <!-- ITRON RFN METERS -->
     <pao id="RFN420CL" inherits="RFN_EXTENDED, RFN_BASIC_VOLTAGE, RFN_TOU">
         <displayName>RFN-420cL</displayName>
     </pao>
@@ -5651,11 +5681,13 @@
         <displayName>RFN-420cD</displayName>
     </pao>
 	
-    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES">
+    <!-- ELSTER RFN METERS -->
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU">
         <displayName>RFN-430A3</displayName>
     </pao>
     
-    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE">
+    <!-- GE RFN METERS -->
+    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU">
         <displayName>RFN-430KV</displayName>
     </pao>
 
