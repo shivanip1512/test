@@ -10,6 +10,8 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+#include <boost/assign/list_of.hpp>
+
 using Cti::Protocols::EmetconProtocol;
 using std::string;
 using std::endl;
@@ -18,7 +20,7 @@ using std::list;
 namespace Cti {
 namespace Devices {
 
-const double Mct31xDevice::MCT360_GEKV_KWHMultiplier = 2000000.0;
+static const double MCT360_GEKV_KWHMultiplier = 2000000.0;
 
 const Mct31xDevice::CommandSet Mct31xDevice::_commandStore = Mct31xDevice::initCommandStore();
 
@@ -236,7 +238,7 @@ ULONG Mct31xDevice::calcNextLPScanTime( void )
 }
 
 
-INT Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     int nRet = NoError;
 
@@ -393,8 +395,86 @@ bool Mct31xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
+INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    if( parse.isKeyValid("ied") && parse.isKeyValid("reset")
+          && (getType() == TYPEMCT360 || getType() == TYPEMCT370) )
+    {
+        const int function = EmetconProtocol::PutValue_IEDReset;
 
-INT Mct31xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+        if( getOperation(function, OutMessage->Buffer.BSt) )
+        {
+            using boost::assign::list_of;
+
+            typedef map<int, std::vector<unsigned char> > IedTypesToCommands;
+
+            static const IedTypesToCommands ied_reset_commands =
+                boost::assign::map_list_of
+                    (CtiTableDeviceMCTIEDPort::AlphaPowerPlus,
+                        list_of<unsigned char>
+                            (MCT360_AlphaResetPos)
+                            (60)  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                            (1))  //  Demand Reset function code for the Alpha
+                    (CtiTableDeviceMCTIEDPort::LandisGyrS4,
+                        list_of<unsigned char>
+                            (MCT360_LGS4ResetPos)
+                            (MCT360_LGS4ResetID)
+                            (60)  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                            (43)) //  Demand Reset function code for the LG S4
+                    (CtiTableDeviceMCTIEDPort::GeneralElectricKV,
+                        list_of<unsigned char>
+                            (MCT360_GEKVResetPos)
+                            (MCT360_GEKVResetID)
+                            (60)  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                            (0)   //  sequence, standard proc, and uppoer bits of proc are 0
+                            (9)   //  procedure 9
+                            (1)   //  parameter length 1
+                            (1)); //  demand reset bit set
+
+            const int iedtype = getIEDPort().getIEDType();
+
+            IedTypesToCommands::const_iterator itr = ied_reset_commands.find(iedtype);
+
+            if( itr != ied_reset_commands.end() )
+            {
+                const std::vector<unsigned char> &command = itr->second;
+
+                if( ! command.empty() )
+                {
+                    OutMessage->Buffer.BSt.Function = command[0];
+                    OutMessage->Buffer.BSt.Length   = command.size() - 1;
+                    std::copy(command.begin() + 1, command.end(), OutMessage->Buffer.BSt.Message);
+
+                    // Load all the other stuff that is needed
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+
+                    OutMessage->Request.RouteID   = getRouteID();
+                    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+                    return NoError;
+                }
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return MISCONFIG;
+        }
+    }
+
+    return Inherited::executePutValue(pReq, parse, OutMessage, vgList, retList, outList);
+}
+
+
+INT Mct31xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -495,7 +575,7 @@ INT Mct31xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool expectMore)
+INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
 {
     INT status = NORMAL;
     USHORT SaveCount;
@@ -580,7 +660,7 @@ INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 }
 
 
-INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -860,7 +940,7 @@ INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 
 
-INT Mct31xDevice::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -1132,7 +1212,7 @@ INT Mct31xDevice::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 
 
-INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -1975,7 +2055,7 @@ INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 }
 
 
-INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid;
@@ -2066,7 +2146,7 @@ INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
 }
 
 
-INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -2195,7 +2275,7 @@ INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int       status = NORMAL;
     double    Value;
@@ -2282,7 +2362,7 @@ INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 
 
-INT Mct31xDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 

@@ -4,6 +4,8 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
+#include <boost/assign/list_of.hpp>
+
 using Cti::Devices::Mct31xDevice;
 using Cti::Protocols::EmetconProtocol;
 
@@ -58,17 +60,19 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         const OUTMESS *om = outList.front();
 
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_AlphaResetPos );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_AlphaResetLen );
+        const std::vector<unsigned char> expected_message =
+            boost::assign::list_of
+                (60)(1);
 
-        const unsigned char expected_message[] = { 60, 1 };
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xb0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
             om->Buffer.BSt.Message,
             om->Buffer.BSt.Message + om->Buffer.BSt.Length,
-            expected_message,
-            expected_message + sizeof(expected_message) );
+            expected_message.begin(),
+            expected_message.end() );
     }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_lgs4)
@@ -87,17 +91,19 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         const OUTMESS *om = outList.front();
 
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_LGS4ResetPos );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_LGS4ResetLen );
+        const std::vector<unsigned char> expected_message =
+            boost::assign::list_of
+                (3)(60)(43);
 
-        const unsigned char expected_message[] = { 3, 60, 43 };
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xc0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   3 );
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
             om->Buffer.BSt.Message,
             om->Buffer.BSt.Message + om->Buffer.BSt.Length,
-            expected_message,
-            expected_message + sizeof(expected_message) );
+            expected_message.begin(),
+            expected_message.end() );
     }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_gekv)
@@ -116,17 +122,19 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         const OUTMESS *om = outList.front();
 
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct31xDevice::MCT360_GEKVResetPos );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct31xDevice::MCT360_GEKVResetLen );
+        const std::vector<unsigned char> expected_message =
+            boost::assign::list_of
+                (4)(60)(0)(9)(1)(1);
 
-        const unsigned char expected_message[] = { 4, 60, 0, 9, 1, 1 };
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xc1 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
             om->Buffer.BSt.Message,
             om->Buffer.BSt.Message + om->Buffer.BSt.Length,
-            expected_message,
-            expected_message + sizeof(expected_message) );
+            expected_message.begin(),
+            expected_message.end() );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()

@@ -2,6 +2,8 @@
 
 #include "dev_mct4xx.h"
 
+#include <boost/optional.hpp>
+
 namespace Cti {
 namespace Devices {
 
@@ -170,6 +172,10 @@ private:
         IED_Type_DNP      = 0x07,
         IED_Type_GE_kV2c  = 0x08,
     };
+
+    static boost::optional<IED_Types> tryFindIedTypeInCommandString(const std::string &commandString);
+    static boost::optional<IED_Types> tryDetermineIedTypeFromDeviceType(const int deviceType);
+    boost::optional<int> tryDetermineIedTypeFromDeviceConfiguration();
 
     static IED_Types resolveIEDType(const std::string &iedType);
     static std::string    resolveIEDName(int bits);

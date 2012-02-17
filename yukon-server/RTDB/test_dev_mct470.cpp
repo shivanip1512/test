@@ -7,8 +7,6 @@
 using Cti::Devices::Mct470Device;
 using Cti::Protocols::EmetconProtocol;
 
-using std::list;
-
 struct test_Mct470Device : Mct470Device
 {
     typedef Mct470Device::point_info point_info;
@@ -598,6 +596,61 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kvetch)
+    {
+        test_Mct470Device mct;
+
+        mct._type = TYPEMCT470;
+
+        //  "kvetch" was chosen as a word that contains "kv"
+        CtiCommandParser parse("putvalue ied reset kvetch");
+
+        BOOST_CHECK_EQUAL( MISCONFIG, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE( outList.empty() );
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+        BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
+        BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2_noqueue)
+    {
+        test_Mct470Device mct;
+
+        mct._type = TYPEMCT470;
+
+        //  make sure it can pick out "kv2" even if there's another parameter after the IED type
+        CtiCommandParser parse("putvalue ied reset kv2 noqueue");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 5, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -610,9 +663,9 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
 
     INMESS im;
 
-    list<OUTMESS *> om_list;
-    list<CtiMessage *> ret_list;
-    list<CtiMessage *> vg_list;
+    std::list<OUTMESS *> om_list;
+    std::list<CtiMessage *> ret_list;
+    std::list<CtiMessage *> vg_list;
 
     //  set up the ied demand inmessage
     {
