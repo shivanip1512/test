@@ -2566,9 +2566,7 @@ INT Mct470Device::executePutConfig(CtiRequestMsg *pReq,
 
 boost::optional<Mct470Device::IED_Types> Mct470Device::tryFindIedTypeInCommandString(const string &commandString)
 {
-    typedef map<string, IED_Types> NameToType;
-
-    static const NameToType IedResetNames = boost::assign::map_list_of
+    static const map<string, IED_Types> IedResetNames = boost::assign::map_list_of
         (" alpha",    IED_Type_Alpha_PP)
         (" s4",       IED_Type_LG_S4)
         (" a3",       IED_Type_Alpha_A3)
@@ -2585,6 +2583,7 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryFindIedTypeInCommandSt
         {
             string::const_iterator end_of_iedtype = commandString.begin() + pos + iedTypeName.first.size();
 
+            //  Check to see if the IED substring is at the end of the string OR if it's followed by a space
             if( end_of_iedtype == commandString.end() || isspace(*end_of_iedtype) )
             {
                 return iedTypeName.second;
@@ -2646,18 +2645,6 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
     bool found = false;
     int function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   CtiString(OutMessage->Request.CommandStr),
-                                                   CtiString(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.GrpMsgID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
     if( parse.isKeyValid("kyz") )
     {
         function = EmetconProtocol::PutValue_KYZ;
@@ -2665,6 +2652,21 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
         {
             if(parse.isKeyValid("kyz_offset") && parse.isKeyValid("kyz_reading") )
             {
+                std::auto_ptr<CtiReturnMsg>
+                    errRet(
+                        new CtiReturnMsg(
+                                getID( ),
+                                CtiString(OutMessage->Request.CommandStr),
+                                CtiString(),
+                                nRet,
+                                OutMessage->Request.RouteID,
+                                OutMessage->Request.MacroOffset,
+                                OutMessage->Request.Attempt,
+                                OutMessage->Request.GrpMsgID,
+                                OutMessage->Request.UserID,
+                                OutMessage->Request.SOE,
+                                CtiMultiMsg_vec( )));
+
                 int    offset = parse.getiValue("kyz_offset");
                 double dial   = parse.getdValue("kyz_reading", -1.0);
 
@@ -2698,28 +2700,18 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
                     {
                         found = false;
 
-                        if( errRet )
-                        {
-                            errRet->setResultString("Invalid reading specified for command");
-                            errRet->setStatus(NoMethod);
-                            retList.push_back(errRet);
-
-                            errRet = NULL;
-                        }
+                        errRet->setResultString("Invalid reading specified for command");
+                        errRet->setStatus(NoMethod);
+                        retList.push_back(errRet.release());
                     }
                 }
                 else
                 {
                     found = false;
 
-                    if( errRet )
-                    {
-                        errRet->setResultString("Invalid offset specified (" + CtiNumStr(offset) + ")");
-                        errRet->setStatus(NoMethod);
-                        retList.push_back(errRet);
-
-                        errRet = NULL;
-                    }
+                    errRet->setResultString("Invalid offset specified (" + CtiNumStr(offset) + ")");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back(errRet.release());
                 }
             }
         }
@@ -2728,85 +2720,84 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
     {
         function = EmetconProtocol::PutValue_IEDReset;
 
-        found = getOperation(function, OutMessage->Buffer.BSt);
-
-        boost::optional<int> iedType;
-
-        iedType = tryFindIedTypeInCommandString(parse.getCommandStr());
-
-        if( ! iedType )
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
-            if( getType() == TYPEMCT470 )
-            {
-                iedType = tryDetermineIedTypeFromDeviceConfiguration();
-            }
-            else
+            boost::optional<int> iedType;
+
+            iedType = tryFindIedTypeInCommandString(parse.getCommandStr());
+
+            if( ! iedType )
             {
                 iedType = tryDetermineIedTypeFromDeviceType(getType());
+
+                if( ! iedType )
+                {
+                    iedType = tryDetermineIedTypeFromDeviceConfiguration();
+
+                    if( ! iedType )
+                    {
+                        return MISCONFIG;
+                    }
+                }
             }
-        }
 
-        if( ! iedType )
-        {
-            return MISCONFIG;
-        }
-
-        struct IedResetCommand
-        {
-            unsigned char function;
-            vector<unsigned char> payload;
-
-            IedResetCommand( unsigned char function_, vector<unsigned char> payload_ ) :
-                function(function_),
-                payload(payload_)
+            struct IedResetCommand
             {
+                unsigned char function;
+                vector<unsigned char> payload;
+
+                IedResetCommand( unsigned char function_, vector<unsigned char> payload_ ) :
+                    function(function_),
+                    payload(payload_)
+                {
+                }
+            };
+
+            typedef map<int, IedResetCommand> IedTypesToCommands;
+
+            static const IedTypesToCommands ResetCommandsByIedType = boost::assign::map_list_of
+                (IED_Type_Alpha_PP, IedResetCommand
+                    (FuncWrite_IEDCommand, list_of
+                        //  SPID, meter type, meter num, function Alpha reset
+                        (0xff)(IED_Type_Alpha_PP)(0)(1)))
+                (IED_Type_LG_S4, IedResetCommand
+                    (FuncWrite_IEDCommand, list_of
+                        //  SPID, meter type, meter num, function S4 reset
+                        (0xff)(IED_Type_LG_S4)   (0)(0x2b)))
+                (IED_Type_Alpha_A3, IedResetCommand
+                    (FuncWrite_IEDCommandWithData, list_of
+                        //  SPID, meter type, meter num, command, data length, demand reset bit set
+                        (0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1)))
+                (IED_Type_GE_kV2c, IedResetCommand
+                    (FuncWrite_IEDCommandWithData, list_of
+                        //  SPID, meter type, meter num, command, data length, demand reset bit set
+                        (0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1)))
+                (IED_Type_GE_kV2, IedResetCommand
+                    (FuncWrite_IEDCommandWithData, list_of
+                        //  SPID, meter type, meter num, command, data length, demand reset bit set
+                        (0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1)))
+                (IED_Type_GE_kV, IedResetCommand
+                    (FuncWrite_IEDCommandWithData, list_of
+                        //  SPID, meter type, meter num, command, data length, demand reset bit set
+                        (0xff)(IED_Type_GE_kV)   (0)(9)(1)(1)))
+                (IED_Type_Sentinel, IedResetCommand
+                    (FuncWrite_IEDCommandWithData, list_of
+                        //  SPID, meter type, meter num, command, data length, demand reset bit set
+                        (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
+
+            IedTypesToCommands::const_iterator itr = ResetCommandsByIedType.find(*iedType);
+
+            if( itr == ResetCommandsByIedType.end() )
+            {
+                return MISCONFIG;
             }
-        };
 
-        typedef map<int, IedResetCommand> IedTypesToCommands;
+            const IedResetCommand &command = itr->second;
 
-        static const IedTypesToCommands ResetCommandsByIedType = boost::assign::map_list_of
-            (IED_Type_Alpha_PP, IedResetCommand
-                (FuncWrite_IEDCommand, list_of
-                    //  SPID, meter type, meter num, function Alpha reset
-                    (0xff)(IED_Type_Alpha_PP)(0)(1)))
-            (IED_Type_LG_S4, IedResetCommand
-                (FuncWrite_IEDCommand, list_of
-                    //  SPID, meter type, meter num, function S4 reset
-                    (0xff)(IED_Type_LG_S4)   (0)(0x2b)))
-            (IED_Type_Alpha_A3, IedResetCommand
-                (FuncWrite_IEDCommandWithData, list_of
-                    //  SPID, meter type, meter num, command, data length, demand reset bit set
-                    (0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1)))
-            (IED_Type_GE_kV2c, IedResetCommand
-                (FuncWrite_IEDCommandWithData, list_of
-                    //  SPID, meter type, meter num, command, data length, demand reset bit set
-                    (0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1)))
-            (IED_Type_GE_kV2, IedResetCommand
-                (FuncWrite_IEDCommandWithData, list_of
-                    //  SPID, meter type, meter num, command, data length, demand reset bit set
-                    (0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1)))
-            (IED_Type_GE_kV, IedResetCommand
-                (FuncWrite_IEDCommandWithData, list_of
-                    //  SPID, meter type, meter num, command, data length, demand reset bit set
-                    (0xff)(IED_Type_GE_kV)   (0)(9)(1)(1)))
-            (IED_Type_Sentinel, IedResetCommand
-                (FuncWrite_IEDCommandWithData, list_of
-                    //  SPID, meter type, meter num, command, data length, demand reset bit set
-                    (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
-
-        IedTypesToCommands::const_iterator itr = ResetCommandsByIedType.find(*iedType);
-
-        if( itr == ResetCommandsByIedType.end() )
-        {
-            return MISCONFIG;
+            OutMessage->Buffer.BSt.Function = command.function;
+            OutMessage->Buffer.BSt.Length   = command.payload.size();
+            std::copy(command.payload.begin(), command.payload.end(), OutMessage->Buffer.BSt.Message);
         }
-
-        const IedResetCommand &command = itr->second;
-
-        OutMessage->Buffer.BSt.Function = command.function;
-        OutMessage->Buffer.BSt.Length   = command.payload.size();
-        std::copy(command.payload.begin(), command.payload.end(), OutMessage->Buffer.BSt.Message);
     }
     else
     {
@@ -2829,12 +2820,6 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
 
         nRet = NoError;
-    }
-
-    if( errRet != NULL )
-    {
-        delete errRet;
-        errRet = NULL;
     }
 
     return nRet;
