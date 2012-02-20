@@ -35,6 +35,7 @@ import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
@@ -43,10 +44,12 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.exceptions.EmptyImportFileException;
 import com.cannontech.web.exceptions.NoImportFileException;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.FDR_TRANSLATION_MANAGER)
 @RequestMapping("fdrTranslationManager/*")
 public class FdrTranslationManagerController {
     private FdrTranslationManagerService fdrTranslationManagerService;
