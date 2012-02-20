@@ -1,5 +1,7 @@
 #include "dev_mct470.h"
 #include "devicetypes.h"
+#include "config_device.h"
+#include "boostutil.h"
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
@@ -383,6 +385,7 @@ struct beginExecuteRequest_helper
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
+    test_Mct470Device mct;
 
     ~beginExecuteRequest_helper()
     {
@@ -392,12 +395,21 @@ struct beginExecuteRequest_helper
     }
 };
 
+struct test_DeviceConfig : public Cti::Config::DeviceConfig
+{
+    test_DeviceConfig() :
+        DeviceConfig(-1, string(), string())
+    {
+    }
+
+    using DeviceConfig::insertValue;
+};
+
+
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_alpha)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset alpha");
@@ -422,11 +434,67 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_alpha_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x30");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+
+        const unsigned char expected_message[] = { 255, 3, 0, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_430a)
+    {
+        mct._type = TYPEMCT430A;
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+
+        const unsigned char expected_message[] = { 255, 3, 0, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_s4)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset s4");
@@ -451,11 +519,67 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_s4_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x10");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+
+        const unsigned char expected_message[] = { 255, 1, 0, 43 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_430s4)
+    {
+        mct._type = TYPEMCT430S4;
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+
+        const unsigned char expected_message[] = { 255, 1, 0, 43 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_a3)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset a3");
@@ -480,11 +604,67 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_a3_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x20");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 2, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_430a3)
+    {
+        mct._type = TYPEMCT430A3;
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 2, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2c)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset kv2c");
@@ -509,11 +689,41 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2c_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x80");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 8, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset kv2");
@@ -538,11 +748,41 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x50");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 5, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset kv");
@@ -567,11 +807,41 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x40");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 4, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_sentinel)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         CtiCommandParser parse("putvalue ied reset sentinel");
@@ -596,11 +866,67 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message,
             expected_message + sizeof(expected_message) );
     }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_sentinel_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        config.insertValue("configuration", "0x60");
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 6, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_430sl)
+    {
+        mct._type = TYPEMCT430SL;
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+        const unsigned char expected_message[] = { 255, 6, 0, 9, 1, 1 };
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+            expected_message,
+            expected_message + sizeof(expected_message) );
+    }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kvetch)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         //  "kvetch" was chosen as a word that contains "kv"
@@ -621,10 +947,29 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
     }
 
+    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_no_deviceconfig)
+    {
+        mct._type = TYPEMCT470;
+
+        CtiCommandParser parse("putvalue ied reset");
+
+        BOOST_CHECK_EQUAL( MISCONFIG, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE( outList.empty() );
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+        BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
+        BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+    }
+
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2_noqueue)
     {
-        test_Mct470Device mct;
-
         mct._type = TYPEMCT470;
 
         //  make sure it can pick out "kv2" even if there's another parameter after the IED type
