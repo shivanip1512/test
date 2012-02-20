@@ -174,8 +174,8 @@
     <entry key="yukon.web.modules.capcontrol.command.DELETE_ITEM">Delete Item</entry> 
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_SUBSTATION_BUS">Confirm Substation Bus</entry>
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_AREA">Confirm Area</entry> 
-    <entry key="yukon.web.modules.capcontrol.command.ENABLE_AREA">Enable</entry> 
-    <entry key="yukon.web.modules.capcontrol.command.DISABLE_AREA">Disable</entry> 
+    <entry key="yukon.web.modules.capcontrol.command.ENABLE_AREA">Enable Area</entry> 
+    <entry key="yukon.web.modules.capcontrol.command.DISABLE_AREA">Disable Area</entry> 
     <entry key="yukon.web.modules.capcontrol.command.ENABLE_SYSTEM">Enable System</entry>
     <entry key="yukon.web.modules.capcontrol.command.DISABLE_SYSTEM">Disable System</entry>
     <entry key="yukon.web.modules.capcontrol.command.FLIP_7010_CAPBANK">Flip 7010 Cap Bank</entry>
