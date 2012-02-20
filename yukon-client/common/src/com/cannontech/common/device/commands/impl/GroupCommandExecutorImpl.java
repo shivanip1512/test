@@ -34,55 +34,38 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * Implementation class for GroupCommandExecutor
  */
 public class GroupCommandExecutorImpl implements GroupCommandExecutor {
+    private Logger log = YukonLogManager.getLogger(GroupCommandExecutorImpl.class);
 
-    private CommandRequestDeviceExecutor commandRequestExecutor;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 
     private RecentResultsCache<GroupCommandResult> resultsCache
         = new RecentResultsCache<GroupCommandResult>();
-    
-    private Logger log = YukonLogManager.getLogger(GroupCommandExecutorImpl.class);
-    
-    @Autowired
-    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
-    }
 
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-
+    @Override
     public String execute(DeviceCollection deviceCollection, final String command,
                           DeviceRequestType commandRequestExecutionType,
                           SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         if (commandRequestExecutionType == null) {
             throw new IllegalArgumentException("commandRequestExecutionType cannot be null");
         }
-        
-        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
+
+        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper =
+            new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 return buildStandardRequest(from, command);
             }
         };
-        
-    	List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
-    	
-    	return execute(deviceCollection, command, requests, commandRequestExecutionType, callback, user);
+
+        List<CommandRequestDevice> requests =
+            new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+
+        return execute(deviceCollection, command, requests, commandRequestExecutionType, callback, user);
     }
 
+    @Override
     public String execute(final DeviceCollection deviceCollection, final String command,
                           List<CommandRequestDevice> requests,
                           DeviceRequestType commandRequestExecutionType,
@@ -94,9 +77,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         // create temporary groups
         final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
-        
+
         final GroupCommandResult groupCommandResult = new GroupCommandResult();
-        
+
         GroupCommandCompletionCallback commandCompletionCallback = new GroupCommandCompletionCallback() {
             @Override
             public void doComplete() {
@@ -106,98 +89,104 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
                     log.warn("There was an error executing the callback", e);
                 }
             }
-            
+
             @Override
             public void handleSuccess(SimpleDevice device) {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
             }
-            
+
             @Override
             public void handleFailure(SimpleDevice device) {
                 deviceGroupMemberEditorDao.addDevices(failureGroup, device);
             }
-            
+
         };
-        
+
         groupCommandResult.setCommandRequestExecutionType(commandRequestExecutionType);
         groupCommandResult.setCommand(command);
         groupCommandResult.setResultHolder(commandCompletionCallback);
         groupCommandResult.setDeviceCollection(deviceCollection);
         groupCommandResult.setCallback(commandCompletionCallback);
-        
+
         DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
         groupCommandResult.setSuccessCollection(successCollection);
-        DeviceCollection failureCollectioin = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
-        groupCommandResult.setFailureCollection(failureCollectioin);
+        DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
+        groupCommandResult.setFailureCollection(failureCollection);
         groupCommandResult.setStartTime(new Date());
-        
+
         String key = resultsCache.addResult(groupCommandResult);
         groupCommandResult.setKey(key);
-        
-        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = commandRequestExecutor.execute(requests, commandCompletionCallback, commandRequestExecutionType, user);
+
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier =
+            commandRequestExecutor.execute(requests, commandCompletionCallback, commandRequestExecutionType, user);
         groupCommandResult.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
-        
+
         log.debug("executing " + command + " on the " + requests.size() + " devices in " + deviceCollection);
-        
+
         return key;
     }
-    
+
     @Override
     public long cancelExecution(String resultId, LiteYukonUser user) throws ResultResultExpiredException {
 
         GroupCommandResult result = getResult(resultId);
         long commandsCanceled = commandRequestExecutor.cancelExecution(result.getCallback(), user);
-        
+
         return commandsCanceled;
     }
-    
+
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-        
+
         request.setCommandCallback(new PorterCommandCallback(command));
         return request;
     }
 
+    @Override
     public List<GroupCommandResult> getCompleted() {
         return resultsCache.getCompleted();
     }
-    
+
+    @Override
     public List<GroupCommandResult> getCompletedByType(DeviceRequestType type) {
-    	List<GroupCommandResult> completedOfType = new ArrayList<GroupCommandResult>();
-    	List<GroupCommandResult> completed = getCompleted();
-    	for (GroupCommandResult result : completed) {
-    		if (result.getCommandRequestExecutionType().equals(type)) {
-    			completedOfType.add(result);
-    		}
-    	}
-    	return completedOfType;
+        List<GroupCommandResult> completedOfType = new ArrayList<GroupCommandResult>();
+        List<GroupCommandResult> completed = getCompleted();
+        for (GroupCommandResult result : completed) {
+            if (result.getCommandRequestExecutionType().equals(type)) {
+                completedOfType.add(result);
+            }
+        }
+        return completedOfType;
     }
 
+    @Override
     public List<GroupCommandResult> getPending() {
         return resultsCache.getPending();
     }
-    
+
+    @Override
     public List<GroupCommandResult> getPendingByType(DeviceRequestType type) {
-    	List<GroupCommandResult> pendingOfType = new ArrayList<GroupCommandResult>();
-    	List<GroupCommandResult> pending = getPending();
-    	for (GroupCommandResult result : pending) {
-    		if (result.getCommandRequestExecutionType().equals(type)) {
-    			pendingOfType.add(result);
-    		}
-    	}
-    	return pendingOfType;
+        List<GroupCommandResult> pendingOfType = new ArrayList<GroupCommandResult>();
+        List<GroupCommandResult> pending = getPending();
+        for (GroupCommandResult result : pending) {
+            if (result.getCommandRequestExecutionType().equals(type)) {
+                pendingOfType.add(result);
+            }
+        }
+        return pendingOfType;
     }
 
+    @Override
     public GroupCommandResult getResult(String id) throws ResultResultExpiredException {
-    	
-    	GroupCommandResult result = resultsCache.getResult(id);
-    	
-    	// friendly exception
+
+        GroupCommandResult result = resultsCache.getResult(id);
+
+        // friendly exception
         if (result == null) {
-			throw new ResultResultExpiredException("Group Command Result No Longer Exists");
-		}
-        
+            throw new ResultResultExpiredException("Group Command Result No Longer Exists");
+        }
+
         return result;
     }
 }
