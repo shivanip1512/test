@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/17/2012 10:50:43 AM                        */
+/* Created on:     2/17/2012 2:40:52 PM                         */
 /*==============================================================*/
 
 
@@ -11004,20 +11004,24 @@ alter table DynamicCCFeeder
       on delete cascade;
 
 alter table DynamicCCMonitorBankHistory
-   add constraint FK_DYN_CCMONBNKHIST_BNKID foreign key (BankID)
-      references CAPBANK (DEVICEID);
+   add constraint FK_DynCCMonBankHistory_CapBank foreign key (BankID)
+      references CAPBANK (DEVICEID)
+      on delete cascade;
 
 alter table DynamicCCMonitorBankHistory
-   add constraint FK_DYN_CCMONBNKHIST_PTID foreign key (PointID)
-      references POINT (POINTID);
+   add constraint FK_DynCCMonBankHistory_Point foreign key (PointID)
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table DynamicCCMonitorPointResponse
-   add constraint FK_DYN_CCMONPTRSP_BNKID foreign key (BankID)
-      references DynamicCCCapBank (CapBankID);
+   add constraint FK_DynCCMonPointResp_CapBank foreign key (BankID)
+      references DynamicCCCapBank (CapBankID)
+      on delete cascade;
 
 alter table DynamicCCMonitorPointResponse
-   add constraint FK_DYN_CCMONPTRSP_PTID foreign key (PointID)
-      references POINT (POINTID);
+   add constraint FK_DynCCMonPointResp_Point foreign key (PointID)
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table DynamicCCOriginalParent
    add constraint FK_DynCCOrigParent_YukonPAO foreign key (PAObjectId)
