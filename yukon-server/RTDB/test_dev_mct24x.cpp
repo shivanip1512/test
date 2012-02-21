@@ -1,12 +1,12 @@
-#include "dev_mct24x.h"
-
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-using Cti::Devices::Mct24xDevice;
+#include "dev_mct24x.h"
+
 using Cti::Protocols::EmetconProtocol;
 
-struct test_Mct24xDevice : Mct24xDevice
+BOOST_AUTO_TEST_SUITE( test_dev_mct24x )
+
+struct test_Mct24xDevice : Cti::Devices::Mct24xDevice
 {
     using MctDevice::getOperation;
 };
@@ -311,5 +311,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Length,   0);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE_END()
 

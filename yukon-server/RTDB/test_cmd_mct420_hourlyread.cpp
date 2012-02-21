@@ -1,8 +1,6 @@
-#include "cmd_mct420_hourlyread.h"
-
-#define BOOST_TEST_MAIN "Testing Devices::Commands::Mct420HourlyReadCommand"
-
 #include <boost/test/unit_test.hpp>
+
+#include "cmd_mct420_hourlyread.h"
 
 using Cti::Devices::Commands::Mct420HourlyReadCommand;
 using Cti::Devices::Commands::DlcCommand;
@@ -17,7 +15,7 @@ struct expected_pointdata
     unsigned offset;
 };
 
-bool operator!=(const DlcCommand::point_data &pd, const expected_pointdata &ep)
+static bool operator!=(const DlcCommand::point_data &pd, const expected_pointdata &ep)
 {
     return pd.time    != ep.time
         || pd.value   != ep.value
@@ -26,7 +24,7 @@ bool operator!=(const DlcCommand::point_data &pd, const expected_pointdata &ep)
         || pd.offset  != ep.offset;
 }
 
-std::ostream &operator<<(std::ostream &os, const expected_pointdata &ep)
+static std::ostream &operator<<(std::ostream &os, const expected_pointdata &ep)
 {
     os << "(" << ep.time.asString()
        << "," << ep.value
@@ -38,7 +36,7 @@ std::ostream &operator<<(std::ostream &os, const expected_pointdata &ep)
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const DlcCommand::point_data &pd)
+static std::ostream &operator<<(std::ostream &os, const DlcCommand::point_data &pd)
 {
     os << "(" << pd.time.asString()
        << "," << pd.value
@@ -49,6 +47,8 @@ std::ostream &operator<<(std::ostream &os, const DlcCommand::point_data &pd)
 
     return os;
 }
+
+BOOST_AUTO_TEST_SUITE( test_cmd_mct420_hourlyread )
 
 BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
 {
@@ -2078,3 +2078,4 @@ BOOST_AUTO_TEST_CASE(test_convert_delta)
     BOOST_CHECK_EQUAL(test::convertDelta(32767), -1);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

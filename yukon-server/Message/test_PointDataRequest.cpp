@@ -1,12 +1,9 @@
-#define BOOST_AUTO_TEST_MAIN "Test Point Data Request"
+#include <boost/test/auto_unit_test.hpp>
 
 #include "PointDataRequestFactory.h"
 #include "DispatchPointdataRequest.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_PointDataRequest )
 
 // mock dispatch connection to test the point data request functionality
 class mock_DispatchConnection : public DispatchConnection
@@ -56,28 +53,28 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
 
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
-    request->processNewMessage( new CtiPointDataMsg(  950, 121.0, NormalQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg(  950, 121.0, NormalQuality, AnalogPointType ) );
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
-    request->processNewMessage( new CtiPointDataMsg( 1101, 121.4, NormalQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg( 1101, 121.4, NormalQuality, AnalogPointType ) );
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
     request->processNewMessage( new CtiPointDataMsg( 1104, 122.2, NormalQuality, AnalogPointType ) );
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
-    request->processNewMessage( new CtiPointDataMsg( 1101, 121.3, NormalQuality, AnalogPointType ) ); 
-    request->processNewMessage( new CtiPointDataMsg( 1103, 120.2, NormalQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg( 1101, 121.3, NormalQuality, AnalogPointType ) );
+    request->processNewMessage( new CtiPointDataMsg( 1103, 120.2, NormalQuality, AnalogPointType ) );
     request->processNewMessage( new CtiPointDataMsg( 1102, 119.7, NormalQuality, AnalogPointType ) );
     request->processNewMessage( new CtiPointDataMsg( 1112, 118.9, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType ) );
 
     //because this point is abnormal and timestamp > previous 1102 pData, will be removed from values, added to rejected
-    request->processNewMessage( new CtiPointDataMsg( 1102, 116.7, UnknownQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg( 1102, 116.7, UnknownQuality, AnalogPointType ) );
 
-    request->processNewMessage( new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType ) );
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
-    request->processNewMessage( new CtiPointDataMsg( 1100, 120.5, NormalQuality, AnalogPointType ) ); 
+    request->processNewMessage( new CtiPointDataMsg( 1100, 120.5, NormalQuality, AnalogPointType ) );
     BOOST_CHECK_EQUAL( true , request->isComplete() );
 
     PointValueMap   receivedPoints = request->getPointValues();
@@ -106,8 +103,4 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
     BOOST_CHECK( receivedPoints.end() == receivedPoints.find(1112) );
 }
 
-BOOST_AUTO_TEST_CASE(test_dispatch_point_data_request)
-{
-
-    BOOST_CHECK_CLOSE(1.0,1.0,.1);
-}
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,36 +1,34 @@
-#include "dev_mct4xx.h"
-
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-using Cti::Devices::Mct4xxDevice;
+#include "dev_mct4xx.h"
+
 using Cti::Protocols::EmetconProtocol;
 
-using std::list;
+BOOST_AUTO_TEST_SUITE( test_dev_mct4xx )
 
-struct test_Mct4xxDevice : Mct4xxDevice
+struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
 {
     //  these are just placeholder pure-virtuals so we can instantiate this abstract base class
     const ValueMapping *getMemoryMap() const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
     const FunctionReadValueMappings *getFunctionReadValueMaps() const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
     point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
     point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     long getLoadProfileInterval(unsigned channel)
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
-    INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
+    INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
     ConfigPartsList getPartsList()
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return ConfigPartsList();  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return ConfigPartsList();  }
     bool isSupported(const Features feature) const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return false;  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return false;  }
     bool sspecValid(const unsigned sspec, const unsigned rev) const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return false;  };
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return false;  }
     unsigned getUsageReportDelay(const unsigned int,const unsigned int) const
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
 
@@ -428,4 +426,6 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Length,   6);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE_END()

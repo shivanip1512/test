@@ -37,11 +37,12 @@ INCLPATHS+= \
 ;$(MSG)\include \
 ;$(RW)
 
-MCCMDTESTOBJS=\
+MCCMD_TEST_OBJS=\
+test_main.obj \
 test_decodeTextCmdFile.obj
 
 DLLOBJS=\
-$(OBJ)\decodeTextCmdFile.obj
+decodeTextCmdFile.obj
 
 LIBS=\
 $(TCL_LIBS) \
@@ -51,9 +52,32 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\cticparms.lib
 
-ALL: mccmd
+MCCMD_TEST_FULLBUILD = $[Filename,$(OBJ),MccmdTestFullBuild,target]
 
-mccmd:  $(MCCMDTESTOBJS) maketest.mak
+
+ALL:            test_mccmd.exe
+
+$(MCCMD_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(MCCMD_TEST_OBJS)]
+
+test_mccmd.exe:    $(MCCMD_TEST_FULLBUILD) $(MCCMD_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(MCCMD_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(DLLOBJS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
+
 
 
 copy:
@@ -76,21 +100,6 @@ deps:
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(DLLOBJS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-        mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
-
 
 ######################################################################################
 

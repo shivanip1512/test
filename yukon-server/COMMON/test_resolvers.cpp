@@ -1,4 +1,4 @@
-#include "precompiled.h"
+#include <boost/test/unit_test.hpp>
 
 #include "dsm2.h"
 #include "resolvers.h"
@@ -8,13 +8,9 @@
 #include "numstr.h"
 #include "utility.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test Resolvers"
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_resolvers )
 
 BOOST_AUTO_TEST_CASE(test_resolveRouteType)
 {
@@ -491,3 +487,5 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     devType = TYPELTC;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

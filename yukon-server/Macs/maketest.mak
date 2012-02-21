@@ -49,26 +49,49 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\interp.lib
 
 
-MACSTESTOBJS= \
+MACS_TEST_OBJS= \
+test_main.obj \
 test_scheduletime.obj
 
 MACSBASEOBJS= \
-$(OBJ)/clientconn.obj \
-$(OBJ)/clistener.obj \
-$(OBJ)/mc_dbthr.obj \
-$(OBJ)/mc_fileint.obj \
-$(OBJ)/mc_msg.obj \
-$(OBJ)/mc_sched.obj \
-$(OBJ)/mc_scheduler.obj \
-$(OBJ)/mc_server.obj \
-$(OBJ)/mc_script.obj \
-$(OBJ)/mgr_mcsched.obj \
-$(OBJ)/tbl_mcsched.obj \
-$(OBJ)/tbl_mcsimpsched.obj
+clientconn.obj \
+clistener.obj \
+mc_dbthr.obj \
+mc_fileint.obj \
+mc_msg.obj \
+mc_sched.obj \
+mc_scheduler.obj \
+mc_server.obj \
+mc_script.obj \
+mgr_mcsched.obj \
+tbl_mcsched.obj \
+tbl_mcsimpsched.obj
 
-ALL:      macs
+MACS_TEST_FULLBUILD = $[Filename,$(OBJ),MacsTestFullBuild,target]
 
-macs:      $(MACSTESTOBJS) maketest.mak
+
+ALL:            test_macs.exe
+
+$(MACS_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(MACS_TEST_OBJS)]
+
+test_macs.exe:    $(MACS_TEST_FULLBUILD) $(MACS_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(MACS_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -89,21 +112,6 @@ deps:
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(MACSBASEOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
-
 
 ######################################################################################
 #UPDATE#

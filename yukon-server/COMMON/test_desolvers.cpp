@@ -1,13 +1,12 @@
-#define BOOST_AUTO_TEST_MAIN "Test Resolvers"
+#include <boost/test/unit_test.hpp>
 
 #include "desolvers.h"
 #include "devicetypes.h"
 #include "boostutil.h"
 
-#include <boost/test/unit_test.hpp>
-
-
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_desolvers )
 
 BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
 {
@@ -164,3 +163,5 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         BOOST_CHECK_INDEXED_EQUAL(i, type_lookups[i], desolveDeviceType(i));
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

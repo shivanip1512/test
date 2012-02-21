@@ -1,3 +1,5 @@
+#include <boost/test/unit_test.hpp>
+
 #include "database_reader.h"
 #include "row_reader.h"
 #include "dbaccess.h"
@@ -10,8 +12,7 @@
 #include <sstream>
 #include <algorithm>
 
-#define BOOST_TEST_MAIN "Test device_sql"
-#include <boost/test/unit_test.hpp>
+BOOST_AUTO_TEST_SUITE( test_rtdb_sql )
 
 BOOST_AUTO_TEST_CASE(test_sql_string)
 {
@@ -39,18 +40,20 @@ BOOST_AUTO_TEST_CASE(test_sql_string)
         //std::cout << selector.asString() << std::endl;
 
     /////
-    
+
     ///// DATABASE READER CONFIGURATION AND OUTPUT
 
         std::string sql = "SELECT JD.id, JD.phrase "
                           "FROM Jordan JD";
-    
+
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
 
         rdr.execute();
-   
+
         //std::cout << isNull << std::endl;
-        
+
     /////
 }
+
+BOOST_AUTO_TEST_SUITE_END()

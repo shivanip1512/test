@@ -1,15 +1,13 @@
-#define BOOST_AUTO_TEST_MAIN "Test DNP Protocol"
-
-#include "precompiled.h"
+#include <boost/test/auto_unit_test.hpp>
 
 #include "prot_dnp.h"
 #include "dnp_object_internalindications.h"
 
-#include <boost/test/auto_unit_test.hpp>
-
 #include "boost_test_helpers.h"
 
 using Cti::byte_buffer;
+
+BOOST_AUTO_TEST_SUITE( test_prot_dnp )
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
 {
@@ -987,3 +985,4 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 }
 
 
+BOOST_AUTO_TEST_SUITE_END()

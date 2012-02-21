@@ -121,9 +121,6 @@ mccmd.obj:	precompiled.h mccmd.h msg_pcrequest.h dlldefs.h message.h \
 		msg_notif_email_attachment.h tbl_devicereadrequestlog.h \
 		ctibase.h ctinexus.h ctistring.h mgr_holiday.h ctidate.h \
 		wpsc.h xcel.h decodetextcmdfile.h
-mcs8100test.obj:	precompiled.h wpsc.h logger.h dlldefs.h thread.h \
-		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h
 mcsh.obj:	precompiled.h mcsh.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h mccmd.h msg_pcrequest.h \

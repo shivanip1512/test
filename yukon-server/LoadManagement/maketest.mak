@@ -41,59 +41,82 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctiseasondb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib
 
-LOADMANAGEMENTTESTOBJS= \
+LOADMANAGEMENT_TEST_OBJS= \
+test_main.obj \
 test_lmprogram.obj \
 test_lm_constraintviolations.obj
 
 LOADMANAGEMENTBASEOBJS= \
-$(OBJ)\clientconn.obj \
-$(OBJ)\clistener.obj \
-$(OBJ)\executor.obj \
-$(OBJ)\ConstraintViolation.obj \
-$(OBJ)\lmconstraint.obj \
-$(OBJ)\lmcontrolarea.obj \
-$(OBJ)\lmcontrolareastore.obj \
-$(OBJ)\lmcontrolareatrigger.obj \
-$(OBJ)\lmcicustomerbase.obj \
-$(OBJ)\lmcurtailcustomer.obj \
-$(OBJ)\lmenergyexchangecustomer.obj \
-$(OBJ)\lmenergyexchangecustomerreply.obj \
-$(OBJ)\lmenergyexchangehourlycustomer.obj \
-$(OBJ)\lmenergyexchangehourlyoffer.obj \
-$(OBJ)\lmenergyexchangeoffer.obj \
-$(OBJ)\lmenergyexchangeofferrevision.obj \
-$(OBJ)\lmfactory.obj \
-$(OBJ)\lmgroupbase.obj \
-$(OBJ)\lmgroupemetcon.obj \
-$(OBJ)\lmgroupexpresscom.obj \
-$(OBJ)\lmgroupmacro.obj \
-$(OBJ)\lmgroupmct.obj \
-$(OBJ)\lmgrouppoint.obj \
-$(OBJ)\lmgroupripple.obj \
-$(OBJ)\lmgroupsa305.obj \
-$(OBJ)\lmgroupsa105.obj \
-$(OBJ)\lmgroupsa205.obj \
-$(OBJ)\lmgroupsadigital.obj \
-$(OBJ)\lmgroupdigisep.obj \
-$(OBJ)\lmgroupgolay.obj \
-$(OBJ)\lmgroupversacom.obj \
-$(OBJ)\lmmessage.obj \
-$(OBJ)\lmprogrambase.obj \
-$(OBJ)\lmprogramcontrolwindow.obj \
-$(OBJ)\lmprogramcurtailment.obj \
-$(OBJ)\lmprogramdirect.obj \
-$(OBJ)\lmprogramdirectgear.obj \
-$(OBJ)\lmprogramenergyexchange.obj \
-$(OBJ)\lmprogramthermostatgear.obj \
-$(OBJ)\lmservice.obj \
-$(OBJ)\lmutility.obj \
-$(OBJ)\sepcyclegear.obj \
-$(OBJ)\septempoffsetgear.obj \
-$(OBJ)\loadmanager.obj
+clientconn.obj \
+clistener.obj \
+executor.obj \
+ConstraintViolation.obj \
+lmconstraint.obj \
+lmcontrolarea.obj \
+lmcontrolareastore.obj \
+lmcontrolareatrigger.obj \
+lmcicustomerbase.obj \
+lmcurtailcustomer.obj \
+lmenergyexchangecustomer.obj \
+lmenergyexchangecustomerreply.obj \
+lmenergyexchangehourlycustomer.obj \
+lmenergyexchangehourlyoffer.obj \
+lmenergyexchangeoffer.obj \
+lmenergyexchangeofferrevision.obj \
+lmfactory.obj \
+lmgroupbase.obj \
+lmgroupemetcon.obj \
+lmgroupexpresscom.obj \
+lmgroupmacro.obj \
+lmgroupmct.obj \
+lmgrouppoint.obj \
+lmgroupripple.obj \
+lmgroupsa305.obj \
+lmgroupsa105.obj \
+lmgroupsa205.obj \
+lmgroupsadigital.obj \
+lmgroupdigisep.obj \
+lmgroupgolay.obj \
+lmgroupversacom.obj \
+lmmessage.obj \
+lmprogrambase.obj \
+lmprogramcontrolwindow.obj \
+lmprogramcurtailment.obj \
+lmprogramdirect.obj \
+lmprogramdirectgear.obj \
+lmprogramenergyexchange.obj \
+lmprogramthermostatgear.obj \
+lmservice.obj \
+lmutility.obj \
+sepcyclegear.obj \
+septempoffsetgear.obj \
+loadmanager.obj
 
-ALL: loadmanagement
+LOADMANAGEMENT_TEST_FULLBUILD = $[Filename,$(OBJ),LoadManagementTestFullBuild,target]
 
-loadmanagement:  $(LOADMANAGEMENTTESTOBJS) maketest.mak
+
+ALL:            test_loadmanagement.exe
+
+$(LOADMANAGEMENT_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(LOADMANAGEMENT_TEST_OBJS)]
+
+test_loadmanagement.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) $(LOADMANAGEMENT_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(LOADMANAGEMENT_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -114,21 +137,6 @@ deps:
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-        mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
-
 
 ######################################################################################
 #UPDATE#

@@ -1,4 +1,3 @@
-#define BOOST_TEST_MAIN "Testing resolvers.cpp"
 #include <boost/test/unit_test.hpp>
 
 #include "slctdev.h"
@@ -8,10 +7,11 @@
 
 #include <set>
 
+BOOST_AUTO_TEST_SUITE( test_slctdev )
 
 struct test_CtiDeviceBase : public CtiDeviceBase
 {
-    void setType(const int type)    { CtiDeviceBase::setType(type); }
+    using CtiDeviceBase::setType;
 };
 
 
@@ -56,4 +56,6 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device)
         BOOST_CHECK_INDEXED_EQUAL(i, isCarrierLPDevice(dev), type_set.find(i) != type_set.end());
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()
 

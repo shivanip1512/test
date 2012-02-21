@@ -44,29 +44,18 @@ INCLPATHS+= \
 TSTEST=\
 tstest.obj
 
-TEST2OBJS=\
-test2.obj
-
 SIGTESTOBJS=\
 sigtest.obj
 
 PORTERPOKE=\
 porterpoker.obj
 
-CBCOBJS=\
-cbctest.obj
-
 SIGSRCTESTOBJS=\
 sigsrctest.obj
 
-CMDTESTOBJS=\
-cmdtest.obj
-
-
-PCMOBJS=\
-pcmtest.obj
 
 VGOBJS= \
+id_vg.obj \
 dispmain.obj \
 dispsvc.obj \
 con_mgr_vg.obj \
@@ -79,13 +68,9 @@ SOCKSLIB=wsock32.lib
 
 CTIPROGS=\
 dispatch.exe \
-cmdtest.exe \
-cbctest.exe \
-pcmtest.exe \
 poker.exe \
 sigsinktest.exe \
-sigsrctest.exe \
-vgsinktest.exe
+sigsrctest.exe
 
 VGLIBS=\
 advapi32.lib \
@@ -109,7 +94,6 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 ALL:            $(CTIPROGS)
 
 dispatch.exe:   $(VGOBJS) makeexe.mak
-                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
@@ -117,29 +101,6 @@ dispatch.exe:   $(VGOBJS) makeexe.mak
 $(VGOBJS) id_vg.obj -link $(RWLIBS) $(BOOST_LIBS) $(VGLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -copy ..\$@ $(YUKONOUTPUT)
-                @%cd $(CWD)
-
-
-pcmtest.exe:    $(PCMOBJS) makeexe.mak
-                @echo:
-                @echo Compiling ..\$@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(PCMOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -copy ..\$@ $(YUKONOUTPUT)
-                @%cd $(CWD)
-
-vgsinktest.exe: $(TEST2OBJS) makeexe.mak
-                @echo:
-                @echo Compiling ..\$@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(TEST2OBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -166,17 +127,6 @@ $(PORTERPOKE) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
-cbctest.exe: $(CBCOBJS) makeexe.mak
-                @echo:
-                @echo Compiling ..\$@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(CBCOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -copy ..\$@ $(YUKONOUTPUT)
-                @%cd $(CWD)
-
 
 sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak
                 @echo:
@@ -184,28 +134,6 @@ sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(SIGSRCTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -copy ..\$@ $(YUKONOUTPUT)
-                @%cd $(CWD)
-
-cmdtest.exe: $(CMDTESTOBJS) makeexe.mak
-                @echo:
-                @echo Compiling ..\$@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(CMDTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -copy ..\$@ $(YUKONOUTPUT)
-                @%cd $(CWD)
-
-tstest.exe:     $(TSTEST) makeexe.mak
-                @build -nologo -f $(_InputFile) id
-                @echo Compiling ..\$@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(TSTEST) tstest.obj -link $(RWLIBS) $(BOOST_LIBS) $(VGLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
@@ -229,13 +157,6 @@ clean:
         -del *.adb
         -del *.ilk
         -del *.exe
-
-# The lines below accomplish the ID'ing of the project!
-id:
-            @build -nologo -f $(_InputFile) id_vg.obj
-
-id_vg.obj:    id_vg.cpp include\id_vg.h
-
 
 
 ########################### Conversions ##############################
@@ -262,26 +183,6 @@ applist.obj:	precompiled.h applist.h con_mgr.h connection.h dlldefs.h \
 		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h ctibase.h ctinexus.h
-cbctest.obj:	precompiled.h exchange.h dlldefs.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h dbghelp.h dsm2err.h words.h optional.h logger.h \
-		thread.h CtiPCPtrQueue.h string_utility.h message.h \
-		collectable.h rwutil.h database_connection.h dbaccess.h \
-		sema.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h msg_cmd.h msg_reg.h msg_signal.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_pcreturn.h \
-		msg_multi.h
-cmdtest.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
-		types.h ctidbgmem.h database_connection.h dbaccess.h \
-		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dbghelp.h dsm2err.h words.h optional.h sema.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h exchange.h message.h collectable.h msg_cmd.h \
-		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_ptreg.h connection.h
 control_history_association.obj:	precompiled.h \
 		control_history_association.h tbl_lm_controlhist.h \
 		row_reader.h ctitime.h dlldefs.h dbmemobject.h dbaccess.h \
@@ -433,22 +334,6 @@ mgr_ptclients.obj:	precompiled.h dllvg.h dlldefs.h pt_base.h yukon.h \
 		tbl_pt_status.h debug_timer.h con_mgr_vg.h vgexe_factory.h \
 		executor.h exe_ptchg.h executorfactory.h exe_cmd.h exe_reg.h \
 		msg_cmd.h
-pcmtest.obj:	precompiled.h mgr_ptclients.h dlldefs.h mgr_point.h \
-		pt_base.h yukon.h types.h ctidbgmem.h row_reader.h ctitime.h \
-		boostutil.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dbmemobject.h resolvers.h pointtypes.h db_entry_defines.h \
-		pointdefs.h tbl_pt_base.h dllbase.h dsm2.h cticonnect.h \
-		netports.h mutex.h guard.h dbghelp.h dsm2err.h words.h \
-		optional.h dbaccess.h sema.h desolvers.h tbl_pt_property.h \
-		tbl_pt_trigger.h smartmap.h readers_writer_lock.h \
-		critical_section.h msg_pdata.h message.h collectable.h \
-		rwutil.h database_connection.h database_reader.h boost_time.h \
-		ptconnect.h hashkey.h hash_functions.h con_mgr.h connection.h \
-		exchange.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
-		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h ctibase.h ctinexus.h server_b.h \
-		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
-		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h
 pendingopthread.obj:	precompiled.h counter.h guard.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h dbghelp.h mutex.h cparms.h rwutil.h yukon.h \
@@ -549,16 +434,6 @@ tagmanager.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		queue.h cparms.h configkey.h configval.h string_utility.h \
 		tbl_dyn_pttag.h ctibase.h ctinexus.h dbmemobject.h tbl_tag.h \
 		tbl_taglog.h
-test2.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
-		types.h ctidbgmem.h database_connection.h dbaccess.h \
-		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dbghelp.h dsm2err.h words.h optional.h sema.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h connection.h exchange.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_ptreg.h msg_reg.h msg_cmd.h msg_pcreturn.h
 test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		pt_base.h yukon.h types.h ctidbgmem.h row_reader.h ctitime.h \
 		boostutil.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \

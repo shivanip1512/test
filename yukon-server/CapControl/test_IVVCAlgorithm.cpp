@@ -1,35 +1,9 @@
+#include <boost/test/unit_test.hpp>
 
-
-#define BOOST_AUTO_TEST_MAIN "Test CapControl IVVC Algorithm"
-
-#include "precompiled.h"
-#include "ctitime.h"
-#include "ccsubstationbus.h"
-#include "ccsubstation.h"
-#include "ccarea.h"
-#include "capcontroller.h"
-#include "ccsubstationbusstore.h"
-#include "ccexecutor.h"
-#include "ccmessage.h"
-#include "mgr_paosched.h"
-#include "pointdefs.h"
-#include "ccoriginalparent.h"
 #include "ccUnitTestUtil.h"
 
-#include "StrategyManager.h"
 #include "IVVCStrategy.h"
 #include "ZoneManager.h"
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include <string>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
-
-using boost::unit_test_framework::test_suite;
 
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneLoader;
@@ -37,6 +11,8 @@ using Cti::CapControl::ZoneManager;
 
 extern ULONG _MAX_KVAR;
 extern ULONG _SEND_TRIES;
+
+BOOST_AUTO_TEST_SUITE( test_IVVCAlgorithm )
 
 class StrategyUnitTestLoader : public StrategyLoader
 {
@@ -671,3 +647,4 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_all_children_of_zone_with_z
     BOOST_CHECK_EQUAL_COLLECTIONS( results.begin(), results.end(), subset.begin(), subset.end() );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

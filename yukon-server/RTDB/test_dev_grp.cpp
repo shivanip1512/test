@@ -1,47 +1,21 @@
-
-/*
- * file test_cmdparse.cpp
- *  
- * Author: Jian Liu 
- * Date: 07/27/2005 14:05:51 
- * 
- *
- * test CtiDate
- * 
- */
-
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Test dev_grp"
 #include <boost/test/unit_test.hpp>
-
-
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <iostream>
 
 #include "dev_grp.h"
 #include "dev_grp_expresscom.h"
-#include "expresscom.h"
-#include "mgr_point.h"
-#include "pt_status.h"
 #include "devicetypes.h"
-#include "rwutil.h"
+#include "mgr_point.h"
+#include "expresscom.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test Device Group Base"
-using boost::unit_test_framework::test_suite;
-using std::string;
+BOOST_AUTO_TEST_SUITE( test_dev_grp )
 
 BOOST_AUTO_TEST_CASE(test_dev_group_dynamic_text)
 {
-    CtiDeviceGroupExpresscom group; // CtiDeviceGroupBase cant be instanciated
+    CtiDeviceGroupExpresscom group; // CtiDeviceGroupBase can't be instantiated
 
-    string input1 = "control xcom cycle 50 count 8 period 30 truecycle";
-    string input2 = "control xcom cycle 50 count 7 period 30 truecycle";
-    string input3 = "control xcom cycle 50 count 1234 period 30 truecycle";
-    string output = "control xcom cycle 50 period 30 truecycle";
+    std::string input1 = "control xcom cycle 50 count 8 period 30 truecycle";
+    std::string input2 = "control xcom cycle 50 count 7 period 30 truecycle";
+    std::string input3 = "control xcom cycle 50 count 1234 period 30 truecycle";
+    std::string output = "control xcom cycle 50 period 30 truecycle";
 
     BOOST_CHECK_EQUAL( group.removeCommandDynamicText(input1), output );
     BOOST_CHECK_EQUAL( group.removeCommandDynamicText(input2), output );
@@ -102,7 +76,7 @@ BOOST_AUTO_TEST_CASE(test_expresscom_contol_notification)
 
     Test_CtiPointManager manager;
 
-    Test_CtiPointStatus *point_status1, 
+    Test_CtiPointStatus *point_status1,
                         *point_status2;
 
     point_status1 = make_point<Test_CtiPointStatus>(StatusPointType, 1, 1);
@@ -199,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     childGrpPtr->getExpresscomGroup().setProgram(1);
     childGrpPtr->getExpresscomGroup().setSplinter(13);
 
-    
+
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::THIS_IS_PARENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::OPERAND_IS_PARENT, child->compareAddressing(parent));
 
@@ -222,8 +196,8 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
 
     //Very bad stuff below. In current code, SERIAL overrides everything! As of this writing,
-    //the dbeditor assigns a spid when serial is chosen, and addressUsage says "spid" even 
-    //though it is really serial. This test is not "correct" but shows current behavior as a 
+    //the dbeditor assigns a spid when serial is chosen, and addressUsage says "spid" even
+    //though it is really serial. This test is not "correct" but shows current behavior as a
     //warning to anyone who changes this behavior.
 
     parentGrpPtr->getExpresscomGroup().setAddressUsage(CtiProtocolExpresscom::atSpid);
@@ -251,3 +225,5 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

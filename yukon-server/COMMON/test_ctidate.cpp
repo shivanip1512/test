@@ -1,34 +1,16 @@
-/*
- * file test_cmdparse.cpp
- *
- * Author: Jian Liu
- * Date: 07/27/2005 14:05:51
- *
- *
- * test CtiDate
- *
- */
- 
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Test CtiDate"
-#define BOOST_AUTO_TEST_MAIN "Test CtiDate"
+#include <boost/test/unit_test.hpp>
 
 #include "ctidate.h"
 #include "ctitime.h"
 
-#include <boost/test/unit_test.hpp>
-
-#include "boostutil.h"
-
-#include <string>
 #include <rw/rwdate.h>
 #include <rw/rwtime.h>
 #include <rw/zone.h>
-#include <iostream>
 
 using std::string;
 using boost::unit_test_framework::test_suite;
+
+BOOST_AUTO_TEST_SUITE( test_ctidate )
 
 BOOST_AUTO_TEST_CASE(test_ctidate_methods)
 {
@@ -221,4 +203,4 @@ BOOST_AUTO_TEST_CASE(test_ctidate_daysfrom1970)
     BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 2, endDayAfterTest.daysFrom1970() );
 }
 
-
+BOOST_AUTO_TEST_SUITE_END()

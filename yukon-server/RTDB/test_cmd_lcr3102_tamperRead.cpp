@@ -1,15 +1,14 @@
+#include <boost/test/unit_test.hpp>
+
 #include "cmd_lcr3102_tamperRead.h"
 
 #include "ctidate.h"
-#include "ctitime.h"
-
-#define BOOST_TEST_MAIN "Testing Devices::Commands::Lcr3102TamperReadCommand"
-
-#include <boost/test/unit_test.hpp>
 
 using Cti::Devices::Commands::Lcr3102TamperReadCommand;
 using Cti::Devices::Commands::DlcCommand;
 using std::string;
+
+BOOST_AUTO_TEST_SUITE( test_cmd_lcr3102_tamperRead )
 
 struct expected_pointdata
 {
@@ -436,4 +435,4 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
     }
 }
 
-
+BOOST_AUTO_TEST_SUITE_END()

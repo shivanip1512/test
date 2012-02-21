@@ -1,17 +1,12 @@
-#define BOOST_AUTO_TEST_MAIN "Test BchBehavior"
-
-#include "precompiled.h"
-#include "boostutil.h"
-#include "BehaviorCollection.h"
-#include "BchBehavior.h"
-#include "types.h"
-#include "logger.h"
-#include "SimulatorLogger.h"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
+#include "BehaviorCollection.h"
+#include "BchBehavior.h"
+#include "SimulatorLogger.h"
+
 using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_SUITE( test_bch_behavior )
 
 BOOST_AUTO_TEST_CASE(test_bch_behavior)
 {
@@ -40,3 +35,5 @@ BOOST_AUTO_TEST_CASE(test_bch_behavior)
     // in the intended order to match the reference vector.
     BOOST_CHECK_EQUAL_COLLECTIONS(message.begin(), message.end(), reference.begin(), reference.end());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

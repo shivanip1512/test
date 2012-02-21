@@ -1,15 +1,15 @@
+#include <boost/test/unit_test.hpp>
+
 #include "dev_mct470.h"
 #include "devicetypes.h"
 #include "config_device.h"
 #include "boostutil.h"
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-
-using Cti::Devices::Mct470Device;
 using Cti::Protocols::EmetconProtocol;
 
-struct test_Mct470Device : Mct470Device
+BOOST_AUTO_TEST_SUITE( test_dev_mct470 )
+
+struct test_Mct470Device : Cti::Devices::Mct470Device
 {
     typedef Mct470Device::point_info point_info;
 
@@ -24,16 +24,6 @@ struct test_Mct470Device : Mct470Device
     using Mct470Device::computeResolutionByte;
     using Mct470Device::ResultDecode;
 };
-
-
-//  hack to get BOOST_CHECK_EQUAL_COLLECTIONS to print unsigned char as integer
-namespace std {
-
-ostream &operator<<( ostream &os, const unsigned char &uc ) {
-    return os << static_cast<unsigned>(uc);
-}
-
-}
 
 
 struct utc34_checker_base_date
@@ -423,8 +413,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 3, 0, 1 };
 
@@ -455,8 +445,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 3, 0, 1 };
 
@@ -483,8 +473,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 3, 0, 1 };
 
@@ -509,8 +499,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 3, 0, 1 };
 
@@ -536,8 +526,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 1, 0, 43 };
 
@@ -568,8 +558,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 1, 0, 43 };
 
@@ -596,8 +586,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 1, 0, 43 };
 
@@ -622,8 +612,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommand );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Mct470Device::FuncWrite_IEDCommandLen );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommand );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   Cti::Devices::Mct470Device::FuncWrite_IEDCommandLen );
 
         const unsigned char expected_message[] = { 255, 1, 0, 43 };
 
@@ -649,7 +639,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 2, 0, 9, 1, 1 };
@@ -681,7 +671,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 2, 0, 9, 1, 1 };
@@ -709,7 +699,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 2, 0, 9, 1, 1 };
@@ -735,7 +725,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 2, 0, 9, 1, 1 };
@@ -762,7 +752,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 8, 0, 9, 1, 1 };
@@ -794,7 +784,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 8, 0, 9, 1, 1 };
@@ -822,7 +812,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 8, 0, 9, 1, 1 };
@@ -849,7 +839,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 5, 0, 9, 1, 1 };
@@ -881,7 +871,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 5, 0, 9, 1, 1 };
@@ -909,7 +899,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 5, 0, 9, 1, 1 };
@@ -936,7 +926,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 4, 0, 9, 1, 1 };
@@ -968,7 +958,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 4, 0, 9, 1, 1 };
@@ -996,7 +986,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 4, 0, 9, 1, 1 };
@@ -1023,7 +1013,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 6, 0, 9, 1, 1 };
@@ -1055,7 +1045,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 6, 0, 9, 1, 1 };
@@ -1083,7 +1073,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 6, 0, 9, 1, 1 };
@@ -1109,7 +1099,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 6, 0, 9, 1, 1 };
@@ -1180,7 +1170,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE(om);
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Write );
-        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Mct470Device::FuncWrite_IEDCommandWithData );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, Cti::Devices::Mct470Device::FuncWrite_IEDCommandWithData );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
 
         const unsigned char expected_message[] = { 255, 5, 0, 9, 1, 1 };
@@ -1781,3 +1771,6 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE_END()
+

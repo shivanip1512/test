@@ -191,12 +191,6 @@ $(BIN)\*.exe
 
 ######################################################################################
 #UPDATE#
-almtest.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
-		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h dsm2err.h words.h optional.h sema.h row_reader.h \
-		database_connection.h tbl_pt_alarm.h dbmemobject.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
 dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \

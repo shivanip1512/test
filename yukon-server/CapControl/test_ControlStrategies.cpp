@@ -1,15 +1,11 @@
-
-#define BOOST_AUTO_TEST_MAIN "Test CapControl Control Strategies"
-
 #include <boost/test/unit_test.hpp>
-#include <string>
 
 #include "ControlStrategy.h"
 #include "NoStrategy.h"
 
-using boost::unit_test_framework::test_suite;
 using namespace std;
 
+BOOST_AUTO_TEST_SUITE( test_ControlStrategies )
 
 BOOST_AUTO_TEST_CASE(test_NoStrategy_default_creation)
 {
@@ -92,3 +88,4 @@ BOOST_AUTO_TEST_CASE(test_NoStrategy_default_creation)
     BOOST_CHECK_EQUAL( noStrategy.getDaysOfWeek(),              "YYYYYYYY" );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

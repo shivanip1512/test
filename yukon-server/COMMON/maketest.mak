@@ -19,8 +19,8 @@ INCLPATHS+= \
 ;$(RW) \
 ;$(ACTIVEMQ)
 
-TESTOBJS=\
-cmdparsetestgenerator.obj \
+COMMON_TEST_OBJS=\
+test_main.obj \
 test_cmdparse.obj \
 test_ctidate.obj \
 test_CtiPCPtrQueue.obj \
@@ -48,14 +48,47 @@ SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib
 
-
-CMTEST=\
-cmdparsetestgenerator.exe
+COMMON_TEST_FULLBUILD = $[Filename,$(OBJ),CommonTestFullBuild,target]
 
 
-ALL:            ctibasetest
+ALL:            test_common.exe cmdparsetestgenerator.exe
 
-ctibasetest:    $(TESTOBJS)  Makefile
+$(COMMON_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(COMMON_TEST_OBJS)]
+
+test_common.exe:    $(COMMON_TEST_FULLBUILD) $(COMMON_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(COMMON_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
+
+cmdparsetestgenerator.exe: cmdparsetestgenerator.obj
+        @echo:
+        @echo Creating Executable $(BIN)\$(@B).exe
+        @echo:
+        $(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
+        $(OBJ)\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS)
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+        -copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+        -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+        -if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
+        @%cd $(CWD)
+        @echo.
+
 
 deps:
                 scandeps -Output maketest.mak *.cpp
@@ -90,31 +123,6 @@ copy:
         @echo           $(OBJ)\$(@B).obj
         @echo:
         $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-        @echo:
-        @echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-        $(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-        .\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\cticparms.lib $(SQLAPILIB) $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LINKFLAGS)
-
-        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-        -copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-        -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-        -if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-        @%cd $(CWD)
-        @echo.
-
-######################################################################################
-ctidate.obj:    yukon.h ctidate.h
-ctitime.obj:    yukon.h ctitime.h
-cmdparse.obj:   yukon.h precompiled.h ctidbgmem.h cmdparse.h dlldefs.h \
-                parsevalue.h cparms.h devicetypes.h logger.h thread.h mutex.h \
-                guard.h numstr.h pointdefs.h utility.h dsm2.h
-test_cmdparse.obj:      cmdparse.h test_cmdparse_input.h test_cmdparse_output.h
-cmdparsetestgenerator.obj:  cmdparse.h test_cmdparse_input.h
-test_ctidate.obj:  ctidate.h
-test_ctitime.obj:  ctitime.h
 
 #UPDATE#
 attributeservice.obj:	precompiled.h AttributeService.h LitePoint.h \

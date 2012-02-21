@@ -1,17 +1,11 @@
-#define BOOST_AUTO_TEST_MAIN "Test Cbc8020Device"
-
-#include "precompiled.h"
-#include "dev_cbc8020.h"
-#include "ctitime.h"
-#include "ctidate.h"
-#include "utility.h"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
-using Cti::Devices::Cbc8020Device;
+#include "dev_cbc8020.h"
+#include "ctidate.h"
 
-struct TestCbc8020Device : Cbc8020Device
+BOOST_AUTO_TEST_SUITE( test_dev_cbc8020 )
+
+struct TestCbc8020Device : Cti::Devices::Cbc8020Device
 {
     using Cbc8020Device::PointOffset_FirmwareRevisionMajor;
     using Cbc8020Device::PointOffset_FirmwareRevisionMinor;
@@ -219,3 +213,5 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_major_minor_minor)
 
     delete_container(points);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

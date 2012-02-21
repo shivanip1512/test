@@ -74,8 +74,6 @@ mccmd.obj:	mccmd.h msg_pcrequest.h dlldefs.h message.h ctidbgmem.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configparms.h \
 		netports.h msg_email.h ctibase.h ctinexus.h pointtypes.h \
 		numstr.h mgr_holiday.h wpsc.h xcel.h decodetextcmdfile.h
-mcs8100test.obj:	wpsc.h logger.h thread.h mutex.h dlldefs.h guard.h \
-		types.h
 mcsh.obj:	mcsh.h logger.h thread.h mutex.h dlldefs.h guard.h mccmd.h \
 		msg_pcrequest.h message.h ctidbgmem.h collectable.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \

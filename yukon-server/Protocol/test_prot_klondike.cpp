@@ -1,20 +1,16 @@
-#define BOOST_TEST_MAIN "Test Klondike protocol"
+#include <boost/test/unit_test.hpp>
 
 #include "prot_klondike.h"
 
-#include <boost/test/unit_test.hpp>
-
-using boost::unit_test_framework::test_suite;
-
 #include "boost_test_helpers.h"
-
-#include <iostream>
 
 using namespace std;
 
 using Cti::Protocols::KlondikeProtocol;
 
 using Cti::byte_buffer;
+
+BOOST_AUTO_TEST_SUITE( test_prot_klondike )
 
 class Test_Wrap : public Cti::Protocol::Wrap
 {
@@ -190,3 +186,5 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
     cout << "Transaction " << ++transactions << endl;
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()

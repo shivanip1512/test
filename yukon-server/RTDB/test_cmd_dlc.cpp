@@ -1,10 +1,8 @@
-#include "cmd_mct410_hourlyread.h"
-
-#define BOOST_TEST_MAIN "Testing Devices::Commands::DlcCommand"
-
 #include <boost/test/unit_test.hpp>
 
-using namespace std;
+#include "cmd_dlc.h"
+
+BOOST_AUTO_TEST_SUITE( test_cmd_dlc )
 
 struct Test_DlcCommand : Cti::Devices::Commands::DlcCommand
 {
@@ -149,3 +147,5 @@ BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_throw )
         BOOST_CHECK_EQUAL(ex.error_description, "Payload too small");
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

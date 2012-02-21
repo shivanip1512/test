@@ -1,22 +1,22 @@
+#include <boost/test/unit_test.hpp>
+
 #include "dev_mct410.h"
 #include "pt_analog.h"
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "devicetypes.h"
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-
 #include "boost_test_helpers.h"
 
 #include <numeric>
 
-using Cti::Devices::Mct410Device;
 using Cti::Protocols::EmetconProtocol;
 using std::string;
 using std::list;
 
-struct test_Mct410Device : Mct410Device
+BOOST_AUTO_TEST_SUITE( test_dev_mct410 )
+
+struct test_Mct410Device : Cti::Devices::Mct410Device
 {
 protected:
     test_Mct410Device(int type, const string &name)
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
 
     CtiDeviceSingle::point_info pi;
 
-    pi = Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
+    pi = Cti::Devices::Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
 
     BOOST_CHECK_EQUAL( pi.value,      512 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
 
     kwh_read[2] = 0x01;
 
-    pi = Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
+    pi = Cti::Devices::Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
 
     BOOST_CHECK_EQUAL( pi.value,      512 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
@@ -2418,4 +2418,6 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Length,   2);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE_END()

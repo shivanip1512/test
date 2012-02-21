@@ -1,23 +1,10 @@
-#define BOOST_AUTO_TEST_MAIN "Test fdrTextImport"
+#include <boost/test/auto_unit_test.hpp>
 
-#include "precompiled.h"
 #include "fdrtextimport.h"
-#include "ctidate.h"
-#include "ctistring.h" // apparently fdrtextimport doesnt have this file.
 
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <sstream>    // for istringstream
-#include <time.h>
-#include <locale>
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_fdrtextimport )
 
 BOOST_AUTO_TEST_CASE( test_ReportUnfinished )
 {
@@ -163,3 +150,5 @@ BOOST_AUTO_TEST_CASE( test_validateAndDecodeLine )
     //BOOST_CHECK_EQUAL(1,0);
     std::cout << "test_validateAndDecodeLine not finished\n";
 }
+
+BOOST_AUTO_TEST_SUITE_END()

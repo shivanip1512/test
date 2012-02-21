@@ -1,12 +1,11 @@
-#include "ctivangogh.h"
-
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
+#include "ctivangogh.h"
 #include "ctidate.h"
 
 #include <bitset>
 
+BOOST_AUTO_TEST_SUITE( test_vangogh )
 
 struct pointdata_test_helper
 {
@@ -189,3 +188,5 @@ BOOST_FIXTURE_TEST_CASE(test_isDuplicatePointData, pointdata_test_helper)
         expected.begin(), expected.end(),
         results_string.begin(), results_string.end());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

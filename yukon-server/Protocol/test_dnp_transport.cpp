@@ -1,14 +1,12 @@
-#define BOOST_AUTO_TEST_MAIN "Test DNP Protocol Transport Layer"
-
-#include "precompiled.h"
+#include <boost/test/auto_unit_test.hpp>
 
 #include "dnp_transport.h"
 
 #include "boostutil.h"
 
-#include <boost/test/auto_unit_test.hpp>
-
 using std::vector;
+
+BOOST_AUTO_TEST_SUITE( test_dnp_transport )
 
 class test_Transport : private Cti::Protocol::DNP::TransportLayer
 {
@@ -403,3 +401,5 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_three_packets)
     }
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()

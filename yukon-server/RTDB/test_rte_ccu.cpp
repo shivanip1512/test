@@ -1,11 +1,9 @@
+#include <boost/test/unit_test.hpp>
+
 #include "rte_ccu.h"
 #include "devicetypes.h"
 
-#define BOOST_TEST_MAIN "Test rte_ccu"
-
-#include <boost/test/unit_test.hpp>
-
-#include "boostutil.h"
+BOOST_AUTO_TEST_SUITE( test_rte_ccu )
 
 const unsigned MsgFlags_None = 0;
 const unsigned MsgFlags_Ccu = MessageFlag_AddCcu711CooldownSilence;
@@ -91,24 +89,36 @@ BOOST_AUTO_TEST_CASE(test_rte_ccu_adjustStagesToFollow)
         {{99, MsgFlags_All,  TYPE_CCU721}, { 7, MsgFlags_All}}
     };
 
-    const int num_test_cases = sizeof(test_matrix) / sizeof(test_case);
-
-    struct test : CtiRouteCCU
+    struct test_CtiRouteCCU : CtiRouteCCU
     {
         using CtiRouteCCU::adjustOutboundStagesToFollow;
     };
 
-    for( int i = 0; i < num_test_cases; ++i )
+    std::vector<unsigned short> expected_stagesToFollow, results_stagesToFollow;
+    std::vector<unsigned> expected_messageFlags, results_messageFlags;
+
+    for each( test_case tc in test_matrix )
     {
-        test::adjustOutboundStagesToFollow(test_matrix[i].tv.stagesToFollow,
-                                           test_matrix[i].tv.messageFlags,
-                                           test_matrix[i].tv.type);
+        expected_stagesToFollow.push_back(tc.ex.stagesToFollow);
+        expected_messageFlags.push_back(tc.ex.messageFlags);
 
-        BOOST_CHECK_INDEXED_EQUAL(i, test_matrix[i].tv.stagesToFollow,
-                                     test_matrix[i].ex.stagesToFollow);
+        test_CtiRouteCCU::adjustOutboundStagesToFollow(
+            tc.tv.stagesToFollow,
+            tc.tv.messageFlags,
+            tc.tv.type);
 
-        BOOST_CHECK_INDEXED_EQUAL(i, test_matrix[i].tv.messageFlags,
-                                     test_matrix[i].ex.messageFlags);
+        results_stagesToFollow.push_back(tc.tv.stagesToFollow);
+        results_messageFlags.push_back(tc.tv.messageFlags);
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected_stagesToFollow.begin(), expected_stagesToFollow.end(),
+        results_stagesToFollow.begin(), results_stagesToFollow.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected_messageFlags.begin(), expected_messageFlags.end(),
+        results_messageFlags.begin(), results_messageFlags.end());
 }
+
+BOOST_AUTO_TEST_SUITE_END()
 

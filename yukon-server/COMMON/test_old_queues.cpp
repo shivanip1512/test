@@ -1,17 +1,13 @@
-#define BOOST_AUTO_TEST_MAIN "Test old queues"
+#include <boost/test/unit_test.hpp>
 
 #include "dsm2.h"  //  for CtiOutMessage
 #include "queues.h"
 
-#include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 #include <boost/bind.hpp>
-#include <iostream>
 
+BOOST_AUTO_TEST_SUITE( test_old_queues )
 
 using namespace std;
-using boost::unit_test_framework::test_suite;
 
 bool findAll(void *, void *)
 {
@@ -309,3 +305,4 @@ BOOST_AUTO_TEST_CASE(test_apply_queue)
     BOOST_CHECK_EQUAL(112358, outmessages[6].DeviceID);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

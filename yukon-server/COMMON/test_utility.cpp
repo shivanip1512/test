@@ -1,8 +1,4 @@
-#define BOOST_AUTO_TEST_MAIN "Test utility.h"
-
-#include "precompiled.h"
 #include <boost/test/unit_test.hpp>
-using boost::unit_test_framework::test_suite;
 
 #include <vector>
 #include <map>
@@ -12,6 +8,8 @@ using boost::unit_test_framework::test_suite;
 #include "dsm2.h"
 #include "queues.h"
 #include "devicetypes.h"
+
+BOOST_AUTO_TEST_SUITE( test_utility )
 
 struct instance_counter
 {
@@ -305,4 +303,4 @@ BOOST_AUTO_TEST_CASE(test_nextScheduledTimeAlignedOnRate_specialValues)
     BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,2,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 2592000 )); //Aligned on month = midnight 1st
 }
 
-
+BOOST_AUTO_TEST_SUITE_END()

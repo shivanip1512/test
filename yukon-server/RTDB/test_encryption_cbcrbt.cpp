@@ -1,20 +1,15 @@
-#define BOOST_AUTO_TEST_MAIN "Test CBC-RBT Mode Encryption"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
-
-#include "boostutil.h"
 #include "encryption_cbcrbt.h"
 
 #include <cstddef>
 #include <cstdlib>
 
-
+BOOST_AUTO_TEST_SUITE( test_encryption_cbcrbt )
 
 BOOST_AUTO_TEST_CASE(test_cbcrbt_encryption)
 {
-    const unsigned char iv[] = 
+    const unsigned char iv[] =
     {
         0x69, 0x50, 0x37, 0x98, 0xdd, 0xf2, 0x8e, 0xe3,
         0xfa, 0x23, 0x58, 0xa5, 0xab, 0x9d, 0xef, 0x30
@@ -44,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_cbcrbt_encryption)
 
 
     CbcRbtEncryption    encryptor( parentKey, iv );
-    
+
     encryptor.encrypt( plainText, sizeof( plainText ), cipherText );
 
     BOOST_CHECK_EQUAL_COLLECTIONS( cipherText,          cipherText + sizeof( plainText ),
@@ -54,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_cbcrbt_encryption)
 
 BOOST_AUTO_TEST_CASE(test_cbcrbt_decryption)
 {
-    const unsigned char iv[] = 
+    const unsigned char iv[] =
     {
         0x69, 0x50, 0x37, 0x98, 0xdd, 0xf2, 0x8e, 0xe3,
         0xfa, 0x23, 0x58, 0xa5, 0xab, 0x9d, 0xef, 0x30
@@ -84,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_cbcrbt_decryption)
 
 
     CbcRbtEncryption    decryptor( parentKey, iv );
-    
+
     decryptor.decrypt( cipherText, sizeof( cipherText ), plainText );
 
     BOOST_CHECK_EQUAL_COLLECTIONS( plainText,           plainText + sizeof( cipherText ),
@@ -94,7 +89,7 @@ BOOST_AUTO_TEST_CASE(test_cbcrbt_decryption)
 
 BOOST_AUTO_TEST_CASE(test_cbcrbt_encryption_and_decryption_on_random_data)
 {
-    const unsigned char iv[] = 
+    const unsigned char iv[] =
     {
         0x69, 0x50, 0x37, 0x98, 0xdd, 0xf2, 0x8e, 0xe3,
         0xfa, 0x23, 0x58, 0xa5, 0xab, 0x9d, 0xef, 0x30
@@ -125,11 +120,12 @@ BOOST_AUTO_TEST_CASE(test_cbcrbt_encryption_and_decryption_on_random_data)
     for ( int length = 0; length < plainTextLength; ++length )
     {
         encryptor.encrypt( plainText, length, cipherText );
-        
-        encryptor.decrypt( cipherText, length, expectedPlainText );        
+
+        encryptor.decrypt( cipherText, length, expectedPlainText );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( plainText,           plainText + length,
                                        expectedPlainText,   expectedPlainText + length );
     }
 }
 
+BOOST_AUTO_TEST_SUITE_END()

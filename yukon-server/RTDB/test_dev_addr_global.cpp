@@ -1,18 +1,12 @@
-/*
- * test isDeviceAddressGlobal()
- *
- */
+#include <boost/test/unit_test.hpp>
 
 #include "devicetypes.h"
 #include "dsm2.h"
 #include "dev_single.h"
 
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Testing isDeviceAddressGlobal"
-#include <boost/test/unit_test.hpp>
-
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_dev_addr_global )
 
 #define NONGLOBAL_ADDRESS   100
 
@@ -64,3 +58,4 @@ BOOST_AUTO_TEST_CASE(test_is_device_address_global)
     BOOST_CHECK( ! test.isDeviceAddressGlobal() );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

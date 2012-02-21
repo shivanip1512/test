@@ -1,12 +1,8 @@
-#include "precompiled.h"
+#include <boost/test/unit_test.hpp>
 
 #include "PointAttribute.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test Point Attribute"
-
-#include <boost/test/unit_test.hpp>
-
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_PointAttribute )
 
 //test function to verify the Attribute retreival is correct.
 BOOST_AUTO_TEST_CASE(test_valueOf)
@@ -36,3 +32,4 @@ BOOST_AUTO_TEST_CASE(test_valueOf)
     BOOST_CHECK_EQUAL(PointAttribute::Unknown.name(), attributeTest.name());
 }
 
+BOOST_AUTO_TEST_SUITE_END()

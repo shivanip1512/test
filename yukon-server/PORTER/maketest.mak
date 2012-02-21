@@ -46,17 +46,40 @@ $(COMPILEBASE)\lib\portglob.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(OPENSSL_LIBS)
 
-PORTERTESTOBJS= \
+PORTER_TEST_OBJS= \
+test_main.obj \
 test_LantronixEncryption.obj \
 test_gen_reply.obj
 
 PORTERBASEOBJS= \
-$(OBJ)\encryption_lantronix.obj \
-$(OBJ)\plidlc.obj
+encryption_lantronix.obj \
+plidlc.obj
 
-ALL: porter
+PORTER_TEST_FULLBUILD = $[Filename,$(OBJ),PorterTestFullBuild,target]
 
-porter:  $(PORTERTESTOBJS) makeexe.mak
+
+ALL:            test_porter.exe
+
+$(PORTER_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(PORTER_TEST_OBJS)]
+
+test_porter.exe:    $(PORTER_TEST_FULLBUILD) $(PORTER_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(PORTER_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(PORTERBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -77,21 +100,6 @@ deps:
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(PORTERBASEOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
-
 
 ######################################################################################
 #UPDATE#

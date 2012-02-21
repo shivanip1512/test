@@ -1,20 +1,13 @@
-
-#define BOOST_AUTO_TEST_MAIN "Test CapControl Zone Manager"
-
 #include <boost/test/unit_test.hpp>
-
-#include <string>
 
 #include "ZoneManager.h"
 #include "ZoneLoader.h"
-#include "Zone.h"
-
-using boost::unit_test_framework::test_suite;
 
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneLoader;
 using Cti::CapControl::ZoneManager;
 
+BOOST_AUTO_TEST_SUITE( test_ZoneManager )
 
 class ZoneUnitTestLoader : public ZoneLoader
 {
@@ -215,3 +208,4 @@ BOOST_AUTO_TEST_CASE(test_ZoneManager_get_root_zone_for_Subbus)
     BOOST_CHECK_EQUAL(  115,  zoneManager.getRootZoneIdForSubbus(48) );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

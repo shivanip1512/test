@@ -37,7 +37,8 @@ INCLPATHS+= \
 ;$(RW)
 
 
-TESTOBJS=\
+SIMULATOR_TEST_OBJS=\
+test_main.obj \
 test_ccusim.obj \
 test_behavior_collection.obj \
 test_delay_behavior.obj \
@@ -49,17 +50,17 @@ test_mct410_sim.obj \
 
 
 CCU_SIMULATOR_BASE_OBJS=\
-$(OBJ)\SimulatorLogger.obj \
-$(OBJ)\ScopedLogger.obj \
-$(OBJ)\PortLogger.obj \
-$(OBJ)\EmetconWords.obj \
-$(OBJ)\DeviceMemoryManager.obj \
-$(OBJ)\Mct410.obj \
-$(OBJ)\DelayBehavior.obj \
-$(OBJ)\BchBehavior.obj \
-$(OBJ)\FrozenPeakTimestampBehavior.obj \
-$(OBJ)\FrozenReadParityBehavior.obj \
-$(OBJ)\RandomConsumptionBehavior.obj \
+SimulatorLogger.obj \
+ScopedLogger.obj \
+PortLogger.obj \
+EmetconWords.obj \
+DeviceMemoryManager.obj \
+Mct410.obj \
+DelayBehavior.obj \
+BchBehavior.obj \
+FrozenPeakTimestampBehavior.obj \
+FrozenReadParityBehavior.obj \
+RandomConsumptionBehavior.obj \
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \
@@ -67,10 +68,32 @@ $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\cticparms.lib
 
-ALL:            ctibasetest
+SIMULATOR_TEST_FULLBUILD = $[Filename,$(OBJ),SimulatorTestFullBuild,target]
 
-ctibasetest:    $(TESTOBJS) Makefile
+ALL:            test_simulator.exe
 
+$(SIMULATOR_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(SIMULATOR_TEST_OBJS)]
+
+test_simulator.exe:    $(SIMULATOR_TEST_FULLBUILD) $(SIMULATOR_TEST_OBJS) Makefile
+	@echo:
+	@echo Creating Executable $(OBJ)\$(@B).exe
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(@B).exe \
+	$(SIMULATOR_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
+	@%cd $(CWD)
+	@echo.
 deps:
                 scandeps -Output maketest.mak *.cpp
 
@@ -103,20 +126,6 @@ copy:
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
 
 
 ######################################################################################

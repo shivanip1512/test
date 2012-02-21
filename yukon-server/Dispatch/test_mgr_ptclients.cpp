@@ -1,18 +1,13 @@
-#define BOOST_AUTO_TEST_MAIN "Test Mgr PtClients"
+#include <boost/test/auto_unit_test.hpp>
 
 #include "mgr_ptclients.h"
 #include "tbl_pt_alarm.h"
 #include "pt_status.h"
 #include "pt_analog.h"
 
-#include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
 using namespace std;
 
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_mgr_ptclients )
 
 template <class T>
 T *make_point(long deviceid, long pointid, CtiPointType_t type, int offset)
@@ -148,3 +143,5 @@ BOOST_AUTO_TEST_CASE(test_dynamic)
 
     BOOST_CHECK(!pDispatch);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

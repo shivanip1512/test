@@ -1,7 +1,9 @@
+#include <boost/test/auto_unit_test.hpp>
+
 #include "tbl_dv_idlcremote.h"
 
-#define BOOST_TEST_MAIN "Test tbl_dv_idlcremote"
-#include <boost/test/unit_test.hpp>
+BOOST_AUTO_TEST_SUITE( test_dbl_dv_idlcremote )
+
 
 class test_CtiTableDeviceIDLC : public CtiTableDeviceIDLC
 {
@@ -89,3 +91,5 @@ BOOST_AUTO_TEST_CASE(test_tbl_dv_idlcremote_getamp)
     BOOST_CHECK_EQUAL(tbl.getAmp(), 0);
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()

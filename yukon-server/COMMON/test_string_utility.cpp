@@ -1,9 +1,8 @@
-#define BOOST_AUTO_TEST_MAIN "Test utility.h"
-
 #include <boost/test/unit_test.hpp>
-using boost::unit_test_framework::test_suite;
 
 #include "string_utility.h"
+
+BOOST_AUTO_TEST_SUITE( test_string_utility )
 
 BOOST_AUTO_TEST_CASE(test_filename_only)
 {
@@ -14,3 +13,4 @@ BOOST_AUTO_TEST_CASE(test_filename_only)
     BOOST_CHECK_EQUAL(expected, Cti::filename_only(test));
 }
 
+BOOST_AUTO_TEST_SUITE_END()

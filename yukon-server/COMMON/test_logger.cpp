@@ -1,26 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_logger
-*
-* Date:   10/22/2008
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.2.2.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 2007 Cannon Technologies. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#include "precompiled.h"
+#include <boost/test/unit_test.hpp>
 
 #include "logger.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test Logger"
-
-#include <boost/test/unit_test.hpp>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_logger )
 
 class Test_CtiLogger : public CtiLogger
 {
@@ -87,3 +71,4 @@ BOOST_AUTO_TEST_CASE(test_logger)
     BOOST_CHECK_EQUAL(l.secondsUntilMidnight(tm_check), 1);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

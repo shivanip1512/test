@@ -1,27 +1,14 @@
-/*
- * file test_mgr_point.cpp
- *
- * Author: Matt Fisher
- * Date: 09/11/2007 10:58
- *
- *
- */
-
-
-#define BOOST_TEST_MAIN "Test mgr_point"
+#include <boost/test/unit_test.hpp>
 
 #include "mgr_point.h"
 #include "pt_status.h"
 #include "pt_analog.h"
 #include "pt_accum.h"
 
-#include <boost/test/floating_point_comparison.hpp>
-#include <boost/test/unit_test.hpp>
 #include <string>
 #include <iostream>
 
-#define BOOST_AUTO_TEST_MAIN "Test Point Manager"
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_mgr_point )
 
 enum
 {
@@ -223,3 +210,5 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_pao)
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device2_id, 1, AnalogPointType).get(), point_analog3);
 }
 */
+
+BOOST_AUTO_TEST_SUITE_END()

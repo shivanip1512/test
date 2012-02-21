@@ -1,4 +1,4 @@
-#define BOOST_AUTO_TEST_MAIN "Test RW Utils"
+#include <boost/test/unit_test.hpp>
 
 #include "rwutil.h"
 #include "utility.h"
@@ -7,14 +7,13 @@
 #include "boost_time.h"
 #include "dbaccess.h"
 
-#include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/local_time_adjustor.hpp>
 #include <boost/date_time/c_local_time_adjustor.hpp>
 
 #include <string>
 
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_rwutil )
 
 
 BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
@@ -22,8 +21,6 @@ BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
     std::string s1 = "My Compare";
     std::string s2 = "my cOmParE";
     BOOST_CHECK_EQUAL( ciStringEqual(s1, s2),true );
-
-
 }
 
 
@@ -51,6 +48,9 @@ BOOST_AUTO_TEST_CASE(test_assignSQLPlaceholders)
 
     for (int i = 0; i < sizeof(sql_input)/sizeof(*sql_input); i++)
     {
-        BOOST_CHECK_EQUAL( sql_expected_output[i], assignSQLPlaceholders( sql_input[i] ) );    
+        BOOST_CHECK_EQUAL( sql_expected_output[i], assignSQLPlaceholders( sql_input[i] ) );
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+

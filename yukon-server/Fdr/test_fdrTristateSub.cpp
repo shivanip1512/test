@@ -1,32 +1,11 @@
-/*
-    File test_fdrsanmiguel.cpp
+#include <boost/test/auto_unit_test.hpp>
 
-    Author: Thain Spar
-    Date:   5/15/2007
-
-    Test SanMiguel interface
-
-*/
-
-#define BOOST_AUTO_TEST_MAIN "Test FdrSanMiguel"
-
-#include "precompiled.h"
-#include "ctitime.h"
-#include "ctidate.h"
-#include "ctistring.h"
 #include "fdrTriStateSub.h"
+#include "ctidate.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include <string>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <list>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_fdrTriStateSub )
 
 BOOST_AUTO_TEST_CASE( test_readInFile_goodData )
 {   //example cases from an actual data file.
@@ -249,3 +228,5 @@ BOOST_AUTO_TEST_CASE( test_generateMessage_goodInput )
     BOOST_CHECK_EQUAL(val,v);
 
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,26 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_hash.cpp
-*
-* Date:   11/27/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.1.10.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#define BOOST_AUTO_TEST_MAIN "Test CtiHash"
-
-#include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+
 #include "hashkey.h"
 
 using namespace std;
 
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_hash )
 
 BOOST_AUTO_TEST_CASE(test_hash_integer_operators)
 {
@@ -56,3 +40,4 @@ BOOST_AUTO_TEST_CASE(test_hash_string_operators)
     BOOST_CHECK(bHashKey < cHashKey);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

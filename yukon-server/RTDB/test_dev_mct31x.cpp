@@ -1,15 +1,15 @@
+#include <boost/test/unit_test.hpp>
+
 #include "dev_mct31x.h"
 #include "devicetypes.h"
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-
 #include <boost/assign/list_of.hpp>
 
-using Cti::Devices::Mct31xDevice;
 using Cti::Protocols::EmetconProtocol;
 
-struct test_Mct31xDevice : Mct31xDevice
+BOOST_AUTO_TEST_SUITE( test_dev_mct31x )
+
+struct test_Mct31xDevice : Cti::Devices::Mct31xDevice
 {
     using MctDevice::getOperation;
     using CtiTblPAOLite::_type;
@@ -29,16 +29,6 @@ struct beginExecuteRequest_helper
         delete_container(outList);
     }
 };
-
-
-//  hack to get BOOST_CHECK_EQUAL_COLLECTIONS to print unsigned char as integer
-namespace std {
-
-ostream &operator<<( ostream &os, const unsigned char &uc ) {
-    return os << static_cast<unsigned>(uc);
-}
-
-}
 
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
@@ -669,4 +659,6 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
 
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE_END()

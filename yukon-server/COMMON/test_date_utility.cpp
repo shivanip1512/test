@@ -1,11 +1,10 @@
-#define BOOST_AUTO_TEST_MAIN "Test date_utility.h"
+#include <boost/test/unit_test.hpp>
 
 #include "date_utility.h"
 
-#include <boost/test/unit_test.hpp>
-using boost::unit_test_framework::test_suite;
+using Cti::parseDateValue;
 
-using namespace Cti;
+BOOST_AUTO_TEST_SUITE( test_date_utility )
 
 BOOST_AUTO_TEST_CASE(test_parse_date_value)
 {
@@ -51,3 +50,5 @@ BOOST_AUTO_TEST_CASE(test_parse_date_value)
         BOOST_CHECK(date.is_neg_infinity());
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

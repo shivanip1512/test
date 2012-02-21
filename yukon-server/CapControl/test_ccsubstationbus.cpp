@@ -1,27 +1,8 @@
-/*---------------------------------------------------------------------------
-        Filename:  test_ccapbank.cpp
+#include <boost/test/unit_test.hpp>
 
-        Programmer:  Jess Oteson
-
-        Initial Date:  5/11/2007
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies 2007
----------------------------------------------------------------------------*/
-
-#define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
-
-#include "precompiled.h"
-#include "ctitime.h"
 #include "ccsubstationbus.h"
-#include "ccsubstation.h"
-#include "ccarea.h"
-#include "capcontroller.h"
 #include "ccsubstationbusstore.h"
-#include "ccexecutor.h"
-#include "ccmessage.h"
 #include "mgr_paosched.h"
-#include "pointdefs.h"
-#include "ccoriginalparent.h"
 #include "ccUnitTestUtil.h"
 
 #include "StrategyManager.h"
@@ -29,23 +10,12 @@
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
 
 extern ULONG _MAX_KVAR;
 extern ULONG _SEND_TRIES;
+
+BOOST_AUTO_TEST_SUITE( test_ccsubstationbus )
 
 class StrategyUnitTestLoader : public StrategyLoader
 {
@@ -562,3 +532,5 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     store->deleteInstance();
 }
+
+BOOST_AUTO_TEST_SUITE_END()

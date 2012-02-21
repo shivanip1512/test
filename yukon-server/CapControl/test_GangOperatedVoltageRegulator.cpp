@@ -1,13 +1,6 @@
-#define BOOST_AUTO_TEST_MAIN "Test CapControl Gang Operated Voltage Regulators"
-
 #include <boost/test/unit_test.hpp>
-#include <vector>
 
-#include "precompiled.h"
 #include "capcontroller.h"
-#include "ccmessage.h"
-#include "PointAttribute.h"
-#include "AttributeService.h"
 #include "VoltageRegulatorManager.h"
 #include "GangOperatedVoltageRegulator.h"
 
@@ -18,6 +11,7 @@ using Cti::CapControl::GangOperatedVoltageRegulator;
 // Exceptions
 using Cti::CapControl::MissingPointAttribute;
 
+BOOST_AUTO_TEST_SUITE( test_GangOperatedVoltageRegulator )
 
 struct TestCtiCapController : public CtiCapController
 {
@@ -556,3 +550,4 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
     BOOST_CHECK_EQUAL( "Disable Remote Control", eventMsg->getText() );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

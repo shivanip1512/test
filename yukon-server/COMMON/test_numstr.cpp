@@ -1,51 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_numstr
-*
-* Date:   10/10/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.3.2.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 2007 Cannon Technologies. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#include "precompiled.h"
+#include <boost/test/unit_test.hpp>
 
 #include "numstr.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test NumStr"
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
 
-/*  Items to test:
-
-    CtiNumStr
-
-    Constructors/data types:
-        char  (+ unsigned)
-        short (+ unsigned)
-        int   (+ unsigned)
-        long  (+ unsigned)
-        float
-        double
-        pointer
-
-    Modifiers (check for each):
-        zpad(unsigned int)
-        spad(unsigned int)
-
-        hex(void)
-        xhex(void)
-
-        exp(void)
-*/
-
+BOOST_AUTO_TEST_SUITE( test_numstr )
 
 //  for integer types
 template <class T>
@@ -531,3 +490,4 @@ BOOST_AUTO_TEST_CASE(test_limits)
     BOOST_CHECK_EQUAL(numstr.toString(), "3.141592653589793");
 }
 
+BOOST_AUTO_TEST_SUITE_END()

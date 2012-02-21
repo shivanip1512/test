@@ -53,8 +53,7 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\cticparms.lib
 
 EXECS=\
-mcsh.exe \
-mcs8100test.exe
+mcsh.exe
 
 ALL:            $(EXECS)
 
@@ -66,19 +65,6 @@ mcsh.exe:     $(BASEOBJS) Makefile
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(PORTERLIBS)
-                @echo:
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -@copy ..\$@ $(YUKONOUTPUT)
-                @echo Done building Target $@
-                @echo:
-               -@%cd $(CWD)
-
-mcs8100test.exe:    mcs8100test.obj Makefile
-                @echo:
-                @echo Compiling $@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-wpsc.obj mcs8100test.obj -link $(LIBS) $(RWLIBS) $(PORTERLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -122,8 +108,6 @@ mccmd.obj:	mccmd.h msg_pcrequest.h dlldefs.h message.h ctidbgmem.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configparms.h \
 		netports.h msg_email.h ctibase.h ctinexus.h pointtypes.h \
 		numstr.h mgr_holiday.h wpsc.h xcel.h decodetextcmdfile.h
-mcs8100test.obj:	wpsc.h logger.h thread.h mutex.h dlldefs.h guard.h \
-		types.h
 mcsh.obj:	mcsh.h logger.h thread.h mutex.h dlldefs.h guard.h mccmd.h \
 		msg_pcrequest.h message.h ctidbgmem.h collectable.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \

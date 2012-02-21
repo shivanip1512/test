@@ -1,23 +1,14 @@
-
-/*
- * test Cti::Devices::Lcr3102Device
- *
- */
+#include <boost/test/unit_test.hpp>
 
 #include "dev_lcr3102.h"
 #include <map>
 
-#define BOOST_TEST_MAIN "Test dev_lcr3102"
-#include <boost/test/unit_test.hpp>
+BOOST_AUTO_TEST_SUITE( test_lcr3102 )
 
-using boost::unit_test_framework::test_suite;
 using std::list;
 using std::string;
 
-namespace Cti {
-namespace Devices {
-
-struct test_Lcr3102Device : Lcr3102Device
+struct test_Lcr3102Device : Cti::Devices::Lcr3102Device
 {
     typedef CtiDeviceSingle::point_info point_info;
 
@@ -496,5 +487,4 @@ BOOST_AUTO_TEST_CASE(test_duty_cycle)
     BOOST_CHECK_EQUAL(dutyCycle, 42);
 }
 
-};
-};
+BOOST_AUTO_TEST_SUITE_END()

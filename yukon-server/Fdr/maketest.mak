@@ -36,7 +36,8 @@ INCLPATHS+= \
 ;$(SIGNAL)\include \
 ;$(RW)
 
-FDRTESTOBJS=\
+FDR_TEST_OBJS=\
+test_main.obj \
 test_fdrDnpSlave.obj \
 test_fdrTextImport.obj \
 test_fdrTristateSub.obj \
@@ -58,42 +59,79 @@ $(COMPILEBASE)\lib\pllib.lib \
 $(COMPILEBASE)\lib\psapi.lib
 
 CTIFDRDLL=\
-$(BIN)\fdrbepc.lib \
-$(BIN)\fdrtextexport.lib \
-$(BIN)\fdrtextimport.lib \
-$(BIN)\fdrdsm2import.lib \
-$(BIN)\fdrdsm2filein.lib \
-$(BIN)\fdrrdex.lib \
-$(BIN)\fdrcygnet.lib \
-$(BIN)\fdracs.lib \
-$(BIN)\fdracsmulti.lib \
-$(BIN)\fdrvalmet.lib \
-$(BIN)\fdrinet.lib \
-$(BIN)\fdrstec.lib \
-$(BIN)\fdrtristate.lib \
-$(BIN)\fdrrccs.lib \
-$(BIN)\fdrlodestarimport_enh.lib \
-$(BIN)\fdrlodestarimport_std.lib \
-$(BIN)\fdrtelegyr.lib \
-$(BIN)\fdrxa21lm.lib \
-$(BIN)\fdrlivedata.lib \
-$(BIN)\fdrwabash.lib \
-$(BIN)\fdrtristatesub.lib \
-$(BIN)\cti_fdr.lib \
-$(BIN)\fdrdnpslave.lib \
+..\$(BIN)\fdrbepc.lib \
+..\$(BIN)\fdrtextexport.lib \
+..\$(BIN)\fdrtextimport.lib \
+..\$(BIN)\fdrdsm2import.lib \
+..\$(BIN)\fdrdsm2filein.lib \
+..\$(BIN)\fdrrdex.lib \
+..\$(BIN)\fdrcygnet.lib \
+..\$(BIN)\fdracs.lib \
+..\$(BIN)\fdracsmulti.lib \
+..\$(BIN)\fdrvalmet.lib \
+..\$(BIN)\fdrinet.lib \
+..\$(BIN)\fdrstec.lib \
+..\$(BIN)\fdrtristate.lib \
+..\$(BIN)\fdrrccs.lib \
+..\$(BIN)\fdrlodestarimport_enh.lib \
+..\$(BIN)\fdrlodestarimport_std.lib \
+..\$(BIN)\fdrtelegyr.lib \
+..\$(BIN)\fdrxa21lm.lib \
+..\$(BIN)\fdrlivedata.lib \
+..\$(BIN)\fdrwabash.lib \
+..\$(BIN)\fdrtristatesub.lib \
+..\$(BIN)\cti_fdr.lib \
+..\$(BIN)\fdrdnpslave.lib \
 
 
-ALL:      fdrtest
+FDR_TEST_FULLBUILD = $[Filename,$(OBJ),FdrTestFullBuild,target]
 
-fdrtest:  $(FDRTESTOBJS) makeexe.mak
+
+ALL:      test_fdr.exe
+
+$(FDR_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(FDR_TEST_OBJS)]
+
+test_fdr.exe:  $(FDR_TEST_FULLBUILD) $(FDR_TEST_OBJS) Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(FDR_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(CTIFDRDLL) $(FDRTELEGYRLIBS) $(CTIFDRLIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
+
+
+deps:
+                scandeps -Output maketest.mak test_*.cpp
+
+clean:
+        -del \
+test*.pdb \
+$(OBJ)\test*.obj \
+$(BIN)\test*.pdb \
+$(BIN)\test*.pch \
+$(BIN)\test*.ilk \
+$(BIN)\test*.exp \
+$(BIN)\test*.lib \
+$(BIN)\test*.dll \
+$(BIN)\test*.exe
+
+
+allclean:   clean test
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
-
-
-deps:
-        scandeps -Output maketest.mak test_*.cpp
 
 
 ########################### Conversions ##############################
@@ -106,25 +144,6 @@ deps:
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CTIFDRDLL) $(FDRTELEGYRLIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(CTIFDRLIBS) $(FDRLIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-
-	#@set  # this would run the shell command-line instruction "set" showing the environment variabless.
-
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
-
 
 ######################################################################################
 

@@ -1,12 +1,11 @@
-#include "precompiled.h"
+#include <boost/test/auto_unit_test.hpp>
+
 #include "decodetextcmdfile.h"
 
-#define BOOST_TEST_MAIN "Test MCCMD decode text cmd file"
-#include <boost/test/unit_test.hpp>
-
-using boost::unit_test_framework::test_suite;
 using std::string;
 using std::endl;
+
+BOOST_AUTO_TEST_SUITE( test_decodetextcmdfile )
 
 BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine)
 {
@@ -282,3 +281,5 @@ BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine)
     result = validateAndDecodeLine(input, TEXT_CMD_FILE_SPECIFY_EXPRESSCOM, decodedCommand, filename);
     BOOST_CHECK_EQUAL(result, false);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

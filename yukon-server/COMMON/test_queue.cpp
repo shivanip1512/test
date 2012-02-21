@@ -1,20 +1,17 @@
-#define BOOST_AUTO_TEST_MAIN "Test CtiQueue"
+#include <boost/test/unit_test.hpp>
 
 #include "queue.h"
 #include "dbaccess.h"
 #include "boostutil.h"
 
-#include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
 #include <set>
 #include <SQLAPI.h>
 
 using namespace std;
-using boost::unit_test_framework::test_suite;
 
+BOOST_AUTO_TEST_SUITE( test_queue )
 
 inline double xtime_duration(boost::xtime &begin, boost::xtime &end)
 {
@@ -275,3 +272,4 @@ BOOST_AUTO_TEST_CASE(test_fifoqueue_multi_threaded)
     t4.join();
 }
 
+BOOST_AUTO_TEST_SUITE_END()

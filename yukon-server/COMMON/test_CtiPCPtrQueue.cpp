@@ -1,22 +1,11 @@
-/*
- * File test_CtiPCPtrQueue.cpp
- *
- * Author: Thain Spar
- * Date: 03/15/2006 16:55:13
- *
- * Testing the Cti Producer Consumer Pointer Queue
- *
- */
-#define BOOST_AUTO_TEST_MAIN "Test CtiPCPtrQueue"
-
-#include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
+
 #include "ctipcptrqueue.h"
-#include "boostutil.h"
+#include <boost/thread/thread.hpp>
+
 using namespace std;
 
-
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_CtiPCPtrQueue )
 
 int threadTest = 0;
 CtiPCPtrQueue<int> threadQ;
@@ -172,3 +161,4 @@ BOOST_AUTO_TEST_CASE(test_timeOutMultiThread)
 
 }
 
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,9 +1,8 @@
-#define BOOST_AUTO_TEST_MAIN "Test compiler behaviors"
+#include <boost/test/unit_test.hpp>
 
 #include <set>
 
-#include <boost/test/unit_test.hpp>
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_compiler_behaviors )
 
 BOOST_AUTO_TEST_CASE(test_modulus_sign)
 {
@@ -93,3 +92,4 @@ BOOST_AUTO_TEST_CASE(test_multiset_insert_order)
     }
 }
 
+BOOST_AUTO_TEST_SUITE_END()

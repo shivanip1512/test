@@ -1,11 +1,10 @@
-#define BOOST_TEST_MAIN "Test multiset"
 #include <boost/test/unit_test.hpp>
-using boost::unit_test_framework::test_suite;
 
 #include "utility.h"
 
 #include <set>
 
+BOOST_AUTO_TEST_SUITE( test_multiset )
 
 struct fun_pair : public std::pair<int, int>
 {
@@ -136,3 +135,4 @@ BOOST_AUTO_TEST_CASE(test_ptr_priority_sort)
     BOOST_CHECK_EQUAL(*itr, &b);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,29 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_signalmanager.cpp
-*
-* Date:   1/11/2008
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.3.6.1 $
-* DATE         :  $Date: 2008/11/10 20:47:12 $
-*
-* Copyright (c) 2008 Cannon Technologies All rights reserved.
-*-----------------------------------------------------------------------------*/
-#define BOOST_AUTO_TEST_MAIN "Test SignalManager"
+#include <boost/test/auto_unit_test.hpp>
 
-#include "precompiled.h"
 #include "tbl_pt_alarm.h"
 #include "signalmanager.h"
 
-#include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
 using namespace std;
 
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_signalmanager )
 
 BOOST_AUTO_TEST_CASE(test_signalmanager_signal_add)
 {
@@ -228,3 +210,5 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
     }
 
 }
+
+BOOST_AUTO_TEST_SUITE_END()

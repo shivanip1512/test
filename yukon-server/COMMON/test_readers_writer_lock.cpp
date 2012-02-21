@@ -1,26 +1,20 @@
-#define BOOST_AUTO_TEST_MAIN "Test readers/writer lock"
-
-#include "precompiled.h"
 #include <boost/test/unit_test.hpp>
-using boost::unit_test_framework::test_suite;
 
 #include "readers_writer_lock.h"
 
 #include <sstream>
 
-namespace Cti {
+BOOST_AUTO_TEST_SUITE( test_readers_writer_lock )
 
-class test_readers_writer_lock_t : public readers_writer_lock_t
+class test_readers_writer_lock_t : public Cti::readers_writer_lock_t
 {
 protected:
     virtual void terminate_program() const { throw "Unit test program kill override"; }
 };
 
-}; // namespace Cti
-
 BOOST_AUTO_TEST_CASE(test_lock)
 {
-    Cti::test_readers_writer_lock_t lock;
+    test_readers_writer_lock_t lock;
     std::ostringstream s;
 
     s.str("");
@@ -82,3 +76,4 @@ BOOST_AUTO_TEST_CASE(test_lock)
     BOOST_CHECK_EQUAL(static_cast<std::string>(lock), s.str());
 }
 
+BOOST_AUTO_TEST_SUITE_END()

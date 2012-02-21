@@ -1,31 +1,11 @@
-#define BOOST_AUTO_TEST_MAIN "Test ccuSim"
-
-#include "CCU711.h"
-#include "ctitime.h"
-#include "ctidate.h"
-#include "Ccu721.h"
-#include "numstr.h"
-#include "Mct410.h"
-#include "EmetconWords.h"
-#include "types.h"
-
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <string>
-#include <sstream>    // for istringstream
-#include <time.h>
-#include <locale>
-#include <fstream>
-
 #include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <boost/tokenizer.hpp>
+#include "EmetconWords.h"
 
-using boost::unit_test_framework::test_suite;
 using namespace std;
 using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_SUITE( test_ccusim )
 
 BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
 {
@@ -261,8 +241,8 @@ BOOST_AUTO_TEST_CASE( test_makevalue_consumption )
 
     outFile.close();
 
-} 
- 
+}
+
 BOOST_AUTO_TEST_CASE( test_Extract_Queue_Entry_721 )
 {
     bytes command_data;
@@ -296,9 +276,9 @@ BOOST_AUTO_TEST_CASE( test_Extract_Queue_Entry_721 )
     queue_entry entry;
 
     extractQueueEntry(command_data, 0, 0, entry);
-    
+
     EmetconWordB bword(0,0,4194012,2,240,true,true,0x3c);
-    
+
     bytes cword1_data, cword2_data;
 
     cword1_data.push_back(0xff);
@@ -373,8 +353,8 @@ BOOST_AUTO_TEST_CASE( test_WriteMem_extract )
     BOOST_CHECK_EQUAL(known.data[4], info.data[4]);
     BOOST_CHECK_EQUAL(known.data[5], info.data[5]);
 
-} 
- 
+}
+
 BOOST_AUTO_TEST_CASE( test_b_word )
 {
     unsigned repeater_variable, repeater_fixed, address, function_code, index = 0;
@@ -436,6 +416,8 @@ BOOST_AUTO_TEST_CASE( test_b_word )
     BOOST_CHECK_EQUAL(b_word.write,             test_word.write);
     BOOST_CHECK_EQUAL(b_word.bch,               test_word.bch);
 
-} 
- 
+}
+
 */
+
+BOOST_AUTO_TEST_SUITE_END()

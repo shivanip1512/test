@@ -1,14 +1,11 @@
-#define BOOST_AUTO_TEST_MAIN "Test behaviorCollection"
+#include <boost/test/unit_test.hpp>
 
-#include "precompiled.h"
-#include "boostutil.h"
 #include "BehaviorCollection.h"
 #include "SimulatorLogger.h"
 
-#include <boost/test/unit_test.hpp>
-
-using boost::unit_test_framework::test_suite;
 using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_SUITE( test_behavior_collection )
 
 class IntBehavior
 {
@@ -67,3 +64,5 @@ BOOST_AUTO_TEST_CASE(test_behavior_collection)
 
     BOOST_CHECK_EQUAL(value, 220);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -5,18 +5,15 @@ include $(COMPILEBASE)\rwglobal.inc
 all:
             @build -nologo -f $(PRECOMPILED)\makepch.mak
             @build -nologo -f makedll.mak
-            @build -nologo -f makeexe.mak
             @build -nologo -f maketest.mak
 
 copy:
             @build -nologo -f $(PRECOMPILED)\makepch.mak $@
             @build -nologo -f makedll.mak $@
-            @build -nologo -f makeexe.mak $@
             @build -nologo -f maketest.mak $@
 
 deps:
             @build -nologo -f makedll.mak $@
-            @build -nologo -f makeexe.mak $@
             @build -nologo -f maketest.mak $@
 
 

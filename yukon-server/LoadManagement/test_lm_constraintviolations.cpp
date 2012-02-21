@@ -1,10 +1,9 @@
-#include "precompiled.h"
+#include <boost/test/unit_test.hpp>
 
 #include "ConstraintViolation.h"
 #include "ctidate.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test LM Constraint Violations"
-#include <boost/test/unit_test.hpp>
+BOOST_AUTO_TEST_SUITE( test_lm_constraintviolations )
 
 struct VectorHolder
 {
@@ -1001,3 +1000,5 @@ BOOST_AUTO_TEST_CASE(test_cv_type_tti)
     }
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()

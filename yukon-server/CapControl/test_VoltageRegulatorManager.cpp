@@ -1,16 +1,7 @@
-
-#define BOOST_AUTO_TEST_MAIN "Test CapControl Voltage Regulators and Manager"
-
-#include "GangOperatedVoltageRegulator.h"
-#include "VoltageRegulatorLoader.h"
-#include "AttributeService.h"
-#include "PointAttribute.h"
-#include "ccsubstationbusstore.h"
-
 #include <boost/test/unit_test.hpp>
 
-#include <map>
-#include <string>
+#include "GangOperatedVoltageRegulator.h"
+#include "ccsubstationbusstore.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulator;
@@ -22,6 +13,7 @@ using Cti::CapControl::GangOperatedVoltageRegulator;
 using Cti::CapControl::NoVoltageRegulator;
 using Cti::CapControl::MissingPointAttribute;
 
+BOOST_AUTO_TEST_SUITE( test_VoltageRegulatorManager )
 
 class VoltageRegulatorUnitTestLoader : public VoltageRegulatorLoader
 {
@@ -204,3 +196,4 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_with_miss
     CtiCCSubstationBusStore::deleteInstance();
 }
 
+BOOST_AUTO_TEST_SUITE_END()

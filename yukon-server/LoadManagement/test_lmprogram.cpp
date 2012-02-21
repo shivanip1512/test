@@ -1,10 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_lmprogram
-*
-* Copyright (c) 2009 Cooper Industries. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#include "precompiled.h"
+#include <boost/test/unit_test.hpp>
 
 #include "lmprogramdirect.h"
 #include "lmprogramcontrolwindow.h"
@@ -15,16 +9,12 @@
 
 #include "ConstraintViolation.h"
 
-#include <string>
-#include <vector>
-
-#define BOOST_AUTO_TEST_MAIN "Test LM Program"
-#include <boost/test/unit_test.hpp>
-
 extern CtiTime gEndOfCtiTime;
 
 // Nonexistent window
 const CtiLMProgramControlWindow *no_window = 0;
+
+BOOST_AUTO_TEST_SUITE( test_lmprogram )
 
 /*
 ***  TESTING: GetTimeFromOffsetAndDate()
@@ -1936,26 +1926,26 @@ BOOST_AUTO_TEST_CASE(test_timed_notification_setup)
     {
         typedef Cti::Test::StringRow<32> LMProgramDirectRow;
         typedef Cti::Test::TestReader<LMProgramDirectRow> LMProgramDirectReader;
-    
+
         LMProgramDirectRow columnNames =   {"paobjectid", "category", "paoclass", "paoname", "type", "description", "disableflag", "controltype", "constraintid", "constraintname", "availableweekdays", "maxhoursdaily", "maxhoursmonthly", "maxhoursseasonal", "maxhoursannually", "minactivatetime", "minrestarttime", "maxdailyops", "maxactivatetime", "holidayscheduleid", "seasonscheduleid",  "programstate",                         "pointid",                              "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "notifyactiveoffset", "notifyinactiveoffset", "notifyadjust", "currentgearnumber"};
         LMProgramDirectRow columnValues1 = {"1234567890", "category", "paoclass", "paoname", "type", "description", "N",           "controltype", "1",            "constraintname", "availableweekdays", "0",             "0",               "0",                "0",                "0",               "0",              "0",           "0",               "0",                 "0",                 LMProgramDirectReader::getNullString(), LMProgramDirectReader::getNullString(), "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "600",                "-600",                 "notifyadjust", LMProgramDirectReader::getNullString()};
-    
+
         std::vector<LMProgramDirectRow> rowVec;
         rowVec.push_back( columnValues1 );
-    
+
         LMProgramDirectReader reader(columnNames, rowVec);
-    
+
         reader();
         CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr(CTIDBG_new CtiLMProgramDirect(reader));
-    
+
         CtiTime start = CtiTime::now();
         CtiTime stop = start + 3600; // 1hour control
         lmProgram->scheduleNotificationForTimedControl(start, stop);
-    
-        BOOST_CHECK_EQUAL(lmProgram->getNotifyActiveOffset(), 600); 
+
+        BOOST_CHECK_EQUAL(lmProgram->getNotifyActiveOffset(), 600);
         BOOST_CHECK_EQUAL(lmProgram->getNotifyActiveTime(), start-600);
-    
-        BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveOffset(), -600); 
+
+        BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveOffset(), -600);
         BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveTime(), stop-600);
 
         lmProgram->scheduleStopNotificationForTimedControl(start);
@@ -1966,29 +1956,31 @@ BOOST_AUTO_TEST_CASE(test_timed_notification_setup)
     {
         typedef Cti::Test::StringRow<32> LMProgramDirectRow;
         typedef Cti::Test::TestReader<LMProgramDirectRow> LMProgramDirectReader;
-    
+
         LMProgramDirectRow columnNames =   {"paobjectid", "category", "paoclass", "paoname", "type", "description", "disableflag", "controltype", "constraintid", "constraintname", "availableweekdays", "maxhoursdaily", "maxhoursmonthly", "maxhoursseasonal", "maxhoursannually", "minactivatetime", "minrestarttime", "maxdailyops", "maxactivatetime", "holidayscheduleid", "seasonscheduleid",  "programstate",                         "pointid",                              "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "notifyactiveoffset", "notifyinactiveoffset", "notifyadjust", "currentgearnumber"};
         LMProgramDirectRow columnValues1 = {"1234567890", "category", "paoclass", "paoname", "type", "description", "N",           "controltype", "1",            "constraintname", "availableweekdays", "0",             "0",               "0",                "0",                "0",               "0",              "0",           "0",               "0",                 "0",                 LMProgramDirectReader::getNullString(), LMProgramDirectReader::getNullString(), "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "600",                "600",                 "notifyadjust", LMProgramDirectReader::getNullString()};
-    
+
         std::vector<LMProgramDirectRow> rowVec;
         rowVec.push_back( columnValues1 );
-    
+
         LMProgramDirectReader reader(columnNames, rowVec);
-    
+
         reader();
         CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr(CTIDBG_new CtiLMProgramDirect(reader));
-    
+
         CtiTime start = CtiTime::now();
         CtiTime stop = start + 3600; // 1hour control
         lmProgram->scheduleNotificationForTimedControl(start, stop);
-    
-        BOOST_CHECK_EQUAL(lmProgram->getNotifyActiveOffset(), 600); 
+
+        BOOST_CHECK_EQUAL(lmProgram->getNotifyActiveOffset(), 600);
         BOOST_CHECK_EQUAL(lmProgram->getNotifyActiveTime(), start-600);
-    
-        BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveOffset(), 600); 
+
+        BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveOffset(), 600);
         BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveTime(), stop); // Timed control does not allow the inactive offset to go forward.
 
         lmProgram->scheduleStopNotificationForTimedControl(start);
         BOOST_CHECK_EQUAL(lmProgram->getNotifyInactiveTime(), start); // ditto
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,14 +1,10 @@
-#define BOOST_AUTO_TEST_MAIN "Test mct410 device"
-
-#include "precompiled.h"
-#include "boostutil.h"
-#include "types.h"
-#include "Mct410.h"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
+#include "Mct410.h"
+
 using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_SUITE( test_mct410_sim )
 
 struct testMct410Sim : Mct410Sim
 {
@@ -43,3 +39,5 @@ BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )
         BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionMultiplier(address), 20.0);
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

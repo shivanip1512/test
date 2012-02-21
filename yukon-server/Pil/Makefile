@@ -4,16 +4,13 @@
 all:
         @build -nologo -f $(PRECOMPILED)\makepch.mak
         @build -nologo -f makedll.mak
-        @build -nologo -f makeexe.mak
 
 copy:
         @build -nologo -f $(PRECOMPILED)\makepch.mak $@
         @build -nologo -f makedll.mak $@
-        @build -nologo -f makeexe.mak $@
 
 deps:
         @build -nologo -f makedll.mak $@
-        @build -nologo -f makeexe.mak $@
 
 clean:
         -del \

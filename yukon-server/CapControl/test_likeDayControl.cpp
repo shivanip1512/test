@@ -1,31 +1,19 @@
+#include <boost/test/unit_test.hpp>
 
-
-#define BOOST_AUTO_TEST_MAIN "Test LikeDayControl"
-
-#include "precompiled.h"
-#include "ctitime.h"
 #include "ccfeeder.h"
 #include "ccsubstationbus.h"
 
 #include "ccUnitTestUtil.h"
 
-#include "StrategyManager.h"
 #include "KVarStrategy.h"
 #include "PFactorKWKVarStrategy.h"
 #include "VoltStrategy.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
-#include <time.h>
-#include <locale>
-
 extern unsigned long _LIKEDAY_OVERRIDE_TIMEOUT;
 
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_likeDayControl )
 
 void initialize_feeder(CtiCCFeeder * feeder)
 {
@@ -233,3 +221,4 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
 //Add tests for the other control methods
 
+BOOST_AUTO_TEST_SUITE_END()

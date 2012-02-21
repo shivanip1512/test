@@ -6,7 +6,6 @@ ALL:
             @build -nologo -f $(PRECOMPILED)\makepch.mak
             @build -nologo -f makedll.mak
             @build -nologo -f makecdll.mak
-            @build -nologo -f makeexe.mak
 
 
 clean:
@@ -33,7 +32,6 @@ copy:
             @build -nologo -f $(PRECOMPILED)\makepch.mak $@
             @build -nologo -f makedll.mak $@
             @build -nologo -f makecdll.mak $@
-            @build -nologo -f makeexe.mak $@
 
 deps:
 

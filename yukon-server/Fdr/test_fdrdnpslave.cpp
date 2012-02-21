@@ -1,17 +1,10 @@
-#define BOOST_AUTO_TEST_MAIN "Test fdrDnpSlave"
-
-#include "precompiled.h"
-
-#include <string>
-
 #include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include "boost_test_helpers.h"
 
 #include "fdrdnpslave.h"
 
-using boost::unit_test_framework::test_suite;
+#include "boost_test_helpers.h"
+
+BOOST_AUTO_TEST_SUITE( test_fdrdnpslave )
 
 using Cti::byte_buffer;
 
@@ -180,3 +173,5 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
         expected.end());
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()

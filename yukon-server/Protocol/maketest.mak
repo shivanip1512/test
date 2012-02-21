@@ -35,7 +35,8 @@ INCLPATHS+= \
 ;$(RW)
 
 
-TEST_OBJS=\
+PROTOCOL_TEST_OBJS=\
+test_main.obj \
 test_prot_klondike.obj \
 test_prot_expresscom.obj \
 test_prot_dnp.obj \
@@ -49,10 +50,40 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctiprot.lib
 
 
-ALL:            $(TEST_OBJS) Makefile
+SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
+
+LIBS=\
+kernel32.lib user32.lib advapi32.lib wsock32.lib
+
+PROTOCOL_TEST_FULLBUILD = $[Filename,$(OBJ),ProtocolTestFullBuild,target]
+
+
+ALL:            test_protocol.exe
+
+$(PROTOCOL_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(PROTOCOL_TEST_OBJS)]
+
+test_protocol.exe:    $(PROTOCOL_TEST_FULLBUILD) $(PROTOCOL_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(PROTOCOL_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(PROTLIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
+
 
 deps:
-                scandeps -Output maketest.mak *.cpp
+                scandeps -Output maketest.mak test_*.cpp
 
 clean:
         -del \
@@ -74,14 +105,6 @@ copy:
                 -copy bin\*.exe $(YUKONOUTPUT)
 
 
-# The lines below accomplish the ID'ing of the project!
-id:
-            @build -nologo -f $(_InputFile) id_ctiprot.obj
-
-id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h
-
-
-
 ########################### Conversions ##############################
 
 .SUFFIXES:      .cpp .obj
@@ -92,20 +115,6 @@ id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(PROTLIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
 
 ######################################################################################
 

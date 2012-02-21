@@ -1,16 +1,8 @@
-#define BOOST_AUTO_TEST_MAIN "Test CapControl Phase Operated Voltage Regulators"
-
 #include <boost/test/unit_test.hpp>
-#include <vector>
 
-#include "precompiled.h"
 #include "capcontroller.h"
-#include "ccmessage.h"
-#include "PointAttribute.h"
-#include "AttributeService.h"
 #include "VoltageRegulatorManager.h"
 #include "PhaseOperatedVoltageRegulator.h"
-#include "ccutil.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulatorManager;
@@ -19,6 +11,7 @@ using Cti::CapControl::PhaseOperatedVoltageRegulator;
 // Exceptions
 using Cti::CapControl::MissingPointAttribute;
 
+BOOST_AUTO_TEST_SUITE( test_PhaseOperatedVoltageRegulator )
 
 struct TestCtiCapController : public CtiCapController
 {
@@ -1033,3 +1026,4 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Phase
     BOOST_CHECK_EQUAL( "Raise Tap Position - Phase: A", eventMsg->getText() );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

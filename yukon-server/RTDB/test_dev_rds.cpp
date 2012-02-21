@@ -1,11 +1,9 @@
-#define BOOST_TEST_MAIN "Test dev_rds"
 #include <boost/test/unit_test.hpp>
 
 #include "dev_rds.h"
 #include "test_reader.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test RDS Device"
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_dev_rds )
 
 using namespace std;
 
@@ -37,15 +35,15 @@ void fillRDSTransmitter(Test_RDSTransmitter &test_xmitter)
     {
         typedef Cti::Test::StringRow<15> RdsDeviceDatabaseRow;
         typedef Cti::Test::TestReader<RdsDeviceDatabaseRow> RDSDatabaseReader;
-    
+
         RdsDeviceDatabaseRow columnNames =   {"paobjectid", "category", "paoclass", "paoname", "type", "disableflag", "deviceid", "alarminhibit", "controlinhibit", "portid","phonenumber",                             "minconnecttime", "maxconnecttime", "linesettings", "baudrate" };
         RdsDeviceDatabaseRow columnValues1 = {"1234",     "transmitter", "device", "Rds Pao 1", "RDS Transmitter", "N", "1234",     "Y",            "Y",               "1",     RDSDatabaseReader::getNullString(),          "0",              "1",              "8N1",             "8600"};
-    
+
         std::vector<RdsDeviceDatabaseRow> rowVec;
         rowVec.push_back( columnValues1 );
-    
+
         RDSDatabaseReader reader(columnNames, rowVec);
-    
+
         if( reader() )
         {
             test_xmitter.DecodeDatabaseReader(reader);
@@ -55,19 +53,19 @@ void fillRDSTransmitter(Test_RDSTransmitter &test_xmitter)
     {
         typedef Cti::Test::StringRow<4> StaticPaoInfoRow;
         typedef Cti::Test::TestReader<StaticPaoInfoRow> StaticPaoInfoReader;
-    
+
         StaticPaoInfoRow columnNames    = {"staticpaoinfoid", "paobjectid",        "infokey",              "value"};
         StaticPaoInfoRow staValues1     = {"1",               "1234",      "RDS_TRANSMITTER_SITE_ADDRESS",    "11"};
         StaticPaoInfoRow staValues2     = {"2",               "1234",      "RDS_TRANSMITTER_ENCODER_ADDRESS", "12"};
         StaticPaoInfoRow staValues3     = {"3",               "1234",      "RDS_TRANSMITTER_TRANSMIT_SPEED",  ".8"};
         StaticPaoInfoRow staValues4     = {"4",               "1234",      "RDS_TRANSMITTER_GROUP_TYPE",      "11A"};
-    
+
         std::vector<StaticPaoInfoRow> rowVec;
         rowVec.push_back( staValues1 );
         rowVec.push_back( staValues2 );
         rowVec.push_back( staValues3 );
         rowVec.push_back( staValues4 );
-    
+
         StaticPaoInfoReader reader(columnNames, rowVec);
 
         CtiTableStaticPaoInfo static_paoinfo;
@@ -261,3 +259,4 @@ BOOST_AUTO_TEST_CASE(test_start_stop_bytes)
     BOOST_CHECK_EQUAL(message.back(),  0xFF);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

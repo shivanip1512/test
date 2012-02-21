@@ -1,12 +1,8 @@
-
-
-#define BOOST_AUTO_TEST_MAIN "Test Expresscom Protocol"
-
-#include "precompiled.h"
-#include "expresscom.h"
-
 #include <boost/test/auto_unit_test.hpp>
 
+#include "expresscom.h"
+
+BOOST_AUTO_TEST_SUITE( test_prot_expresscom )
 
 BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout)
 {
@@ -1192,3 +1188,6 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
         }
     }
 }
+
+
+BOOST_AUTO_TEST_SUITE_END();

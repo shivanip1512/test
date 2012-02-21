@@ -47,6 +47,7 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 
 CAPCTRLTESTOBJS= \
+test_main.obj \
 test_ControlStrategies.obj \
 test_StrategyManager.obj \
 test_ZoneManager.obj \
@@ -61,90 +62,109 @@ test_PhaseOperatedVoltageRegulator.obj
 
 
 CAPCTRLBASEOBJS= \
-$(OBJ)\ccservice.obj \
-$(OBJ)\capcontroller.obj \
-$(OBJ)\cccapbank.obj \
-$(OBJ)\ccclientconn.obj \
-$(OBJ)\ccclientlistener.obj \
-$(OBJ)\ccexecutor.obj \
-$(OBJ)\ccfeeder.obj \
-$(OBJ)\ccstate.obj \
-$(OBJ)\ccsubstationbus.obj \
-$(OBJ)\ccsubstationbusstore.obj \
-$(OBJ)\pao_schedule.obj \
-$(OBJ)\pao_event.obj \
-$(OBJ)\mgr_paosched.obj \
-$(OBJ)\Controllable.obj \
-$(OBJ)\ControlStrategy.obj \
-$(OBJ)\IVVCStrategy.obj \
-$(OBJ)\KVarStrategy.obj \
-$(OBJ)\MultiVoltStrategy.obj \
-$(OBJ)\MultiVoltVarStrategy.obj \
-$(OBJ)\NoStrategy.obj \
-$(OBJ)\PFactorKWKVarStrategy.obj \
-$(OBJ)\PFactorKWKQStrategy.obj \
-$(OBJ)\TimeOfDayStrategy.obj \
-$(OBJ)\VoltStrategy.obj \
-$(OBJ)\StrategyLoader.obj \
-$(OBJ)\StrategyManager.obj \
-$(OBJ)\Zone.obj \
-$(OBJ)\ZoneLoader.obj \
-$(OBJ)\ZoneManager.obj \
-$(OBJ)\VoltageRegulator.obj \
-$(OBJ)\VoltageRegulatorLoader.obj \
-$(OBJ)\VoltageRegulatorManager.obj \
-$(OBJ)\GangOperatedVoltageRegulator.obj \
-$(OBJ)\PhaseOperatedVoltageRegulator.obj \
-$(OBJ)\ccmonitorpoint.obj \
-$(OBJ)\cctwowaycbcpoints.obj \
-$(OBJ)\ccarea.obj \
-$(OBJ)\ccsparea.obj \
-$(OBJ)\ccsubstation.obj \
-$(OBJ)\ccoperationstats.obj \
-$(OBJ)\ccconfirmationstats.obj \
-$(OBJ)\ccstatsobject.obj \
-$(OBJ)\ccoriginalparent.obj \
-$(OBJ)\CapControlPao.obj \
-$(OBJ)\CapControlPointDataHandler.obj \
-$(OBJ)\PointValueHolder.obj \
-$(OBJ)\ccutil.obj \
-$(OBJ)\IVVCAlgorithm.obj \
-$(OBJ)\IVVCState.obj \
-$(OBJ)\CapControlDispatchConnection.obj \
-$(OBJ)\CapControlCParms.obj \
-$(OBJ)\PointResponseDatabaseDao.obj \
-$(OBJ)\PointResponse.obj \
-$(OBJ)\PointResponseManager.obj \
-$(OBJ)\DynamicCommand.obj \
-$(OBJ)\DynamicCommandExecutor.obj \
-$(OBJ)\MsgCapControlCommand.obj \
-$(OBJ)\MsgCapControlMessage.obj \
-$(OBJ)\MsgItemCommand.obj \
-$(OBJ)\MsgVerifyInactiveBanks.obj \
-$(OBJ)\MsgChangeOpState.obj \
-$(OBJ)\MsgCapControlEventLog.obj \
-$(OBJ)\MsgObjectMove.obj \
-$(OBJ)\MsgBankMove.obj \
-$(OBJ)\MsgSubstationBus.obj \
-$(OBJ)\MsgCapBankStates.obj \
-$(OBJ)\MsgAreas.obj \
-$(OBJ)\MsgSpecialAreas.obj \
-$(OBJ)\MsgSubstations.obj \
-$(OBJ)\MsgVoltageRegulator.obj \
-$(OBJ)\ExecChangeOpState.obj \
-$(OBJ)\ExecVerification.obj \
-$(OBJ)\MsgVerifyBanks.obj \
-$(OBJ)\MsgDeleteItem.obj \
-$(OBJ)\MsgSystemStatus.obj \
-$(OBJ)\MsgCapControlServerResponse.obj \
-$(OBJ)\MsgCapControlShutdown.obj \
-$(OBJ)\ExecutorFactory.obj
+ccservice.obj \
+capcontroller.obj \
+cccapbank.obj \
+ccclientconn.obj \
+ccclientlistener.obj \
+ccexecutor.obj \
+ccfeeder.obj \
+ccstate.obj \
+ccsubstationbus.obj \
+ccsubstationbusstore.obj \
+pao_schedule.obj \
+pao_event.obj \
+mgr_paosched.obj \
+Controllable.obj \
+ControlStrategy.obj \
+IVVCStrategy.obj \
+KVarStrategy.obj \
+MultiVoltStrategy.obj \
+MultiVoltVarStrategy.obj \
+NoStrategy.obj \
+PFactorKWKVarStrategy.obj \
+PFactorKWKQStrategy.obj \
+TimeOfDayStrategy.obj \
+VoltStrategy.obj \
+StrategyLoader.obj \
+StrategyManager.obj \
+Zone.obj \
+ZoneLoader.obj \
+ZoneManager.obj \
+VoltageRegulator.obj \
+VoltageRegulatorLoader.obj \
+VoltageRegulatorManager.obj \
+GangOperatedVoltageRegulator.obj \
+PhaseOperatedVoltageRegulator.obj \
+ccmonitorpoint.obj \
+cctwowaycbcpoints.obj \
+ccarea.obj \
+ccsparea.obj \
+ccsubstation.obj \
+ccoperationstats.obj \
+ccconfirmationstats.obj \
+ccstatsobject.obj \
+ccoriginalparent.obj \
+CapControlPao.obj \
+CapControlPointDataHandler.obj \
+PointValueHolder.obj \
+ccutil.obj \
+IVVCAlgorithm.obj \
+IVVCState.obj \
+CapControlDispatchConnection.obj \
+CapControlCParms.obj \
+PointResponseDatabaseDao.obj \
+PointResponse.obj \
+PointResponseManager.obj \
+DynamicCommand.obj \
+DynamicCommandExecutor.obj \
+MsgCapControlCommand.obj \
+MsgCapControlMessage.obj \
+MsgItemCommand.obj \
+MsgVerifyInactiveBanks.obj \
+MsgChangeOpState.obj \
+MsgCapControlEventLog.obj \
+MsgObjectMove.obj \
+MsgBankMove.obj \
+MsgSubstationBus.obj \
+MsgCapBankStates.obj \
+MsgAreas.obj \
+MsgSpecialAreas.obj \
+MsgSubstations.obj \
+MsgVoltageRegulator.obj \
+ExecChangeOpState.obj \
+ExecVerification.obj \
+MsgVerifyBanks.obj \
+MsgDeleteItem.obj \
+MsgSystemStatus.obj \
+MsgCapControlServerResponse.obj \
+MsgCapControlShutdown.obj \
+ExecutorFactory.obj
 
-TARGS = capcontrol.exe
+CAPCONTROL_TEST_FULLBUILD = $[Filename,$(OBJ),CapControlTestFullBuild,target]
 
-ALL:      capcontrol
+ALL:     test_capcontrol.exe
 
-capcontrol:  $(CAPCTRLTESTOBJS) makeexe.mak
+$(CAPCONTROL_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(CAPCTRLTESTOBJS)]
+
+test_capcontrol.exe:  $(CAPCONTROL_TEST_FULLBUILD) $(CAPCTRLTESTOBJS) Makefile
+	@echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+	$(CAPCTRLTESTOBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CAPCTRLBASEOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+	@%cd $(CWD)
+	@echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -162,23 +182,9 @@ deps:
 .cpp.obj :
         @echo:
         @echo Compiling $< to
-        @echo           $(OBJ)\$(@B).obj
+        @echo           $(OBJ)\$(_SourceB).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CAPCTRLBASEOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $(_Source)
 
 
 ######################################################################################

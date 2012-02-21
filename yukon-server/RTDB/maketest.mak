@@ -57,7 +57,8 @@ $(COMPILEBASE)\lib\ctiprtdb.lib \
 $(XERCES_LIBS) \
 $(OPENSSL_LIBS) \
 
-TEST_OBJS=\
+RTDB_TEST_OBJS=\
+test_main.obj \
 test_cmd_dlc.obj \
 test_cmd_mct410_hourlyread.obj \
 test_cmd_mct420_hourlyread.obj \
@@ -94,8 +95,33 @@ test_encryption_oneway.obj \
 test_encryption_oneway_message.obj \
 
 
+RTDB_TEST_FULLBUILD = $[Filename,$(OBJ),RtdbTestFullBuild,target]
 
-ALL:            $(TEST_OBJS) Makefile
+
+ALL:            test_rtdb.exe
+
+$(RTDB_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(RTDB_TEST_OBJS)]
+
+test_rtdb.exe:	$(RTDB_TEST_FULLBUILD) $(RTDB_TEST_OBJS) Makefile
+	@echo:
+	@echo Creating Executable $(BIN)\$(@B).exe
+        @echo:
+	@%cd obj
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(@B).exe \
+	$(RTDB_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
+	@%cd $(CWD)
+	@echo.
+
 
 deps:
                 scandeps -Output maketest.mak *.cpp
@@ -129,21 +155,7 @@ copy:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 

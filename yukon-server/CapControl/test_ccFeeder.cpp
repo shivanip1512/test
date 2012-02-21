@@ -1,8 +1,5 @@
+#include <boost/test/unit_test.hpp>
 
-#define BOOST_AUTO_TEST_MAIN "Test CCFeeder"
-
-#include "precompiled.h"
-#include "ctitime.h"
 #include "ccfeeder.h"
 #include "ccsubstationbus.h"
 #include "ccsubstationbusstore.h"
@@ -11,23 +8,12 @@
 #include "StrategyManager.h"
 #include "PFactorKWKVarStrategy.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
 
 extern BOOL _RETRY_FAILED_BANKS;
 
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_ccFeeder )
 
 void initialize_bank(CtiCCCapBank* bank, int closeOrder = 0, int tripOrder = 0)
 {
@@ -539,3 +525,5 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     feeder = NULL;
     CtiCCSubstationBusStore::deleteInstance();
 }
+
+BOOST_AUTO_TEST_SUITE_END()

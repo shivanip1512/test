@@ -1,13 +1,11 @@
-#include "cmdparse.h"
-
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-#include "boostutil.h"
+#include "cmdparse.h"
+
 #include "test_cmdparse_input.h"
 #include "test_cmdparse_output.h"
 
-using boost::unit_test_framework::test_suite;
+BOOST_AUTO_TEST_SUITE( test_cmdparse )
 
 BOOST_AUTO_TEST_CASE(testString)
 {
@@ -78,4 +76,4 @@ BOOST_AUTO_TEST_CASE(testShedTimes)
     BOOST_CHECK_EQUAL_COLLECTIONS(shedTimes.begin(), shedTimes.end(), shedSecondTimes, shedSecondTimes + expected_size);
 }
 
-
+BOOST_AUTO_TEST_SUITE_END()

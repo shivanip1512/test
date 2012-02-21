@@ -1,14 +1,12 @@
-#define BOOST_AUTO_TEST_MAIN "Test TimePeriod"
-
 #include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "timeperiod.h"
 #include "ctitime.h"
 #include "ctidate.h"
-using boost::unit_test_framework::test_suite;
 
 using Cti::TimePeriod;
+
+BOOST_AUTO_TEST_SUITE( test_utility )
 
 BOOST_AUTO_TEST_CASE(test_timeperiod_conversion)
 {
@@ -111,3 +109,5 @@ BOOST_AUTO_TEST_CASE(test_timeperiod_invalid)
     // This is not a hard set rule, but a test that addDays is ok when invalid.
     BOOST_CHECK_EQUAL(invalidPeriod.begin(), invalidPeriod.addDays(1).begin());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

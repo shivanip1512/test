@@ -1,26 +1,14 @@
-#define BOOST_AUTO_TEST_MAIN "Test delayBehavior"
-
-#include "precompiled.h"
-#include "boostutil.h"
-#include "BehaviorCollection.h"
-#include "DelayBehavior.h"
-#include "types.h"
-#include "SimulatorLogger.h"
-
-#include <time.h>
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
+#include "DelayBehavior.h"
+#include "BehaviorCollection.h"
+
 using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_SUITE( test_delay_behavior )
 
 BOOST_AUTO_TEST_CASE(test_delay_behavior)
 {
-    srand(time(NULL));
-    // Apparently the first random needs to be dumped or else
-    // the random number will be some linear function as
-    // opposed to being truly (or rather pseudo-) random.
-    rand();
-
     SimulatorLogger logger(dout);
 
     BehaviorCollection<CommsBehavior> behaviorCollection;
@@ -71,3 +59,5 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(message.begin(), message.end(), reference.begin(), reference.end());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

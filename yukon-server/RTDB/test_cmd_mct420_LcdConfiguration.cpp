@@ -1,14 +1,13 @@
+#include <boost/test/unit_test.hpp>
+
 #include "cmd_mct420_LcdConfiguration.h"
 
 #include "ctidate.h"
 
-#define BOOST_TEST_MAIN "Testing Devices::Commands::Mct420LcdConfigurationCommand"
-
-#include <boost/test/unit_test.hpp>
-
-using Cti::Devices::Commands::Mct420LcdConfigurationCommand;
 using Cti::Devices::Commands::DlcCommand;
 using std::string;
+
+BOOST_AUTO_TEST_SUITE( test_cmd_mct420_LcdConfiguration )
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
@@ -800,4 +799,4 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
     }
 }
 
-
+BOOST_AUTO_TEST_SUITE_END()

@@ -35,7 +35,8 @@ INCLPATHS+= \
 
 
 
-CALCTESTOBJS= \
+CALC_TEST_OBJS= \
+test_main.obj \
 test_calc.obj \
 
 CALCLIBS=\
@@ -50,16 +51,38 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib \
 advapi32.lib
 
 CALCOBJS= \
-$(OBJ)\calc.obj \
-$(OBJ)\calccomponent.obj \
-$(OBJ)\pointstore.obj \
-$(OBJ)\calcthread.obj \
-$(OBJ)\calclogicsvc.obj \
+calc.obj \
+calccomponent.obj \
+pointstore.obj \
+calcthread.obj \
+calclogicsvc.obj \
 
 
-ALL:      calctest
+CALC_TEST_FULLBUILD = $[Filename,$(OBJ),CalcTestFullBuild,target]
 
-calctest:  $(CALCTESTOBJS) makeexe.mak
+
+ALL:            test_calc.exe
+
+$(CALC_TEST_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(CALC_TEST_OBJS)]
+
+test_calc.exe:    $(CALC_TEST_FULLBUILD) $(CALC_TEST_OBJS)  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(CALC_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(CALCOBJS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -94,21 +117,6 @@ $(BIN)\test*.exe
         @echo           $(OBJ)\$(@B).obj
         @echo:
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
-
-	@echo:
-	@echo Creating Executable $(OBJ)\$(@B).exe
-        @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CALCOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS)
-
-	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
-	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
-	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
-	@%cd $(CWD)
-	@echo.
-
 
 ######################################################################################
 

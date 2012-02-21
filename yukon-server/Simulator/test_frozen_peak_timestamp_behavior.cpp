@@ -1,17 +1,11 @@
-#define BOOST_AUTO_TEST_MAIN "Test FrozenReadParityBehavior"
-
-#include "yukon.h"
-#include "boostutil.h"
-#include "BehaviorCollection.h"
-#include "FrozenPeakTimestampBehavior.h"
-#include "types.h"
-#include "logger.h"
-#include "SimulatorLogger.h"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
+#include "FrozenPeakTimestampBehavior.h"
+#include "BehaviorCollection.h"
+
 using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_SUITE( test_frozen_peak_timestamp_behavior )
 
 BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
 {
@@ -24,11 +18,11 @@ BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
 
     {
         bytes message, reference;
-    
+
         /**
-         * Pushing data onto each vector. For messages returning from 
-         * function read 0x94, the FrozenPeakTimestampBehavior should 
-         * add 86400 seconds to the timestamp in bytes 2-5. 
+         * Pushing data onto each vector. For messages returning from
+         * function read 0x94, the FrozenPeakTimestampBehavior should
+         * add 86400 seconds to the timestamp in bytes 2-5.
          */
         message.push_back(0x04);
         message.push_back(0x08);
@@ -48,11 +42,11 @@ BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
         MctMessageContext contextEnd   = { reference, 0x94, true };
 
         behaviorCollection.processMessage(contextBegin, logger);
-    
-        // Check to see that the FrozenPeakTimestampBehavior correctly 
+
+        // Check to see that the FrozenPeakTimestampBehavior correctly
         // processed the message and put the information back
         // in the intended order to match contextEnd.
-        BOOST_CHECK_EQUAL_COLLECTIONS(contextBegin.data.begin(), contextBegin.data.end(), 
+        BOOST_CHECK_EQUAL_COLLECTIONS(contextBegin.data.begin(), contextBegin.data.end(),
                                       contextEnd.data.begin(), contextEnd.data.end());
         BOOST_CHECK_EQUAL(contextBegin.function_read, contextEnd.function_read);
         BOOST_CHECK_EQUAL(contextBegin.function, contextEnd.function);
@@ -60,12 +54,12 @@ BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
 
     {
         bytes message, reference;
-    
+
         /**
-         * Pushing data onto each vector. For messages returning from 
-         * anything except function read 0x94, the 
-         * FrozenPeakTimestampBehavior should leave the message 
-         * untouched. 
+         * Pushing data onto each vector. For messages returning from
+         * anything except function read 0x94, the
+         * FrozenPeakTimestampBehavior should leave the message
+         * untouched.
          */
         message.push_back(0x04);
         message.push_back(0x08);
@@ -84,13 +78,13 @@ BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
         {
             MctMessageContext contextBegin = { message, 0x94, false };   // Data read 0x94, nothing should happen.
             MctMessageContext contextEnd   = { reference, 0x94, false };
-    
+
             behaviorCollection.processMessage(contextBegin, logger);
-        
-            // Check to see that the FrozenReadParityBehavior correctly 
+
+            // Check to see that the FrozenReadParityBehavior correctly
             // processed the message and put the information back
             // in the intended order to match contextEnd.
-            BOOST_CHECK_EQUAL_COLLECTIONS(contextBegin.data.begin(), contextBegin.data.end(), 
+            BOOST_CHECK_EQUAL_COLLECTIONS(contextBegin.data.begin(), contextBegin.data.end(),
                                           contextEnd.data.begin(), contextEnd.data.end());
             BOOST_CHECK_EQUAL(contextBegin.function_read, contextEnd.function_read);
             BOOST_CHECK_EQUAL(contextBegin.function, contextEnd.function);
@@ -99,16 +93,18 @@ BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
         {
             MctMessageContext contextBegin = { message, 0x93, true };   // Function read 0x93, nothing should happen.
             MctMessageContext contextEnd   = { reference, 0x93, true };
-    
+
             behaviorCollection.processMessage(contextBegin, logger);
-        
-            // Check to see that the FrozenReadParityBehavior correctly 
+
+            // Check to see that the FrozenReadParityBehavior correctly
             // processed the message and put the information back
             // in the intended order to match contextEnd.
-            BOOST_CHECK_EQUAL_COLLECTIONS(contextBegin.data.begin(), contextBegin.data.end(), 
+            BOOST_CHECK_EQUAL_COLLECTIONS(contextBegin.data.begin(), contextBegin.data.end(),
                                           contextEnd.data.begin(), contextEnd.data.end());
             BOOST_CHECK_EQUAL(contextBegin.function_read, contextEnd.function_read);
             BOOST_CHECK_EQUAL(contextBegin.function, contextEnd.function);
         }
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

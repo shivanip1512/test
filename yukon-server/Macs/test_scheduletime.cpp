@@ -1,35 +1,13 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  test_scheduletime.cpp
-
-        Programmer:  Jess Oteson
-
-        Initial Date:  8/22/2008
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies 2007
----------------------------------------------------------------------------*/
-
-#define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
-#include "precompiled.h"
-
-#include <boost/test/unit_test.hpp>
-
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
+#include <boost/test/auto_unit_test.hpp>
 
 #include "ctitime.h"
 #include "mc_scheduler.h"
 #include "mc_sched.h"
 #include "mgr_mcsched.h"
 
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_scheduletime )
 
 BOOST_AUTO_TEST_CASE(test_MACS_calc_date_time_start)
 {
@@ -188,3 +166,5 @@ BOOST_AUTO_TEST_CASE(test_MACS_day_of_month_start)
 
     BOOST_CHECK_EQUAL(expectedResult, startTime);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

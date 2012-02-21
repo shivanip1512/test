@@ -1,16 +1,10 @@
-#define BOOST_AUTO_TEST_MAIN "Test Lantronix Encryption"
+#include <boost/test/auto_unit_test.hpp>
 
-#include "precompiled.h"
 #include "encryption_lantronix.h"
-#include "numstr.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include <string>
-
-using boost::unit_test_framework::test_suite;
 using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_LantronixEncryption )
 
 BOOST_AUTO_TEST_CASE(decode_from_debug_mode_encoding)
 {
@@ -168,3 +162,5 @@ BOOST_AUTO_TEST_CASE(test_setIV)
 
     delete filter;
 }
+
+BOOST_AUTO_TEST_SUITE_END()

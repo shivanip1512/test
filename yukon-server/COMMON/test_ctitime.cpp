@@ -1,38 +1,14 @@
-/*
- * file test_cmdparse.cpp
- *
- * Author: Jian Liu
- * Date: 08/05/2005 13:25:55
- *
- *
- * test ctitime.cpp
- *
- *
- */
-#define BOOST_AUTO_TEST_MAIN "Test CtiTime"
-
 #include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
-
-
 
 #include "ctitime.h"
 #include "ctidate.h"
+#include <rw/rwtime.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
-using boost::unit_test_framework::test_suite;
 using namespace boost::gregorian;
 using namespace boost::posix_time;
-using namespace std;
+
+BOOST_AUTO_TEST_SUITE( test_ctitime )
 
 /*
 BOOST_AUTO_TEST_CASE(test_ptime)
@@ -156,7 +132,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_specials)
 {
 
     //check boost special values
-    std::cout << endl;
+    /*std::cout << endl;*/
     ptime x(date(boost::date_time::neg_infin), boost::date_time::neg_infin);
     /*std::cout << "neg_infin ptime hour: " << x.time_of_day().hours() << std::endl;
     std::cout << "neg_infin ptime seconds: " << x.time_of_day().seconds() << std::endl;
@@ -563,3 +539,5 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
         BOOST_CHECK( ! t1.isDST() );
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

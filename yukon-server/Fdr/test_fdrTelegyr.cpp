@@ -1,15 +1,8 @@
-#define BOOST_AUTO_TEST_MAIN "Test fdrTelegyr"
+#include <boost/test/unit_test.hpp>
 
-#include "precompiled.h"
 #include "fdrtelegyr.h"
 
-#include <string>
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-using boost::unit_test_framework::test_suite;
-
+BOOST_AUTO_TEST_SUITE( test_fdrTelegyr )
 
 class  TestFdrTelegyr :  public CtiFDRTelegyr {
     public:
@@ -60,3 +53,5 @@ BOOST_AUTO_TEST_CASE( test_one )
     bool ret = telegyr.testProcessAnalog(aPoint,groupId,groupType,index);
     BOOST_CHECK_EQUAL(ret,true);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,13 +1,13 @@
+#include <boost/test/unit_test.hpp>
+
 #include "dev_mct.h"
 #include "ctidate.h"
 
-#define BOOST_TEST_MAIN "Test dev_mct"
-#include <boost/test/unit_test.hpp>
-
-using Cti::Devices::MctDevice;
 using Cti::Protocols::EmetconProtocol;
 
-struct test_MctDevice : MctDevice
+BOOST_AUTO_TEST_SUITE( test_dev_mct )
+
+struct test_MctDevice : Cti::Devices::MctDevice
 {
     using MctDevice::findLastScheduledFreeze;
     using MctDevice::getOperation;
@@ -952,4 +952,6 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Length,   5);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,14 +1,9 @@
-#define BOOST_AUTO_TEST_MAIN "Test One-Way Encryption"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
-
-#include "boostutil.h"
 #include "encryption_oneway.h"
 #include "CtiDate.h"
 
-
+BOOST_AUTO_TEST_SUITE( test_encryption_oneway )
 
 BOOST_AUTO_TEST_CASE(test_one_way_encryption_and_decryption_on_random_data)
 {
@@ -53,3 +48,4 @@ BOOST_AUTO_TEST_CASE(test_one_way_encryption_and_decryption_on_random_data)
     }
 }
 
+BOOST_AUTO_TEST_SUITE_END()

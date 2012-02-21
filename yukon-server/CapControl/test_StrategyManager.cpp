@@ -1,9 +1,4 @@
-
-#define BOOST_AUTO_TEST_MAIN "Test CapControl Control Strategy Manager"
-
 #include <boost/test/unit_test.hpp>
-
-#include <string>
 
 #include "StrategyManager.h"
 #include "StrategyLoader.h"
@@ -11,9 +6,7 @@
 #include "NoStrategy.h"
 #include "PFactorKWKVarStrategy.h"
 
-
-using boost::unit_test_framework::test_suite;
-
+BOOST_AUTO_TEST_SUITE( test_StrategyManager )
 
 class StrategyUnitTestLoader : public StrategyLoader
 {
@@ -29,7 +22,7 @@ public:
         if (ID < 0)
         {
             long IDs[] = { 100, 110, 125 };
-    
+
             for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
             {
                 loadSingle(IDs[i], strategies);
@@ -239,3 +232,4 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single_weak_pointer_invalidatio
     BOOST_CHECK_EQUAL( weak.expired(), true );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

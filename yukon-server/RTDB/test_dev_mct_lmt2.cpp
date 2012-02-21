@@ -1,14 +1,14 @@
-#include "dev_mct_lmt2.h"
-
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-using Cti::Devices::Lmt2Device;
+#include "dev_mct_lmt2.h"
+
+BOOST_AUTO_TEST_SUITE( test_dev_mct_lmt2 )
+
 using Cti::Protocols::EmetconProtocol;
 
-struct test_Lmt2Device : Lmt2Device
+struct test_Lmt2Device : Cti::Devices::Lmt2Device
 {
-    using MctDevice::getOperation;
+    using Lmt2Device::getOperation;
 };
 
 
@@ -283,5 +283,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Length,   0);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE_END()
 

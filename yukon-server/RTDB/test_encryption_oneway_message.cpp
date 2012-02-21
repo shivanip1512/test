@@ -1,15 +1,10 @@
-#define BOOST_AUTO_TEST_MAIN "Test One-Way Message Encryption"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
-
-#include "boostutil.h"
 #include "encryption_oneway_message.h"
 #include "CtiDate.h"
 #include "CtiTime.h"
 
-
+BOOST_AUTO_TEST_SUITE( test_encryption_oneway_message )
 
 BOOST_AUTO_TEST_CASE(test_one_way_message_sequence_generator)
 {
@@ -68,3 +63,4 @@ BOOST_AUTO_TEST_CASE(test_one_way_message_sequence_generator)
     BOOST_CHECK_EQUAL( utcCounter   , 2         );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

@@ -1,13 +1,8 @@
-#define BOOST_AUTO_TEST_MAIN "Test CMAC Authentication"
-
 #include <boost/test/unit_test.hpp>
 
-using boost::unit_test_framework::test_suite;
-
-#include "boostutil.h"
 #include "encryption_cmac.h"
 
-
+BOOST_AUTO_TEST_SUITE( test_encryption_cmac )
 
 BOOST_AUTO_TEST_CASE(test_encryption_rfc_4493_nist_cmac_length_0)
 {
@@ -156,3 +151,4 @@ BOOST_AUTO_TEST_CASE(test_encryption_rfc_4493_nist_cmac_length_64)
                                    expected,    expected + sizeof( expected ) );
 }
 
+BOOST_AUTO_TEST_SUITE_END()

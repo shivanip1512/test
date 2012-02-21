@@ -1,21 +1,13 @@
-#include <iostream>
+#include <boost/test/unit_test.hpp>
 
 #include "dev_ccu721.h"
 #include "prot_emetcon.h"
 
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Test dev_ccu721"
-#include <boost/test/unit_test.hpp>
-
-#define BOOST_AUTO_TEST_MAIN "Test CCU-721 Device"
-using boost::unit_test_framework::test_suite;
-
 using namespace std;
 
-using Cti::Devices::Ccu721Device;
+BOOST_AUTO_TEST_SUITE( test_dev_ccu721 )
 
-struct Test_Ccu721Device : Ccu721Device
+struct Test_Ccu721Device : Cti::Devices::Ccu721Device
 {
     typedef Ccu721Device Inherited;
 
@@ -260,3 +252,5 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
     BOOST_CHECK_EQUAL(entries.size(), 1);
     BOOST_CHECK_EQUAL(entries.front(), &om);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

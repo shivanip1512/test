@@ -1,12 +1,12 @@
-#include "dev_mct210.h"
-
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-using Cti::Devices::Mct210Device;
+#include "dev_mct210.h"
+
 using Cti::Protocols::EmetconProtocol;
 
-struct test_Mct210Device : Mct210Device
+BOOST_AUTO_TEST_SUITE( test_dev_mct210 )
+
+struct test_Mct210Device : Cti::Devices::Mct210Device
 {
     using MctDevice::getOperation;
 };
@@ -267,3 +267,4 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_SUITE_END()
