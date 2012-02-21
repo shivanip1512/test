@@ -41,31 +41,22 @@ public:
     bool operator<(const CtiTablePaoExclusion &rhs) const;
 
     long getExclusionId() const;
-    CtiTablePaoExclusion& setExclusionId(long xid);
 
     long getPaoId() const;
-    CtiTablePaoExclusion& setPaoId(long val);
 
     long getExcludedPaoId() const;
-    CtiTablePaoExclusion& setExcludedPaoId(long val);
 
     long getPointId() const;
-    CtiTablePaoExclusion& setPointId(long val);
 
     double getValue() const;
-    CtiTablePaoExclusion& setValue(double val);
 
     long getFunctionId() const;
-    CtiTablePaoExclusion& setFunctionId(long val);
 
     std::string getFunctionName() const;
-    CtiTablePaoExclusion& setFunctionName(std::string val);
 
     long getFunctionRequeue() const;
-    CtiTablePaoExclusion& setFunctionRequeue(long val);
 
     std::string getFunctionParams() const;
-    CtiTablePaoExclusion& setFunctionParams(std::string val);
 
     static std::string getSQLCoreStatement(long id = 0);
 
@@ -101,6 +92,5 @@ public:
     int getTransmitTime() const;
     CtiTablePaoExclusion &setTransmitTime(int transmittime);
     int getMaxTransmitTime() const;
-    CtiTablePaoExclusion &setMaxTransmitTime(int maxtransmittime);
 
 };

@@ -96,6 +96,5 @@ public:
     CtiTablePaoExclusion getCycleTimeExclusion() const;
 
     unsigned int getMinTimeInSec() const;
-    void setMinTimeInSec(unsigned int sec);
 
 };

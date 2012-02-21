@@ -712,10 +712,5 @@ unsigned int CtiDeviceExclusion::getMinTimeInSec() const
     return _minTimeInSec;
 }
 
-void CtiDeviceExclusion::setMinTimeInSec(unsigned int sec)
-{
-    _minTimeInSec = sec;
-    return;
-}
 
 

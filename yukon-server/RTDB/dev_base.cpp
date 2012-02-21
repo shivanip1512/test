@@ -1082,6 +1082,16 @@ CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 }
 void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
 {
+    if( ciStringEqual(paox.getFunctionName(), "TimeInfo") &&
+        ! paox.getCycleTime() &&
+        ! paox.getCycleOffset() &&
+        ! paox.getTransmitTime() &&
+        ! paox.getMaxTransmitTime() )
+    {
+        //  empty placeholder entry left by DB editor for convenience in case you want to reenable timing
+        return;
+    }
+
     _exclusion.setId(getID());
     try
     {

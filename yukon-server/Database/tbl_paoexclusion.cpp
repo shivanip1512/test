@@ -1,17 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_paoexclusion
-*
-* Date:   5/14/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/01/18 22:13:38 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 #include <boost\regex.hpp>
 
@@ -64,90 +50,45 @@ long CtiTablePaoExclusion::getExclusionId() const
 {
     return _exclusionId;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setExclusionId(long xid)
-{
-    _exclusionId = xid;
-    return *this;
-}
 
 long CtiTablePaoExclusion::getPaoId() const
 {
     return _paoId;
-}
-CtiTablePaoExclusion& CtiTablePaoExclusion::setPaoId(long val)
-{
-    _paoId = val;
-    return *this;
 }
 
 long CtiTablePaoExclusion::getExcludedPaoId() const
 {
     return _excludedPaoId;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setExcludedPaoId(long val)
-{
-    _excludedPaoId = val;
-    return *this;
-}
 
 long CtiTablePaoExclusion::getPointId() const
 {
     return _pointId;
-}
-CtiTablePaoExclusion& CtiTablePaoExclusion::setPointId(long val)
-{
-    _pointId = val;
-    return *this;
 }
 
 double CtiTablePaoExclusion::getValue() const
 {
     return _value;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setValue(double val)
-{
-    _value = val;
-    return *this;
-}
 
 long CtiTablePaoExclusion::getFunctionId() const
 {
     return _functionId;
-}
-CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionId(long val)
-{
-    _functionId = val;
-    return *this;
 }
 
 string CtiTablePaoExclusion::getFunctionName() const
 {
     return _funcName;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionName(string val)
-{
-    _funcName = val;
-    return *this;
-}
 
 string CtiTablePaoExclusion::getFunctionParams() const
 {
     return _funcParams;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionParams(string val)
-{
-    _funcParams = val;
-    return *this;
-}
 
 long CtiTablePaoExclusion::getFunctionRequeue() const
 {
     return _funcRequeue;
-}
-CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionRequeue(long val)
-{
-    _funcRequeue = val;
-    return *this;
 }
 
 string CtiTablePaoExclusion::getTableName()
@@ -305,11 +246,6 @@ CtiTablePaoExclusion &CtiTablePaoExclusion::setTransmitTime(int transmittime)
     return *this;
 }
 
-CtiTablePaoExclusion &CtiTablePaoExclusion::setMaxTransmitTime(int maxtransmittime)
-{
-    _maxTransmitTime = maxtransmittime;
-    return *this;
-}
 
 
 
