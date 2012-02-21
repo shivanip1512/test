@@ -37,6 +37,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -99,11 +100,23 @@ public class ZigBeeHardwareController {
             ZigbeeDevice device;
             if (type.isGateway()) {
                 device = gatewayDeviceDao.getZigbeeGateway(deviceId);
-                ping = zigbeeStateUpdaterService.updateGatewayStatus(device);
+                try {
+                    ping = zigbeeStateUpdaterService.updateGatewayStatus(device);
+                } catch (DigiWebServiceException e) {
+                    String notConfigured = "yukon.web.modules.operator.hardware.zigbeeNotEnabled";
+                    MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(notConfigured);
+                    ping = new ZigbeePingResponse(false, Commissioned.DECOMMISSIONED, resolvable);
+                }
                 
             } else {
                 device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
-                ping = zigbeeStateUpdaterService.updateEndPointStatus(device);
+                try {
+                    ping = zigbeeStateUpdaterService.updateEndPointStatus(device);
+                } catch (DigiWebServiceException e) {
+                    String notConfigured = "yukon.web.modules.operator.hardware.zigbeeNotEnabled";
+                    MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(notConfigured);
+                    ping = new ZigbeePingResponse(false, Commissioned.DECOMMISSIONED, resolvable);    
+                }
             }
             
             zigbeeEventLogService.zigbeeDeviceRefreshed(pao.getPaoName());

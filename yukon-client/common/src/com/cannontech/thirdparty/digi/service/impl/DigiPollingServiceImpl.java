@@ -21,6 +21,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.WaitableExecutor;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.FileData;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 
@@ -136,7 +137,7 @@ public class DigiPollingServiceImpl {
             try {
                 zigbeeStateUpdaterService.updateAllGatewayStatuses();
                 zigbeeStateUpdaterService.updateAllEndPointStatuses();
-            } catch (Exception e) {
+            } catch (DigiWebServiceException e) {
                 log.error("Exception in Digi Gateway Status Poll", e);
             }
             log.debug("Digi Device Status Poll Finished");
