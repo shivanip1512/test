@@ -231,7 +231,16 @@ public class CommandController {
                            @ModelAttribute("bankMoveBean") BankMoveBean bankMoveBean) {
         
         rolePropertyDao.verifyProperty(permissions.get(CapControlType.CAPBANK), user);
+        model.addAttribute("substationId", substationId);
+        model.addAttribute("areaId", cache.getParentAreaID(substationId));
+        
         CapBankDevice bank = cache.getCapBankDevice(bankMoveBean.getBankId());
+        
+        if(bankMoveBean.getNewFeederId() == 0) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.noFeederSelected", bank.getCcName()));
+            return "redirect:/spring/capcontrol/tier/feeders";
+        }
+        
         Feeder newFeeder = cache.getFeeder(bankMoveBean.getNewFeederId());
         BankMove command = CommandHelper.buildBankMove(user, bankMoveBean, tempMove == null ? true : false);
         
@@ -268,8 +277,6 @@ public class CommandController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveSuccess", bank.getCcName(), newFeeder.getCcName()));
         }
         
-        model.addAttribute("substationId", substationId);
-        model.addAttribute("areaId", cache.getParentAreaID(substationId));
         return "redirect:/spring/capcontrol/tier/feeders";
     }
     

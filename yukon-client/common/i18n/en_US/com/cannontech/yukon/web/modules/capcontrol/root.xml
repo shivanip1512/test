@@ -228,6 +228,7 @@
     <entry key="yukon.web.modules.capcontrol.bankMoveFailed">Bank move for bank ''{0}'' to feeder ''{1}'' failed: {2}</entry>
     <entry key="yukon.web.modules.capcontrol.bankMoveTimeout">Bank move request for bank ''{0}'' to feeder ''{1}'' timed out.</entry>
     <entry key="yukon.web.modules.capcontrol.bankMoveSuccess">Bank ''{0}'' successfully moved to feeder ''{1}''.</entry>
+    <entry key="yukon.web.modules.capcontrol.noFeederSelected">Bank move for bank ''{0}'' failed: no feeder selected.</entry>
     
     <!-- CapControlType.java enum -->
     <entry key="yukon.web.modules.capcontrol.type.AREA">Area</entry>
