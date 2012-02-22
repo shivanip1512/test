@@ -33,10 +33,8 @@
         <property name="order" value="2"/>
     </bean>
 
-    <bean id="viewResolver"
-        class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-        <property name="viewClass"
-            value="org.springframework.web.servlet.view.JstlView" />
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
         <property name="prefix" value="/WEB-INF/pages/login/" />
     </bean>
     
@@ -44,11 +42,9 @@
         <property name="defaultThemeName" value="default"/>
     </bean>
 
-    <bean id="indexController" class="com.cannontech.web.login.IndexController">
-    </bean>
+    <bean id="indexController" class="com.cannontech.web.login.IndexController" />
 
-    <bean id="loginController"
-        class="com.cannontech.web.login.YukonLoginController">
+    <bean id="loginController" class="com.cannontech.web.login.YukonLoginController">
         <property name="methodNameResolver" ref="methodNameResolver" />
         <property name="loginService" ref="loginService"/>
         <property name="loginCookieHelper" ref="loginCookieHelper"/>
@@ -56,8 +52,7 @@
         <property name="urlAccessChecker" ref="urlAccessChecker"/>
     </bean>
 
-    <bean id="methodNameResolver"
-        class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+    <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
         <property name="defaultMethodName" value="view" />
         <property name="paramName" value="ACTION" />
         <property name="logicalMappings">
