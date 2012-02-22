@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api"
+    targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="ThermostatAndScheduleListResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:sequence>
+                        <xsd:element name="thermostatAndScheduleList" type="yukon:ThermostatAndScheduleList" />
+                    </xsd:sequence>
+                    <xsd:element name="failure" type="yukon:Failure" />
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="thermostatAndScheduleList">
+        <xsd:sequence>
+            <xsd:element name="account" type="yukon:Account"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="account">
+        <xsd:element name="accountId" type="yukon:SerialNumber" />
+        <xsd:complexType name="thermostat">
+            <xsd:element name="inventoryId" type="yukon:SerialNumber" />
+            <xsd:element name="deviceLabel" type="xsd:string" />
+            <xsd:element name="thermostatType" type="xsd:string" />
+            <xsd:sequence>
+                <xsd:element name="schedule">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="scheduleId" type="yukon:SerialNumber" />
+                            <xsd:element name="scheduleName" type="xsd:string" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+        </xsd:complexType>
+    </xsd:complexType>
+
+    <xsd:element name="thermostatAndScheduleListResponse" type="yukon:thermostatAndScheduleListResponse" />
+
+</xsd:schema>

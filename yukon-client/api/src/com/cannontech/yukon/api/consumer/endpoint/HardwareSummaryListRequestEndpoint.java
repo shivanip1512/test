@@ -21,7 +21,6 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
-import com.cannontech.yukon.api.stars.endpoint.RunThermostatProgramEndpoint;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.collect.Lists;
@@ -32,7 +31,7 @@ public class HardwareSummaryListRequestEndpoint {
 
     @Autowired private InventoryDao inventoryDao;
     private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
+    private Logger log = YukonLogManager.getLogger(HardwareSummaryListRequestEndpoint.class);
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="hardwareSummaryListRequest")
     public Element invoke(Element hardwareSummaryListRequest, CustomerAccount customerAccount) throws Exception {

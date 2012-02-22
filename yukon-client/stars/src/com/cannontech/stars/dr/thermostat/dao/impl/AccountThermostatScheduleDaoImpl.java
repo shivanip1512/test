@@ -341,12 +341,27 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         return schedules;
     }
     
+
+    @Override
+    public List<AccountThermostatSchedule> getAllAllowedSchedulesForAccountByType(int accountId, SchedulableThermostatType type) {
+        List<AccountThermostatSchedule> schedules = getAllSchedulesForAccountByType(accountId, type);
+        removeDisallowedSchedules(accountId, schedules);
+       
+        return schedules;
+    }
+    
     
     // ALL SCHEDULES FOR ACCOUNT BY TYPE and remove schedules which are not allowed for the specified user
     @Override
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
-        
         List<AccountThermostatSchedule> schedules = getAllSchedulesAndEntriesForAccountByTypes(accountId, types);
+        removeDisallowedSchedules(accountId, schedules);
+        
+        return schedules;
+    }
+    
+    //removes schedules which are not allowed for the specified user
+    private void removeDisallowedSchedules(int accountId, List<AccountThermostatSchedule> schedules){
         List<AccountThermostatSchedule> disallowedSchedules = Lists.newArrayList();
         Set<ThermostatScheduleMode> allowedModes = thermostatService.getAllowedThermostatScheduleModesByAccountId(accountId);
         
@@ -358,7 +373,6 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         }
         schedules.removeAll(disallowedSchedules);
         
-        return schedules;
     }
     
 	// GET NUMBER OF THERMOSTATS USING SCHEDULE
