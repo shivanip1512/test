@@ -24,6 +24,7 @@ using std::endl;
 using std::list;
 using std::make_pair;
 using std::queue;
+using std::pair;
 using namespace boost::posix_time;
 
 ptime::time_duration_type getRTCVerificationTimeoutDuration()
@@ -34,11 +35,6 @@ ptime::time_duration_type getRTCVerificationTimeoutDuration()
 CtiDeviceRTC::CtiDeviceRTC() :
 _millis(0)
 {
-}
-
-CtiDeviceRTC::CtiDeviceRTC(const CtiDeviceRTC &aRef)
-{
-    *this = aRef;
 }
 
 CtiDeviceRTC::~CtiDeviceRTC()
@@ -60,15 +56,6 @@ CtiDeviceRTC::~CtiDeviceRTC()
         _verification_objects.pop();
         delete pV;
     }
-}
-
-CtiDeviceRTC &CtiDeviceRTC::operator=(const CtiDeviceRTC &aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
 }
 
 INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
@@ -358,17 +345,12 @@ void CtiDeviceRTC::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
 }
 
-const CtiTableDeviceRTC& CtiDeviceRTC::getRTCTable() const
-{
-    return _rtcTable;
-}
-
 LONG CtiDeviceRTC::getAddress() const
 {
-    return getRTCTable().getRTCAddress();
+    return _rtcTable.getRTCAddress();
 }
 
-INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
 {
     INT status = NORMAL;
 
@@ -391,11 +373,6 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         }
 
         OutMessage= 0;
-
-        if(dqcnt)
-        {
-            *dqcnt = (UINT)_repeatList.size();
-        }
 
         status = QUEUED_TO_DEVICE;
     }
@@ -525,16 +502,9 @@ LONG CtiDeviceRTC::deviceQueueCommunicationTime() const
 
 LONG CtiDeviceRTC::deviceMaxCommunicationTime() const
 {
-    LONG maxtime = gConfigParms.getValueAsULong("PORTER_MAX_TRANSMITTER_TIME", 0);
-
-    return maxtime;
+    return gConfigParms.getValueAsULong("PORTER_MAX_TRANSMITTER_TIME", 0);
 }
 
-CtiDeviceRTC& CtiDeviceRTC::setRepeatTime(const CtiTime& aRef)
-{
-    _repeatTime = aRef;
-    return *this;
-}
 
 INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 {
@@ -552,150 +522,27 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
         if(OutMessage->Buffer.SASt._commandType == ControlRequest ||
            OutMessage->Buffer.SASt._commandType == PutConfigRequest)
         {
-            char codestr[256];
-            string code;
-            string cmdStr;
-
-            switch(OutMessage->Buffer.SASt._groupType)
-            {
-            case SA305:
-                {
-                    CtiProtocolSA305 prot( OutMessage->Buffer.SASt._buffer, OutMessage->Buffer.SASt._bufferLen );
-                    prot.setTransmitterType(getType());
-                    cmdStr = prot.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << CtiTime() << " " <<  getName() << ": " << cmdStr << endl;
-                    }
-                    break;
-                }
-            default:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << CtiTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
-                    }
-                    break;
-                }
-            }
+            writeCodeToSimulatorLog(OutMessage->Buffer.SASt);
 
             // Any repeats that are generated here should be sent out in the next cycle, or 5 minutes from now!
-            setRepeatTime( getExclusion().getNextTimeSlotOpen() );
+            _repeatTime = getExclusion().getNextTimeSlotOpen();
 
             if(OutMessage->Retry-- > 0)
             {
                 // This OM needs to be plopped on the retry queue!
                 CtiOutMessage *omcopy = new CtiOutMessage(*OutMessage);
-                queueRepeatToDevice(omcopy, NULL);
+                queueRepeatToDevice(omcopy);
             }
 
             msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
-            if( !OutMessage->VerificationSequence )
-            {
-                OutMessage->VerificationSequence = VerificationSequenceGen();
-            }
-
-            CtiVerificationWork *work = 0;
-            if( OutMessage->Buffer.SASt._code305[0] != '\0' )
-            {
-                memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
-                codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
-                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
-            }
-            else if( OutMessage->Buffer.SASt._code205 )
-            {
-                code = CtiNumStr(OutMessage->Buffer.SASt._code205).zpad(6);
-                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
-                }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, code, getRTCVerificationTimeoutDuration());
-            }
-            else if( OutMessage->Buffer.SASt._groupType == SADIG )
-            {
-                strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 7);
-                codestr[7] = 0;
-                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << cmdStr << endl;
-                }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
-            }
-            else
-            {
-                strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
-                codestr[6] = 0;
-                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
-                }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
-            }
-
-            if(work) _verification_objects.push(work);
+            addVerificationForOutMessage(*OutMessage);
 
             while( codecount <= gConfigParms.getValueAsULong("PORTER_SA_RTC_MAXCODES",35) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
             {
                 if( OutMessage->OutLength + 10 + rtcOutMessage->OutLength <= sizeof(OutMessage->Buffer.OutMessage) )     // 10 is for the time slot message.
                 {
-                    work = 0;
-                    if( !rtcOutMessage->VerificationSequence )
-                    {
-                        rtcOutMessage->VerificationSequence = VerificationSequenceGen();
-                    }
-
-                    if( rtcOutMessage->Buffer.SASt._code305[0] != '\0' )
-                    {
-                        memcpy((void*)codestr, (void*)(rtcOutMessage->Buffer.SASt._code305), rtcOutMessage->Buffer.SASt._bufferLen);
-                        codestr[rtcOutMessage->Buffer.SASt._bufferLen + 1] = 0;
-                        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
-                    }
-                    else if( rtcOutMessage->Buffer.SASt._code205 )
-                    {
-                        code = CtiNumStr(rtcOutMessage->Buffer.SASt._code205).zpad(6);
-                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
-                        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << cmdStr << endl;
-                        }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, code, getRTCVerificationTimeoutDuration());
-                    }
-                    else if( rtcOutMessage->Buffer.SASt._groupType == SADIG )
-                    {
-                        strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 7);
-                        codestr[7] = 0;
-                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
-                        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << cmdStr << endl;
-                        }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *rtcOutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
-                    }
-                    else
-                    {
-                        strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
-                        codestr[6] = 0;
-                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
-                        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
-                        }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
-                    }
-
-                    if(work) _verification_objects.push(work);
+                    addVerificationForOutMessage(*rtcOutMessage);
 
                     now = now.now();
                     codecount++;
@@ -704,38 +551,12 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
                     msgMillis += messageDuration(rtcOutMessage->Buffer.SASt._groupType);
 
-                    switch(rtcOutMessage->Buffer.SASt._groupType)
-                    {
-                    case SA305:
-                        {
-                            CtiProtocolSA305 prot( rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->Buffer.SASt._bufferLen );
-                            prot.setTransmitterType(getType());
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << CtiTime() << " " <<  getName() << ": " << prot.asString() << endl;
-                            }
-                            if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " <<  getName() << ": " << prot.asString() << endl;
-                            }
-                            break;
-                        }
-                    default:
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << CtiTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt) << endl;
-                            }
-                            break;
-                        }
-                    }
+                    writeCodeToSimulatorLog(rtcOutMessage->Buffer.SASt);
 
                     if(rtcOutMessage->Retry-- > 0)
                     {
                         // This OM needs to be plopped on the retry queue!
-                        queueRepeatToDevice(rtcOutMessage, NULL);
-
+                        queueRepeatToDevice(rtcOutMessage);
                     }
 
                     delete rtcOutMessage;
@@ -797,6 +618,93 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 }
 
 
+void CtiDeviceRTC::writeCodeToSimulatorLog(const CtiSAData &SASt) const
+{
+    if( SASt._groupType == SA305 )
+    {
+        CtiProtocolSA305 prot( SASt._buffer, SASt._bufferLen );
+        prot.setTransmitterType(getType());
+        string cmdStr = prot.getDescription();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << CtiTime() << " " <<  getName() << ": " << cmdStr << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(slog);
+        slog << CtiTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(SASt) << endl;
+    }
+}
+
+
+void CtiDeviceRTC::addVerificationForOutMessage(CtiOutMessage &OutMessage)
+{
+    string code;
+    string cmdStr;
+
+    const ptime::time_duration_type timeout = getRTCVerificationTimeoutDuration();
+
+    if( !OutMessage.VerificationSequence )
+    {
+        OutMessage.VerificationSequence = VerificationSequenceGen();
+    }
+
+    if( OutMessage.Buffer.SASt._code305[0] != '\0' )
+    {
+        CtiProtocolSA305 prot( OutMessage.Buffer.SASt._buffer, OutMessage.Buffer.SASt._bufferLen );
+        prot.setTransmitterType(getType());
+
+        cmdStr = prot.getDescription();
+        code   = prot.getAsciiString();
+
+        _verification_objects.push(new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, OutMessage, cmdStr, code, timeout));
+    }
+    else if( OutMessage.Buffer.SASt._code205 )
+    {
+        code = CtiNumStr(OutMessage.Buffer.SASt._code205).zpad(6);
+        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage.Buffer.SASt);
+        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
+        }
+        _verification_objects.push(new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, OutMessage, cmdStr, code, timeout));
+    }
+    else if( OutMessage.Buffer.SASt._groupType == SADIG )
+    {
+        char codestr[8];
+        strncpy(codestr, OutMessage.Buffer.SASt._codeSimple, 7);
+        codestr[7] = 0;
+        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage.Buffer.SASt);
+        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << cmdStr << endl;
+        }
+        _verification_objects.push(new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, OutMessage, cmdStr, codestr, timeout));
+    }
+    else
+    {
+        char codestr[7];
+        strncpy(codestr, OutMessage.Buffer.SASt._codeSimple, 6);
+        codestr[6] = 0;
+        string golay_codestr;
+        golay_codestr  = codestr;
+        golay_codestr += "-";
+        golay_codestr += CtiNumStr(OutMessage.Buffer.SASt._function - 1);  // 0-based to match the RTM's return
+
+        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage.Buffer.SASt);
+        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
+        }
+        _verification_objects.push(new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, OutMessage, cmdStr, golay_codestr, timeout));
+    }
+}
+
+
 void CtiDeviceRTC::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {
     while( !_verification_objects.empty() )
@@ -808,23 +716,12 @@ void CtiDeviceRTC::getVerificationObjects(queue< CtiVerificationBase * > &work_q
 }
 
 
-
-ULONG CtiDeviceRTC::messageDuration(int groupType)
+ULONG CtiDeviceRTC::messageDuration(const int groupType)
 {
-    ULONG millitime;
-
-    if(groupType == SA205)
+    switch( groupType )
     {
-        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
+        case SA205:  return gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
+        case SA305:  return gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_305_CODE", 1000);
+        default:     return gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 250);
     }
-    else if(groupType == SA305)
-    {
-        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_305_CODE", 1000);
-    }
-    else
-    {
-        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 250);
-    }
-
-    return millitime;
 }

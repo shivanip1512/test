@@ -1925,54 +1925,6 @@ FLOAT FltLittleEndian(FLOAT *BigEndianFloat)
 
 }
 
-DOUBLE DblLittleEndian(DOUBLE *BigEndianDouble)
-{
-   /* This guy is in charge of doing the shuffle royale */
-
-   union
-   {
-      DOUBLE   db;
-      CHAR     ch[8];
-   } Flipper;
-
-   DOUBLE *dptr = (DOUBLE*) BigEndianDouble;    // We point at the first byte of the destination.
-
-   CHAR   *cptr = (CHAR *) BigEndianDouble;
-
-   Flipper.ch[7] = *cptr++;
-   Flipper.ch[6] = *cptr++;
-   Flipper.ch[5] = *cptr++;
-   Flipper.ch[4] = *cptr++;
-   Flipper.ch[3] = *cptr++;
-   Flipper.ch[2] = *cptr++;
-   Flipper.ch[1] = *cptr++;
-   Flipper.ch[0] = *cptr++;
-
-   *dptr = Flipper.db;
-
-   return *dptr;
-}
-
-void BDblLittleEndian(CHAR *BigEndianBDouble)
-{
-   /* This guy is in charge of doing the shuffle royale */
-
-   CHAR     Flipper[9];
-   CHAR   *cptr = BigEndianBDouble;
-
-   Flipper[8] = *cptr++;
-   Flipper[7] = *cptr++;
-   Flipper[6] = *cptr++;
-   Flipper[5] = *cptr++;
-   Flipper[4] = *cptr++;
-   Flipper[3] = *cptr++;
-   Flipper[2] = *cptr++;
-   Flipper[1] = *cptr++;
-   Flipper[0] = *cptr++;
-
-   ::memcpy(BigEndianBDouble, Flipper, 9);
-}
-
 /* Function to return system time in milliseconds */
 ULONG MilliTime (PULONG MilliSeconds)
 {
@@ -2341,43 +2293,6 @@ string explainTags(const unsigned tags)
     return str;
 }
 
-
-IM_EX_CTIBASE unsigned char addBitToSA305CRC(unsigned char crc, unsigned char bit) // bit is 0 or 1
-{
-    unsigned char msb = ((crc&0x80)?1:0);
-    bit = msb ^ bit;
-    crc<<=1;
-    crc|=bit;
-    if (bit)
-        crc^=0x48;
-
-    return(crc);
-}
-
-IM_EX_CTIBASE unsigned char addOctalCharToSA305CRC(unsigned char crc, unsigned char ch) // octal char
-{
-    int i=0;
-    ch-='0';
-    for (i=0; i<3; i++)
-    {
-        crc = addBitToSA305CRC(crc, ch&0x04?1:0);
-        ch<<=1;
-    }
-    return(crc);
-}
-
-IM_EX_CTIBASE void testSA305CRC(char* testData)
-{
-    unsigned i;
-    unsigned char crc=0;
-    for (i=0; i<::strlen(testData)-3; i++)
-        crc = addOctalCharToSA305CRC(crc,testData[i]);
-    // shift in one false 0
-    crc = addBitToSA305CRC(crc, 0);
-    printf("%o\r\n",crc);
-
-    return;
-}
 
 IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length)
 {

@@ -1,102 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_grp_golay
-*
-* Date:   4/21/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
-*
-* HISTORY      :
-* $Log: dev_grp_golay.cpp,v $
-* Revision 1.24  2008/10/28 19:21:42  mfisher
-* YUK-6589 Scanner should not load non-scannable devices
-* refreshList() now takes a list of paoids, which may be empty if it's a full reload
-* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
-* Removed a couple unused Porter functions
-* Added logger unit test
-* Simplified DebugTimer's variables
-*
-* Revision 1.23  2008/08/14 15:57:39  jotteson
-* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
-* Cancellation now uses the new group message ID.
-* Group Message ID name added to Request, Result, Out, and In messages.
-*
-* Revision 1.22  2007/08/27 18:27:10  jotteson
-* YUK-4279
-* Added function to remove the dynamic text from control command strings.
-*
-* Revision 1.21  2006/04/17 20:12:07  cplender
-* Altered the processing of golay operational addresses to fully support F1,2,3 & 4
-*
-* Revision 1.20  2006/02/27 23:58:30  tspar
-* Phase two of RWTPtrSlist replacement.
-*
-* Revision 1.19  2006/02/24 00:19:11  tspar
-* First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
-*
-* Revision 1.18  2006/02/17 17:04:34  tspar
-* CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
-*
-* Revision 1.17  2006/01/16 20:48:25  mfisher
-* Message Flags naming change
-*
-* Revision 1.16  2005/12/20 17:20:21  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.15  2005/10/25 14:36:22  cplender
-* Have reportControlStart use the command sent as the last command... it is for these guys.
-*
-* Revision 1.14  2005/09/02 16:19:46  cplender
-* Modified the getPutConfigAssignment() method to allow modifier parameters.
-*
-* Revision 1.13  2005/07/25 16:38:04  cplender
-* Golay receivers cannot epire an OM in less than 15 minutes.
-*
-* Revision 1.12  2005/04/15 19:04:10  mfisher
-* got rid of magic number debuglevel checks
-*
-* Revision 1.11  2005/02/17 23:22:31  cplender
-* Removed deletes of OutMessage that are unnecessary
-*
-* Revision 1.10  2005/02/17 19:02:58  mfisher
-* Removed space before CVS comment header, moved #include "precompiled.h"
-//#include "yukon.h" after CVS header
-*
-* Revision 1.9  2005/02/10 23:23:59  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.8  2005/01/27 17:50:44  cplender
-* Added method reportActionItemsToDispatch()
-*
-* Revision 1.7  2004/12/02 22:15:13  cplender
-* Added OM-ExpirationTime to the device queue processing.
-*
-* Revision 1.6  2004/12/01 20:12:49  cplender
-* Default "control_reduction" is 100, not -1.
-*
-* Revision 1.5  2004/06/28 16:40:40  cplender
-* Added toUpper on the string responses to FORCE case insensitivity.
-*
-* Revision 1.4  2004/06/23 13:16:58  cplender
-* Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
-*
-* Revision 1.3  2004/05/24 13:49:46  cplender
-* Set retries to 0 for all but 205 commands.
-*
-* Revision 1.2  2004/05/10 22:35:28  cplender
-* Controls require
-* OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC
-*
-* Revision 1.1  2004/04/29 20:23:49  cplender
-* IR
-*
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "cmdparse.h"
@@ -114,30 +15,18 @@ using std::string;
 using std::endl;
 using std::list;
 
-//===================================================================================================================
-//===================================================================================================================
-
 CtiDeviceGroupGolay::CtiDeviceGroupGolay()
 {
 }
-
-//===================================================================================================================
-//===================================================================================================================
 
 CtiDeviceGroupGolay::CtiDeviceGroupGolay(const CtiDeviceGroupGolay& aRef)
 {
     *this = aRef;
 }
 
-//===================================================================================================================
-//===================================================================================================================
-
 CtiDeviceGroupGolay::~CtiDeviceGroupGolay()
 {
 }
-
-//===================================================================================================================
-//===================================================================================================================
 
 CtiDeviceGroupGolay& CtiDeviceGroupGolay::operator=(const CtiDeviceGroupGolay& aRef)
 {
@@ -150,33 +39,21 @@ CtiDeviceGroupGolay& CtiDeviceGroupGolay::operator=(const CtiDeviceGroupGolay& a
     return *this;
 }
 
-//===================================================================================================================
-//===================================================================================================================
-
 CtiTableSASimpleGroup CtiDeviceGroupGolay::getLoadGroup() const
 {
     return _loadGroup;
 }
-
-//===================================================================================================================
-//===================================================================================================================
 
 CtiTableSASimpleGroup& CtiDeviceGroupGolay::getLoadGroup()
 {
     return _loadGroup;
 }
 
-//===================================================================================================================
-//===================================================================================================================
-
 CtiDeviceGroupGolay& CtiDeviceGroupGolay::setLoadGroup(const CtiTableSASimpleGroup& aRef)
 {
     _loadGroup = aRef;
     return *this;
 }
-
-//===================================================================================================================
-//===================================================================================================================
 
 LONG CtiDeviceGroupGolay::getRouteID()
 {
@@ -199,9 +76,6 @@ string CtiDeviceGroupGolay::getDescription(const CtiCommandParser & parse) const
     return tmpStr;
 }
 
-//===================================================================================================================
-//===================================================================================================================
-
 string CtiDeviceGroupGolay::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
@@ -214,9 +88,6 @@ string CtiDeviceGroupGolay::getSQLCoreStatement() const
     return sqlCore;
 }
 
-//===================================================================================================================
-//===================================================================================================================
-
 void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
@@ -228,9 +99,6 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
     _loadGroup.DecodeDatabaseReader(rdr);
 }
-
-//===================================================================================================================
-//===================================================================================================================
 
 INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

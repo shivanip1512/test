@@ -1,11 +1,12 @@
 #pragma once
 
-#include <list>
 #include "dev_remote.h"
 #include "queue.h"
 #include "tbl_dv_rtc.h"
 
-class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote
+#include <list>
+
+class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote, boost::noncopyable
 {
 private:
 
@@ -13,15 +14,13 @@ private:
 
     LONG _millis;
 
-    static ULONG messageDuration(int groupType);
+    static ULONG messageDuration(const int groupType);
 
     std::queue< CtiVerificationBase * > _verification_objects;
 
-public:
+protected:
 
     typedef std::list< std::pair< CtiTime, CtiOutMessage* > > CtiRepeatCol;
-
-protected:
 
     CtiTableDeviceRTC _rtcTable;
 
@@ -30,16 +29,14 @@ protected:
     CtiTime _repeatTime;                                             // This is the time assigned to any OM placed on the list!
     CtiRepeatCol _repeatList;
 
+    INT queueRepeatToDevice(OUTMESS *&OutMessage);
+    void addVerificationForOutMessage(CtiOutMessage &OutMessage);
+    void writeCodeToSimulatorLog(const CtiSAData &SASt) const;
+
 public:
 
     CtiDeviceRTC();
-    CtiDeviceRTC(const CtiDeviceRTC& aRef);
     virtual ~CtiDeviceRTC();
-
-    CtiDeviceRTC& operator=(const CtiDeviceRTC& aRef);
-    CtiDeviceRTC& setRepeatTime(const CtiTime& aRef);
-
-    const CtiTableDeviceRTC& getRTCTable() const;
 
     virtual std::string getSQLCoreStatement() const;
 
@@ -54,8 +51,6 @@ public:
     virtual LONG deviceQueueCommunicationTime() const;
     virtual LONG deviceMaxCommunicationTime() const;
 
-    INT queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
-
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
     INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
@@ -65,5 +60,4 @@ public:
 
     INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
     void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
-
 };

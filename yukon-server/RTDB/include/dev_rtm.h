@@ -37,6 +37,8 @@ class IM_EX_DEVDB CtiDeviceRTM : public CtiDeviceIED
 
     unsigned long findHeader(unsigned char *buf, unsigned long len);
 
+protected:
+
     static bool tryDecodeAsSA305(const UCHAR *abuf, const INT len, string &code, string &cmd);
 
 public:

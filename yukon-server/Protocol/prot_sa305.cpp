@@ -105,7 +105,7 @@ _percentageOff(0)
 {
 }
 
-CtiProtocolSA305::CtiProtocolSA305(BYTE *bytestr, UINT bytelen) :
+CtiProtocolSA305::CtiProtocolSA305(const BYTE *bytestr, UINT bytelen) :
 _padBits(0),
 _startBits(4),
 _transmitterType(0),
@@ -636,16 +636,6 @@ void CtiProtocolSA305::addressMessage(int command_type, int command_description)
     return;
 }
 
-void CtiProtocolSA305::terminateMessage()
-{
-    return;
-}
-
-void CtiProtocolSA305::resolveAddressLevel()
-{
-    return;
-}
-
 INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
     INT  i;
@@ -1094,7 +1084,7 @@ int CtiProtocolSA305::buildHexMessage(CHAR *buffer) const      // Returns the le
 
         if(_transmitterType == TYPE_RTC)
         {
-            int ltf = _messageBits.size() / 8 + (_messageBits.size() % 8 ? 1 : 0);
+            int ltf = (_messageBits.size() + 7) / 8;
 
             buffer[bufpos++] = (CHAR)(0xa0 | (0x0f & _transmitterAddress));         // byte 1 of the RTC preamble
             rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
@@ -1167,14 +1157,60 @@ string CtiProtocolSA305::getBitString() const
     return _bitStr;
 }
 
-string  CtiProtocolSA305::asString() const
+string CtiProtocolSA305::getAsciiString() const
+{
+    vector<BYTE>::const_iterator itr = _messageBits.begin();
+    vector<BYTE>::const_iterator end = _messageBits.end();
+
+    if(_transmitterType == TYPE_RTC)
+    {
+        itr += 34;  //  Skip the RTC-specific bits
+        end -=  8;
+    }
+
+    vector<unsigned> nibbles;
+
+    while( itr != end )
+    {
+        unsigned nibble = 0;
+
+        for( unsigned bit = 0; bit < 4; ++bit )
+        {
+            nibble <<= 1;
+
+            if( itr != end )
+            {
+                nibble |= *itr++;
+            }
+        }
+
+        nibbles.push_back(nibble);
+    }
+
+    ostringstream ascii;
+
+    ascii << std::hex;  //  print the nibbles as lowercase hex characters instead of decimal digits
+
+    std::copy(nibbles.begin(), nibbles.end(), ostream_iterator<unsigned>(ascii));
+
+    return ascii.str();
+}
+
+string  CtiProtocolSA305::getDescription() const
 {
     string rstr;
     UINT bit = 0;       // This is just past the Uaddr.
 
-    rstr += "SA 305 - code. ";
+    if(_transmitterType == TYPE_RTC)  getBits(bit,34);  // RTC specific - 4 bytes of RTC header, 2 padding bits
 
-    if(_transmitterType == TYPE_RTC)  getBits(bit,37);  // RTC crud.
+    const UINT start_bits = getBits(bit,3);
+
+    switch( start_bits )
+    {
+        case 5:  rstr += "SA 326 - code. ";  break;
+        case 4:  rstr += "SA 305 - code. ";  break;
+        default: rstr += "Unknown (" + CtiNumStr(start_bits) + ") - code. ";  break;
+    }
 
     UINT flag = getBits(bit,6);   // 6 bits of flag.
 

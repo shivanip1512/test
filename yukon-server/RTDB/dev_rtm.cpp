@@ -429,16 +429,6 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - No code length for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-
-                        if( _code_len > 200 || _code_len < 0 )
-                        {
-                            _state = State_Complete;
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - invalid code length (" << _code_len << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
                     }
                     else if( _code_len > 200 || _code_len <= 0 )
                     {
@@ -563,17 +553,34 @@ bool CtiDeviceRTM::tryDecodeAsSA305(const UCHAR *abuf, const INT len, string &co
 {
     std::vector<unsigned char> buffer;
 
-    if( len % 2 || len < 12 )
+    static const unsigned
+        MinimumSa305Bits    = 39,
+        MinimumSa305Bytes   = (MinimumSa305Bits + 7) / 8,
+        RtmHeaderBytes      = 5,
+        RtmCrcBytes         = 1,
+        MinimumMessageBytes = RtmHeaderBytes + MinimumSa305Bytes + RtmCrcBytes;
+
+    if( len % 2 || len < MinimumMessageBytes * 2 )
     {
         return false;
     }
 
-    //  Convert from ASCII digits to bytes
+    //  Convert from ASCII hex digits to bytes
     for( int i = 0; i < len; i += 2 )
     {
         char num[3] = { abuf[i], abuf[i+1], 0 };
+        char *endptr;
 
-        buffer.push_back(strtoul(num, NULL, 16));
+        unsigned long result = strtoul(num, &endptr, 16);
+
+        if( endptr == (num + 2) )
+        {
+            buffer.push_back(result);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //  Two example 305 inbounds.
@@ -587,10 +594,17 @@ bool CtiDeviceRTM::tryDecodeAsSA305(const UCHAR *abuf, const INT len, string &co
     30 32 39 30 39 31 30 46 45 30 32 30 35 33
     */
 
-/*
-    CtiProtocolSA305 prot(&buffer[5], buffer.size() - 5);
-*/
-    return false;
+    CtiProtocolSA305 prot(&buffer[RtmHeaderBytes], buffer.size() - RtmHeaderBytes - RtmCrcBytes);  //  exclude the last byte, since it's a CRC or something
+
+    prot.setTransmitterType(TYPE_SYSTEM);  //  anything but TYPE_RTC.
+
+    cmd = prot.getDescription();
+
+    code.assign(abuf + RtmHeaderBytes * 2, abuf + len - RtmCrcBytes * 2);
+
+    CtiToLower(code);  //  make it match prot_sa305, just in case
+
+    return true;
 }
 
 

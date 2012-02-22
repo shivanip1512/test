@@ -144,8 +144,6 @@ IM_EX_CTIBASE USHORT  CCITT16CRC(INT Id, BYTE* buffer, LONG length, BOOL bAdd);
 
 IM_EX_CTIBASE USHORT  ShortLittleEndian(USHORT *ShortEndianFloat);
 IM_EX_CTIBASE FLOAT   FltLittleEndian(FLOAT  *BigEndianFloat);
-IM_EX_CTIBASE DOUBLE  DblLittleEndian(DOUBLE *BigEndianDouble);
-IM_EX_CTIBASE void    BDblLittleEndian(CHAR *BigEndianBDouble);
 
 IM_EX_CTIBASE ULONG   MilliTime (PULONG);
 
@@ -159,11 +157,6 @@ IM_EX_CTIBASE void cleanupOutMessages(void *unusedptr, void* d);
 IM_EX_CTIBASE std::string explainTags(const unsigned tags);
 
 IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length);
-
-IM_EX_CTIBASE unsigned char addBitToSA305CRC(unsigned char crc, unsigned char bit); // bit is 0 or 1
-IM_EX_CTIBASE unsigned char addOctalCharToSA305CRC(unsigned char crc, unsigned char ch); // octal char
-
-IM_EX_CTIBASE void testSA305CRC(char* testData);
 
 IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
 IM_EX_CTIBASE std::vector< std::vector<std::string> > getLmXmlParametersByGroupId(long groupId);

@@ -85,8 +85,6 @@ private:
 
     void resetMessage();
     void addressMessage(int command_type = CommandTypeOperationFlag, int command_description = CommandDescription_DIMode);
-    void terminateMessage();
-    void resolveAddressLevel();
     INT assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage);
     INT assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
@@ -112,7 +110,7 @@ private:
 public:
 
     CtiProtocolSA305();
-    CtiProtocolSA305(BYTE *bytestr, UINT bytelen);
+    CtiProtocolSA305(const BYTE *bytestr, UINT bytelen);
 
     int parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
@@ -124,5 +122,6 @@ public:
     void setTransmitterType( int trans );
 
     std::string getBitString() const;
-    std::string asString() const;
+    std::string getAsciiString() const;
+    std::string getDescription() const;
 };
