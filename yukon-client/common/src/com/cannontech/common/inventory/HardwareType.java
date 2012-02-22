@@ -67,16 +67,16 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     // consumer.xml
     private final static String keyPrefix = "yukon.dr.consumer.hardware.type.";
     
-    private int definitionId;
-    private InventoryCategory inventoryCategory;
-    private HardwareClass hardwareClass;
-    private HardwareConfigType hardwareConfigType;
+    private final int definitionId;
+    private final InventoryCategory inventoryCategory;
+    private final HardwareClass hardwareClass;
+    private final HardwareConfigType hardwareConfigType;
     
-    private static ImmutableSet<HardwareType> zigbeeTypes;
-    private static ImmutableSet<HardwareType> zigbeeEndpointTypes;
-    private static ImmutableSet<HardwareType> validForChangeType;
-    private static ImmutableSet<HardwareType> utilityPROTypes;
-    private static ImmutableSet<HardwareType> autoModeEnableTypes;
+    private final static ImmutableSet<HardwareType> zigbeeTypes;
+    private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
+    private final static ImmutableSet<HardwareType> validForChangeType;
+    private final static ImmutableSet<HardwareType> utilityPROTypes;
+    private final static ImmutableSet<HardwareType> autoModeEnableTypes;
     static {
         Builder<HardwareType> builder = ImmutableSet.builder();
         builder.add(UTILITY_PRO_ZIGBEE);

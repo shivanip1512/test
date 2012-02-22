@@ -49,6 +49,7 @@ jQuery(function() {
         if (uriSelect.val() == 'other') {
             uriInput.show();
             uriInput.focus();
+            uriInput.select();
         } else {
             uriInput.hide();
         }
@@ -114,7 +115,7 @@ jQuery(function() {
                     </c:forEach>
                     <option value="other"><cti:msg2 key=".otherUri"/></option>
                 </select>
-                <input style="display: none" type="text" id="uriInput">
+                <input style="display: none" type="text" id="uriInput" value="${uris[0]}">
                 <input type="hidden" id="uriHidden" name="uri">
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".username">

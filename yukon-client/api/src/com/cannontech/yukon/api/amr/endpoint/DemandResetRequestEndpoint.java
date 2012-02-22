@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.pao.service.PaoSelectionService.PaoSelectionData;
 import com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType;
@@ -31,14 +32,14 @@ import com.google.common.collect.Sets;
 
 @Endpoint
 public class DemandResetRequestEndpoint {
-    private static final Logger log = YukonLogManager.getLogger(DemandResetRequestEndpoint.class);
+    private final static Logger log = YukonLogManager.getLogger(DemandResetRequestEndpoint.class);
     private final static Namespace ns = YukonXml.getYukonNamespace();
 
     @Autowired private PaoSelectionService paoSelectionService;
     @Autowired private DemandResetService demandResetService;
 
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "demandResetRequest")
-    public Element invoke(Element demandResetRequest, LiteYukonUser user) throws Exception {
+    public Element invoke(Element demandResetRequest, LiteYukonUser user) {
         XmlVersionUtils.verifyYukonMessageVersion(demandResetRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         Element response = new Element("demandResetResponse", ns);
@@ -52,9 +53,10 @@ public class DemandResetRequestEndpoint {
 
             // TODO:  do some overall checks--e.g. is porter up?
 
-            Element resetsRequestedElem = new Element("resetsRequested");
-            List<Element> lookupErrorElems = Lists.newArrayList();
-            List<Element> errorElems = Lists.newArrayList();
+            Element resetsRequestedElem = new Element("resetsRequested", ns);
+            Element lookupFailureElem = new Element("lookupError", ns);
+            boolean hasLookupFailures = false;
+            final List<Element> errorElems = Lists.newArrayList();
 
             PaoSelectionData paoData =
                     paoSelectionService.selectPaoIdentifiersByType(paoCollectionNode);
@@ -62,35 +64,30 @@ public class DemandResetRequestEndpoint {
                 PaoSelectorType selectorType = entry.getKey();
                 List<String> lookupFailures = entry.getValue();
                 if (!lookupFailures.isEmpty()) {
-                    Element lookupFailureElem = new Element("lookupError");
                     for (String lookupFailure : lookupFailures) {
-                        Element paoElement = new Element(selectorType.getElementName());
+                        Element paoElement = new Element(selectorType.getElementName(), ns);
                         paoElement.setAttribute("value", lookupFailure);
                         lookupFailureElem.addContent(paoElement);
                     }
-                    lookupErrorElems.add(lookupFailureElem);
+                    hasLookupFailures = true;
                 }
             }
 
             Set<PaoIdentifier> devices = paoData.getPaoDataById().keySet();
-            Set<PaoIdentifier> validDevices =
+            final Set<PaoIdentifier> validDevices =
                     Sets.newHashSet(demandResetService.validDevices(devices));
             Set<PaoIdentifier> invalidDevices = Sets.difference(devices, validDevices);
             for (PaoIdentifier invalidDevice : invalidDevices) {
-                Element errorElem = new Element("error");
-                errorElem.setAttribute("errorCode", ErrorCode.UNSUPPORTED_DEVICE.getXmlValue());
-                Element paoElement = new Element(PaoSelectorType.PAO_ID.getElementName());
-                paoElement.setAttribute("value", Integer.toString(invalidDevice.getPaoId()));
-                errorElem.addContent(paoElement);
-                errorElems.add(errorElem);
+                errorElems.add(makeErrorElement(invalidDevice, ErrorCode.UNSUPPORTED_DEVICE));
             }
-
-            resetsRequestedElem.setAttribute("initiated", Integer.toString(validDevices.size()));
 
             demandResetService.sendDemandReset(validDevices, user);
 
+            resetsRequestedElem.setAttribute("initiated", Integer.toString(validDevices.size()));
             response.addContent(resetsRequestedElem);
-            response.addContent(lookupErrorElems);
+            if (hasLookupFailures) {
+                response.addContent(lookupFailureElem);
+            }
             response.addContent(errorElems);
 
         } catch (XmlValidationException xmle) {
@@ -116,5 +113,18 @@ public class DemandResetRequestEndpoint {
         }
 
         return response;
+    }
+
+    private Element makeErrorElement(YukonPao pao, ErrorCode errorCode) {
+        Element errorElem = new Element("error", ns);
+        errorElem.setAttribute("errorCode", errorCode.getXmlValue());
+        errorElem.addContent(makePaoElement(pao));
+        return errorElem;
+    }
+
+    private Element makePaoElement(YukonPao pao) {
+        Element paoElement = new Element(PaoSelectorType.PAO_ID.getElementName(), ns);
+        paoElement.setAttribute("value", Integer.toString(pao.getPaoIdentifier().getPaoId()));
+        return paoElement;
     }
 }

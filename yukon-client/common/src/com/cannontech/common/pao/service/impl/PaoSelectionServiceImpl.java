@@ -172,16 +172,20 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
             }
 
             Set<DeviceGroup> groups = Sets.newHashSet();
+            Set<String> myFailures = Sets.newHashSet();
             for (String groupName : groupNames) {
                 DeviceGroup group = deviceGroupService.findGroupName(groupName);
                 if (group == null) {
                     if (lookupFailures != null) {
-                        groupNames.remove(groupName);
                         lookupFailures.add(groupName);
+                        myFailures.add(groupName);
                     }
                 } else {
                     groups.add(group);
                 }
+            }
+            if (lookupFailures != null) {
+                groupNames.removeAll(myFailures);
             }
             Set<SimpleDevice> devices = deviceGroupService.getDevices(groups);
 
