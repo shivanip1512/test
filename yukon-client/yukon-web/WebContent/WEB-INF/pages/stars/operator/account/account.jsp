@@ -64,6 +64,10 @@
     		
     		jQuery(document).delegate("#passwordDialog", 'e_updatePassword', updatePassword);
             jQuery(document).delegate("a.f_resetPasswordDialog", 'click', resetPasswordDialog);
+            jQuery(document).delegate(".f_prepPasswordFields", 'click', prepPasswordFields);
+            jQuery(document).delegate(".f_generatePassword", 'click', generatePassword);
+            jQuery(document).delegate(".f_deleteLogin", "click", function(){jQuery('#confirmDeleteLoginDialog').show();});
+           
     	});
 
     	function toggleCommercialInputs(isCommercial) {
@@ -111,7 +115,7 @@
             new jQuery.ajax({
                     url: '/spring/stars/operator/account/generatePassword',
                     success: function(data) {
-                         jQuery("#password1, #password2, #loginBackingBean\\.password1, #loginBackingBean\\.password2").each(function(){
+                         jQuery(".password_editor_field").each(function(){
                              this.value = data;
                          });
                         // Check and show the password fields
@@ -124,14 +128,24 @@
 
         function showPassword() {
             var type = jQuery("#showPasswordCheckbox:checked").length ? 'text' : 'password'; 
-            jQuery("#password1, #password2, #loginBackingBean\\.password1, #loginBackingBean\\.password2").each(function(){
-                this.type = type;
+            jQuery(".password_editor_field:password").each(function(){
+                var input = jQuery(this);
+                if(type == 'text'){
+                    input.hide();
+                    input.siblings("input:text").show().val(input.val());
+                }else{
+                    input.siblings("input:text").hide();
+                    //ugly, but works because we have a 1:1 mapping on the fields
+                    input.show().val(input.siblings("input:text").val());
+                }
             });
         }
         
         function updatePassword(event){
             jQuery("#passwordDialog").removeMessage();
             jQuery("#passwordDialog .error").removeClass('error');
+            
+            prepPasswordFields();
             
             if(jQuery("#password1").val().length == 0 && jQuery("#password2").val().length == 0){
                 jQuery("#passwordDialog").addMessage({
@@ -160,6 +174,18 @@
                         }
                         jQuery("#passwordDialog").addMessage({message: data, messageClass: 'error'});
                 }});
+            }
+        }
+        
+        function prepPasswordFields(){
+            debug('prepping password fields!');
+          //if we are showing the plain-text fields, copy them over to the password fields
+            if(jQuery("#showPasswordCheckbox:checked").length > 0){
+                jQuery(".password_editor_field:password").each(function(){
+                    var input = jQuery(this);
+                    //ugly, but works because we have a 1:1 mapping on the fields
+                    input.val(input.siblings("input:text").val());
+                });
             }
         }
         
@@ -332,14 +358,20 @@
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                                     <c:if test="${supportsPasswordSet and empty passwordBean}">
+                                        
+                                        <!-- IE does not support changing the 'type' attribute on input fields.
+                                             hence, what you see below in regards to the duplicate password fields -->
+                                        <div class="password_editor">
                                         <tags:nameValue2 nameKey=".newPassword">
-                                            <tags:password path="loginBackingBean.password1" autocomplete="false"/>
+                                            <input type="text" class="dn password_editor_field" id="password1-plain" autocomplete="false" maxlength="64"/>
+                                            <tags:password path="loginBackingBean.password1" cssClass="password_editor_field" autocomplete="false"/>
                                         </tags:nameValue2>
                                         <tags:nameValue2 nameKey=".confirmPassword">
-                                            <tags:password path="loginBackingBean.password2" autocomplete="false"/>
+                                            <input type="text" class="dn password_editor_field" id="password2-plain" autocomplete="false" maxlength="64"/>
+                                            <tags:password path="loginBackingBean.password2" cssClass="password_editor_field" autocomplete="false"/>
                                         </tags:nameValue2>
                                         <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                                            <button type="button" onclick="generatePassword();"><i:inline key=".generatePassword"/></button>
+                                            <button type="button" class="f_generatePassword"><i:inline key=".generatePassword"/></button>
                                             <br>
                                             <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()" /> <i:inline key=".showPassword"/>
                                         </tags:nameValue2>
@@ -352,7 +384,7 @@
                             <c:if test="${loginMode eq 'EDIT'}">
                                 <br/>
                                 <br/>
-                                <span style="float:right;padding-top:3px;"><button type="button" onclick="jQuery('#confirmDeleteLoginDialog').show()"><i:inline key=".deleteLogin"/></button></span>
+                                <span style="float:right;padding-top:3px;"><button type="button" class="f_deleteLogin"><i:inline key=".deleteLogin"/></button></span>
                             </c:if>
                         </cti:displayForPageEditModes>
                         
@@ -369,7 +401,7 @@
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <cti:displayForPageEditModes modes="EDIT">
-                    <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                    <cti:button nameKey="save" type="submit" styleClass="f_blocker f_prepPasswordFields"/>
                     <button type="button" onclick="jQuery('#confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
  		            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
 			            <cti:param name="accountId" value="${accountId}"/>
@@ -378,7 +410,7 @@
                 </cti:displayForPageEditModes>
             </cti:checkRolesAndProperties>
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="create" type="submit" styleClass="f_blocker f_prepPasswordFields"/>
                 <input name="cancelCreation" type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
             </cti:displayForPageEditModes>
         </cti:displayForPageEditModes>
@@ -410,13 +442,15 @@
 
                         <tags:nameValueContainer2 id="passwordFields">
                             <tags:nameValue2 nameKey=".newPassword">
-                                <tags:password path="password1" autocomplete="false" maxlength="64" />
+                                <input type="text" class="dn password_editor_field" id="password1-plain" autocomplete="false" maxlength="64"/>
+                                <tags:password path="password1" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".confirmPassword">
-                                <tags:password path="password2" autocomplete="false" maxlength="64" />
+                                <input type="text" class="dn password_editor_field" id="password2-plain" autocomplete="false" maxlength="64"/>
+                                <tags:password path="password2" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                                <button type="button" onclick="generatePassword();">
+                                <button type="button" class="f_generatePassword">
                                     <i:inline key=".generatePassword" />
                                 </button>
                                 <br>
