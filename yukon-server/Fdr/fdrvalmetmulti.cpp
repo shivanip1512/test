@@ -74,7 +74,7 @@ CtiFDR_ValmetMulti::~CtiFDR_ValmetMulti()
     delete _helper;
 }
 
-BOOL CtiFDR_ValmetMulti::run( void ) 
+BOOL CtiFDR_ValmetMulti::run( void )
 {
     // load up the base class
     CtiFDRScadaServer::run();
@@ -100,8 +100,8 @@ void CtiFDR_ValmetMulti::startMultiListeners()
 {
     for each(int port in _listeningPortNumbers)
     {
-        RWThreadFunction thr = rwMakeThreadFunction(*(static_cast<CtiFDRSocketServer*>(this)), 
-                                                    &CtiFDR_ValmetMulti::threadFunctionConnection, 
+        RWThreadFunction thr = rwMakeThreadFunction(*(static_cast<CtiFDRSocketServer*>(this)),
+                                                    &CtiFDR_ValmetMulti::threadFunctionConnection,
                                                     port,
                                                     _listenerThreadStartupDelay);
         thr.start();
@@ -893,7 +893,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Received Scan Request for Translation Point: " << translationName << endl;
+        dout << CtiTime() << " Received Scan Request for Translation Point: " << translationName << " on " << connection->getName() << endl;
     }
     if (ciStringEqual(translationName, _sendAllPointsPointName))
     {
@@ -901,7 +901,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Processed Scan Request for All Valmet Translation Points." << endl;
+            dout << CtiTime() << " Processed Scan Request for All Valmet Translation Points on " << connection->getName() << endl;;
         }
         return NORMAL;
     }

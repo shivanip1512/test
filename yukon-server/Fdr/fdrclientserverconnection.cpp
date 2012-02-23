@@ -55,16 +55,7 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connect
 
 CtiFDRClientServerConnection::~CtiFDRClientServerConnection( )
 {
-    // stops all threads in this object
-    stop();
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "connection destroyed" << endl;
-    }
-
     _parentInterface->logEvent(_linkName + ": connection destroyed", "", true);
-
 }
 
 SOCKET CtiFDRClientServerConnection::getRawSocket()
@@ -195,8 +186,10 @@ bool CtiFDRClientServerConnection::queueMessage(CHAR *aBuffer,
     if (writeResult != NO_ERROR)
     {
         // write to queue failed!
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Error queueing data (" << writeResult << "), failing connection" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Error queueing data (" << writeResult << "), failing connection" << endl;
+        }
         success = false;
         failConnection();
     }
@@ -465,7 +458,7 @@ INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG
         aBytesWritten = bytesSent;
     }
 
-    if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         logNow() << "Wrote " << aBytesWritten << " bytes" << endl;
@@ -612,7 +605,7 @@ INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG
 
     } while (totalByteCnt < length);
 
-    if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         logNow() << "Read " << aBytesRead << " bytes" << endl;

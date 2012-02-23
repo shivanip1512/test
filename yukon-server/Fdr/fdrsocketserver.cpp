@@ -124,8 +124,8 @@ BOOL CtiFDRSocketServer::run( void )
         }
         _threadSingleConnection = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionConnection, getPortNumber(), 0);
         _threadSingleConnection.start();
-    } 
-    else 
+    }
+    else
     {
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
@@ -175,7 +175,13 @@ BOOL CtiFDRSocketServer::stop( void )
     CtiLockGuard<CtiMutex> guard(_connectionListMutex);
     for (ConnectionList::const_iterator myIter = _connectionList.begin();
          myIter != _connectionList.end();
-         ++myIter) {
+         ++myIter)
+    {
+        if (getDebugLevel() & CONNECTION_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Stopping " << (*myIter)->getName() << endl;
+        }
         (*myIter)->stop();
     }
 
@@ -385,8 +391,8 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
         }
 
         while (true) {
-            // We may have gotten to this point because of a socket being closed on 
-            // shutdown. Check to see if we're supposed to be exiting, otherwise 
+            // We may have gotten to this point because of a socket being closed on
+            // shutdown. Check to see if we're supposed to be exiting, otherwise
             // continue forward and attempt to forge a new connection.
             pSelf.serviceCancellation( );
             DWORD waitResult = WaitForSingleObject(_shutdownEvent, 2000);
@@ -403,7 +409,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
             } else {
-                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                if (getDebugLevel() & CONNECTION_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Listening for connection on port " << listeningPort << endl;
@@ -590,7 +596,6 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             continue;
         }
 
-        CtiLockGuard<CtiMutex> guard(_connectionListMutex);
         CtiFDRPoint::DestinationList& destList = point->getDestinationList();
         for each( CtiFDRDestination dest in destList )
         {
@@ -615,6 +620,11 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
                 {
                     bool tmpRet = connection->queueMessage(buffer, bufferSize, MAXPRIORITY-1);
                     retVal = retVal && tmpRet;
+                    if (tmpRet == false)
+                    {
+                        //There was an error with the connection. Stop sending.
+                        break;
+                    }
                 }
             }
         }
