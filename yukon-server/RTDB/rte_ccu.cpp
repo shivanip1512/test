@@ -355,6 +355,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.ASt.DlcRoute.Bus        = Carrier.getBus();
         OutMessage->Buffer.ASt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
+        OutMessage->Buffer.ASt.DlcRoute.Stages     = getStages();
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_interval", EmetconProtocol::calculateControlInterval(parse.getiValue("shed", 0)));
