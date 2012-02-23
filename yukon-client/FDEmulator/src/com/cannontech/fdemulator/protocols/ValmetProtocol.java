@@ -48,7 +48,7 @@ import com.cannontech.fdemulator.fileio.ValmetFileIO;
 public class ValmetProtocol extends FDEProtocol implements Runnable {
     // settings gui
     private ValmetSettings settings = null;
-
+    private static final String forceScanPointName = "CP_SEND_ALL";
     // loop escape
     private int quit = 0;
 
@@ -77,6 +77,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
     private final int VALMET_NULL = 0;
     private final int VALMET_VALUE = 101;
     private final int VALMET_STATUS = 102;
+    private final int VALMET_FORCE_SCAN = 110;
     // private final int VALMET_ANALOGOUTPUT = 103;
     private final int VALMET_CONTROL = 201;
     // private final int VALMET_TIMESYNC = 401;
@@ -684,9 +685,15 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                         exit = 1;
                     }
                 }
-                // if (nextpoint.getPort() == yukon_in_port)
-                // {
+
+                boolean forceScan = nextpoint.getPointName().equalsIgnoreCase(forceScanPointName);
+                
                 if (nextpoint.getPointInterval() == 10) {
+                    if (forceScan) {
+                        createForceScan(out);
+                        continue;
+                    }
+                    
                     if ("Value".equalsIgnoreCase(nextpoint.getPointType())) {
                         createValuePoint(out, nextpoint, value);
                     } else if ("Status".equalsIgnoreCase(nextpoint.getPointType())) {
@@ -763,6 +770,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
                 lastpoint = (ValmetPoint) pointarray[i + 1];
 
+                boolean forceScan = nextpoint.getPointName().equalsIgnoreCase(forceScanPointName);
+                if (forceScan) {
+                    createForceScan(out);
+                    continue;
+                }
+            
                 try {
                     if (lastpoint.getPointName().equalsIgnoreCase("")) {
                         exit = 1;
@@ -800,6 +813,13 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
     public void sendManual(String mtype, String mname, String mpoint, int mquality) {
         int nameLength = settings.isExtendedName() ? 32 : 16;
+        
+        boolean forceScan = mname.equalsIgnoreCase(forceScanPointName);
+        if (forceScan) {
+            createForceScan(out);
+            return;
+        }
+        
         if ("Value".equalsIgnoreCase(mtype)) {
 
             try {
@@ -1450,6 +1470,32 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         }
     }
 
+    private void createForceScan(DataOutputStream out) {
+
+            try {
+                out.writeShort(VALMET_FORCE_SCAN);
+
+                out.writeBytes(getTimeStamp());
+                writeName(out, forceScanPointName);
+                out.writeShort(0);
+                out.writeShort(0);
+                out.writeShort(0);
+                out.writeShort(0);
+            } catch (IOException e1) {
+                System.out.println(getDebugTimeStamp() + "Error with writting to the output stream ");
+            }
+            
+        // Write message to traffic log file
+        try {
+            FileWriter traffic = new FileWriter(trafficFile, true);
+            traffic.write(getDebugTimeStamp() + "SENT ");
+            traffic.write(" Name: " + forceScanPointName + "\n");
+            traffic.close();
+        } catch (Exception e) {
+            System.out.println(getDebugTimeStamp() + "Error with traffic stream ");
+        }
+    }
+    
     public void createValuePoint(DataOutputStream out, ValmetPoint nextpoint, Float value) {
         try {
 
@@ -1594,16 +1640,20 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         }
     }
 
-    public void writeName(DataOutputStream out, ValmetPoint nextpoint) {
+    private void writeName(DataOutputStream out, ValmetPoint nextpoint) {
+        writeName(out,nextpoint.getPointName());
+    }
+    
+    private void writeName(DataOutputStream out, String name) {
         try {
             int nameLength = settings.isExtendedName() ? 32 : 16;
 
-            if (nextpoint.getPointName().length() > nameLength) {
-                out.writeBytes(nextpoint.getPointName().substring(0, nameLength - 1));
+            if (name.length() > nameLength) {
+                out.writeBytes(name.substring(0, nameLength - 1));
             } else {
-                out.writeBytes(nextpoint.getPointName());
+                out.writeBytes(name);
 
-                for (int j = 0; j < (nameLength - nextpoint.getPointName().length()); j++) {
+                for (int j = 0; j < (nameLength - name.length()); j++) {
                     out.writeByte(0);
                 }
             }
@@ -1612,5 +1662,5 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         }
 
     }
-
+    
 }
