@@ -111,17 +111,17 @@ BOOL CtiFDR_BEPC::stop( void )
 
 string CtiFDR_BEPC::YukonToForeignTime (CtiTime aTime)
 {
-    CHAR workBuffer[50];
-    string retVal;
-    struct tm *gmTime = NULL;
-    CtiTime newTime;
+    string retVal = string ("200001010000");
 
     if (aTime.isValid())
     {
-        // get a gmtime from our time
-        LONG longTime=aTime.seconds();
-        gmTime=CtiTime::gmtime_r(reinterpret_cast<const time_t *>(&longTime));
+        char workBuffer[50];
 
+        // get a gmtime from our time
+        long longTime = aTime.seconds();
+
+        time_t tPtr = longTime;
+        struct tm *gmTime = CtiTime::gmtime_r(&tPtr);
         _snprintf (workBuffer,
                        50,
                    "%04ld%02ld%02ld%02ld%02ld",
@@ -133,10 +133,7 @@ string CtiFDR_BEPC::YukonToForeignTime (CtiTime aTime)
 
         retVal = string (workBuffer);
     }
-    else
-    {
-        retVal = string ("200001010000");
-    }
+
     return retVal;
 }
 
@@ -437,7 +434,6 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 
     string action,desc;
     string fileName;
-    string workBuffer;
 
     FILE* fptr;
 
@@ -508,7 +504,11 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                             else
                             {
                                 // value is expected to be an integer so cast the float
-                                workBuffer = coopId + "," +  YukonToForeignTime(translationPoint.getLastTimeStamp()) + "," + CtiNumStr((int)translationPoint.getValue()).toString() + ",0,0,0\n";
+
+                                string time = YukonToForeignTime(translationPoint.getLastTimeStamp());
+                                //Intentional Casting of float to int
+                                string value = CtiNumStr((int)translationPoint.getValue()).toString();
+                                string workBuffer = coopId + "," + time  + "," + value + ",0,0,0\n";
 
                                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                 {
