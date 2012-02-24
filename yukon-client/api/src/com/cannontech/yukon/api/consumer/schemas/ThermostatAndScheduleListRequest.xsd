@@ -5,21 +5,18 @@ targetNamespace="http://yukon.cannontech.com/api">
     
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
-  
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-        </xsd:documentation>
-    </xsd:annotation>
 
-    <xsd:complexType name="thermostatAndScheduleListRequest">
+    <xsd:complexType name="ThermostatAndScheduleListRequest">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
-                <xsd:element name="inventoryId" type="yukon:SerialNumber" minOccurs="0"
-                    maxOccurs="unbounded">
+                <xsd:sequence>
+                    <xsd:element name="inventoryId" type="yukon:nonNegativeInt" minOccurs="0"
+                        maxOccurs="unbounded"/>
+                </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="thermostatAndScheduleListRequest" type="yukon:thermostatAndScheduleListRequest"/>
+    <xsd:element name="thermostatAndScheduleListRequest" type="yukon:ThermostatAndScheduleListRequest"/>
 
 </xsd:schema>

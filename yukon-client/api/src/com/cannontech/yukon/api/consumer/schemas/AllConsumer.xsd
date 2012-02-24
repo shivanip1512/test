@@ -16,5 +16,7 @@
     <xsd:include schemaLocation="UserLoginResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="ForgotPasswordRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="ForgotPasswordResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="ThermostatAndScheduleListRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="ThermostatAndScheduleListResponse.xsd"></xsd:include>
     
 </xsd:schema>
