@@ -545,6 +545,10 @@ div.widgetInternalSection {
 	margin-left: 20px;
 }
 
+table.boxContainer_miniResultsTable {
+    width: 100%;
+}
+
 div.widgetPopup {
 	position: absolute;
 	top: 0px; 
@@ -1535,8 +1539,12 @@ a.icon {
     background-image: url("/WebConfig/yukon/Icons/pdf.gif") !important;
 }
 
-.ui-icon.refresh{
+.ui-icon.refresh {
     background-image: url("/WebConfig/yukon/Icons/table_refresh.gif") !important; 
+}
+
+.ui-icon.refresh:hover {
+    background-image: url("/WebConfig/yukon/Icons/table_refresh_over.gif") !important; 
 }
 
 .ex_large_icon {

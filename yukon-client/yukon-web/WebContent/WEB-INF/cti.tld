@@ -835,6 +835,7 @@
     <body-content>empty</body-content>
     <attribute>
         <name>value</name>
+        <description>value can be a long (milliseconds) or a ReadableDuration</description>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue> 
     </attribute>

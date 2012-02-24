@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.CollectingDeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.PreviousReadings;
@@ -22,25 +20,22 @@ import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display basic device information
  */
 public class MeterReadingsWidget extends WidgetControllerBase {
 
-    private MeterDao meterDao;
-    private DeviceAttributeReadService deviceAttributeReadService;
-    private AttributeService attributeService;
-    private MeteringEventLogService meteringEventLogService;
-    private PointService pointService;
-    private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private AttributeReadingWidgetHelper widgetHelper;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private MeteringEventLogService meteringEventLogService;
+    @Autowired private PointService pointService;
     
     private List<? extends Attribute> attributesToShow;
     private Attribute previousReadingsAttributeToShow;
@@ -55,9 +50,9 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     }
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+            throws ServletRequestBindingException {
 
-        Meter meter = getMeter(request);
+        Meter meter = widgetHelper.getMeter(request);
         ModelAndView mav = new ModelAndView("meterReadingsWidget/render.jsp");
         mav.addObject("device", meter);
         mav.addObject("attributes", attributesToShow);
@@ -93,67 +88,23 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         return mav;
     }
     
-    public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
+    public ModelAndView read(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user)
+    throws ServletRequestBindingException {
         
-        Meter meter = getMeter(request);
-        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
-        
+        Meter meter = widgetHelper.getMeter(request);
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         
         // allExisting is a copy...
         allExistingAttributes.retainAll(attributesToShow);
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
+
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
-        CollectingDeviceAttributeReadCallback callback = new CollectingDeviceAttributeReadCallback();
-        Set<Meter> meterSingleton = Collections.singleton(meter);
-        deviceAttributeReadService.initiateRead(meterSingleton, allExistingAttributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
-        callback.waitForCompletion();
         
-        mav.addObject("result", callback);
-        
-        boolean readable = deviceAttributeReadService.isReadable(meterSingleton, allExistingAttributes, user);
-        mav.addObject("readable", readable);
+        return widgetHelper.initiateRead(request, 
+                                 meter,
+                                 allExistingAttributes, 
+                                 "common/deviceAttributeReadResult.jsp", 
+                                 DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ);
 
-        return mav;
-    }
-
-    private Meter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
-        return meter;
     }
 
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-	
-    @Autowired
-    public void setMeteringEventLogService(
-            MeteringEventLogService meteringEventLogService) {
-        this.meteringEventLogService = meteringEventLogService;
-    }
-    
-    @Autowired
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
-    }
-    
-    @Autowired
-    public void setDeviceAttributeReadService(DeviceAttributeReadService deviceAttributeReadService) {
-        this.deviceAttributeReadService = deviceAttributeReadService;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
 }

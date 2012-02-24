@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.jsp.JspException;
 
+import org.joda.time.ReadableDuration;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class FormatDurationTag extends YukonTagSupport {
     private String var;
     private boolean isVarSet = false;
     
-    private long value; //milliseconds
+    private Object value; //long as milliseconds or joda Duration
     private boolean isValueSet = false; 
     
     private String type;
@@ -61,7 +62,11 @@ public class FormatDurationTag extends YukonTagSupport {
             }
         } else {
             if (isValueSet){
-                formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
+                if (value instanceof Long) {
+                    formattedDuration = durationFormattingService.formatDuration((Long)value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
+                } else if (value instanceof ReadableDuration) {
+                    formattedDuration = durationFormattingService.formatDuration((ReadableDuration)value, durationFormat, getUserContext());
+                }
             } else {
                 throw new JspException("both possible value types were not set");
             }

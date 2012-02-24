@@ -123,32 +123,35 @@ function JsWidgetObject(shortName, parameters) {
    * }
    */
   this.doActionUpdate = function(args) {
-    var defaultButtonText = $(args.buttonID).down('span').innerHTML;
-    $(args.buttonID).down('span').innerHTML = args.waitingText;
-    $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
-    var container = this.container;
-    $(container).getElementsBySelector('button').invoke('disable');
-    
-    var localSuccess = function() {
-        $(args.buttonID).down('span').innerHTML = defaultButtonText;
-        $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
-        $(container).getElementsBySelector('button').invoke('enable');
-    }
-    
-    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
-    
+      if (args.buttonID) {
+          var defaultButtonText = $(args.buttonID).down('span').innerHTML;
+          $(args.buttonID).down('span').innerHTML = args.waitingText;
+          $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
+          var container = this.container;
+          $(container).getElementsBySelector('button').invoke('disable');
+          var updateButton = function() {
+              $(args.buttonID).down('span').innerHTML = defaultButtonText;
+              $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
+              $(container).getElementsBySelector('button').invoke('enable');
+          }
+      }
+
+    var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters);
+
     var url = "/spring/widget/" + this.shortName + "/" + args.command;
 
     jQuery.ajax({
     	url: url,
     	data: oldParams,
     	success: function(data) {
-    		localSuccess();
+    		if (updateButton) {
+    		    updateButton();
+    		}
     		jQuery(document.getElementById(args.containerID)).html(data);
     	}
     });
   };
-  
+
   this.setParameter = function(name, value){
   	this.parameters[name] = value;
   };

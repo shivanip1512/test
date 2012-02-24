@@ -292,6 +292,21 @@
         </property>
     </bean>
     
+    <bean id="rfnOutagesWidget" class="com.cannontech.web.widget.RfnOutagesWidget">
+        <property name="title" value="Outages"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
         <property name="title" value="Meter Events"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
@@ -1994,4 +2009,6 @@
     <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
     <bean id="exportReportValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportReportValidator"/>
     <bean id="exportReportGenaratorService" class="com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorImpl"/>
+    
+    <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingWidgetHelper"/>
 </beans>

@@ -33,11 +33,11 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
-    private RfnMeterDao rfnMeterDao;
-    private AttributeService attributeService;
-    private DynamicDataSource dynamicDataSource;
-    private RfnMeterDisconnectService rfnMeterDisconnectService;
-    private ConfigurationSource configurationSource;
+    @Autowired private RfnMeterDao rfnMeterDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
+    @Autowired private ConfigurationSource configurationSource;
     
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectWidget.class);
     
@@ -160,31 +160,6 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
 
     private boolean isArming() {
         return configurationSource.getBoolean("RFN_METER_DISCONNECT_ARMING", false);
-    }
-    
-    @Autowired
-    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
-        this.rfnMeterDao = rfnMeterDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setDynamiceDataSource(DynamicDataSource dynamiceDataSource) {
-        this.dynamicDataSource = dynamiceDataSource;
-    }
-    
-    @Autowired
-    public void setRfnMeterDisconnectService(RfnMeterDisconnectService rfnMeterDisconnectService) {
-        this.rfnMeterDisconnectService = rfnMeterDisconnectService;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
     }
     
 }

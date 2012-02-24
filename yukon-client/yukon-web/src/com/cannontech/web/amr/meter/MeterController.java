@@ -178,6 +178,8 @@ public class MeterController extends MultiActionController {
         mav.addObject("deviceId", deviceId);
         mav.addObject("deviceName",  paoLoadingService.getDisplayablePao(device).getName());
         
+        boolean isRFMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
+        
         // do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         cachingPointFormattingService.addLitePointsToCache(litePoints);
@@ -193,8 +195,9 @@ public class MeterController extends MultiActionController {
         boolean outageSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.OUTAGE) 
             && (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) 
                     || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
-        mav.addObject("outageSupported", outageSupported);
-
+        mav.addObject("outageSupported", outageSupported && !isRFMesh);
+        mav.addObject("rfnOutageSupported", outageSupported && isRFMesh);
+        
         String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
         mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
 
@@ -231,7 +234,7 @@ public class MeterController extends MultiActionController {
         boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
         mav.addObject("configSupported", configSupported);
         
-        if(device.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
+        if(isRFMesh) {
             mav.addObject("isRFMesh", true);
         }
         

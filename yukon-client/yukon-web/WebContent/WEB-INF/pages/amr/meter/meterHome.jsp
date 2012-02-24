@@ -135,6 +135,10 @@
 					<c:if test="${outageSupported}">
 						<ct:widget bean="meterOutagesWidget" />
 					</c:if>
+                    
+                    <c:if test="${rfnOutageSupported}">
+                        <ct:widget bean="rfnOutagesWidget"/>
+                    </c:if>
 	
 					<c:if test="${touSupported}">
 						<ct:widget bean="touWidget" />

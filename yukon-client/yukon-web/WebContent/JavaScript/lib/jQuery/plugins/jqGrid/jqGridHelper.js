@@ -16,29 +16,39 @@ Yukon.GridHelper = {
         },
 
         _createBasicGrid: function(args){
-            jQuery(document.getElementById(args.id)).jqGrid({
-                altRows: true,
-                caption: args.title,
-                colModel: args.colModel,
-                datatype: 'json',
-                height: args.height || 'auto',
-                jsonReader : {
-                    root: "root",
-                    page: "",
-                    total: "",
-                    records: "",
-                    repeatitems: false,
-                    cell: "",
-                    id: 0
-                  },
-                loadonce: true,
-                loadui: args.loadui, //currently not loading locale file
-                mtype: 'GET',
-                scroll: true,
-                toolbar: args.toolbar || [false, ""],
-                url: args.url,
-                width: args.width || 'auto'
-              });
+            
+            var opts = {
+                    altRows: true,
+                    caption: args.title,
+                    colModel: args.colModel,
+                    datatype: 'json',
+                    height: args.height || 'auto',
+                    width: args.width || 'auto',
+                    jsonReader : {
+                        root: "root",
+                        page: "",
+                        total: "",
+                        records: "",
+                        repeatitems: false,
+                        cell: "",
+                        id: 0
+                      },
+                    loadonce: true,
+                    loadui: args.loadui, //currently not loading locale file
+                    mtype: 'GET',
+                    scroll: true,
+                    toolbar: args.toolbar || [false, ""],
+                    url: args.url
+                  };
+            
+            jQuery.extend(opts, args);
+            
+            if(args.width == null || typeof(args.width) == 'undefined'){
+                opts.autowidth = true;
+                opts.shrinkToFit = 200;
+            }
+            
+            jQuery(document.getElementById(args.id)).jqGrid(opts);
         },
         
         _createToolbar: function(args){
@@ -71,3 +81,8 @@ Yukon.GridHelper = {
 };
 
 var jqGridHelper = Yukon.GridHelper;
+
+jQuery(window).delegate(".ui-jqgrid", 'onresize', function(event){
+    debug('resize!');
+    jQuery(this).jqGrid();
+});

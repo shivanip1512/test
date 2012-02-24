@@ -25,6 +25,7 @@
                 <tags:nameValue name="Manufacturer">
                     <form:select path="manufacturer">
                         <form:option value="LGYR">LGYR</form:option>
+                        <form:option value="ITRN">ITRN</form:option>
                         <form:option value="Eka">Eka</form:option>
                         <form:option value="EE">EE</form:option>
                         <form:option value="GE">GE</form:option>
@@ -34,6 +35,7 @@
                 <tags:nameValue name="Model">
                     <form:select path="model">
                         <form:option value="FocuskWh">FocuskWh</form:option>
+                        <form:option value="C2SX">C2SX</form:option>
                         <form:option value="water_sensor">water_sensor</form:option>
                         <form:option value="water_sensor">water_node</form:option>
                         <form:option value="A3R">A3R</form:option>
