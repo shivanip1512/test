@@ -30,7 +30,6 @@
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointName">POINT_NAME</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointNameDescription">A point on the specified Yukon device.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.direction">DIRECTION</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.directionDescription">"Send", "Send for control","Receive", "Receive for control" or "Receive for Analog Output".</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsText">Each interface requires additional columns. Select an interface to see required columns and download a sample file.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsHeader">Columns</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.sampleFileLink">Download a sample import file</entry>
@@ -62,6 +61,7 @@
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.missingAnyColumn">Import Error: Missing column value for {0}.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidAction">Import Error: Invalid Action.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.invalidDirection">"{0}" is not a valid direction.</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.unsupportedDirection">"{0}" direction is not supported by the "{1}" interface.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.error.pointNotFound">Point "{0}" on Device "{1}" is not a valid point.</entry>
     
     <!-- IMPORT LOG MESSAGES -->

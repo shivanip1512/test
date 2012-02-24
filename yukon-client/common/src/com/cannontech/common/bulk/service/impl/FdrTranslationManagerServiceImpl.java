@@ -213,6 +213,11 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.invalidDirection", dataRow.getDirection());
                     throw new ProcessingException(error);
                 }
+                List<FdrDirection> supportedDirections = dataRow.getInterface().getSupportedDirectionsList();
+                if(!supportedDirections.contains(fdrDirection)) {
+                    String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.unsupportedDirection", fdrDirection, dataRow.getInterface());
+                    throw new ProcessingException(error);
+                }
                                 
                 //build translation
                 FdrTranslation translation = new FdrTranslation();

@@ -110,14 +110,16 @@
                                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointNameDescription"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td class="smallBoldLabel">
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.direction"/>
-                            </td>
-                            <td>
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.directionDescription"/>
-                            </td>
-                        </tr>
+                        <c:forEach var="interface" items="${interfaceTypes}">
+                            <tr class="interface_${interface}" style="display:none;">
+                                <td class="smallBoldLabel">
+                                    <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.direction"/>
+                                </td>
+                                <td>
+                                    <c:forEach var="direction" varStatus="status" items="${interface.supportedDirections}">"${direction.value}"<c:if test="${!status.last}">,&nbsp;</c:if></c:forEach>
+                                </td>
+                            </tr>
+                        </c:forEach>   
                     </table>
                 </div>
                 <div class="bottomPadded">

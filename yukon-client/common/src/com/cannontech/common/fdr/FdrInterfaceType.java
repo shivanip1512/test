@@ -309,6 +309,13 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
     }
     
     /**
+     * @return a list containing all FdrDirections supported by this interface.
+     */
+    public List<FdrDirection> getSupportedDirectionsList() {
+        return Lists.newArrayList(getSupportedDirections());
+    }
+    
+    /**
      * @return the interface with the specified integer ID, or null if the ID is invalid
      */
     public static FdrInterfaceType getById(int id) {
