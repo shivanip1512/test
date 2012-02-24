@@ -2645,6 +2645,20 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
     bool found = false;
     int function;
 
+    std::auto_ptr<CtiReturnMsg> errRet(
+        new CtiReturnMsg(
+                getID( ),
+                CtiString(OutMessage->Request.CommandStr),
+                CtiString(),
+                nRet,
+                OutMessage->Request.RouteID,
+                OutMessage->Request.MacroOffset,
+                OutMessage->Request.Attempt,
+                OutMessage->Request.GrpMsgID,
+                OutMessage->Request.UserID,
+                OutMessage->Request.SOE,
+                CtiMultiMsg_vec( )));
+
     if( parse.isKeyValid("kyz") )
     {
         function = EmetconProtocol::PutValue_KYZ;
@@ -2652,21 +2666,6 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
         {
             if(parse.isKeyValid("kyz_offset") && parse.isKeyValid("kyz_reading") )
             {
-                std::auto_ptr<CtiReturnMsg>
-                    errRet(
-                        new CtiReturnMsg(
-                                getID( ),
-                                CtiString(OutMessage->Request.CommandStr),
-                                CtiString(),
-                                nRet,
-                                OutMessage->Request.RouteID,
-                                OutMessage->Request.MacroOffset,
-                                OutMessage->Request.Attempt,
-                                OutMessage->Request.GrpMsgID,
-                                OutMessage->Request.UserID,
-                                OutMessage->Request.SOE,
-                                CtiMultiMsg_vec( )));
-
                 int    offset = parse.getiValue("kyz_offset");
                 double dial   = parse.getdValue("kyz_reading", -1.0);
 
@@ -2736,6 +2735,10 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
 
                     if( ! iedType )
                     {
+                        errRet->setResultString("Could not determine the IED type");
+                        errRet->setStatus(MISCONFIG);
+                        retList.push_back(errRet.release());
+
                         return MISCONFIG;
                     }
                 }
@@ -2789,6 +2792,10 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
 
             if( itr == ResetCommandsByIedType.end() )
             {
+                errRet->setResultString("Could not determine the command for IED type " + CtiNumStr(*iedType));
+                errRet->setStatus(MISCONFIG);
+                retList.push_back(errRet.release());
+
                 return MISCONFIG;
             }
 

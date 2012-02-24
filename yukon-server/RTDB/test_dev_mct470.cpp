@@ -1122,15 +1122,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_REQUIRE( outList.empty() );
 
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
 
-        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+        {
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
 
-        BOOST_REQUIRE(retMsg);
+            BOOST_REQUIRE(retMsg);
 
-        BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
-        BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
-        BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), "Could not determine the IED type" );
+            BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+        }
+
+        {
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.back());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
+            BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+        }
     }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_no_deviceconfig_no_dynamicpaoinfo)
@@ -1143,15 +1155,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_REQUIRE( outList.empty() );
 
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
 
-        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+        {
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
 
-        BOOST_REQUIRE(retMsg);
+            BOOST_REQUIRE(retMsg);
 
-        BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
-        BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
-        BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), "Could not determine the IED type" );
+            BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+        }
+
+        {
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.back());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
+            BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
+        }
     }
 
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kv2_noqueue)
