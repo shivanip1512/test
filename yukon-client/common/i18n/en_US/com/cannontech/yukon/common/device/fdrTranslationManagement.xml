@@ -20,7 +20,7 @@
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsText">All import files must contain the following columns.</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsHeader">Default Columns</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsDescriptionHeader">Description</entry>
-    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsLabel">Choose an interface</entry>
+    <entry key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsLabel">Choose an interface:</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.action">ACTION</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.actionDescription">ADD or REMOVE</entry>
     <entry key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceName">DEVICE_NAME</entry>
