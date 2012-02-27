@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.clientutils.YukonLogManager;
+
 public class SampleEimFile implements Comparable<SampleEimFile> {
+    private final static Logger log = YukonLogManager.getLogger(SampleEimFile.class);
+
     private final static Pattern filenamePattern =
-        Pattern.compile(".*\\\\api\\\\(\\w+)\\\\schemas\\\\xml-templates\\\\([\\w\\.]+)\\.xml");
+        Pattern.compile(".*/api/(\\w+)/schemas/xml-templates/([\\w\\.]+)\\.xml");
 
     private int id;
     private String category;
@@ -18,11 +23,11 @@ public class SampleEimFile implements Comparable<SampleEimFile> {
     public SampleEimFile(int id, Resource resource) throws IOException {
         this.id = id;
         this.resource = resource;
-        String fullPath = resource.getFile().getAbsolutePath();
+        String path = resource.getURL().getPath();
 
-        Matcher matcher = filenamePattern.matcher(fullPath);
+        Matcher matcher = filenamePattern.matcher(path);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException(fullPath + " does not match");
+            log.error(path + " does not match", new IllegalArgumentException());
         }
         category = nicifyCategory(matcher.group(1));
         niceName = nicifyName(matcher.group(2));
